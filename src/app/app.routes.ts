@@ -1,9 +1,9 @@
 import {ModuleWithProviders}  from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {DashboardComponent} from './components/dashboard/dashboard.component';
-import {DataSelectionComponent} from "./components/data-selection/data-selection.component";
-import {AnalysisComponent} from "./components/analysis/analysis.component";
-import {ExportComponent} from "./components/export/export.component";
+import {DashboardComponent} from './dashboard/dashboard.component';
+import {DataSelectionComponent} from "./data-selection/data-selection.component";
+import {AnalysisComponent} from "./analysis/analysis.component";
+import {ExportComponent} from "./export/export.component";
 
 // Route Configuration
 export const routes: Routes = [

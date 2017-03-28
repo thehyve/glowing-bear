@@ -5,11 +5,11 @@ import {HttpModule} from '@angular/http';
 
 import {routing} from './app.routes';
 import {AppComponent} from './app.component';
-import {NavbarComponent} from "./components/navbar/navbar.component";
-import {DashboardComponent} from "./components/dashboard/dashboard.component";
-import { DataSelectionComponent } from './components/data-selection/data-selection.component';
-import { AnalysisComponent } from './components/analysis/analysis.component';
-import { ExportComponent } from './components/export/export.component';
+import {NavbarComponent} from "./navbar/navbar.component";
+import {DashboardComponent} from "./dashboard/dashboard.component";
+import { DataSelectionComponent } from './data-selection/data-selection.component';
+import { AnalysisComponent } from './analysis/analysis.component';
+import { ExportComponent } from './export/export.component';
 
 @NgModule({
   declarations: [
