@@ -4,10 +4,7 @@
 
 .nav-icon {
   font-size: 6px;
-}
-
-.nav-btn {
-  font-family: Roboto;
+  color: lightgray;
 }
 
 .nav-btn:hover {
@@ -16,7 +13,7 @@
 
 .nav-active {
   font-weight: bolder;
-  font-family: Roboto;
+  font-family: FontAwesome;
   font-size: 110%;
   text-decoration: underline;
 }
