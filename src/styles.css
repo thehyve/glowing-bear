@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+@import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
+
+body {
+  font-family: FontAwesome;
+}
+
+.loading-message {
+  color: #369;
+  font-size: 300%;
+  text-align: center;
+  padding: 200px;
+  opacity: .8;
+}

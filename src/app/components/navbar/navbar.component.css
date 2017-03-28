@@ -1,0 +1,22 @@
+.nav-container {
+  font-family: FontAwesome;
+}
+
+.nav-icon {
+  font-size: 6px;
+}
+
+.nav-btn {
+  font-family: Roboto;
+}
+
+.nav-btn:hover {
+  background-color: lightgray;;
+}
+
+.nav-active {
+  font-weight: bolder;
+  font-family: Roboto;
+  font-size: 110%;
+  text-decoration: underline;
+}
