@@ -11,6 +11,8 @@ import { DataSelectionComponent } from './data-selection/data-selection.componen
 import { AnalysisComponent } from './analysis/analysis.component';
 import { ExportComponent } from './export/export.component';
 
+import { EndpointService } from './services/endpoint.service';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +28,9 @@ import { ExportComponent } from './export/export.component';
     HttpModule,
     routing
   ],
-  providers: [],
+  providers: [
+    EndpointService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
