@@ -6,19 +6,9 @@ import {Location} from '@angular/common';
 export class EndpointService {
 
   private endpoint:Endpoint = new Endpoint('http://localhost:8080');
-  private location:Location;
 
-  constructor(location:Location) {
-    this.location = location;
-    let fullUrl = window.location.href;
-    // parse the url into protocol, host, port and hash, e.g.
-    // {
-    //   protocol: 'http',
-    //   host: 'localhost',
-    //   port: '4200',
-    //   hash: ''
-    // }
-    let parsedUrl = this.parseUrl(fullUrl);
+  constructor(private location:Location) {
+    let parsedUrl = this.parseUrl(this.getCurrentUrl());
     let oauthGrantFragment:string = parsedUrl.hash;
     if (oauthGrantFragment.length > 1) {
       // Update the current endpoint with the received credentials and save it
@@ -33,7 +23,33 @@ export class EndpointService {
     }
   }
 
+  /**
+   * Return the current url
+   * @returns {string}
+   */
+  getCurrentUrl():string {
+    return window.location.href;
+  }
 
+  /**
+   * Navigates to the specified url
+   * @param url
+   */
+  navigateToUrl(url:string) {
+    window.location.href = url;
+  }
+
+  /**
+   * Parse the url into protocol, host, port and hash, e.g.
+   * {
+   *   protocol: 'http',
+   *   host: 'localhost',
+   *   port: '4200',
+   *   hash: ''
+   * }
+   * @param _url
+   * @returns {{protocol: string, host: string, port: string, hash: (string|string), path: (string|string)}}
+   */
   parseUrl(_url: string) {
     let url = this.location.normalize(_url);
     let arr = url.split('://');
@@ -65,12 +81,6 @@ export class EndpointService {
    * @param endpoint
    */
   navigateToAuthorizationPage(endpoint) {
-    var parsedUrl = this.parseUrl(window.location.href);
-    var currentProtocol = parsedUrl.protocol,
-      currentHost = String(parsedUrl.host),
-      currentPort = String(parsedUrl.port),
-      currentPath = String(parsedUrl.path);
-
 
     // Cut off any '/'
     var url = endpoint.url;
@@ -78,17 +88,16 @@ export class EndpointService {
       url = url.substring(0, url.length - 1);
     }
 
+    // Construct the redirect url
+    var parsedUrl = this.parseUrl(this.getCurrentUrl());
     let redirectUri =
-      this.getRedirectURI(currentProtocol,
-                          currentHost,
-                          currentPort,
-                          currentPath);
+      this.getRedirectURI(parsedUrl.protocol,
+                          parsedUrl.host,
+                          parsedUrl.port,
+                          parsedUrl.path);
 
-    var authorizationUrl = url +
-      '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=' +
-      redirectUri;
-
-    window.location.href = authorizationUrl;
+    var authorizationUrl = `${url}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${redirectUri}`;
+    this.navigateToUrl(authorizationUrl);
   }
 
   /**
@@ -105,12 +114,9 @@ export class EndpointService {
     } else {
       port = '%3A' + port;
     }
-    let redirectUri = protocol + '%3A%2F%2F' + host + port;
-    // if(path) redirectUri += '%2F'+path;
-
+    let redirectUri = `${protocol}%3A%2F%2F${host}${port}`;
     return redirectUri;
   }
-
 
   /**
    * Sets up a new restangular instance using the specified credentials.
