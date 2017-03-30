@@ -107,7 +107,7 @@ export class EndpointService {
     }
     let redirectUri = protocol + '%3A%2F%2F' + host + port;
     // if(path) redirectUri += '%2F'+path;
-  
+
     return redirectUri;
   }
 
