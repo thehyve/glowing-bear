@@ -106,6 +106,7 @@ export class EndpointService {
    * @param port {string}
    * @param host {string}
    * @param protocol {string}
+   * @param path {string}
    * @returns {string}
    */
   getRedirectURI(protocol, host, port, path) {
