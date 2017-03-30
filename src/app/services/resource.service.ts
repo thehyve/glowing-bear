@@ -1,20 +1,29 @@
 import { Injectable } from '@angular/core';
+import { Http, Response, Headers } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
+
+import { Study } from '../models/study';
+import { EndpointService } from './endpoint.service';
 
 @Injectable()
 export class ResourceService {
 
-  private _IS_AUTHENTICATED: boolean;
+  constructor(private http: Http, private endpointService: EndpointService) { }
 
-  constructor() {
-    this._IS_AUTHENTICATED = false;
-  }
-
-  isAuthenticated(): boolean {
-    return this._IS_AUTHENTICATED;
-  }
-
-  authenticate(): void {
-    console.log('log in here: ', this.isAuthenticated());
+  getStudies(): Promise<Study[]> {
+    var headers = new Headers();
+    var endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.access_token}`);
+    return this.http.get(`${endpoint.url}/studies`, {
+      headers: headers
+    })
+      .toPromise()
+      .then((response: Response) => {
+        return response.json().studies as Study[]
+      })
+      .catch(() => {
+        console.log("an error occurred");
+      });
   }
 
 }

@@ -1,5 +1,5 @@
 export class Endpoint {
-  private url:string;
+  public url:string;
   public access_token:string;
 
   private _isAuthenticated: boolean;

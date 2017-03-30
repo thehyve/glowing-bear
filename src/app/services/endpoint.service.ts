@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {Endpoint} from "../models/endpoint";
-import {Location} from '@angular/common';
+import { Endpoint } from '../models/endpoint';
+import { Location } from '@angular/common';
 
 @Injectable()
 export class EndpointService {
