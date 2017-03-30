@@ -10,45 +10,50 @@ export class EndpointService {
 
   constructor(location:Location) {
     this.location = location;
-
-    // Check if there is an OAuth fragment, which indicates we're in the process
-    // of authorizing an endpoint.
-    var parsedUrl = this.parseUrl(this.location.prepareExternalUrl(this.location.path(true)));
-    var oauthGrantFragment:string = parsedUrl.hash;
+    let fullUrl = window.location.href;
+    // parse the url into protocol, host, port and hash, e.g.
+    // {
+    //   protocol: 'http',
+    //   host: 'localhost',
+    //   port: '4200',
+    //   hash: ''
+    // }
+    let parsedUrl = this.parseUrl(fullUrl);
+    let oauthGrantFragment:string = parsedUrl.hash;
     if (oauthGrantFragment.length > 1) {
       // Update the current endpoint with the received credentials and save it
       this.endpoint = this.initializeEndpointWithCredentials(
         this.endpoint,
         oauthGrantFragment
       );
-
-      //$location.url($location.path());
     }
 
     if (!this.endpoint.access_token) {
       this.navigateToAuthorizationPage(this.endpoint);
     }
-
   }
 
-  parseUrl(url: string) {
-    console.log('hi');
+
+  parseUrl(_url: string) {
+    let url = this.location.normalize(_url);
     let arr = url.split('://');
     let protocol = arr[0];
     let tail = arr[1];
     arr = tail.split('#');
-    let path = arr[0];
-    let hash = arr[1];
-    let host = path.split('/')[0];
-    let port = path.split(':')[1];
+    let part = arr[0];
+    let path = part.split('/')[1]||'';
+    let hash = arr[1]||'';
+    let host = part.split('/')[0].split(':')[0];
+    let port = part.split(':')[1].split('/')[0];
+
     return {
       protocol: protocol,
       host: host,
       port: port,
-      hash: hash
+      hash: hash,
+      path: path
     }
   }
-
 
   public getEndpoint() {
     return this.endpoint;
@@ -60,10 +65,12 @@ export class EndpointService {
    * @param endpoint
    */
   navigateToAuthorizationPage(endpoint) {
-    var parsedUrl = this.parseUrl(endpoint.url);
-    var currentHost = String(parsedUrl.host),
+    var parsedUrl = this.parseUrl(window.location.href);
+    var currentProtocol = parsedUrl.protocol,
+      currentHost = String(parsedUrl.host),
       currentPort = String(parsedUrl.port),
-      currentProtocol = parsedUrl.protocol;
+      currentPath = String(parsedUrl.path);
+
 
     // Cut off any '/'
     var url = endpoint.url;
@@ -71,11 +78,17 @@ export class EndpointService {
       url = url.substring(0, url.length - 1);
     }
 
+    let redirectUri =
+      this.getRedirectURI(currentProtocol,
+                          currentHost,
+                          currentPort,
+                          currentPath);
+
     var authorizationUrl = url +
       '/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=' +
-      this.getRedirectURI(currentProtocol, currentHost, currentPort);
+      redirectUri;
 
-    this.location.go(authorizationUrl, '_self');
+    window.location.href = authorizationUrl;
   }
 
   /**
@@ -86,13 +99,16 @@ export class EndpointService {
    * @param protocol {string}
    * @returns {string}
    */
-  getRedirectURI(protocol, host, port) {
+  getRedirectURI(protocol, host, port, path) {
     if (['80', '443'].indexOf(port) >= 0) {
       port = '';
     } else {
       port = '%3A' + port;
     }
-    return protocol + '%3A%2F%2F' + host + port + '%2Fconnections';
+    let redirectUri = protocol + '%3A%2F%2F' + host + port;
+    // if(path) redirectUri += '%2F'+path;
+  
+    return redirectUri;
   }
 
 
