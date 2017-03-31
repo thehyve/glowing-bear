@@ -3,30 +3,33 @@ import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
-import {routing} from './app.routes';
+import {routing} from './app.routing';
 import {AppComponent} from './app.component';
-import {NavbarComponent} from "./navbar/navbar.component";
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import { DataSelectionComponent } from './data-selection/data-selection.component';
-import { AnalysisComponent } from './analysis/analysis.component';
-import { ExportComponent } from './export/export.component';
+import {NavbarComponent} from "./components/navbar/navbar.component";
+import {DashboardComponent} from "./modules/dashboard/dashboard.component";
 
-import { EndpointService } from './services/endpoint.service';
+
+import {EndpointService} from './services/endpoint.service';
+
+import {AnalysisModule} from "./modules/analysis/analysis.module";
+import {ExportModule} from "./modules/export/export.module";
+import {DataSelectionModule} from "./modules/data-selection/data-selection.module";
+
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
-    DashboardComponent,
-    DataSelectionComponent,
-    AnalysisComponent,
-    ExportComponent
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    routing
+    routing,
+    DataSelectionModule,
+    AnalysisModule,
+    ExportModule
   ],
   providers: [
     EndpointService
