@@ -16,24 +16,17 @@ export class NavbarComponent {
   constructor(private router: Router) {
     router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        let whichStep = event.urlAfterRedirects.split('/')[1];
+        let whichStep = event.urlAfterRedirects.split('/')[1].split('#')[0];
         this.updateNavbar(whichStep);
       }
     });
   }
 
   updateNavbar(whichStep: string) {
-    this.isDashboard = (whichStep === 'dashboard');
+    this.isDashboard = (whichStep === 'dashboard' || whichStep == '');
     this.isDataSelection = (whichStep === 'data-selection');
     this.isAnalysis = (whichStep === 'analysis');
     this.isExport = (whichStep === 'export');
-
-    // console.log('-- which step: ', whichStep);
-    // console.log('isDashboard: ', this.isDashboard);
-    // console.log('isDataSelection: ', this.isDataSelection);
-    // console.log('isDataView: ', this.isDataView);
-    // console.log('isAnalysis: ', this.isAnalysis);
-    // console.log('isExport: ', this.isExport);
   }
 
 }

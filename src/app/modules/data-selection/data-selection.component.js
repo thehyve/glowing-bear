@@ -7,20 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
-var endpoint_service_1 = require("./services/endpoint.service");
-var common_1 = require("@angular/common");
-var AppComponent = (function () {
-    function AppComponent(endpointService) {
-        this.endpointService = endpointService;
+var DataSelectionComponent = (function () {
+    function DataSelectionComponent() {
     }
-    return AppComponent;
+    DataSelectionComponent.prototype.ngOnInit = function () {
+    };
+    return DataSelectionComponent;
 }());
-AppComponent = __decorate([
+DataSelectionComponent = __decorate([
     core_1.Component({
-        selector: 'app-root',
-        templateUrl: './app.component.html',
-        styleUrls: ['./app.component.css'],
-        providers: [endpoint_service_1.EndpointService, common_1.Location, { provide: common_1.LocationStrategy, useClass: common_1.HashLocationStrategy }]
+        selector: 'data-selection',
+        templateUrl: './data-selection.component.html',
+        styleUrls: ['./data-selection.component.css']
     })
-], AppComponent);
-exports.AppComponent = AppComponent;
+], DataSelectionComponent);
+exports.DataSelectionComponent = DataSelectionComponent;

@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadChildren: '/modules/dashboard/dashboard.module#DashboardModule'
+    loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
   },
   {
     path: 'data-selection',

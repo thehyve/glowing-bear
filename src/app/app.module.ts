@@ -6,27 +6,27 @@ import {HttpModule} from '@angular/http';
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 import {NavbarComponent} from "./components/navbar/navbar.component";
-import {DashboardComponent} from "./modules/dashboard/dashboard.component";
 
 
 import {EndpointService} from './services/endpoint.service';
-
+import {DataSelectionModule} from "./modules/data-selection/data-selection.module";
 import {AnalysisModule} from "./modules/analysis/analysis.module";
 import {ExportModule} from "./modules/export/export.module";
-import {DataSelectionModule} from "./modules/data-selection/data-selection.module";
+import {DashboardModule} from "./modules/dashboard/dashboard.module";
+
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent,
-    DashboardComponent
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     routing,
+    DashboardModule,
     DataSelectionModule,
     AnalysisModule,
     ExportModule

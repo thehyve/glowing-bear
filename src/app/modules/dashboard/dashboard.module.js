@@ -7,20 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
-var endpoint_service_1 = require("./services/endpoint.service");
 var common_1 = require("@angular/common");
-var AppComponent = (function () {
-    function AppComponent(endpointService) {
-        this.endpointService = endpointService;
+var dashboard_component_1 = require("./dashboard.component");
+var dashboard_routing_1 = require("./dashboard.routing");
+var router_1 = require("@angular/router");
+var AnalysisModule = (function () {
+    function AnalysisModule() {
     }
-    return AppComponent;
+    return AnalysisModule;
 }());
-AppComponent = __decorate([
-    core_1.Component({
-        selector: 'app-root',
-        templateUrl: './app.component.html',
-        styleUrls: ['./app.component.css'],
-        providers: [endpoint_service_1.EndpointService, common_1.Location, { provide: common_1.LocationStrategy, useClass: common_1.HashLocationStrategy }]
+AnalysisModule = __decorate([
+    core_1.NgModule({
+        imports: [
+            common_1.CommonModule,
+            dashboard_routing_1.routing
+        ],
+        exports: [
+            router_1.RouterModule
+        ],
+        declarations: [dashboard_component_1.AnalysisComponent]
     })
-], AppComponent);
-exports.AppComponent = AppComponent;
+], AnalysisModule);
+exports.AnalysisModule = AnalysisModule;
