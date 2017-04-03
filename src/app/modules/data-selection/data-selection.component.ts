@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-data-selection',
+  selector: 'data-selection',
   templateUrl: './data-selection.component.html',
   styleUrls: ['./data-selection.component.css']
 })
