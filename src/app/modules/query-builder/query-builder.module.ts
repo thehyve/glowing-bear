@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {TestComponent} from "./test.component";
-import {routing} from './test.routes';
+import {QueryBuilderComponent} from "./query-builder.component";
+import {routing} from './query-builder.routing';
 import {RouterModule} from "@angular/router";
 
 @NgModule({
@@ -12,6 +12,6 @@ import {RouterModule} from "@angular/router";
   exports: [
     RouterModule
   ],
-  declarations: [TestComponent]
+  declarations: [QueryBuilderComponent]
 })
-export class TestModule { }
+export class QueryBuilderModule { }

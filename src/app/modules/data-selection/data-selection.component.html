@@ -1,1 +1,43 @@
-<h1>data-selection</h1>
+<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+  <!-- patient selection -->
+  <ngb-panel>
+    <template ngbPanelTitle>
+      <span>Patient selection</span>
+    </template>
+    <template ngbPanelContent>
+      <query></query>
+    </template>
+    <h1>haha</h1>
+  </ngb-panel>
+
+  <!-- observation selection -->
+  <ngb-panel>
+    <template ngbPanelTitle>
+      <span>Observation selection</span>
+    </template>
+    <template ngbPanelContent>
+      <query></query>
+    </template>
+  </ngb-panel>
+
+  <!-- data view  -->
+  <ngb-panel>
+    <template ngbPanelTitle>
+      <span>Data view</span>
+    </template>
+    <template ngbPanelContent>
+      <data-view></data-view>
+    </template>
+  </ngb-panel>
+
+  <!-- summary  -->
+  <ngb-panel>
+    <template ngbPanelTitle>
+      <span>Summary</span>
+    </template>
+    <template ngbPanelContent>
+      <data-view></data-view>
+    </template>
+  </ngb-panel>
+
+</ngb-accordion>

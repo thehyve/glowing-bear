@@ -13,6 +13,7 @@ import {DataSelectionModule} from "./modules/data-selection/data-selection.modul
 import {AnalysisModule} from "./modules/analysis/analysis.module";
 import {ExportModule} from "./modules/export/export.module";
 import {DashboardModule} from "./modules/dashboard/dashboard.module";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 
@@ -25,6 +26,7 @@ import {DashboardModule} from "./modules/dashboard/dashboard.module";
     BrowserModule,
     FormsModule,
     HttpModule,
+    NgbModule.forRoot(),
     routing,
     DashboardModule,
     DataSelectionModule,
