@@ -1,9 +1,5 @@
 import {ModuleWithProviders}  from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {DashboardComponent} from './dashboard/dashboard.component';
-import {DataSelectionComponent} from "./data-selection/data-selection.component";
-import {AnalysisComponent} from "./analysis/analysis.component";
-import {ExportComponent} from "./export/export.component";
 
 // Route Configuration
 export const routes: Routes = [
@@ -14,20 +10,20 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    component: DashboardComponent
+    loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
   },
   {
     path: 'data-selection',
-    component: DataSelectionComponent
+    loadChildren: './modules/data-selection/data-selection.module#DataSelectionModule'
   },
   {
     path: 'analysis',
-    component: AnalysisComponent
+    loadChildren: './modules/analysis/analysis.module#AnalysisModule'
   },
   {
     path: 'export',
-    component: ExportComponent
-  },
+    loadChildren: './modules/export/export.module#ExportModule'
+  }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);

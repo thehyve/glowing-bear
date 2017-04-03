@@ -92,9 +92,9 @@ export class EndpointService {
     var parsedUrl = this.parseUrl(this.getCurrentUrl());
     let redirectUri =
       this.getRedirectURI(parsedUrl.protocol,
-                          parsedUrl.host,
-                          parsedUrl.port,
-                          parsedUrl.path);
+        parsedUrl.host,
+        parsedUrl.port,
+        parsedUrl.path);
 
     var authorizationUrl = `${url}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${redirectUri}`;
     this.navigateToUrl(authorizationUrl);
