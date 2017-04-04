@@ -8,19 +8,21 @@ export class EndpointService {
   private endpoint:Endpoint = new Endpoint('http://localhost:8080');
 
   constructor(private location:Location) {
-    let parsedUrl = this.parseUrl(this.getCurrentUrl());
-    let oauthGrantFragment:string = parsedUrl.hash;
-    if (oauthGrantFragment.length > 1) {
-      // Update the current endpoint with the received credentials and save it
-      this.endpoint = this.initializeEndpointWithCredentials(
-        this.endpoint,
-        oauthGrantFragment
-      );
-    }
+    // let parsedUrl = this.parseUrl(this.getCurrentUrl());
+    // let oauthGrantFragment:string = parsedUrl.hash;
+    // if (oauthGrantFragment.length > 1) {
+    //   // Update the current endpoint with the received credentials and save it
+    //   this.endpoint = this.initializeEndpointWithCredentials(
+    //     this.endpoint,
+    //     oauthGrantFragment
+    //   );
+    // }
+    //
+    // if (!this.endpoint.access_token) {
+    //   this.navigateToAuthorizationPage(this.endpoint);
+    // }
 
-    if (!this.endpoint.access_token) {
-      this.navigateToAuthorizationPage(this.endpoint);
-    }
+    this.endpoint.access_token = '59bf7291-8593-4954-9993-cf0be771694d';
   }
 
   /**

@@ -3,9 +3,11 @@ import {CommonModule} from '@angular/common';
 import {DataSelectionComponent} from "./data-selection.component";
 import {routing} from './data-selection.routing';
 import {RouterModule} from "@angular/router";
-import {QueryComponent} from "./components/query/query.component";
 import {DataViewComponent} from './components/data-view/data-view.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { PatientSelectionComponent } from './components/patient-selection/patient-selection.component';
+import { ObservationSelectionComponent } from './components/observation-selection/observation-selection.component';
+import { DataSummaryComponent } from './components/data-summary/data-summary.component';
 
 @NgModule({
   imports: [
@@ -18,8 +20,10 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
   ],
   declarations: [
     DataSelectionComponent,
-    QueryComponent,
-    DataViewComponent
+    DataViewComponent,
+    PatientSelectionComponent,
+    ObservationSelectionComponent,
+    DataSummaryComponent
   ]
 })
 export class DataSelectionModule {
