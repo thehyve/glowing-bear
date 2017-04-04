@@ -5,24 +5,22 @@ import { Location } from '@angular/common';
 @Injectable()
 export class EndpointService {
 
-  private endpoint:Endpoint = new Endpoint('http://localhost:8080');
+  private endpoint:Endpoint = new Endpoint('http://localhost:8080', 'v2');
 
   constructor(private location:Location) {
-    // let parsedUrl = this.parseUrl(this.getCurrentUrl());
-    // let oauthGrantFragment:string = parsedUrl.hash;
-    // if (oauthGrantFragment.length > 1) {
-    //   // Update the current endpoint with the received credentials and save it
-    //   this.endpoint = this.initializeEndpointWithCredentials(
-    //     this.endpoint,
-    //     oauthGrantFragment
-    //   );
-    // }
-    //
-    // if (!this.endpoint.access_token) {
-    //   this.navigateToAuthorizationPage(this.endpoint);
-    // }
+    let parsedUrl = this.parseUrl(this.getCurrentUrl());
+    let oauthGrantFragment:string = parsedUrl.hash;
+    if (oauthGrantFragment.length > 1) {
+      // Update the current endpoint with the received credentials and save it
+      this.endpoint = this.initializeEndpointWithCredentials(
+        this.endpoint,
+        oauthGrantFragment
+      );
+    }
 
-    this.endpoint.access_token = '59bf7291-8593-4954-9993-cf0be771694d';
+    if (!this.endpoint.getAccessToken()) {
+      this.navigateToAuthorizationPage(this.endpoint);
+    }
   }
 
   /**
@@ -148,7 +146,8 @@ export class EndpointService {
           .replace(/&/g, "\",\"") // replace '&' with ','
           .replace(/=/g, "\":\"")) + '"}' // replace '=' with ':'
     );
-    return Object.assign(fragmentObj, endpoint);
+    endpoint.setAccessToken(fragmentObj.access_token);
+    return endpoint;
   }
 
 

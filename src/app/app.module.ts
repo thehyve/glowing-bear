@@ -8,12 +8,14 @@ import {AppComponent} from './app.component';
 import {NavbarComponent} from "./components/navbar/navbar.component";
 
 
-import {EndpointService} from './services/endpoint.service';
+import {EndpointService} from './modules/shared/services/endpoint.service';
 import {DataSelectionModule} from "./modules/data-selection/data-selection.module";
 import {AnalysisModule} from "./modules/analysis/analysis.module";
 import {ExportModule} from "./modules/export/export.module";
 import {DashboardModule} from "./modules/dashboard/dashboard.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {WorkflowService} from "./modules/shared/services/workflow.service";
+import {ResourceService} from "./modules/shared/services/resource.service";
 
 
 
@@ -34,7 +36,9 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     ExportModule
   ],
   providers: [
-    EndpointService
+    EndpointService,
+    ResourceService,
+    WorkflowService
   ],
   bootstrap: [AppComponent]
 })

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {EndpointService} from "./services/endpoint.service";
+import {EndpointService} from "./modules/shared/services/endpoint.service";
 import {Location, LocationStrategy, HashLocationStrategy} from "@angular/common";
 
 @Component({
