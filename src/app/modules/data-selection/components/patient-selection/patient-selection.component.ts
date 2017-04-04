@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ResourceService} from "../../../../services/resource.service";
+import {ResourceService} from "../../../shared/services/resource.service";
 
 @Component({
   selector: 'patient-selection',
@@ -15,9 +15,17 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   runPatientQuery() {
+    // let patients: Patient[];
     console.log('run patient query');
-    let promise = this.resourceService.getStudies();
-    console.log('promise: ', promise);
+    this.resourceService.getPatients().subscribe(
+      patients => {
+        console.log('patients: ', patients);
+      },
+      err => {
+        console.log(err);
+      }
+    );
+
   }
 
 }
