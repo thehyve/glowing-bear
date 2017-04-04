@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import {EndpointService} from "./services/endpoint.service";
 import {Location, LocationStrategy, HashLocationStrategy} from "@angular/common";
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
