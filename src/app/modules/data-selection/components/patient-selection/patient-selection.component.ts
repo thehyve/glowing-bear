@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
-import {TrueConstraint} from "../../../shared/models/constraints/TrueConstraint";
+import {TrueConstraint} from "../../../shared/models/constraints/true-constraint";
 
 @Component({
   selector: 'patient-selection',

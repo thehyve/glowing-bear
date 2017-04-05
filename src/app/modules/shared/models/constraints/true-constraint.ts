@@ -1,4 +1,4 @@
-import {Constraint} from './Constraint';
+import {Constraint} from './constraint';
 
 export class TrueConstraint implements Constraint {
 

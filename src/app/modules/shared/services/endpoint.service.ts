@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Endpoint } from '../models/Endpoint';
+import { Endpoint } from '../models/endpoint';
 import { Location } from '@angular/common';
 
 @Injectable()

@@ -6,10 +6,10 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import {Study} from '../models/Study';
-import {Patient} from '../models/Patient';
+import {Study} from '../models/study';
+import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
-import {Constraint} from "../models/constraints/Constraint";
+import {Constraint} from "../models/constraints/constraint";
 
 @Injectable()
 export class ResourceService {
