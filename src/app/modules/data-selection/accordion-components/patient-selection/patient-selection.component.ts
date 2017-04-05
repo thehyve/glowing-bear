@@ -6,30 +6,28 @@ import {TrueConstraint} from "../../../shared/models/constraints/true-constraint
 @Component({
   selector: 'patient-selection',
   templateUrl: './patient-selection.component.html',
-  styleUrls: ['./patient-selection.component.css'],
-  providers: [ResourceService, WorkflowService]
+  styleUrls: ['./patient-selection.component.css']
 })
 export class PatientSelectionComponent implements OnInit {
   patientCount: number;
 
-  constructor(private resourceService: ResourceService, private workflowService: WorkflowService) {
+  constructor(private resourceService: ResourceService,
+              private workflowService: WorkflowService) {
     this.patientCount = 0;
   }
+
 
   ngOnInit() {
   }
 
   runPatientQuery() {
 
-    let currentWorkflow = this.workflowService.getCurrentWorkflow();
-
     let trueConstraint = new TrueConstraint();
 
     this.resourceService.getPatients(trueConstraint)
       .subscribe(
         patients => {
-          currentWorkflow.setPatients(patients); 
-          this.patientCount = currentWorkflow.getPatients().length;
+          this.patientCount = patients.length;
         },
         err => {
           console.error(err);
@@ -40,5 +38,7 @@ export class PatientSelectionComponent implements OnInit {
   savePatientSet(constraint: string) {
 
   }
+
+
 
 }

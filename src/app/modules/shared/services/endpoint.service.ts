@@ -8,6 +8,7 @@ export class EndpointService {
   private endpoint:Endpoint = new Endpoint('http://localhost:8080', 'v2');
 
   constructor(private location:Location) {
+
     let parsedUrl = this.parseUrl(this.getCurrentUrl());
     let oauthGrantFragment:string = parsedUrl.hash;
     if (oauthGrantFragment.length > 1) {
