@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Workflow} from "../models/workflow";
+import {Workflow} from "../models/Workflow";
 
 @Injectable()
 export class WorkflowService {

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
+import {TrueConstraint} from "../../../shared/models/constraints/TrueConstraint";
 
 @Component({
   selector: 'patient-selection',
@@ -22,16 +23,21 @@ export class PatientSelectionComponent implements OnInit {
 
     let currentWorkflow = this.workflowService.getCurrentWorkflow();
 
-    console.log('run patient query');
-    this.resourceService.getPatients().subscribe(
-      patientsObj => {
-        currentWorkflow.setPatients(patientsObj['patients']);
-        this.patientCount = currentWorkflow.getPatients().length;
-      },
-      err => {
-        console.error(err);
-      }
-    );
+    let trueConstraint = new TrueConstraint();
+
+    this.resourceService.getPatients(trueConstraint)
+      .subscribe(
+        patients => {
+          currentWorkflow.setPatients(patients); 
+          this.patientCount = currentWorkflow.getPatients().length;
+        },
+        err => {
+          console.error(err);
+        }
+      );
+  }
+
+  savePatientSet(constraint: string) {
 
   }
 

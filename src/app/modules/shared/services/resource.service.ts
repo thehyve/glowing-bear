@@ -6,9 +6,10 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import {Study} from '../models/study';
-import {Patient} from '../models/patient';
+import {Study} from '../models/Study';
+import {Patient} from '../models/Patient';
 import {EndpointService} from './endpoint.service';
+import {Constraint} from "../models/constraints/Constraint";
 
 @Injectable()
 export class ResourceService {
@@ -32,16 +33,23 @@ export class ResourceService {
       });
   }
 
-  getPatients(): Observable<Patient[]> {
+  /**
+   * Given a constraint, retrieve the corresponding patient array
+   * @param constraint
+   * @returns {Observable<Patient[]>}
+   */
+  getPatients(constraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = endpoint.getUrl() + '/'+ endpoint.getVersion() +'/patients?constraint={"type":"true"}';
+    // let url = endpoint.getUrl() + '/'+ endpoint.getVersion() +'/patients?constraint={"type":"true"}';
+    let url = endpoint.getUrl() + '/'+ endpoint.getVersion() +'/patients?constraint='+constraint.toJsonString();
+
     return this.http.get(url, {
       headers: headers
     })
-      .map((res:Response) => res.json())
+      .map((res:Response) => res.json().patients)
       .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
 
