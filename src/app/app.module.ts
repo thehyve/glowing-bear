@@ -7,7 +7,6 @@ import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 import {NavbarComponent} from "./components/navbar/navbar.component";
 
-
 import {EndpointService} from './modules/shared/services/endpoint.service';
 import {DataSelectionModule} from "./modules/data-selection/data-selection.module";
 import {AnalysisModule} from "./modules/analysis/analysis.module";
