@@ -12,10 +12,10 @@ export class PatientSelectionComponent implements OnInit {
   patientCount: number;
 
   constructor(private resourceService: ResourceService, private workflowService: WorkflowService) {
+    this.patientCount = 0;
   }
 
   ngOnInit() {
-    this.patientCount = 0;
   }
 
   runPatientQuery() {
