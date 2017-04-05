@@ -25,12 +25,11 @@ export class PatientSelectionComponent implements OnInit {
     console.log('run patient query');
     this.resourceService.getPatients().subscribe(
       patientsObj => {
-        console.log('patients: ', patientsObj);
         currentWorkflow.setPatients(patientsObj['patients']);
         this.patientCount = currentWorkflow.getPatients().length;
       },
       err => {
-        console.log(err);
+        console.error(err);
       }
     );
 
