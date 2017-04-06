@@ -1,14 +1,27 @@
-import {Patient} from "./patient";
-
 export class Workflow {
-  private patients: Patient[];
 
-  getPatients(): Patient[] {
-    return this.patients;
+  constructor() {
+    this.configureDataSelectionDefaults();
   }
 
-  setPatients(patients: Patient[]): void {
-    this.patients = patients;
+  configureDataSelectionDefaults() {
+    let patientSelectionConfig = {};
+    patientSelectionConfig['patients'] = [];
+
+    let dataSelectionConfig = {};
+    dataSelectionConfig['active-accordion-ids'] = ['patient-selection-panel'];
+    dataSelectionConfig['patient-selection'] = patientSelectionConfig;
+
+    this['data-selection'] = dataSelectionConfig;
+  }
+
+  updateDataSelectionAccordion(toggledId, toggledState) {
+    if(toggledState) {
+      this['data-selection']['active-accordion-ids'].push(toggledId);
+    }
+    else {
+      this['data-selection']['active-accordion-ids'].splice(toggledId, 1);
+    }
   }
 
 }

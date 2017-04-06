@@ -1,17 +1,16 @@
-<ngb-accordion #acc="ngbAccordion" activeIds="ngb-panel-0">
+<ngb-accordion activeIds="{{activeIds}}" (panelChange)="handleAccordionToggle($event)">
   <!-- patient selection -->
-  <ngb-panel>
+  <ngb-panel id="patient-selection-panel">
     <template ngbPanelTitle>
       <span>Patient selection</span>
     </template>
     <template ngbPanelContent>
       <patient-selection></patient-selection>
     </template>
-    <h1>haha</h1>
   </ngb-panel>
 
   <!-- observation selection -->
-  <ngb-panel>
+  <ngb-panel id="observation-selection-panel">
     <template ngbPanelTitle>
       <span>Observation selection</span>
     </template>
@@ -21,7 +20,7 @@
   </ngb-panel>
 
   <!-- data view  -->
-  <ngb-panel>
+  <ngb-panel id="data-view-panel">
     <template ngbPanelTitle>
       <span>Data view</span>
     </template>
@@ -31,7 +30,7 @@
   </ngb-panel>
 
   <!-- summary  -->
-  <ngb-panel>
+  <ngb-panel id="summary-panel">
     <template ngbPanelTitle>
       <span>Summary</span>
     </template>
