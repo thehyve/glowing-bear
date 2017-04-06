@@ -1,0 +1,14 @@
+
+div {
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: #f7f7f7;
+}
+
+.form-inline {
+  margin: 6px;
+}
+
+.form-inline > * {
+  margin: 8px;
+}

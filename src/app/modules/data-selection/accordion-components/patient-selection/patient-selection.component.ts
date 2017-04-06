@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
 import {TrueConstraint} from "../../../shared/models/constraints/true-constraint";
+import { StudyConstraintComponent } from '../../constraint-components/study-constraint/study-constraint.component';
 
 
 @Component({
@@ -12,6 +13,9 @@ import {TrueConstraint} from "../../../shared/models/constraints/true-constraint
 export class PatientSelectionComponent implements OnInit {
   patientCount: number;
   responseMessage: string;
+
+  //TODO: consider using events instead of a reference to the constraint component
+  @ViewChild('constraint') constraint: StudyConstraintComponent;
 
   constructor(private resourceService: ResourceService,
               private workflowService: WorkflowService) {
@@ -24,9 +28,8 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   runPatientQuery() {
-    let trueConstraint = new TrueConstraint();
-
-    this.resourceService.getPatients(trueConstraint)
+    let constraint = this.constraint.getConstraint();
+    this.resourceService.getPatients(constraint)
       .subscribe(
         patients => {
           this.patientCount = patients.length;

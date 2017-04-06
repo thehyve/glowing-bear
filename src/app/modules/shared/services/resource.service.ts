@@ -18,20 +18,17 @@ export class ResourceService {
   constructor(private http: Http, private endpointService: EndpointService) {
   }
 
-  getStudies(): Promise<Study[]> {
-    var headers = new Headers();
-    var endpoint = this.endpointService.getEndpoint();
+  getStudies(): Observable<Study[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
-    return this.http.get(`${endpoint.getUrl()}/studies`, {
+
+    let url = `${endpoint.getUrl()}/studies`;
+    return this.http.get(url, {
       headers: headers
     })
-      .toPromise()
-      .then((response: Response) => {
-        return response.json().studies as Study[]
-      })
-      .catch(() => {
-        console.log("an error occurred");
-      });
+      .map((response:Response) => response.json().studies as Study[])
+      .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
   }
 
   /**

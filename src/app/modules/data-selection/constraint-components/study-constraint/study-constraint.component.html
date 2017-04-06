@@ -1,0 +1,8 @@
+<div class="form-inline">
+  <label>Study </label>
+  <select class="form-control" (change)="onChange($event)">
+    <option *ngFor="let study of studies">
+      {{ study.studyId }}
+    </option>
+  </select>
+</div>
