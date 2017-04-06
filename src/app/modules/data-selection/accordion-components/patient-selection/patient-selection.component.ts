@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
 import {TrueConstraint} from "../../../shared/models/constraints/true-constraint";
+import { StudyConstraintComponent } from '../../constraint-components/study-constraint/study-constraint.component';
 
 
 @Component({

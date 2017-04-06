@@ -8,6 +8,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {PatientSelectionComponent} from './accordion-components/patient-selection/patient-selection.component';
 import {ObservationSelectionComponent} from './accordion-components/observation-selection/observation-selection.component';
 import {DataSummaryComponent} from './accordion-components/data-summary/data-summary.component';
+import { StudyConstraintComponent } from './constraint-components/study-constraint/study-constraint.component';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import {DataSummaryComponent} from './accordion-components/data-summary/data-sum
     DataViewComponent,
     PatientSelectionComponent,
     ObservationSelectionComponent,
-    DataSummaryComponent
+    DataSummaryComponent,
+    StudyConstraintComponent
   ]
 })
 export class DataSelectionModule {
