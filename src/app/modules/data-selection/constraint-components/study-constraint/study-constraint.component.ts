@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Study} from "../../../shared/models/study";
 import {ResourceService} from "../../../shared/services/resource.service";
+import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 
 @Component({
   selector: 'study-constraint',
@@ -10,6 +11,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 export class StudyConstraintComponent implements OnInit {
 
   private studies: Study[];
+  private selectedStudy: Study;
 
   constructor(private resourceService: ResourceService) {
   }
@@ -20,6 +22,14 @@ export class StudyConstraintComponent implements OnInit {
         studies => this.studies = studies,
         err => console.error(err)
       );
+  }
+
+  onChange(study) {
+    this.selectedStudy = study;
+  }
+
+  public getConstraint() {
+    return new StudyConstraint(this.studies[0]);
   }
 
 }

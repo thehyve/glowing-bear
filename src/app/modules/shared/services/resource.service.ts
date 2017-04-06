@@ -23,7 +23,7 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = `${endpoint.getUrl()}/${endpoint.getVersion()}/studies`;
+    let url = `${endpoint.getUrl()}/studies`;
     return this.http.get(url, {
       headers: headers
     })
