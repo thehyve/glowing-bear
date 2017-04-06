@@ -84,7 +84,7 @@ export class EndpointService {
   navigateToAuthorizationPage(endpoint) {
 
     // Cut off any '/'
-    var url = endpoint.url;
+    var url = endpoint.getBaseUrl();
     if (url.substring(url.length - 1, url.length) === '/') {
       url = url.substring(0, url.length - 1);
     }

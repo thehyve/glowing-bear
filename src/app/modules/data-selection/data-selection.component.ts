@@ -18,10 +18,8 @@ export class DataSelectionComponent implements OnInit {
   }
 
   handleAccordionToggle(e) {
-    let panelId = e['panelId'];
-    let state = e['nextState'];
-    let workflow = this.workflowService.getCurrentWorkflow();
-    workflow.updateDataSelectionAccordion(panelId, state);
+    this.workflowService.getCurrentWorkflow()
+      .updateDataSelectionAccordion(e['panelId'], e['nextState']);
   }
 
 }
