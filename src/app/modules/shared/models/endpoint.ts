@@ -1,19 +1,23 @@
 export class Endpoint {
 
-  private url: string;
+  private baseUrl: string;
   private version: string;
   private access_token: string;
   private _isAuthenticated: boolean;
 
 
-  constructor(url: string, version: string) {
-    this.url = url;
+  constructor(baseUrl: string, version: string) {
+    this.baseUrl = baseUrl;
     this.version = version;
     this._isAuthenticated = false;
   }
 
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   getUrl(): string {
-    return this.url;
+    return this.baseUrl + '/' + this.version;
   }
 
   getVersion(): string {
