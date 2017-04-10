@@ -24,12 +24,8 @@ export class StudyConstraintComponent implements OnInit {
       );
   }
 
-  onChange(study) {
-    this.selectedStudy = study;
-  }
-
   public getConstraint() {
-    return new StudyConstraint(this.studies[0]);
+    return new StudyConstraint(this.selectedStudy);
   }
 
 }
