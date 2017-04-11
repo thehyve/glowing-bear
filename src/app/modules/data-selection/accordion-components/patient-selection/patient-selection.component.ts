@@ -1,8 +1,12 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {
+  Component, OnInit, ViewChild
+} from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
 import {TrueConstraint} from "../../../shared/models/constraints/true-constraint";
-import { StudyConstraintComponent } from '../../constraint-components/study-constraint/study-constraint.component';
+import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
+import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
+import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 
 
 @Component({
@@ -14,21 +18,27 @@ export class PatientSelectionComponent implements OnInit {
   patientCount: number;
   responseMessage: string;
 
-  //TODO: consider using events instead of a reference to the constraint component
-  @ViewChild('constraint') constraint: StudyConstraintComponent;
+  rootConstraint: CombinationConstraint;
+  @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
 
   constructor(private resourceService: ResourceService,
               private workflowService: WorkflowService) {
     this.patientCount = 0;
     this.responseMessage = "";
+    this.rootConstraint = new CombinationConstraint();
+    this.rootConstraint.addChildConstraint(new ConceptConstraint());
+    this.rootConstraint.addChildConstraint(new ConceptConstraint());
+    let combo = new CombinationConstraint();
+    combo.addChildConstraint(new ConceptConstraint());
+    this.rootConstraint.addChildConstraint(combo);
   }
-
 
   ngOnInit() {
   }
 
   runPatientQuery() {
-    let constraint = this.constraint.getConstraint();
+    // let constraint = this.rootConstraint.getConstraint();
+    let constraint = new TrueConstraint();
     this.resourceService.getPatients(constraint)
       .subscribe(
         patients => {

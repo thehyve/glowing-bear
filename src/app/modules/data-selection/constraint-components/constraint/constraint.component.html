@@ -1,0 +1,8 @@
+<div>
+  <div *ngIf="constraint.getConstraintType() == 'combination-constraint'">
+    <combination-constraint [constraint]="constraint"></combination-constraint>
+  </div>
+  <div *ngIf="constraint.getConstraintType() == 'concept-constraint'">
+    <concept-constraint [constraint]="constraint"></concept-constraint>
+  </div>
+</div>

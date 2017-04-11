@@ -1,0 +1,18 @@
+.constraint-comp {
+  border: 2px inset lightgray;
+  border-radius: 3px;
+  margin: 10px 5px 10px 16px; /* top right bottom left */
+  background-color: white;
+  padding: 1px 1px 1px 6px; /* top right bottom left */
+  /*box-shadow: 0px 0px 2px 2px grey; !* h-shadow v-shadow blur spread color *!*/
+  min-height: 40px;
+}
+
+.constraint-comp:hover {
+  background-color: rgba(245,245,247,.5);
+}
+
+.constraint-btn-remove {
+  margin-right: 6px;
+  margin-top: 3px;
+}
