@@ -21,4 +21,12 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
     constraint.AND = !constraint.AND;
     constraint.OR = !constraint.OR;
   }
+
+  addRule() {
+    console.log('add a constraint other than combination constraint.');
+  }
+
+  addRuleSet() {
+    console.log('add a combination constraint.');
+  }
 }

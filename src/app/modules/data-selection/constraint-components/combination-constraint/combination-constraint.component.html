@@ -21,11 +21,24 @@
     </button>
   </div>
 
-  <!-- Remove Button -->
-  <button type="button" class="btn btn-outline-danger btn-sm pull-right constraint-btn-remove"
-          (click)="removeSelfComponent()">
-    Remove
-  </button>
+  <!-- Add rule, group, and Remove button -->
+  <div class="btn-group pull-right">
+    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
+            (click)="addRule()">
+      Add rule
+    </button>
+
+    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
+            (click)="addRuleSet()">
+      Add group
+    </button>
+
+    <button type="button" class="btn btn-outline-danger btn-sm constraint-btn"
+            (click)="removeSelfComponent()">
+      Remove
+    </button>
+  </div>
+
 
   <!-- Child Constraints -->
   <div *ngFor="let child of constraint.getChildConstraints()">
