@@ -13,7 +13,6 @@ import {StudyConstraintComponent} from './constraint-components/study-constraint
 import {CombinationConstraintComponent} from './constraint-components/combination-constraint/combination-constraint.component';
 import {ConstraintComponent} from './constraint-components/constraint/constraint.component';
 import {ConceptConstraintComponent} from './constraint-components/concept-constraint/concept-constraint.component';
-import {FormsModule} from "@angular/forms";
 
 @NgModule({
   imports: [
