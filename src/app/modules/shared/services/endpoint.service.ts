@@ -9,19 +9,19 @@ export class EndpointService {
 
   constructor(private location:Location) {
 
-    // let parsedUrl = this.parseUrl(this.getCurrentUrl());
-    // let oauthGrantFragment:string = parsedUrl.hash;
-    // if (oauthGrantFragment.length > 1) {
-    //   // Update the current endpoint with the received credentials and save it
-    //   this.endpoint = this.initializeEndpointWithCredentials(
-    //     this.endpoint,
-    //     oauthGrantFragment
-    //   );
-    // }
-    //
-    // if (!this.endpoint.getAccessToken()) {
-    //   this.navigateToAuthorizationPage(this.endpoint);
-    // }
+    let parsedUrl = this.parseUrl(this.getCurrentUrl());
+    let oauthGrantFragment:string = parsedUrl.hash;
+    if (oauthGrantFragment.length > 1) {
+      // Update the current endpoint with the received credentials and save it
+      this.endpoint = this.initializeEndpointWithCredentials(
+        this.endpoint,
+        oauthGrantFragment
+      );
+    }
+
+    if (!this.endpoint.getAccessToken()) {
+      this.navigateToAuthorizationPage(this.endpoint);
+    }
   }
 
   /**
