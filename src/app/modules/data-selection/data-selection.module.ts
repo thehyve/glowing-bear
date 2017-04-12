@@ -11,9 +11,8 @@ import {ObservationSelectionComponent} from './accordion-components/observation-
 import {DataSummaryComponent} from './accordion-components/data-summary/data-summary.component';
 import {StudyConstraintComponent} from './constraint-components/study-constraint/study-constraint.component';
 import {CombinationConstraintComponent} from './constraint-components/combination-constraint/combination-constraint.component';
-import { ConstraintComponent } from './constraint-components/constraint/constraint.component';
-import { TestComponent } from './constraint-components/test/test.component';
-import { ConceptConstraintComponent } from './constraint-components/concept-constraint/concept-constraint.component';
+import {ConstraintComponent} from './constraint-components/constraint/constraint.component';
+import {ConceptConstraintComponent} from './constraint-components/concept-constraint/concept-constraint.component';
 import {FormsModule} from "@angular/forms";
 
 @NgModule({
@@ -35,11 +34,9 @@ import {FormsModule} from "@angular/forms";
     StudyConstraintComponent,
     CombinationConstraintComponent,
     ConstraintComponent,
-    TestComponent,
     ConceptConstraintComponent
   ],
   entryComponents: [
-    TestComponent,
     ConstraintComponent,
     CombinationConstraintComponent,
     StudyConstraintComponent

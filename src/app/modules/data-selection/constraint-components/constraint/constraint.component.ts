@@ -1,5 +1,4 @@
 import {Component, OnInit, Input} from '@angular/core';
-import {ResourceService} from "../../../shared/services/resource.service";
 import {Constraint} from "../../../shared/models/constraints/constraint";
 
 @Component({
@@ -16,7 +15,12 @@ export class ConstraintComponent implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * call this method when the user clicks the 'remove' button of a constraint component,
+   * it removes the component itself from its parent component
+   */
   removeSelfComponent() {
     console.log('remove component');
   }
+
 }

@@ -5,7 +5,7 @@ export class ConceptConstraint implements Constraint {
   constructor() {}
 
   getConstraintType(): string {
-    return 'concept-constraint';
+    return ConceptConstraint.name;
   }
 
   toJsonString(): string {

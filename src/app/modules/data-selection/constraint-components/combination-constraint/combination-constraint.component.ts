@@ -18,8 +18,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   toggleAndOr() {
     let constraint = <CombinationConstraint>this.constraint;
-    constraint.AND = !constraint.AND;
-    constraint.OR = !constraint.OR;
+    constraint.switchCombinationState();
   }
 
   addRule() {

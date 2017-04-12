@@ -12,7 +12,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     super();
   }
 
-  ngOnInit() { console.log('concept comp init');
+  ngOnInit() { 
   }
 
 }

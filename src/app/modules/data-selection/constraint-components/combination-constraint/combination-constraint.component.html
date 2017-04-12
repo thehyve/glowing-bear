@@ -41,7 +41,7 @@
 
 
   <!-- Child Constraints -->
-  <div *ngFor="let child of constraint.getChildConstraints()">
+  <div *ngFor="let child of constraint.children">
     <constraint [constraint]="child"></constraint>
   </div>
 

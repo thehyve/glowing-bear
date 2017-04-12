@@ -26,11 +26,11 @@ export class PatientSelectionComponent implements OnInit {
     this.patientCount = 0;
     this.responseMessage = "";
     this.rootConstraint = new CombinationConstraint();
-    this.rootConstraint.addChildConstraint(new ConceptConstraint());
-    this.rootConstraint.addChildConstraint(new ConceptConstraint());
+    this.rootConstraint.children.push(new ConceptConstraint());
+    this.rootConstraint.children.push(new ConceptConstraint());
     let combo = new CombinationConstraint();
-    combo.addChildConstraint(new ConceptConstraint());
-    this.rootConstraint.addChildConstraint(combo);
+    combo.children.push(new ConceptConstraint());
+    this.rootConstraint.children.push(combo);
   }
 
   ngOnInit() {
