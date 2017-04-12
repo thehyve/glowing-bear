@@ -1,4 +1,5 @@
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {DataSelectionComponent} from "./data-selection.component";
 import {routing} from './data-selection.routing';
@@ -14,7 +15,8 @@ import { StudyConstraintComponent } from './constraint-components/study-constrai
   imports: [
     CommonModule,
     NgbModule,
-    routing
+    routing,
+    FormsModule
   ],
   exports: [
     RouterModule
