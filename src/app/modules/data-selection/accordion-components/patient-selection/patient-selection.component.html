@@ -4,8 +4,11 @@
     patient-selection works!
   </p>
 
-  <study-constraint #constraint></study-constraint>
+  <constraint #rootConstraintComponent [constraint]="rootConstraint"></constraint>
 
+
+
+  <hr>
   <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>
   <br><br>
 
