@@ -11,6 +11,7 @@ export class CombinationConstraint implements Constraint {
   constructor() {
     this._children = [];
     this._isNot = false;
+    this.combinationState = CombinationState.And;
   }
 
   getConstraintType(): string {
@@ -19,6 +20,10 @@ export class CombinationConstraint implements Constraint {
 
   toJsonString(): string {
     return '';
+  }
+
+  isAnd() {
+    return this.combinationState === CombinationState.And;
   }
 
   get isNot(): boolean {
