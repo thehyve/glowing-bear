@@ -29,7 +29,7 @@ export class Endpoint {
   }
 
   setAccessToken(token: string): void {
-    this._isAuthenticated = true;
+    this._isAuthenticated = !!token;
     this.access_token = token;
   }
 

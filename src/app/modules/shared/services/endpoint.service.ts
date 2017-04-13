@@ -1,74 +1,24 @@
 import { Injectable } from '@angular/core';
 import { Endpoint } from '../models/endpoint';
-import { Location } from '@angular/common';
 
 @Injectable()
 export class EndpointService {
 
   private endpoint:Endpoint = new Endpoint('http://localhost:8080', 'v2');
 
-  constructor(private location:Location) {
+  constructor() {
 
+    // Check if there is authentication data in the hash fragment of the url
     let parsedUrl = this.parseUrl(this.getCurrentUrl());
     let oauthGrantFragment:string = parsedUrl.hash;
     if (oauthGrantFragment.length > 1) {
-      // Update the current endpoint with the received credentials and save it
-      this.endpoint = this.initializeEndpointWithCredentials(
-        this.endpoint,
-        oauthGrantFragment
-      );
+      // Update the current endpoint with the received credentials
+      this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
+      // Save the endpoint
+      this.saveEndpoint();
     }
-
-    if (!this.endpoint.getAccessToken()) {
-      this.navigateToAuthorizationPage(this.endpoint);
-    }
-  }
-
-  /**
-   * Return the current url
-   * @returns {string}
-   */
-  getCurrentUrl():string {
-    return window.location.href;
-  }
-
-  /**
-   * Navigates to the specified url
-   * @param url
-   */
-  navigateToUrl(url:string) {
-    window.location.href = url;
-  }
-
-  /**
-   * Parse the url into protocol, host, port and hash, e.g.
-   * {
-   *   protocol: 'http',
-   *   host: 'localhost',
-   *   port: '4200',
-   *   hash: ''
-   * }
-   * @param _url
-   * @returns {{protocol: string, host: string, port: string, hash: (string|string), path: (string|string)}}
-   */
-  parseUrl(_url: string) {
-    let url = this.location.normalize(_url);
-    let arr = url.split('://');
-    let protocol = arr[0];
-    let tail = arr[1];
-    arr = tail.split('#');
-    let part = arr[0];
-    let path = part.split('/')[1]||'';
-    let hash = arr[1]||'';
-    let host = part.split('/')[0].split(':')[0];
-    let port = part.split(':')[1].split('/')[0];
-
-    return {
-      protocol: protocol,
-      host: host,
-      port: port,
-      hash: hash,
-      path: path
+    else {
+      this.restoreEndpoint();
     }
   }
 
@@ -77,11 +27,55 @@ export class EndpointService {
   }
 
   /**
+   * Removes the currently held token and navigates to the authorization page
+   * to get a new one.
+   */
+  invalidateToken() {
+    this.endpoint.setAccessToken('');
+    this.saveEndpoint();
+    this.navigateToAuthorizationPage(this.endpoint);
+  }
+
+  /**
+   * Return the current url
+   * @returns {string}
+   */
+  private getCurrentUrl():string {
+    return window.location.href;
+  }
+
+  /**
+   * Navigates to the specified url
+   * @param url
+   */
+  private navigateToUrl(url:string) {
+    window.location.href = url;
+  }
+
+  /**
+   * Parse the url into its elements
+   * @param url
+   * @returns {}
+   */
+  private parseUrl(url: string) {
+    var match = url.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)#?(.*)$/);
+    return match && {
+      href: url,
+      protocol: match[1],
+      host: match[2],
+      hostname: match[3],
+      port: match[4],
+      path: match[5],
+      search: match[6],
+      hash: match[7]
+    };
+  }
+
+  /**
    * Navigate to the endpoint's authorization page.
-   * @memberof EndpointService
    * @param endpoint
    */
-  navigateToAuthorizationPage(endpoint) {
+  private navigateToAuthorizationPage(endpoint) {
 
     // Cut off any '/'
     var url = endpoint.getBaseUrl();
@@ -93,7 +87,7 @@ export class EndpointService {
     var parsedUrl = this.parseUrl(this.getCurrentUrl());
     let redirectUri =
       this.getRedirectURI(parsedUrl.protocol,
-        parsedUrl.host,
+        parsedUrl.hostname,
         parsedUrl.port,
         parsedUrl.path);
 
@@ -102,54 +96,68 @@ export class EndpointService {
   }
 
   /**
-   * Return redirect URI
-   * @memberof EndpointService
+   * Return URI-encoded redirect URI that can be used as a parameter in a url
    * @param port {string}
    * @param host {string}
    * @param protocol {string}
    * @param path {string}
    * @returns {string}
    */
-  getRedirectURI(protocol, host, port, path) {
+  private getRedirectURI(protocol, host, port, path) {
     if (['80', '443'].indexOf(port) >= 0) {
       port = '';
     } else {
-      port = '%3A' + port;
+      port = ':' + port;
     }
-    let redirectUri = `${protocol}%3A%2F%2F${host}${port}`;
-    return redirectUri;
+    let redirectUri = `${protocol}//${host}${port}`;
+    return encodeURIComponent(redirectUri);
   }
 
   /**
    * Sets up a new restangular instance using the specified credentials.
-   * @memberof EndpointService
    * @param endpoint
    * @param oauthGrantFragment
    */
-  initializeEndpointWithCredentials(endpoint, oauthGrantFragment) {
-    endpoint = this.mergeEndpointCredentials(endpoint, oauthGrantFragment);
+  private initializeEndpointWithCredentials(endpoint, oauthGrantFragment) {
+    var fragmentParams = this.getFragmentParameters(oauthGrantFragment);
+    endpoint.setAccessToken(fragmentParams.access_token);
     var time = new Date();
-    endpoint.expiresAt = time.setTime(time.getTime() + endpoint.expires_in * 1000);
-    return endpoint;
+    endpoint.expiresAt = time.setTime(time.getTime() + fragmentParams.expires_in * 1000);
   }
 
   /**
-   * Returns endpoint with merged credentials extracted from URI.
-   * @memberof EndpointService
-   * @param endpoint
-   * @param strFragment
+   * Returns the parsed fragment parameters as an object
+   * @param fragment
    * @returns {*}
    */
-  mergeEndpointCredentials(endpoint, strFragment) {
-    var fragmentObj = JSON.parse('{"' +
+  private getFragmentParameters(fragment:string) {
+    return JSON.parse('{"' +
       decodeURI(
-        strFragment
+        fragment
           .replace(/&/g, "\",\"") // replace '&' with ','
           .replace(/=/g, "\":\"")) + '"}' // replace '=' with ':'
     );
-    endpoint.setAccessToken(fragmentObj.access_token);
-    return endpoint;
   }
 
+  /**
+   * Saves the endpoint to local storage.
+   */
+  private saveEndpoint() {
+    localStorage.setItem('endpoint', JSON.stringify(this.endpoint));
+  }
+
+  /**
+   * Restores the endpoint from local storage, or navigates to the
+   * authorization page is no data is found.
+   */
+  private restoreEndpoint() {
+    let endpointJSON = localStorage.getItem('endpoint');
+    if (endpointJSON) {
+      Object.assign(this.endpoint, JSON.parse(endpointJSON));
+    }
+    else {
+      this.navigateToAuthorizationPage(this.endpoint);
+    }
+  }
 
 }

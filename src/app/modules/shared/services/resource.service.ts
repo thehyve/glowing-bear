@@ -18,6 +18,33 @@ export class ResourceService {
   constructor(private http: Http, private endpointService: EndpointService) {
   }
 
+  /**
+   * Currently only handles the 'invalid_token' error, other errors are passed on.
+   * @param error
+   * @returns {any}
+   */
+  private handleError(error: Response|any) {
+    let errMsg: string;
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+
+      if (err == 'invalid_token') {
+        this.endpointService.invalidateToken();
+      }
+
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    console.error(errMsg);
+    return Observable.throw(errMsg || 'Server error');
+  }
+
+  /**
+   * Returns the available studies.
+   * @returns {Observable<Study[]>}
+   */
   getStudies(): Observable<Study[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
@@ -28,7 +55,7 @@ export class ResourceService {
       headers: headers
     })
       .map((response:Response) => response.json().studies as Study[])
-      .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+      .catch(this.handleError.bind(this));
   }
 
   /**
@@ -42,14 +69,12 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
     let url = endpoint.getUrl() +'/patients?constraint='+constraint.toJsonString();
-
     return this.http.get(url, {
       headers: headers
     })
       .map((res:Response) => res.json().patients as Patient[])
-      .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+      .catch(this.handleError.bind(this));
   }
-
 
   /**
    * Given the name and constraint of the patient set to be saved, save it to transmart
@@ -68,7 +93,7 @@ export class ResourceService {
 
     return this.http.post(url, body, options)
       .map((res:Response) => res.json() as PatientSetPostResponse)
-      .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+      .catch(this.handleError.bind(this));
   }
 
 }
