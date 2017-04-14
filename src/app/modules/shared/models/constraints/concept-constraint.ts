@@ -8,7 +8,7 @@ export class ConceptConstraint implements Constraint {
     return ConceptConstraint.name;
   }
 
-  toJsonString(): string {
-    return '';
+  toQueryObject(): Object {
+    return {};
   }
 }

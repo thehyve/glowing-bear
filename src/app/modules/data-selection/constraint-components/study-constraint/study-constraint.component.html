@@ -1,6 +1,8 @@
 <div class="form-inline">
   <label>Study </label>
-  <select class="form-control" [(ngModel)]="selectedStudy">
+  <select class="form-control"
+          [(ngModel)]="selectedStudy"
+          (change)="onSelectionChange()">
     <option *ngFor="let study of studies" [ngValue]="study">
       {{ study.studyId }}
     </option>

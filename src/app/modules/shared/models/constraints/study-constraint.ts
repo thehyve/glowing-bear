@@ -3,16 +3,29 @@ import {Study} from "../study";
 
 export class StudyConstraint implements Constraint {
 
-  constructor(private study:Study) {}
+  private _study:Study;
 
-  getConstraintType(): string {
-    return 'study-constraint';
+  constructor() {}
+
+  get study():Study {
+    return this._study;
   }
 
-  toJsonString(): string {
-    return JSON.stringify({
+  set study(value:Study) {
+    this._study = value;
+  }
+
+  getConstraintType(): string {
+    return this.constructor.name;
+  }
+
+  toQueryObject(): Object {
+    if (!this._study) {
+      return null;
+    }
+    return {
       type: "study_name",
       studyId: this.study.studyId
-    });
+    };
   }
 }

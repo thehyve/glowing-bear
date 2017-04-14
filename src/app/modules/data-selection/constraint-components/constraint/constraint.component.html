@@ -11,4 +11,7 @@
   <div *ngIf="constraint.getConstraintType() == 'ConceptConstraint' ">
     <concept-constraint [constraint]="constraint"></concept-constraint>
   </div>
+  <div *ngIf="constraint.getConstraintType() == 'StudyConstraint' ">
+    <study-constraint [constraint]="constraint"></study-constraint>
+  </div>
 </div>

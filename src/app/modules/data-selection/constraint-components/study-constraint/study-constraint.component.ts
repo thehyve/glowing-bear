@@ -26,8 +26,8 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
       );
   }
 
-  public getConstraint() {
-    return new StudyConstraint(this.selectedStudy);
+  onSelectionChange() {
+    (<StudyConstraint>this.constraint).study = this.selectedStudy;
   }
 
 }

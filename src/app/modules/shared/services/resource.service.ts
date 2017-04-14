@@ -68,7 +68,9 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = endpoint.getUrl() +'/patients?constraint='+constraint.toJsonString();
+    let constraintString = JSON.stringify(constraint.toQueryObject());
+    console.log("Constraint: " + constraintString);
+    let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
     })
@@ -88,8 +90,8 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let body = constraint.toJsonString();
-    let url = endpoint.getUrl() + '/patient_sets?name='+name;
+    let body = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)
       .map((res:Response) => res.json() as PatientSetPostResponse)
