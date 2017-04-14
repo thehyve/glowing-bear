@@ -1,9 +1,9 @@
 <div class="constraint-comp">
 
-  <!-- Negation, ANd, OR -->
+  <!-- Negation, AND, OR -->
   <div class="btn-group">
     <label class="form-check-label">
-      <input [(ngModel)]="constraint.NOT" class="form-check-input" type="checkbox">
+      <input [(ngModel)]="constraint.isNot" class="form-check-input" type="checkbox">
       NOT
     </label>
 
@@ -33,16 +33,12 @@
       Add group
     </button>
 
-    <button type="button" class="btn btn-outline-danger btn-sm constraint-btn"
-            (click)="removeSelfComponent()">
-      Remove
-    </button>
   </div>
 
 
   <!-- Child Constraints -->
-  <div *ngFor="let child of constraint.children">
-    <constraint [constraint]="child"></constraint>
-  </div>
+  <constraint *ngFor="let child of constraint.children"
+              [constraint]="child"
+              (constraintRemoved)="onConstraintRemoved(child)"></constraint>
 
 </div>

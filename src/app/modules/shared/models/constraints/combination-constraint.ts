@@ -55,4 +55,11 @@ export class CombinationConstraint implements Constraint {
       (this.combinationState === CombinationState.And) ? CombinationState.Or : CombinationState.And;
   }
 
+  removeChildConstraint(child:Constraint) {
+    let index = this.children.indexOf(child);
+    if (index > -1) {
+      this.children.splice(index, 1);
+    }
+  }
+
 }

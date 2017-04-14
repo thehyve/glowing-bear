@@ -16,3 +16,14 @@
   margin-right: 6px;
   margin-top: 3px;
 }
+
+.constraint-remove-btn {
+  margin-right: 6px;
+  margin-top: 3px;
+  border: none;
+  color: lightgray;
+}
+
+.constraint-remove-btn:hover {
+  color: white;
+}
