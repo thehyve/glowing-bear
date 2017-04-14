@@ -12,7 +12,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 export class StudyConstraintComponent extends ConstraintComponent implements OnInit  {
 
   private studies: Study[];
-  private selectedStudy: Study;
+  searchResults: Study[];
 
   constructor(private resourceService: ResourceService) {
     super();
@@ -26,8 +26,12 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
       );
   }
 
-  onSelectionChange() {
-    (<StudyConstraint>this.constraint).study = this.selectedStudy;
+  onSelect(selectedStudy) {
+    (<StudyConstraint>this.constraint).study = selectedStudy;
+  }
+
+  search(event) {
+    this.searchResults = this.studies.filter((study:Study) => study.studyId.toLowerCase().includes(event.query.toLowerCase()));
   }
 
 }
