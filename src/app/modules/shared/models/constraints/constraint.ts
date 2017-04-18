@@ -10,4 +10,7 @@ export interface Constraint {
    * in queries to the backend.
    */
   toQueryObject(): Object;
+
+  textRepresentation: string;
+
 }

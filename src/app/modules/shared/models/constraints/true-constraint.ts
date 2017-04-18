@@ -9,4 +9,8 @@ export class TrueConstraint implements Constraint {
   toQueryObject(): Object {
     return {"type": "true"};
   }
+
+  get textRepresentation(): string {
+    return 'True';
+  }
 }

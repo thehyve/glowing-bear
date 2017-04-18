@@ -1,8 +1,12 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {Constraint} from "../../../shared/models/constraints/constraint";
-import {AutoCompleteModule} from 'primeng/components/autocomplete/autocomplete';
+import {
+  AutoCompleteModule,
+  AutoComplete
+} from 'primeng/components/autocomplete/autocomplete';
+import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 
 @Component({
   selector: 'combination-constraint',
@@ -11,7 +15,11 @@ import {AutoCompleteModule} from 'primeng/components/autocomplete/autocomplete';
 })
 export class CombinationConstraintComponent extends ConstraintComponent implements OnInit {
 
-  constructor() {
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
+
+  searchResults: Constraint[];
+
+  constructor(private dimensionRegistry:DimensionRegistryService) {
     super();
   }
 
@@ -19,7 +27,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   }
 
   toggleAndOr() {
-    let constraint = <CombinationConstraint>this.constraint;
+    let constraint:CombinationConstraint = <CombinationConstraint>this.constraint;
     constraint.switchCombinationState();
   }
 
@@ -32,15 +40,44 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   }
 
 
-  text: string;
+  onSearch(event) {
+    let results = this.dimensionRegistry.searchAllConstraints(event.query);
+    this.searchResults = results;
 
-  results: string[];
+    // Workaround for dropdown not showing properly, as described in
+    // https://github.com/primefaces/primeng/issues/745
+    /*this.searchResults = [];
+    this.searchResults = results;
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
+    this.autoComplete.onDropdownFocus();
+    this.autoComplete.show();*/
+  }
 
-  search(event) {
-    this.results = ['segseg', 'aaaa', 'test'];
-    /*this.mylookupservice.getResults(event.query).then(data => {
-      this.results = data;
-    });*/
+  onDropdown(event) {
+    let results = this.dimensionRegistry.searchAllConstraints('');
+
+    // Workaround for dropdown not showing properly, as described in
+    // https://github.com/primefaces/primeng/issues/745
+    this.searchResults = [];
+    this.searchResults = results;
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
+    if (this.autoComplete.panelVisible) {
+      this.autoComplete.onDropdownBlur();
+      this.autoComplete.hide();
+    } else {
+      this.autoComplete.onDropdownFocus();
+      this.autoComplete.show();
+    }
+  }
+
+  onSelect(selectedConstraint) {
+    if (selectedConstraint != null) {
+      let combinationConstraint = <CombinationConstraint>this.constraint;
+      combinationConstraint.children.push(selectedConstraint);
+      //this.autoComplete.selectItem(null);
+    }
   }
 
 }

@@ -20,9 +20,14 @@
       OR
     </button>
 
-    <p-autoComplete [(ngModel)]="text"
-                    [suggestions]="results"
-                    (completeMethod)="search($event)"
+    <p-autoComplete #autoComplete
+                    [suggestions]="searchResults"
+                    field="textRepresentation"
+                    (completeMethod)="onSearch($event)"
+                    (onSelect)="onSelect($event)"
+                    size="40"
+                    dropdown="true"
+                    (onDropdownClick)="onDropdown($event)"
                     placeholder="Add constraint"></p-autoComplete>
 
   </div>

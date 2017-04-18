@@ -49,6 +49,10 @@ export class CombinationConstraint implements Constraint {
     return combinationQueryObject;
   }
 
+  get textRepresentation(): string {
+    return 'And / Or / Not constraint';
+  }
+
   isAnd() {
     return this.combinationState === CombinationState.And;
   }

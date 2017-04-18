@@ -28,4 +28,11 @@ export class StudyConstraint implements Constraint {
       studyId: this.study.studyId
     };
   }
+
+  get textRepresentation(): string {
+    if (this.study) {
+      return `Study: ${this.study.studyId}`
+    }
+    return 'Study';
+  }
 }

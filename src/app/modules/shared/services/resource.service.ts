@@ -11,6 +11,7 @@ import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
+import {Concept} from "../models/concept";
 
 @Injectable()
 export class ResourceService {
@@ -55,6 +56,19 @@ export class ResourceService {
       headers: headers
     })
       .map((response:Response) => response.json().studies as Study[])
+      .catch(this.handleError.bind(this));
+  }
+
+  getTreeNodes(): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+
+    let url = `${endpoint.getUrl()}/tree_nodes`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((response:Response) => response.json().tree_nodes)
       .catch(this.handleError.bind(this));
   }
 
