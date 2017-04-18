@@ -1,3 +1,11 @@
-<div>
-  Here is a concept constraint !
+<div class="form-inline">
+  <label>Concept </label>
+  <p-autoComplete #autoComplete
+                  [suggestions]="searchResults"
+                  field="path"
+                  (completeMethod)="onSearch($event)"
+                  (onSelect)="onSelect($event)"
+                  size="40"
+                  dropdown="true"
+                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 </div>

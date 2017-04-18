@@ -12,18 +12,24 @@ export class DimensionRegistryService {
   private studies:Study[] = [];
   private concepts:Concept[] = [];
 
-  private emptyConstraints:Constraint[] = [
+  private allConstraints:Constraint[] = [
     new StudyConstraint(),
-    new ConceptConstraint
+    new ConceptConstraint()
   ];
-
 
   constructor(private resourceService:ResourceService) {
 
     // Retrieve available studies
     this.resourceService.getStudies()
       .subscribe(
-        studies => this.studies = studies,
+        studies => {
+          this.studies = studies;
+          studies.forEach(study => {
+            let constraint = new StudyConstraint();
+            constraint.study = study;
+            this.allConstraints.push(constraint);
+          })
+        },
         err => console.error(err)
       );
 
@@ -40,13 +46,30 @@ export class DimensionRegistryService {
 
   }
 
+  /** Extracts concepts (and later possibly other dimensions) from the
+   *  provided TreeNode array and their children.
+   * @param treeNodes
+   */
   private processTreeNodes(treeNodes:object[]) {
+    if (!treeNodes) {
+      return;
+    }
+
     treeNodes.forEach(treeNode => {
+
+      // Extract concept
       if (treeNode['dimension'] == 'concept') {
         let concept = new Concept();
         concept.path = treeNode['fullName'];
         this.concepts.push(concept);
+
+        let constraint = new ConceptConstraint();
+        constraint.concept = concept;
+        this.allConstraints.push(constraint);
       }
+
+      // Recurse
+      this.processTreeNodes(treeNode['children']);
     });
   }
 
@@ -54,9 +77,13 @@ export class DimensionRegistryService {
     return this.studies;
   }
 
+  getConcepts() {
+    return this.concepts;
+  }
+
   searchAllConstraints(query:string):Constraint[] {
     console.log(query);
-    return this.emptyConstraints;
+    return this.allConstraints;
   }
 
 }

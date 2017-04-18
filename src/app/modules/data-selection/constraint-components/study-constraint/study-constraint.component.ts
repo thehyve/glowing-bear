@@ -30,7 +30,6 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
   onSearch(event) {
     let query = event.query.toLowerCase();
     let studies = this.dimensionRegistry.getStudies();
-    console.log(query);
     if (query) {
       this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
     }

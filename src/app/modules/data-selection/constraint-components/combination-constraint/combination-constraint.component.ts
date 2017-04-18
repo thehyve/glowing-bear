@@ -74,8 +74,15 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   onSelect(selectedConstraint) {
     if (selectedConstraint != null) {
+
+      // Create a copy of the selected constraint
+      let newConstraint = new selectedConstraint.constructor();
+      Object.assign(newConstraint, selectedConstraint);
+
+      // Add it as a new child
       let combinationConstraint = <CombinationConstraint>this.constraint;
-      combinationConstraint.children.push(selectedConstraint);
+      combinationConstraint.children.push(<Constraint>newConstraint);
+
       //this.autoComplete.selectItem(null);
     }
   }

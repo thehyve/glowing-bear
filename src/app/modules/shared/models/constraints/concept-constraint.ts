@@ -1,8 +1,9 @@
 import {Constraint} from './constraint';
+import {Concept} from "../concept";
 
 export class ConceptConstraint implements Constraint {
 
-  path:string;
+  concept:Concept;
 
   constructor() {}
 
@@ -13,13 +14,13 @@ export class ConceptConstraint implements Constraint {
   toQueryObject(): Object {
     return {
       type: "concept",
-      path: this.path
+      path: this.concept.path
     };
   }
 
   get textRepresentation(): string {
-    if (this.path) {
-      return `Concept: ${this.path}`;
+    if (this.concept) {
+      return `Concept: ${this.concept.path}`;
     }
     return 'Concept';
   }
