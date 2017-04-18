@@ -19,22 +19,13 @@
             (click)="toggleAndOr()">
       OR
     </button>
-  </div>
 
-  <!-- Add rule, group, and Remove button -->
-  <div class="btn-group pull-right">
-    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
-            (click)="addRule()">
-      Add rule
-    </button>
-
-    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
-            (click)="addRuleSet()">
-      Add group
-    </button>
+    <p-autoComplete [(ngModel)]="text"
+                    [suggestions]="results"
+                    (completeMethod)="search($event)"
+                    placeholder="Add constraint"></p-autoComplete>
 
   </div>
-
 
   <!-- Child Constraints -->
   <constraint *ngFor="let child of constraint.children"

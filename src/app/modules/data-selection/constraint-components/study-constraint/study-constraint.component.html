@@ -1,8 +1,11 @@
 <div class="form-inline constraint-comp">
   <label>Study </label>
-  <p-autoComplete [suggestions]="searchResults"
+  <p-autoComplete #autoComplete
+                  [suggestions]="searchResults"
                   field="studyId"
-                  (completeMethod)="search($event)"
+                  (completeMethod)="onSearch($event)"
                   (onSelect)="onSelect($event)"
-                  size="40"></p-autoComplete>
+                  size="40"
+                  dropdown="true"
+                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 </div>

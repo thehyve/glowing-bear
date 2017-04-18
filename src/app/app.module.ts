@@ -15,6 +15,7 @@ import {DashboardModule} from "./modules/dashboard/dashboard.module";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
+import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
 
 
 
@@ -37,7 +38,8 @@ import {ResourceService} from "./modules/shared/services/resource.service";
   providers: [
     EndpointService,
     ResourceService,
-    WorkflowService
+    WorkflowService,
+    DimensionRegistryService
   ],
   bootstrap: [AppComponent]
 })

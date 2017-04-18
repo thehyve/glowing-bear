@@ -1,8 +1,8 @@
 .constraint-comp {
-  border: 1px solid #DCC896;;
-  border-radius: 3px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
   margin: 10px 5px 10px 16px; /* top right bottom left */
-  background-color: rgba(245,245,247,.5);
+  background-color: #f7f7f7;
   padding: 1px 1px 1px 6px; /* top right bottom left */
   /*box-shadow: 0px 0px 2px 2px grey; !* h-shadow v-shadow blur spread color *!*/
   min-height: 40px;
@@ -27,3 +27,8 @@
 .constraint-remove-btn:hover {
   color: white;
 }
+
+.form-inline > * {
+  margin: 8px;
+}
+

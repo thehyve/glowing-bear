@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Study} from "../../../shared/models/study";
 import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 import {ConstraintComponent} from "../constraint/constraint.component";
-import {ResourceService} from "../../../shared/services/resource.service";
+import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
+import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 
 @Component({
   selector: 'study-constraint',
@@ -11,27 +12,49 @@ import {ResourceService} from "../../../shared/services/resource.service";
 })
 export class StudyConstraintComponent extends ConstraintComponent implements OnInit  {
 
-  private studies: Study[];
-  searchResults: Study[];
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
 
-  constructor(private resourceService: ResourceService) {
+  private searchResults: Study[];
+
+  constructor(private dimensionRegistry:DimensionRegistryService) {
     super();
   }
 
   ngOnInit() {
-    this.resourceService.getStudies()
-      .subscribe(
-        studies => this.studies = studies,
-        err => console.error(err)
-      );
   }
 
   onSelect(selectedStudy) {
     (<StudyConstraint>this.constraint).study = selectedStudy;
   }
 
-  search(event) {
-    this.searchResults = this.studies.filter((study:Study) => study.studyId.toLowerCase().includes(event.query.toLowerCase()));
+  onSearch(event) {
+    let query = event.query.toLowerCase();
+    let studies = this.dimensionRegistry.getStudies();
+    console.log(query);
+    if (query) {
+      this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
+    }
+    else {
+      this.searchResults = studies;
+    }
+  }
+
+  onDropdown(event) {
+    let studies = this.dimensionRegistry.getStudies();
+
+    // Workaround for dropdown not showing properly, as described in
+    // https://github.com/primefaces/primeng/issues/745
+    this.searchResults = [];
+    this.searchResults = studies;
+    event.originalEvent.preventDefault();
+    event.originalEvent.stopPropagation();
+    if (this.autoComplete.panelVisible) {
+      this.autoComplete.onDropdownBlur();
+      this.autoComplete.hide();
+    } else {
+      this.autoComplete.onDropdownFocus();
+      this.autoComplete.show();
+    }
   }
 
 }
