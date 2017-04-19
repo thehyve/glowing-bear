@@ -23,10 +23,6 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   ngOnInit() {
   }
 
-  onSelect(selectedConcept) {
-    (<ConceptConstraint>this.constraint).concept = selectedConcept;
-  }
-
   onSearch(event) {
     let query = event.query.toLowerCase();
     let concepts = this.dimensionRegistry.getConcepts();

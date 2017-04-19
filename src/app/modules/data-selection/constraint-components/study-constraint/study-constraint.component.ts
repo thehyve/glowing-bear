@@ -23,10 +23,6 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
   ngOnInit() {
   }
 
-  onSelect(selectedStudy) {
-    (<StudyConstraint>this.constraint).study = selectedStudy;
-  }
-
   onSearch(event) {
     let query = event.query.toLowerCase();
     let studies = this.dimensionRegistry.getStudies();

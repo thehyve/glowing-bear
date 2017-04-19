@@ -16,24 +16,14 @@ import {StudyConstraint} from "../../../shared/models/constraints/study-constrai
   styleUrls: ['./patient-selection.component.css']
 })
 export class PatientSelectionComponent implements OnInit {
-  patientCount: number;
-  responseMessage: string;
 
-  rootConstraint: CombinationConstraint;
+  patientCount: number = 0;
+  responseMessage: string = "";
+  rootConstraint: CombinationConstraint = new CombinationConstraint();
   @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
 
   constructor(private resourceService: ResourceService,
               private workflowService: WorkflowService) {
-    this.patientCount = 0;
-    this.responseMessage = "";
-
-
-    this.rootConstraint = new CombinationConstraint();
-    this.rootConstraint.children.push(new StudyConstraint());
-    this.rootConstraint.children.push(new StudyConstraint());
-    let combo = new CombinationConstraint();
-    combo.children.push(new ConceptConstraint());
-    this.rootConstraint.children.push(combo);
   }
 
   ngOnInit() {

@@ -5,6 +5,7 @@ import {Constraint} from "../models/constraints/constraint";
 import {Concept} from "../models/concept";
 import {StudyConstraint} from "../models/constraints/study-constraint";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
+import {CombinationConstraint} from "../models/constraints/combination-constraint";
 
 @Injectable()
 export class DimensionRegistryService {
@@ -12,7 +13,11 @@ export class DimensionRegistryService {
   private studies:Study[] = [];
   private concepts:Concept[] = [];
 
+  // List keeping track of all available constraints. By default, the empty
+  // constraints are in here. In addition, (partially) filled constraints are
+  // added. The constraints should be copied when editing them.
   private allConstraints:Constraint[] = [
+    new CombinationConstraint(),
     new StudyConstraint(),
     new ConceptConstraint()
   ];
@@ -81,9 +86,23 @@ export class DimensionRegistryService {
     return this.concepts;
   }
 
+  /**
+   * Returns a list of all constraints that match the query string.
+   * The constraints should be copied when editing them.
+   * @param query
+   * @returns {Array}
+   */
   searchAllConstraints(query:string):Constraint[] {
     console.log(query);
-    return this.allConstraints;
+    query = query.toLowerCase();
+    let results = [];
+    this.allConstraints.forEach((constraint:Constraint) => {
+      let text = constraint.textRepresentation.toLowerCase();
+      if (text.indexOf(query) > -1) {
+        results.push(constraint);
+      }
+    });
+    return results;
   }
 
 }

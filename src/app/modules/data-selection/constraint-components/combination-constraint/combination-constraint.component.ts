@@ -18,6 +18,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
   searchResults: Constraint[];
+  selectedConstraint: Constraint;
 
   constructor(private dimensionRegistry:DimensionRegistryService) {
     super();
@@ -43,15 +44,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   onSearch(event) {
     let results = this.dimensionRegistry.searchAllConstraints(event.query);
     this.searchResults = results;
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
-    /*this.searchResults = [];
-    this.searchResults = results;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    this.autoComplete.onDropdownFocus();
-    this.autoComplete.show();*/
   }
 
   onDropdown(event) {
@@ -73,17 +65,24 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   }
 
   onSelect(selectedConstraint) {
-    if (selectedConstraint != null) {
+    if (this.selectedConstraint != null) {
 
       // Create a copy of the selected constraint
-      let newConstraint = new selectedConstraint.constructor();
-      Object.assign(newConstraint, selectedConstraint);
+      let newConstraint:Constraint = new selectedConstraint.constructor();
+      Object.assign(newConstraint, this.selectedConstraint);
+
+      // But we don't want to copy a CombinationConstraint's children
+      if (newConstraint instanceof CombinationConstraint) {
+        (<CombinationConstraint>newConstraint).children = [];
+      }
 
       // Add it as a new child
-      let combinationConstraint = <CombinationConstraint>this.constraint;
-      combinationConstraint.children.push(<Constraint>newConstraint);
+      let combinationConstraint:CombinationConstraint = <CombinationConstraint>this.constraint;
+      combinationConstraint.children.push(newConstraint);
 
-      //this.autoComplete.selectItem(null);
+      // Clear selection (for some reason, setting the model selectedConstraint
+      // to null doesn't work)
+      this.autoComplete.selectItem(null);
     }
   }
 

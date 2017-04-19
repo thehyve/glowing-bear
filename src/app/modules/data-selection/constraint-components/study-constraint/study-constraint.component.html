@@ -1,10 +1,10 @@
 <div class="form-inline">
   <label>Study </label>
   <p-autoComplete #autoComplete
+                  [(ngModel)]="constraint.study"
                   [suggestions]="searchResults"
                   field="studyId"
                   (completeMethod)="onSearch($event)"
-                  (onSelect)="onSelect($event)"
                   size="40"
                   dropdown="true"
                   (onDropdownClick)="onDropdown($event)"></p-autoComplete>

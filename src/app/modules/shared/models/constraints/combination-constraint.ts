@@ -50,7 +50,7 @@ export class CombinationConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'And / Or / Not constraint';
+    return 'Group (and/or/not)';
   }
 
   isAnd() {
@@ -67,6 +67,10 @@ export class CombinationConstraint implements Constraint {
 
   get children(): Constraint[] {
     return this._children;
+  }
+
+  set children(value:Constraint[]) {
+    this._children = value;
   }
 
   get combinationState(): CombinationState {
