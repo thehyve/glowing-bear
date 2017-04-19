@@ -11,3 +11,8 @@
 body {
   font-family: "Avenir Next";
 }
+
+/* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
+.ui-autocomplete-dropdown.ui-button {
+  height: 38px;
+}
