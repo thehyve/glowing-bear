@@ -4,12 +4,26 @@ import { Endpoint } from '../models/endpoint';
 @Injectable()
 export class EndpointService {
 
-  private endpoint:Endpoint = new Endpoint('http://localhost:8080', 'v2');
+  private endpoint:Endpoint;
 
   constructor() {
+    let parsedUrl = this.parseUrl(this.getCurrentUrl());
+
+    // In development mode, we assume the rest API is at http://localhost:8080.
+    // In production mode, we assume the rest API is at the same protocol+host.
+    // We currently assume we are in development mode if the host is localhost.
+    // Note that this is the default and it may be overwritten (restored) with
+    // the value stored in localStorage.
+    //TODO: make this configurable
+    if (parsedUrl.hostname == 'localhost') {
+      this.endpoint = new Endpoint('http://localhost:8080', 'v2');
+    }
+    else {
+      let url = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+      this.endpoint = new Endpoint(url, 'v2');
+    }
 
     // Check if there is authentication data in the hash fragment of the url
-    let parsedUrl = this.parseUrl(this.getCurrentUrl());
     let oauthGrantFragment:string = parsedUrl.hash;
     if (oauthGrantFragment.length > 1) {
       // Update the current endpoint with the received credentials
