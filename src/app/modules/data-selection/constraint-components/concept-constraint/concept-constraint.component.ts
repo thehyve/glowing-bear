@@ -59,4 +59,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       this.autoComplete.show();
     }
   }
+
+  isNumeric() {
+    let concept:Concept = (<ConceptConstraint>this.constraint).concept;
+    if (!concept) {
+      return false;
+    }
+    return concept.type == 'NUMERIC'
+  }
 }

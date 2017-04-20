@@ -66,6 +66,7 @@ export class DimensionRegistryService {
       if (treeNode['dimension'] == 'concept') {
         let concept = new Concept();
         concept.path = treeNode['fullName'];
+        concept.type = treeNode['type'];
         this.concepts.push(concept);
 
         let constraint = new ConceptConstraint();
