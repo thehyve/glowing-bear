@@ -14,13 +14,21 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
-  private searchResults: Concept[];
+  searchResults: Concept[];
 
   constructor(private dimensionRegistry:DimensionRegistryService) {
     super();
   }
 
   ngOnInit() {
+  }
+
+  get selectedConcept():Concept {
+    return (<ConceptConstraint>this.constraint).concept;
+  }
+
+  set selectedConcept(value:Concept) {
+    (<ConceptConstraint>this.constraint).concept = value;
   }
 
   onSearch(event) {

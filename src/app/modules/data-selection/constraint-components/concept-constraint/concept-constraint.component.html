@@ -1,7 +1,7 @@
 <div class="form-inline">
   <label>Concept </label>
   <p-autoComplete #autoComplete
-                  [(ngModel)]="constraint.concept"
+                  [(ngModel)]="selectedConcept"
                   [suggestions]="searchResults"
                   field="path"
                   (completeMethod)="onSearch($event)"

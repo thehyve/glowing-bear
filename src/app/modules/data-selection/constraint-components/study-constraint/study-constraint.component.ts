@@ -14,13 +14,21 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
-  private searchResults: Study[];
+  searchResults: Study[];
 
   constructor(private dimensionRegistry:DimensionRegistryService) {
     super();
   }
 
   ngOnInit() {
+  }
+
+  get selectedStudy():Study {
+    return (<StudyConstraint>this.constraint).study;
+  }
+
+  set selectedStudy(value:Study) {
+    (<StudyConstraint>this.constraint).study = value;
   }
 
   onSearch(event) {

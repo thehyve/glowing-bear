@@ -27,6 +27,22 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   ngOnInit() {
   }
 
+  get isNot():boolean {
+    return (<CombinationConstraint>this.constraint).isNot;
+  }
+
+  set isNot(value:boolean) {
+    (<CombinationConstraint>this.constraint).isNot = value;
+  }
+
+  get isAnd():boolean {
+    return (<CombinationConstraint>this.constraint).isAnd();
+  }
+
+  get children():Constraint[] {
+    return (<CombinationConstraint>this.constraint).children;
+  }
+
   toggleAndOr() {
     let constraint:CombinationConstraint = <CombinationConstraint>this.constraint;
     constraint.switchCombinationState();
