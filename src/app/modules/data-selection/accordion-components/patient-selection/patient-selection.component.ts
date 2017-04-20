@@ -7,6 +7,7 @@ import {TrueConstraint} from "../../../shared/models/constraints/true-constraint
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
+import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 
 
 @Component({
@@ -15,31 +16,21 @@ import {ConceptConstraint} from "../../../shared/models/constraints/concept-cons
   styleUrls: ['./patient-selection.component.css']
 })
 export class PatientSelectionComponent implements OnInit {
-  patientCount: number;
-  responseMessage: string;
 
-  rootConstraint: CombinationConstraint;
+  patientCount: number = 0;
+  responseMessage: string = "";
+  rootConstraint: CombinationConstraint = new CombinationConstraint();
   @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
 
   constructor(private resourceService: ResourceService,
               private workflowService: WorkflowService) {
-    this.patientCount = 0;
-    this.responseMessage = "";
-    this.rootConstraint = new CombinationConstraint();
-    this.rootConstraint.children.push(new ConceptConstraint());
-    this.rootConstraint.children.push(new ConceptConstraint());
-    let combo = new CombinationConstraint();
-    combo.children.push(new ConceptConstraint());
-    this.rootConstraint.children.push(combo);
   }
 
   ngOnInit() {
   }
 
   runPatientQuery() {
-    // let constraint = this.rootConstraint.getConstraint();
-    let constraint = new TrueConstraint();
-    this.resourceService.getPatients(constraint)
+    this.resourceService.getPatients(this.rootConstraint)
       .subscribe(
         patients => {
           this.patientCount = patients.length;
@@ -52,8 +43,7 @@ export class PatientSelectionComponent implements OnInit {
 
   savePatientSet() {
     let name = 'test_patient_set';
-    let trueConstraint = new TrueConstraint();
-    this.resourceService.savePatients(name, trueConstraint)
+    this.resourceService.savePatients(name, this.rootConstraint)
       .subscribe(
         result => {
           this.responseMessage = JSON.stringify(result);

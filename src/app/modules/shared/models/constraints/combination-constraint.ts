@@ -18,8 +18,39 @@ export class CombinationConstraint implements Constraint {
     return CombinationConstraint.name;
   }
 
-  toJsonString(): string {
-    return '';
+  toQueryObject(): Object {
+    // Convert all children to query objects
+    let childQueryObjects =
+      this._children.map((constraint: Constraint) => constraint.toQueryObject());
+
+    // Ignore all null and {} values
+    // TODO: show validation error instead?
+    childQueryObjects = childQueryObjects.filter(object => {
+      if (!object) {
+        return false;
+      }
+      return Object.keys(object).length > 0;
+    });
+
+    // Combination
+    let combinationQueryObject = {
+      type: "combination",
+      operator: this._combinationState === CombinationState.And ? "and" : "or",
+      args: childQueryObjects
+    };
+
+    // If we're negating, we wrap the object in a negation constraint
+    if (this._isNot) {
+      return {
+        type: "negation",
+        arg: combinationQueryObject
+      }
+    }
+    return combinationQueryObject;
+  }
+
+  get textRepresentation(): string {
+    return 'Group (and/or/not)';
   }
 
   isAnd() {
@@ -38,7 +69,7 @@ export class CombinationConstraint implements Constraint {
     return this._children;
   }
 
-  set children(value: Constraint[]) {
+  set children(value:Constraint[]) {
     this._children = value;
   }
 
@@ -53,6 +84,13 @@ export class CombinationConstraint implements Constraint {
   switchCombinationState() {
     this.combinationState =
       (this.combinationState === CombinationState.And) ? CombinationState.Or : CombinationState.And;
+  }
+
+  removeChildConstraint(child:Constraint) {
+    let index = this.children.indexOf(child);
+    if (index > -1) {
+      this.children.splice(index, 1);
+    }
   }
 
 }

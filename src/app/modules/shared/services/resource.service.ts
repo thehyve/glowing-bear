@@ -11,6 +11,7 @@ import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
+import {Concept} from "../models/concept";
 
 @Injectable()
 export class ResourceService {
@@ -58,6 +59,19 @@ export class ResourceService {
       .catch(this.handleError.bind(this));
   }
 
+  getTreeNodes(): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+
+    let url = `${endpoint.getUrl()}/tree_nodes`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((response:Response) => response.json().tree_nodes)
+      .catch(this.handleError.bind(this));
+  }
+
   /**
    * Given a constraint, retrieve the corresponding patient array
    * @param constraint - the constraint of the patient set to be queried
@@ -68,7 +82,9 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = endpoint.getUrl() +'/patients?constraint='+constraint.toJsonString();
+    let constraintString = JSON.stringify(constraint.toQueryObject());
+    console.log("Constraint: " + constraintString);
+    let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
     })
@@ -88,8 +104,8 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let body = constraint.toJsonString();
-    let url = endpoint.getUrl() + '/patient_sets?name='+name;
+    let body = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)
       .map((res:Response) => res.json() as PatientSetPostResponse)

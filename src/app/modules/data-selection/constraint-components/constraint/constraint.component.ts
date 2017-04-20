@@ -1,4 +1,4 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 import {Constraint} from "../../../shared/models/constraints/constraint";
 
 @Component({
@@ -8,6 +8,8 @@ import {Constraint} from "../../../shared/models/constraints/constraint";
 })
 export class ConstraintComponent implements OnInit {
   @Input() constraint: Constraint;
+  @Output()
+  constraintRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor() {
   }
@@ -16,11 +18,11 @@ export class ConstraintComponent implements OnInit {
   }
 
   /**
-   * call this method when the user clicks the 'remove' button of a constraint component,
-   * it removes the component itself from its parent component
+   * Emits the constraintRemoved event, indicating the constraint corresponding
+   * to this component is to be removed from its parent.
    */
-  removeSelfComponent() {
-    console.log('remove component');
+  remove() {
+    this.constraintRemoved.emit();
   }
 
 }

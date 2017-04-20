@@ -13,13 +13,15 @@ import {StudyConstraintComponent} from './constraint-components/study-constraint
 import {CombinationConstraintComponent} from './constraint-components/combination-constraint/combination-constraint.component';
 import {ConstraintComponent} from './constraint-components/constraint/constraint.component';
 import {ConceptConstraintComponent} from './constraint-components/concept-constraint/concept-constraint.component';
+import {AutoCompleteModule} from "primeng/components/autocomplete/autocomplete";
 
 @NgModule({
   imports: [
     CommonModule,
     NgbModule,
     routing,
-    FormsModule
+    FormsModule,
+    AutoCompleteModule
   ],
   exports: [
     RouterModule

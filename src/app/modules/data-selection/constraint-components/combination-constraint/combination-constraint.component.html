@@ -1,48 +1,43 @@
-<div class="constraint-comp">
+<div>
 
-  <!-- Negation, ANd, OR -->
-  <div class="btn-group">
+  <!-- Negation, AND, OR -->
+  <div class="form-inline">
     <label class="form-check-label">
-      <input [(ngModel)]="constraint.NOT" class="form-check-input" type="checkbox">
+      <input [(ngModel)]="isNot" class="form-check-input" type="checkbox">
       NOT
     </label>
 
-    <button type="button"
-            [ngClass]="{'btn': true, 'btn-outline-primary': true, 'btn-sm': true,
-            'constraint-btn-toggled': constraint.isAnd()}"
-            (click)="toggleAndOr()">
-      AND
-    </button>
-    <button type="button"
-            [ngClass]="{'btn': true, 'btn-outline-primary': true, 'btn-sm': true,
-            'constraint-btn-toggled': !constraint.isAnd() }"
-            (click)="toggleAndOr()">
-      OR
-    </button>
+    <div class="btn-group">
+      <button type="button"
+              [ngClass]="{'btn': true, 'btn-outline-primary': true, 'btn-sm': true,
+              'constraint-btn-toggled': isAnd}"
+              (click)="toggleAndOr()">
+        AND
+      </button>
+      <button type="button"
+              [ngClass]="{'btn': true, 'btn-outline-primary': true, 'btn-sm': true,
+              'constraint-btn-toggled': !isAnd }"
+              (click)="toggleAndOr()">
+        OR
+      </button>
+    </div>
+
+    <p-autoComplete #autoComplete
+                    [(ngModel)]="selectedConstraint"
+                    [suggestions]="searchResults"
+                    field="textRepresentation"
+                    (completeMethod)="onSearch($event)"
+                    (onSelect)="onSelect($event)"
+                    size="40"
+                    dropdown="true"
+                    (onDropdownClick)="onDropdown($event)"
+                    placeholder="Add constraint"></p-autoComplete>
+
   </div>
-
-  <!-- Add rule, group, and Remove button -->
-  <div class="btn-group pull-right">
-    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
-            (click)="addRule()">
-      Add rule
-    </button>
-
-    <button type="button" class="btn btn-outline-primary btn-sm constraint-btn"
-            (click)="addRuleSet()">
-      Add group
-    </button>
-
-    <button type="button" class="btn btn-outline-danger btn-sm constraint-btn"
-            (click)="removeSelfComponent()">
-      Remove
-    </button>
-  </div>
-
 
   <!-- Child Constraints -->
-  <div *ngFor="let child of constraint.children">
-    <constraint [constraint]="child"></constraint>
-  </div>
+  <constraint *ngFor="let child of children"
+              [constraint]="child"
+              (constraintRemoved)="onConstraintRemoved(child)"></constraint>
 
 </div>

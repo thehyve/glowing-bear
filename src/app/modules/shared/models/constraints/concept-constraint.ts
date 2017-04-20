@@ -1,6 +1,9 @@
 import {Constraint} from './constraint';
+import {Concept} from "../concept";
 
 export class ConceptConstraint implements Constraint {
+
+  concept:Concept;
 
   constructor() {}
 
@@ -8,7 +11,17 @@ export class ConceptConstraint implements Constraint {
     return ConceptConstraint.name;
   }
 
-  toJsonString(): string {
-    return '';
+  toQueryObject(): Object {
+    return {
+      type: "concept",
+      path: this.concept.path
+    };
+  }
+
+  get textRepresentation(): string {
+    if (this.concept) {
+      return `Concept: ${this.concept.path}`;
+    }
+    return 'Concept';
   }
 }

@@ -1,8 +1,11 @@
 <div class="form-inline">
   <label>Study </label>
-  <select class="form-control" [(ngModel)]="selectedStudy">
-    <option *ngFor="let study of studies" [ngValue]="study">
-      {{ study.studyId }}
-    </option>
-  </select>
+  <p-autoComplete #autoComplete
+                  [(ngModel)]="selectedStudy"
+                  [suggestions]="searchResults"
+                  field="studyId"
+                  (completeMethod)="onSearch($event)"
+                  size="40"
+                  dropdown="true"
+                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 </div>

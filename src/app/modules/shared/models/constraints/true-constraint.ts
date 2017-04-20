@@ -6,7 +6,11 @@ export class TrueConstraint implements Constraint {
     return 'true-constraint';
   }
 
-  toJsonString(): string {
-    return '{"type": "true"}';
+  toQueryObject(): Object {
+    return {"type": "true"};
+  }
+
+  get textRepresentation(): string {
+    return 'True';
   }
 }

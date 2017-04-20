@@ -1,8 +1,14 @@
-<div>
-  <div *ngIf="constraint.getConstraintType() == 'CombinationConstraint' ">
-    <combination-constraint [constraint]="constraint"></combination-constraint>
-  </div>
-  <div *ngIf="constraint.getConstraintType() == 'ConceptConstraint' ">
-    <concept-constraint [constraint]="constraint"></concept-constraint>
-  </div>
+<div class="constraint-comp">
+  <!-- Remove Button -->
+  <button type="button" class="btn btn-outline-danger btn-sm pull-right constraint-remove-btn"
+          (click)="remove()">
+    <i class="fa fa-times" aria-hidden="true"></i>
+  </button>
+
+  <combination-constraint *ngIf="constraint.getConstraintType() == 'CombinationConstraint' "
+                          [constraint]="constraint"></combination-constraint>
+  <concept-constraint *ngIf="constraint.getConstraintType() == 'ConceptConstraint' "
+                      [constraint]="constraint"></concept-constraint>
+  <study-constraint *ngIf="constraint.getConstraintType() == 'StudyConstraint' "
+                    [constraint]="constraint"></study-constraint>
 </div>
