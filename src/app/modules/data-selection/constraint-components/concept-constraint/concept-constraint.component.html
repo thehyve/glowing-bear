@@ -1,0 +1,17 @@
+<div class="form-inline">
+  <label>Concept </label>
+  <p-autoComplete #autoComplete
+                  [(ngModel)]="selectedConcept"
+                  [suggestions]="searchResults"
+                  field="path"
+                  (completeMethod)="onSearch($event)"
+                  size="40"
+                  dropdown="true"
+                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+  <div *ngIf="isNumeric()">
+    between
+    <input type="number" class="form-control col-sm-2">
+    and
+    <input type="number" class="form-control col-sm-2">
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<div>
+
+  <constraint #rootConstraintComponent [constraint]="rootConstraint"></constraint>
+
+  <hr>
+  <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>
+  <br><br>
+
+  <div id="patientQueryResult">
+    <p>The patient count is: <b>{{patientCount}}</b>.</p>
+  </div>
+
+  <hr>
+  <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
+  <br><br>
+
+  <div id="patientSavingResult">
+    <p>The result of saving patient set is: </p>
+    <p><b>{{responseMessage}}</b></p>
+  </div>
+
+</div>

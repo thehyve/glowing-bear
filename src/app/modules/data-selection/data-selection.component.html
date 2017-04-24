@@ -1,0 +1,42 @@
+<ngb-accordion activeIds="{{activeIds}}" (panelChange)="handleAccordionToggle($event)">
+  <!-- patient selection -->
+  <ngb-panel id="patient-selection-panel">
+    <template ngbPanelTitle>
+      <span>Patient selection</span>
+    </template>
+    <template ngbPanelContent>
+      <patient-selection></patient-selection>
+    </template>
+  </ngb-panel>
+
+  <!-- observation selection -->
+  <ngb-panel id="observation-selection-panel">
+    <template ngbPanelTitle>
+      <span>Observation selection</span>
+    </template>
+    <template ngbPanelContent>
+      <observation-selection></observation-selection>
+    </template>
+  </ngb-panel>
+
+  <!-- data view  -->
+  <ngb-panel id="data-view-panel">
+    <template ngbPanelTitle>
+      <span>Data view</span>
+    </template>
+    <template ngbPanelContent>
+      <data-view></data-view>
+    </template>
+  </ngb-panel>
+
+  <!-- summary  -->
+  <ngb-panel id="summary-panel">
+    <template ngbPanelTitle>
+      <span>Summary</span>
+    </template>
+    <template ngbPanelContent>
+      <data-summary></data-summary>
+    </template>
+  </ngb-panel>
+
+</ngb-accordion>

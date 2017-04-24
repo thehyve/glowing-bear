@@ -1,0 +1,22 @@
+<div class="nav-container">
+  <button type="button" [ngClass]="{'btn': true, 'btn-link': true, 'nav-btn': true, 'nav-active': isDashboard}"
+          [routerLink]="['/dashboard']">
+    Dashboard
+  </button>
+  <i class="fa fa-circle nav-icon" aria-hidden="true"></i>
+  <button type="button" [ngClass]="{'btn': true, 'btn-link': true, 'nav-btn': true, 'nav-active': isDataSelection}"
+          [routerLink]="['/data-selection']">
+    Data Selection
+  </button>
+  <i class="fa fa-circle nav-icon" aria-hidden="true"></i>
+  <button type="button" [ngClass]="{'btn': true, 'btn-link': true, 'nav-btn': true, 'nav-active': isAnalysis}"
+          [routerLink]="['/analysis']">
+    Analysis
+  </button>
+  <i class="fa fa-circle nav-icon" aria-hidden="true"></i>
+  <button type="button" [ngClass]="{'btn': true, 'btn-link': true, 'nav-btn': true, 'nav-active': isExport}"
+          [routerLink]="['/export']">
+    Export
+  </button>
+
+</div>

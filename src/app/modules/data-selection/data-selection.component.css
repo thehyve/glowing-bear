@@ -1,0 +1,8 @@
+.nav-btn:hover {
+  background-color: lightgray;;
+}
+
+.nav-active {
+  font-weight: bolder;
+}
+

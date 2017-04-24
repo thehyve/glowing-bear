@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {WorkflowService} from "./modules/shared/services/workflow.service";
+import {EndpointService} from "./modules/shared/services/endpoint.service";
+import {ResourceService} from "./modules/shared/services/resource.service";
 
 @Component({
   selector: 'app-root',
@@ -6,5 +9,10 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
+
+  constructor(private endpointService: EndpointService,
+              private workflowService: WorkflowService,
+              private resourceService: ResourceService) {
+  }
+
 }
