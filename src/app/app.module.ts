@@ -16,6 +16,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
 import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
+import {ConfigService} from "./modules/shared/services/config/config.service";
 
 
 
@@ -36,6 +37,7 @@ import {DimensionRegistryService} from "./modules/shared/services/dimension-regi
     ExportModule
   ],
   providers: [
+    ConfigService,
     EndpointService,
     ResourceService,
     WorkflowService,

@@ -11,7 +11,6 @@ import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
-import {Concept} from "../models/concept";
 
 @Injectable()
 export class ResourceService {
@@ -49,8 +48,8 @@ export class ResourceService {
   getStudies(): Observable<Study[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let url = `${endpoint.getUrl()}/studies`;
     return this.http.get(url, {
       headers: headers
@@ -62,7 +61,7 @@ export class ResourceService {
   getTreeNodes(): Observable<object> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
     let url = `${endpoint.getUrl()}/tree_nodes`;
     return this.http.get(url, {
@@ -80,7 +79,7 @@ export class ResourceService {
   getPatients(constraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
     let constraintString = JSON.stringify(constraint.toQueryObject());
     console.log("run patient query with Constraint: " + constraintString);
@@ -101,7 +100,7 @@ export class ResourceService {
   savePatients(name: string, constraint: Constraint): Observable<PatientSetPostResponse> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let body = JSON.stringify(constraint.toQueryObject());

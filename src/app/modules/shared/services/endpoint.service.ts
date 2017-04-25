@@ -1,40 +1,36 @@
 import { Injectable } from '@angular/core';
 import { Endpoint } from '../models/endpoint';
+import {ConfigService} from "./config/config.service";
 
 @Injectable()
 export class EndpointService {
 
   private endpoint:Endpoint;
 
-  constructor() {
-    let parsedUrl = this.parseUrl(this.getCurrentUrl());
+  constructor(private configService: ConfigService) {
 
-    // In development mode, we assume the rest API is at http://localhost:8080.
-    // In production mode, we assume the rest API is at the same protocol+host.
-    // We currently assume we are in development mode if the host is localhost.
-    // Note that this is the default and it may be overwritten (restored) with
-    // the value stored in localStorage.
-    //TODO: make this configurable
-    if (parsedUrl.hostname == 'localhost') {
-      this.endpoint = new Endpoint('http://localhost:8080', 'v2');
-    }
-    else {
-      //transmart-test.thehyve.net
-      let url = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
-      this.endpoint = new Endpoint(url, 'v2');
-    }
+    let func = function () {
+      let apiUrl = configService.get('api-url');
+      let apiVersion = configService.get('api-version');
+      let appUrl = configService.get('app-url');
 
-    // Check if there is authentication data in the hash fragment of the url
-    let oauthGrantFragment:string = parsedUrl.hash;
-    if (oauthGrantFragment.length > 1) {
-      // Update the current endpoint with the received credentials
-      this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
-      // Save the endpoint
-      this.saveEndpoint();
-    }
-    else {
-      this.restoreEndpoint();
-    }
+      this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
+      let parsedUrl = this.parseUrl(this.getCurrentUrl());
+      // Check if there is authentication data in the hash fragment of the url
+      let oauthGrantFragment:string = parsedUrl.hash;
+      if (oauthGrantFragment.length > 1) {
+        // Update the current endpoint with the received credentials
+        this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
+        // Save the endpoint
+        this.saveEndpoint();
+      }
+      else {
+        this.restoreEndpoint();
+      }
+    };
+
+    configService.load().then(func.bind(this));
+
   }
 
   public getEndpoint() {
@@ -46,7 +42,7 @@ export class EndpointService {
    * to get a new one.
    */
   invalidateToken() {
-    this.endpoint.setAccessToken('');
+    this.endpoint.accessToken = '';
     this.saveEndpoint();
     this.navigateToAuthorizationPage(this.endpoint);
   }
@@ -93,20 +89,16 @@ export class EndpointService {
   private navigateToAuthorizationPage(endpoint) {
 
     // Cut off any '/'
-    var url = endpoint.getBaseUrl();
-    if (url.substring(url.length - 1, url.length) === '/') {
-      url = url.substring(0, url.length - 1);
+    let apiUrl = endpoint.apiUrl;
+    let appUrl = endpoint.appUrl;
+    if (apiUrl.substring(apiUrl.length - 1, apiUrl.length) === '/') {
+      apiUrl = apiUrl.substring(0, apiUrl.length - 1);
+    }
+    if (appUrl.substring(appUrl.length - 1, appUrl.length) === '/') {
+      appUrl = appUrl.substring(0, appUrl.length - 1);
     }
 
-    // Construct the redirect url
-    var parsedUrl = this.parseUrl(this.getCurrentUrl());
-    let redirectUri =
-      this.getRedirectURI(parsedUrl.protocol,
-        parsedUrl.hostname,
-        parsedUrl.port,
-        parsedUrl.path);
-
-    var authorizationUrl = `${url}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${redirectUri}`;
+    var authorizationUrl = `${apiUrl}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${appUrl}`;
     this.navigateToUrl(authorizationUrl);
   }
 
@@ -119,12 +111,19 @@ export class EndpointService {
    * @returns {string}
    */
   private getRedirectURI(protocol, host, port, path) {
-    if (['80', '443'].indexOf(port) >= 0) {
-      port = '';
-    } else {
-      port = ':' + port;
+    let redirectUri;
+    if(port) {
+      if (['80', '443'].indexOf(port) >= 0) {
+        port = '';
+      } else {
+        port = ':' + port;
+      }
+      redirectUri = `${protocol}//${host}${port}`;
     }
-    let redirectUri = `${protocol}//${host}${port}`;
+    else {
+      redirectUri = `${protocol}//${host}`;
+    }
+
     return encodeURIComponent(redirectUri);
   }
 
@@ -135,7 +134,7 @@ export class EndpointService {
    */
   private initializeEndpointWithCredentials(endpoint, oauthGrantFragment) {
     var fragmentParams = this.getFragmentParameters(oauthGrantFragment);
-    endpoint.setAccessToken(fragmentParams.access_token);
+    endpoint.accessToken = fragmentParams.access_token;
     var time = new Date();
     endpoint.expiresAt = time.setTime(time.getTime() + fragmentParams.expires_in * 1000);
   }
