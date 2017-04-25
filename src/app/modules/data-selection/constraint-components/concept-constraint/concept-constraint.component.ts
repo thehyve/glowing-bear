@@ -5,7 +5,7 @@ import {Concept} from "../../../shared/models/concept";
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 import {ConceptOperatorState} from "./concept-operator-state";
-import {Value} from "../../../shared/models/constraints/value";
+import {Value} from "../../../shared/models/value";
 
 @Component({
   selector: 'concept-constraint',
@@ -36,7 +36,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     return (<ConceptConstraint>this.constraint).concept;
   }
 
-  set selectedConcept(value:Concept) { console.log('set selected concept: ', value);
+  set selectedConcept(value:Concept) {
     (<ConceptConstraint>this.constraint).concept = value;
   }
 
@@ -74,7 +74,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (!concept) {
       return false;
     }
-    return concept.type == 'NUMERIC';
+    return concept.valueType === 'NUMERIC';
   }
 
   isBetween() {
@@ -82,7 +82,6 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   switchOperatorState() {
-    console.log('--> ', this.minVal, this.maxVal, this.equalVal, this.isMaxEqual, this.isMinEqual);
     this.operatorState =
       (this.operatorState === ConceptOperatorState.EQUAL) ?
         (this.operatorState = ConceptOperatorState.BETWEEN) :
@@ -95,10 +94,49 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     return name;
   }
 
-  // updateConceptValues() {
-  //   if(this.operatorState === ConceptOperatorState.EQUAL) {
-  //     let val: Value = new Value
-  //   }
-  // }
+  updateConceptValues() {
+    let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+
+    //if the concept is numeric
+    if(this.isNumeric()) {
+      //if to define a single value
+      if(this.operatorState === ConceptOperatorState.EQUAL) {
+        if(typeof this.equalVal === 'number') {
+          let newVal: Value = new Value();
+          newVal.valueType = this.selectedConcept.valueType;
+          newVal.operator = '=';
+          newVal.value = this.equalVal;
+          conceptConstraint.values = [];
+          conceptConstraint.values.push(newVal);
+        }
+      }
+
+      //else if to define a value range
+      else if(this.operatorState === ConceptOperatorState.BETWEEN) {
+        conceptConstraint.values = [];
+        if(typeof this.minVal === 'number') {
+          let newMinVal: Value = new Value();
+          newMinVal.valueType = this.selectedConcept.valueType;
+          newMinVal.operator = '>';
+          if(this.isMinEqual) newMinVal.operator = '>=';
+          newMinVal.value = this.minVal;
+          conceptConstraint.values.push(newMinVal);
+        }
+
+        if(typeof this.maxVal === 'number') {
+          let newMaxVal: Value = new Value();
+          newMaxVal.valueType = this.selectedConcept.valueType;
+          newMaxVal.operator = '<';
+          if(this.isMaxEqual) newMaxVal.operator = '<=';
+          newMaxVal.value = this.maxVal;
+          conceptConstraint.values.push(newMaxVal);
+        }
+      }
+    }
+    //else if the concept is categorical
+    else {
+
+    }
+  }
 
 }

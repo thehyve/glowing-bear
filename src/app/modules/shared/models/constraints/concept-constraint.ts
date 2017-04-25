@@ -1,6 +1,6 @@
 import {Constraint} from './constraint';
 import {Concept} from "../concept";
-import {Value} from "./value";
+import {Value} from "../value";
 
 export class ConceptConstraint implements Constraint {
 
@@ -8,7 +8,7 @@ export class ConceptConstraint implements Constraint {
   private _values: Value[];
 
   constructor() {
-
+    this.values = [];
   }
 
   get concept(): Concept {
@@ -31,22 +31,28 @@ export class ConceptConstraint implements Constraint {
     return ConceptConstraint.name;
   }
 
-  toQueryObject(): Object { console.log('to query obj with concept: ', this._concept, this._values);
-    return {
-      type: "concept",
-      path: this.concept.path
-    };
+  toQueryObject(): Object {
+    let args = [];
+    args.push({
+      type: this._concept.type,
+      path: this._concept.path
+    });
 
-    // return {
-    //   type: "and",
-    //   args: [
-    //     {
-    //       type: "_concept",
-    //       path: this._concept.path
-    //     },
-    //     {"type": "_concept", "path":" \\Public Studies\\EHR\\Vital Signs\\Heart Rate\\"}
-    //   ]
-    // }
+    if(this.values) {
+      for(let value of this.values) {
+        args.push({
+          type: value.type,
+          valueType: value.valueType,
+          operator: value.operator,
+          value: value.value
+        });
+      }
+    }
+
+    return {
+      type: "and",
+      args: args
+    };
   }
 
   get textRepresentation(): string {
