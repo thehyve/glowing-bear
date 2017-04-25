@@ -1,4 +1,4 @@
 export class Concept {
-  path: string;
   type: string;
+  path: string;
 }

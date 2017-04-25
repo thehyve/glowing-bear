@@ -80,12 +80,13 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
     }
   }
 
-  onSelect(selectedConstraint) {
+  onSelect(selectedConstraint) { console.log('selected constraint: ', selectedConstraint);
     if (this.selectedConstraint != null) {
 
       // Create a copy of the selected constraint
       let newConstraint:Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
+      console.log('new constraint: ', newConstraint);
 
       // But we don't want to copy a CombinationConstraint's children
       if (newConstraint instanceof CombinationConstraint) {

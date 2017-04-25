@@ -1,5 +1,5 @@
 <div class="form-inline">
-  <label>Concept </label>
+  <label>for Concept </label>
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedConcept"
                   [suggestions]="searchResults"
@@ -8,10 +8,36 @@
                   size="40"
                   dropdown="true"
                   (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+
+  <!-- if the concept is numeric -->
   <div *ngIf="isNumeric()">
-    between
-    <input type="number" class="form-control col-sm-2">
-    and
-    <input type="number" class="form-control col-sm-2">
+    with value
+    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+            (click)="switchOperatorState()">
+      {{getOperatorButtonName()}}
+    </button>
+
+    <div *ngIf=" isBetween() " class="d-inline-block">
+      <input type="number" class="form-control col-sm-4" placeholder="min" [(ngModel)]="minVal">
+      <label class="form-check-label d-inline-block">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isMinEqual">
+      </label>
+      and
+      <input type="number" class="form-control col-sm-4" placeholder="max" [(ngModel)]="maxVal">
+      <label class="form-check-label d-inline-block">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="isMaxEqual">
+      </label>
+    </div>
+
+    <div *ngIf=" !isBetween() " class="d-inline-block">
+      <input type="number" class="form-control col-sm-8" [(ngModel)]="equalVal">
+    </div>
+
   </div>
+
+  <!-- if the concept is categorical -->
+  <div *ngIf="!isNumeric()">
+    <b>categorical concept here</b>
+  </div>
+
 </div>

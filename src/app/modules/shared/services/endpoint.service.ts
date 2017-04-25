@@ -19,6 +19,7 @@ export class EndpointService {
       this.endpoint = new Endpoint('http://localhost:8080', 'v2');
     }
     else {
+      //transmart-test.thehyve.net
       let url = `${parsedUrl.protocol}//${parsedUrl.hostname}`;
       this.endpoint = new Endpoint(url, 'v2');
     }
