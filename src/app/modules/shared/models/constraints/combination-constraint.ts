@@ -34,8 +34,7 @@ export class CombinationConstraint implements Constraint {
 
     // Combination
     let combinationQueryObject = {
-      type: "combination",
-      operator: this._combinationState === CombinationState.And ? "and" : "or",
+      type: this._combinationState === CombinationState.And ? "and" : "or",
       args: childQueryObjects
     };
 

@@ -83,7 +83,7 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
     let constraintString = JSON.stringify(constraint.toQueryObject());
-    console.log("Constraint: " + constraintString);
+    console.log("run patient query with Constraint: " + constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
