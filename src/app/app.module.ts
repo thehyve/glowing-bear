@@ -18,6 +18,9 @@ import {ResourceService} from "./modules/shared/services/resource.service";
 import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
 import {AppConfig} from "./config/app.config";
 
+export function initConfig(config: AppConfig){
+  return () => config.load()
+}
 
 @NgModule({
   declarations: [
@@ -43,7 +46,7 @@ import {AppConfig} from "./config/app.config";
     AppConfig,
     {
       provide: APP_INITIALIZER,
-      useFactory: (config: AppConfig) => () => config.load(),
+      useFactory: initConfig,
       deps: [AppConfig],
       multi: true
     }
