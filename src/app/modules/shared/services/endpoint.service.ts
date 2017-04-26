@@ -1,35 +1,29 @@
-import { Injectable } from '@angular/core';
-import { Endpoint } from '../models/endpoint';
-import {ConfigService} from "./config/config.service";
+import {Injectable} from '@angular/core';
+import {Endpoint} from '../models/endpoint';
+import {AppConfig} from "../../../config/app.config";
 
 @Injectable()
 export class EndpointService {
 
-  private endpoint:Endpoint;
+  private endpoint: Endpoint;
 
-  constructor(private configService: ConfigService) {
-
-    let func = function () {
-      let apiUrl = configService.get('api-url');
-      let apiVersion = configService.get('api-version');
-      let appUrl = configService.get('app-url');
-
-      this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
-      let parsedUrl = this.parseUrl(this.getCurrentUrl());
-      // Check if there is authentication data in the hash fragment of the url
-      let oauthGrantFragment:string = parsedUrl.hash;
-      if (oauthGrantFragment.length > 1) {
-        // Update the current endpoint with the received credentials
-        this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
-        // Save the endpoint
-        this.saveEndpoint();
-      }
-      else {
-        this.restoreEndpoint();
-      }
-    };
-
-    configService.load().then(func.bind(this));
+  constructor(private appConfig: AppConfig) {
+    let apiUrl = appConfig.getConfig('api-url');
+    let apiVersion = appConfig.getConfig('api-version');
+    let appUrl = appConfig.getConfig('app-url');
+    this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
+    let parsedUrl = this.parseUrl(this.getCurrentUrl());
+    // Check if there is authentication data in the hash fragment of the url
+    let oauthGrantFragment: string = parsedUrl.hash;
+    if (oauthGrantFragment.length > 1) {
+      // Update the current endpoint with the received credentials
+      this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
+      // Save the endpoint
+      this.saveEndpoint();
+    }
+    else {
+      this.restoreEndpoint();
+    }
 
   }
 
@@ -51,7 +45,7 @@ export class EndpointService {
    * Return the current url
    * @returns {string}
    */
-  private getCurrentUrl():string {
+  private getCurrentUrl(): string {
     return window.location.href;
   }
 
@@ -59,7 +53,7 @@ export class EndpointService {
    * Navigates to the specified url
    * @param url
    */
-  private navigateToUrl(url:string) {
+  private navigateToUrl(url: string) {
     window.location.href = url;
   }
 
@@ -71,15 +65,15 @@ export class EndpointService {
   private parseUrl(url: string) {
     var match = url.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)#?(.*)$/);
     return match && {
-      href: url,
-      protocol: match[1],
-      host: match[2],
-      hostname: match[3],
-      port: match[4],
-      path: match[5],
-      search: match[6],
-      hash: match[7]
-    };
+        href: url,
+        protocol: match[1],
+        host: match[2],
+        hostname: match[3],
+        port: match[4],
+        path: match[5],
+        search: match[6],
+        hash: match[7]
+      };
   }
 
   /**
@@ -112,7 +106,7 @@ export class EndpointService {
    */
   private getRedirectURI(protocol, host, port, path) {
     let redirectUri;
-    if(port) {
+    if (port) {
       if (['80', '443'].indexOf(port) >= 0) {
         port = '';
       } else {
@@ -144,7 +138,7 @@ export class EndpointService {
    * @param fragment
    * @returns {*}
    */
-  private getFragmentParameters(fragment:string) {
+  private getFragmentParameters(fragment: string) {
     return JSON.parse('{"' +
       decodeURI(
         fragment

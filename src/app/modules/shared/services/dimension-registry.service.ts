@@ -42,7 +42,6 @@ export class DimensionRegistryService {
     this.resourceService.getTreeNodes()
       .subscribe(
         (treeNodes:object[]) => {
-          console.log(treeNodes);
           this.processTreeNodes(treeNodes);
         },
         err => console.error(err)
@@ -94,7 +93,6 @@ export class DimensionRegistryService {
    * @returns {Array}
    */
   searchAllConstraints(query:string):Constraint[] {
-    console.log(query);
     query = query.toLowerCase();
     let results = [];
     this.allConstraints.forEach((constraint:Constraint) => {
