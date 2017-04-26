@@ -1,3 +1,11 @@
 .concept-constraint-comp {
 
 }
+
+.concept-constraint-operator-state-btn {
+  color: rgba(41,43,44,.8);
+}
+
+.concept-constraint-operator-state-btn:hover {
+  background-color: lightblue;
+}

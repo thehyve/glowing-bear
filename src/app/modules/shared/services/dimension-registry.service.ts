@@ -42,7 +42,6 @@ export class DimensionRegistryService {
     this.resourceService.getTreeNodes()
       .subscribe(
         (treeNodes:object[]) => {
-          console.log(treeNodes);
           this.processTreeNodes(treeNodes);
         },
         err => console.error(err)
@@ -66,7 +65,7 @@ export class DimensionRegistryService {
       if (treeNode['dimension'] == 'concept') {
         let concept = new Concept();
         concept.path = treeNode['fullName'];
-        concept.type = treeNode['type'];
+        concept.valueType = treeNode['type'];
         this.concepts.push(concept);
 
         let constraint = new ConceptConstraint();
@@ -94,7 +93,6 @@ export class DimensionRegistryService {
    * @returns {Array}
    */
   searchAllConstraints(query:string):Constraint[] {
-    console.log(query);
     query = query.toLowerCase();
     let results = [];
     this.allConstraints.forEach((constraint:Constraint) => {
