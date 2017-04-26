@@ -1,6 +1,5 @@
-
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
 
 @Injectable()
@@ -34,9 +33,16 @@ export class AppConfig {
    */
   public load() {
     return new Promise((resolve, reject) => {
+
+      let headers = new Headers();
+      headers.append('Content-Type', 'application/json');
+
       let path = 'src/app/config/';
 
-      this.http.get(path+'env.json')
+      this.http
+        .get(path + 'env.json', {
+          headers: headers
+        })
         .map(res => res.json())
         .catch((error: any): any => {
           console.log('Configuration file "env.json" could not be read');
@@ -49,12 +55,12 @@ export class AppConfig {
 
           switch (envResponse['env']) {
             case 'prod': {
-              request = this.http.get(path+'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
             }
               break;
 
             case 'dev': {
-              request = this.http.get(path+'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
             }
               break;
 
