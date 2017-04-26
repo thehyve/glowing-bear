@@ -37,7 +37,7 @@ export class AppConfig {
       let headers = new Headers();
       headers.append('Content-Type', 'application/json');
 
-      let path = 'src/app/config/';
+      let path = 'app/config/';
 
       this.http
         .get(path + 'env.json', {
