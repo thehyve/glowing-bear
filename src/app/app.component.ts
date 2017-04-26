@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {EndpointService} from "./modules/shared/services/endpoint.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
-import {ConfigService} from "./modules/shared/services/config/config.service";
+import {AppConfig} from "./config/app.config";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ import {ConfigService} from "./modules/shared/services/config/config.service";
 })
 export class AppComponent {
 
-  constructor(private configService: ConfigService,
+  constructor(private appConfig: AppConfig,
               private endpointService: EndpointService,
               private workflowService: WorkflowService,
               private resourceService: ResourceService) {
