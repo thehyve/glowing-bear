@@ -45,7 +45,7 @@ export class AppConfig {
         })
         .map(res => res.json())
         .catch((error: any): any => {
-          console.log('Configuration file "env.json" could not be read');
+          console.error('Configuration file "env.json" could not be read');
           resolve(true);
           return Observable.throw(error.json().error || 'Server error');
         })
@@ -53,14 +53,14 @@ export class AppConfig {
           this.env = envResponse;
           let request: any = null;
 
-          switch (envResponse['env']) {
+          switch (this.getEnv('env')) {
             case 'prod': {
-              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 
             case 'dev': {
-              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 
@@ -75,12 +75,13 @@ export class AppConfig {
             request
               .map(res => res.json())
               .catch((error: any) => {
-                console.error('Error reading ' + envResponse['env'] + ' configuration file');
+                console.error('Error reading ' + this.getEnv('env') + ' configuration file');
                 resolve(error);
                 return Observable.throw(error.json().error || 'Server error');
               })
               .subscribe((responseData) => {
                 this.config = responseData;
+                console.log('Successfully retrieved config: ', this.config);
                 resolve(true);
               });
           } else {

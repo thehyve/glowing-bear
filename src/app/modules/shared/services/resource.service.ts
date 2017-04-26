@@ -95,6 +95,7 @@ export class ResourceService{
 
     let constraintString = JSON.stringify(constraint.toQueryObject());
     console.log("run patient query with Constraint: " + constraintString);
+
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
