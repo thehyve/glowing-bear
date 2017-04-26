@@ -4,10 +4,12 @@ import {Value} from "../value";
 
 export class ConceptConstraint implements Constraint {
 
+  private _type: string;
   private _concept:Concept;
   private _values: Value[];
 
   constructor() {
+    this._type = 'ConceptConstraint';
     this.values = [];
   }
 
@@ -28,7 +30,7 @@ export class ConceptConstraint implements Constraint {
   }
 
   getConstraintType(): string {
-    return ConceptConstraint.name;
+    return this._type;
   }
 
   toQueryObject(): Object {

@@ -15,7 +15,7 @@ import {PatientSetPostResponse} from "../models/patient-set-post-response";
 @Injectable()
 export class ResourceService{
 
-  constructor(private http: Http, private endpointService: EndpointService) {
+  constructor(private http: Http, private endpointService: EndpointService) { console.log('resource service start...');
   }
 
   /**
@@ -47,7 +47,7 @@ export class ResourceService{
    */
   getStudies(): Observable<Study[]> {
     let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
+    let endpoint = this.endpointService.getEndpoint(); console.log('resource service get studies, ', endpoint);
 
     if(endpoint) {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);

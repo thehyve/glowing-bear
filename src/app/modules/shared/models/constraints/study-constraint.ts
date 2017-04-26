@@ -3,9 +3,12 @@ import {Study} from "../study";
 
 export class StudyConstraint implements Constraint {
 
+  private _type: string;
   private _study:Study;
 
-  constructor() {}
+  constructor() {
+    this._type = 'StudyConstraint';
+  }
 
   get study():Study {
     return this._study;
@@ -16,7 +19,7 @@ export class StudyConstraint implements Constraint {
   }
 
   getConstraintType(): string {
-    return this.constructor.name;
+    return this._type;
   }
 
   toQueryObject(): Object {

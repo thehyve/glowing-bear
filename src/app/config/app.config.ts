@@ -9,7 +9,7 @@ export class AppConfig {
   private env: Object = null;
 
   //see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
-  constructor(private http: Http) {
+  constructor(private http: Http) { console.log('app config is starting...');
   }
 
   /**
@@ -53,14 +53,14 @@ export class AppConfig {
           this.env = envResponse;
           let request: any = null;
 
-          switch (envResponse['env']) {
+          switch (this.getEnv('env')) {
             case 'prod': {
-              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 
             case 'dev': {
-              request = this.http.get(path + 'config.' + envResponse['env'] + '.json');
+              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 
@@ -75,12 +75,12 @@ export class AppConfig {
             request
               .map(res => res.json())
               .catch((error: any) => {
-                console.error('Error reading ' + envResponse['env'] + ' configuration file');
+                console.error('Error reading ' + this.getEnv('env') + ' configuration file');
                 resolve(error);
                 return Observable.throw(error.json().error || 'Server error');
               })
               .subscribe((responseData) => {
-                this.config = responseData;
+                this.config = responseData; console.log('app config here: ', this.config);
                 resolve(true);
               });
           } else {

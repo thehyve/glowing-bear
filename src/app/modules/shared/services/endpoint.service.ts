@@ -7,7 +7,7 @@ export class EndpointService {
 
   private endpoint: Endpoint;
 
-  constructor(private appConfig: AppConfig) {
+  constructor(private appConfig: AppConfig) { console.log('endpoint service start...');
     let apiUrl = appConfig.getConfig('api-url');
     let apiVersion = appConfig.getConfig('api-version');
     let appUrl = appConfig.getConfig('app-url');

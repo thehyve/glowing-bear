@@ -21,7 +21,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   selectedConstraint: Constraint;
 
   constructor(private dimensionRegistry:DimensionRegistryService) {
-    super();
+    super();console.log(';;;;;combo constraint construct;;;;');
   }
 
   ngOnInit() {
