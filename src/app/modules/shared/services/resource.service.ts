@@ -11,10 +11,9 @@ import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
-import {Concept} from "../models/concept";
 
 @Injectable()
-export class ResourceService {
+export class ResourceService{
 
   constructor(private http: Http, private endpointService: EndpointService) {
   }
@@ -49,27 +48,39 @@ export class ResourceService {
   getStudies(): Observable<Study[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = `${endpoint.getUrl()}/studies`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((response:Response) => response.json().studies as Study[])
-      .catch(this.handleError.bind(this));
+    if(endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      let url = `${endpoint.getUrl()}/studies`;
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response:Response) => response.json().studies as Study[])
+        .catch(this.handleError.bind(this));
+    }
+    else {
+      console.error('Could not establish endpoint.');
+    }
+
   }
 
   getTreeNodes(): Observable<object> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
 
-    let url = `${endpoint.getUrl()}/tree_nodes`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((response:Response) => response.json().tree_nodes)
-      .catch(this.handleError.bind(this));
+    if(endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+
+      let url = `${endpoint.getUrl()}/tree_nodes`;
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response:Response) => response.json().tree_nodes)
+        .catch(this.handleError.bind(this));
+    }
+    else {
+      console.error('Could not establish endpoint.');
+    }
   }
 
   /**
@@ -80,10 +91,10 @@ export class ResourceService {
   getPatients(constraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
     let constraintString = JSON.stringify(constraint.toQueryObject());
-    console.log("Constraint: " + constraintString);
+    console.log("run patient query with Constraint: " + constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
@@ -101,7 +112,7 @@ export class ResourceService {
   savePatients(name: string, constraint: Constraint): Observable<PatientSetPostResponse> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.getAccessToken()}`);
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let body = JSON.stringify(constraint.toQueryObject());

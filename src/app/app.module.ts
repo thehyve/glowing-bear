@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 
@@ -16,7 +16,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
 import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
-
+import {AppConfig} from "./config/app.config";
 
 
 @NgModule({
@@ -39,7 +39,14 @@ import {DimensionRegistryService} from "./modules/shared/services/dimension-regi
     EndpointService,
     ResourceService,
     WorkflowService,
-    DimensionRegistryService
+    DimensionRegistryService,
+    AppConfig,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (config: AppConfig) => () => config.load(),
+      deps: [AppConfig],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })
