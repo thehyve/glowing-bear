@@ -15,7 +15,7 @@ import {PatientSetPostResponse} from "../models/patient-set-post-response";
 @Injectable()
 export class ResourceService{
 
-  constructor(private http: Http, private endpointService: EndpointService) { console.log('resource service start...');
+  constructor(private http: Http, private endpointService: EndpointService) {
   }
 
   /**
@@ -47,7 +47,7 @@ export class ResourceService{
    */
   getStudies(): Observable<Study[]> {
     let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint(); console.log('resource service get studies, ', endpoint);
+    let endpoint = this.endpointService.getEndpoint();
 
     if(endpoint) {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
@@ -95,6 +95,7 @@ export class ResourceService{
 
     let constraintString = JSON.stringify(constraint.toQueryObject());
     console.log("run patient query with Constraint: " + constraintString);
+
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers

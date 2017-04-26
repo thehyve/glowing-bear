@@ -16,7 +16,7 @@ export class CombinationConstraint implements Constraint {
     this.combinationState = CombinationState.And;
   }
 
-  getConstraintType(): string { console.log('get comboConstraint type: ', CombinationConstraint.name);
+  getConstraintType(): string {
     return this._type;
   }
 

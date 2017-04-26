@@ -22,12 +22,12 @@ export class DimensionRegistryService {
     new ConceptConstraint()
   ];
 
-  constructor(private resourceService:ResourceService) { console.log('dim service start...');
+  constructor(private resourceService:ResourceService) {
 
     // Retrieve available studies
     this.resourceService.getStudies()
       .subscribe(
-        studies => { console.log('get studies: ', studies);
+        studies => {
           this.studies = studies;
           studies.forEach(study => {
             let constraint = new StudyConstraint();

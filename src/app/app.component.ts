@@ -16,7 +16,6 @@ export class AppComponent {
               private workflowService: WorkflowService,
               private resourceService: ResourceService,
               private dimensionRegistryService: DimensionRegistryService) {
-    console.log('app comp starting,.,');
   }
 
 }

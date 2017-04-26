@@ -9,7 +9,7 @@ export class AppConfig {
   private env: Object = null;
 
   //see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
-  constructor(private http: Http) { console.log('app config is starting...');
+  constructor(private http: Http) {
   }
 
   /**
@@ -45,7 +45,7 @@ export class AppConfig {
         })
         .map(res => res.json())
         .catch((error: any): any => {
-          console.log('Configuration file "env.json" could not be read');
+          console.error('Configuration file "env.json" could not be read');
           resolve(true);
           return Observable.throw(error.json().error || 'Server error');
         })
@@ -80,7 +80,8 @@ export class AppConfig {
                 return Observable.throw(error.json().error || 'Server error');
               })
               .subscribe((responseData) => {
-                this.config = responseData; console.log('app config here: ', this.config);
+                this.config = responseData;
+                console.log('Successfully retrieved config: ', this.config);
                 resolve(true);
               });
           } else {

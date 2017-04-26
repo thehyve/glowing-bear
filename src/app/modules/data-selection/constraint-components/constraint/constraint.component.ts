@@ -14,7 +14,7 @@ export class ConstraintComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() { console.log('----- constraint: ', this.constraint,' and its type: ', this.constraint.getConstraintType());
+  ngOnInit() {
   }
 
   /**
