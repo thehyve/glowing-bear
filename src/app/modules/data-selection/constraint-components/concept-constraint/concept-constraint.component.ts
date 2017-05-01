@@ -6,6 +6,7 @@ import {DimensionRegistryService} from "../../../shared/services/dimension-regis
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 import {ConceptOperatorState} from "./concept-operator-state";
 import {Value} from "../../../shared/models/value";
+import {ResourceService} from "../../../shared/services/resource.service";
 
 @Component({
   selector: 'concept-constraint',
@@ -23,13 +24,34 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   equalVal: number;
   minVal: number;
   maxVal: number;
+  minLimit: number;
+  maxLimit: number;
 
-  constructor(private dimensionRegistry:DimensionRegistryService) {
+  constructor(private dimensionRegistry:DimensionRegistryService, private resourceService:ResourceService) {
     super();
-    this.operatorState = ConceptOperatorState.EQUAL;
+    this.isMinEqual = true;
+    this.isMaxEqual = true;
+    this.operatorState = ConceptOperatorState.BETWEEN;
   }
 
   ngOnInit() {
+    let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    this.resourceService.getConceptAggregate(constraint)
+      .subscribe(
+        aggregate => {
+          constraint.concept.aggregate = aggregate;
+          if(this.isNumeric()) {
+            this.minLimit = aggregate.min;
+            this.maxLimit = aggregate.max;
+          }
+          else {
+            console.log('values: ', aggregate.values);
+          }
+        },
+        err => {
+          console.error(err);
+        }
+      );
   }
 
   get selectedConcept():Concept {

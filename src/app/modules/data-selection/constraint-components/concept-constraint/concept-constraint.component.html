@@ -18,7 +18,7 @@
     </button>
 
     <div *ngIf=" isBetween() " class="d-inline-block">
-      <input type="number" class="form-control col-sm-4" placeholder="min"
+      <input type="number" class="form-control col-sm-4" placeholder="min:{{minLimit}}"
              [(ngModel)]="minVal"
              (ngModelChange)="updateConceptValues()">
       <label class="form-check-label d-inline-block">
@@ -27,7 +27,7 @@
                (ngModelChange)="updateConceptValues()">
       </label>
       and
-      <input type="number" class="form-control col-sm-4" placeholder="max"
+      <input type="number" class="form-control col-sm-4" placeholder="max:{{maxLimit}}"
              [(ngModel)]="maxVal"
              (ngModelChange)="updateConceptValues()">
       <label class="form-check-label d-inline-block">

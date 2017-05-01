@@ -11,6 +11,8 @@ import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
+import {Aggregate} from "../models/aggregate";
+import {ConceptConstraint} from "../models/constraints/concept-constraint";
 
 @Injectable()
 export class ResourceService{
@@ -40,6 +42,8 @@ export class ResourceService{
     console.error(errMsg);
     return Observable.throw(errMsg || 'Server error');
   }
+
+  // -------------------------------------- study calls --------------------------------------
 
   /**
    * Returns the available studies.
@@ -83,6 +87,9 @@ export class ResourceService{
     }
   }
 
+
+  // -------------------------------------- patient calls --------------------------------------
+
   /**
    * Given a constraint, retrieve the corresponding patient array
    * @param constraint - the constraint of the patient set to be queried
@@ -121,6 +128,33 @@ export class ResourceService{
 
     return this.http.post(url, body, options)
       .map((res:Response) => res.json() as PatientSetPostResponse)
+      .catch(this.handleError.bind(this));
+  }
+
+  // -------------------------------------- aggregate calls --------------------------------------
+
+  /**
+   * Given a constraint, get its aggregate which includes min, max, average or categorical values
+   * @param constraint
+   * @returns {Observable<Aggregate>}
+   */
+  getConceptAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintString = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/observations/aggregate?`;
+    if(constraint.concept.valueType === 'NUMERIC') {
+      url += `type=min&type=max&type=average&type=count&constraint=${constraintString}`;
+    }
+    else {
+      url += `type=values&constraint=${constraintString}`;
+    }
+
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res:Response) => res.json() as Aggregate)
       .catch(this.handleError.bind(this));
   }
 
