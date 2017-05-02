@@ -12,12 +12,10 @@ import {DataSelectionModule} from "./modules/data-selection/data-selection.modul
 import {AnalysisModule} from "./modules/analysis/analysis.module";
 import {ExportModule} from "./modules/export/export.module";
 import {DashboardModule} from "./modules/dashboard/dashboard.module";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
 import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
 import {AppConfig} from "./config/app.config";
-import {CommonModule} from "@angular/common";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 export function initConfig(config: AppConfig){
@@ -33,7 +31,6 @@ export function initConfig(config: AppConfig){
     BrowserModule,
     FormsModule,
     HttpModule,
-    NgbModule.forRoot(),
     BrowserAnimationsModule,
     routing,
     DashboardModule,
