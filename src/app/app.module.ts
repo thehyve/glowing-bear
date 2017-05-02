@@ -17,6 +17,8 @@ import {WorkflowService} from "./modules/shared/services/workflow.service";
 import {ResourceService} from "./modules/shared/services/resource.service";
 import {DimensionRegistryService} from "./modules/shared/services/dimension-registry.service";
 import {AppConfig} from "./config/app.config";
+import {CommonModule} from "@angular/common";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 export function initConfig(config: AppConfig){
   return () => config.load()
@@ -32,6 +34,7 @@ export function initConfig(config: AppConfig){
     FormsModule,
     HttpModule,
     NgbModule.forRoot(),
+    BrowserAnimationsModule,
     routing,
     DashboardModule,
     DataSelectionModule,

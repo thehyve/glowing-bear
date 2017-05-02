@@ -14,6 +14,7 @@ import {CombinationConstraintComponent} from './constraint-components/combinatio
 import {ConstraintComponent} from './constraint-components/constraint/constraint.component';
 import {ConceptConstraintComponent} from './constraint-components/concept-constraint/concept-constraint.component';
 import {AutoCompleteModule} from "primeng/components/autocomplete/autocomplete";
+import {Md2AccordionModule} from "md2";
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import {AutoCompleteModule} from "primeng/components/autocomplete/autocomplete";
     NgbModule,
     routing,
     FormsModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    Md2AccordionModule
   ],
   exports: [
     RouterModule

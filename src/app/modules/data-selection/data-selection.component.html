@@ -1,42 +1,21 @@
-<ngb-accordion activeIds="{{activeIds}}" (panelChange)="handleAccordionToggle($event)">
-  <!-- patient selection -->
-  <ngb-panel id="patient-selection-panel">
-    <template ngbPanelTitle>
-      <span>Select patients</span>
-    </template>
-    <template ngbPanelContent>
-      <patient-selection></patient-selection>
-    </template>
-  </ngb-panel>
+<md2-accordion [multiple]="multiple">
+  <md2-accordion-tab>
+    <md2-accordion-header>Select patients</md2-accordion-header>
+    <patient-selection></patient-selection>
+  </md2-accordion-tab>
 
-  <!-- observation selection -->
-  <ngb-panel id="observation-selection-panel">
-    <template ngbPanelTitle>
-      <span>Select observations</span>
-    </template>
-    <template ngbPanelContent>
-      <observation-selection></observation-selection>
-    </template>
-  </ngb-panel>
+  <md2-accordion-tab>
+    <md2-accordion-header>Select observations</md2-accordion-header>
+    <observation-selection></observation-selection>
+  </md2-accordion-tab>
 
-  <!-- data view  -->
-  <ngb-panel id="data-view-panel">
-    <template ngbPanelTitle>
-      <span>Data table</span>
-    </template>
-    <template ngbPanelContent>
-      <data-view></data-view>
-    </template>
-  </ngb-panel>
+  <md2-accordion-tab>
+    <md2-accordion-header>Data table</md2-accordion-header>
+    <data-view></data-view>
+  </md2-accordion-tab>
 
-  <!-- summary  -->
-  <ngb-panel id="summary-panel">
-    <template ngbPanelTitle>
-      <span>Data summary</span>
-    </template>
-    <template ngbPanelContent>
-      <data-summary></data-summary>
-    </template>
-  </ngb-panel>
-
-</ngb-accordion>
+  <md2-accordion-tab>
+    <md2-accordion-header>Data summary</md2-accordion-header>
+    <data-summary></data-summary>
+  </md2-accordion-tab>
+</md2-accordion>
