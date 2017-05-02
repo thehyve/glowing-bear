@@ -52,10 +52,8 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
     if (this.autoComplete.panelVisible) {
-      this.autoComplete.onDropdownBlur();
       this.autoComplete.hide();
     } else {
-      this.autoComplete.onDropdownFocus();
       this.autoComplete.show();
     }
   }
