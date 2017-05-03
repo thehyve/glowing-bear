@@ -18,8 +18,27 @@ body {
 }
 
 .ui-autocomplete-multiple-container {
-  height: 38px;
   position: relative;
   top: 4px;
-  overflow: auto;
 }
+
+/* Change input placeholder text color */
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  color: lightgray;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: lightgray;
+  opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: lightgray;
+  opacity:  1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: lightgray;
+}
+
+.form-control::-webkit-input-placeholder { color: lightgray; }
+.form-control:-moz-placeholder { color: lightgray; }
+.form-control::-moz-placeholder { color: lightgray; }
+.form-control:-ms-input-placeholder { color: lightgray; }

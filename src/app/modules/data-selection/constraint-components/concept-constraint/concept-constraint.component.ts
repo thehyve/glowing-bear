@@ -109,7 +109,8 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
     let categories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
     if (query) {
-      this.suggestedCategories = categories.filter((category: string) => category.toLowerCase().includes(query));
+      this.suggestedCategories =
+        categories.filter((category: string) => category.toLowerCase().includes(query));
     }
     else {
       this.suggestedCategories = categories;
@@ -202,7 +203,17 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     }
     //else if the concept is categorical
     else {
-
+      if(this.selectedCategories.length === 0) {
+        this.operatorState = ConceptOperatorState.ALL;
+      }
+      for(let category of this.selectedCategories) {
+        let newVal: Value = new Value();
+        newVal.valueType = 'STRING';
+        newVal.operator = 'contains';
+        newVal.value = category;
+        conceptConstraint.values = [];
+        conceptConstraint.values.push(newVal);
+      }
     }
   }
 
