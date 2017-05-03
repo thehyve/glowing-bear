@@ -1,3 +1,7 @@
 .form-inline > * {
   margin: 8px;
 }
+
+#patientSetName {
+  width: 20%;
+}

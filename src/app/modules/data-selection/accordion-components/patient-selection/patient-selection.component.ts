@@ -19,6 +19,7 @@ import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-re
 export class PatientSelectionComponent implements OnInit {
 
   patientCount: number = 0;
+  patientSetName: string = "";
   patientSetPostResponse: PatientSetPostResponse = null;
   rootConstraint: CombinationConstraint = new CombinationConstraint();
   @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
@@ -43,8 +44,7 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   savePatientSet() {
-    let name = 'test_patient_set';
-    this.resourceService.savePatients(name, this.rootConstraint)
+    this.resourceService.savePatients(this.patientSetName, this.rootConstraint)
       .subscribe(
         result => {
           this.patientSetPostResponse = result;
