@@ -16,6 +16,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 export class ConceptConstraintComponent extends ConstraintComponent implements OnInit {
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
+  @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
 
   searchResults: Concept[];
   operatorState: ConceptOperatorState;
@@ -56,7 +57,8 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
               this.maxLimit = aggregate.max;
             }
             else {
-              console.log('values: ', aggregate.values);
+              this.selectedCategories = aggregate.values;
+              this.suggestedCategories = aggregate.values;
             }
           },
           err => {
@@ -104,6 +106,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   onCategorySearch(event) {
     let query = event.query.toLowerCase().trim();
+
     let categories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
     if (query) {
       this.suggestedCategories = categories.filter((category: string) => category.toLowerCase().includes(query));
@@ -133,12 +136,18 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           (this.operatorState = ConceptOperatorState.EQUAL);
     }
     else {
+      if(this.operatorState === ConceptOperatorState.ALL) {
+        this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+      }
+      else {
+        this.selectedCategories = [];
+      }
+
       this.operatorState =
         (this.operatorState === ConceptOperatorState.ALL) ?
           (this.operatorState = ConceptOperatorState.NONE) :
           (this.operatorState = ConceptOperatorState.ALL);
     }
-
   }
 
   getOperatorButtonName() {
@@ -147,11 +156,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       name = (this.operatorState === ConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
     }
     else {
-      name = (this.operatorState === ConceptOperatorState.ALL) ? '(All)' : '(None)';
-      let aggregate = (<ConceptConstraint>this.constraint).concept.aggregate;
-      if(aggregate) {
-        this.selectedCategories = (this.operatorState === ConceptOperatorState.ALL) ? aggregate.values: [];
-      }
+      name = (this.operatorState === ConceptOperatorState.ALL) ? 'all' : 'clear';
     }
     return name;
   }
