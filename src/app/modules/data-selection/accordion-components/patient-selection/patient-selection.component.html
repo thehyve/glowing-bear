@@ -4,20 +4,18 @@
   <constraint #rootConstraintComponent [constraint]="rootConstraint"></constraint>
 
   <hr>
-  <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>
-  <br><br>
-
-  <div id="patientQueryResult">
-    <p>The patient count is: <b>{{patientCount}}</b>.</p>
+  <div class="form-inline">
+    <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>
+    <span><b>{{patientCount}}</b> patients match your selection.</span>
   </div>
 
   <hr>
-  <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
-  <br><br>
+  <div class="form-inline">
+    <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
+  </div>
 
-  <div id="patientSavingResult">
-    <p>The result of saving patient set is: </p>
-    <p><b>{{responseMessage}}</b></p>
+  <div class="form-inline" *ngIf="patientSetPostResponse != null">
+    <span>Your patient set <b>{{patientSetPostResponse.description}}</b> with <b>{{patientSetPostResponse.setSize}}</b> patients has been saved with the identifier <b>{{patientSetPostResponse.id}}</b></span>
   </div>
 
 </div>
