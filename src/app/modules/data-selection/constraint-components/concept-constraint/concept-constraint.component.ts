@@ -35,23 +35,29 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   ngOnInit() {
+    this.initializeAggregates();
+  }
+
+  initializeAggregates() {
     let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    this.resourceService.getConceptAggregate(constraint)
-      .subscribe(
-        aggregate => {
-          constraint.concept.aggregate = aggregate;
-          if(this.isNumeric()) {
-            this.minLimit = aggregate.min;
-            this.maxLimit = aggregate.max;
+    if (constraint.concept) {
+      this.resourceService.getConceptAggregate(constraint)
+        .subscribe(
+          aggregate => {
+            constraint.concept.aggregate = aggregate;
+            if (this.isNumeric()) {
+              this.minLimit = aggregate.min;
+              this.maxLimit = aggregate.max;
+            }
+            else {
+              console.log('values: ', aggregate.values);
+            }
+          },
+          err => {
+            console.error(err);
           }
-          else {
-            console.log('values: ', aggregate.values);
-          }
-        },
-        err => {
-          console.error(err);
-        }
-      );
+        );
+    }
   }
 
   get selectedConcept():Concept {
@@ -60,6 +66,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   set selectedConcept(value:Concept) {
     (<ConceptConstraint>this.constraint).concept = value;
+    this.initializeAggregates();
   }
 
   onSearch(event) {
