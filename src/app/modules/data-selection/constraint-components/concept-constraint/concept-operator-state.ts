@@ -1,4 +1,6 @@
 export enum ConceptOperatorState {
   BETWEEN,
-  EQUAL
+  EQUAL,
+  ALL,
+  NONE
 }

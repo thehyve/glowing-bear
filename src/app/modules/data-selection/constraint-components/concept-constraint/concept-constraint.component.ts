@@ -27,11 +27,17 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   minLimit: number;
   maxLimit: number;
 
+  selectedCategories: string[];
+  suggestedCategories: string[];
+
   constructor(private dimensionRegistry:DimensionRegistryService, private resourceService:ResourceService) {
     super();
     this.isMinEqual = true;
     this.isMaxEqual = true;
     this.operatorState = ConceptOperatorState.BETWEEN;
+
+    this.selectedCategories = [];
+    this.suggestedCategories = [];
   }
 
   ngOnInit() {
@@ -96,6 +102,17 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     }
   }
 
+  onCategorySearch(event) {
+    let query = event.query.toLowerCase().trim();
+    let categories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+    if (query) {
+      this.suggestedCategories = categories.filter((category: string) => category.toLowerCase().includes(query));
+    }
+    else {
+      this.suggestedCategories = categories;
+    }
+  }
+
   isNumeric() {
     let concept:Concept = (<ConceptConstraint>this.constraint).concept;
     if (!concept) {
@@ -109,15 +126,33 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   switchOperatorState() {
-    this.operatorState =
-      (this.operatorState === ConceptOperatorState.EQUAL) ?
-        (this.operatorState = ConceptOperatorState.BETWEEN) :
-        (this.operatorState = ConceptOperatorState.EQUAL);
+    if(this.isNumeric()) {
+      this.operatorState =
+        (this.operatorState === ConceptOperatorState.EQUAL) ?
+          (this.operatorState = ConceptOperatorState.BETWEEN) :
+          (this.operatorState = ConceptOperatorState.EQUAL);
+    }
+    else {
+      this.operatorState =
+        (this.operatorState === ConceptOperatorState.ALL) ?
+          (this.operatorState = ConceptOperatorState.NONE) :
+          (this.operatorState = ConceptOperatorState.ALL);
+    }
+
   }
 
   getOperatorButtonName() {
-    let name = 'equal to';
-    if(this.operatorState === ConceptOperatorState.BETWEEN) name = 'between';
+    let name = '';
+    if(this.isNumeric()) {
+      name = (this.operatorState === ConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
+    }
+    else {
+      name = (this.operatorState === ConceptOperatorState.ALL) ? '(All)' : '(None)';
+      let aggregate = (<ConceptConstraint>this.constraint).concept.aggregate;
+      if(aggregate) {
+        this.selectedCategories = (this.operatorState === ConceptOperatorState.ALL) ? aggregate.values: [];
+      }
+    }
     return name;
   }
 
