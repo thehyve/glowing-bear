@@ -8,6 +8,7 @@ import {ConstraintComponent} from "../../constraint-components/constraint/constr
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
+import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-response";
 
 
 @Component({
@@ -18,7 +19,8 @@ import {StudyConstraint} from "../../../shared/models/constraints/study-constrai
 export class PatientSelectionComponent implements OnInit {
 
   patientCount: number = 0;
-  responseMessage: string = "";
+  patientSetName: string = "";
+  patientSetPostResponse: PatientSetPostResponse = null;
   rootConstraint: CombinationConstraint = new CombinationConstraint();
   @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
 
@@ -42,11 +44,10 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   savePatientSet() {
-    let name = 'test_patient_set';
-    this.resourceService.savePatients(name, this.rootConstraint)
+    this.resourceService.savePatients(this.patientSetName, this.rootConstraint)
       .subscribe(
         result => {
-          this.responseMessage = JSON.stringify(result);
+          this.patientSetPostResponse = result;
         },
         err => {
           console.error(err);

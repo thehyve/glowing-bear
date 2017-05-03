@@ -118,6 +118,10 @@ export class ResourceService{
    * @returns {Observable<PatientSetPostResponse>}
    */
   savePatients(name: string, constraint: Constraint): Observable<PatientSetPostResponse> {
+    if (!name) {
+      // Default name
+      name = 'patient set';
+    }
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
