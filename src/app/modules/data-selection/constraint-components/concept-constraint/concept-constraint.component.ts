@@ -56,7 +56,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
               this.minLimit = aggregate.min;
               this.maxLimit = aggregate.max;
             }
-            else {
+            else if(this.isCategorical()) {
               this.selectedCategories = aggregate.values;
               this.suggestedCategories = aggregate.values;
             }
@@ -125,6 +125,14 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     return concept.valueType === 'NUMERIC';
   }
 
+  isCategorical() {
+    let concept:Concept = (<ConceptConstraint>this.constraint).concept;
+    if (!concept) {
+      return false;
+    }
+    return concept.valueType === 'CATEGORICAL_OPTION';
+  }
+
   isBetween() {
     return this.operatorState === ConceptOperatorState.BETWEEN;
   }
@@ -136,28 +144,19 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           (this.operatorState = ConceptOperatorState.BETWEEN) :
           (this.operatorState = ConceptOperatorState.EQUAL);
     }
-    else {
-      if(this.operatorState === ConceptOperatorState.ALL) {
-        this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
-      }
-      else {
-        this.selectedCategories = [];
-      }
+  }
 
-      this.operatorState =
-        (this.operatorState === ConceptOperatorState.ALL) ?
-          (this.operatorState = ConceptOperatorState.NONE) :
-          (this.operatorState = ConceptOperatorState.ALL);
-    }
+  selectAll() {
+    this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+  }
+  selectNone() {
+    this.selectedCategories = [];
   }
 
   getOperatorButtonName() {
     let name = '';
     if(this.isNumeric()) {
       name = (this.operatorState === ConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
-    }
-    else {
-      name = (this.operatorState === ConceptOperatorState.ALL) ? 'all' : 'clear';
     }
     return name;
   }
@@ -202,10 +201,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       }
     }
     //else if the concept is categorical
-    else {
-      if(this.selectedCategories.length === 0) {
-        this.operatorState = ConceptOperatorState.ALL;
-      }
+    else if(this.isCategorical()){
       conceptConstraint.values = [];
       for(let category of this.selectedCategories) {
         let newVal: Value = new Value();
