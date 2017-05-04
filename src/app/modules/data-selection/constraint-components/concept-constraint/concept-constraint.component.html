@@ -46,8 +46,28 @@
   </div>
 
   <!-- if the concept is categorical -->
-  <div *ngIf="!isNumeric()">
-    <b>categorical concept here</b>
+  <div *ngIf="isCategorical()" class="v-align-center">
+    with values &nbsp;
+
+    <p-autoComplete #categoricalAutoComplete
+                    [(ngModel)]="selectedCategories"
+                    [suggestions]="suggestedCategories"
+                    (completeMethod)="onCategorySearch($event)"
+                    (onFocus)="updateConceptValues($event)"
+                    (onBlur)="updateConceptValues($event)"
+                    [multiple]="true"></p-autoComplete>
+
+    &nbsp;
+    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+            (click)="selectAll()">
+      Select all
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+            (click)="selectNone()">
+      Select none
+    </button>
+
   </div>
 
 </div>

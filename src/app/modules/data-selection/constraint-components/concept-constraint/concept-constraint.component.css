@@ -9,3 +9,8 @@
 .concept-constraint-operator-state-btn:hover {
   background-color: lightblue;
 }
+
+.v-align-center {
+  display: flex;
+  align-items: center;
+}
