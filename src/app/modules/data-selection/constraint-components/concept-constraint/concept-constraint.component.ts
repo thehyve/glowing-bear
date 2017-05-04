@@ -206,12 +206,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       if(this.selectedCategories.length === 0) {
         this.operatorState = ConceptOperatorState.ALL;
       }
+      conceptConstraint.values = [];
       for(let category of this.selectedCategories) {
         let newVal: Value = new Value();
         newVal.valueType = 'STRING';
         newVal.operator = 'contains';
         newVal.value = category;
-        conceptConstraint.values = [];
         conceptConstraint.values.push(newVal);
       }
     }
