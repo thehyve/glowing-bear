@@ -8,10 +8,6 @@
   min-height: 40px;
 }
 
-.constraint-comp:hover {
-  background-color: rgba(250,240,210,.5);
-}
-
 .constraint-btn {
   margin-right: 6px;
   margin-top: 3px;
