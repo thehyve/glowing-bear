@@ -2,15 +2,16 @@
 
 }
 
-.concept-constraint-operator-state-btn {
-  color: rgba(41,43,44,.8);
-}
-
-.concept-constraint-operator-state-btn:hover {
-  background-color: lightblue;
-}
-
 .v-align-center {
   display: flex;
   align-items: center;
+}
+
+.btn-outline-secondary {
+  color: #333333;
+  font-family: "Avenir Next";
+}
+.btn-outline-secondary:hover {
+  background-color: #c8eae6;
+  color: black;
 }
