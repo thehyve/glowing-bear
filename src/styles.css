@@ -1,5 +1,38 @@
+body {
+  background-color: #FCFCFC;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: "Avenir Next";
+}
+
+md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+  border-color: #339C90 !important;
+  box-shadow: 0 1px 0 #339C90 !important;
+}
+
+/*md2-accordion-tab.md2-accordion-tab-active {*/
+  /*border-color: red;*/
+  /*box-shadow: 0 1px 0 red;*/
+/*}*/
+
+/*md2-accordion-tab-header {*/
+  /*border-color: red;*/
+  /*box-shadow: 0 1px 0 red;*/
+/*}*/
+
+/*md2-accordion-tab-body {*/
+  /*border-color: red;*/
+  /*box-shadow: 0 1px 0 red;*/
+/*}*/
+
 .loading-message {
   color: #339C90;
+  font-family: "Avenir Next";
   font-size: 300%;
   text-align: center;
   padding: 200px;
