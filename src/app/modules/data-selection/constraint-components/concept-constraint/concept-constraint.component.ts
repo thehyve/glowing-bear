@@ -6,6 +6,7 @@ import {DimensionRegistryService} from "../../../shared/services/dimension-regis
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 import {ConceptOperatorState} from "./concept-operator-state";
 import {Value} from "../../../shared/models/value";
+import {ResourceService} from "../../../shared/services/resource.service";
 
 @Component({
   selector: 'concept-constraint',
@@ -15,6 +16,7 @@ import {Value} from "../../../shared/models/value";
 export class ConceptConstraintComponent extends ConstraintComponent implements OnInit {
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
+  @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
 
   searchResults: Concept[];
   operatorState: ConceptOperatorState;
@@ -23,13 +25,47 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   equalVal: number;
   minVal: number;
   maxVal: number;
+  minLimit: number;
+  maxLimit: number;
 
-  constructor(private dimensionRegistry:DimensionRegistryService) {
+  selectedCategories: string[];
+  suggestedCategories: string[];
+
+  constructor(private dimensionRegistry:DimensionRegistryService, private resourceService:ResourceService) {
     super();
-    this.operatorState = ConceptOperatorState.EQUAL;
+    this.isMinEqual = true;
+    this.isMaxEqual = true;
+    this.operatorState = ConceptOperatorState.BETWEEN;
+
+    this.selectedCategories = [];
+    this.suggestedCategories = [];
   }
 
   ngOnInit() {
+    this.initializeAggregates();
+  }
+
+  initializeAggregates() {
+    let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    if (constraint.concept) {
+      this.resourceService.getConceptAggregate(constraint)
+        .subscribe(
+          aggregate => {
+            constraint.concept.aggregate = aggregate;
+            if (this.isNumeric()) {
+              this.minLimit = aggregate.min;
+              this.maxLimit = aggregate.max;
+            }
+            else if(this.isCategorical()) {
+              this.selectedCategories = aggregate.values;
+              this.suggestedCategories = aggregate.values;
+            }
+          },
+          err => {
+            console.error(err);
+          }
+        );
+    }
   }
 
   get selectedConcept():Concept {
@@ -38,6 +74,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   set selectedConcept(value:Concept) {
     (<ConceptConstraint>this.constraint).concept = value;
+    this.initializeAggregates();
   }
 
   onSearch(event) {
@@ -61,11 +98,22 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
     if (this.autoComplete.panelVisible) {
-      this.autoComplete.onDropdownBlur();
       this.autoComplete.hide();
     } else {
-      this.autoComplete.onDropdownFocus();
       this.autoComplete.show();
+    }
+  }
+
+  onCategorySearch(event) {
+    let query = event.query.toLowerCase().trim();
+
+    let categories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+    if (query) {
+      this.suggestedCategories =
+        categories.filter((category: string) => category.toLowerCase().includes(query));
+    }
+    else {
+      this.suggestedCategories = categories;
     }
   }
 
@@ -77,20 +125,39 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     return concept.valueType === 'NUMERIC';
   }
 
+  isCategorical() {
+    let concept:Concept = (<ConceptConstraint>this.constraint).concept;
+    if (!concept) {
+      return false;
+    }
+    return concept.valueType === 'CATEGORICAL_OPTION';
+  }
+
   isBetween() {
     return this.operatorState === ConceptOperatorState.BETWEEN;
   }
 
   switchOperatorState() {
-    this.operatorState =
-      (this.operatorState === ConceptOperatorState.EQUAL) ?
-        (this.operatorState = ConceptOperatorState.BETWEEN) :
-        (this.operatorState = ConceptOperatorState.EQUAL);
+    if(this.isNumeric()) {
+      this.operatorState =
+        (this.operatorState === ConceptOperatorState.EQUAL) ?
+          (this.operatorState = ConceptOperatorState.BETWEEN) :
+          (this.operatorState = ConceptOperatorState.EQUAL);
+    }
+  }
+
+  selectAll() {
+    this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+  }
+  selectNone() {
+    this.selectedCategories = [];
   }
 
   getOperatorButtonName() {
-    let name = 'equal to';
-    if(this.operatorState === ConceptOperatorState.BETWEEN) name = 'between';
+    let name = '';
+    if(this.isNumeric()) {
+      name = (this.operatorState === ConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
+    }
     return name;
   }
 
@@ -134,8 +201,15 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       }
     }
     //else if the concept is categorical
-    else {
-
+    else if(this.isCategorical()){
+      conceptConstraint.values = [];
+      for(let category of this.selectedCategories) {
+        let newVal: Value = new Value();
+        newVal.valueType = 'STRING';
+        newVal.operator = 'contains';
+        newVal.value = category;
+        conceptConstraint.values.push(newVal);
+      }
     }
   }
 
