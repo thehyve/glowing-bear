@@ -15,21 +15,6 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
   box-shadow: 0 1px 0 #339C90 !important;
 }
 
-/*md2-accordion-tab.md2-accordion-tab-active {*/
-  /*border-color: red;*/
-  /*box-shadow: 0 1px 0 red;*/
-/*}*/
-
-/*md2-accordion-tab-header {*/
-  /*border-color: red;*/
-  /*box-shadow: 0 1px 0 red;*/
-/*}*/
-
-/*md2-accordion-tab-body {*/
-  /*border-color: red;*/
-  /*box-shadow: 0 1px 0 red;*/
-/*}*/
-
 .loading-message {
   color: #339C90;
   font-family: "Avenir Next";
