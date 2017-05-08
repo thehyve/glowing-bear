@@ -1,12 +1,11 @@
 .form-check-label {
   margin-right: 3px;
-  color: rgba(0, 115, 219, 1);
 }
 
 .constraint-btn-toggled {
-  background-color: rgba(0, 115, 219, 1);
-  color: white;
-  border: 1px inset lightgray;
+  text-decoration: underline;
+  /*color: white;*/
+  border: 2px inset lightgray;
 }
 
 .btn-group {

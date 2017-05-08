@@ -1,15 +1,9 @@
-@import '../node_modules/bootstrap/dist/css/bootstrap.css';
-
 .loading-message {
-  color: #369;
+  color: #339C90;
   font-size: 300%;
   text-align: center;
   padding: 200px;
   opacity: .8;
-}
-
-body {
-  font-family: "Avenir Next";
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */

@@ -1,0 +1,46 @@
+body {
+  font-family:  "Avenir Next";
+  background-color: #FCFCFC;
+}
+
+.btn-primary {
+  background-color: #42ab9e;
+  border-color: #42ab9e;
+  color: #333333;
+  font-family: "Avenir Next";
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #339C90;
+  border-color: #339C90;
+  color: black;
+}
+
+.btn-outline-primary {
+  background-color: #42ab9e;
+  border-color: #42ab9e;
+  color: #333333;
+  font-family: "Avenir Next";
+  font-weight: 500;
+}
+
+.btn-outline-primary:hover {
+  background-color: #339C90;
+  border-color: #339C90;
+  color: black;
+}
+
+
+body .ui-button {
+  background-color: #42ab9e;
+}
+
+body .ui-button:hover {
+  background-color: #339C90;
+}
+
+.md2-accordion-header {
+  border-color: red;
+  box-shadow: red;
+}
