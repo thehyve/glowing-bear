@@ -14,6 +14,7 @@ import {ConstraintComponent} from './constraint-components/constraint/constraint
 import {ConceptConstraintComponent} from './constraint-components/concept-constraint/concept-constraint.component';
 import {AutoCompleteModule} from "primeng/components/autocomplete/autocomplete";
 import {Md2AccordionModule} from "md2";
+import {CheckboxModule} from "primeng/components/checkbox/checkbox";
 
 @NgModule({
   imports: [
@@ -21,7 +22,8 @@ import {Md2AccordionModule} from "md2";
     routing,
     FormsModule,
     AutoCompleteModule,
-    Md2AccordionModule
+    Md2AccordionModule,
+    CheckboxModule
   ],
   exports: [
     RouterModule
