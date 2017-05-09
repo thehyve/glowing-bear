@@ -54,3 +54,7 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
 .form-control:-moz-placeholder { color: lightgray; }
 .form-control::-moz-placeholder { color: lightgray; }
 .form-control:-ms-input-placeholder { color: lightgray; }
+
+.fa-plus {
+  color: lightgray;
+}

@@ -1,5 +1,7 @@
 import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 import {Constraint} from "../../../shared/models/constraints/constraint";
+import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
+import {CombinationState} from "../../../shared/models/constraints/combination-state";
 
 @Component({
   selector: 'constraint',
@@ -8,8 +10,8 @@ import {Constraint} from "../../../shared/models/constraints/constraint";
 })
 export class ConstraintComponent implements OnInit {
   @Input() constraint: Constraint;
-  @Output()
-  constraintRemoved: EventEmitter<any> = new EventEmitter();
+  @Input() isRoot: boolean;
+  @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor() {
   }

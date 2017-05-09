@@ -2,11 +2,11 @@
   margin-right: 3px;
 }
 
-.constraint-btn-toggled {
-  text-decoration: underline;
-  border: 2px inset lightgray;
-}
-
 .btn-group {
   margin-top: 3px;
+}
+
+
+.constraint-state-container {
+  margin-left: 16px;
 }

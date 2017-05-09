@@ -3,11 +3,8 @@ import {
 } from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
 import {WorkflowService} from "../../../shared/services/workflow.service";
-import {TrueConstraint} from "../../../shared/models/constraints/true-constraint";
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
-import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-response";
 
 
@@ -21,8 +18,11 @@ export class PatientSelectionComponent implements OnInit {
   patientCount: number = 0;
   patientSetName: string = "";
   patientSetPostResponse: PatientSetPostResponse = null;
-  rootConstraint: CombinationConstraint = new CombinationConstraint();
-  @ViewChild('rootConstraintComponent') rootConstraintComponent: ConstraintComponent;
+  rootInclusionConstraint: CombinationConstraint = new CombinationConstraint();
+  rootExclusionConstraint: CombinationConstraint = new CombinationConstraint();
+
+  @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
+  @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
   constructor(private resourceService: ResourceService,
               private workflowService: WorkflowService) {
@@ -32,7 +32,7 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   runPatientQuery() {
-    this.resourceService.getPatients(this.rootConstraint)
+    this.resourceService.getPatients(this.rootInclusionConstraint, this.rootExclusionConstraint)
       .subscribe(
         patients => {
           this.patientCount = patients.length;
@@ -44,7 +44,7 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   savePatientSet() {
-    this.resourceService.savePatients(this.patientSetName, this.rootConstraint)
+    this.resourceService.savePatients(this.patientSetName, this.rootInclusionConstraint, this.rootExclusionConstraint)
       .subscribe(
         result => {
           this.patientSetPostResponse = result;

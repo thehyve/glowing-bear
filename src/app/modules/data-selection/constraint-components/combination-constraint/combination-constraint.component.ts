@@ -7,6 +7,7 @@ import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
+import {CombinationState} from "../../../shared/models/constraints/combination-state";
 
 @Component({
   selector: 'combination-constraint',
@@ -14,6 +15,7 @@ import {DimensionRegistryService} from "../../../shared/services/dimension-regis
   styleUrls: ['./combination-constraint.component.css', '../constraint/constraint.component.css']
 })
 export class CombinationConstraintComponent extends ConstraintComponent implements OnInit {
+  CombinationState = CombinationState;
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
@@ -41,11 +43,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   get children():Constraint[] {
     return (<CombinationConstraint>this.constraint).children;
-  }
-
-  toggleAndOr() {
-    let constraint:CombinationConstraint = <CombinationConstraint>this.constraint;
-    constraint.switchCombinationState();
   }
 
   /**
@@ -98,6 +95,14 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       // to null doesn't work)
       this.autoComplete.selectItem(null);
     }
+  }
+
+  get combinationState() {
+    return (<CombinationConstraint>this.constraint).combinationState;
+  }
+
+  toggleJunction() {
+    (<CombinationConstraint>this.constraint).switchCombinationState();
   }
 
 

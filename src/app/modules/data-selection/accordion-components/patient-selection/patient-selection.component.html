@@ -1,8 +1,26 @@
+
 <div>
 
-  that have observations:
-  <constraint #rootConstraintComponent [constraint]="rootConstraint"></constraint>
+  <!-- Inclusion criteria -->
+  <div class="criteria-box">
+    <p><b>Inclusion</b> criteria:</p>
 
+    <constraint #rootInclusionConstraintComponent
+                [constraint]="rootInclusionConstraint"
+                [isRoot]="true"></constraint>
+  </div>
+
+  <!-- Exclusion criteria -->
+  <div class="criteria-box">
+    <p><b>Exclusion</b> criteria:</p>
+
+    <constraint #rootExclusionConstraintComponent
+                [constraint]="rootExclusionConstraint"
+                [isRoot]="true"></constraint>
+  </div>
+
+
+  <!-- Run patient query and save patient set -->
   <hr>
   <div class="form-inline">
     <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>

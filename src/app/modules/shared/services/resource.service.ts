@@ -91,16 +91,24 @@ export class ResourceService{
   // -------------------------------------- patient calls --------------------------------------
 
   /**
-   * Given a constraint, retrieve the corresponding patient array
+   * Given inclusion constraint and exclusion, retrieve the corresponding patient array
    * @param constraint - the constraint of the patient set to be queried
    * @returns {Observable<Patient[]>}
    */
-  getPatients(constraint: Constraint): Observable<Patient[]> {
+  getPatients(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
-    let constraintString = JSON.stringify(constraint.toQueryObject());
+    let inclusion = inclusionConstraint.toQueryObject();
+    let exclusion = {};
+    exclusion['type'] = 'negation';
+    exclusion['arg'] = exclusionConstraint.toQueryObject();
+    let combination = {};
+    combination['type'] = 'and';
+    combination['args'] = [inclusion, exclusion];
+    let constraintString = JSON.stringify(combination);
+
     console.log("run patient query with Constraint: " + constraintString);
 
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
@@ -117,7 +125,7 @@ export class ResourceService{
    * @param constraint - the constraint of the patient set to be saved
    * @returns {Observable<PatientSetPostResponse>}
    */
-  savePatients(name: string, constraint: Constraint): Observable<PatientSetPostResponse> {
+  savePatients(name: string, inclusionConstraint: Constraint, exclusionConstraint: Constraint): Observable<PatientSetPostResponse> {
     if (!name) {
       // Default name
       name = 'patient set';
@@ -127,7 +135,16 @@ export class ResourceService{
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify(constraint.toQueryObject());
+    let inclusion = inclusionConstraint.toQueryObject();
+    let exclusion = {};
+    exclusion['type'] = 'negation';
+    exclusion['arg'] = exclusionConstraint.toQueryObject();
+    let combination = {};
+    combination['type'] = 'and';
+    combination['args'] = [inclusion, exclusion];
+
+
+    let body = JSON.stringify(combination);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)

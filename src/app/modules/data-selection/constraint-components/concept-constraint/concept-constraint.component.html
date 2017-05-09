@@ -1,5 +1,5 @@
 <div class="form-inline">
-  <label>for Concept </label>
+  <label>Concept </label>
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedConcept"
                   [suggestions]="searchResults"
@@ -22,18 +22,16 @@
              [(ngModel)]="minVal"
              (ngModelChange)="updateConceptValues()">
       <label class="form-check-label d-inline-block">
-        <input class="form-check-input" type="checkbox"
-               [(ngModel)]="isMinEqual"
-               (ngModelChange)="updateConceptValues()">
+        <p-checkbox [(ngModel)]="isMinEqual" binary="true"
+                    (ngModelChange)="updateConceptValues()"></p-checkbox>
       </label>
       and
       <input type="number" class="form-control col-sm-4" placeholder="max:{{maxLimit}}"
              [(ngModel)]="maxVal"
              (ngModelChange)="updateConceptValues()">
       <label class="form-check-label d-inline-block">
-        <input class="form-check-input" type="checkbox"
-               [(ngModel)]="isMaxEqual"
-               (ngModelChange)="updateConceptValues()">
+        <p-checkbox [(ngModel)]="isMaxEqual" binary="true"
+                    (ngModelChange)="updateConceptValues()"></p-checkbox>
       </label>
     </div>
 
@@ -58,12 +56,12 @@
                     [multiple]="true"></p-autoComplete>
 
     &nbsp;
-    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+    <button type="button" class="btn btn-outline-secondary"
             (click)="selectAll()">
       Select all
     </button>
     &nbsp;
-    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+    <button type="button" class="btn btn-outline-secondary"
             (click)="selectNone()">
       Select none
     </button>
