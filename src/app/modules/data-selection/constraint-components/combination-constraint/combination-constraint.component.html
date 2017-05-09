@@ -2,12 +2,15 @@
 
   <!-- Child Constraints -->
   <div *ngFor="let child of children; let i = index">
+    <div *ngIf="i > 0" class="constraint-state-container">
+      <button type="button" class="btn btn-outline-primary btn-sm"
+              (click)="toggleJunction()" [ngSwitch]="combinationState">
+        <i *ngSwitchCase="CombinationState.And">and</i>
+        <i *ngSwitchCase="CombinationState.Or">or</i>
+      </button>
+    </div>
     <constraint [constraint]="child"
                 (constraintRemoved)="onConstraintRemoved(child)"></constraint>
-    <div *ngIf="showJunction(i)" class="constraint-state-container">
-      <button type="button" class="btn btn-outline-primary btn-sm"
-              (click)="toggleJunction()">{{getJunctionName()}}</button>
-    </div>
   </div>
 
 

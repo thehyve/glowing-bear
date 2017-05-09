@@ -15,6 +15,7 @@ import {CombinationState} from "../../../shared/models/constraints/combination-s
   styleUrls: ['./combination-constraint.component.css', '../constraint/constraint.component.css']
 })
 export class CombinationConstraintComponent extends ConstraintComponent implements OnInit {
+  CombinationState = CombinationState;
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
@@ -96,16 +97,8 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
     }
   }
 
-  /**
-   * To determine whether to show the conjunction or disjunction button
-   */
-  showJunction(index) {
-    let length = (<CombinationConstraint>this.constraint).children.length;
-    return (length > 1 && index < length - 1) ? true : false;
-  }
-
-  getJunctionName() {
-    return (<CombinationConstraint>this.constraint).combinationState === CombinationState.And ? 'and' : 'or';
+  get combinationState() {
+    return (<CombinationConstraint>this.constraint).combinationState;
   }
 
   toggleJunction() {
