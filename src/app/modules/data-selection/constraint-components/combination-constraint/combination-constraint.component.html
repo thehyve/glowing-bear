@@ -1,9 +1,15 @@
 <div>
 
   <!-- Child Constraints -->
-  <constraint *ngFor="let child of children"
-              [constraint]="child"
-              (constraintRemoved)="onConstraintRemoved(child)"></constraint>
+  <div *ngFor="let child of children; let i = index">
+    <constraint [constraint]="child"
+                (constraintRemoved)="onConstraintRemoved(child)"></constraint>
+    <div *ngIf="showJunction(i)" class="constraint-state-container">
+      <button type="button" class="btn btn-outline-primary btn-sm"
+              (click)="toggleJunction()">{{getJunctionName()}}</button>
+    </div>
+  </div>
+
 
   <div class="form-inline">
 

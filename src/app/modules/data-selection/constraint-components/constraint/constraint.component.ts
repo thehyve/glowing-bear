@@ -27,36 +27,4 @@ export class ConstraintComponent implements OnInit {
     this.constraintRemoved.emit();
   }
 
-  /**
-   * To determine whether to show the conjunction or disjunction button
-   */
-  showJunction() {
-    let show = false;
-    if (this.constraint.parentConstraint) {
-      let parentConstraint = <CombinationConstraint>this.constraint.parentConstraint;
-      if (parentConstraint.children && parentConstraint.children.length > 1) {
-        let index = parentConstraint.children.indexOf(this.constraint);
-        if (index < parentConstraint.children.length - 1)
-          show = (index < parentConstraint.children.length - 1) ? true : false;
-      }
-    }
-    return show;
-  }
-
-  getJunctionName() {
-    let name = '';
-    if (this.constraint.parentConstraint) {
-      let parentConstraint = <CombinationConstraint>this.constraint.parentConstraint;
-      name = (parentConstraint.combinationState === CombinationState.And) ? 'and' : 'or';
-    }
-    return name;
-  }
-
-  toggleJunction() {
-    if (this.constraint.parentConstraint) {
-      let parentConstraint = <CombinationConstraint>this.constraint.parentConstraint;
-      parentConstraint.switchCombinationState();
-    }
-  }
-
 }

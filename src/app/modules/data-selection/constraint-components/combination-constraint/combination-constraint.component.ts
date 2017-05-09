@@ -7,6 +7,7 @@ import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
+import {CombinationState} from "../../../shared/models/constraints/combination-state";
 
 @Component({
   selector: 'combination-constraint',
@@ -79,7 +80,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       // Create a copy of the selected constraint
       let newConstraint:Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
-      newConstraint.parentConstraint = this.constraint;
 
       // But we don't want to copy a CombinationConstraint's children
       if (newConstraint instanceof CombinationConstraint) {
@@ -94,6 +94,22 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       // to null doesn't work)
       this.autoComplete.selectItem(null);
     }
+  }
+
+  /**
+   * To determine whether to show the conjunction or disjunction button
+   */
+  showJunction(index) {
+    let length = (<CombinationConstraint>this.constraint).children.length;
+    return (length > 1 && index < length - 1) ? true : false;
+  }
+
+  getJunctionName() {
+    return (<CombinationConstraint>this.constraint).combinationState === CombinationState.And ? 'and' : 'or';
+  }
+
+  toggleJunction() {
+    (<CombinationConstraint>this.constraint).switchCombinationState();
   }
 
 

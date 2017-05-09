@@ -100,10 +100,10 @@ export class ResourceService{
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
-    let inclusion = inclusionConstraint.toQueryObject();
+    let inclusion = inclusionConstraint.toQueryObject(); console.log('in: ', inclusionConstraint.toQueryObject());
     let exclusion = {};
     exclusion['type'] = 'negation';
-    exclusion['arg'] = exclusionConstraint.toQueryObject();
+    exclusion['arg'] = exclusionConstraint.toQueryObject(); console.log('ex: ', exclusionConstraint.toQueryObject());
     let combination = {};
     combination['type'] = 'and';
     combination['args'] = [inclusion, exclusion];
