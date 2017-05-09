@@ -24,6 +24,10 @@
   color: white;
 }
 
+.constraint-state-container {
+  margin-left: 16px;
+}
+
 .form-inline > * {
   margin: 8px;
 }

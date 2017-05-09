@@ -43,11 +43,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
     return (<CombinationConstraint>this.constraint).children;
   }
 
-  toggleAndOr() {
-    let constraint:CombinationConstraint = <CombinationConstraint>this.constraint;
-    constraint.switchCombinationState();
-  }
-
   /**
    * Removes the childConstraint from the CombinationConstraint corresponding to this component.
    * @param childConstraint
@@ -84,6 +79,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       // Create a copy of the selected constraint
       let newConstraint:Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
+      newConstraint.parentConstraint = this.constraint;
 
       // But we don't want to copy a CombinationConstraint's children
       if (newConstraint instanceof CombinationConstraint) {

@@ -12,3 +12,8 @@
   <study-constraint *ngIf="constraint.getConstraintType() == 'StudyConstraint' "
                     [constraint]="constraint"></study-constraint>
 </div>
+
+<div *ngIf="showJunction()" class="constraint-state-container">
+  <button type="button" class="btn btn-outline-primary btn-sm"
+          (click)="toggleJunction()">{{getJunctionName()}}</button>
+</div>

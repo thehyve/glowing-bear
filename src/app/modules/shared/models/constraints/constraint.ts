@@ -1,5 +1,7 @@
 export interface Constraint {
 
+  parentConstraint?: Constraint;
+
   /**
    * Returns the name of the constraint class.
    */
