@@ -2,10 +2,10 @@ import {
   Component, OnInit, ViewChild
 } from '@angular/core';
 import {ResourceService} from "../../../shared/services/resource.service";
-import {WorkflowService} from "../../../shared/services/workflow.service";
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-response";
+import {ConstraintService} from "../../../shared/services/constraint.service";
 
 
 @Component({
@@ -15,33 +15,39 @@ import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-re
 })
 export class PatientSelectionComponent implements OnInit {
 
-  patientCount: number = 0;
   patientSetName: string = "";
   patientSetPostResponse: PatientSetPostResponse = null;
-  rootInclusionConstraint: CombinationConstraint = new CombinationConstraint();
-  rootExclusionConstraint: CombinationConstraint = new CombinationConstraint();
-
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
   constructor(private resourceService: ResourceService,
-              private workflowService: WorkflowService) {
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
+    this.constraintService.update();
   }
 
-  runPatientQuery() {
-    this.resourceService.getPatients(this.rootInclusionConstraint, this.rootExclusionConstraint)
-      .subscribe(
-        patients => {
-          this.patientCount = patients.length;
-        },
-        err => {
-          console.error(err);
-        }
-      );
+  get patientCount(): number {
+    return this.constraintService.patientCount;
   }
+
+  get inclusionPatientCount(): number {
+    return this.constraintService.inclusionPatientCount;
+  }
+
+  get exclusionPatientCount(): number {
+    return this.constraintService.exclusionPatientCount;
+  }
+
+  get rootInclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootInclusionConstraint;
+  }
+
+  get rootExclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootExclusionConstraint;
+  }
+
 
   savePatientSet() {
     this.resourceService.savePatients(this.patientSetName, this.rootInclusionConstraint, this.rootExclusionConstraint)
@@ -54,7 +60,6 @@ export class PatientSelectionComponent implements OnInit {
         }
       );
   }
-
 
 
 }

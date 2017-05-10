@@ -8,6 +8,7 @@ import {
 } from 'primeng/components/autocomplete/autocomplete';
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 import {CombinationState} from "../../../shared/models/constraints/combination-state";
+import {ConstraintService} from "../../../shared/services/constraint.service";
 
 @Component({
   selector: 'combination-constraint',
@@ -22,26 +23,27 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   searchResults: Constraint[];
   selectedConstraint: Constraint;
 
-  constructor(private dimensionRegistry:DimensionRegistryService) {
+  constructor(private dimensionRegistry: DimensionRegistryService,
+              private constraintService: ConstraintService) {
     super();
   }
 
   ngOnInit() {
   }
 
-  get isNot():boolean {
+  get isNot(): boolean {
     return (<CombinationConstraint>this.constraint).isNot;
   }
 
-  set isNot(value:boolean) {
+  set isNot(value: boolean) {
     (<CombinationConstraint>this.constraint).isNot = value;
   }
 
-  get isAnd():boolean {
+  get isAnd(): boolean {
     return (<CombinationConstraint>this.constraint).isAnd();
   }
 
-  get children():Constraint[] {
+  get children(): Constraint[] {
     return (<CombinationConstraint>this.constraint).children;
   }
 
@@ -49,10 +51,10 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
    * Removes the childConstraint from the CombinationConstraint corresponding to this component.
    * @param childConstraint
    */
-  onConstraintRemoved(childConstraint:Constraint) {
+  onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
+    this.constraintService.update();
   }
-
 
   onSearch(event) {
     let results = this.dimensionRegistry.searchAllConstraints(event.query);
@@ -79,7 +81,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
     if (this.selectedConstraint != null) {
 
       // Create a copy of the selected constraint
-      let newConstraint:Constraint = new selectedConstraint.constructor();
+      let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
 
       // But we don't want to copy a CombinationConstraint's children
@@ -88,12 +90,13 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       }
 
       // Add it as a new child
-      let combinationConstraint:CombinationConstraint = <CombinationConstraint>this.constraint;
+      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
       combinationConstraint.children.push(newConstraint);
 
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
+      this.constraintService.update();
     }
   }
 
@@ -103,6 +106,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
+    this.constraintService.update();
   }
 
 

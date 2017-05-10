@@ -13,6 +13,7 @@ import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
+import {TrueConstraint} from "../models/constraints/true-constraint";
 
 @Injectable()
 export class ResourceService{
@@ -91,26 +92,88 @@ export class ResourceService{
   // -------------------------------------- patient calls --------------------------------------
 
   /**
-   * Given inclusion constraint and exclusion, retrieve the corresponding patient array
-   * @param constraint - the constraint of the patient set to be queried
+   * Get all patients based on both inclusion and exclusion criteria
+   * @param inclusionConstraint
+   * @param exclusionConstraint
    * @returns {Observable<Patient[]>}
    */
-  getPatients(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Observable<Patient[]> {
+  getAllPatients(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
-    let inclusion = inclusionConstraint.toQueryObject();
-    let exclusion = {};
-    exclusion['type'] = 'negation';
-    exclusion['arg'] = exclusionConstraint.toQueryObject();
+    let constraintString = this.constraintsToString(inclusionConstraint, exclusionConstraint);
+    console.log("run patient query with Constraint: " + constraintString);
+    let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res:Response) => res.json().patients as Patient[])
+      .catch(this.handleError.bind(this));
+  }
+
+  /**
+   * Given the inclusion and exclusion criteria, convert them to a single string
+   * @param inclusionConstraint
+   * @param exclusionConstraint
+   * @returns {string}
+   */
+  constraintsToString(inclusionConstraint: Constraint, exclusionConstraint: Constraint): string {
+    let inConstraintObj = inclusionConstraint.toQueryObject();
+    if(inConstraintObj['args'].length === 0) {
+      inConstraintObj = new TrueConstraint().toQueryObject();
+    }
+    let exConstraintObj = exclusionConstraint.toQueryObject();
+    if(exConstraintObj['args'].length === 0) {
+      exConstraintObj = new TrueConstraint().toQueryObject();
+    }
     let combination = {};
     combination['type'] = 'and';
-    combination['args'] = [inclusion, exclusion];
-    let constraintString = JSON.stringify(combination);
+    combination['args'] = [inConstraintObj, exConstraintObj];
+    return JSON.stringify(combination);
+  }
 
+  /**
+   * Get included patients with the inclusive criteria
+   * @param constraint
+   * @returns {Observable<Patient[]>}
+   */
+  getInclusivePatients(constraint: Constraint): Observable<Patient[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintObj = constraint.toQueryObject();
+    if(constraintObj['args'].length === 0) {
+      constraintObj = new TrueConstraint().toQueryObject();
+    }
+    let constraintString = JSON.stringify(constraintObj);
     console.log("run patient query with Constraint: " + constraintString);
+    let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res:Response) => res.json().patients as Patient[])
+      .catch(this.handleError.bind(this));
+  }
 
+  /**
+   * Get excluded patients with the exclusive criteria
+   * @param constraint
+   * @returns {Observable<Patient[]>}
+   */
+  getExclusivePatients(constraint: Constraint): Observable<Patient[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintObj = constraint.toQueryObject();
+    if(constraintObj['args'].length === 0) {
+      constraintObj = {
+        type: 'negation',
+        arg: new TrueConstraint().toQueryObject()
+      };
+    }
+    let constraintString = JSON.stringify(constraintObj);
+    console.log("run patient query with Constraint: " + constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
@@ -135,16 +198,7 @@ export class ResourceService{
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let inclusion = inclusionConstraint.toQueryObject();
-    let exclusion = {};
-    exclusion['type'] = 'negation';
-    exclusion['arg'] = exclusionConstraint.toQueryObject();
-    let combination = {};
-    combination['type'] = 'and';
-    combination['args'] = [inclusion, exclusion];
-
-
-    let body = JSON.stringify(combination);
+    let body = this.constraintsToString(inclusionConstraint, exclusionConstraint);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)
