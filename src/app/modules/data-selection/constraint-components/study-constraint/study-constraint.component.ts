@@ -4,30 +4,32 @@ import {StudyConstraint} from "../../../shared/models/constraints/study-constrai
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
+import {ConstraintService} from "../../../shared/services/constraint.service";
 
 @Component({
   selector: 'study-constraint',
   templateUrl: './study-constraint.component.html',
   styleUrls: ['./study-constraint.component.css', '../constraint/constraint.component.css']
 })
-export class StudyConstraintComponent extends ConstraintComponent implements OnInit  {
+export class StudyConstraintComponent extends ConstraintComponent implements OnInit {
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
   searchResults: Study[];
 
-  constructor(private dimensionRegistry:DimensionRegistryService) {
+  constructor(private dimensionRegistry: DimensionRegistryService,
+              private constraintService: ConstraintService) {
     super();
   }
 
   ngOnInit() {
   }
 
-  get selectedStudy():Study {
+  get selectedStudy(): Study {
     return (<StudyConstraint>this.constraint).study;
   }
 
-  set selectedStudy(value:Study) {
+  set selectedStudy(value: Study) {
     (<StudyConstraint>this.constraint).study = value;
   }
 
@@ -56,6 +58,12 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
     } else {
       this.autoComplete.show();
     }
+  }
+
+  onSelect(studyObject) {
+    let studyConstraint = (<StudyConstraint>this.constraint);
+    studyConstraint.study = studyObject;
+    this.constraintService.update();
   }
 
 }

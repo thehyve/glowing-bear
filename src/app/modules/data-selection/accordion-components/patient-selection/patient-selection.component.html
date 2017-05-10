@@ -4,7 +4,7 @@
   <!-- Inclusion criteria -->
   <div class="criteria-box">
     <p><b>Inclusion</b> criteria:</p>
-
+    <p>{{inclusionPatientCount}} patients included.</p>
     <constraint #rootInclusionConstraintComponent
                 [constraint]="rootInclusionConstraint"
                 [isRoot]="true"></constraint>
@@ -13,7 +13,7 @@
   <!-- Exclusion criteria -->
   <div class="criteria-box">
     <p><b>Exclusion</b> criteria:</p>
-
+    <p>{{exclusionPatientCount}} patients excluded.</p>
     <constraint #rootExclusionConstraintComponent
                 [constraint]="rootExclusionConstraint"
                 [isRoot]="true"></constraint>
@@ -23,8 +23,7 @@
   <!-- Run patient query and save patient set -->
   <hr>
   <div class="form-inline">
-    <button type="button" class="btn btn-primary" (click)="runPatientQuery()"> Run patient query </button>
-    <span><b>{{patientCount}}</b> patients match your selection.</span>
+    <span>{{patientCount}} patients match your selection.</span>
   </div>
 
   <hr>

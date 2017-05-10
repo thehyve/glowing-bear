@@ -1,5 +1,5 @@
 <div class="form-inline">
-  <label>in Study </label>
+  <label>Study </label>
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedStudy"
                   [suggestions]="searchResults"
@@ -7,5 +7,6 @@
                   (completeMethod)="onSearch($event)"
                   size="40"
                   dropdown="true"
+                  (onSelect)="onSelect($event)"
                   (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 </div>

@@ -1,7 +1,5 @@
 import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
 import {Constraint} from "../../../shared/models/constraints/constraint";
-import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {CombinationState} from "../../../shared/models/constraints/combination-state";
 
 @Component({
   selector: 'constraint',

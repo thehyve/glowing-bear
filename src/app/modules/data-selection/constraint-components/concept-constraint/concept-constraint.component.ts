@@ -7,6 +7,7 @@ import {ConceptConstraint} from "../../../shared/models/constraints/concept-cons
 import {ConceptOperatorState} from "./concept-operator-state";
 import {Value} from "../../../shared/models/value";
 import {ResourceService} from "../../../shared/services/resource.service";
+import {ConstraintService} from "../../../shared/services/constraint.service";
 
 @Component({
   selector: 'concept-constraint',
@@ -31,7 +32,9 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   selectedCategories: string[];
   suggestedCategories: string[];
 
-  constructor(private dimensionRegistry:DimensionRegistryService, private resourceService:ResourceService) {
+  constructor(private dimensionRegistry:DimensionRegistryService,
+              private resourceService:ResourceService,
+              private constraintService: ConstraintService) {
     super();
     this.isMinEqual = true;
     this.isMaxEqual = true;
@@ -73,8 +76,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   set selectedConcept(value:Concept) {
-    (<ConceptConstraint>this.constraint).concept = value;
-    this.initializeAggregates();
+    if(value.type && value.type === 'concept') {
+      (<ConceptConstraint>this.constraint).concept = value;
+      this.initializeAggregates();
+      this.constraintService.update();
+    }
+
   }
 
   onSearch(event) {
@@ -211,6 +218,9 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
         conceptConstraint.values.push(newVal);
       }
     }
+
+    this.constraintService.update();
+
   }
 
 }
