@@ -26,7 +26,6 @@ export class ConstraintService {
 
   updatePatients() {
     let inclusionConstraint = this.generateInclusionConstraint(this.rootInclusionConstraint);
-    console.log('the new inclusion constraint: ', inclusionConstraint);
     this.resourceService.getPatients(inclusionConstraint)
       .subscribe(
         patients => {

@@ -96,7 +96,6 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString: string = JSON.stringify(constraint.toQueryObject());
-    console.log("run patient query with Constraint: " + constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
