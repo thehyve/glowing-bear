@@ -1,18 +1,20 @@
-<div class="form-inline">
-  <label>Concept </label>
-  <p-autoComplete #autoComplete
-                  [(ngModel)]="selectedConcept"
-                  [suggestions]="searchResults"
-                  field="path"
-                  (completeMethod)="onSearch($event)"
-                  size="40"
-                  dropdown="true"
-                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+<div>
+  <div class="form-inline">
+    <label>for Concept </label>
+    <p-autoComplete #autoComplete
+                    [(ngModel)]="selectedConcept"
+                    [suggestions]="searchResults"
+                    field="path"
+                    (completeMethod)="onSearch($event)"
+                    size="40"
+                    dropdown="true"
+                    (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+  </div>
 
   <!-- if the concept is numeric -->
-  <div *ngIf="isNumeric()">
-    with value
-    <button type="button" class="btn btn-outline-secondary"
+  <div *ngIf="isNumeric()" class="form-inline">
+    <span>with value</span>
+    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
             (click)="switchOperatorState()">
       {{getOperatorButtonName()}}
     </button>
@@ -25,7 +27,7 @@
         <p-checkbox [(ngModel)]="isMinEqual" binary="true"
                     (ngModelChange)="updateConceptValues()"></p-checkbox>
       </label>
-      and
+      <span>&nbsp;and&nbsp;</span>
       <input type="number" class="form-control col-sm-4" placeholder="max:{{maxLimit}}"
              [(ngModel)]="maxVal"
              (ngModelChange)="updateConceptValues()">
@@ -44,9 +46,8 @@
   </div>
 
   <!-- if the concept is categorical -->
-  <div *ngIf="isCategorical()" class="v-align-center">
-    with values &nbsp;
-
+  <div *ngIf="isCategorical()" class="v-align-center form-inline">
+    <span>with values</span>
     <p-autoComplete #categoricalAutoComplete
                     [(ngModel)]="selectedCategories"
                     [suggestions]="suggestedCategories"
@@ -54,18 +55,36 @@
                     (onFocus)="updateConceptValues($event)"
                     (onBlur)="updateConceptValues($event)"
                     [multiple]="true"></p-autoComplete>
-
-    &nbsp;
     <button type="button" class="btn btn-outline-secondary"
             (click)="selectAll()">
       Select all
     </button>
-    &nbsp;
     <button type="button" class="btn btn-outline-secondary"
             (click)="selectNone()">
       Select none
     </button>
-
   </div>
 
+  <!-- date range -->
+  <div class="form-inline">
+    <input id="applyDateConstraintCheckbox" class="form-check-input" type="checkbox" [(ngModel)]="applyDateConstraint">
+    <label *ngIf="applyDateConstraint" for="applyDateConstraintCheckbox" >and start date</label>
+    <label *ngIf="!applyDateConstraint" for="applyDateConstraintCheckbox" >apply date constraint</label>
+    <div *ngIf="applyDateConstraint" class="form-inline">
+      <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+              (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
+        <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
+        <i *ngSwitchCase="DateOperatorState.AFTER">after </i>
+        <i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>
+        <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
+      </button>
+      &nbsp;
+      <!-- TODO: replace with datetime component that actually works and doesn't show time in local timezone -->
+      <input type="datetime-local" [value]="date1" (change)="date1=$event.target.value">
+      <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
+        <span>&nbsp;and&nbsp;</span>
+        <input type="datetime-local" [value]="date2" (change)="date2=$event.target.value">
+      </div>
+    </div>
+  </div>
 </div>
