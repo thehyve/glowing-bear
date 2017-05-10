@@ -30,7 +30,7 @@ export class ConstraintService {
           console.error(err);
         }
       );
-    this.resourceService.getExclusivePatients(this.rootExclusionConstraint)
+    this.resourceService.getExclusivePatientsWithInclusion(this.rootInclusionConstraint, this.rootExclusionConstraint)
       .subscribe(
         patients => {
           this.exclusionPatientCount = patients.length;
