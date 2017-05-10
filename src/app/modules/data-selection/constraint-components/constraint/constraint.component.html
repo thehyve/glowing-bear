@@ -1,6 +1,8 @@
 <div class="constraint-comp">
   <!-- Remove Button -->
-  <button type="button" class="btn btn-outline-danger btn-sm pull-right constraint-remove-btn"
+  <button *ngIf="!isRoot"
+          type="button"
+          class="btn btn-outline-danger btn-sm pull-right constraint-remove-btn"
           (click)="remove()">
     <i class="fa fa-times" aria-hidden="true"></i>
   </button>
