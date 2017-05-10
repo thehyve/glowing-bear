@@ -57,7 +57,7 @@ export class ConceptConstraint implements Constraint {
     }
 
     if (this.applyDateConstraint) {
-      args.push(this.buildDateConstraint());
+      args.push(this.buildDateConstraintQueryObject());
     }
 
     return {
@@ -73,7 +73,10 @@ export class ConceptConstraint implements Constraint {
     return 'Concept';
   }
 
-  buildDateConstraint():Object {
+  /** Builds a query object for the date constraint.
+   * @returns {Object}
+   */
+  buildDateConstraintQueryObject():Object {
     // Operator
     let operator = {
       [DateOperatorState.BETWEEN]: "<-->",
