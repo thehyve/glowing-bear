@@ -79,6 +79,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if(value.type && value.type === 'concept') {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeAggregates();
+      this.constraintService.update();
     }
 
   }
@@ -94,7 +95,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     }
   }
 
-  onDropdown(event) { 
+  onDropdown(event) {
     let concepts = this.dimensionRegistry.getConcepts();
 
     // Workaround for dropdown not showing properly, as described in

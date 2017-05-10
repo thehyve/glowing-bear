@@ -1,7 +1,6 @@
 import {
   Component, OnInit, ViewChild
 } from '@angular/core';
-import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-response";
@@ -20,8 +19,7 @@ export class PatientSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
-  constructor(private resourceService: ResourceService,
-              private constraintService: ConstraintService) {
+  constructor(private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
@@ -48,17 +46,8 @@ export class PatientSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-
   savePatientSet() {
-    this.resourceService.savePatients(this.patientSetName, this.rootInclusionConstraint, this.rootExclusionConstraint)
-      .subscribe(
-        result => {
-          this.patientSetPostResponse = result;
-        },
-        err => {
-          console.error(err);
-        }
-      );
+    this.constraintService.savePatients(this.patientSetName);
   }
 
 
