@@ -2,11 +2,6 @@
 
 }
 
-.v-align-center {
-  display: flex;
-  align-items: center;
-}
-
 .btn-outline-secondary {
   color: #333333;
   font-family: "Avenir Next";

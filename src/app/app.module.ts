@@ -19,7 +19,7 @@ import {AppConfig} from "./config/app.config";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ConstraintService} from "./modules/shared/services/constraint.service";
 
-export function initConfig(config: AppConfig){
+export function initConfig(config: AppConfig) {
   return () => config.load()
 }
 
