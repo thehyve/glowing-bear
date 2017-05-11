@@ -3,7 +3,6 @@ import {
 } from '@angular/core';
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {PatientSetPostResponse} from "../../../shared/models/patient-set-post-response";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 
 
@@ -15,7 +14,6 @@ import {ConstraintService} from "../../../shared/services/constraint.service";
 export class PatientSelectionComponent implements OnInit {
 
   patientSetName: string = "";
-  patientSetPostResponse: PatientSetPostResponse = null;
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
