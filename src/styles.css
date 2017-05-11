@@ -29,9 +29,19 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
   height: 38px;
 }
 
+.ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
+  height: 45px;
+  margin-top: 4px;
+}
+
 .ui-autocomplete-multiple-container {
   position: relative;
   top: 4px;
+}
+
+.v-align-center {
+  display: flex;
+  align-items: center;
 }
 
 /* Change input placeholder text color */

@@ -1,21 +1,24 @@
 import {Constraint} from './constraint';
 import {Study} from "../study";
+import {CombinationConstraint} from "./combination-constraint";
+import {CombinationState} from "./combination-state";
 
 export class StudyConstraint implements Constraint {
 
   private _type: string;
-  private _study:Study;
+  private _studies: Study[];
 
   constructor() {
     this._type = 'StudyConstraint';
+    this._studies = [];
   }
 
-  get study():Study {
-    return this._study;
+  get studies(): Study[] {
+    return this._studies;
   }
 
-  set study(value:Study) {
-    this._study = value;
+  set studies(value: Study[]) {
+    this._studies = value;
   }
 
   getConstraintType(): string {
@@ -23,19 +26,29 @@ export class StudyConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    if (!this._study) {
+    if (!this._studies) {
       return null;
     }
-    return {
-      type: "study_name",
-      studyId: this.study.studyId
+
+    let query = {
+      "type": "or",
+      "args": []
     };
+    for(let study of this.studies) {
+      query.args.push({
+        "type": "study_name",
+        "studyId": study.studyId
+      })
+    }
+    return query;
   }
 
   get textRepresentation(): string {
-    if (this.study) {
-      return `Study: ${this.study.studyId}`
+    let result: string = (this.studies) ? 'Study: ' : 'Study';
+    for (let study of this.studies) {
+      result += study.studyId + ', '
     }
-    return 'Study';
+    result = (this.studies) ? result.substring(0, result.length - 2) : result;
+    return result;
   }
 }

@@ -1,3 +1,8 @@
 .ui-autocomplete-dropdown.ui-button {
-  height: 38px;
+  height: 138px !important;
+}
+
+.ui-autocomplete-dropdown.ui-button.ui-widget.ui-state-default.ui-corner-all.ui-button-icon-only {
+  color: red !important;
+  background-color: red !important;
 }

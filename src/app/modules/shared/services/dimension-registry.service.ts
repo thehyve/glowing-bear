@@ -31,7 +31,8 @@ export class DimensionRegistryService {
           this.studies = studies;
           studies.forEach(study => {
             let constraint = new StudyConstraint();
-            constraint.study = study;
+            // constraint.study = study;
+            constraint.studies.push(study);
             this.allConstraints.push(constraint);
           })
         },
