@@ -1,12 +1,17 @@
 <div class="form-inline">
   <label>Study </label>
+
   <p-autoComplete #autoComplete
-                  [(ngModel)]="selectedStudy"
+                  [(ngModel)]="selectedStudies"
                   [suggestions]="searchResults"
                   field="studyId"
                   (completeMethod)="onSearch($event)"
-                  size="40"
+                  (onSelect)="updateStudies($event)"
+                  (onUnselect)="updateStudies($event)"
+                  (onBlur)="updateStudies($event)"
                   dropdown="true"
-                  (onSelect)="onSelect($event)"
-                  (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+                  size="40"
+                  (onDropdownClick)="onDropdown($event)"
+                  [multiple]="true"></p-autoComplete>
+
 </div>

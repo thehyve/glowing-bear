@@ -25,12 +25,13 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
   ngOnInit() {
   }
 
-  get selectedStudy(): Study {
-    return (<StudyConstraint>this.constraint).study;
+
+  get selectedStudies(): Study[] {
+    return (<StudyConstraint>this.constraint).studies;
   }
 
-  set selectedStudy(value: Study) {
-    (<StudyConstraint>this.constraint).study = value;
+  set selectedStudies(value: Study[]) {
+    (<StudyConstraint>this.constraint).studies = value;
   }
 
   onSearch(event) {
@@ -60,9 +61,7 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
     }
   }
 
-  onSelect(studyObject) {
-    let studyConstraint = (<StudyConstraint>this.constraint);
-    studyConstraint.study = studyObject;
+  updateStudies(studyObject) {
     this.constraintService.update();
   }
 
