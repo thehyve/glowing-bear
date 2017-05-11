@@ -68,7 +68,13 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   initializeAggregates() {
     let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
-      this.resourceService.getConceptAggregate(constraint)
+
+      // Construct a new constraint that only has the concept as sub constraint
+      // (We don't want to apply value and date constraints when getting aggregates)
+      let conceptOnlyConstraint:ConceptConstraint = new ConceptConstraint();
+      conceptOnlyConstraint.concept = constraint.concept;
+
+      this.resourceService.getConceptAggregate(conceptOnlyConstraint)
         .subscribe(
           aggregate => {
             constraint.concept.aggregate = aggregate;
