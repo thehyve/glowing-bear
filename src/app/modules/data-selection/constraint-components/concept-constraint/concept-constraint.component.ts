@@ -265,7 +265,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   set date1(value:string) {
     this._date1 = new Date(value);
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.date1 = this._date1;
+    conceptConstraint.timeConstraint.date1 = this._date1;
     this.constraintService.update();
   }
 
@@ -276,7 +276,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   set date2(value:string) {
     this._date2 = new Date(value);
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.date2 = this._date2;
+    conceptConstraint.timeConstraint.date2 = this._date2;
     this.constraintService.update();
   }
 
@@ -290,7 +290,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
     // Update the constraint
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.dateOperator = this._dateOperatorState;
+    conceptConstraint.timeConstraint.dateOperator = this._dateOperatorState;
 
     // Notify constraint service
     this.constraintService.update();
