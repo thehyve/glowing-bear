@@ -13,9 +13,10 @@ import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
+import {TrueConstraint} from "../models/constraints/true-constraint";
 
 @Injectable()
-export class ResourceService{
+export class ResourceService {
 
   constructor(private http: Http, private endpointService: EndpointService) {
   }
@@ -53,13 +54,13 @@ export class ResourceService{
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
 
-    if(endpoint) {
+    if (endpoint) {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
       let url = `${endpoint.getUrl()}/studies`;
       return this.http.get(url, {
         headers: headers
       })
-        .map((response:Response) => response.json().studies as Study[])
+        .map((response: Response) => response.json().studies as Study[])
         .catch(this.handleError.bind(this));
     }
     else {
@@ -72,14 +73,14 @@ export class ResourceService{
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
 
-    if(endpoint) {
+    if (endpoint) {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       let url = `${endpoint.getUrl()}/tree_nodes`;
       return this.http.get(url, {
         headers: headers
       })
-        .map((response:Response) => response.json().tree_nodes)
+        .map((response: Response) => response.json().tree_nodes)
         .catch(this.handleError.bind(this));
     }
     else {
@@ -90,24 +91,16 @@ export class ResourceService{
 
   // -------------------------------------- patient calls --------------------------------------
 
-  /**
-   * Given a constraint, retrieve the corresponding patient array
-   * @param constraint - the constraint of the patient set to be queried
-   * @returns {Observable<Patient[]>}
-   */
   getPatients(constraint: Constraint): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-
-    let constraintString = JSON.stringify(constraint.toQueryObject());
-    console.log("run patient query with Constraint: " + constraintString);
-
+    let constraintString: string = JSON.stringify(constraint.toQueryObject());
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
     })
-      .map((res:Response) => res.json().patients as Patient[])
+      .map((res: Response) => res.json().patients as Patient[])
       .catch(this.handleError.bind(this));
   }
 
@@ -131,7 +124,7 @@ export class ResourceService{
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)
-      .map((res:Response) => res.json() as PatientSetPostResponse)
+      .map((res: Response) => res.json() as PatientSetPostResponse)
       .catch(this.handleError.bind(this));
   }
 
@@ -148,7 +141,7 @@ export class ResourceService{
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString = JSON.stringify(constraint.toQueryObject());
     let url = `${endpoint.getUrl()}/observations/aggregate?`;
-    if(constraint.concept.valueType === 'NUMERIC') {
+    if (constraint.concept.valueType === 'NUMERIC') {
       url += `type=min&type=max&type=average&type=count&constraint=${constraintString}`;
     }
     else {
@@ -158,7 +151,7 @@ export class ResourceService{
     return this.http.get(url, {
       headers: headers
     })
-      .map((res:Response) => res.json() as Aggregate)
+      .map((res: Response) => res.json() as Aggregate)
       .catch(this.handleError.bind(this));
   }
 

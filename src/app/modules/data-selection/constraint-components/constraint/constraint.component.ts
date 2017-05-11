@@ -8,8 +8,8 @@ import {Constraint} from "../../../shared/models/constraints/constraint";
 })
 export class ConstraintComponent implements OnInit {
   @Input() constraint: Constraint;
-  @Output()
-  constraintRemoved: EventEmitter<any> = new EventEmitter();
+  @Input() isRoot: boolean;
+  @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor() {
   }

@@ -7,6 +7,8 @@ import {ConceptConstraint} from "../../../shared/models/constraints/concept-cons
 import {ConceptOperatorState} from "./concept-operator-state";
 import {Value} from "../../../shared/models/value";
 import {ResourceService} from "../../../shared/services/resource.service";
+import {ConstraintService} from "../../../shared/services/constraint.service";
+import {DateOperatorState} from "./date-operator-state";
 
 @Component({
   selector: 'concept-constraint',
@@ -31,7 +33,21 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   selectedCategories: string[];
   suggestedCategories: string[];
 
-  constructor(private dimensionRegistry:DimensionRegistryService, private resourceService:ResourceService) {
+  private _applyDateConstraint: boolean = false;
+  private _dateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
+  DateOperatorState = DateOperatorState; // make enum visible in template
+  static readonly dateOperatorSequence = {
+    [DateOperatorState.BETWEEN]: DateOperatorState.AFTER,
+    [DateOperatorState.AFTER]: DateOperatorState.BEFORE,
+    [DateOperatorState.BEFORE]: DateOperatorState.NOT_BETWEEN,
+    [DateOperatorState.NOT_BETWEEN]: DateOperatorState.BETWEEN
+  };
+  private _date1: Date;
+  private _date2: Date;
+
+  constructor(private dimensionRegistry:DimensionRegistryService,
+              private resourceService:ResourceService,
+              private constraintService: ConstraintService) {
     super();
     this.isMinEqual = true;
     this.isMaxEqual = true;
@@ -39,6 +55,10 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
     this.selectedCategories = [];
     this.suggestedCategories = [];
+
+    this._dateOperatorState = DateOperatorState.BETWEEN;
+    this._date1 = new Date();
+    this._date2 = new Date();
   }
 
   ngOnInit() {
@@ -73,8 +93,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   set selectedConcept(value:Concept) {
-    (<ConceptConstraint>this.constraint).concept = value;
-    this.initializeAggregates();
+    if(value.type && value.type === 'concept') {
+      (<ConceptConstraint>this.constraint).concept = value;
+      this.initializeAggregates();
+      this.constraintService.update();
+    }
+
   }
 
   onSearch(event) {
@@ -211,6 +235,52 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
         conceptConstraint.values.push(newVal);
       }
     }
+
+    this.constraintService.update();
+
+  }
+
+  get applyDateConstraint():boolean {
+    return this._applyDateConstraint;
+  }
+
+  set applyDateConstraint(value:boolean) {
+    this._applyDateConstraint = value;
+    let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.applyDateConstraint = this._applyDateConstraint;
+  }
+
+  get date1():string {
+    return this._date1.toISOString().slice(0,16);
+  }
+
+  set date1(value:string) {
+    this._date1 = new Date(value);
+    let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.date1 = this._date1;
+  }
+
+  get date2():string {
+    return this._date2.toISOString().slice(0,16);
+  }
+
+  set date2(value:string) {
+    this._date2 = new Date(value);
+    let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.date2 = this._date2;
+  }
+
+  get dateOperatorState():DateOperatorState {
+    return this._dateOperatorState;
+  }
+
+  switchDateOperatorState() {
+    // Select the next state in the operator sequence
+    this._dateOperatorState = ConceptConstraintComponent.dateOperatorSequence[this._dateOperatorState];
+
+    // Update the constraint
+    let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.dateOperator = this._dateOperatorState;
   }
 
 }

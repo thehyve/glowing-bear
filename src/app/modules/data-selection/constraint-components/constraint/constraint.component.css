@@ -1,15 +1,11 @@
 .constraint-comp {
   border: 1px solid #ddd;
   border-radius: 6px;
-  margin: 10px 5px 10px 16px; /* top right bottom left */
+  margin: 10px 33px 10px 16px; /* top right bottom left */
   background-color: #f7f7f7;
   padding: 1px 1px 1px 6px; /* top right bottom left */
   /*box-shadow: 0px 0px 2px 2px grey; !* h-shadow v-shadow blur spread color *!*/
   min-height: 40px;
-}
-
-.constraint-comp:hover {
-  background-color: rgba(250,240,210,.5);
 }
 
 .constraint-btn {
@@ -18,7 +14,7 @@
 }
 
 .constraint-remove-btn {
-  margin-right: 6px;
+  margin-right: 3px;
   margin-top: 3px;
   border: none;
   color: lightgray;
@@ -28,6 +24,14 @@
   color: white;
 }
 
-.form-inline > * {
-  margin: 8px;
+.form-inline * {
+  margin: 6px;
+}
+
+.form-inline div {
+  margin: 0px;
+}
+
+.form-inline div * {
+  margin: 0px;
 }

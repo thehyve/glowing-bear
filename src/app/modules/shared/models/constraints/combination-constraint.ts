@@ -51,7 +51,7 @@ export class CombinationConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Group (and/or/not)';
+    return 'Group';
   }
 
   isAnd() {
