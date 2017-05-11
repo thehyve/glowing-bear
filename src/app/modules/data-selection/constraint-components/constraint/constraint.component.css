@@ -24,6 +24,14 @@
   color: white;
 }
 
-.form-inline > * {
-  margin: 8px;
+.form-inline * {
+  margin: 6px;
+}
+
+.form-inline div {
+  margin: 0px;
+}
+
+.form-inline div * {
+  margin: 0px;
 }
