@@ -32,8 +32,10 @@
     <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
   </div>
 
-  <div class="form-inline" *ngIf="patientSetPostResponse != null">
-    <span>Your patient set <b>{{patientSetPostResponse.description}}</b> with <b>{{patientSetPostResponse.setSize}}</b> patients has been saved with the identifier <b>{{patientSetPostResponse.id}}</b></span>
+  <div class="form-inline" *ngIf="constraintService.patientSetPostResponse != null">
+    <span>Your patient set <b>{{constraintService.patientSetPostResponse.description}}</b>
+      with <b>{{constraintService.patientSetPostResponse.setSize}}</b> patients has been saved
+      with the identifier <b>{{constraintService.patientSetPostResponse.id}}</b></span>
   </div>
 
 </div>

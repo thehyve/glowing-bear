@@ -68,7 +68,13 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   initializeAggregates() {
     let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
-      this.resourceService.getConceptAggregate(constraint)
+
+      // Construct a new constraint that only has the concept as sub constraint
+      // (We don't want to apply value and date constraints when getting aggregates)
+      let conceptOnlyConstraint:ConceptConstraint = new ConceptConstraint();
+      conceptOnlyConstraint.concept = constraint.concept;
+
+      this.resourceService.getConceptAggregate(conceptOnlyConstraint)
         .subscribe(
           aggregate => {
             constraint.concept.aggregate = aggregate;
@@ -168,6 +174,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           (this.operatorState = ConceptOperatorState.BETWEEN) :
           (this.operatorState = ConceptOperatorState.EQUAL);
     }
+    this.constraintService.update();
   }
 
   selectAll() {
@@ -248,6 +255,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._applyDateConstraint = value;
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyDateConstraint = this._applyDateConstraint;
+    this.constraintService.update();
   }
 
   get date1():string {
@@ -258,6 +266,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._date1 = new Date(value);
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.date1 = this._date1;
+    this.constraintService.update();
   }
 
   get date2():string {
@@ -268,6 +277,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._date2 = new Date(value);
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.date2 = this._date2;
+    this.constraintService.update();
   }
 
   get dateOperatorState():DateOperatorState {
@@ -281,6 +291,9 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     // Update the constraint
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.dateOperator = this._dateOperatorState;
+
+    // Notify constraint service
+    this.constraintService.update();
   }
 
 }
