@@ -1,7 +1,5 @@
 import {Constraint} from './constraint';
 import {Study} from "../study";
-import {CombinationConstraint} from "./combination-constraint";
-import {CombinationState} from "./combination-state";
 
 export class StudyConstraint implements Constraint {
 
