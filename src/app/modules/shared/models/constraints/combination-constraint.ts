@@ -20,19 +20,33 @@ export class CombinationConstraint implements Constraint {
     return this._type;
   }
 
-  toQueryObject(): Object {
+  hasNonEmptyChildren():boolean {
+    return this.getNonEmptyQueryObjects().length > 0;
+  }
+
+  getNonEmptyQueryObjects():Object[] {
     // Convert all children to query objects
     let childQueryObjects =
       this._children.map((constraint: Constraint) => constraint.toQueryObject());
 
     // Ignore all null and {} values
-    // TODO: show validation error instead?
     childQueryObjects = childQueryObjects.filter(object => {
       if (!object) {
         return false;
       }
       return Object.keys(object).length > 0;
     });
+
+    return childQueryObjects;
+  }
+
+  toQueryObject(): Object {
+    let childQueryObjects =  this.getNonEmptyQueryObjects();
+    if (childQueryObjects.length == 0) {
+      // No children, so ignore this constraint
+      // TODO: show validation error instead?
+      return null;
+    }
 
     // Combination
     let combinationQueryObject = {

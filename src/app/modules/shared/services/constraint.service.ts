@@ -70,11 +70,11 @@ export class ConstraintService {
    */
   generateIntersectionConstraint(inclusionConstraint: Constraint,
                                  exclusionConstraint: Constraint): Constraint {
-    if ((<CombinationConstraint>inclusionConstraint).children.length === 0) {
+    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
       inclusionConstraint = new TrueConstraint();
     }
     let newExclusionConstraint: Constraint;
-    if ((<CombinationConstraint>exclusionConstraint).children.length === 0) {
+    if (!(<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
       newExclusionConstraint = new TrueConstraint();
     }
     else {
@@ -96,7 +96,7 @@ export class ConstraintService {
    * @returns {TrueConstraint|Constraint}
    */
   generateInclusionConstraint(inclusionConstraint: Constraint): Constraint {
-    return (<CombinationConstraint>inclusionConstraint).children.length === 0 ?
+    return !(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
       new TrueConstraint() : inclusionConstraint;
   }
 
@@ -109,12 +109,12 @@ export class ConstraintService {
    */
   generateExclusionConstraint(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Constraint {
     let inConstraint: Constraint = inclusionConstraint;
-    if ((<CombinationConstraint>inclusionConstraint).children.length === 0) {
+    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
       inConstraint = new TrueConstraint();
     }
 
     let exConstraint: Constraint = exclusionConstraint;
-    if ((<CombinationConstraint>exclusionConstraint).children.length === 0) {
+    if (!(<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
       exConstraint = new CombinationConstraint();
       (<CombinationConstraint>exConstraint).isNot = true;
       (<CombinationConstraint>exConstraint).children.push(new TrueConstraint());
