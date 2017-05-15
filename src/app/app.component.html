@@ -1,6 +1,19 @@
-<div class="container">
-  <navbar></navbar>
+<vertical-split-pane
+  primary-component-minsize="30"
+  secondary-component-minsize="30"
+  primary-component-initialratio="0.2">
 
-  <hr>
-  <router-outlet></router-outlet>
-</div>
+  <div class="split-pane-content-primary">
+    <div class="left-container">
+      Tree here
+      <side-panel></side-panel>
+    </div>
+  </div>
+  <div class="split-pane-content-secondary">
+    <div class="right-container">
+      <nav-bar></nav-bar>
+      <hr>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</vertical-split-pane>

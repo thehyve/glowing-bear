@@ -18,6 +18,9 @@ import {DimensionRegistryService} from "./modules/shared/services/dimension-regi
 import {AppConfig} from "./config/app.config";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {ConstraintService} from "./modules/shared/services/constraint.service";
+import {SplitPaneModule} from "ng2-split-pane/lib/ng2-split-pane";
+import {SidePanelModule} from "./modules/side-panel/side-panel.module";
+import {NavBarModule} from "./modules/nav-bar/nav-bar.module";
 
 export function initConfig(config: AppConfig) {
   return () => config.load()
@@ -25,19 +28,21 @@ export function initConfig(config: AppConfig) {
 
 @NgModule({
   declarations: [
-    AppComponent,
-    NavbarComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     BrowserAnimationsModule,
+    SplitPaneModule,
     routing,
+    NavBarModule,
     DashboardModule,
     DataSelectionModule,
     AnalysisModule,
-    ExportModule
+    ExportModule,
+    SidePanelModule
   ],
   providers: [
     EndpointService,

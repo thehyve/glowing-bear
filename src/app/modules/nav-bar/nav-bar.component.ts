@@ -1,12 +1,12 @@
-import {Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
 
 @Component({
-  selector: 'navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css']
+  selector: 'nav-bar',
+  templateUrl: './nav-bar.component.html',
+  styleUrls: ['./nav-bar.component.css']
 })
-export class NavbarComponent {
+export class NavBarComponent implements OnInit {
 
   isDashboard = true;
   isDataSelection = false;
@@ -22,6 +22,9 @@ export class NavbarComponent {
     });
   }
 
+  ngOnInit() {
+  }
+
   updateNavbar(whichStep: string) {
     this.isDashboard = (whichStep === 'dashboard' || whichStep == '');
     this.isDataSelection = (whichStep === 'data-selection');
@@ -30,3 +33,4 @@ export class NavbarComponent {
   }
 
 }
+
