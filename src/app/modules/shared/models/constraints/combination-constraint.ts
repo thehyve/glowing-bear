@@ -27,7 +27,13 @@ export class CombinationConstraint implements Constraint {
   getNonEmptyQueryObjects():Object[] {
     // Convert all children to query objects
     let childQueryObjects =
-      this._children.map((constraint: Constraint) => constraint.toQueryObject());
+      this._children.map((constraint: Constraint) => {
+        return {
+          "type": "subselection",
+          "dimension": "patient",
+          "constraint": constraint.toQueryObject()
+        }
+      });
 
     // Ignore all null and {} values
     childQueryObjects = childQueryObjects.filter(object => {
