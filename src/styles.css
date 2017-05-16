@@ -25,11 +25,18 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
 }
 
 /*
- * style fixes for the primeng tree-container in the side-panel
+ * style fix for hiding the border in tab menu bar
+ */
+body .ui-tabmenu-nav {
+  border: none;
+}
+
+/*
+ * style fix for the primeng tree-container in the side-panel
  */
 body .gb-tree-container {
   width: auto;
-  margin-left: -10px;
+  margin-left: -20px;
   padding-left: 0px;
   border-style: none;
 }
