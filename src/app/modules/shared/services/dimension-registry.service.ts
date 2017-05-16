@@ -47,7 +47,6 @@ export class DimensionRegistryService {
         err => console.error(err)
       );
 
-
   }
 
   /** Extracts concepts (and later possibly other dimensions) from the
