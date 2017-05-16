@@ -63,14 +63,20 @@ export class DimensionRegistryService {
 
       // Extract concept
       if (treeNode['dimension'] == 'concept') {
-        let concept = new Concept();
-        concept.path = treeNode['fullName'];
-        concept.valueType = treeNode['type'];
-        this.concepts.push(concept);
 
-        let constraint = new ConceptConstraint();
-        constraint.concept = concept;
-        this.allConstraints.push(constraint);
+        // Only include non-FOLDERs and non-CONTAINERs
+        if (treeNode['visualAttributes'].indexOf('FOLDER') == -1 &&
+            treeNode['visualAttributes'].indexOf('CONTAINER') == -1) {
+
+          let concept = new Concept();
+          concept.path = treeNode['fullName'];
+          concept.valueType = treeNode['type'];
+          this.concepts.push(concept);
+
+          let constraint = new ConceptConstraint();
+          constraint.concept = concept;
+          this.allConstraints.push(constraint);
+        }
       }
 
       // Recurse
