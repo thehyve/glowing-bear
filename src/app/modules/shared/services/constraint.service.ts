@@ -4,12 +4,15 @@ import {ResourceService} from "./resource.service";
 import {Constraint} from "../models/constraints/constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
-
 type LoadingState = "loading" | "complete";
 
 @Injectable()
 export class ConstraintService {
 
+  /*
+   * The patient count variables and criterion constraints
+   * in the patient-selection accordion in data-selection
+   */
   private _patientCount: number = 0;
   private _inclusionPatientCount: number = 0;
   private _exclusionPatientCount: number = 0;
@@ -21,9 +24,17 @@ export class ConstraintService {
   loadingStateExclusion:LoadingState = "complete";
   loadingStateTotal:LoadingState = "complete";
 
+  /*
+   * The selected tree node in the tree on the side-panel
+   */
+  private _selectedTreeNode: any = null;
+  private _validTreeNodeTypes: string[] = [];
+
+
   constructor(private resourceService: ResourceService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
+    this._validTreeNodeTypes = ['NUMERIC', 'CATEGORICAL_OPTION'];
   }
 
   update() {
@@ -207,4 +218,19 @@ export class ConstraintService {
     this._patientSetPostResponse = value;
   }
 
+  get selectedTreeNode(): any {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: any) {
+    this._selectedTreeNode = value;
+  }
+
+  get validTreeNodeTypes(): string[] {
+    return this._validTreeNodeTypes;
+  }
+
+  set validTreeNodeTypes(value: string[]) {
+    this._validTreeNodeTypes = value;
+  }
 }

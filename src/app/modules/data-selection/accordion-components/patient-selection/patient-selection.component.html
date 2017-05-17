@@ -2,7 +2,8 @@
 <div>
 
   <!-- Inclusion criteria -->
-  <div class="criteria-box">
+  <div #inclusionCriteriaBox
+       class="criteria-box">
     <p><b>Inclusion</b> criteria:</p>
     <div class="patient-count-box">
       <i *ngIf="constraintService.loadingStateInclusion == 'loading'" class="fa fa-spin fa-refresh fa-fw"></i>
@@ -14,7 +15,8 @@
   </div>
 
   <!-- Exclusion criteria -->
-  <div class="criteria-box">
+  <div #exclusionCriteriaBox
+       class="criteria-box">
     <p><b>Exclusion</b> criteria:</p>
     <div class="patient-count-box">
       <i *ngIf="constraintService.loadingStateExclusion == 'loading'" class="fa fa-spin fa-refresh fa-fw"></i>

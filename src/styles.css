@@ -37,7 +37,7 @@ body .ui-tabmenu-nav {
 body .gb-tree-container {
   width: auto;
   margin-left: -20px;
-  padding-left: 0px;
+  margin-top: -20px;
   border-style: none;
 }
 

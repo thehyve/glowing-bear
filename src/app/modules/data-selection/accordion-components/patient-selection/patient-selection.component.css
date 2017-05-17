@@ -8,6 +8,11 @@
 
 .criteria-box {
   margin-bottom: 30px;
+  padding-bottom: 10px;
+}
+
+.dropzone {
+  background-color: rgba(32, 178, 170, .3);
 }
 
 .patient-count-box {
