@@ -9,3 +9,12 @@
 .criteria-box {
   margin-bottom: 30px;
 }
+
+.patient-count-box {
+  margin: 4px 4px 4px 16px;
+}
+
+.patient-count-box span {
+  border-radius: 4px;
+  padding: 2px 8px 2px 8px;
+}

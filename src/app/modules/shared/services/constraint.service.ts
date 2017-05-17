@@ -5,6 +5,8 @@ import {Constraint} from "../models/constraints/constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
 
+type LoadingState = "loading" | "complete";
+
 @Injectable()
 export class ConstraintService {
 
@@ -14,6 +16,10 @@ export class ConstraintService {
   private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+
+  loadingStateInclusion:LoadingState = "complete";
+  loadingStateExclusion:LoadingState = "complete";
+  loadingStateTotal:LoadingState = "complete";
 
   constructor(private resourceService: ResourceService) {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -25,14 +31,20 @@ export class ConstraintService {
   }
 
   updatePatients() {
+    this.loadingStateInclusion = "loading";
+    this.loadingStateExclusion = "loading";
+    this.loadingStateTotal = "loading";
+
     let inclusionConstraint = this.generateInclusionConstraint(this.rootInclusionConstraint);
     this.resourceService.getPatients(inclusionConstraint)
       .subscribe(
         patients => {
           this.inclusionPatientCount = patients.length;
+          this.loadingStateInclusion = "complete";
         },
         err => {
           console.error(err);
+          this.loadingStateInclusion = "complete";
         }
       );
 
@@ -42,9 +54,11 @@ export class ConstraintService {
       .subscribe(
         patients => {
           this.exclusionPatientCount = patients.length;
+          this.loadingStateExclusion = "complete";
         },
         err => {
           console.error(err);
+          this.loadingStateExclusion = "complete";
         }
       );
 
@@ -54,9 +68,11 @@ export class ConstraintService {
       .subscribe(
         patients => {
           this.patientCount = patients.length;
+          this.loadingStateTotal = "complete";
         },
         err => {
           console.error(err);
+          this.loadingStateTotal = "complete";
         }
       );
   }
