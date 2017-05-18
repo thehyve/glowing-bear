@@ -69,6 +69,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       if (this.constraintService.validTreeNodeTypes.includes(dataObjectType)) {
         ptreeNode.querySelector('li.ui-treenode')
           .addEventListener('dragstart', (function (event) {
+            event.stopPropagation();
             this.constraintService.selectedTreeNode = dataObject;
           }).bind(this));
       }

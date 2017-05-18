@@ -4,6 +4,11 @@ import {ResourceService} from "./resource.service";
 import {Constraint} from "../models/constraints/constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
+import {TreeNode} from "primeng/components/common/api";
+import {StudyConstraint} from "../models/constraints/study-constraint";
+import {Study} from "../models/study";
+import {Concept} from "../models/concept";
+import {ConceptConstraint} from "../models/constraints/concept-constraint";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -158,6 +163,28 @@ export class ConstraintService {
     combination.children.push(inclusionConstraint);
     combination.children.push(exclusionConstraint);
     return combination;
+  }
+
+  generateConstraintFromTreeNode(treeNode: TreeNode): Constraint {
+    let constraint: Constraint = null;
+    let treeNodeType = treeNode['type'];
+
+    if(treeNodeType === 'STUDY') {
+      let study: Study = new Study();
+      study.studyId = treeNode['constraint']['studyId'];
+      constraint = new StudyConstraint();
+      (<StudyConstraint>constraint).studies.push(study);
+    }
+    else if(treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL_OPTION') {
+      let concept = new Concept();
+      concept.path = treeNode['fullName'];
+      concept.valueType = treeNode['type'];
+      constraint = new ConceptConstraint();
+      (<ConceptConstraint>constraint).concept = concept;
+    }
+
+    return constraint;
   }
 
   savePatients(patientSetName: string) {

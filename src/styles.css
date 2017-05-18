@@ -29,6 +29,7 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
  */
 body .ui-tabmenu-nav {
   border: none;
+  background-color: #FCFCFC;
 }
 
 /*

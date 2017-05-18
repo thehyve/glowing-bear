@@ -3,6 +3,9 @@ import {Constraint} from "../../../shared/models/constraints/constraint";
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 import {ResourceService} from "../../../shared/services/resource.service";
+import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
+import {ConceptConstraintComponent} from "../concept-constraint/concept-constraint.component";
+import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 
 @Component({
   selector: 'constraint',
@@ -15,7 +18,7 @@ export class ConstraintComponent implements OnInit {
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor(protected dimensionRegistry: DimensionRegistryService,
-              protected resourceService:ResourceService,
+              protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
               protected element: ElementRef) {
   }
@@ -41,10 +44,13 @@ export class ConstraintComponent implements OnInit {
   }
 
   onDragEnter(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.element.nativeElement.firstChild.classList.add('dropzone');
   }
 
   onDragOver(event) {
+    event.stopPropagation();
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.add('dropzone');
   }
@@ -54,6 +60,34 @@ export class ConstraintComponent implements OnInit {
   }
 
   onDrop(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
+    let droppedConstraint: Constraint =
+      this.constraintService.generateConstraintFromTreeNode(this.constraintService.selectedTreeNode);
+
+    if (droppedConstraint) {
+      let constraintType = this.constraint.getConstraintType();
+      if(constraintType === 'CombinationConstraint') {
+        let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+        combinationConstraint.children.push(droppedConstraint);
+        this.constraintService.update();
+      }
+      else if(constraintType === droppedConstraint.getConstraintType()) {
+        if(constraintType === 'StudyConstraint') {
+          let study = (<StudyConstraint>droppedConstraint).studies[0];
+          (<StudyConstraint>this.constraint).studies.push(study);
+          this.constraintService.update();
+        }
+        else if(constraintType === 'ConceptConstraint') {
+          this.constraint = droppedConstraint;
+          //TODO: still needs to find a way to update the aggregates fo the CocneptConstraintComponent
+          this.constraintService.update();
+        }
+      }
+
+    }
+
   }
+
 }
