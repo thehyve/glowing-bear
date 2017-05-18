@@ -24,25 +24,19 @@ export class CombinationConstraint implements Constraint {
     return this.getNonEmptyQueryObjects().length > 0;
   }
 
+  /**
+   * Collects all non-empty query objects
+   * @returns {Object[]}
+   */
   getNonEmptyQueryObjects():Object[] {
-    // Convert all children to query objects
-    let childQueryObjects =
-      this._children.map((constraint: Constraint) => {
-        return {
-          "type": "subselection",
-          "dimension": "patient",
-          "constraint": constraint.toQueryObject()
+    let childQueryObjects:Object[] =
+      this._children.reduce((result:Object[], constraint:Constraint) => {
+        let queryObject:Object = constraint.toQueryObject();
+        if (queryObject && Object.keys(queryObject).length > 0) {
+          result.push(queryObject);
         }
-      });
-
-    // Ignore all null and {} values
-    childQueryObjects = childQueryObjects.filter(object => {
-      if (!object) {
-        return false;
-      }
-      return Object.keys(object).length > 0;
-    });
-
+        return result;
+      }, []);
     return childQueryObjects;
   }
 
@@ -62,6 +56,15 @@ export class CombinationConstraint implements Constraint {
       queryObject = childQueryObjects[0];
     }
     else {
+      // Wrap the child query objects in subselections
+      childQueryObjects = childQueryObjects.map(queryObject => {
+        return {
+          "type": "subselection",
+          "dimension": "patient",
+          "constraint": queryObject
+        };
+      });
+
       // Wrap in and/or constraint
       queryObject = {
         type: this._combinationState === CombinationState.And ? "and" : "or",
