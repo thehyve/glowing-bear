@@ -47,7 +47,8 @@ export class CombinationConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    let childQueryObjects =  this.getNonEmptyQueryObjects();
+    // Collect children query objects
+    let childQueryObjects:Object[] =  this.getNonEmptyQueryObjects();
     if (childQueryObjects.length == 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
@@ -55,19 +56,27 @@ export class CombinationConstraint implements Constraint {
     }
 
     // Combination
-    let combinationQueryObject = {
-      type: this._combinationState === CombinationState.And ? "and" : "or",
-      args: childQueryObjects
-    };
+    let queryObject:Object;
+    if (childQueryObjects.length == 1) {
+      // Only one child, so don't wrap it in and/or
+      queryObject = childQueryObjects[0];
+    }
+    else {
+      // Wrap in and/or constraint
+      queryObject = {
+        type: this._combinationState === CombinationState.And ? "and" : "or",
+        args: childQueryObjects
+      };
+    }
 
     // If we're negating, we wrap the object in a negation constraint
     if (this._isNot) {
       return {
         type: "negation",
-        arg: combinationQueryObject
+        arg: queryObject
       }
     }
-    return combinationQueryObject;
+    return queryObject;
   }
 
   get textRepresentation(): string {

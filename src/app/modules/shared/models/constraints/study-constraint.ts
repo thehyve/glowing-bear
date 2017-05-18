@@ -28,17 +28,27 @@ export class StudyConstraint implements Constraint {
       return null;
     }
 
-    let query = {
-      "type": "or",
-      "args": []
-    };
-    for(let study of this.studies) {
-      query.args.push({
+    // Construct query objects for all studies
+    let childQueryObjects:Object[] = [];
+    for (let study of this.studies) {
+      childQueryObjects.push({
         "type": "study_name",
         "studyId": study.studyId
       })
     }
-    return query;
+
+    if (childQueryObjects.length == 1) {
+      // Don't wrap in 'or' if we only have one study
+      return childQueryObjects[0];
+    }
+    else {
+      // Wrap study query objects in 'or' constraint
+      return {
+        "type": "or",
+        "args": childQueryObjects
+      };
+    }
+
   }
 
   get textRepresentation(): string {
