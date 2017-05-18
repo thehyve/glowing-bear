@@ -91,12 +91,12 @@ export class ResourceService {
 
   // -------------------------------------- patient calls --------------------------------------
 
-  getPatients(constraint: Constraint): Observable<Patient[]> {
+  getPatients(constraint: Constraint, debugLabel:string): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString: string = JSON.stringify(constraint.toQueryObject());
-    console.log("run patient query with Constraint: " + constraintString);
+    console.log(debugLabel, "constraint:", constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
