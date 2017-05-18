@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {Study} from "../../../shared/models/study";
 import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 import {ConstraintComponent} from "../constraint/constraint.component";
@@ -17,14 +17,8 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
 
   searchResults: Study[];
 
-  constructor(private dimensionRegistry: DimensionRegistryService,
-              private constraintService: ConstraintService) {
-    super();
-  }
-
   ngOnInit() {
   }
-
 
   get selectedStudies(): Study[] {
     return (<StudyConstraint>this.constraint).studies;

@@ -1,5 +1,8 @@
-import {Component, OnInit, Input, EventEmitter, Output} from '@angular/core';
+import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
 import {Constraint} from "../../../shared/models/constraints/constraint";
+import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
+import {ConstraintService} from "../../../shared/services/constraint.service";
+import {ResourceService} from "../../../shared/services/resource.service";
 
 @Component({
   selector: 'constraint',
@@ -11,10 +14,14 @@ export class ConstraintComponent implements OnInit {
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
 
-  constructor() {
+  constructor(protected dimensionRegistry: DimensionRegistryService,
+              protected resourceService:ResourceService,
+              protected constraintService: ConstraintService,
+              protected element: ElementRef) {
   }
 
   ngOnInit() {
+    this.addEventListeners();
   }
 
   /**
@@ -25,4 +32,28 @@ export class ConstraintComponent implements OnInit {
     this.constraintRemoved.emit();
   }
 
+  addEventListeners() {
+    let elm = this.element.nativeElement;
+    elm.addEventListener('dragenter', this.onDragEnter.bind(this), false);
+    elm.addEventListener('dragover', this.onDragOver.bind(this), false);
+    elm.addEventListener('dragleave', this.onDragLeave.bind(this), false);
+    elm.addEventListener('drop', this.onDrop.bind(this), false);
+  }
+
+  onDragEnter(event) {
+    this.element.nativeElement.firstChild.classList.add('dropzone');
+  }
+
+  onDragOver(event) {
+    event.preventDefault();
+    this.element.nativeElement.firstChild.classList.add('dropzone');
+  }
+
+  onDragLeave(event) {
+    this.element.nativeElement.firstChild.classList.remove('dropzone');
+  }
+
+  onDrop(event) {
+    this.element.nativeElement.firstChild.classList.remove('dropzone');
+  }
 }

@@ -35,3 +35,7 @@
 .form-inline div * {
   margin: 0px;
 }
+
+.dropzone {
+  background-color: rgba(32, 178, 170, .2);
+}

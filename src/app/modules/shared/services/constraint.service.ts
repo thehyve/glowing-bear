@@ -34,7 +34,11 @@ export class ConstraintService {
   constructor(private resourceService: ResourceService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
-    this._validTreeNodeTypes = ['NUMERIC', 'CATEGORICAL_OPTION'];
+    this._validTreeNodeTypes = [
+      'NUMERIC',
+      'CATEGORICAL_OPTION',
+      'STUDY'
+    ];
   }
 
   update() {
