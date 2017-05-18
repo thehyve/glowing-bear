@@ -24,7 +24,7 @@ export class StudyConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    if (!this._studies) {
+    if (this._studies.length == 0) {
       return null;
     }
 
