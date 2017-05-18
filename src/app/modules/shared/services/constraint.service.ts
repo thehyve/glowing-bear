@@ -5,6 +5,8 @@ import {Constraint} from "../models/constraints/constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
 
+type LoadingState = "loading" | "complete";
+
 @Injectable()
 export class ConstraintService {
 
@@ -14,6 +16,10 @@ export class ConstraintService {
   private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+
+  loadingStateInclusion:LoadingState = "complete";
+  loadingStateExclusion:LoadingState = "complete";
+  loadingStateTotal:LoadingState = "complete";
 
   constructor(private resourceService: ResourceService) {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -25,38 +31,55 @@ export class ConstraintService {
   }
 
   updatePatients() {
+    this.loadingStateInclusion = "loading";
+    this.loadingStateExclusion = "loading";
+    this.loadingStateTotal = "loading";
+
     let inclusionConstraint = this.generateInclusionConstraint(this.rootInclusionConstraint);
-    this.resourceService.getPatients(inclusionConstraint)
+    this.resourceService.getPatients(inclusionConstraint, "Inclusion")
       .subscribe(
         patients => {
           this.inclusionPatientCount = patients.length;
+          this.loadingStateInclusion = "complete";
         },
         err => {
           console.error(err);
+          this.loadingStateInclusion = "complete";
         }
       );
 
-    let exclusionConstraint =
-      this.generateExclusionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    this.resourceService.getPatients(exclusionConstraint)
-      .subscribe(
-        patients => {
-          this.exclusionPatientCount = patients.length;
-        },
-        err => {
-          console.error(err);
-        }
-      );
+    // Only execute the exclusion constraint if it has non-empty children
+    if ((<CombinationConstraint>this.rootExclusionConstraint).hasNonEmptyChildren()) {
+      let exclusionConstraint =
+        this.generateExclusionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+      this.resourceService.getPatients(exclusionConstraint, "Exclusion")
+        .subscribe(
+          patients => {
+            this.exclusionPatientCount = patients.length;
+            this.loadingStateExclusion = "complete";
+          },
+          err => {
+            console.error(err);
+            this.loadingStateExclusion = "complete";
+          }
+        );
+    }
+    else {
+      this.exclusionPatientCount = 0;
+      this.loadingStateExclusion = "complete";
+    }
 
     let intersectionConstraint: Constraint =
       this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    this.resourceService.getPatients(intersectionConstraint)
+    this.resourceService.getPatients(intersectionConstraint, "Intersection")
       .subscribe(
         patients => {
           this.patientCount = patients.length;
+          this.loadingStateTotal = "complete";
         },
         err => {
           console.error(err);
+          this.loadingStateTotal = "complete";
         }
       );
   }
@@ -70,24 +93,29 @@ export class ConstraintService {
    */
   generateIntersectionConstraint(inclusionConstraint: Constraint,
                                  exclusionConstraint: Constraint): Constraint {
+
+    // Inclusion part
     if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
       inclusionConstraint = new TrueConstraint();
     }
-    let newExclusionConstraint: Constraint;
-    if (!(<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
-      newExclusionConstraint = new TrueConstraint();
-    }
-    else {
-      newExclusionConstraint = new CombinationConstraint();
+
+    // Only use exclusion if there's something there
+    if ((<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
+      // Wrap in negation
+      //TODO: it might be clearer to create a separate NegationConstraint for this
+      let newExclusionConstraint = new CombinationConstraint();
       (<CombinationConstraint>newExclusionConstraint).isNot = true;
       (<CombinationConstraint>newExclusionConstraint).children.push(exclusionConstraint);
+
+      let combination = new CombinationConstraint();
+      combination.children.push(inclusionConstraint);
+      combination.children.push(newExclusionConstraint);
+      return combination;
     }
-
-    let combination = new CombinationConstraint();
-    combination.children.push(inclusionConstraint);
-    combination.children.push(newExclusionConstraint);
-
-    return combination;
+    else {
+      // Otherwise just return the inclusion part
+      return inclusionConstraint;
+    }
   }
 
   /**
@@ -108,23 +136,13 @@ export class ConstraintService {
    * @returns {CombinationConstraint}
    */
   generateExclusionConstraint(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Constraint {
-    let inConstraint: Constraint = inclusionConstraint;
-    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
-      inConstraint = new TrueConstraint();
-    }
-
-    let exConstraint: Constraint = exclusionConstraint;
-    if (!(<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
-      exConstraint = new CombinationConstraint();
-      (<CombinationConstraint>exConstraint).isNot = true;
-      (<CombinationConstraint>exConstraint).children.push(new TrueConstraint());
-    }
+    // Inclusion part, which is what the exclusion count is calculated from
+    inclusionConstraint = this.generateInclusionConstraint(inclusionConstraint);
 
     let combination = new CombinationConstraint();
-    combination.children.push(inConstraint);
-    combination.children.push(exConstraint);
+    combination.children.push(inclusionConstraint);
+    combination.children.push(exclusionConstraint);
     return combination;
-
   }
 
   savePatients(patientSetName: string) {

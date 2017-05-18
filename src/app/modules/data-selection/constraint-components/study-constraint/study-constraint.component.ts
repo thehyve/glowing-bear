@@ -61,6 +61,13 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
     }
   }
 
+  onUnselect(studyObject) {
+    // For some funny reason, the study is still in the list when this handler is invoked
+    let index = this.selectedStudies.indexOf(studyObject);
+    this.selectedStudies.splice(index, 1);
+    this.constraintService.update();
+  }
+
   updateStudies(studyObject) {
     this.constraintService.update();
   }
