@@ -35,11 +35,15 @@ export class PatientSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
-  constructor(private constraintService: ConstraintService) {
+  constructor(private _constraintService: ConstraintService) {
   }
 
   ngOnInit() {
     this.constraintService.update();
+  }
+
+  get constraintService(): ConstraintService {
+    return this._constraintService;
   }
 
   get patientCount(): number {
