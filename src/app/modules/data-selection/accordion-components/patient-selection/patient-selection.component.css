@@ -12,10 +12,18 @@
 }
 
 .patient-count-box {
-  margin: 4px 4px 4px 16px;
+  margin: 4px 4px 4px 4px;
 }
 
 .patient-count-box span {
   border-radius: 4px;
-  padding: 2px 8px 2px 8px;
+  padding: 2px 8px 2px 4px;
+}
+
+.gb-spinner {
+  visibility: hidden;
+}
+
+.gb-spinner.loading {
+  visibility: visible;
 }

@@ -6,7 +6,7 @@
        class="criteria-box">
     <p><b>Inclusion</b> criteria:</p>
     <div class="patient-count-box">
-      <i *ngIf="constraintService.loadingStateInclusion == 'loading'" class="fa fa-spin fa-refresh fa-fw"></i>
+      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateInclusion == 'loading'"></i>
       <span [@notifyState]="constraintService.loadingStateInclusion">{{inclusionPatientCount}} patients included.</span>
     </div>
     <constraint #rootInclusionConstraintComponent
@@ -19,7 +19,7 @@
        class="criteria-box">
     <p><b>Exclusion</b> criteria:</p>
     <div class="patient-count-box">
-      <i *ngIf="constraintService.loadingStateExclusion == 'loading'" class="fa fa-spin fa-refresh fa-fw"></i>
+      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateExclusion == 'loading'"></i>
       <span [@notifyState]="constraintService.loadingStateExclusion">{{exclusionPatientCount}} patients excluded.</span>
     </div>
     <constraint #rootExclusionConstraintComponent
@@ -31,7 +31,7 @@
   <!-- Run patient query and save patient set -->
   <hr>
   <div class="patient-count-box">
-    <i *ngIf="constraintService.loadingStateTotal == 'loading'" class="fa fa-spin fa-refresh fa-fw"></i>
+    <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateTotal == 'loading'"></i>
     <span [@notifyState]="constraintService.loadingStateTotal">{{patientCount}} patients match your selection.</span>
   </div>
 
