@@ -53,7 +53,11 @@ export class CombinationConstraint implements Constraint {
     let queryObject:Object;
     if (childQueryObjects.length == 1) {
       // Only one child, so don't wrap it in and/or
-      queryObject = childQueryObjects[0];
+      queryObject = {
+        "type": "subselection",
+        "dimension": "patient",
+        "constraint": childQueryObjects[0]
+      }
     }
     else {
       // Wrap the child query objects in subselections
