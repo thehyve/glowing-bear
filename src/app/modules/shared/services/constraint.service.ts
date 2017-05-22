@@ -178,7 +178,7 @@ export class ConstraintService {
     else if(treeNodeType === 'NUMERIC' ||
       treeNodeType === 'CATEGORICAL_OPTION') {
       let concept = new Concept();
-      concept.path = treeNode['constraint']['path'];
+      concept.path = treeNode['fullName'];
       concept.type = treeNode['type'];
       constraint = new ConceptConstraint();
       (<ConceptConstraint>constraint).concept = concept;
