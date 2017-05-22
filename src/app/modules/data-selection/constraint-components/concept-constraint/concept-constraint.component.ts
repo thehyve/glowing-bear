@@ -94,7 +94,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   set selectedConcept(value:Concept) {
-    if(value.type && value.type === 'concept') {
+    if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeAggregates();
       this.constraintService.update();

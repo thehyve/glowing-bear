@@ -3,21 +3,19 @@ import {CombinationState} from "./combination-state";
 
 export class CombinationConstraint implements Constraint {
 
-  private _type: string;
   private _children: Constraint[];
   private _isNot: boolean;
   private _combinationState: CombinationState;
 
 
   constructor() {
-    this._type = 'CombinationConstraint';
     this._children = [];
     this._isNot = false;
     this.combinationState = CombinationState.And;
   }
 
-  getConstraintType(): string {
-    return this._type;
+  getClassName(): string {
+    return 'CombinationConstraint';
   }
 
   hasNonEmptyChildren():boolean {

@@ -3,16 +3,15 @@ import {Concept} from "../concept";
 import {Value} from "../value";
 import {TimeConstraint} from "./time-constraint";
 
-export class ConceptConstraint implements Constraint {
 
-  private _type: string;
+export class ConceptConstraint implements Constraint {
+  
   private _concept:Concept;
   private _values: Value[];
   applyDateConstraint: boolean = false;
   timeConstraint: TimeConstraint = new TimeConstraint();
 
   constructor() {
-    this._type = 'ConceptConstraint';
     this.values = [];
   }
 
@@ -32,21 +31,21 @@ export class ConceptConstraint implements Constraint {
     this._values = value;
   }
 
-  getConstraintType(): string {
-    return this._type;
+  getClassName(): string {
+    return 'ConceptConstraint';
   }
 
   toQueryObject(): Object {
     let args = [];
     args.push({
-      type: this._concept.type,
+      type: 'concept',
       path: this._concept.path
     });
 
     if(this.values) {
       for(let value of this.values) {
         args.push({
-          type: value.type,
+          type: "value",
           valueType: value.valueType,
           operator: value.operator,
           value: value.value
