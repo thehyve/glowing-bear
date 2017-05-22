@@ -66,7 +66,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         node['collapsedIcon'] = 'fa-folder';
         this.augmentTreeNodes(node['children']);
       }
-      else { console.log('type: ', node['type']);
+      else {
         if(node['type'] === 'NUMERIC') {
           node['icon'] = 'fa-leaf';
         }
