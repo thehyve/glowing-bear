@@ -24,6 +24,24 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
   opacity: .8;
 }
 
+/*
+ * style fix for hiding the border in tab menu bar
+ */
+body .ui-tabmenu-nav {
+  border: none;
+  background-color: #FCFCFC;
+}
+
+/*
+ * style fix for the primeng tree-container in the side-panel
+ */
+body .gb-tree-container {
+  width: auto;
+  margin-left: -20px;
+  margin-top: -20px;
+  border-style: none;
+}
+
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
   height: 38px;
