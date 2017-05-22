@@ -32,6 +32,7 @@ import {ConstraintService} from "../../../shared/services/constraint.service";
 export class PatientSelectionComponent implements OnInit {
 
   patientSetName: string = "";
+
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
@@ -69,6 +70,5 @@ export class PatientSelectionComponent implements OnInit {
   savePatientSet() {
     this.constraintService.savePatients(this.patientSetName);
   }
-
 
 }

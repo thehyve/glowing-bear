@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
 import {Concept} from "../../../shared/models/concept";
@@ -45,10 +45,11 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   private _date1: Date;
   private _date2: Date;
 
-  constructor(private dimensionRegistry:DimensionRegistryService,
-              private resourceService:ResourceService,
-              private constraintService: ConstraintService) {
-    super();
+  ngOnInit() {
+    this.initializeAggregates();
+  }
+
+  initializeAggregates() {
     this.isMinEqual = true;
     this.isMaxEqual = true;
     this.operatorState = ConceptOperatorState.BETWEEN;
@@ -59,13 +60,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._dateOperatorState = DateOperatorState.BETWEEN;
     this._date1 = new Date();
     this._date2 = new Date();
-  }
 
-  ngOnInit() {
-    this.initializeAggregates();
-  }
-
-  initializeAggregates() {
     let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
 

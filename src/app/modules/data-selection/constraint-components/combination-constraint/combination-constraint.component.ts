@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {Constraint} from "../../../shared/models/constraints/constraint";
@@ -22,11 +22,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   searchResults: Constraint[];
   selectedConstraint: Constraint;
-
-  constructor(private dimensionRegistry: DimensionRegistryService,
-              private constraintService: ConstraintService) {
-    super();
-  }
 
   ngOnInit() {
   }

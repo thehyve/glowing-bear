@@ -4,12 +4,20 @@ import {ResourceService} from "./resource.service";
 import {Constraint} from "../models/constraints/constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
-
+import {TreeNode} from "primeng/components/common/api";
+import {StudyConstraint} from "../models/constraints/study-constraint";
+import {Study} from "../models/study";
+import {Concept} from "../models/concept";
+import {ConceptConstraint} from "../models/constraints/concept-constraint";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
 export class ConstraintService {
 
+  /*
+   * The patient count variables and criterion constraints
+   * in the patient-selection accordion in data-selection
+   */
   private _patientCount: number = 0;
   private _inclusionPatientCount: number = 0;
   private _exclusionPatientCount: number = 0;
@@ -21,9 +29,21 @@ export class ConstraintService {
   loadingStateExclusion:LoadingState = "complete";
   loadingStateTotal:LoadingState = "complete";
 
+  /*
+   * The selected tree node in the tree on the side-panel
+   */
+  private _selectedTreeNode: any = null;
+  private _validTreeNodeTypes: string[] = [];
+
+
   constructor(private resourceService: ResourceService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
+    this._validTreeNodeTypes = [
+      'NUMERIC',
+      'CATEGORICAL_OPTION',
+      'STUDY'
+    ];
   }
 
   update() {
@@ -145,6 +165,28 @@ export class ConstraintService {
     return combination;
   }
 
+  generateConstraintFromTreeNode(treeNode: TreeNode): Constraint {
+    let constraint: Constraint = null;
+    let treeNodeType = treeNode['type'];
+
+    if(treeNodeType === 'STUDY') {
+      let study: Study = new Study();
+      study.studyId = treeNode['constraint']['studyId'];
+      constraint = new StudyConstraint();
+      (<StudyConstraint>constraint).studies.push(study);
+    }
+    else if(treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL_OPTION') {
+      let concept = new Concept();
+      concept.path = treeNode['fullName'];
+      concept.valueType = treeNode['type'];
+      constraint = new ConceptConstraint();
+      (<ConceptConstraint>constraint).concept = concept;
+    }
+
+    return constraint;
+  }
+
   savePatients(patientSetName: string) {
     let intersectionConstraint =
       this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
@@ -207,4 +249,19 @@ export class ConstraintService {
     this._patientSetPostResponse = value;
   }
 
+  get selectedTreeNode(): any {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: any) {
+    this._selectedTreeNode = value;
+  }
+
+  get validTreeNodeTypes(): string[] {
+    return this._validTreeNodeTypes;
+  }
+
+  set validTreeNodeTypes(value: string[]) {
+    this._validTreeNodeTypes = value;
+  }
 }

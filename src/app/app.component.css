@@ -1,7 +1,11 @@
-.container {
-  padding-top: 10px;
-  padding-left: 30px;
-  padding-right: 30px;
-  width: 100%;
+.left-container {
+  background-color: #ededed;
+  margin-left: 0px;
+}
 
+.right-container {
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  width: 100%;
 }
