@@ -9,6 +9,7 @@ import {StudyConstraint} from "../models/constraints/study-constraint";
 import {Study} from "../models/study";
 import {Concept} from "../models/concept";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
+import {CombinationState} from "../models/constraints/combination-state";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -178,12 +179,50 @@ export class ConstraintService {
     else if(treeNodeType === 'NUMERIC' ||
       treeNodeType === 'CATEGORICAL_OPTION') {
       let concept = new Concept();
-      //TODO: retrieve concept path in less hacky manner:
-      let path = treeNode['constraint']['path'];
-      concept.path = path ? path : treeNode['fullName'];
-      concept.type = treeNode['type'];
+      if(treeNode['constraint']) {
+        let constraintObject = treeNode['constraint'];
+        constraintObject['valueType'] = treeNodeType;
+        constraint = this.generateConstraintFromConstraintObject(constraintObject);
+      }
+      else {
+        concept.path = treeNode['conceptPath'];
+        concept.type = treeNodeType;
+        constraint = new ConceptConstraint();
+        (<ConceptConstraint>constraint).concept = concept;
+      }
+    }
+
+    return constraint;
+  }
+
+  generateConstraintFromConstraintObject(constraintObject): Constraint {
+    let type = constraintObject['type'];
+    let constraint: Constraint = null;
+    if(type === 'concept') {
+      let concept = new Concept();
+      concept.path = constraintObject['path'];
+      concept.type = constraintObject['valueType'];
       constraint = new ConceptConstraint();
       (<ConceptConstraint>constraint).concept = concept;
+    }
+    else if(type === 'study_name') {
+      let study = new Study();
+      study.studyId = constraintObject['studyId'];
+      constraint = new StudyConstraint();
+      (<StudyConstraint>constraint).studies.push(study);
+    }
+    else if(type === 'combination') {
+      let operator = constraintObject['operator'];
+      constraint = new CombinationConstraint();
+      (<CombinationConstraint>constraint).combinationState =
+        (operator === 'and') ? CombinationState.And : CombinationState.Or;
+      for(let arg of constraintObject['args']) {
+        if(arg['type'] === 'concept') {
+          arg['valueType'] = constraintObject['valueType'];
+        }
+        let child = this.generateConstraintFromConstraintObject(arg);
+        (<CombinationConstraint>constraint).children.push(child);
+      }
     }
 
     return constraint;
