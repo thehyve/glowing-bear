@@ -337,7 +337,7 @@ html {
 }
 
 body {
-  font-family: "Avenir Next";
+  font-family: 'Roboto Slab', serif;;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
@@ -5578,7 +5578,7 @@ button.close {
   position: absolute;
   z-index: 1070;
   display: block;
-  font-family: "Avenir Next";
+  font-family: 'Roboto Slab', serif;;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
@@ -5682,7 +5682,7 @@ button.close {
   display: block;
   max-width: 276px;
   padding: 1px;
-  font-family: "Avenir Next";
+  font-family: 'Roboto Slab', serif;;
   font-style: normal;
   font-weight: normal;
   letter-spacing: normal;
