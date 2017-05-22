@@ -15,12 +15,9 @@ import {ConstraintService} from "../../../shared/services/constraint.service";
   styleUrls: ['./patient-selection.component.css'],
   animations: [
     trigger('notifyState', [
-      state('loading', style({
-        display: 'none'
-      })),
       transition( 'loading => complete', [
         style({
-          background: 'rgba(51, 156, 144, 1.0)'
+          background: 'rgba(51, 156, 144, 0.5)'
         }),
         animate('1000ms ease-out', style({
           background: 'rgba(255, 255, 255, 0.0)'
