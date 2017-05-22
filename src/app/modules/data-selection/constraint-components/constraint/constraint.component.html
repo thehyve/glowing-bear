@@ -7,10 +7,10 @@
     <i class="fa fa-times" aria-hidden="true"></i>
   </button>
 
-  <combination-constraint *ngIf="constraint.getConstraintType() == 'CombinationConstraint' "
+  <combination-constraint *ngIf="constraint.getClassName() == 'CombinationConstraint' "
                           [constraint]="constraint"></combination-constraint>
-  <concept-constraint *ngIf="constraint.getConstraintType() == 'ConceptConstraint' "
+  <concept-constraint *ngIf="constraint.getClassName() == 'ConceptConstraint' "
                       [constraint]="constraint"></concept-constraint>
-  <study-constraint *ngIf="constraint.getConstraintType() == 'StudyConstraint' "
+  <study-constraint *ngIf="constraint.getClassName() == 'StudyConstraint' "
                     [constraint]="constraint"></study-constraint>
 </div>

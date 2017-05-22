@@ -6,6 +6,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
 import {ConceptConstraintComponent} from "../concept-constraint/concept-constraint.component";
 import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
+import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 
 @Component({
   selector: 'constraint',
@@ -67,19 +68,18 @@ export class ConstraintComponent implements OnInit {
       this.constraintService.generateConstraintFromTreeNode(this.constraintService.selectedTreeNode);
 
     if (droppedConstraint) {
-      let constraintType = this.constraint.getConstraintType();
-      if(constraintType === 'CombinationConstraint') {
+      if(this.constraint instanceof CombinationConstraint) {
         let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
         combinationConstraint.children.push(droppedConstraint);
         this.constraintService.update();
       }
-      else if(constraintType === droppedConstraint.getConstraintType()) {
-        if(constraintType === 'StudyConstraint') {
+      else if (this.constraint.getClassName() === droppedConstraint.getClassName()) {
+        if (this.constraint instanceof StudyConstraint) {
           let study = (<StudyConstraint>droppedConstraint).studies[0];
           (<StudyConstraint>this.constraint).studies.push(study);
           this.constraintService.update();
         }
-        else if(constraintType === 'ConceptConstraint') {
+        else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;
           //TODO: still needs to find a way to update the aggregates fo the CocneptConstraintComponent
           this.constraintService.update();

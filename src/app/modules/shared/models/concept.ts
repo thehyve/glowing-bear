@@ -1,21 +1,11 @@
 import {Aggregate} from "./aggregate";
 
 export class Concept {
-  private _type: string;
   private _path: string;
-  private _valueType: string;
+  private _type: string;
   private _aggregate: Aggregate;
 
   constructor() {
-    this._type = 'concept';
-  }
-
-  get type(): string {
-    return this._type;
-  }
-
-  set type(value: string) {
-    this._type = value;
   }
 
   get path(): string {
@@ -26,12 +16,12 @@ export class Concept {
     this._path = value;
   }
 
-  get valueType(): string {
-    return this._valueType;
+  get type(): string {
+    return this._type;
   }
 
-  set valueType(value: string) {
-    this._valueType = value;
+  set type(value: string) {
+    this._type = value;
   }
 
   get aggregate(): Aggregate {
