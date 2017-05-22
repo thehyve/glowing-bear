@@ -3,9 +3,7 @@ import {Concept} from "../concept";
 import {Value} from "../value";
 import {TimeConstraint} from "./time-constraint";
 
-
 export class ConceptConstraint implements Constraint {
-  
   private _concept:Concept;
   private _values: Value[];
   applyDateConstraint: boolean = false;
@@ -42,14 +40,31 @@ export class ConceptConstraint implements Constraint {
       path: this._concept.path
     });
 
-    if(this.values) {
-      for(let value of this.values) {
+    if (this.values.length > 0) {
+      if (this._concept.type == 'NUMERIC') {
+        // Add numerical values directly to the main constraint
+        for (let value of this.values) {
+          args.push({
+            type: "value",
+            valueType: value.valueType,
+            operator: value.operator,
+            value: value.value
+          });
+        }
+      }
+      if (this._concept.type == 'CATEGORICAL_OPTION') {
+        // Wrap categorical values in an OR constraint
         args.push({
-          type: "value",
-          valueType: value.valueType,
-          operator: value.operator,
-          value: value.value
-        });
+          type: "or",
+          args: this.values.map((value: Value) => {
+            return {
+              type: "value",
+              valueType: value.valueType,
+              operator: value.operator,
+              value: value.value
+            };
+          })
+        })
       }
     }
 

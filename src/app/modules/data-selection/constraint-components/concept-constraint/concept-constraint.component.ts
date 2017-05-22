@@ -147,7 +147,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (!concept) {
       return false;
     }
-    return concept.valueType === 'NUMERIC';
+    return concept.type === 'NUMERIC';
   }
 
   isCategorical() {
@@ -155,7 +155,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (!concept) {
       return false;
     }
-    return concept.valueType === 'CATEGORICAL_OPTION';
+    return concept.type === 'CATEGORICAL_OPTION';
   }
 
   isBetween() {
@@ -196,7 +196,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       if(this.operatorState === ConceptOperatorState.EQUAL) {
         if(typeof this.equalVal === 'number') {
           let newVal: Value = new Value();
-          newVal.valueType = this.selectedConcept.valueType;
+          newVal.valueType = this.selectedConcept.type;
           newVal.operator = '=';
           newVal.value = this.equalVal;
           conceptConstraint.values = [];
@@ -209,7 +209,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
         conceptConstraint.values = [];
         if(typeof this.minVal === 'number') {
           let newMinVal: Value = new Value();
-          newMinVal.valueType = this.selectedConcept.valueType;
+          newMinVal.valueType = this.selectedConcept.type;
           newMinVal.operator = '>';
           if(this.isMinEqual) newMinVal.operator = '>=';
           newMinVal.value = this.minVal;
@@ -218,7 +218,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
         if(typeof this.maxVal === 'number') {
           let newMaxVal: Value = new Value();
-          newMaxVal.valueType = this.selectedConcept.valueType;
+          newMaxVal.valueType = this.selectedConcept.type;
           newMaxVal.operator = '<';
           if(this.isMaxEqual) newMaxVal.operator = '<=';
           newMaxVal.value = this.maxVal;
