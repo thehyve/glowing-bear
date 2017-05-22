@@ -9,8 +9,8 @@ import {MenuItem} from "primeng/components/common/api";
 })
 export class NavBarComponent implements OnInit {
 
-  private items: MenuItem[];
-  private activeItem: MenuItem;
+  private _items: MenuItem[];
+  private _activeItem: MenuItem;
 
   isDashboard = true;
   isDataSelection = false;
@@ -21,7 +21,7 @@ export class NavBarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.items = [
+    this._items = [
       {label: 'Dashboard', routerLink: '/dashboard'},
       {label: 'Data Selection', routerLink: '/data-selection'},
       {label: 'Analysis', routerLink: '/analysis'},
@@ -42,19 +42,33 @@ export class NavBarComponent implements OnInit {
     this.isExport = (whichStep === 'export');
 
     if(this.isDashboard) {
-      this.activeItem = this.items[0];
+      this._activeItem = this._items[0];
     }
     else if(this.isDataSelection) {
-      this.activeItem = this.items[1];
+      this._activeItem = this._items[1];
     }
     else if(this.isAnalysis) {
-      this.activeItem = this.items[2];
+      this._activeItem = this._items[2];
     }
     else if(this.isExport) {
-      this.activeItem = this.items[3];
+      this._activeItem = this._items[3];
     }
   }
 
+  get items(): MenuItem[] {
+    return this._items;
+  }
 
+  set items(value: MenuItem[]) {
+    this._items = value;
+  }
+
+  get activeItem(): MenuItem {
+    return this._activeItem;
+  }
+
+  set activeItem(value: MenuItem) {
+    this._activeItem = value;
+  }
 }
 
