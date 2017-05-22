@@ -179,7 +179,7 @@ export class ConstraintService {
       treeNodeType === 'CATEGORICAL_OPTION') {
       let concept = new Concept();
       concept.path = treeNode['fullName'];
-      concept.valueType = treeNode['type'];
+      concept.type = treeNode['type'];
       constraint = new ConceptConstraint();
       (<ConceptConstraint>constraint).concept = concept;
     }

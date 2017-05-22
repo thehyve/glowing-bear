@@ -3,17 +3,15 @@ import {DateOperatorState} from "../../../data-selection/constraint-components/c
 
 export class TimeConstraint implements Constraint {
 
-  private _type: string;
   dateOperator: DateOperatorState = DateOperatorState.BETWEEN;
   date1: Date = new Date();
   date2: Date = new Date();
 
   constructor() {
-    this._type = 'TimeConstraint';
   }
 
-  getConstraintType(): string {
-    return this._type;
+  getClassName(): string {
+    return 'TimeConstraint';
   }
 
   /** Builds a query object for the date constraint.

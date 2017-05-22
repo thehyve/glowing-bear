@@ -142,7 +142,7 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString = JSON.stringify(constraint.toQueryObject());
     let url = `${endpoint.getUrl()}/observations/aggregate?`;
-    if (constraint.concept.valueType === 'NUMERIC') {
+    if (constraint.concept.type === 'NUMERIC') {
       url += `type=min&type=max&type=average&type=count&constraint=${constraintString}`;
     }
     else {
