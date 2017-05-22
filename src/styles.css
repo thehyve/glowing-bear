@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+@import url('https://fonts.googleapis.com/css?family=Roboto');
 
 body {
   background-color: #FCFCFC;
@@ -9,12 +9,12 @@ input,
 optgroup,
 select,
 textarea {
-  font-family: 'Roboto Slab', serif;;
+  font-family: 'Roboto', sans-serif;
 }
 
 .loading-message {
   color: #339C90;
-  font-family: 'Roboto Slab', serif;;
+  font-family: 'Roboto', sans-serif;
   font-size: 300%;
   text-align: center;
   padding: 200px;
