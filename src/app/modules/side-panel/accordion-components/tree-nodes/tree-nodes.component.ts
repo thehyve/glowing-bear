@@ -22,6 +22,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
+          console.log('tree nodes: ', treeNodes);
         },
         err => console.error(err)
       );
@@ -49,14 +50,35 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   augmentTreeNodes(nodes: Object[]) {
     for (let node of nodes) {
-      node['label'] = node['name'];
+      let patientCount = node['patientCount'];
+      let observationCount = node['observationCount'];
+      let countStr = ' ';
+      if(patientCount) {
+        countStr += '(' + patientCount;
+      }
+      if(observationCount) {
+        countStr += ' | ' + observationCount;
+      }
+      if(countStr !== ' ') countStr += ')';
+      node['label'] = node['name'] + countStr;
       if (node['children']) {
         node['expandedIcon'] = 'fa-folder-open';
         node['collapsedIcon'] = 'fa-folder';
         this.augmentTreeNodes(node['children']);
       }
       else {
-        node['icon'] = 'fa-leaf';
+        if(node['type'] === 'NUMERIC') {
+          node['icon'] = 'fa-leaf';
+        }
+        else if(node['type'] === 'HIGH_DIMENSIONAL') {
+          node['icon'] = 'fa-file';
+        }
+        else if(node['type'] === 'CATEGORICAL_OPTION') {
+          node['icon'] = 'fa-pie-chart';
+        }
+        else {
+          node['icon'] = 'fa-folder-o';
+        }
       }
     }
   }

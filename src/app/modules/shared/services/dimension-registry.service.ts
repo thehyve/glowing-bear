@@ -68,7 +68,7 @@ export class DimensionRegistryService {
             treeNode['visualAttributes'].indexOf('CONTAINER') == -1) {
 
           let concept = new Concept();
-          concept.path = treeNode['fullName'];
+          concept.path = treeNode['constraint']['path'];
           concept.type = treeNode['type'];
           this.concepts.push(concept);
 
