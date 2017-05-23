@@ -22,7 +22,8 @@ export class EndpointService {
       this.saveEndpoint();
     }
     else {
-      this.restoreEndpoint();
+      // Read the access token information from the local storage
+      this.restoreEndpointAuthentication();
     }
 
   }
@@ -155,13 +156,15 @@ export class EndpointService {
   }
 
   /**
-   * Restores the endpoint from local storage, or navigates to the
+   * Restores the endpoint authentication from local storage, or navigates to the
    * authorization page is no data is found.
    */
-  private restoreEndpoint() {
+  private restoreEndpointAuthentication() {
     let endpointJSON = localStorage.getItem('endpoint');
     if (endpointJSON) {
-      Object.assign(this.endpoint, JSON.parse(endpointJSON));
+      let storedEndpoint = JSON.parse(endpointJSON);
+      this.endpoint.accessToken = storedEndpoint._accessToken;
+      this.endpoint.expiresAt = storedEndpoint._expiresAt;
     }
     else {
       this.navigateToAuthorizationPage(this.endpoint);
