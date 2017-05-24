@@ -2,12 +2,9 @@ import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
 import {Concept} from "../../../shared/models/concept";
-import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
 import {ConceptOperatorState} from "./concept-operator-state";
-import {Value} from "../../../shared/models/value";
-import {ResourceService} from "../../../shared/services/resource.service";
-import {ConstraintService} from "../../../shared/services/constraint.service";
+import {ValueConstraint} from "../../../shared/models/constraints/value-constraint";
 import {DateOperatorState} from "./date-operator-state";
 
 @Component({
@@ -195,7 +192,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       //if to define a single value
       if(this.operatorState === ConceptOperatorState.EQUAL) {
         if(typeof this.equalVal === 'number') {
-          let newVal: Value = new Value();
+          let newVal: ValueConstraint = new ValueConstraint();
           newVal.valueType = this.selectedConcept.type;
           newVal.operator = '=';
           newVal.value = this.equalVal;
@@ -208,7 +205,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       else if(this.operatorState === ConceptOperatorState.BETWEEN) {
         conceptConstraint.values = [];
         if(typeof this.minVal === 'number') {
-          let newMinVal: Value = new Value();
+          let newMinVal: ValueConstraint = new ValueConstraint();
           newMinVal.valueType = this.selectedConcept.type;
           newMinVal.operator = '>';
           if(this.isMinEqual) newMinVal.operator = '>=';
@@ -217,7 +214,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
         }
 
         if(typeof this.maxVal === 'number') {
-          let newMaxVal: Value = new Value();
+          let newMaxVal: ValueConstraint = new ValueConstraint();
           newMaxVal.valueType = this.selectedConcept.type;
           newMaxVal.operator = '<';
           if(this.isMaxEqual) newMaxVal.operator = '<=';
@@ -230,7 +227,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     else if(this.isCategorical()){
       conceptConstraint.values = [];
       for(let category of this.selectedCategories) {
-        let newVal: Value = new Value();
+        let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = 'contains';
         newVal.value = category;

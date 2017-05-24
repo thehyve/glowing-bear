@@ -1,11 +1,11 @@
 import {Constraint} from './constraint';
 import {Concept} from "../concept";
-import {Value} from "../value";
+import {ValueConstraint} from "./value-constraint";
 import {TimeConstraint} from "./time-constraint";
 
 export class ConceptConstraint implements Constraint {
   private _concept:Concept;
-  private _values: Value[];
+  private _values: ValueConstraint[];
   applyDateConstraint: boolean = false;
   timeConstraint: TimeConstraint = new TimeConstraint();
 
@@ -21,11 +21,11 @@ export class ConceptConstraint implements Constraint {
     this._concept = value;
   }
 
-  get values(): Value[] {
+  get values(): ValueConstraint[] {
     return this._values;
   }
 
-  set values(value: Value[]) {
+  set values(value: ValueConstraint[]) {
     this._values = value;
   }
 
@@ -56,14 +56,7 @@ export class ConceptConstraint implements Constraint {
         // Wrap categorical values in an OR constraint
         args.push({
           type: "or",
-          args: this.values.map((value: Value) => {
-            return {
-              type: "value",
-              valueType: value.valueType,
-              operator: value.operator,
-              value: value.value
-            };
-          })
+          args: this.values.map((value: ValueConstraint) => value.toQueryObject())
         })
       }
     }
