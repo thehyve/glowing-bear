@@ -4,13 +4,11 @@ import {CombinationState} from "./combination-state";
 export class CombinationConstraint implements Constraint {
 
   private _children: Constraint[];
-  private _isNot: boolean;
   private _combinationState: CombinationState;
 
 
   constructor() {
     this._children = [];
-    this._isNot = false;
     this.combinationState = CombinationState.And;
   }
 
@@ -74,13 +72,6 @@ export class CombinationConstraint implements Constraint {
       };
     }
 
-    // If we're negating, we wrap the object in a negation constraint
-    if (this._isNot) {
-      return {
-        type: "negation",
-        arg: queryObject
-      }
-    }
     return queryObject;
   }
 
@@ -90,14 +81,6 @@ export class CombinationConstraint implements Constraint {
 
   isAnd() {
     return this.combinationState === CombinationState.And;
-  }
-
-  get isNot(): boolean {
-    return this._isNot;
-  }
-
-  set isNot(value: boolean) {
-    this._isNot = value;
   }
 
   get children(): Constraint[] {
