@@ -1,4 +1,6 @@
-export class Value {
+import {Constraint} from "./constraint";
+
+export class ValueConstraint implements Constraint {
   private _valueType: string;
   private _operator: string;
   private _value: any;
@@ -29,4 +31,22 @@ export class Value {
   set value(value: any) {
     this._value = value;
   }
+
+  getClassName(): string {
+    return 'ValueConstraint';
+  }
+
+  toQueryObject(): Object {
+    return {
+      type: "value",
+      valueType: this._valueType,
+      operator: this._operator,
+      value: this._value
+    };
+  }
+
+  get textRepresentation(): string {
+    return 'Value';
+  }
+
 }
