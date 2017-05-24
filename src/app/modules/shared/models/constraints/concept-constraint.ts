@@ -34,6 +34,11 @@ export class ConceptConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
+    // When no concept is selected, we cannot create a query object (it should be ignored)
+    if (!this._concept) {
+      return null;
+    }
+
     let args = [];
     args.push({
       type: 'concept',
