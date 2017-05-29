@@ -166,7 +166,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           (this.operatorState = ConceptOperatorState.BETWEEN) :
           (this.operatorState = ConceptOperatorState.EQUAL);
     }
-    this.constraintService.update();
+    this.updateConceptValues();
   }
 
   selectAll() {
