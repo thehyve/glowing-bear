@@ -27,7 +27,7 @@
     "font-awesome": "^4.7.0",
     "md2": "0.0.19",
     "ng2-split-pane": "^1.4.0",
-    "primeng": "^4.0.0",
+    "primeng": "^4.0.1",
     "rxjs": "^5.1.0",
     "typescript": "^2.3.2",
     "zone.js": "^0.8.4"
