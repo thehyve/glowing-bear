@@ -55,8 +55,6 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this.suggestedCategories = [];
 
     this._dateOperatorState = DateOperatorState.BETWEEN;
-    this._date1 = new Date();
-    this._date2 = new Date();
 
     let constraint:ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
@@ -84,6 +82,14 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           }
         );
     }
+
+    // Initialize the dates from the contraint's time constraint
+    // Because the date picker represents the date/time in the local timezone,
+    // we need to correct the date that is actually used in the constraint.
+    let date1 = constraint.timeConstraint.date1;
+    this._date1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+    let date2 = constraint.timeConstraint.date2;
+    this._date2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
   }
 
   get selectedConcept():Concept {
@@ -250,25 +256,43 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this.constraintService.update();
   }
 
-  get date1():string {
-    return this._date1.toISOString().slice(0,16);
+  get date1():Date {
+    return this._date1;
   }
 
-  set date1(value:string) {
-    this._date1 = new Date(value);
+  set date1(value:Date) {
+    // Ignore invalid values
+    if (!value) {
+      return;
+    }
+
+    this._date1 = value;
+
+    // Because the date picker represents the date/time in the local timezone,
+    // we need to correct the date that is actually used in the constraint.
+    let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.timeConstraint.date1 = this._date1;
+    conceptConstraint.timeConstraint.date1 = correctedDate;
     this.constraintService.update();
   }
 
-  get date2():string {
-    return this._date2.toISOString().slice(0,16);
+  get date2():Date {
+    return this._date2;
   }
 
-  set date2(value:string) {
-    this._date2 = new Date(value);
+  set date2(value:Date) {
+    // Ignore invalid values
+    if (!value) {
+      return;
+    }
+
+    this._date2 = value;
+
+    // Because the date picker represents the date/time in the local timezone,
+    // we need to correct the date that is actually used in the constraint.
+    let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint:ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.timeConstraint.date2 = this._date2;
+    conceptConstraint.timeConstraint.date2 = correctedDate;
     this.constraintService.update();
   }
 

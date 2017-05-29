@@ -79,11 +79,20 @@
         <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
       </button>
       &nbsp;
-      <!-- TODO: replace with datetime component that actually works and doesn't show time in local timezone -->
-      <input type="datetime-local" [value]="date1" (change)="date1=$event.target.value">
+      <p-calendar [(ngModel)]="date1"
+                  dateFormat="dd-mm-yy"
+                  showTime="true"
+                  showSeconds="true"
+                  hourFormat="24"
+                  utc="true"></p-calendar>
       <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
         <span>&nbsp;and&nbsp;</span>
-        <input type="datetime-local" [value]="date2" (change)="date2=$event.target.value">
+        <p-calendar [(ngModel)]="date2"
+                    dateFormat="dd-mm-yy"
+                    showTime="true"
+                    showSeconds="true"
+                    hourFormat="24"
+                    utc="true"></p-calendar>
       </div>
     </div>
   </div>
