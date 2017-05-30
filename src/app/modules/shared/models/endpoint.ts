@@ -2,7 +2,7 @@ export class Endpoint {
 
   private _accessToken: string;
   private _isAuthenticated: boolean;
-
+  private _expiresAt: number;
 
   constructor(private _apiUrl: string, private _apiVersion: string, private _appUrl: string) {
     this._isAuthenticated = false;
@@ -51,5 +51,13 @@ export class Endpoint {
 
   set isAuthenticated(value: boolean) {
     this._isAuthenticated = value;
+  }
+
+  get expiresAt():number {
+    return this._expiresAt;
+  }
+
+  set expiresAt(value:number) {
+    this._expiresAt = value;
   }
 }

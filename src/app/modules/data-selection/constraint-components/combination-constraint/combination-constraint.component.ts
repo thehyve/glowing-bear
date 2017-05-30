@@ -26,14 +26,6 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
   ngOnInit() {
   }
 
-  get isNot(): boolean {
-    return (<CombinationConstraint>this.constraint).isNot;
-  }
-
-  set isNot(value: boolean) {
-    (<CombinationConstraint>this.constraint).isNot = value;
-  }
-
   get isAnd(): boolean {
     return (<CombinationConstraint>this.constraint).isAnd();
   }

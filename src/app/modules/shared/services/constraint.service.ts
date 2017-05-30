@@ -10,6 +10,7 @@ import {Study} from "../models/study";
 import {Concept} from "../models/concept";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationState} from "../models/constraints/combination-state";
+import {NegationConstraint} from "../models/constraints/negation-constraint";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -122,15 +123,12 @@ export class ConstraintService {
 
     // Only use exclusion if there's something there
     if ((<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
-      // Wrap in negation
-      //TODO: it might be clearer to create a separate NegationConstraint for this
-      let newExclusionConstraint = new CombinationConstraint();
-      (<CombinationConstraint>newExclusionConstraint).isNot = true;
-      (<CombinationConstraint>newExclusionConstraint).children.push(exclusionConstraint);
+      // Wrap exclusion in negation
+      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
 
       let combination = new CombinationConstraint();
       combination.children.push(inclusionConstraint);
-      combination.children.push(newExclusionConstraint);
+      combination.children.push(negatedExclusionConstraint);
       return combination;
     }
     else {
