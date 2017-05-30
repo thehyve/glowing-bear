@@ -76,8 +76,15 @@ export class ConstraintComponent implements OnInit {
       else if (this.constraint.getClassName() === droppedConstraint.getClassName()) {
         if (this.constraint instanceof StudyConstraint) {
           let study = (<StudyConstraint>droppedConstraint).studies[0];
-          (<StudyConstraint>this.constraint).studies.push(study);
-          this.constraintService.update();
+          let studies = (<StudyConstraint>this.constraint).studies;
+          let studyIds = [];
+          for(let _study of studies) {
+            studyIds.push(_study.studyId);
+          }
+          if(studyIds.indexOf(study.studyId) === -1) {
+            studies.push(study);
+            this.constraintService.update();
+          }
         }
         else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;

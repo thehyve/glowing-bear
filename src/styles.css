@@ -60,13 +60,18 @@ body .gb-tree-container {
 }
 
 .ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
-  height: 45px;
+  height: 40px;
   margin-top: 4px;
 }
 
 .ui-autocomplete-multiple-container {
   position: relative;
   top: 4px;
+}
+
+/* Fix multiple autocomplete dropdown button new line break */
+.ui-autocomplete {
+  display: inline-flex;
 }
 
 .v-align-center {
