@@ -235,7 +235,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       for(let category of this.selectedCategories) {
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
-        newVal.operator = 'contains';
+        newVal.operator = '=';
         newVal.value = category;
         conceptConstraint.values.push(newVal);
       }
