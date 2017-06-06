@@ -7,6 +7,8 @@ import {StudyConstraint} from "../models/constraints/study-constraint";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationConstraint} from "../models/constraints/combination-constraint";
 import {PatientSet} from "../models/patient-set";
+import {ObservationSet} from "../models/observation-set";
+import {SavedSet} from "../models/saved-set";
 
 @Injectable()
 export class DimensionRegistryService {
@@ -14,7 +16,8 @@ export class DimensionRegistryService {
 
   private studies: Study[] = [];
   private concepts: Concept[] = [];
-  private patientSets: PatientSet[] = [];
+  private patientSets: SavedSet[] = [];
+  private observationSets: SavedSet[] = [];
 
 
   // List keeping track of all available constraints. By default, the empty
@@ -103,6 +106,10 @@ export class DimensionRegistryService {
 
   getPatientSets() {
     return this.patientSets;
+  }
+
+  getObservationSets() {
+    return this.observationSets;
   }
 
   /**

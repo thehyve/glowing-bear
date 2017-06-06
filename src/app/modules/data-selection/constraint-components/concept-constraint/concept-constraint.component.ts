@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
 import {Concept} from "../../../shared/models/concept";
