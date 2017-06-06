@@ -6,12 +6,16 @@ import {Concept} from "../models/concept";
 import {StudyConstraint} from "../models/constraints/study-constraint";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationConstraint} from "../models/constraints/combination-constraint";
+import {PatientSet} from "../models/patient-set";
 
 @Injectable()
 export class DimensionRegistryService {
 
+
   private studies: Study[] = [];
   private concepts: Concept[] = [];
+  private patientSets: PatientSet[] = [];
+
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
@@ -46,6 +50,10 @@ export class DimensionRegistryService {
         },
         err => console.error(err)
       );
+
+    // Retrieve all the saved patient sets
+    // TODO: connect to real backend call
+    this.patientSets = resourceService.getPatientSets();
 
   }
 
@@ -91,6 +99,10 @@ export class DimensionRegistryService {
 
   getConcepts() {
     return this.concepts;
+  }
+
+  getPatientSets() {
+    return this.patientSets;
   }
 
   /**

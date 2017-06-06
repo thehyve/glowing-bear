@@ -6,8 +6,13 @@ import {TimeConstraint} from "./time-constraint";
 export class ConceptConstraint implements Constraint {
   private _concept:Concept;
   private _values: ValueConstraint[];
+
+  // date range
   applyDateConstraint: boolean = false;
   timeConstraint: TimeConstraint = new TimeConstraint();
+
+  // trial visit
+
 
   constructor() {
     this.values = [];

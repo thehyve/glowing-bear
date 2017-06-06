@@ -14,6 +14,7 @@ import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
+import {PatientSet} from "../models/patient-set";
 
 @Injectable()
 export class ResourceService {
@@ -96,6 +97,23 @@ export class ResourceService {
 
   // -------------------------------------- patient calls --------------------------------------
 
+  //TODO: connect to real backend call
+  getPatientSets(): PatientSet[] {
+    let patientSets: PatientSet[] = [];
+    let ps1: PatientSet = new PatientSet('28746', 'testing-age-ps');
+    let ps2: PatientSet = new PatientSet('28747', 'test-race-ps');
+    patientSets.push(ps1);
+    patientSets.push(ps2);
+
+    return patientSets;
+  }
+
+  /**
+   * Given a constraint, return the corresponding patient list
+   * @param constraint
+   * @param debugLabel - for debugging purpose
+   * @returns {Observable<R|T>}
+   */
   getPatients(constraint: Constraint, debugLabel:string): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();

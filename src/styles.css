@@ -54,6 +54,13 @@ body .ui-tabmenu-nav {
 }
 
 /*
+ * style fix for hiding the border in data list in saved patient sets in the side panel
+ */
+body .ui-widget-content {
+  border: none;
+}
+
+/*
  * style fix for the primeng tree-container in the side-panel
  */
 body .gb-tree-container {
@@ -73,6 +80,16 @@ body .gb-spinner {
 body .gb-spinner.loading {
   display: inline-block;
   visibility: visible;
+}
+
+/*
+ * style for a patient-set item on the side panel
+ */
+body .gb-patient-set-item {
+  padding: 3px;
+  border-radius: 5px;
+  border: 1px solid #D5D5D5;
+  margin-bottom: 3px;
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */

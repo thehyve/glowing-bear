@@ -1,0 +1,16 @@
+<p-dataList [value]="patientSets">
+  <ng-template let-patientSet let-i="index" pTemplate="item">
+
+    <div class="ui-grid ui-grid-responsive ui-fluid gb-patient-set-item"
+         pDraggable="patient-set-drag-drop">
+      <div class="ui-grid-row">
+        <div class="ui-grid ui-grid-responsive ui-fluid">
+          <div class="ui-grid-row">
+            {{patientSet.name}}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+</p-dataList>
