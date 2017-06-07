@@ -1,7 +1,8 @@
-import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
 import {TreeNode} from "primeng/components/common/api";
 import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
+import {OverlayPanel} from "primeng/components/overlaypanel/overlaypanel";
 
 @Component({
   selector: 'tree-nodes',
@@ -10,8 +11,13 @@ import {ConstraintService} from "../../../shared/services/constraint.service";
 })
 export class TreeNodesComponent implements OnInit, AfterViewInit {
 
+  @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
+
   treeNodes: TreeNode[];
   observer: MutationObserver;
+  expansionStatus: any;
+  metadataContent: any;
+  metadata:any;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
@@ -26,13 +32,19 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         },
         err => console.error(err)
       );
+
+    this.expansionStatus = {
+      expanded: false,
+      treeNodeElm: null,
+      treeNode: null
+    };
   }
 
   ngOnInit() {
   }
 
   ngAfterViewInit() {
-    this.observer = new MutationObserver(this.updateEventHandlers.bind(this));
+    this.observer = new MutationObserver(this.update.bind(this));
     var config = {
       attributes: false,
       subtree: true,
@@ -60,7 +72,13 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         countStr += ' | ' + observationCount;
       }
       if(countStr !== ' ') countStr += ')';
+
       node['label'] = node['name'] + countStr;
+
+      if(node['metadata']) {
+        node['label'] = node['label'] + ' 🂠';
+      }
+
       if (node['children']) {
         node['expandedIcon'] = 'fa-folder-open';
         node['collapsedIcon'] = 'fa-folder';
@@ -83,29 +101,72 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     }
   }
 
-  updateEventHandlersRecursively(ptreeNodes, dataTreeNodes) {
-    for (let ptreeNode of ptreeNodes) {
-      let index: number = ptreeNode.getAttribute('ng-reflect-index');
-      let dataObject: TreeNode = dataTreeNodes[index];
+  /**
+   * Add event listeners to the newly appended tree nodes
+   * @param treeNodeElements
+   * @param treeNodes
+   */
+  updateEventListeners(treeNodeElements, treeNodes) {
+    let index = 0;
+    for (let elm of treeNodeElements) {
+      let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
+      let metadata = dataObject['metadata'];
+      let treeNodeElm = elm.querySelector('li.ui-treenode');
+
+      let handleDragstart = (function (event) {
+        event.stopPropagation();
+        this.constraintService.selectedTreeNode = dataObject;
+      }).bind(this);
+
+      let handleContextmenu = (function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        for(let key in metadata) {
+          let val = metadata[key];
+          this.metadataContent += key + ': ' + val + '\n';
+        }
+        this.metadata;
+        console.log('metadata: ', metadata);
+        this.treeNodeMetadataPanel.toggle(event);
+      }).bind(this);
+
+      //if the data object type belongs to the listed types
       if (this.constraintService.validTreeNodeTypes.includes(dataObjectType)) {
-        ptreeNode.querySelector('li.ui-treenode')
-          .addEventListener('dragstart', (function (event) {
-            event.stopPropagation();
-            this.constraintService.selectedTreeNode = dataObject;
-          }).bind(this));
+        treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
-      let uiTreeNodeChildrenElm = ptreeNode.querySelector('.ui-treenode-children');
+      //if metadata exitss
+      if(metadata) {
+        treeNodeElm.addEventListener('contextmenu', handleContextmenu);
+      }
+
+      let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
-        this.updateEventHandlersRecursively(uiTreeNodeChildrenElm.children, dataObject.children);
+        this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
       }
+      index++;
     }
   }
 
-  updateEventHandlers() {
-    let ptree = this.element.nativeElement.querySelector('p-tree');
-    let rootPtreeNodes = ptree.querySelector('.ui-tree-container').children;
-    this.updateEventHandlersRecursively(rootPtreeNodes, this.treeNodes);
+  update() {
+    if(this.expansionStatus['expanded']) {
+      let treeNodeElm = this.expansionStatus['treeNodeElm'];
+      let treeNode = this.expansionStatus['treeNode'];
+      let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
+      this.updateEventListeners(newChildren, treeNode.children);
+
+      this.expansionStatus['expanded'] = false;
+      this.expansionStatus['treeNodeElm'] = null;
+      this.expansionStatus['treeNode'] = null;
+    }
+  }
+
+  expandNode(event) {
+    if(event.node) {
+      this.expansionStatus['expanded'] = true;
+      this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
+      this.expansionStatus['treeNode'] = event.node;
+    }
   }
 
 

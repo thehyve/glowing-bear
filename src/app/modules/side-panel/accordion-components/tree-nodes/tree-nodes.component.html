@@ -1,3 +1,11 @@
 <p-tree [value]="treeNodes"
+        (onNodeExpand)="expandNode($event)"
         draggableNodes="true"
         styleClass="gb-tree-container"></p-tree>
+
+<p-overlayPanel #treeNodeMetadataPanel
+                [dismissable]="true"
+                [showCloseIcon]="true">
+  <!--{{metadataContent}}-->
+  {{metadata}}
+</p-overlayPanel>
