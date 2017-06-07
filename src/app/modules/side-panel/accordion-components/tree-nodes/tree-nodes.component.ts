@@ -16,8 +16,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   treeNodes: TreeNode[];
   observer: MutationObserver;
   expansionStatus: any;
-  metadataContent: any;
-  metadata:any;
+  metadataContent: any = [];
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
@@ -76,7 +75,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       node['label'] = node['name'] + countStr;
 
       if(node['metadata']) {
-        node['label'] = node['label'] + ' 🂠';
+        node['label'] = node['label'] + ' ⚆';
       }
 
       if (node['children']) {
@@ -102,6 +101,21 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   /**
+   * Update the contextmenu popup (right click) content
+   * by the given metadata object from a treenode
+   * @param metadata
+   */
+  updateMetadataContent(metadata) {
+    this.metadataContent = [];
+    for(let key in metadata) {
+      this.metadataContent.push({
+        key: key,
+        val: metadata[key]
+      });
+    }
+  }
+
+  /**
    * Add event listeners to the newly appended tree nodes
    * @param treeNodeElements
    * @param treeNodes
@@ -122,12 +136,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       let handleContextmenu = (function (event) {
         event.stopPropagation();
         event.preventDefault();
-        for(let key in metadata) {
-          let val = metadata[key];
-          this.metadataContent += key + ': ' + val + '\n';
-        }
-        this.metadata;
-        console.log('metadata: ', metadata);
+        this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.toggle(event);
       }).bind(this);
 

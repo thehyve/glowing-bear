@@ -7,5 +7,10 @@
                 [dismissable]="true"
                 [showCloseIcon]="true">
   <!--{{metadataContent}}-->
-  {{metadata}}
+  <div *ngFor="let item of metadataContent">
+    <div class="ui-grid-row gb-metadata-row">
+      {{item.key}}: {{item.val}}
+    </div>
+  </div>
+
 </p-overlayPanel>
