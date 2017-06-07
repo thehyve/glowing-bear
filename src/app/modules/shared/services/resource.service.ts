@@ -94,7 +94,6 @@ export class ResourceService {
     }
   }
 
-
   // -------------------------------------- patient calls --------------------------------------
 
   //TODO: connect to real backend call

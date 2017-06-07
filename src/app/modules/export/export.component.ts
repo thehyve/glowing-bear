@@ -1,7 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
+import {Component, OnInit, ElementRef} from '@angular/core';
 import {DimensionRegistryService} from "../shared/services/dimension-registry.service";
 import {SavedSet} from "../shared/models/saved-set";
+import {ConstraintService} from "../shared/services/constraint.service";
 
 @Component({
   selector: 'export',
@@ -12,11 +12,12 @@ export class ExportComponent implements OnInit {
 
   autoCompleteHolders: object[];
 
-  selectedSet: any;
   searchResults: any;
   exportTaskName: string;
 
-  constructor(private dimensionRegistry: DimensionRegistryService) {
+  constructor(private dimensionRegistry: DimensionRegistryService,
+              private constraintService: ConstraintService,
+              private element: ElementRef) {
     this.autoCompleteHolders = [{
       selectedSet: null
     }];
@@ -67,5 +68,18 @@ export class ExportComponent implements OnInit {
 
   exportSelectedSets() {
     console.log(this.autoCompleteHolders);
+  }
+
+  onExportTaskNameInputDrop(event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  onExportAutoCompleteFormDrop(event, index) {
+    console.log('event: ', event, index);
+    event.stopPropagation();
+    event.preventDefault();
+    // this.constraintService.selectedPatientSet
+    this.autoCompleteHolders[index]['selectedSet'] = this.constraintService.selectedSet;
   }
 }

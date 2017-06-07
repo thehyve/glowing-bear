@@ -196,6 +196,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
     }
+
   }
 
 }

@@ -9,6 +9,7 @@ import {CombinationConstraint} from "../models/constraints/combination-constrain
 import {PatientSet} from "../models/patient-set";
 import {ObservationSet} from "../models/observation-set";
 import {SavedSet} from "../models/saved-set";
+import {TreeNode} from "primeng/components/common/api";
 
 @Injectable()
 export class DimensionRegistryService {

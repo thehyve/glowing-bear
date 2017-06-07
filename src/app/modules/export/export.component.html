@@ -3,13 +3,14 @@
   <!-- autocompletes to select patient sets or observation sets -->
 
   <div *ngFor="let holder of autoCompleteHolders; let i = index">
-    <div class="form-inline">
+    <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event, i)">
       <p-autoComplete [(ngModel)]="holder.selectedSet"
                       [suggestions]="searchResults"
                       (completeMethod)="onSearch($event)"
                       field="name"
                       size="60"
                       dropdown="true"
+                      pDroppable="patient-set-drag-drop"
                       placeholder="select patient set or observation set"
                       (onDropdownClick)="onDropdown($event)"></p-autoComplete>
       <button *ngIf="autoCompleteHolders.length > 1" type="button"
@@ -35,8 +36,9 @@
 
   <!-- export name input and button -->
   <div class="form-inline">
-    <input type="text" id="exportTaskName" class="form-text"
+    <input id="exportTaskNameInput" type="text" class="form-text"
            placeholder="Export task name"
+           (drop)="onExportTaskNameInputDrop($event)"
            [(ngModel)]="exportTaskName" >
     <button type="button" class="btn btn-primary" (click)="exportSelectedSets()">Export selected sets</button>
   </div>

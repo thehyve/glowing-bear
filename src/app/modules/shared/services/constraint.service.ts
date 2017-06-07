@@ -11,6 +11,7 @@ import {Concept} from "../models/concept";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationState} from "../models/constraints/combination-state";
 import {NegationConstraint} from "../models/constraints/negation-constraint";
+import {SavedSet} from "../models/saved-set";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -36,6 +37,11 @@ export class ConstraintService {
    */
   private _selectedTreeNode: any = null;
   private _validTreeNodeTypes: string[] = [];
+
+  /*
+   * The selected patient/observation set in the patient set list on the side-panel
+   */
+  private _selectedSet: SavedSet = null;
 
 
   constructor(private resourceService: ResourceService) {
@@ -302,5 +308,13 @@ export class ConstraintService {
 
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
+  }
+
+  get selectedSet(): SavedSet {
+    return this._selectedSet;
+  }
+
+  set selectedSet(value: SavedSet) {
+    this._selectedSet = value;
   }
 }

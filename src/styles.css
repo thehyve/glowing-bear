@@ -90,6 +90,8 @@ body .gb-patient-set-item {
   border-radius: 5px;
   border: 1px solid #D5D5D5;
   margin-bottom: 3px;
+  background-color: #f2f2f2;
+  box-shadow: 1px 1px 1px #D5D5D5;
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
