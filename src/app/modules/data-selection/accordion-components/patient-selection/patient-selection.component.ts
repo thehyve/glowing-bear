@@ -68,4 +68,9 @@ export class PatientSelectionComponent implements OnInit {
     this.constraintService.savePatients(this.patientSetName);
   }
 
+  onTreeNodeDropOnPatientSetNameField(event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
 }

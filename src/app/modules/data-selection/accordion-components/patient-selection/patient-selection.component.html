@@ -37,7 +37,10 @@
 
   <hr>
   <div class="form-inline">
-    <input type="text" id="patientSetName" class="form-text" placeholder="Patient set name (optional)" [(ngModel)]="patientSetName" >
+    <input type="text" id="patientSetName" class="form-text"
+           placeholder="Patient set name (optional)"
+           (drop)="onTreeNodeDropOnPatientSetNameField($event)"
+           [(ngModel)]="patientSetName" >
     <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
   </div>
 
