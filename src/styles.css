@@ -54,6 +54,19 @@ body .gb-tree-container {
   border-style: none;
 }
 
+/*
+ * style class for loading tree nodes and patient counts
+ */
+body .gb-spinner {
+  display: none;
+  visibility: hidden;
+}
+
+body .gb-spinner.loading {
+  display: inline-block;
+  visibility: visible;
+}
+
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
   height: 38px;
