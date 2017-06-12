@@ -2,7 +2,7 @@ import {
   Component, OnInit, ViewChild
 } from '@angular/core';
 import {
-  trigger, state, style, animate, transition
+  trigger, style, animate, transition
 } from '@angular/animations';
 import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
 import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";

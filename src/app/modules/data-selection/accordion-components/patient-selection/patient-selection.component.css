@@ -20,10 +20,3 @@
   padding: 2px 8px 2px 4px;
 }
 
-.gb-spinner {
-  visibility: hidden;
-}
-
-.gb-spinner.loading {
-  visibility: visible;
-}
