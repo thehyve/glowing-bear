@@ -177,6 +177,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   selectAll() {
     this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+    this.updateConceptValues();
   }
   selectNone() {
     this.selectedCategories = [];
