@@ -76,7 +76,7 @@ export class ResourceService {
     if (endpoint) {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
-      let url = `${endpoint.getUrl()}/tree_nodes?counts=true`;
+      let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
       return this.http.get(url, {
         headers: headers
       })

@@ -1,3 +1,16 @@
 <p-tree [value]="treeNodes"
+        (onNodeExpand)="expandNode($event)"
         draggableNodes="true"
         styleClass="gb-tree-container"></p-tree>
+
+<p-overlayPanel #treeNodeMetadataPanel
+                [dismissable]="true"
+                [showCloseIcon]="true">
+  <!--{{metadataContent}}-->
+  <div *ngFor="let item of metadataContent">
+    <div class="ui-grid-row gb-metadata-row">
+      {{item.key}}: {{item.val}}
+    </div>
+  </div>
+
+</p-overlayPanel>
