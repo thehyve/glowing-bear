@@ -4,6 +4,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 import {OverlayPanel} from "primeng/components/overlaypanel/overlaypanel";
 
+
 @Component({
   selector: 'tree-nodes',
   templateUrl: './tree-nodes.component.html',
@@ -18,15 +19,19 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   expansionStatus: any;
   metadataContent: any = [];
 
+  isLoadingTreeNodes: boolean;
+
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
 
+    this.isLoadingTreeNodes = true;
     this.resourceService.getTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
+          this.isLoadingTreeNodes = false;
           console.log('tree nodes: ', treeNodes);
         },
         err => console.error(err)
@@ -177,6 +182,5 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNode'] = event.node;
     }
   }
-
 
 }

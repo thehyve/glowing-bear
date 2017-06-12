@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ResourceService} from "./resource.service";
 import {Study} from "../models/study";
 import {Constraint} from "../models/constraints/constraint";
@@ -10,19 +10,19 @@ import {CombinationConstraint} from "../models/constraints/combination-constrain
 @Injectable()
 export class DimensionRegistryService {
 
-  private studies:Study[] = [];
-  private concepts:Concept[] = [];
+  private studies: Study[] = [];
+  private concepts: Concept[] = [];
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
   // added. The constraints should be copied when editing them.
-  private allConstraints:Constraint[] = [
+  private allConstraints: Constraint[] = [
     new CombinationConstraint(),
     new StudyConstraint(),
     new ConceptConstraint()
   ];
 
-  constructor(private resourceService:ResourceService) {
+  constructor(private resourceService: ResourceService) {
 
     // Retrieve available studies
     this.resourceService.getStudies()
@@ -41,7 +41,7 @@ export class DimensionRegistryService {
     // Retrieve all tree nodes and extract the concepts
     this.resourceService.getTreeNodes()
       .subscribe(
-        (treeNodes:object[]) => {
+        (treeNodes: object[]) => {
           this.processTreeNodes(treeNodes);
         },
         err => console.error(err)
@@ -53,7 +53,7 @@ export class DimensionRegistryService {
    *  provided TreeNode array and their children.
    * @param treeNodes
    */
-  private processTreeNodes(treeNodes:object[]) {
+  private processTreeNodes(treeNodes: object[]) {
     if (!treeNodes) {
       return;
     }
@@ -65,7 +65,7 @@ export class DimensionRegistryService {
 
         // Only include non-FOLDERs and non-CONTAINERs
         if (treeNode['visualAttributes'].indexOf('FOLDER') == -1 &&
-            treeNode['visualAttributes'].indexOf('CONTAINER') == -1) {
+          treeNode['visualAttributes'].indexOf('CONTAINER') == -1) {
 
           let concept = new Concept();
           //TODO: retrieve concept path in less hacky manner:
@@ -99,10 +99,10 @@ export class DimensionRegistryService {
    * @param query
    * @returns {Array}
    */
-  searchAllConstraints(query:string):Constraint[] {
+  searchAllConstraints(query: string): Constraint[] {
     query = query.toLowerCase();
     let results = [];
-    this.allConstraints.forEach((constraint:Constraint) => {
+    this.allConstraints.forEach((constraint: Constraint) => {
       let text = constraint.textRepresentation.toLowerCase();
       if (text.indexOf(query) > -1) {
         results.push(constraint);
