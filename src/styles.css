@@ -49,9 +49,8 @@ body .ui-tabmenu-nav {
  */
 body .gb-tree-container {
   width: auto;
-  margin-left: -20px;
-  margin-top: -20px;
-  border-style: none;
+  background-color: transparent;
+  border: none;
 }
 
 /*
