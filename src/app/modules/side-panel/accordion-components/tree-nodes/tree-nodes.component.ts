@@ -90,13 +90,13 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       }
       else {
         if(node['type'] === 'NUMERIC') {
-          node['icon'] = 'fa-leaf';
+          node['icon'] = 'icon-123';
         }
         else if(node['type'] === 'HIGH_DIMENSIONAL') {
-          node['icon'] = 'fa-file';
+          node['icon'] = 'fa-file-text';
         }
         else if(node['type'] === 'CATEGORICAL_OPTION') {
-          node['icon'] = 'fa-pie-chart';
+          node['icon'] = 'icon-abc';
         }
         else {
           node['icon'] = 'fa-folder-o';
