@@ -77,6 +77,10 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
+
+      // loading tree faster with this url
+      // let url = `${endpoint.getUrl()}/tree_nodes`;
+
       return this.http.get(url, {
         headers: headers
       })

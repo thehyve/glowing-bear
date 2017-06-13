@@ -3,12 +3,26 @@ import {TreeNode} from "primeng/components/common/api";
 import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 import {OverlayPanel} from "primeng/components/overlaypanel/overlaypanel";
+import {trigger, transition, animate, style} from "@angular/animations";
 
+type LoadingState = "loading" | "complete";
 
 @Component({
   selector: 'tree-nodes',
   templateUrl: './tree-nodes.component.html',
-  styleUrls: ['./tree-nodes.component.css']
+  styleUrls: ['./tree-nodes.component.css'],
+  animations: [
+    trigger('notifyState', [
+      transition( 'loading => complete', [
+        style({
+          background: 'rgba(51, 156, 144, 0.5)'
+        }),
+        animate('1000ms ease-out', style({
+          background: 'rgba(255, 255, 255, 0.0)'
+        }))
+      ])
+    ])
+  ]
 })
 export class TreeNodesComponent implements OnInit, AfterViewInit {
 
@@ -19,6 +33,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   expansionStatus: any;
   metadataContent: any = [];
 
+  loadingTreeNodes:LoadingState = "complete";
   isLoadingTreeNodes: boolean;
 
   constructor(private resourceService: ResourceService,
@@ -26,12 +41,15 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
               private element: ElementRef) {
 
     this.isLoadingTreeNodes = true;
+    this.loadingTreeNodes = "loading";
     this.resourceService.getTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
           this.isLoadingTreeNodes = false;
+          this.loadingTreeNodes = "complete";
+
           console.log('tree nodes: ', treeNodes);
         },
         err => console.error(err)
