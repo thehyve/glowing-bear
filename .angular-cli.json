@@ -26,6 +26,7 @@
         "../node_modules/font-awesome/css/font-awesome.css",
         "app/themes/primeng-theme.css",
         "app/themes/bootstrap.css",
+        "app/icons/icons.style.css",
         "styles.css"
       ],
       "scripts": [
