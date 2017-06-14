@@ -34,20 +34,17 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   metadataContent: any = [];
 
   loadingTreeNodes:LoadingState = "complete";
-  isLoadingTreeNodes: boolean;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
 
-    this.isLoadingTreeNodes = true;
     this.loadingTreeNodes = "loading";
     this.resourceService.getTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
-          this.isLoadingTreeNodes = false;
           this.loadingTreeNodes = "complete";
 
           console.log('tree nodes: ', treeNodes);
