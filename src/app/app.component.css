@@ -55,7 +55,7 @@
   position: relative; /* important (all position that's not `static`) */
   width: 10px;
   height: auto;
-  background-color: #c1e1dd;
+  background-color: #e4e4e4;
   cursor: col-resize;
   margin-left: 3px;
   margin-right: 3px;
