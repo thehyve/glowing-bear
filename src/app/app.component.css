@@ -1,11 +1,66 @@
-.left-container {
+/*
+    This is our main wrapping element,
+    it's made 100vh high to ensure it is always the correct size
+    and then moved into place and padded with negative margin and padding
+*/
+.gb-container {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
+}
+
+/*
+    All the scrollable sections should overflow
+    and be whatever height they need to be.
+    As they are flex-items (due to being inside a flex container)
+    they could be made to stretch full height at all times if needed.
+    WebKit inertia scrolling is being added here
+    for any present/future devices that are able to make use of it.
+*/
+.gb-left-panel,
+.gb-right-panel {
+  overflow: scroll;
+  height: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+}
+
+.gb-left-panel::-webkit-scrollbar,
+.gb-right-panel::-webkit-scrollbar {
+  display: none;
+}
+
+.gb-left-panel {
+  position: relative;
+  display: inline;
+  width: 20%;
   background-color: #ededed;
   margin-left: 0px;
 }
 
-.right-container {
+.gb-right-panel {
   padding-top: 10px;
   padding-left: 10px;
   padding-right: 10px;
-  width: 100%;
+  position: relative;
+  width: calc(80% - 10px - 6px);
+  background-color: white;
 }
+
+.gutter {
+  position: relative; /* important (all position that's not `static`) */
+  width: 10px;
+  height: auto;
+  background-color: #c1e1dd;
+  cursor: col-resize;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+
+
+
