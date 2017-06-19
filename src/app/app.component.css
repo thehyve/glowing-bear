@@ -23,16 +23,20 @@
 */
 .gb-left-panel,
 .gb-right-panel {
-  overflow: scroll;
+  overflow: auto;
   height: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: none;
 }
 
-.gb-left-panel::-webkit-scrollbar,
-.gb-right-panel::-webkit-scrollbar {
-  display: none;
-}
+
+/*
+    We can choose to explicitly hide the scroll bar if we want
+ */
+/*.gb-left-panel::-webkit-scrollbar,*/
+/*.gb-right-panel::-webkit-scrollbar {*/
+  /*display: none;*/
+/*}*/
 
 .gb-left-panel {
   position: relative;
