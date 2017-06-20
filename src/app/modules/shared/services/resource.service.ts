@@ -96,15 +96,27 @@ export class ResourceService {
 
   // -------------------------------------- patient calls --------------------------------------
 
-  //TODO: connect to real backend call
-  getPatientSets(): PatientSet[] {
-    let patientSets: PatientSet[] = [];
-    let ps1: PatientSet = new PatientSet('28746', 'testing-age-ps');
-    let ps2: PatientSet = new PatientSet('28747', 'test-race-ps');
-    patientSets.push(ps1);
-    patientSets.push(ps2);
+  /**
+   * Get the list of patient sets that the current user saved
+   * @returns {Observable<PatientSet[]>}
+   */
+  getPatientSets(): Observable<PatientSet[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
 
-    return patientSets;
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      let url = `${endpoint.getUrl()}/patient_sets`;
+
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json().patientSets as PatientSet[])
+        .catch(this.handleError.bind(this));
+    }
+    else {
+      console.error('Could not establish endpoint.');
+    }
   }
 
   /**

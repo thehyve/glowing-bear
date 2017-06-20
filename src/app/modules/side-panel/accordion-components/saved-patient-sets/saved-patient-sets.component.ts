@@ -1,8 +1,7 @@
 import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
-import {PatientSet} from "../../../shared/models/patient-set";
-import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
+import {SavedSet} from "../../../shared/models/saved-set";
 
 @Component({
   selector: 'saved-patient-sets',
@@ -11,12 +10,11 @@ import {DimensionRegistryService} from "../../../shared/services/dimension-regis
 })
 export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
 
-  patientSets: PatientSet[];
+  patientSets: SavedSet[];
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
-    //TODO: connect to real backend call using resource service
     this.patientSets = this.dimensionRegistry.getPatientSets();
   }
 
