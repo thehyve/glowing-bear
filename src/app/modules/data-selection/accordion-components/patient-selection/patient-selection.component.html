@@ -41,7 +41,7 @@
            placeholder="Patient set name (optional)"
            (drop)="onTreeNodeDropOnPatientSetNameField($event)"
            [(ngModel)]="patientSetName" >
-    <button type="button" class="btn btn-primary" (click)="savePatientSet()"> Save patient set </button>
+    <button type="button" class="btn btn-primary" (click)="onSavePatientSetBtnClick()"> Save patient set </button>
   </div>
 
   <div class="form-inline" *ngIf="constraintService.patientSetPostResponse != null">

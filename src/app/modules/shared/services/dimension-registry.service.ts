@@ -14,9 +14,11 @@ import {TreeNode} from "primeng/components/common/api";
 @Injectable()
 export class DimensionRegistryService {
 
-
   private studies: Study[] = [];
+  private studyConstraints: Constraint[] = [];
   private concepts: Concept[] = [];
+  private conceptConstraints: Constraint[] = [];
+
   private patientSets: SavedSet[] = [];
   private observationSets: SavedSet[] = [];
 
@@ -24,49 +26,32 @@ export class DimensionRegistryService {
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
   // added. The constraints should be copied when editing them.
-  private allConstraints: Constraint[] = [
-    new CombinationConstraint(),
-    new StudyConstraint(),
-    new ConceptConstraint()
-  ];
+  private allConstraints: Constraint[] = [];
 
   constructor(private resourceService: ResourceService) {
 
-    // Retrieve available studies
+    this.updateStudies();
+    this.updateConcepts();
+    this.updatePatientSets();
+
+  }
+
+  updateStudies() {
     this.resourceService.getStudies()
       .subscribe(
         studies => {
+          // reset studies and study constraints
           this.studies = studies;
+          this.studyConstraints = [];
           studies.forEach(study => {
             let constraint = new StudyConstraint();
             constraint.studies.push(study);
-            this.allConstraints.push(constraint);
-          })
+            this.studyConstraints.push(constraint);
+          });
+          this.updateAllConstraints();
         },
         err => console.error(err)
       );
-
-    // Retrieve all tree nodes and extract the concepts
-    this.resourceService.getTreeNodes()
-      .subscribe(
-        (treeNodes: object[]) => {
-          this.processTreeNodes(treeNodes);
-        },
-        err => console.error(err)
-      );
-
-    // Retrieve all the saved patient sets
-    this.resourceService.getPatientSets()
-      .subscribe(
-        sets => {
-          sets.forEach(set => {
-            set.name = set.description;
-            this.patientSets.push(set);
-          })
-        },
-        err => console.error(err)
-      );
-
   }
 
   /** Extracts concepts (and later possibly other dimensions) from the
@@ -96,13 +81,54 @@ export class DimensionRegistryService {
 
           let constraint = new ConceptConstraint();
           constraint.concept = concept;
-          this.allConstraints.push(constraint);
+          this.conceptConstraints.push(constraint);
         }
       }
 
       // Recurse
       this.processTreeNodes(treeNode['children']);
     });
+  }
+
+  updateConcepts() {
+    // Retrieve all tree nodes and extract the concepts
+    this.resourceService.getTreeNodes()
+      .subscribe(
+        (treeNodes: object[]) => {
+          // reset concepts and concept constraints
+          this.concepts = [];
+          this.conceptConstraints = [];
+          this.processTreeNodes(treeNodes);
+          this.updateAllConstraints();
+        },
+        err => console.error(err)
+      );
+  }
+
+  updatePatientSets() {
+    // reset patient sets
+    this.resourceService.getPatientSets()
+      .subscribe(
+        sets => {
+          // this is to retain the original reference pointer to the array
+          this.patientSets.length = 0;
+          sets.forEach(set => {
+            set.name = set.description;
+            this.patientSets.push(set);
+          });
+        },
+        err => console.error(err)
+      );
+  }
+
+  updateAllConstraints() {
+    this.allConstraints = [
+      new CombinationConstraint(),
+      new StudyConstraint(),
+      new ConceptConstraint()
+    ];
+
+    this.allConstraints = this.allConstraints.concat(this.studyConstraints.concat(this.conceptConstraints));
   }
 
   getStudies() {
