@@ -13,7 +13,6 @@ import {Constraint} from "../models/constraints/constraint";
 import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
-import {TrueConstraint} from "../models/constraints/true-constraint";
 import {PatientSet} from "../models/patient-set";
 
 @Injectable()
@@ -155,7 +154,6 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let body = JSON.stringify(constraint.toQueryObject());
-    console.log('body: ', body);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)

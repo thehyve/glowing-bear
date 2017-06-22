@@ -64,7 +64,7 @@ export class PatientSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  savePatientSet() {
+  onSavePatientSetBtnClick() {
     this.constraintService.savePatients(this.patientSetName);
   }
 
