@@ -13,6 +13,7 @@ import {CombinationState} from "../models/constraints/combination-state";
 import {NegationConstraint} from "../models/constraints/negation-constraint";
 import {SavedSet} from "../models/saved-set";
 import {DropMode} from "../models/drop-mode";
+import {DimensionRegistryService} from "./dimension-registry.service";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -43,7 +44,8 @@ export class ConstraintService {
   private _validTreeNodeTypes: string[] = [];
 
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService,
+              private dimensionReistryService: DimensionRegistryService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
     this._validTreeNodeTypes = [
@@ -281,12 +283,17 @@ export class ConstraintService {
   }
 
   savePatients(patientSetName: string) {
+    // derive the intersection constraint
     let intersectionConstraint =
       this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+
+    // call the backend api to save patient set of that constraint
+    // and update the dimension registry service for the patient set list
     this.resourceService.savePatients(patientSetName, intersectionConstraint)
       .subscribe(
         result => {
           this._patientSetPostResponse = result;
+          this.dimensionReistryService.updatePatientSets();
         },
         err => {
           console.error(err);
