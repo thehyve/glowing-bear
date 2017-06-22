@@ -77,10 +77,10 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       // loading tree nodes with patient and observation counts, and metadata
-      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
+      let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
 
       // loading tree nodes faster with this url
-      let url = `${endpoint.getUrl()}/tree_nodes`;
+      // let url = `${endpoint.getUrl()}/tree_nodes`;
 
       return this.http.get(url, {
         headers: headers
