@@ -101,12 +101,20 @@ body .gb-patient-set-item {
 
 .ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
   height: 40px;
-  margin-top: 4px;
+  margin-top: 6px;
+  padding-bottom: 10px;
 }
 
-.ui-autocomplete-multiple-container {
+body .ui-autocomplete-multiple-container {
   position: relative;
   top: 4px;
+}
+
+/*
+ * Fix the width of placeholder in multiple autocomplete input field
+ */
+body .ui-autocomplete-input-token input {
+  width: 15em;
 }
 
 /* Fix multiple autocomplete dropdown button new line break */

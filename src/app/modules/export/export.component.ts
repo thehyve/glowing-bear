@@ -2,6 +2,7 @@ import {Component, OnInit, ElementRef} from '@angular/core';
 import {DimensionRegistryService} from "../shared/services/dimension-registry.service";
 import {SavedSet} from "../shared/models/saved-set";
 import {ConstraintService} from "../shared/services/constraint.service";
+import {DropMode} from "../shared/models/drop-mode";
 
 @Component({
   selector: 'export',
@@ -11,9 +12,11 @@ import {ConstraintService} from "../shared/services/constraint.service";
 export class ExportComponent implements OnInit {
 
   autoCompleteHolders: object[];
+  selectedSets: SavedSet[];
 
   searchResults: any;
   exportTaskName: string;
+
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
@@ -21,6 +24,7 @@ export class ExportComponent implements OnInit {
     this.autoCompleteHolders = [{
       selectedSet: null
     }];
+    this.selectedSets = [];
   }
 
   ngOnInit() {
@@ -42,8 +46,6 @@ export class ExportComponent implements OnInit {
   }
 
   onDropdown(event) {
-    console.log('on dropdown: ', event);
-
     let patientSets = this.dimensionRegistry.getPatientSets();
     let observationSets = this.dimensionRegistry.getObservationSets();
 
@@ -53,21 +55,8 @@ export class ExportComponent implements OnInit {
     event.originalEvent.stopPropagation();
   }
 
-  addAutoComplete() {
-    this.autoCompleteHolders.push({
-      selectedSet: null
-    });
-  }
-
-  removeAutoComplete(index) {
-    console.log('remove index: ', index);
-    if(this.autoCompleteHolders.length > 1) {
-      this.autoCompleteHolders.splice(index, 1);
-    }
-  }
-
   exportSelectedSets() {
-    console.log(this.autoCompleteHolders);
+    console.log('Export these sets: ', this.selectedSets);
   }
 
   onExportTaskNameInputDrop(event) {
@@ -75,11 +64,16 @@ export class ExportComponent implements OnInit {
     event.preventDefault();
   }
 
-  onExportAutoCompleteFormDrop(event, index) {
-    console.log('event: ', event, index);
+  onExportAutoCompleteFormDrop(event) {
     event.stopPropagation();
     event.preventDefault();
-    // this.constraintService.selectedPatientSet
-    // this.autoCompleteHolders[index]['selectedSet'] = this.constraintService.selectedSet;
+
+    let selectedNode = this.constraintService.selectedNode;
+    let dropMode = selectedNode.dropMode;
+    if ((dropMode === DropMode.PatientSet || dropMode === DropMode.ObservationSet)
+      && (this.selectedSets.indexOf(selectedNode) === -1)) {
+      this.selectedSets.push(selectedNode);
+    }
   }
+
 }

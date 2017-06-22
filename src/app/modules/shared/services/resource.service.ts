@@ -124,7 +124,7 @@ export class ResourceService {
    * @param debugLabel - for debugging purpose
    * @returns {Observable<R|T>}
    */
-  getPatients(constraint: Constraint, debugLabel:string): Observable<Patient[]> {
+  getPatients(constraint: Constraint, debugLabel: string): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
@@ -154,7 +154,8 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify(constraint.toQueryObject()); console.log('body: ', body);
+    let body = JSON.stringify(constraint.toQueryObject());
+    console.log('body: ', body);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)

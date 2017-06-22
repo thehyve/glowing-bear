@@ -2,33 +2,40 @@
 
   <!-- autocompletes to select patient sets or observation sets -->
 
-  <div *ngFor="let holder of autoCompleteHolders; let i = index">
-    <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event, i)">
-      <p-autoComplete [(ngModel)]="holder.selectedSet"
-                      [suggestions]="searchResults"
-                      (completeMethod)="onSearch($event)"
-                      field="name"
-                      size="60"
-                      dropdown="true"
-                      pDroppable="patient-set-drag-drop"
-                      placeholder="select patient set or observation set"
-                      (onDropdownClick)="onDropdown($event)"></p-autoComplete>
-      <button *ngIf="autoCompleteHolders.length > 1" type="button"
-              class="btn btn-primary gb-auto-complete-removal-btn"
-              (click)="removeAutoComplete(i)">
-        <i class="fa fa-minus" aria-hidden="true"></i>
-      </button>
-    </div>
-  </div>
-
-
-  <div class="form-inline">
-    <button type="button" class="btn btn-primary" (click)="addAutoComplete()">
-      <i class="fa fa-plus" aria-hidden="true"></i>
+  <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
+    <p-autoComplete [(ngModel)]="selectedSets"
+                    [suggestions]="searchResults"
+                    (completeMethod)="onSearch($event)"
+                    field="name"
+                    size="120"
+                    dropdown="true"
+                    [multiple]="true"
+                    pDroppable="patient-set-drag-drop"
+                    placeholder="patient/observation set(s)"
+                    (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+    <button *ngIf="autoCompleteHolders.length > 1" type="button"
+            class="btn btn-primary gb-auto-complete-removal-btn"
+            (click)="removeAutoComplete(i)">
+      <i class="fa fa-minus" aria-hidden="true"></i>
     </button>
   </div>
 
+  <!-- example here -->
+  <!--<p-autoComplete #autoComplete-->
+                  <!--[(ngModel)]="selectedSets"-->
+                  <!--[suggestions]="searchResults"-->
+                  <!--field="studyId"-->
+                  <!--(completeMethod)="onSearch($event)"-->
+                  <!--(onSelect)="updateStudies($event)"-->
+                  <!--(onUnselect)="onUnselect($event)"-->
+                  <!--(onBlur)="updateStudies($event)"-->
+                  <!--dropdown="true"-->
+                  <!--size="40"-->
+                  <!--(onDropdownClick)="onDropdown($event)"-->
+                  <!--[multiple]="true"></p-autoComplete>-->
+
   <!-- area to indicate which formats to export -->
+  <hr>
   <div class="form-inline">
     <p>format selection here</p>
   </div>
