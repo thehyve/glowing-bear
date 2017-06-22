@@ -1,1 +1,55 @@
-<h1>export</h1>
+<div class="export-container">
+
+  <!-- autocompletes to select patient sets or observation sets -->
+
+  <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
+    <p-autoComplete [(ngModel)]="selectedSets"
+                    [suggestions]="searchResults"
+                    (completeMethod)="onSearch($event)"
+                    field="name"
+                    size="120"
+                    dropdown="true"
+                    [multiple]="true"
+                    pDroppable="patient-set-drag-drop"
+                    placeholder="patient/observation set(s)"
+                    (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+    <button *ngIf="autoCompleteHolders.length > 1" type="button"
+            class="btn btn-primary gb-auto-complete-removal-btn"
+            (click)="removeAutoComplete(i)">
+      <i class="fa fa-minus" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <!-- example here -->
+  <!--<p-autoComplete #autoComplete-->
+                  <!--[(ngModel)]="selectedSets"-->
+                  <!--[suggestions]="searchResults"-->
+                  <!--field="studyId"-->
+                  <!--(completeMethod)="onSearch($event)"-->
+                  <!--(onSelect)="updateStudies($event)"-->
+                  <!--(onUnselect)="onUnselect($event)"-->
+                  <!--(onBlur)="updateStudies($event)"-->
+                  <!--dropdown="true"-->
+                  <!--size="40"-->
+                  <!--(onDropdownClick)="onDropdown($event)"-->
+                  <!--[multiple]="true"></p-autoComplete>-->
+
+  <!-- area to indicate which formats to export -->
+  <hr>
+  <div class="form-inline">
+    <p>format selection here</p>
+  </div>
+
+
+  <!-- export name input and button -->
+  <div class="form-inline">
+    <input id="exportTaskNameInput" type="text" class="form-text"
+           placeholder="Export task name"
+           (drop)="onExportTaskNameInputDrop($event)"
+           [(ngModel)]="exportTaskName" >
+    <button type="button" class="btn btn-primary" (click)="exportSelectedSets()">Export selected sets</button>
+  </div>
+
+</div>
+
+

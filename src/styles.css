@@ -54,6 +54,13 @@ body .ui-tabmenu-nav {
 }
 
 /*
+ * style fix for hiding the border in data list in saved patient sets in the side panel
+ */
+body .ui-widget-content {
+  border: none;
+}
+
+/*
  * style fix for the primeng tree-container in the side-panel
  */
 body .gb-tree-container {
@@ -75,6 +82,18 @@ body .gb-spinner.loading {
   visibility: visible;
 }
 
+/*
+ * style for a patient-set item on the side panel
+ */
+body .gb-patient-set-item {
+  padding: 3px;
+  border-radius: 5px;
+  border: 1px solid #D5D5D5;
+  margin-bottom: 3px;
+  background-color: #f2f2f2;
+  box-shadow: 1px 1px 1px #D5D5D5;
+}
+
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
   height: 38px;
@@ -82,12 +101,20 @@ body .gb-spinner.loading {
 
 .ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
   height: 40px;
-  margin-top: 4px;
+  margin-top: 6px;
+  padding-bottom: 10px;
 }
 
-.ui-autocomplete-multiple-container {
+body .ui-autocomplete-multiple-container {
   position: relative;
   top: 4px;
+}
+
+/*
+ * Fix the width of placeholder in multiple autocomplete input field
+ */
+body .ui-autocomplete-input-token input {
+  width: 15em;
 }
 
 /* Fix multiple autocomplete dropdown button new line break */

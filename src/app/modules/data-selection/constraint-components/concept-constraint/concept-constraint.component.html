@@ -96,4 +96,38 @@
       </div>
     </div>
   </div>
+
+  <!-- trial visit constraint -->
+  <div class="form-inline">
+    <input id="applyTrialVisitConstraintCheckbox" class="form-check-input" type="checkbox"
+           [(ngModel)]="applyTrialVisitConstraint">
+    <label *ngIf="applyDateConstraint" for="applyDateConstraintCheckbox" >and start date</label>
+    <label *ngIf="!applyDateConstraint" for="applyDateConstraintCheckbox" >apply trial-visit constraint</label>
+    <div *ngIf="applyDateConstraint" class="form-inline">
+      <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+              (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
+        <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
+        <i *ngSwitchCase="DateOperatorState.AFTER">after </i>
+        <i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>
+        <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
+      </button>
+      &nbsp;
+      <p-calendar [(ngModel)]="date1"
+                  dateFormat="dd-mm-yy"
+                  showTime="true"
+                  showSeconds="true"
+                  hourFormat="24"
+                  utc="true"></p-calendar>
+      <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
+        <span>&nbsp;and&nbsp;</span>
+        <p-calendar [(ngModel)]="date2"
+                    dateFormat="dd-mm-yy"
+                    showTime="true"
+                    showSeconds="true"
+                    hourFormat="24"
+                    utc="true"></p-calendar>
+      </div>
+    </div>
+  </div>
+
 </div>

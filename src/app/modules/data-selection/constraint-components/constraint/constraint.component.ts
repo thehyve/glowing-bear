@@ -7,6 +7,7 @@ import {CombinationConstraint} from "../../../shared/models/constraints/combinat
 import {ConceptConstraintComponent} from "../concept-constraint/concept-constraint.component";
 import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
 import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
+import {DropMode} from "../../../shared/models/drop-mode";
 
 @Component({
   selector: 'constraint',
@@ -65,7 +66,7 @@ export class ConstraintComponent implements OnInit {
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
     let droppedConstraint: Constraint =
-      this.constraintService.generateConstraintFromTreeNode(this.constraintService.selectedTreeNode);
+      this.constraintService.generateConstraintFromSelectedNode();
 
     if (droppedConstraint) {
       if(this.constraint instanceof CombinationConstraint) {
@@ -90,7 +91,7 @@ export class ConstraintComponent implements OnInit {
         }
       }
 
-    }
+    }//if dropped constraint exists
 
   }
 

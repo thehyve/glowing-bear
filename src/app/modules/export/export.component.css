@@ -1,0 +1,20 @@
+.fa-plus{
+  color: white;
+}
+
+.export-container {
+  margin-left: 10px;
+  padding: 10px;
+}
+
+.form-inline {
+  margin: 5px;
+}
+
+#exportTaskNameInput {
+  margin-right: 10px;
+}
+
+.gb-auto-complete-removal-btn {
+  margin-left: 5px;
+}

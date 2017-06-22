@@ -6,8 +6,13 @@ import {TimeConstraint} from "./time-constraint";
 export class ConceptConstraint implements Constraint {
   private _concept:Concept;
   private _values: ValueConstraint[];
+
+  // date range
   applyDateConstraint: boolean = false;
   timeConstraint: TimeConstraint = new TimeConstraint();
+
+  // trial visit
+
 
   constructor() {
     this.values = [];
@@ -42,7 +47,8 @@ export class ConceptConstraint implements Constraint {
     let args = [];
     args.push({
       type: 'concept',
-      path: this._concept.path
+      path: this._concept.path,
+      valueType: this._concept.type
     });
 
     if (this.values.length > 0) {
