@@ -6,12 +6,20 @@ import {Concept} from "../models/concept";
 import {StudyConstraint} from "../models/constraints/study-constraint";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationConstraint} from "../models/constraints/combination-constraint";
+import {PatientSet} from "../models/patient-set";
+import {ObservationSet} from "../models/observation-set";
+import {SavedSet} from "../models/saved-set";
+import {TreeNode} from "primeng/components/common/api";
 
 @Injectable()
 export class DimensionRegistryService {
 
+
   private studies: Study[] = [];
   private concepts: Concept[] = [];
+  private patientSets: SavedSet[] = [];
+  private observationSets: SavedSet[] = [];
+
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
@@ -43,6 +51,18 @@ export class DimensionRegistryService {
       .subscribe(
         (treeNodes: object[]) => {
           this.processTreeNodes(treeNodes);
+        },
+        err => console.error(err)
+      );
+
+    // Retrieve all the saved patient sets
+    this.resourceService.getPatientSets()
+      .subscribe(
+        sets => {
+          sets.forEach(set => {
+            set.name = set.description;
+            this.patientSets.push(set);
+          })
         },
         err => console.error(err)
       );
@@ -91,6 +111,14 @@ export class DimensionRegistryService {
 
   getConcepts() {
     return this.concepts;
+  }
+
+  getPatientSets() {
+    return this.patientSets;
+  }
+
+  getObservationSets() {
+    return this.observationSets;
   }
 
   /**

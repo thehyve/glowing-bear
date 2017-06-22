@@ -11,6 +11,8 @@ import {Concept} from "../models/concept";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {CombinationState} from "../models/constraints/combination-state";
 import {NegationConstraint} from "../models/constraints/negation-constraint";
+import {SavedSet} from "../models/saved-set";
+import {DropMode} from "../models/drop-mode";
 type LoadingState = "loading" | "complete";
 
 @Injectable()
@@ -32,9 +34,12 @@ export class ConstraintService {
   loadingStateTotal:LoadingState = "complete";
 
   /*
-   * The selected tree node in the tree on the side-panel
+   * The selected node (drag-start) in the side-panel of either
+   * (1) the tree
+   * (2) the patient sets
+   * or (3) the observation sets
    */
-  private _selectedTreeNode: any = null;
+  private _selectedNode: any = null;
   private _validTreeNodeTypes: string[] = [];
 
 
@@ -164,30 +169,44 @@ export class ConstraintService {
     return combination;
   }
 
-  generateConstraintFromTreeNode(treeNode: TreeNode): Constraint {
+  generateConstraintFromSelectedNode(): Constraint {
     let constraint: Constraint = null;
-    let treeNodeType = treeNode['type'];
-
-    if(treeNodeType === 'STUDY') {
-      let study: Study = new Study();
-      study.studyId = treeNode['constraint']['studyId'];
-      constraint = new StudyConstraint();
-      (<StudyConstraint>constraint).studies.push(study);
+    let dropMode: DropMode = this.selectedNode['dropMode'];
+    //if the dropped node is a tree node
+    if(dropMode === DropMode.TreeNode) {
+      let treeNode = this.selectedNode;
+      let treeNodeType = treeNode['type'];
+      if(treeNodeType === 'STUDY') {
+        let study: Study = new Study();
+        study.studyId = treeNode['constraint']['studyId'];
+        constraint = new StudyConstraint();
+        (<StudyConstraint>constraint).studies.push(study);
+      }
+      else if(treeNodeType === 'NUMERIC' ||
+        treeNodeType === 'CATEGORICAL_OPTION') {
+        let concept = new Concept();
+        if(treeNode['constraint']) {
+          let constraintObject = treeNode['constraint'];
+          constraintObject['valueType'] = treeNodeType;
+          constraint = this.generateConstraintFromConstraintObject(constraintObject);
+        }
+        else {
+          concept.path = treeNode['conceptPath'];
+          concept.type = treeNodeType;
+          constraint = new ConceptConstraint();
+          (<ConceptConstraint>constraint).concept = concept;
+        }
+      }
     }
-    else if(treeNodeType === 'NUMERIC' ||
-      treeNodeType === 'CATEGORICAL_OPTION') {
-      let concept = new Concept();
-      if(treeNode['constraint']) {
-        let constraintObject = treeNode['constraint'];
-        constraintObject['valueType'] = treeNodeType;
+    //if the dropped node is a patient set
+    else if(dropMode === DropMode.PatientSet) {
+      if(this.selectedNode.requestConstraints) {
+        let constraintObject = JSON.parse(this.selectedNode.requestConstraints);
+        constraintObject = this.optimizeConstraintObject(constraintObject);
         constraint = this.generateConstraintFromConstraintObject(constraintObject);
       }
-      else {
-        concept.path = treeNode['conceptPath'];
-        concept.type = treeNodeType;
-        constraint = new ConceptConstraint();
-        (<ConceptConstraint>constraint).concept = concept;
-      }
+    }
+    else if(dropMode === DropMode.ObservationSet) {
     }
 
     return constraint;
@@ -222,8 +241,43 @@ export class ConstraintService {
         (<CombinationConstraint>constraint).children.push(child);
       }
     }
+    else if(type === 'and' || type === 'or') {
+      let operator = type;
+      constraint = new CombinationConstraint();
+      (<CombinationConstraint>constraint).combinationState =
+        (operator === 'and') ? CombinationState.And : CombinationState.Or;
+      for(let arg of constraintObject['args']) {
+        let child = this.generateConstraintFromConstraintObject(arg);
+        (<CombinationConstraint>constraint).children.push(child);
+      }
+    }
 
     return constraint;
+  }
+
+  optimizeConstraintObject(constraintObject) {
+    let newConstraintObject = constraintObject;
+
+    // if the object has 'args' property
+    if(constraintObject['args']) {
+      if(constraintObject['args'].length === 1) {
+        newConstraintObject = this.optimizeConstraintObject(constraintObject['args'][0]);
+      }
+      else if(constraintObject['args'].length > 1) {
+        let newArgs = [];
+        for(let arg of constraintObject['args']) {
+          let newArg = this.optimizeConstraintObject(arg);
+          newArgs.push(newArg);
+        }
+        newConstraintObject['args'] = newArgs;
+      }
+    }
+    // if the object has the 'constraint' property
+    else if(constraintObject['constraint']){
+      newConstraintObject = this.optimizeConstraintObject(constraintObject['constraint']);
+    }
+
+    return newConstraintObject;
   }
 
   savePatients(patientSetName: string) {
@@ -288,12 +342,12 @@ export class ConstraintService {
     this._patientSetPostResponse = value;
   }
 
-  get selectedTreeNode(): any {
-    return this._selectedTreeNode;
+  get selectedNode(): any {
+    return this._selectedNode;
   }
 
-  set selectedTreeNode(value: any) {
-    this._selectedTreeNode = value;
+  set selectedNode(value: any) {
+    this._selectedNode = value;
   }
 
   get validTreeNodeTypes(): string[] {
@@ -303,4 +357,5 @@ export class ConstraintService {
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
   }
+
 }

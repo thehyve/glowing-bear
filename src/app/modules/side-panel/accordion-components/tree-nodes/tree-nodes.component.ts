@@ -4,6 +4,7 @@ import {ResourceService} from "../../../shared/services/resource.service";
 import {ConstraintService} from "../../../shared/services/constraint.service";
 import {OverlayPanel} from "primeng/components/overlaypanel/overlaypanel";
 import {trigger, transition, animate, style} from "@angular/animations";
+import {DropMode} from "../../../shared/models/drop-mode";
 
 type LoadingState = "loading" | "complete";
 
@@ -150,7 +151,8 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
       let handleDragstart = (function (event) {
         event.stopPropagation();
-        this.constraintService.selectedTreeNode = dataObject;
+        dataObject['dropMode'] = DropMode.TreeNode;
+        this.constraintService.selectedNode = dataObject;
       }).bind(this);
 
       let handleContextmenu = (function (event) {
@@ -164,7 +166,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       if (this.constraintService.validTreeNodeTypes.includes(dataObjectType)) {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
-      //if metadata exitss
+      //if metadata exits
       if(metadata) {
         treeNodeElm.addEventListener('contextmenu', handleContextmenu);
       }
@@ -196,6 +198,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
     }
+
   }
 
 }

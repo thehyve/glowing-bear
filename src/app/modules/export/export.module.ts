@@ -3,11 +3,15 @@ import { CommonModule } from '@angular/common';
 import {ExportComponent} from "./export.component";
 import {routing} from './export.routing';
 import {RouterModule} from "@angular/router";
+import {AutoCompleteModule} from "primeng/components/autocomplete/autocomplete";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   imports: [
     CommonModule,
-    routing
+    routing,
+    FormsModule,
+    AutoCompleteModule
   ],
   exports: [
     RouterModule

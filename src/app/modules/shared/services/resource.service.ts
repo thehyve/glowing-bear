@@ -14,6 +14,7 @@ import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {TrueConstraint} from "../models/constraints/true-constraint";
+import {PatientSet} from "../models/patient-set";
 
 @Injectable()
 export class ResourceService {
@@ -45,7 +46,6 @@ export class ResourceService {
   }
 
   // -------------------------------------- study calls --------------------------------------
-
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
@@ -93,10 +93,38 @@ export class ResourceService {
     }
   }
 
-
   // -------------------------------------- patient calls --------------------------------------
 
-  getPatients(constraint: Constraint, debugLabel:string): Observable<Patient[]> {
+  /**
+   * Get the list of patient sets that the current user saved
+   * @returns {Observable<PatientSet[]>}
+   */
+  getPatientSets(): Observable<PatientSet[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      let url = `${endpoint.getUrl()}/patient_sets`;
+
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json().patientSets as PatientSet[])
+        .catch(this.handleError.bind(this));
+    }
+    else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  /**
+   * Given a constraint, return the corresponding patient list
+   * @param constraint
+   * @param debugLabel - for debugging purpose
+   * @returns {Observable<R|T>}
+   */
+  getPatients(constraint: Constraint, debugLabel: string): Observable<Patient[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
@@ -127,6 +155,7 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let body = JSON.stringify(constraint.toQueryObject());
+    console.log('body: ', body);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)

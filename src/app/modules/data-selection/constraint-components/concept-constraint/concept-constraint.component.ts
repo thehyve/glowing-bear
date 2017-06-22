@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
 import {Concept} from "../../../shared/models/concept";
@@ -30,6 +30,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   selectedCategories: string[];
   suggestedCategories: string[];
 
+  // date range
   private _applyDateConstraint: boolean = false;
   private _dateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
   DateOperatorState = DateOperatorState; // make enum visible in template
@@ -41,6 +42,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   };
   private _date1: Date;
   private _date2: Date;
+
+  // trial visit
+  private _applyTrialVisitConstraint: boolean = false;
+
+
+
 
   ngOnInit() {
     this.initializeAggregates();
@@ -299,6 +306,14 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
   get dateOperatorState():DateOperatorState {
     return this._dateOperatorState;
+  }
+
+  get applyTrialVisitConstraint(): boolean {
+    return this._applyTrialVisitConstraint;
+  }
+
+  set applyTrialVisitConstraint(value: boolean) {
+    this._applyTrialVisitConstraint = value;
   }
 
   switchDateOperatorState() {
