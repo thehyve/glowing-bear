@@ -46,7 +46,6 @@ export class ResourceService {
   }
 
   // -------------------------------------- study calls --------------------------------------
-
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
@@ -78,10 +77,10 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       // loading tree nodes with patient and observation counts, and metadata
-      let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
+      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
 
       // loading tree nodes faster with this url
-      // let url = `${endpoint.getUrl()}/tree_nodes`;
+      let url = `${endpoint.getUrl()}/tree_nodes`;
 
       return this.http.get(url, {
         headers: headers
@@ -155,7 +154,7 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify(constraint.toQueryObject());
+    let body = JSON.stringify(constraint.toQueryObject()); console.log('body: ', body);
     let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
 
     return this.http.post(url, body, options)

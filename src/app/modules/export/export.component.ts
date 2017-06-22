@@ -80,6 +80,6 @@ export class ExportComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     // this.constraintService.selectedPatientSet
-    this.autoCompleteHolders[index]['selectedSet'] = this.constraintService.selectedSet;
+    // this.autoCompleteHolders[index]['selectedSet'] = this.constraintService.selectedSet;
   }
 }

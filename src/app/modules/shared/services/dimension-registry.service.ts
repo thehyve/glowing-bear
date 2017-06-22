@@ -59,7 +59,6 @@ export class DimensionRegistryService {
     this.resourceService.getPatientSets()
       .subscribe(
         sets => {
-          console.log('saved patient sets: ', sets);
           sets.forEach(set => {
             set.name = set.description;
             this.patientSets.push(set);

@@ -47,7 +47,8 @@ export class ConceptConstraint implements Constraint {
     let args = [];
     args.push({
       type: 'concept',
-      path: this._concept.path
+      path: this._concept.path,
+      valueType: this._concept.type
     });
 
     if (this.values.length > 0) {
