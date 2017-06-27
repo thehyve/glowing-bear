@@ -31,7 +31,7 @@ export class ExportComponent implements OnInit {
   }
 
   onSearch(event) {
-    console.log('on search: ', event);
+    console.log('event: ', event, ', query: ', event.query);
     let query = event.query.toLowerCase();
     let patientSets = this.dimensionRegistry.getPatientSets();
     let observationSets = this.dimensionRegistry.getObservationSets();
