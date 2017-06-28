@@ -101,13 +101,12 @@ body .gb-patient-set-item {
 
 .ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
   height: 40px;
-  margin-top: 6px;
-  padding-bottom: 10px;
 }
 
-body .ui-autocomplete-multiple-container {
+body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
   position: relative;
-  top: 4px;
+  height: 40px;
+  padding-top: 6px;
 }
 
 /*

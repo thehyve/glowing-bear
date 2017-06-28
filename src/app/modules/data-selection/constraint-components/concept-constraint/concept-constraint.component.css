@@ -1,12 +1,12 @@
-.concept-constraint-comp {
-
-}
-
 .btn-outline-secondary {
   color: #333333;
-  font-family: "Avenir Next";
 }
 .btn-outline-secondary:hover {
   background-color: #c8eae6;
   color: black;
 }
+
+.gray-text {
+  color: darkgray;
+}
+
