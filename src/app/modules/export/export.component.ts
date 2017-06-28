@@ -35,10 +35,13 @@ export class ExportComponent implements OnInit {
     let query = event.query.toLowerCase();
     let patientSets = this.dimensionRegistry.getPatientSets();
     let observationSets = this.dimensionRegistry.getObservationSets();
-    let sets = patientSets.concat(observationSets);
+    let sets = patientSets.concat(observationSets); console.log('sets: ', sets);
 
     if (query) {
-      this.searchResults = sets.filter((set: SavedSet) => set.name.toLowerCase().includes(query));
+      this.searchResults = sets.filter((set: SavedSet) => {
+        console.log('set: ', set);
+        set.name.toLowerCase().includes(query)
+      });
     }
     else {
       this.searchResults = sets;
