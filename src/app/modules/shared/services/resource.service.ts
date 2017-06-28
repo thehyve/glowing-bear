@@ -14,6 +14,7 @@ import {PatientSetPostResponse} from "../models/patient-set-post-response";
 import {Aggregate} from "../models/aggregate";
 import {ConceptConstraint} from "../models/constraints/concept-constraint";
 import {PatientSet} from "../models/patient-set";
+import {TrialVisit} from "../models/trial-visit";
 
 @Injectable()
 export class ResourceService {
@@ -76,10 +77,10 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       // loading tree nodes with patient and observation counts, and metadata
-      let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
+      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
 
       // loading tree nodes faster with this url
-      // let url = `${endpoint.getUrl()}/tree_nodes`;
+      let url = `${endpoint.getUrl()}/tree_nodes`;
 
       return this.http.get(url, {
         headers: headers
@@ -185,6 +186,26 @@ export class ResourceService {
       headers: headers
     })
       .map((res: Response) => res.json() as Aggregate)
+      .catch(this.handleError.bind(this));
+  }
+
+  // -------------------------------------- trial visit calls --------------------------------------
+  /**
+   * Given a constraint, normally a concept or a study constraint, return the corresponding trial visit list
+   * @param constraint
+   * @returns {Observable<R|T>}
+   */
+  getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintString = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/dimensions/trial visit/elements?constraint=${constraintString}`;
+
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res: Response) => res.json().elements as TrialVisit[])
       .catch(this.handleError.bind(this));
   }
 

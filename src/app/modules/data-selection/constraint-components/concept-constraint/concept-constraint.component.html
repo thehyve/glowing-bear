@@ -52,25 +52,26 @@
                     [(ngModel)]="selectedCategories"
                     [suggestions]="suggestedCategories"
                     (completeMethod)="onCategorySearch($event)"
-                    (onFocus)="updateConceptValues($event)"
-                    (onBlur)="updateConceptValues($event)"
+                    (onSelect)="updateConceptValues($event)"
+                    (onUnselect)="onUnselectCategories($event)"
                     [multiple]="true"></p-autoComplete>
     <button type="button" class="btn btn-outline-secondary"
-            (click)="selectAll()">
+            (click)="selectAllCategories()">
       Select all
     </button>
     <button type="button" class="btn btn-outline-secondary"
-            (click)="selectNone()">
+            (click)="clearAllCategories()">
       Clear
     </button>
   </div>
 
-  <!-- date range -->
+
+  <!-- date range constraint -->
   <div class="form-inline">
-    <input id="applyDateConstraintCheckbox" class="form-check-input" type="checkbox" [(ngModel)]="applyDateConstraint">
-    <label *ngIf="applyDateConstraint" for="applyDateConstraintCheckbox" >and start date</label>
-    <label *ngIf="!applyDateConstraint" for="applyDateConstraintCheckbox" >apply date constraint</label>
+    <p-checkbox [(ngModel)]="applyDateConstraint" binary="true"></p-checkbox>
+    <label *ngIf="!applyDateConstraint" class="gray-text">apply date constraint</label>
     <div *ngIf="applyDateConstraint" class="form-inline">
+      <span>and start date &nbsp;</span>
       <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
               (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
         <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
@@ -97,37 +98,33 @@
     </div>
   </div>
 
-  <!-- trial visit constraint -->
-  <!--<div class="form-inline">-->
-    <!--<input id="applyTrialVisitConstraintCheckbox" class="form-check-input" type="checkbox"-->
-           <!--[(ngModel)]="applyTrialVisitConstraint">-->
-    <!--<label *ngIf="applyDateConstraint" for="applyDateConstraintCheckbox" >and start date</label>-->
-    <!--<label *ngIf="!applyDateConstraint" for="applyDateConstraintCheckbox" >apply trial-visit constraint</label>-->
-    <!--<div *ngIf="applyDateConstraint" class="form-inline">-->
-      <!--<button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"-->
-              <!--(click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">-->
-        <!--<i *ngSwitchCase="DateOperatorState.BEFORE">before </i>-->
-        <!--<i *ngSwitchCase="DateOperatorState.AFTER">after </i>-->
-        <!--<i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>-->
-        <!--<i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>-->
-      <!--</button>-->
-      <!--&nbsp;-->
-      <!--<p-calendar [(ngModel)]="date1"-->
-                  <!--dateFormat="dd-mm-yy"-->
-                  <!--showTime="true"-->
-                  <!--showSeconds="true"-->
-                  <!--hourFormat="24"-->
-                  <!--utc="true"></p-calendar>-->
-      <!--<div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">-->
-        <!--<span>&nbsp;and&nbsp;</span>-->
-        <!--<p-calendar [(ngModel)]="date2"-->
-                    <!--dateFormat="dd-mm-yy"-->
-                    <!--showTime="true"-->
-                    <!--showSeconds="true"-->
-                    <!--hourFormat="24"-->
-                    <!--utc="true"></p-calendar>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
 
+  <!-- trial visit constraint -->
+  <div class="form-inline">
+    <p-checkbox [(ngModel)]="applyTrialVisitConstraint" binary="true"></p-checkbox>
+    <label *ngIf="!applyTrialVisitConstraint" class="gray-text">apply trial-visit constraint</label>
+    <div *ngIf="applyTrialVisitConstraint">
+      <span>and trial visits </span>
+      <p-autoComplete #trialVisitAutoComplete
+                      [(ngModel)]="selectedTrialVisits"
+                      [suggestions]="suggestedTrialVisits"
+                      (completeMethod)="onTrialVisitSearch($event)"
+                      (onSelect)="updateTrialVisitValues($event)"
+                      (onUnselect)="onUnselectTrialVisit($event)"
+                      dropdown="true"
+                      field="relTimeLabel"
+                      (onDropdownClick)="onTrialVisitDropdown($event)"
+                      [multiple]="true"></p-autoComplete>
+      <button type="button" class="btn btn-outline-secondary"
+              (click)="selectAllTrialVisits()">
+        Select all
+      </button>
+      <button type="button" class="btn btn-outline-secondary"
+              (click)="clearAllTrialVisits()">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <br>
 </div>
