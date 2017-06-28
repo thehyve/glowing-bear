@@ -2,9 +2,10 @@ import {Constraint} from './constraint';
 import {Concept} from "../concept";
 import {ValueConstraint} from "./value-constraint";
 import {TimeConstraint} from "./time-constraint";
+import {TrialVisitConstraint} from "./trial-visit-constraint";
 
 export class ConceptConstraint implements Constraint {
-  private _concept:Concept;
+  private _concept: Concept;
   private _values: ValueConstraint[];
 
   // date range
@@ -12,6 +13,8 @@ export class ConceptConstraint implements Constraint {
   timeConstraint: TimeConstraint = new TimeConstraint();
 
   // trial visit
+  applyTrialVisitConstraint: boolean = false;
+  trialVisitConstraint: TrialVisitConstraint = new TrialVisitConstraint();
 
 
   constructor() {
@@ -74,6 +77,10 @@ export class ConceptConstraint implements Constraint {
 
     if (this.applyDateConstraint) {
       args.push(this.timeConstraint.toQueryObject());
+    }
+
+    if (this.applyTrialVisitConstraint) {
+      args.push(this.trialVisitConstraint.toQueryObject());
     }
 
     return {
