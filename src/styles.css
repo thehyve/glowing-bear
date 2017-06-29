@@ -158,3 +158,11 @@ body .ui-autocomplete-input-token input {
 .fa-plus {
   color: lightgray;
 }
+
+/*
+ * shrink the size of legend header of a p-fieldset
+ */
+legend {
+  font-size: 1em;
+}
+
