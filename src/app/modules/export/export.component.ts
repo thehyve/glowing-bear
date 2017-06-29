@@ -11,20 +11,42 @@ import {DropMode} from "../shared/models/drop-mode";
 })
 export class ExportComponent implements OnInit {
 
-  autoCompleteHolders: object[];
   selectedSets: SavedSet[];
-
   searchResults: any;
+
+  dataFormats: Object[];
+  exportTasks: Object[];
   exportTaskName: string;
 
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
-    this.autoCompleteHolders = [{
-      selectedSet: null
-    }];
     this.selectedSets = [];
+    this.dataFormats = [
+      {
+        name: 'clinical',
+        checked: false
+      },
+      {
+        name: 'high dimensional',
+        checked: false
+      }
+    ];
+    this.exportTasks = [
+      {
+        name: 'export task 1',
+        status: 'in process'
+      },
+      {
+        name: 'export task 2',
+        status: 'in process'
+      },
+      {
+        name: 'export task 3',
+        status: 'finished'
+      }
+    ]
   }
 
   ngOnInit() {
@@ -57,7 +79,7 @@ export class ExportComponent implements OnInit {
   }
 
   exportSelectedSets() {
-    console.log('Export these sets: ', this.selectedSets);
+    console.log('Export these sets: ', this.selectedSets, ' with data formats: ', this.dataFormats);
   }
 
   onExportTaskNameInputDrop(event) {

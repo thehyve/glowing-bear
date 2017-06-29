@@ -1,54 +1,80 @@
 <div class="export-container">
 
-  <!-- autocompletes to select patient sets or observation sets -->
+  <!-- *---------- export selection panel ----------* -->
+  <p-fieldset [toggleable]="true">
+    <p-header>Export selection</p-header>
 
-  <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
-    <p-autoComplete [(ngModel)]="selectedSets"
-                    [suggestions]="searchResults"
-                    (completeMethod)="onSearch($event)"
-                    field="name"
-                    size="120"
-                    dropdown="true"
-                    [multiple]="true"
-                    pDroppable="patient-set-drag-drop"
-                    placeholder="patient/observation set(s)"
-                    (onDropdownClick)="onDropdown($event)"></p-autoComplete>
-    <button *ngIf="autoCompleteHolders.length > 1" type="button"
-            class="btn btn-primary gb-auto-complete-removal-btn"
-            (click)="removeAutoComplete(i)">
-      <i class="fa fa-minus" aria-hidden="true"></i>
-    </button>
-  </div>
+    <!-- autocompletes to select patient sets or observation sets -->
+    <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
+      <p-autoComplete [(ngModel)]="selectedSets"
+                      [suggestions]="searchResults"
+                      (completeMethod)="onSearch($event)"
+                      field="name"
+                      size="120"
+                      dropdown="true"
+                      [multiple]="true"
+                      pDroppable="patient-set-drag-drop"
+                      placeholder="Select patient/observation set(s)"
+                      (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+    </div>
 
-  <!-- example here -->
-  <!--<p-autoComplete #autoComplete-->
-                  <!--[(ngModel)]="selectedSets"-->
-                  <!--[suggestions]="searchResults"-->
-                  <!--field="studyId"-->
-                  <!--(completeMethod)="onSearch($event)"-->
-                  <!--(onSelect)="updateStudies($event)"-->
-                  <!--(onUnselect)="onUnselect($event)"-->
-                  <!--(onBlur)="updateStudies($event)"-->
-                  <!--dropdown="true"-->
-                  <!--size="40"-->
-                  <!--(onDropdownClick)="onDropdown($event)"-->
-                  <!--[multiple]="true"></p-autoComplete>-->
+    <!-- example here -->
+    <!--<p-autoComplete #autoComplete-->
+    <!--[(ngModel)]="selectedSets"-->
+    <!--[suggestions]="searchResults"-->
+    <!--field="studyId"-->
+    <!--(completeMethod)="onSearch($event)"-->
+    <!--(onSelect)="updateStudies($event)"-->
+    <!--(onUnselect)="onUnselect($event)"-->
+    <!--(onBlur)="updateStudies($event)"-->
+    <!--dropdown="true"-->
+    <!--size="40"-->
+    <!--(onDropdownClick)="onDropdown($event)"-->
+    <!--[multiple]="true"></p-autoComplete>-->
 
-  <!-- area to indicate which formats to export -->
-  <hr>
-  <div class="form-inline">
-    <p>format selection here</p>
-  </div>
+    <!-- area to indicate which formats to export -->
+    <div class="gb-data-format-container">
+      <div class="gb-data-format-header">Select data formats:</div>
+      <p-dataList [value]="dataFormats">
+        <ng-template let-dataFormat let-i="index" pTemplate="item">
+
+          <div class="ui-grid ui-grid-responsive ui-fluid gb-data-format-item">
+            <p-checkbox [(ngModel)]="dataFormat.checked" binary="true"></p-checkbox>
+            {{dataFormat.name}}
+          </div>
+
+        </ng-template>
+      </p-dataList>
+    </div>
 
 
-  <!-- export name input and button -->
-  <div class="form-inline">
-    <input id="exportTaskNameInput" type="text" class="form-text"
-           placeholder="Export task name"
-           (drop)="onExportTaskNameInputDrop($event)"
-           [(ngModel)]="exportTaskName" >
-    <button type="button" class="btn btn-primary" (click)="exportSelectedSets()">Export selected sets</button>
-  </div>
+    <!-- export name input and button -->
+    <div class="form-inline">
+      <input id="exportTaskNameInput" type="text" class="form-text"
+             placeholder="Export task name"
+             (drop)="onExportTaskNameInputDrop($event)"
+             [(ngModel)]="exportTaskName" >
+      <button type="button" class="btn btn-primary" (click)="exportSelectedSets()">Export selected sets</button>
+    </div>
+
+  </p-fieldset>
+
+  <!-- *---------- export task panel ----------* -->
+  <p-fieldset [toggleable]="true">
+    <p-header>Export tasks</p-header>
+
+    <p-dataTable [value]="exportTasks"
+                 sortField="name"
+                 rowGroupMode="subheader"
+                 groupField="status"
+                 expandableRowGroups="true"
+                 [sortableRowGroup]="false">
+      <ng-template pTemplate="rowgroupheader" let-exportTask>{{exportTask['status']}}</ng-template>
+      <p-column field="name" header=" Task name" [style]="{'border-color': 'lightgrey'}"></p-column>
+      <p-column field="status" header="Status" [style]="{'border-color': 'lightgrey'}"></p-column>
+    </p-dataTable>
+
+  </p-fieldset>
 
 </div>
 
