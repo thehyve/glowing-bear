@@ -174,7 +174,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       if (metadata) {
         treeNodeElm.addEventListener('contextmenu', handleContextmenu);
       }
-      treeNodeElm.addEventListener('contextmenu', handleContextmenu);
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
