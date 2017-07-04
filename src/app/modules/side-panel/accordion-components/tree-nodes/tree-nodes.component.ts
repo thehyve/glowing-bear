@@ -14,7 +14,7 @@ type LoadingState = "loading" | "complete";
   styleUrls: ['./tree-nodes.component.css'],
   animations: [
     trigger('notifyState', [
-      transition( 'loading => complete', [
+      transition('loading => complete', [
         style({
           background: 'rgba(51, 156, 144, 0.5)'
         }),
@@ -34,7 +34,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   expansionStatus: any;
   metadataContent: any = [];
 
-  loadingTreeNodes:LoadingState = "complete";
+  loadingTreeNodes: LoadingState = "complete";
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
@@ -58,6 +58,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       treeNodeElm: null,
       treeNode: null
     };
+
   }
 
   ngOnInit() {
@@ -85,17 +86,17 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       let patientCount = node['patientCount'];
       let observationCount = node['observationCount'];
       let countStr = ' ';
-      if(patientCount) {
+      if (patientCount) {
         countStr += '(' + patientCount;
       }
-      if(observationCount) {
+      if (observationCount) {
         countStr += ' | ' + observationCount;
       }
-      if(countStr !== ' ') countStr += ')';
+      if (countStr !== ' ') countStr += ')';
 
       node['label'] = node['name'] + countStr;
 
-      if(node['metadata']) {
+      if (node['metadata']) {
         node['label'] = node['label'] + ' ⚆';
       }
 
@@ -105,13 +106,13 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         this.augmentTreeNodes(node['children']);
       }
       else {
-        if(node['type'] === 'NUMERIC') {
+        if (node['type'] === 'NUMERIC') {
           node['icon'] = 'icon-123';
         }
-        else if(node['type'] === 'HIGH_DIMENSIONAL') {
+        else if (node['type'] === 'HIGH_DIMENSIONAL') {
           node['icon'] = 'fa-file-text';
         }
-        else if(node['type'] === 'CATEGORICAL_OPTION') {
+        else if (node['type'] === 'CATEGORICAL_OPTION') {
           node['icon'] = 'icon-abc';
         }
         else {
@@ -128,7 +129,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   updateMetadataContent(metadata) {
     this.metadataContent = [];
-    for(let key in metadata) {
+    for (let key in metadata) {
       this.metadataContent.push({
         key: key,
         val: metadata[key]
@@ -160,6 +161,9 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         event.preventDefault();
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.toggle(event);
+        let div = this.treeNodeMetadataPanel.el.nativeElement.children[0];
+        div.style.left = event.clientX + 'px';
+        div.style.top = (event.layerY + 75) + 'px';
       }).bind(this);
 
       //if the data object type belongs to the listed types
@@ -167,9 +171,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       //if metadata exits
-      if(metadata) {
+      if (metadata) {
         treeNodeElm.addEventListener('contextmenu', handleContextmenu);
       }
+      treeNodeElm.addEventListener('contextmenu', handleContextmenu);
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
@@ -180,7 +185,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   update() {
-    if(this.expansionStatus['expanded']) {
+    if (this.expansionStatus['expanded']) {
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
@@ -193,7 +198,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   expandNode(event) {
-    if(event.node) {
+    if (event.node) {
       this.expansionStatus['expanded'] = true;
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
