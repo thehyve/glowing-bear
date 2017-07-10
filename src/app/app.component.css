@@ -13,6 +13,10 @@
   will-change: overflow;
 }
 
+.gb-router-outlet-container {
+  margin-top: 40px;
+}
+
 /*
     All the scrollable sections should overflow
     and be whatever height they need to be.

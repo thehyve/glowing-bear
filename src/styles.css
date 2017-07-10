@@ -108,13 +108,7 @@ body .gb-patient-set-item {
 }
 
 .ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
-  height: 40px;
-}
-
-body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
-  position: relative;
-  height: 40px;
-  padding-top: 6px;
+  height: 46px;
 }
 
 /*
