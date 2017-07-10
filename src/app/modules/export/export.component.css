@@ -28,6 +28,10 @@
   border-radius: 10px;
 }
 
+.gb-export-btn-container {
+  margin-top: 20px;
+}
+
 .gb-data-format-item {
   font-size: larger;
   background-color: transparent;
