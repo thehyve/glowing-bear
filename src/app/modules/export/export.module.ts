@@ -10,6 +10,7 @@ import {CheckboxModule} from "primeng/components/checkbox/checkbox";
 import {FieldsetModule} from "primeng/components/fieldset/fieldset";
 import {DataTableModule} from "primeng/components/datatable/datatable";
 import {SharedModule} from "primeng/components/common/shared";
+import {DropdownModule} from "primeng/components/dropdown/dropdown";
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import {SharedModule} from "primeng/components/common/shared";
     CheckboxModule,
     FieldsetModule,
     DataTableModule,
+    DropdownModule,
     SharedModule
   ],
   exports: [

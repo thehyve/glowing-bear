@@ -66,7 +66,7 @@ export class ConstraintComponent implements OnInit {
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
     let droppedConstraint: Constraint =
-      this.constraintService.generateConstraintFromSelectedNode();
+      this.constraintService.generateConstraintFromSelectedNode(); console.log('dropped constraint: ', droppedConstraint);
 
     if (droppedConstraint) {
       if(this.constraint instanceof CombinationConstraint) {
