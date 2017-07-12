@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers, RequestOptions} from '@angular/http';
+import {Http, Response, Headers, RequestOptions, ResponseContentType} from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import {Observable} from 'rxjs/Rx';
@@ -302,6 +302,27 @@ export class ResourceService {
 
     return this.http.post(url, {}, options)
       .map((res: Response) => res.json().exportJob as ExportJob)
+      .catch(this.handleError.bind(this));
+  }
+
+  /**
+   * Given an export job id, return the blob (zipped file) ready to be used on frontend
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  downloadExportJob(jobId: string) {
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/zip');
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+
+
+    let url = `${endpoint.getUrl()}/export/${jobId}/download`;
+    return this.http.get(url, {
+      headers: headers,
+      responseType: ResponseContentType.Blob
+    })
+      .map((res: Response) => res.blob())
       .catch(this.handleError.bind(this));
   }
 

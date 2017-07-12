@@ -128,6 +128,16 @@ body .ui-autocomplete-input-token input {
   align-items: center;
 }
 
+/*
+ * Change the primeng data table border to lightgrey
+ */
+.ui-datatable .ui-datatable-thead>tr>th,
+.ui-datatable .ui-datatable-tfoot>tr>td,
+.ui-datatable .ui-datatable-data>tr>td {
+  border-color: lightgrey;
+}
+
+
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
@@ -159,4 +169,5 @@ body .ui-autocomplete-input-token input {
 legend {
   font-size: 1em;
 }
+
 

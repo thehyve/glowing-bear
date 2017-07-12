@@ -1,10 +1,11 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DimensionRegistryService} from "../shared/services/dimension-registry.service";
 import {SavedSet} from "../shared/models/saved-set";
 import {ConstraintService} from "../shared/services/constraint.service";
 import {DropMode} from "../shared/models/drop-mode";
 import {ResourceService} from "../shared/services/resource.service";
 import {SelectItem} from "primeng/components/common/api";
+import {SimpleTimer} from "ng2-simple-timer";
 
 @Component({
   selector: 'export',
@@ -21,14 +22,14 @@ export class ExportComponent implements OnInit {
   searchResults: any;
 
   dataFormats: Object[];
-  exportTasks: Object[];
-  exportTaskName: string;
+  exportJobs: Object[];
+  exportJobName: string;
 
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
               private resourceService: ResourceService,
-              private element: ElementRef) {
+              private timer: SimpleTimer) {
     let patientOpt: SelectItem = {
       label: 'patient',
       value: 'patient'
@@ -41,17 +42,19 @@ export class ExportComponent implements OnInit {
     this.selectedAvailableSetOption = 'patient';
     this.selectedSets = [];
     this.dataFormats = [];
-    this.updateExportTasks();
+    this.updateExportJobs();
+    this.timer.newTimer('30sec', 30);
+    this.timer.subscribe('30sec', e => this.updateExportJobs());
   }
 
   ngOnInit() {
   }
 
-  updateExportTasks() {
+  updateExportJobs() {
     this.resourceService.getExportJobs()
       .subscribe(
-        tasks => {
-          this.exportTasks = tasks;
+        jobs => { console.log('jobs: ', jobs);
+          this.exportJobs = jobs;
         },
         err => console.error(err)
       );
@@ -82,23 +85,18 @@ export class ExportComponent implements OnInit {
     }
   }
 
-  exportSelectedSets() {
-    if(this.selectedSets.length > 0) {
-      console.log('Export these sets: ', this.selectedSets, ' with name: ', this.exportTaskName);
-      this.createExportJob();
-    }
-  }
-
   createExportJob() {
-    let name = this.exportTaskName ? this.exportTaskName.trim() : undefined;
-    this.resourceService.createExportJob(name)
-      .subscribe(
-        newJob => {
-          console.log('new job: ', newJob);
-          this.runExportJob(newJob.id);
-        },
-        err => console.error(err)
-      );
+    if(this.selectedSets.length > 0) {
+      let name = this.exportJobName ? this.exportJobName.trim() : undefined;
+      this.resourceService.createExportJob(name)
+        .subscribe(
+          newJob => {
+            console.log('new job: ', newJob);
+            this.runExportJob(newJob.id);
+          },
+          err => console.error(err)
+        );
+    }
   }
 
   runExportJob(jobId: string) {
@@ -115,14 +113,26 @@ export class ExportComponent implements OnInit {
         format: fileFormat
       });
     }
-    //TODO: export permission to be sorted out
+
     this.resourceService.runExportJob(jobId, setOption, ids, elements)
       .subscribe(
         returnedExportJob => {
-          // TODO: handle returned export job
-          console.log('successfully running export job: ', returnedExportJob);
+          this.updateExportJobs();
         },
         err => console.log(err)
+      );
+  }
+
+  downloadExportJob(job) {
+    console.log('download job: ', job);
+    this.resourceService.downloadExportJob(job.id)
+      .subscribe(
+        response => {
+          var blob = new Blob([response], { type: 'application/zip' });
+          var url= window.URL.createObjectURL(blob);
+          window.open(url);
+        },
+        err => console.error(err)
       );
   }
 
@@ -168,7 +178,7 @@ export class ExportComponent implements OnInit {
     event.originalEvent.stopPropagation();
   }
 
-  onExportTaskNameInputDrop(event) {
+  onExportJobNameInputDrop(event) {
     event.stopPropagation();
     event.preventDefault();
   }
