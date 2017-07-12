@@ -21,8 +21,8 @@ export class ExportComponent implements OnInit {
   searchResults: any;
 
   dataFormats: Object[];
-  exportTasks: Object[];
-  exportTaskName: string;
+  exportJobs: Object[];
+  exportJobName: string;
 
 
   constructor(private dimensionRegistry: DimensionRegistryService,
@@ -41,17 +41,17 @@ export class ExportComponent implements OnInit {
     this.selectedAvailableSetOption = 'patient';
     this.selectedSets = [];
     this.dataFormats = [];
-    this.updateExportTasks();
+    this.updateExportJobs();
   }
 
   ngOnInit() {
   }
 
-  updateExportTasks() {
+  updateExportJobs() {
     this.resourceService.getExportJobs()
       .subscribe(
-        tasks => {
-          this.exportTasks = tasks;
+        jobs => { console.log('jobs: ', jobs);
+          this.exportJobs = jobs;
         },
         err => console.error(err)
       );
@@ -84,13 +84,13 @@ export class ExportComponent implements OnInit {
 
   exportSelectedSets() {
     if(this.selectedSets.length > 0) {
-      console.log('Export these sets: ', this.selectedSets, ' with name: ', this.exportTaskName);
+      console.log('Export these sets: ', this.selectedSets, ' with name: ', this.exportJobName);
       this.createExportJob();
     }
   }
 
   createExportJob() {
-    let name = this.exportTaskName ? this.exportTaskName.trim() : undefined;
+    let name = this.exportJobName ? this.exportJobName.trim() : undefined;
     this.resourceService.createExportJob(name)
       .subscribe(
         newJob => {
@@ -168,7 +168,7 @@ export class ExportComponent implements OnInit {
     event.originalEvent.stopPropagation();
   }
 
-  onExportTaskNameInputDrop(event) {
+  onExportJobNameInputDrop(event) {
     event.stopPropagation();
     event.preventDefault();
   }
