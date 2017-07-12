@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {ExportComponent} from "./export.component";
 import {routing} from './export.routing';
 import {RouterModule} from "@angular/router";
@@ -11,6 +11,8 @@ import {FieldsetModule} from "primeng/components/fieldset/fieldset";
 import {DataTableModule} from "primeng/components/datatable/datatable";
 import {SharedModule} from "primeng/components/common/shared";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
+import {SimpleTimer} from "ng2-simple-timer";
+import {PanelModule} from "primeng/components/panel/panel";
 
 @NgModule({
   imports: [
@@ -22,12 +24,17 @@ import {DropdownModule} from "primeng/components/dropdown/dropdown";
     CheckboxModule,
     FieldsetModule,
     DataTableModule,
+    PanelModule,
     DropdownModule,
     SharedModule
   ],
   exports: [
     RouterModule
   ],
+  providers: [
+    SimpleTimer
+  ],
   declarations: [ExportComponent]
 })
-export class ExportModule { }
+export class ExportModule {
+}
