@@ -1,8 +1,5 @@
 <div class="export-container">
-
-  <!-- *---------- export selection panel ----------* -->
-  <p-fieldset [toggleable]="true">
-    <p-header>Export selection</p-header>
+  <p-panel header="Select patient/observation set(s) to export" [toggleable]="true">
 
     <!-- autocompletes to select patient sets or observation sets -->
     <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
@@ -36,6 +33,7 @@
     <!--(onDropdownClick)="onDropdown($event)"-->
     <!--[multiple]="true"></p-autoComplete>-->
 
+
     <!-- area to indicate which formats to export -->
     <div *ngIf="dataFormats.length>0" class="gb-data-format-container">
       <div class="gb-data-format-header">Select data formats:</div>
@@ -57,30 +55,57 @@
       <input id="exportJobNameInput" type="text" class="form-text"
              placeholder="Export job name"
              (drop)="onExportJobNameInputDrop($event)"
-             [(ngModel)]="exportJobName" >
+             [(ngModel)]="exportJobName">
       <span>&nbsp;</span>
-      <button type="button" class="btn btn-primary btn-sm" (click)="exportSelectedSets()">Export selected sets</button>
+      <button type="button" class="btn btn-primary btn-sm" (click)="createExportJob()">Export selected sets</button>
     </div>
 
-  </p-fieldset>
+  </p-panel>
 
-  <!-- *---------- export jobs ----------* -->
-  <p-fieldset [toggleable]="true">
-    <p-header>Export jobs</p-header>
 
-    <p-dataTable [value]="exportJobs"
-                 sortField="name"
-                 rowGroupMode="subheader"
-                 groupField="status"
-                 expandableRowGroups="true"
-                 [sortableRowGroup]="false">
-      <ng-template pTemplate="rowgroupheader" let-exportJob>{{exportJob['jobStatus']}}</ng-template>
-      <p-column field="jobName" header=" Name" [style]="{'border-color': 'lightgrey'}"></p-column>
-      <p-column field="jobStatus" header="Status" [style]="{'border-color': 'lightgrey'}"></p-column>
-      <p-column field="jobStatusTime" header="Time" [style]="{'border-color': 'lightgrey'}"></p-column>
+  <p-panel header="Export jobs" [toggleable]="true">
+    <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+      <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+      <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
+    </div>
+    <p-dataTable #dt
+                 [value]="exportJobs"
+                 [rows]="10" [paginator]="true"
+                 [globalFilter]="globalFilter">
+      <p-column field="jobName" header="Name"
+                [sortable]="true"
+                [filter]="true" filterPlaceholder="Filter column">
+
+      </p-column>
+      <p-column field="jobStatus" header="Status"
+                [sortable]="true"
+                [filter]="true" filterPlaceholder="Filter column">
+
+      </p-column>
+      <p-column field="jobStatusTime" header="Time"
+                [sortable]="true"
+                [filter]="true" filterPlaceholder="Filter Column">
+      </p-column>
+      <p-column>
+        <ng-template pTemplate="header">
+          <span>Download</span>
+        </ng-template>
+        <ng-template let-job="rowData" pTemplate="body">
+          <button type="button"
+                  *ngIf="job.jobStatus === 'Completed'"
+                  class="btn btn-outline-primary btn-sm"
+                  (click)="downloadExportJob(job)">
+            <span class="fa fa-download"></span>
+            Download
+          </button>
+
+        </ng-template>
+      </p-column>
+
     </p-dataTable>
 
-  </p-fieldset>
+  </p-panel>
+
 
 </div>
 

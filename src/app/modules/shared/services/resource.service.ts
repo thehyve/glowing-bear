@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers, RequestOptions} from '@angular/http';
+import {Http, Response, Headers, RequestOptions, ResponseContentType} from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 
 import {Observable} from 'rxjs/Rx';
@@ -78,10 +78,10 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
       // loading tree nodes with patient and observation counts, and metadata
-      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
+      let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
 
       // loading tree nodes faster with this url
-      let url = `${endpoint.getUrl()}/tree_nodes`;
+      // let url = `${endpoint.getUrl()}/tree_nodes`;
 
       return this.http.get(url, {
         headers: headers
@@ -302,6 +302,27 @@ export class ResourceService {
 
     return this.http.post(url, {}, options)
       .map((res: Response) => res.json().exportJob as ExportJob)
+      .catch(this.handleError.bind(this));
+  }
+
+  /**
+   * Given an export job id, return the blob (zipped file) ready to be used on frontend
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  downloadExportJob(jobId: string) {
+    let headers = new Headers();
+    headers.append('Content-Type', 'application/zip');
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+
+
+    let url = `${endpoint.getUrl()}/export/${jobId}/download`;
+    return this.http.get(url, {
+      headers: headers,
+      responseType: ResponseContentType.Blob
+    })
+      .map((res: Response) => res.blob())
       .catch(this.handleError.bind(this));
   }
 
