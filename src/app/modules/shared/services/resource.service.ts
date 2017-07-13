@@ -316,7 +316,6 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
-
     let url = `${endpoint.getUrl()}/export/${jobId}/download`;
     return this.http.get(url, {
       headers: headers,
