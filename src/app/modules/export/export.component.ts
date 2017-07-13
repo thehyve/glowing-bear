@@ -7,6 +7,7 @@ import {ResourceService} from "../shared/services/resource.service";
 import {SelectItem} from "primeng/components/common/api";
 import {SimpleTimer} from "ng2-simple-timer";
 import {Response} from "@angular/http";
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'export',
@@ -129,15 +130,30 @@ export class ExportComponent implements OnInit {
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (response: Response) => {
+          let resBlob = response.blob();
+          let length = resBlob.size;
+          console.log('job: ', job.id, ', length: ', length);
           let blob = new Blob([response.blob()], {type: 'application/zip'});
-          let url = window.URL.createObjectURL(blob);
-          var anchor = document.createElement("a");
-          anchor.download = `${job.jobName}.zip`;
-          anchor.href = url;
-          anchor.click();
-          anchor.remove();
+
+          /*
+           * The document anchor click approach
+           */
+          // let url = window.URL.createObjectURL(blob);
+          // var anchor = document.createElement("a");
+          // anchor.download = `${job.jobName}.zip`;
+          // anchor.href = url;
+          // anchor.click();
+          // anchor.remove();
+
+          /*
+           * The file-saver approach
+           */
+          FileSaver.saveAs(blob, `${job.jobName}.zip`);
         },
-        err => console.error(err)
+        err => console.error(err),
+        () => {
+          console.log('=== download complete: ', job.jobName);
+        }
       );
   }
 
