@@ -6,6 +6,7 @@ import {DropMode} from "../shared/models/drop-mode";
 import {ResourceService} from "../shared/services/resource.service";
 import {SelectItem} from "primeng/components/common/api";
 import {SimpleTimer} from "ng2-simple-timer";
+import {Response} from "@angular/http";
 
 @Component({
   selector: 'export',
@@ -53,7 +54,8 @@ export class ExportComponent implements OnInit {
   updateExportJobs() {
     this.resourceService.getExportJobs()
       .subscribe(
-        jobs => { console.log('jobs: ', jobs);
+        jobs => {
+          console.log('jobs: ', jobs);
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -63,14 +65,14 @@ export class ExportComponent implements OnInit {
   updateDataFormats() {
     if (this.selectedSets.length > 0) {
       let ids: string[] = [];
-      for(let set of this.selectedSets) {
+      for (let set of this.selectedSets) {
         ids.push(set['id']);
       }
       this.resourceService.getExportDataFormats(ids)
         .subscribe(
           formats => {
             this.dataFormats = [];
-            for(let name of formats) {
+            for (let name of formats) {
               this.dataFormats.push({
                 name: name,
                 checked: true
@@ -86,7 +88,7 @@ export class ExportComponent implements OnInit {
   }
 
   createExportJob() {
-    if(this.selectedSets.length > 0) {
+    if (this.selectedSets.length > 0) {
       let name = this.exportJobName ? this.exportJobName.trim() : undefined;
       this.resourceService.createExportJob(name)
         .subscribe(
@@ -102,12 +104,12 @@ export class ExportComponent implements OnInit {
   runExportJob(jobId: string) {
     let setOption = this.selectedAvailableSetOption;
     let ids: string[] = [];
-    for(let set of this.selectedSets) {
+    for (let set of this.selectedSets) {
       ids.push(set['id']);
     }
     let elements: Object[] = [];
     let fileFormat: string = this.selectedFileFormat;
-    for(let dataFormat of this.dataFormats) {
+    for (let dataFormat of this.dataFormats) {
       elements.push({
         dataType: dataFormat['name'],
         format: fileFormat
@@ -124,13 +126,16 @@ export class ExportComponent implements OnInit {
   }
 
   downloadExportJob(job) {
-    console.log('download job: ', job);
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
-        response => {
-          var blob = new Blob([response], { type: 'application/zip' });
-          var url= window.URL.createObjectURL(blob);
-          window.open(url);
+        (response: Response) => {
+          let blob = new Blob([response.blob()], {type: 'application/zip'});
+          let url = window.URL.createObjectURL(blob);
+          var anchor = document.createElement("a");
+          anchor.download = `${job.jobName}.zip`;
+          anchor.href = url;
+          anchor.click();
+          anchor.remove();
         },
         err => console.error(err)
       );
@@ -151,10 +156,10 @@ export class ExportComponent implements OnInit {
   onSearch(event) {
     let query = event.query.toLowerCase();
     let sets = null;
-    if(this.selectedAvailableSetOption === 'patient') {
+    if (this.selectedAvailableSetOption === 'patient') {
       sets = this.dimensionRegistry.getPatientSets();
     }
-    else if(this.selectedAvailableSetOption === 'observation') {
+    else if (this.selectedAvailableSetOption === 'observation') {
       sets = this.dimensionRegistry.getObservationSets();
     }
 
