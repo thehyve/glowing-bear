@@ -322,7 +322,7 @@ export class ResourceService {
       headers: headers,
       responseType: ResponseContentType.Blob
     })
-      .map((res: Response) => res.blob())
+      .map((res: Response) => res)
       .catch(this.handleError.bind(this));
   }
 
