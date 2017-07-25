@@ -1,13 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from "../shared/services/dimension-registry.service";
-import {SavedSet} from "../shared/models/saved-set";
-import {ConstraintService} from "../shared/services/constraint.service";
-import {DropMode} from "../shared/models/drop-mode";
-import {ResourceService} from "../shared/services/resource.service";
-import {SelectItem} from "primeng/components/common/api";
-import {SimpleTimer} from "ng2-simple-timer";
-import {Response} from "@angular/http";
-import * as FileSaver from 'file-saver';
+import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
+import {SavedSet} from '../shared/models/saved-set';
+import {ConstraintService} from '../shared/services/constraint.service';
+import {DropMode} from '../shared/models/drop-mode';
+import {ResourceService} from '../shared/services/resource.service';
+import {SelectItem} from 'primeng/components/common/api';
+import {SimpleTimer} from 'ng2-simple-timer';
+import {Response} from '@angular/http';
 
 @Component({
   selector: 'export',
@@ -137,23 +136,17 @@ export class ExportComponent implements OnInit {
 
           /*
            * The document anchor click approach
+           * Alternative: The file-saver approach: FileSaver.saveAs(blob, `${job.jobName}.zip`);
            */
-          // let url = window.URL.createObjectURL(blob);
-          // var anchor = document.createElement("a");
-          // anchor.download = `${job.jobName}.zip`;
-          // anchor.href = url;
-          // anchor.click();
-          // anchor.remove();
-
-          /*
-           * The file-saver approach
-           */
-          FileSaver.saveAs(blob, `${job.jobName}.zip`);
+          let url = window.URL.createObjectURL(blob);
+          let anchor = document.createElement('a');
+          anchor.download = `${job.jobName}.zip`;
+          anchor.href = url;
+          anchor.click();
+          anchor.remove();
         },
         err => console.error(err),
-        () => {
-          console.log('=== download complete: ', job.jobName);
-        }
+        () => {}
       );
   }
 
