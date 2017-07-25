@@ -9,13 +9,13 @@ import 'rxjs/add/operator/catch';
 import {Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
-import {Constraint} from "../models/constraints/constraint";
-import {PatientSetPostResponse} from "../models/patient-set-post-response";
-import {Aggregate} from "../models/aggregate";
-import {ConceptConstraint} from "../models/constraints/concept-constraint";
-import {PatientSet} from "../models/patient-set";
-import {TrialVisit} from "../models/trial-visit";
-import {ExportJob} from "../models/export-job";
+import {Constraint} from '../models/constraints/constraint';
+import {PatientSetPostResponse} from '../models/patient-set-post-response';
+import {Aggregate} from '../models/aggregate';
+import {ConceptConstraint} from '../models/constraints/concept-constraint';
+import {PatientSet} from '../models/patient-set';
+import {TrialVisit} from '../models/trial-visit';
+import {ExportJob} from '../models/export-job';
 
 @Injectable()
 export class ResourceService {
@@ -28,7 +28,7 @@ export class ResourceService {
    * @param error
    * @returns {any}
    */
-  private handleError(error: Response|any) {
+  private handleError(error: Response | any) {
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';
@@ -130,7 +130,7 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString: string = JSON.stringify(constraint.toQueryObject());
-    console.log(debugLabel, "constraint:", constraintString);
+    console.log(debugLabel, 'constraint:', constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
       headers: headers
@@ -222,8 +222,8 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
     let idString = '';
-    for(let id of patientSetIds) {
-      idString += 'id='+id+'&';
+    for (let id of patientSetIds) {
+      idString += 'id=' + id + '&';
     }
     let url = `${endpoint.getUrl()}/export/data_formats?${idString}typeOfSet=patient`;
 
@@ -262,7 +262,7 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let url = `${endpoint.getUrl()}/export/job`;
-    if(name) url += `?name=${name}`;
+    if (name) url += `?name=${name}`;
 
     return this.http.post(url, {}, options)
       .map((res: Response) => res.json().exportJob as ExportJob)
@@ -294,8 +294,8 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let idString = '';
-    for(let id of ids) {
-      idString += 'id='+id+'&';
+    for (let id of ids) {
+      idString += 'id=' + id + '&';
     }
     let elementString = JSON.stringify(elements);
     let url = `${endpoint.getUrl()}/export/${jobId}/run?typeOfSet=${setOption}&${idString}elements=${elementString}`;
