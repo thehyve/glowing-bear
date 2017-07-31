@@ -1,12 +1,12 @@
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
-import {TreeNode} from "primeng/components/common/api";
-import {ResourceService} from "../../../shared/services/resource.service";
-import {ConstraintService} from "../../../shared/services/constraint.service";
-import {OverlayPanel} from "primeng/components/overlaypanel/overlaypanel";
-import {trigger, transition, animate, style} from "@angular/animations";
-import {DropMode} from "../../../shared/models/drop-mode";
+import {TreeNode} from 'primeng/components/common/api';
+import {ResourceService} from '../../../shared/services/resource.service';
+import {ConstraintService} from '../../../shared/services/constraint.service';
+import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
+import {trigger, transition, animate, style} from '@angular/animations';
+import {DropMode} from '../../../shared/models/drop-mode';
 
-type LoadingState = "loading" | "complete";
+type LoadingState = 'loading' | 'complete';
 
 @Component({
   selector: 'tree-nodes',
@@ -34,19 +34,19 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   expansionStatus: any;
   metadataContent: any = [];
 
-  loadingTreeNodes: LoadingState = "complete";
+  loadingTreeNodes: LoadingState = 'complete';
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
 
-    this.loadingTreeNodes = "loading";
-    this.resourceService.getTreeNodes()
+    this.loadingTreeNodes = 'loading';
+    this.resourceService.getAllTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
-          this.loadingTreeNodes = "complete";
+          this.loadingTreeNodes = 'complete';
 
           console.log('tree nodes: ', treeNodes);
         },
@@ -66,7 +66,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.observer = new MutationObserver(this.update.bind(this));
-    var config = {
+    const config = {
       attributes: false,
       subtree: true,
       childList: true,
@@ -166,11 +166,11 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         div.style.top = (event.layerY + 75) + 'px';
       }).bind(this);
 
-      //if the data object type belongs to the listed types
+      // if the data object type belongs to the listed types
       if (this.constraintService.validTreeNodeTypes.includes(dataObjectType)) {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
-      //if metadata exits
+      // if metadata exits
       if (metadata) {
         treeNodeElm.addEventListener('contextmenu', handleContextmenu);
       }
@@ -198,11 +198,23 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   expandNode(event) {
     if (event.node) {
-      this.expansionStatus['expanded'] = true;
-      this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
-      this.expansionStatus['treeNode'] = event.node;
-    }
+      const root = event.node.fullName;
+      const depth = 3;
+      const hasCounts = true;
+      const hasTags = true;
 
+      this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
+        .subscribe(
+          (currentNode: object) => {
+            this.augmentTreeNodes(currentNode['children']);
+            event.node.children = currentNode['children'];
+            this.expansionStatus['expanded'] = true;
+            this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
+            this.expansionStatus['treeNode'] = event.node;
+          },
+          err => console.error(err)
+        );
+    }
   }
 
 }
