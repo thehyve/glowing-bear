@@ -70,7 +70,11 @@ export class ResourceService {
 
   }
 
-  getTreeNodes(): Observable<object> {
+  /**
+   * Get all the available tree nodes in the backend
+   * @returns {Observable<Object>}
+   */
+  getAllTreeNodes(): Observable<object> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
 
@@ -80,16 +84,43 @@ export class ResourceService {
       // loading tree nodes with patient and observation counts, and metadata
       let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
 
-      // loading tree nodes faster with this url
-      // let url = `${endpoint.getUrl()}/tree_nodes`;
-
       return this.http.get(url, {
         headers: headers
       })
         .map((response: Response) => response.json().tree_nodes)
         .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
     }
-    else {
+  }
+
+  /**
+   * Get a specific branch of the tree nodes
+   * @param {string} root - the path to the specific tree node
+   * @param {number} depth - the depth of the tree we want to access
+   * @param {boolean} hasCounts - whether we want to include patient and observation counts in the tree nodes
+   * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
+   * @returns {Observable<Object>}
+   */
+  getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      let url = `${endpoint.getUrl()}/tree_nodes?root=${root}&depth=${depth}`;
+      if (hasCounts) {
+        url += '&counts=true';
+      }
+      if (hasTags) {
+        url += '&tags=true';
+      }
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json().tree_nodes[0])
+        .catch(this.handleError.bind(this));
+    } else {
       console.error('Could not establish endpoint.');
     }
   }

@@ -1,15 +1,12 @@
 import {Injectable} from '@angular/core';
-import {ResourceService} from "./resource.service";
-import {Study} from "../models/study";
-import {Constraint} from "../models/constraints/constraint";
-import {Concept} from "../models/concept";
-import {StudyConstraint} from "../models/constraints/study-constraint";
-import {ConceptConstraint} from "../models/constraints/concept-constraint";
-import {CombinationConstraint} from "../models/constraints/combination-constraint";
-import {PatientSet} from "../models/patient-set";
-import {ObservationSet} from "../models/observation-set";
-import {SavedSet} from "../models/saved-set";
-import {TreeNode} from "primeng/components/common/api";
+import {ResourceService} from './resource.service';
+import {Study} from '../models/study';
+import {Constraint} from '../models/constraints/constraint';
+import {Concept} from '../models/concept';
+import {StudyConstraint} from '../models/constraints/study-constraint';
+import {ConceptConstraint} from '../models/constraints/concept-constraint';
+import {CombinationConstraint} from '../models/constraints/combination-constraint';
+import {SavedSet} from '../models/saved-set';
 
 @Injectable()
 export class DimensionRegistryService {
@@ -66,14 +63,14 @@ export class DimensionRegistryService {
     treeNodes.forEach(treeNode => {
 
       // Extract concept
-      if (treeNode['dimension'] == 'concept') {
+      if (treeNode['dimension'] === 'concept') {
 
         // Only include non-FOLDERs and non-CONTAINERs
-        if (treeNode['visualAttributes'].indexOf('FOLDER') == -1 &&
-          treeNode['visualAttributes'].indexOf('CONTAINER') == -1) {
+        if (treeNode['visualAttributes'].indexOf('FOLDER') === -1 &&
+          treeNode['visualAttributes'].indexOf('CONTAINER') === -1) {
 
           let concept = new Concept();
-          //TODO: retrieve concept path in less hacky manner:
+          // TODO: retrieve concept path in less hacky manner:
           let path = treeNode['constraint']['path'];
           concept.path = path ? path : treeNode['fullName'];
           concept.type = treeNode['type'];
@@ -92,7 +89,7 @@ export class DimensionRegistryService {
 
   updateConcepts() {
     // Retrieve all tree nodes and extract the concepts
-    this.resourceService.getTreeNodes()
+    this.resourceService.getAllTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
           // reset concepts and concept constraints
