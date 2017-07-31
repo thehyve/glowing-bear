@@ -118,7 +118,7 @@ export class ResourceService {
       return this.http.get(url, {
         headers: headers
       })
-        .map((response: Response) => response.json().tree_nodes[0])
+        .map((response: Response) => response.json().tree_nodes)
         .catch(this.handleError.bind(this));
     } else {
       console.error('Could not establish endpoint.');

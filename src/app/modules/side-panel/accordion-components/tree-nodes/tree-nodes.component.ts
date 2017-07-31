@@ -41,14 +41,16 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
               private element: ElementRef) {
 
     this.loadingTreeNodes = 'loading';
-    this.resourceService.getAllTreeNodes()
+    const root = '\\';
+    const depth = 3;
+    const hasCounts = true;
+    const hasTags = true;
+    this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
           this.augmentTreeNodes(this.treeNodes);
           this.loadingTreeNodes = 'complete';
-
-          console.log('tree nodes: ', treeNodes);
         },
         err => console.error(err)
       );
@@ -205,7 +207,8 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
       this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
         .subscribe(
-          (currentNode: object) => {
+          (treeNodes: object) => {
+            const currentNode = treeNodes[0];
             this.augmentTreeNodes(currentNode['children']);
             event.node.children = currentNode['children'];
             this.expansionStatus['expanded'] = true;
