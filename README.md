@@ -20,8 +20,11 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-Before running the tests make sure you are serving the app via `ng serve`.
+For e2e test we use [Protractor](http://www.protractortest.org/) in combination with the [cucumber-js](https://github.com/cucumber/cucumber-js) framework.
+To install protractor run `npm install -g protractor`. 
+To run the tests you need to have an up to dated version of chrome installed and the application running. by default on `localhost:8080`
+to run al tests: `protractor`
+To run specific feature files: `protractor --specs=e2e/features/name-of.feature`
 
 ## Further help
 
