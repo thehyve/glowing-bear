@@ -1,14 +1,11 @@
-import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
-import {ConstraintComponent} from "../constraint/constraint.component";
-import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {Constraint} from "../../../shared/models/constraints/constraint";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {ConstraintComponent} from '../constraint/constraint.component';
+import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
+import {Constraint} from '../../../shared/models/constraints/constraint';
 import {
-  AutoCompleteModule,
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
-import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
-import {CombinationState} from "../../../shared/models/constraints/combination-state";
-import {ConstraintService} from "../../../shared/services/constraint.service";
+import {CombinationState} from '../../../shared/models/constraints/combination-state';
 
 @Component({
   selector: 'combination-constraint',

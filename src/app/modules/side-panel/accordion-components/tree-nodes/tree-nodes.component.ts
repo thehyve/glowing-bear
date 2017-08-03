@@ -9,7 +9,7 @@ import {DropMode} from '../../../shared/models/drop-mode';
 type LoadingState = 'loading' | 'complete';
 
 @Component({
-  selector: 'tree-nodes',
+  selector: 'app-tree-nodes',
   templateUrl: './tree-nodes.component.html',
   styleUrls: ['./tree-nodes.component.css'],
   animations: [
@@ -29,11 +29,19 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
 
+  // the tree nodes to be rendered in the tree, a subset of allTreeNodes
   treeNodes: TreeNode[];
+  // the entire tree
+  allTreeNodes: TreeNode[];
+  // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
+  // a utility variable storing temporary information on the node that is being expanded
   expansionStatus: any;
+  // the variable hoding the current metadata overlay content being shown
   metadataContent: any = [];
-
+  // the search term in the text input box to filter the tree
+  searchTerm: string;
+  // the status indicating the when the tree is being loaded or finished loading
   loadingTreeNodes: LoadingState = 'complete';
 
   constructor(private resourceService: ResourceService,
@@ -47,9 +55,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     const hasTags = true;
     this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
       .subscribe(
-        (treeNodes: object[]) => {
+        (treeNodes: object[]) => { console.log('partial tree initial: ', treeNodes);
+          this.augmentTreeNodes(treeNodes);
           this.treeNodes = treeNodes;
-          this.augmentTreeNodes(this.treeNodes);
+          this.allTreeNodes = treeNodes;
           this.loadingTreeNodes = 'complete';
         },
         err => console.error(err)
@@ -60,7 +69,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       treeNodeElm: null,
       treeNode: null
     };
-
   }
 
   ngOnInit() {
@@ -78,7 +86,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     this.observer.observe(this.element.nativeElement, config);
   }
 
-
   /**
    * Augment tree nodes with tree-ui specifications
    * @param nodes
@@ -94,7 +101,9 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       if (observationCount) {
         countStr += ' | ' + observationCount;
       }
-      if (countStr !== ' ') countStr += ')';
+      if (countStr !== ' ') {
+        countStr += ')';
+      }
 
       node['label'] = node['name'] + countStr;
 
@@ -106,18 +115,14 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         node['expandedIcon'] = 'fa-folder-open';
         node['collapsedIcon'] = 'fa-folder';
         this.augmentTreeNodes(node['children']);
-      }
-      else {
+      } else {
         if (node['type'] === 'NUMERIC') {
           node['icon'] = 'icon-123';
-        }
-        else if (node['type'] === 'HIGH_DIMENSIONAL') {
+        } else if (node['type'] === 'HIGH_DIMENSIONAL') {
           node['icon'] = 'fa-file-text';
-        }
-        else if (node['type'] === 'CATEGORICAL_OPTION') {
+        } else if (node['type'] === 'CATEGORICAL_OPTION') {
           node['icon'] = 'icon-abc';
-        }
-        else {
+        } else {
           node['icon'] = 'fa-folder-o';
         }
       }
@@ -207,7 +212,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
       this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
         .subscribe(
-          (treeNodes: object) => {
+          (treeNodes: object) => { console.log('sub tree: ', treeNodes);
             const currentNode = treeNodes[0];
             this.augmentTreeNodes(currentNode['children']);
             event.node.children = currentNode['children'];
@@ -217,6 +222,52 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
           },
           err => console.error(err)
         );
+    }
+  }
+
+  /**
+   * Recursively filter the tree nodes and return the copied tree nodes that match
+   * @param treeNodes
+   * @param field
+   * @param filterWord
+   * @returns {Array}
+   */
+  filterTreeNodes(treeNodes, field, filterWord) {
+    let result = {
+      hasMatching: false,
+      matchingArray: []
+    };
+    for (let node of treeNodes) {
+      let nodeCopy = Object.assign({}, node);
+      let fieldString = node[field].toLowerCase();
+      if (fieldString.includes(filterWord)) {
+        result.hasMatching = true;
+        result.matchingArray.push(nodeCopy);
+      }
+      if (node['children'] && node['children'].length > 0) {
+        let subResult = this.filterTreeNodes(node['children'], field, filterWord);
+        if (subResult.hasMatching) {
+          if (!result.hasMatching) {
+            result.hasMatching = true;
+            result.matchingArray.push(nodeCopy);
+          }
+          nodeCopy['children'] = subResult.matchingArray;
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * User typing in the input box of the filter search box triggers this function
+   * @param event
+   */
+  onFiltering(event) {
+    if (this.searchTerm === '') {
+      this.treeNodes = this.allTreeNodes;
+    } else {
+      let filterWord = this.searchTerm.toLowerCase();
+      this.treeNodes = this.filterTreeNodes(this.allTreeNodes, 'label', filterWord).matchingArray;
     }
   }
 
