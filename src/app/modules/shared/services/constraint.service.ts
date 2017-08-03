@@ -1,20 +1,19 @@
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from "../models/constraints/combination-constraint";
-import {ResourceService} from "./resource.service";
-import {Constraint} from "../models/constraints/constraint";
-import {TrueConstraint} from "../models/constraints/true-constraint";
-import {PatientSetPostResponse} from "../models/patient-set-post-response";
-import {TreeNode} from "primeng/components/common/api";
-import {StudyConstraint} from "../models/constraints/study-constraint";
-import {Study} from "../models/study";
-import {Concept} from "../models/concept";
-import {ConceptConstraint} from "../models/constraints/concept-constraint";
-import {CombinationState} from "../models/constraints/combination-state";
-import {NegationConstraint} from "../models/constraints/negation-constraint";
-import {SavedSet} from "../models/saved-set";
-import {DropMode} from "../models/drop-mode";
-import {DimensionRegistryService} from "./dimension-registry.service";
-type LoadingState = "loading" | "complete";
+import {CombinationConstraint} from '../models/constraints/combination-constraint';
+import {ResourceService} from './resource.service';
+import {Constraint} from '../models/constraints/constraint';
+import {TrueConstraint} from '../models/constraints/true-constraint';
+import {PatientSetPostResponse} from '../models/patient-set-post-response';
+import {StudyConstraint} from '../models/constraints/study-constraint';
+import {Study} from '../models/study';
+import {Concept} from '../models/concept';
+import {ConceptConstraint} from '../models/constraints/concept-constraint';
+import {CombinationState} from '../models/constraints/combination-state';
+import {NegationConstraint} from '../models/constraints/negation-constraint';
+import {DropMode} from '../models/drop-mode';
+import {DimensionRegistryService} from './dimension-registry.service';
+
+type LoadingState = 'loading' | 'complete';
 
 @Injectable()
 export class ConstraintService {
@@ -30,9 +29,9 @@ export class ConstraintService {
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
 
-  loadingStateInclusion:LoadingState = "complete";
-  loadingStateExclusion:LoadingState = "complete";
-  loadingStateTotal:LoadingState = "complete";
+  loadingStateInclusion: LoadingState = 'complete';
+  loadingStateExclusion: LoadingState = 'complete';
+  loadingStateTotal: LoadingState = 'complete';
 
   /*
    * The selected node (drag-start) in the side-panel of either
@@ -60,20 +59,20 @@ export class ConstraintService {
   }
 
   updatePatients() {
-    this.loadingStateInclusion = "loading";
-    this.loadingStateExclusion = "loading";
-    this.loadingStateTotal = "loading";
+    this.loadingStateInclusion = 'loading';
+    this.loadingStateExclusion = 'loading';
+    this.loadingStateTotal = 'loading';
 
     let inclusionConstraint = this.generateInclusionConstraint(this.rootInclusionConstraint);
-    this.resourceService.getPatients(inclusionConstraint, "Inclusion")
+    this.resourceService.getPatients(inclusionConstraint, 'Inclusion')
       .subscribe(
         patients => {
           this.inclusionPatientCount = patients.length;
-          this.loadingStateInclusion = "complete";
+          this.loadingStateInclusion = 'complete';
         },
         err => {
           console.error(err);
-          this.loadingStateInclusion = "complete";
+          this.loadingStateInclusion = 'complete';
         }
       );
 
@@ -81,34 +80,34 @@ export class ConstraintService {
     if ((<CombinationConstraint>this.rootExclusionConstraint).hasNonEmptyChildren()) {
       let exclusionConstraint =
         this.generateExclusionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-      this.resourceService.getPatients(exclusionConstraint, "Exclusion")
+      this.resourceService.getPatients(exclusionConstraint, 'Exclusion')
         .subscribe(
           patients => {
             this.exclusionPatientCount = patients.length;
-            this.loadingStateExclusion = "complete";
+            this.loadingStateExclusion = 'complete';
           },
           err => {
             console.error(err);
-            this.loadingStateExclusion = "complete";
+            this.loadingStateExclusion = 'complete';
           }
         );
     }
     else {
       this.exclusionPatientCount = 0;
-      this.loadingStateExclusion = "complete";
+      this.loadingStateExclusion = 'complete';
     }
 
     let intersectionConstraint: Constraint =
       this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    this.resourceService.getPatients(intersectionConstraint, "Intersection")
+    this.resourceService.getPatients(intersectionConstraint, 'Intersection')
       .subscribe(
         patients => {
           this.patientCount = patients.length;
-          this.loadingStateTotal = "complete";
+          this.loadingStateTotal = 'complete';
         },
         err => {
           console.error(err);
-          this.loadingStateTotal = "complete";
+          this.loadingStateTotal = 'complete';
         }
       );
   }
@@ -175,19 +174,19 @@ export class ConstraintService {
     let constraint: Constraint = null;
     let dropMode: DropMode = this.selectedNode['dropMode'];
     //if the dropped node is a tree node
-    if(dropMode === DropMode.TreeNode) {
+    if (dropMode === DropMode.TreeNode) {
       let treeNode = this.selectedNode;
       let treeNodeType = treeNode['type'];
-      if(treeNodeType === 'STUDY') {
+      if (treeNodeType === 'STUDY') {
         let study: Study = new Study();
         study.studyId = treeNode['constraint']['studyId'];
         constraint = new StudyConstraint();
         (<StudyConstraint>constraint).studies.push(study);
       }
-      else if(treeNodeType === 'NUMERIC' ||
+      else if (treeNodeType === 'NUMERIC' ||
         treeNodeType === 'CATEGORICAL_OPTION') {
         let concept = new Concept();
-        if(treeNode['constraint']) {
+        if (treeNode['constraint']) {
           let constraintObject = treeNode['constraint'];
           constraintObject['valueType'] = treeNodeType;
           constraint = this.generateConstraintFromConstraintObject(constraintObject);
@@ -201,14 +200,14 @@ export class ConstraintService {
       }
     }
     //if the dropped node is a patient set
-    else if(dropMode === DropMode.PatientSet) {
-      if(this.selectedNode.requestConstraints) {
+    else if (dropMode === DropMode.PatientSet) {
+      if (this.selectedNode.requestConstraints) {
         let constraintObject = JSON.parse(this.selectedNode.requestConstraints);
         constraintObject = this.optimizeConstraintObject(constraintObject);
         constraint = this.generateConstraintFromConstraintObject(constraintObject);
       }
     }
-    else if(dropMode === DropMode.ObservationSet) {
+    else if (dropMode === DropMode.ObservationSet) {
     }
 
     return constraint;
@@ -217,38 +216,38 @@ export class ConstraintService {
   generateConstraintFromConstraintObject(constraintObject): Constraint {
     let type = constraintObject['type'];
     let constraint: Constraint = null;
-    if(type === 'concept') {
+    if (type === 'concept') {
       let concept = new Concept();
       concept.path = constraintObject['path'];
       concept.type = constraintObject['valueType'];
       constraint = new ConceptConstraint();
       (<ConceptConstraint>constraint).concept = concept;
     }
-    else if(type === 'study_name') {
+    else if (type === 'study_name') {
       let study = new Study();
       study.studyId = constraintObject['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
     }
-    else if(type === 'combination') {
+    else if (type === 'combination') {
       let operator = constraintObject['operator'];
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
-      for(let arg of constraintObject['args']) {
-        if(arg['type'] === 'concept') {
+      for (let arg of constraintObject['args']) {
+        if (arg['type'] === 'concept') {
           arg['valueType'] = constraintObject['valueType'];
         }
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
       }
     }
-    else if(type === 'and' || type === 'or') {
+    else if (type === 'and' || type === 'or') {
       let operator = type;
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
-      for(let arg of constraintObject['args']) {
+      for (let arg of constraintObject['args']) {
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
       }
@@ -261,13 +260,13 @@ export class ConstraintService {
     let newConstraintObject = constraintObject;
 
     // if the object has 'args' property
-    if(constraintObject['args']) {
-      if(constraintObject['args'].length === 1) {
+    if (constraintObject['args']) {
+      if (constraintObject['args'].length === 1) {
         newConstraintObject = this.optimizeConstraintObject(constraintObject['args'][0]);
       }
-      else if(constraintObject['args'].length > 1) {
+      else if (constraintObject['args'].length > 1) {
         let newArgs = [];
-        for(let arg of constraintObject['args']) {
+        for (let arg of constraintObject['args']) {
           let newArg = this.optimizeConstraintObject(arg);
           newArgs.push(newArg);
         }
@@ -275,7 +274,7 @@ export class ConstraintService {
       }
     }
     // if the object has the 'constraint' property
-    else if(constraintObject['constraint']){
+    else if (constraintObject['constraint']) {
       newConstraintObject = this.optimizeConstraintObject(constraintObject['constraint']);
     }
 
