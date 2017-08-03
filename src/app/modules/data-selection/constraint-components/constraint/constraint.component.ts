@@ -1,13 +1,11 @@
 import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
-import {Constraint} from "../../../shared/models/constraints/constraint";
-import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
-import {ConstraintService} from "../../../shared/services/constraint.service";
-import {ResourceService} from "../../../shared/services/resource.service";
-import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {ConceptConstraintComponent} from "../concept-constraint/concept-constraint.component";
-import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
-import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
-import {DropMode} from "../../../shared/models/drop-mode";
+import {Constraint} from '../../../shared/models/constraints/constraint';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {ConstraintService} from '../../../shared/services/constraint.service';
+import {ResourceService} from '../../../shared/services/resource.service';
+import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
+import {StudyConstraint} from '../../../shared/models/constraints/study-constraint';
+import {ConceptConstraint} from '../../../shared/models/constraints/concept-constraint';
 
 @Component({
   selector: 'constraint',
@@ -86,12 +84,12 @@ export class ConstraintComponent implements OnInit {
         }
         else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;
-          //TODO: still needs to find a way to update the aggregates fo the CocneptConstraintComponent
+          // TODO: still needs to find a way to update the aggregates fo the CocneptConstraintComponent
           this.constraintService.update();
         }
       }
 
-    }//if dropped constraint exists
+    }// if dropped constraint exists
 
   }
 

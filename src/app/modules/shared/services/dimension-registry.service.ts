@@ -7,10 +7,12 @@ import {StudyConstraint} from '../models/constraints/study-constraint';
 import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {CombinationConstraint} from '../models/constraints/combination-constraint';
 import {SavedSet} from '../models/saved-set';
+import {TreeNode} from 'primeng/primeng';
 
 @Injectable()
 export class DimensionRegistryService {
 
+  public treeNodes: TreeNode[];
   private studies: Study[] = [];
   private studyConstraints: Constraint[] = [];
   private concepts: Concept[] = [];
@@ -82,8 +84,10 @@ export class DimensionRegistryService {
         }
       }
 
-      // Recurse
-      this.processTreeNodes(treeNode['children']);
+      if (treeNode['children']) {
+        // Recurse
+        this.processTreeNodes(treeNode['children']);
+      }
     });
   }
 
@@ -92,6 +96,7 @@ export class DimensionRegistryService {
     this.resourceService.getAllTreeNodes()
       .subscribe(
         (treeNodes: object[]) => {
+          this.treeNodes = treeNodes;
           // reset concepts and concept constraints
           this.concepts = [];
           this.conceptConstraints = [];
