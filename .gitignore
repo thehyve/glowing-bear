@@ -45,3 +45,4 @@ Thumbs.db
 
 src/app/config/env.json
 /src/app/config/env.json
+yarn.lock
