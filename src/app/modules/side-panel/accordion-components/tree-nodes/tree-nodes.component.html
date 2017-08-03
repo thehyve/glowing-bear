@@ -1,5 +1,12 @@
 <div [@notifyState]="loadingTreeNodes">
 
+  <!-- the search/filter input -->
+  <p-autoComplete [(ngModel)]="searchTerm"
+                  styleClass="gb-tree-filter-input"
+                  placeholder="Filter tree nodes"
+                  (onClear)="onFiltering($event)"
+                  (completeMethod)="onFiltering($event)"></p-autoComplete>
+
   <!-- the tree itself -->
   <p-tree [value]="treeNodes"
           (onNodeExpand)="expandNode($event)"

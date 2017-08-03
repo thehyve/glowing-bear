@@ -101,6 +101,16 @@ body .gb-patient-set-item {
   border: 1px solid #D5D5D5;
 }
 
+/*
+ * Style for the search box in the tree-node accordion on the left side
+ */
+.gb-tree-filter-input > input{
+  font-size: small !important;
+  height: 1.8em;
+  min-width: 150px;
+}
+
+
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
   height: 38px;
@@ -168,5 +178,3 @@ body .ui-autocomplete-input-token input {
 legend {
   font-size: 1em;
 }
-
-
