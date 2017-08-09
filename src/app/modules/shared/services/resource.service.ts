@@ -70,32 +70,6 @@ export class ResourceService {
   }
 
   /**
-   * Get all the available tree nodes in the backend
-   * @returns {Observable<Object>}
-   */
-  getAllTreeNodes(): Observable<object> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-
-      // load tree nodes with patient and observation counts, and metadata
-      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
-      // load the tree nodes faster with this link
-      let url = `${endpoint.getUrl()}/tree_nodes`;
-
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().tree_nodes)
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
-  }
-
-  /**
    * Get a specific branch of the tree nodes
    * @param {string} root - the path to the specific tree node
    * @param {number} depth - the depth of the tree we want to access

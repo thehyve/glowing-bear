@@ -33,6 +33,7 @@ export class DimensionRegistryService {
     this.updateConcepts();
     this.updatePatientSets();
   }
+
   updateEmptyConstraints() {
     this.allConstraints.push(new CombinationConstraint());
     this.allConstraints.push(new StudyConstraint());
