@@ -35,7 +35,7 @@ export class ResourceService {
       const err = body.error || JSON.stringify(body);
       errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
 
-      if (err == 'invalid_token') {
+      if (err === 'invalid_token') {
         this.endpointService.invalidateToken();
       }
 
@@ -63,37 +63,10 @@ export class ResourceService {
       })
         .map((response: Response) => response.json().studies as Study[])
         .catch(this.handleError.bind(this));
-    }
-    else {
-      console.error('Could not establish endpoint.');
-    }
-
-  }
-
-  /**
-   * Get all the available tree nodes in the backend
-   * @returns {Observable<Object>}
-   */
-  getAllTreeNodes(): Observable<object> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-
-      // load tree nodes with patient and observation counts, and metadata
-      // let url = `${endpoint.getUrl()}/tree_nodes?counts=true&tags=true`;
-      // load the tree nodes faster with this link
-      let url = `${endpoint.getUrl()}/tree_nodes`;
-
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().tree_nodes)
-        .catch(this.handleError.bind(this));
     } else {
       console.error('Could not establish endpoint.');
     }
+
   }
 
   /**

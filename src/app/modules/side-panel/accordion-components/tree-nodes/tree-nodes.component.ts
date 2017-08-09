@@ -49,26 +49,25 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
               private element: ElementRef) {
 
     this.loadingTreeNodes = 'loading';
-    const root = '\\';
-    const depth = 3;
-    const hasCounts = true;
-    const hasTags = true;
-    this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
-      .subscribe(
-        (treeNodes: object[]) => { console.log('partial tree initial: ', treeNodes);
-          this.augmentTreeNodes(treeNodes);
-          this.treeNodes = treeNodes;
-          this.allTreeNodes = treeNodes;
-          this.loadingTreeNodes = 'complete';
-        },
-        err => console.error(err)
-      );
-
     this.expansionStatus = {
       expanded: false,
       treeNodeElm: null,
       treeNode: null
     };
+
+    this.resourceService.getTreeNodes('\\', 2, true, true)
+      .subscribe(
+        (treeNodes: object[]) => {
+          this.augmentTreeNodes(treeNodes);
+          this.treeNodes = treeNodes;
+          this.allTreeNodes = treeNodes;
+          this.loadingTreeNodes = 'complete';
+          treeNodes.forEach((function (node) {
+            this.loadTreeNext(node);
+          }).bind(this));
+        },
+        err => console.error(err)
+      );
   }
 
   ngOnInit() {
@@ -86,45 +85,72 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     this.observer.observe(this.element.nativeElement, config);
   }
 
+  loadTreeNext(parentNode) {
+    this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
+      .subscribe(
+        (treeNodes: object[]) => {
+          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+          const children = refNode ? refNode['children'] : undefined;
+          if (children) {
+            parentNode['children'] = children;
+            this.augmentTreeNode(parentNode);
+            children.forEach((function (node) {
+              this.loadTreeNext(node);
+            }).bind(this));
+          }
+        },
+        err => console.error(err)
+      );
+  }
+
   /**
-   * Augment tree nodes with tree-ui specifications
+   * Augment tree nodes with PrimeNG tree-ui specifications
    * @param nodes
    */
   augmentTreeNodes(nodes: Object[]) {
     for (let node of nodes) {
-      let patientCount = node['patientCount'];
-      let observationCount = node['observationCount'];
-      let countStr = ' ';
-      if (patientCount) {
-        countStr += '(' + patientCount;
-      }
-      if (observationCount) {
-        countStr += ' | ' + observationCount;
-      }
-      if (countStr !== ' ') {
-        countStr += ')';
-      }
+      this.augmentTreeNode(node);
+    }
+  }
 
-      node['label'] = node['name'] + countStr;
+  /**
+   * Augment a tree node with PrimeNG tree-ui specifications
+   * @param {Object} node
+   */
+  augmentTreeNode(node: Object) {
+    let patientCount = node['patientCount'];
+    let observationCount = node['observationCount'];
+    let countStr = ' ';
+    if (patientCount) {
+      countStr += '(' + patientCount;
+    }
+    // if (observationCount) {
+    //   countStr += ' | ' + observationCount;
+    // }
+    if (countStr !== ' ') {
+      countStr += ')';
+    }
 
-      if (node['metadata']) {
-        node['label'] = node['label'] + ' ⚆';
-      }
+    node['label'] = node['name'] + countStr;
 
-      if (node['children']) {
-        node['expandedIcon'] = 'fa-folder-open';
-        node['collapsedIcon'] = 'fa-folder';
-        this.augmentTreeNodes(node['children']);
+    if (node['metadata']) {
+      node['label'] = node['label'] + ' ⚆';
+    }
+
+    if (node['children']) {
+      node['expandedIcon'] = 'fa-folder-open';
+      node['collapsedIcon'] = 'fa-folder';
+      node['icon'] = '';
+      this.augmentTreeNodes(node['children']);
+    } else {
+      if (node['type'] === 'NUMERIC') {
+        node['icon'] = 'icon-123';
+      } else if (node['type'] === 'HIGH_DIMENSIONAL') {
+        node['icon'] = 'fa-file-text';
+      } else if (node['type'] === 'CATEGORICAL_OPTION') {
+        node['icon'] = 'icon-abc';
       } else {
-        if (node['type'] === 'NUMERIC') {
-          node['icon'] = 'icon-123';
-        } else if (node['type'] === 'HIGH_DIMENSIONAL') {
-          node['icon'] = 'fa-file-text';
-        } else if (node['type'] === 'CATEGORICAL_OPTION') {
-          node['icon'] = 'icon-abc';
-        } else {
-          node['icon'] = 'fa-folder-o';
-        }
+        node['icon'] = 'fa-folder-o';
       }
     }
   }
@@ -205,23 +231,27 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   expandNode(event) {
     if (event.node) {
-      const root = event.node.fullName;
-      const depth = 3;
-      const hasCounts = true;
-      const hasTags = true;
-
-      this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
-        .subscribe(
-          (treeNodes: object) => { console.log('sub tree: ', treeNodes);
-            const currentNode = treeNodes[0];
-            this.augmentTreeNodes(currentNode['children']);
-            event.node.children = currentNode['children'];
-            this.expansionStatus['expanded'] = true;
-            this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
-            this.expansionStatus['treeNode'] = event.node;
-          },
-          err => console.error(err)
-        );
+      this.expansionStatus['expanded'] = true;
+      this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
+      this.expansionStatus['treeNode'] = event.node;
+    //   const root = event.node.fullName;
+    //   const depth = 3;
+    //   const hasCounts = true;
+    //   const hasTags = true;
+    //
+    //   this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
+    //     .subscribe(
+    //       (treeNodes: object) => {
+    //         console.log('sub tree: ', treeNodes);
+    //         const currentNode = treeNodes[0];
+    //         this.augmentTreeNodes(currentNode['children']);
+    //         event.node.children = currentNode['children'];
+    //         this.expansionStatus['expanded'] = true;
+    //         this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
+    //         this.expansionStatus['treeNode'] = event.node;
+    //       },
+    //       err => console.error(err)
+    //     );
     }
   }
 
