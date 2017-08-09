@@ -35,7 +35,7 @@ export class ResourceService {
       const err = body.error || JSON.stringify(body);
       errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
 
-      if (err == 'invalid_token') {
+      if (err === 'invalid_token') {
         this.endpointService.invalidateToken();
       }
 
@@ -63,8 +63,7 @@ export class ResourceService {
       })
         .map((response: Response) => response.json().studies as Study[])
         .catch(this.handleError.bind(this));
-    }
-    else {
+    } else {
       console.error('Could not establish endpoint.');
     }
 

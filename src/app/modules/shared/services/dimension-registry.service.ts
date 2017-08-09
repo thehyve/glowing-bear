@@ -28,11 +28,15 @@ export class DimensionRegistryService {
   private allConstraints: Constraint[] = [];
 
   constructor(private resourceService: ResourceService) {
-
+    this.updateEmptyConstraints();
     this.updateStudies();
     this.updateConcepts();
     this.updatePatientSets();
-
+  }
+  updateEmptyConstraints() {
+    this.allConstraints.push(new CombinationConstraint());
+    this.allConstraints.push(new StudyConstraint());
+    this.allConstraints.push(new ConceptConstraint());
   }
 
   updateStudies() {
@@ -46,8 +50,27 @@ export class DimensionRegistryService {
             let constraint = new StudyConstraint();
             constraint.studies.push(study);
             this.studyConstraints.push(constraint);
+            this.allConstraints.push(constraint);
           });
-          this.updateAllConstraints();
+        },
+        err => console.error(err)
+      );
+  }
+
+  loadTreeNext(parentNode) {
+    this.resourceService.getTreeNodes(parentNode['fullName'], 2, false, false)
+      .subscribe(
+        (treeNodes: object[]) => {
+          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+          const children = refNode ? refNode['children'] : undefined;
+          if (children) {
+            parentNode['children'] = children;
+            // this.augmentTreeNode(parentNode);
+            this.processTreeNodes(children);
+            children.forEach((function (node) {
+              this.loadTreeNext(node);
+            }).bind(this));
+          }
         },
         err => console.error(err)
       );
@@ -81,6 +104,7 @@ export class DimensionRegistryService {
           let constraint = new ConceptConstraint();
           constraint.concept = concept;
           this.conceptConstraints.push(constraint);
+          this.allConstraints.push(constraint);
         }
       }
 
@@ -92,8 +116,8 @@ export class DimensionRegistryService {
   }
 
   updateConcepts() {
-    // Retrieve all tree nodes and extract the concepts
-    this.resourceService.getAllTreeNodes()
+    // Retrieve all tree nodes and extract the concepts iteratively
+    this.resourceService.getTreeNodes('\\', 2, false, false)
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodes = treeNodes;
@@ -101,7 +125,9 @@ export class DimensionRegistryService {
           this.concepts = [];
           this.conceptConstraints = [];
           this.processTreeNodes(treeNodes);
-          this.updateAllConstraints();
+          treeNodes.forEach((function (node) {
+            this.loadTreeNext(node);
+          }).bind(this));
         },
         err => console.error(err)
       );
@@ -124,16 +150,6 @@ export class DimensionRegistryService {
         },
         err => console.error(err)
       );
-  }
-
-  updateAllConstraints() {
-    this.allConstraints = [
-      new CombinationConstraint(),
-      new StudyConstraint(),
-      new ConceptConstraint()
-    ];
-
-    this.allConstraints = this.allConstraints.concat(this.studyConstraints.concat(this.conceptConstraints));
   }
 
   getStudies() {
