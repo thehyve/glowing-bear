@@ -1,12 +1,10 @@
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
-import {ResourceService} from '../../../shared/services/resource.service';
 import {ConstraintService} from '../../../shared/services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../shared/models/drop-mode';
-
-type LoadingState = 'loading' | 'complete';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
 
 @Component({
   selector: 'app-tree-nodes',
@@ -31,43 +29,24 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   // the tree nodes to be rendered in the tree, a subset of allTreeNodes
   treeNodes: TreeNode[];
-  // the entire tree
-  allTreeNodes: TreeNode[];
   // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
   // a utility variable storing temporary information on the node that is being expanded
   expansionStatus: any;
-  // the variable hoding the current metadata overlay content being shown
+  // the variable holding the current metadata overlay content being shown
   metadataContent: any = [];
   // the search term in the text input box to filter the tree
   searchTerm: string;
-  // the status indicating the when the tree is being loaded or finished loading
-  loadingTreeNodes: LoadingState = 'complete';
 
-  constructor(private resourceService: ResourceService,
-              private constraintService: ConstraintService,
+  constructor(private constraintService: ConstraintService,
+              public dimensionRegistryService: DimensionRegistryService,
               private element: ElementRef) {
-
-    this.loadingTreeNodes = 'loading';
     this.expansionStatus = {
       expanded: false,
       treeNodeElm: null,
       treeNode: null
     };
-
-    this.resourceService.getTreeNodes('\\', 2, true, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          this.augmentTreeNodes(treeNodes);
-          this.treeNodes = treeNodes;
-          this.allTreeNodes = treeNodes;
-          this.loadingTreeNodes = 'complete';
-          treeNodes.forEach((function (node) {
-            this.loadTreeNext(node);
-          }).bind(this));
-        },
-        err => console.error(err)
-      );
+    this.treeNodes = dimensionRegistryService.treeNodes;
   }
 
   ngOnInit() {
@@ -83,76 +62,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     };
 
     this.observer.observe(this.element.nativeElement, config);
-  }
-
-  loadTreeNext(parentNode) {
-    this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-            this.augmentTreeNode(parentNode);
-            children.forEach((function (node) {
-              this.loadTreeNext(node);
-            }).bind(this));
-          }
-        },
-        err => console.error(err)
-      );
-  }
-
-  /**
-   * Augment tree nodes with PrimeNG tree-ui specifications
-   * @param nodes
-   */
-  augmentTreeNodes(nodes: Object[]) {
-    for (let node of nodes) {
-      this.augmentTreeNode(node);
-    }
-  }
-
-  /**
-   * Augment a tree node with PrimeNG tree-ui specifications
-   * @param {Object} node
-   */
-  augmentTreeNode(node: Object) {
-    let patientCount = node['patientCount'];
-    let observationCount = node['observationCount'];
-    let countStr = ' ';
-    if (patientCount) {
-      countStr += '(' + patientCount;
-    }
-    // if (observationCount) {
-    //   countStr += ' | ' + observationCount;
-    // }
-    if (countStr !== ' ') {
-      countStr += ')';
-    }
-
-    node['label'] = node['name'] + countStr;
-
-    if (node['metadata']) {
-      node['label'] = node['label'] + ' ⚆';
-    }
-
-    if (node['children']) {
-      node['expandedIcon'] = 'fa-folder-open';
-      node['collapsedIcon'] = 'fa-folder';
-      node['icon'] = '';
-      this.augmentTreeNodes(node['children']);
-    } else {
-      if (node['type'] === 'NUMERIC') {
-        node['icon'] = 'icon-123';
-      } else if (node['type'] === 'HIGH_DIMENSIONAL') {
-        node['icon'] = 'fa-file-text';
-      } else if (node['type'] === 'CATEGORICAL_OPTION') {
-        node['icon'] = 'icon-abc';
-      } else {
-        node['icon'] = 'fa-folder-o';
-      }
-    }
   }
 
   /**
@@ -234,24 +143,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['expanded'] = true;
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
-    //   const root = event.node.fullName;
-    //   const depth = 3;
-    //   const hasCounts = true;
-    //   const hasTags = true;
-    //
-    //   this.resourceService.getTreeNodes(root, depth, hasCounts, hasTags)
-    //     .subscribe(
-    //       (treeNodes: object) => {
-    //         console.log('sub tree: ', treeNodes);
-    //         const currentNode = treeNodes[0];
-    //         this.augmentTreeNodes(currentNode['children']);
-    //         event.node.children = currentNode['children'];
-    //         this.expansionStatus['expanded'] = true;
-    //         this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
-    //         this.expansionStatus['treeNode'] = event.node;
-    //       },
-    //       err => console.error(err)
-    //     );
     }
   }
 
@@ -265,23 +156,24 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   filterTreeNodes(treeNodes, field, filterWord) {
     let result = {
       hasMatching: false,
-      matchingArray: []
+      matchingTreeNodes: [] // matchingTreeNodes is a subset of treeNodes
     };
     for (let node of treeNodes) {
       let nodeCopy = Object.assign({}, node);
+      nodeCopy['expanded'] = true;
       let fieldString = node[field].toLowerCase();
       if (fieldString.includes(filterWord)) {
         result.hasMatching = true;
-        result.matchingArray.push(nodeCopy);
+        result.matchingTreeNodes.push(nodeCopy);
       }
       if (node['children'] && node['children'].length > 0) {
         let subResult = this.filterTreeNodes(node['children'], field, filterWord);
         if (subResult.hasMatching) {
-          if (!result.hasMatching) {
-            result.hasMatching = true;
-            result.matchingArray.push(nodeCopy);
+          nodeCopy['children'] = subResult.matchingTreeNodes;
+          result.hasMatching = true;
+          if (result.matchingTreeNodes.indexOf(nodeCopy) === -1) {
+            result.matchingTreeNodes.push(nodeCopy);
           }
-          nodeCopy['children'] = subResult.matchingArray;
         }
       }
     }
@@ -294,10 +186,11 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onFiltering(event) {
     if (this.searchTerm === '') {
-      this.treeNodes = this.allTreeNodes;
+      this.treeNodes = this.dimensionRegistryService.treeNodes;
     } else {
       let filterWord = this.searchTerm.toLowerCase();
-      this.treeNodes = this.filterTreeNodes(this.allTreeNodes, 'label', filterWord).matchingArray;
+      this.treeNodes = this.filterTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord).matchingTreeNodes;
+      console.log('found tree nodes: ', this.treeNodes);
     }
   }
 

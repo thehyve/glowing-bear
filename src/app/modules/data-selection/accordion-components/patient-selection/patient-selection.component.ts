@@ -4,9 +4,9 @@ import {
 import {
   trigger, style, animate, transition
 } from '@angular/animations';
-import {ConstraintComponent} from "../../constraint-components/constraint/constraint.component";
-import {CombinationConstraint} from "../../../shared/models/constraints/combination-constraint";
-import {ConstraintService} from "../../../shared/services/constraint.service";
+import {ConstraintComponent} from '../../constraint-components/constraint/constraint.component';
+import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
+import {ConstraintService} from '../../../shared/services/constraint.service';
 
 
 @Component({
@@ -28,7 +28,7 @@ import {ConstraintService} from "../../../shared/services/constraint.service";
 })
 export class PatientSelectionComponent implements OnInit {
 
-  patientSetName: string = "";
+  patientSetName = '';
 
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;

@@ -9,10 +9,15 @@ import {CombinationConstraint} from '../models/constraints/combination-constrain
 import {SavedSet} from '../models/saved-set';
 import {TreeNode} from 'primeng/primeng';
 
+type LoadingState = 'loading' | 'complete';
+
 @Injectable()
 export class DimensionRegistryService {
 
-  public treeNodes: TreeNode[];
+  // the variable that holds the entire tree structure
+  public treeNodes: TreeNode[] = [];
+  // the status indicating the when the tree is being loaded or finished loading
+  public loadingTreeNodes: LoadingState = 'complete';
   private studies: Study[] = [];
   private studyConstraints: Constraint[] = [];
   private concepts: Concept[] = [];
@@ -20,7 +25,6 @@ export class DimensionRegistryService {
 
   private patientSets: SavedSet[] = [];
   private observationSets: SavedSet[] = [];
-
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
@@ -59,15 +63,15 @@ export class DimensionRegistryService {
   }
 
   loadTreeNext(parentNode) {
-    this.resourceService.getTreeNodes(parentNode['fullName'], 2, false, false)
+    this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
       .subscribe(
         (treeNodes: object[]) => {
+          console.log('loading: ', parentNode['fullName']);
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
           const children = refNode ? refNode['children'] : undefined;
           if (children) {
             parentNode['children'] = children;
-            // this.augmentTreeNode(parentNode);
-            this.processTreeNodes(children);
+            this.processTreeNode(parentNode);
             children.forEach((function (node) {
               this.loadTreeNext(node);
             }).bind(this));
@@ -79,54 +83,90 @@ export class DimensionRegistryService {
 
   /** Extracts concepts (and later possibly other dimensions) from the
    *  provided TreeNode array and their children.
+   *  And augment tree nodes with PrimeNG tree-ui specifications
    * @param treeNodes
    */
   private processTreeNodes(treeNodes: object[]) {
     if (!treeNodes) {
       return;
     }
+    for (let node of treeNodes) {
+      this.processTreeNode(node);
+    }
+  }
 
-    treeNodes.forEach(treeNode => {
+  private processTreeNode(node: Object) {
+    // Extract concept
+    if (node['dimension'] === 'concept') {
 
-      // Extract concept
-      if (treeNode['dimension'] === 'concept') {
+      // Only include non-FOLDERs and non-CONTAINERs
+      if (node['visualAttributes'].indexOf('FOLDER') === -1 &&
+        node['visualAttributes'].indexOf('CONTAINER') === -1) {
 
-        // Only include non-FOLDERs and non-CONTAINERs
-        if (treeNode['visualAttributes'].indexOf('FOLDER') === -1 &&
-          treeNode['visualAttributes'].indexOf('CONTAINER') === -1) {
+        let concept = new Concept();
+        // TODO: retrieve concept path in less hacky manner:
+        let path = node['constraint']['path'];
+        concept.path = path ? path : node['fullName'];
+        concept.type = node['type'];
+        this.concepts.push(concept);
 
-          let concept = new Concept();
-          // TODO: retrieve concept path in less hacky manner:
-          let path = treeNode['constraint']['path'];
-          concept.path = path ? path : treeNode['fullName'];
-          concept.type = treeNode['type'];
-          this.concepts.push(concept);
-
-          let constraint = new ConceptConstraint();
-          constraint.concept = concept;
-          this.conceptConstraints.push(constraint);
-          this.allConstraints.push(constraint);
-        }
+        let constraint = new ConceptConstraint();
+        constraint.concept = concept;
+        this.conceptConstraints.push(constraint);
+        this.allConstraints.push(constraint);
       }
+    }
+    // Add PrimeNG visual properties for tree nodes
+    let patientCount = node['patientCount'];
+    let countStr = ' ';
+    if (patientCount) {
+      countStr += '(' + patientCount;
+    }
+    // let observationCount = node['observationCount'];
+    // if (observationCount) {
+    //   countStr += ' | ' + observationCount;
+    // }
+    if (countStr !== ' ') {
+      countStr += ')';
+    }
+    node['label'] = node['name'] + countStr;
+    if (node['metadata']) {
+      node['label'] = node['label'] + ' ⚆';
+    }
 
-      if (treeNode['children']) {
-        // Recurse
-        this.processTreeNodes(treeNode['children']);
+    // If this node has children, drill down
+    if (node['children']) {
+      // Recurse
+      node['expandedIcon'] = 'fa-folder-open';
+      node['collapsedIcon'] = 'fa-folder';
+      node['icon'] = '';
+      this.processTreeNodes(node['children']);
+    } else {
+      if (node['type'] === 'NUMERIC') {
+        node['icon'] = 'icon-123';
+      } else if (node['type'] === 'HIGH_DIMENSIONAL') {
+        node['icon'] = 'fa-file-text';
+      } else if (node['type'] === 'CATEGORICAL_OPTION') {
+        node['icon'] = 'icon-abc';
+      } else {
+        node['icon'] = 'fa-folder-o';
       }
-    });
+    }
   }
 
   updateConcepts() {
+    this.loadingTreeNodes = 'loading';
     // Retrieve all tree nodes and extract the concepts iteratively
-    this.resourceService.getTreeNodes('\\', 2, false, false)
+    this.resourceService.getTreeNodes('\\', 2, true, true)
       .subscribe(
         (treeNodes: object[]) => {
-          this.treeNodes = treeNodes;
+          this.loadingTreeNodes = 'complete';
           // reset concepts and concept constraints
           this.concepts = [];
           this.conceptConstraints = [];
           this.processTreeNodes(treeNodes);
           treeNodes.forEach((function (node) {
+            this.treeNodes.push(node); // to ensure the treeNodes pointer remains unchanged
             this.loadTreeNext(node);
           }).bind(this));
         },
