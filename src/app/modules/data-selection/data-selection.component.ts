@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
 
 @Component({
   selector: 'data-selection',
@@ -7,10 +8,33 @@ import {Component, OnInit} from '@angular/core';
 })
 export class DataSelectionComponent implements OnInit {
 
-  constructor() {
+  constructor(private dimensionRegistryService: DimensionRegistryService) {
   }
 
   ngOnInit() {
+  }
+
+  /**
+   * The event handler for the accordion tab open event
+   * @param event
+   */
+  openAccordion(event) {
+    // if the 'select observation' accordion is opened,
+    // set tree selection mode to checkbox on the left side
+    // else set to empty string
+    this.dimensionRegistryService.treeSelectionMode = event.index === 1 ? 'checkbox' : '';
+  }
+
+  /**
+   * The event handler for the accordion tab close event
+   * @param event
+   */
+  closeAccordion(event) {
+    // if the 'select observation' accordion is closed,
+    // set treeSelectionMode to empty string
+    if (event.index === 1) {
+      this.dimensionRegistryService.treeSelectionMode = '';
+    }
   }
 
 }

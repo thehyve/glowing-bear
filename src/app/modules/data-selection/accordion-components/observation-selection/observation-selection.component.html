@@ -1,3 +1,19 @@
-<p>
-  observation-selection works!
-</p>
+<div>
+  <p class="form-text text-muted">
+    Check to select the tree nodes on the left.
+  </p>
+  <!-- the selected tree from the tree panel on the left -->
+  <p-tree [value]="dimensionRegistryService.selectedTreeNodes"></p-tree>
+
+
+  <!-- Save observation set -->
+  <hr>
+  <div class="form-inline">
+    <input type="text" id="observationSetName" class="form-text"
+           placeholder="Observation set name (optional)"
+           [(ngModel)]="observationSetName" >
+    <button type="button" class="btn btn-primary" (click)="onSaveObservationSetBtnClick()"> Save observation set
+    </button>
+  </div>
+
+</div>

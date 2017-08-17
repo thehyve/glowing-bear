@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
 
 @Component({
   selector: 'observation-selection',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ObservationSelectionComponent implements OnInit {
 
-  constructor() { }
+  observationSetName = '';
+
+  constructor(public dimensionRegistryService: DimensionRegistryService) {
+  }
 
   ngOnInit() {
   }
 
+  onSaveObservationSetBtnClick() {
+    console.log('click to save observation set with name: ', this.observationSetName);
+  }
 }
