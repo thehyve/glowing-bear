@@ -1,0 +1,7 @@
+.form-inline > * {
+  margin: 8px;
+}
+
+#observationSetName {
+  width: 23%;
+}

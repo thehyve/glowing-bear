@@ -178,3 +178,21 @@ body .ui-autocomplete-input-token input {
 legend {
   font-size: 1em;
 }
+
+/*
+ * tree node styles for filtering
+ */
+.disabled-treenode {
+  display: none;
+}
+
+.highlight-treenode {
+  color: orangered;
+  font-weight: bold !important;
+}
+
+/*
+ * A marker css class to indicate if a tree node is leaf or not,
+ * should be left empty
+ */
+.is-not-leaf {}

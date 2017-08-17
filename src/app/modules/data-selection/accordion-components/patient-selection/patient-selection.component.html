@@ -28,13 +28,14 @@
   </div>
 
 
-  <!-- Run patient query and save patient set -->
+  <!-- Intersection calculation -->
   <hr>
   <div class="patient-count-box">
     <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateTotal == 'loading'"></i>
     <span [@notifyState]="constraintService.loadingStateTotal">{{patientCount}} patients match your selection.</span>
   </div>
 
+  <!-- Save patient set -->
   <hr>
   <div class="form-inline">
     <input type="text" id="patientSetName" class="form-text"

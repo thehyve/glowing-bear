@@ -7,7 +7,7 @@ import {DropMode} from '../../../shared/models/drop-mode';
 import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
 
 @Component({
-  selector: 'app-tree-nodes',
+  selector: 'tree-nodes',
   templateUrl: './tree-nodes.component.html',
   styleUrls: ['./tree-nodes.component.css'],
   animations: [
@@ -29,6 +29,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   // the tree nodes to be rendered in the tree, a subset of allTreeNodes
   treeNodes: TreeNode[];
+  // the selected tree nodes from the PrimeNG tree API,
+  // which does not retain the origin tree structure, but could give us information
+  // about which tree nodes have been selected
+  selectedTreeNodes: TreeNode[];
   // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
   // a utility variable storing temporary information on the node that is being expanded
@@ -136,6 +140,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = null;
       this.expansionStatus['treeNode'] = null;
     }
+    this.removeFalsePrimeNgClasses();
   }
 
   expandNode(event) {
@@ -147,13 +152,15 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * Recursively filter the tree nodes and return the copied tree nodes that match
+   * Recursively filter the tree nodes and return the copied tree nodes that match,
+   * return the reduced tree as a new instance
+   * (An alternative solution as backup)
    * @param treeNodes
    * @param field
    * @param filterWord
    * @returns {Array}
    */
-  filterTreeNodes(treeNodes, field, filterWord) {
+  filterWithCopiedTreeNodes(treeNodes, field, filterWord) {
     let result = {
       hasMatching: false,
       matchingTreeNodes: [] // matchingTreeNodes is a subset of treeNodes
@@ -167,7 +174,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
         result.matchingTreeNodes.push(nodeCopy);
       }
       if (node['children'] && node['children'].length > 0) {
-        let subResult = this.filterTreeNodes(node['children'], field, filterWord);
+        let subResult = this.filterWithCopiedTreeNodes(node['children'], field, filterWord);
         if (subResult.hasMatching) {
           nodeCopy['children'] = subResult.matchingTreeNodes;
           result.hasMatching = true;
@@ -181,17 +188,132 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * User typing in the input box of the filter search box triggers this function
+   * Recursively filter the original tree nodes in the dimension registry,
+   * assign highlight css classes to tree nodes
+   * @param {TreeNode[]} treeNodes
+   * @param {string} field
+   * @param filterWord
+   * @returns {{hasMatching: boolean}}
+   */
+  filterWithHighlightTreeNodes(treeNodes: TreeNode[], field: string, filterWord) {
+    let result = {
+      hasMatching: false
+    };
+    // if the tree nodes are defined
+    if (treeNodes) {
+      // if there is a filter word
+      if (filterWord.length > 0) {
+        for (let node of treeNodes) {
+          node['expanded'] = false;
+          node['styleClass'] = undefined;
+          let fieldString = node[field].toLowerCase();
+          if (fieldString.includes(filterWord)) {
+            result.hasMatching = true;
+            if (node['children'] && node['children'].length > 0) {
+              node['styleClass'] = 'highlight-treenode is-not-leaf';
+            } else {
+              node['styleClass'] = 'highlight-treenode';
+            }
+          } else {
+            node['styleClass'] = undefined;
+          }
+          if (node['children'] && node['children'].length > 0) {
+            let subResult =
+              this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
+            if (subResult.hasMatching) {
+              result.hasMatching = true;
+              node['expanded'] = true;
+            }
+          }
+        }
+      } else { // if the filter word is empty
+        for (let node of treeNodes) {
+          node['expanded'] = false;
+          if (node['children'] && node['children'].length > 0) {
+            node['styleClass'] = 'is-not-leaf';
+          } else {
+            node['styleClass'] = undefined;
+          }
+          this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * PrimeNg tree is behaving strangely when dynamically adding custom class to tree nodes:
+   * sometimes a tree node with children is marked with the 'ui-treenode-leaf' class.
+   * Therefore, this function is to remove any false ui-treenode-leaf classes.
+   */
+  removeFalsePrimeNgClasses() {
+    let leaves = this.element.nativeElement.querySelectorAll('.ui-treenode-leaf');
+    if (leaves) {
+      for (let supposedLeaf of leaves) {
+        if (supposedLeaf.classList.contains('is-not-leaf')) {
+          supposedLeaf.classList.remove('ui-treenode-leaf');
+        }
+      }
+    }
+  }
+
+  /**
+   * User typing in the input box of the filter search box triggers this handler
    * @param event
    */
   onFiltering(event) {
-    if (this.searchTerm === '') {
-      this.treeNodes = this.dimensionRegistryService.treeNodes;
-    } else {
-      let filterWord = this.searchTerm.toLowerCase();
-      this.treeNodes = this.filterTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord).matchingTreeNodes;
-      console.log('found tree nodes: ', this.treeNodes);
+    let filterWord = this.searchTerm.trim().toLowerCase();
+    this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
+  }
+
+  /**
+   * User selecting a tree node triggers this handler
+   * @param event
+   */
+  onNodeSelect(event) {
+    this.updateSelectedTreeNodes();
+  }
+
+  /**
+   * User unselecting a tree node triggers this handler
+   * @param event
+   */
+  onNodeUnselect(event) {
+    this.updateSelectedTreeNodes();
+  }
+
+  /**
+   * Update the selected tree nodes in the dimension registry service
+   */
+  updateSelectedTreeNodes() {
+    this.dimensionRegistryService.selectedTreeNodes = [];
+    for (let treeNode of this.treeNodes) {
+      const isSelected = this.selectedTreeNodes.indexOf(treeNode) !== -1;
+      const isPartiallySelected = treeNode['partialSelected'];
+      if (isSelected || isPartiallySelected) {
+        let treeNodeCopy = Object.assign({}, treeNode);
+        this.keepSelectedTreeNodes(treeNodeCopy);
+        this.dimensionRegistryService.selectedTreeNodes.push(treeNodeCopy);
+      }
     }
   }
+
+  keepSelectedTreeNodes(parentNode: TreeNode) {
+    let children = parentNode['children'];
+    if (children) {
+      let selectedChildren = [];
+      for (let child of children) {
+        const isChildSelected = this.selectedTreeNodes.indexOf(child) !== -1;
+        const isChildPartiallySelected = child['partialSelected'];
+        if (isChildSelected || isChildPartiallySelected) {
+          let childCopy = Object.assign({}, child);
+          this.keepSelectedTreeNodes(childCopy);
+          selectedChildren.push(childCopy);
+        }
+      }
+      parentNode['children'] = selectedChildren;
+    }
+  }
+
 
 }

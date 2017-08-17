@@ -9,7 +9,11 @@
 
   <!-- the tree itself -->
   <p-tree [value]="treeNodes"
+          [selectionMode]="dimensionRegistryService.treeSelectionMode"
+          [(selection)]="selectedTreeNodes"
           (onNodeExpand)="expandNode($event)"
+          (onNodeSelect)="onNodeSelect($event)"
+          (onNodeUnselect)="onNodeUnselect($event)"
           draggableNodes="true"
           styleClass="gb-tree-container"></p-tree>
 
