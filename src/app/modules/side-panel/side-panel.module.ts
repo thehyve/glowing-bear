@@ -11,6 +11,7 @@ import {SavedPatientSetsComponent} from './accordion-components/saved-patient-se
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {AutoCompleteModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
+import { SavedObservationSetsComponent } from './accordion-components/saved-observation-sets/saved-observation-sets.component';
 
 @NgModule({
   imports: [
@@ -23,7 +24,12 @@ import {FormsModule} from '@angular/forms';
     FormsModule,
     AutoCompleteModule
   ],
-  declarations: [SidePanelComponent, TreeNodesComponent, SavedPatientSetsComponent],
+  declarations: [
+    SidePanelComponent,
+    TreeNodesComponent,
+    SavedPatientSetsComponent,
+    SavedObservationSetsComponent
+  ],
   providers: [TreeDragDropService],
   exports: [SidePanelComponent]
 })

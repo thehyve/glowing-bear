@@ -16,6 +16,10 @@ export class DimensionRegistryService {
 
   // the variable that holds the entire tree structure
   public treeNodes: TreeNode[] = [];
+  // the selectionMode of the tree, default is '', alternative is 'checkbox'
+  public treeSelectionMode = '';
+  // the selected tree nodes by user in observation selection
+  public selectedTreeNodes: TreeNode[] = [];
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
   private studies: Study[] = [];
@@ -66,7 +70,7 @@ export class DimensionRegistryService {
     this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
       .subscribe(
         (treeNodes: object[]) => {
-          console.log('loading: ', parentNode['fullName']);
+          // console.log('loading: ', parentNode['fullName']);
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
           const children = refNode ? refNode['children'] : undefined;
           if (children) {
@@ -157,7 +161,7 @@ export class DimensionRegistryService {
   updateConcepts() {
     this.loadingTreeNodes = 'loading';
     // Retrieve all tree nodes and extract the concepts iteratively
-    this.resourceService.getTreeNodes('\\', 2, true, true)
+    this.resourceService.getTreeNodes('\\', 2, false, true)
       .subscribe(
         (treeNodes: object[]) => {
           this.loadingTreeNodes = 'complete';
