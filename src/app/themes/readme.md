@@ -5,5 +5,4 @@ The file "_custom.scss" is ony used for recompiling the customized css file of B
   2. follow the instructions here: [https://v4-alpha.getbootstrap.com/getting-started/build-tools/#tooling-setup](https://v4-alpha.getbootstrap.com/getting-started/build-tools/#tooling-setup) to set up the building tools for compiling bootstrap code
   3. follow the instructions here: [https://v4-alpha.getbootstrap.com/getting-started/options/](https://v4-alpha.getbootstrap.com/getting-started/options/) to customize the variables
   4. run `$ grunt dist` to compile the customized bootstrap
-  5. copy and paste customized bootstrap.css (or bootstrap.min.css) to the themes folder
- 
+  5. copy and paste customized bootstrap.css (or bootstrap.min.css) to the themes folder.
