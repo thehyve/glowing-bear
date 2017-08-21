@@ -149,7 +149,7 @@ export class DimensionRegistryService {
       if (node['type'] === 'NUMERIC') {
         node['icon'] = 'icon-123';
       } else if (node['type'] === 'HIGH_DIMENSIONAL') {
-        node['icon'] = 'fa-file-text';
+        node['icon'] = 'icon-hd';
       } else if (node['type'] === 'CATEGORICAL_OPTION') {
         node['icon'] = 'icon-abc';
       } else {
