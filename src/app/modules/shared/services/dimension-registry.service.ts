@@ -20,6 +20,11 @@ export class DimensionRegistryService {
   public treeSelectionMode = '';
   // the selected tree nodes by user in observation selection
   public selectedTreeNodes: TreeNode[] = [];
+  // the PrimeNg version of selected tree nodes, an alternative version of selectedTreeNodes
+  // this version is specifically used to store the selected tree nodes checked by the user
+  // it does not retain the origin tree structure, but could give us information
+  // it is used by the tree-nodes.component
+  public selectedTreeNodesPrime: TreeNode[] = [];
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
   private studies: Study[] = [];
@@ -70,7 +75,6 @@ export class DimensionRegistryService {
     this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
       .subscribe(
         (treeNodes: object[]) => {
-          // console.log('loading: ', parentNode['fullName']);
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
           const children = refNode ? refNode['children'] : undefined;
           if (children) {
@@ -178,6 +182,110 @@ export class DimensionRegistryService {
       );
   }
 
+  /**
+   * Update the selected tree nodes
+   */
+  public updateSelectedTreeNodes() {
+    this.selectedTreeNodes.length = 0;
+    for (let treeNode of this.treeNodes) {
+      const isSelected = this.selectedTreeNodesPrime.indexOf(treeNode) !== -1;
+      const isPartiallySelected = treeNode['partialSelected'];
+      if (isSelected || isPartiallySelected) {
+        let treeNodeCopy = Object.assign({}, treeNode);
+        this.keepSelectedTreeNodes(treeNodeCopy);
+        this.selectedTreeNodes.push(treeNodeCopy);
+      }
+    }
+  }
+
+  private keepSelectedTreeNodes(parentNode: TreeNode) {
+    // parentNode.parent = undefined;
+    let children = parentNode['children'];
+    if (children) {
+      let selectedChildren = [];
+      for (let child of children) {
+        const isChildSelected = this.selectedTreeNodesPrime.indexOf(child) !== -1;
+        const isChildPartiallySelected = child['partialSelected'];
+        if (isChildSelected || isChildPartiallySelected) {
+          let childCopy = Object.assign({}, child);
+          this.keepSelectedTreeNodes(childCopy);
+          selectedChildren.push(childCopy);
+        }
+      }
+      parentNode['children'] = selectedChildren;
+    }
+  }
+
+  /**
+   * Update the PrimeNG version of selected tree nodes
+   */
+  public updateSelectedTreeNodesPrime(nodes: TreeNode[]) {
+    for (let node of nodes) {
+      if (this.selectedTreeNodesPrime.indexOf(node) === -1) {
+        node['expanded'] = true;
+        node['isSelected'] = true;
+        let ancestors = this.findTreeNodeAncestors(node);
+        for (let ancestor of ancestors) {
+          ancestor['expanded'] = true;
+          ancestor['partialSelected'] = true;
+        }
+        this.selectedTreeNodesPrime.push(node);
+      }
+    }
+    this.updateSelectedTreeNodes();
+  }
+
+  /**
+   * Find the tree nodes that have the fullNames (i.e. tree paths) in the given paths
+   * @param {TreeNode[]} nodes
+   * @param {string[]} paths
+   * @param {TreeNode[]} foundNodes
+   */
+  private findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
+    for (let node of nodes) {
+      if (paths.indexOf(node['fullName']) !== -1) {
+        foundNodes.push(node);
+      }
+      if (node['children']) {
+        this.findTreeNodesByPaths(node['children'], paths, foundNodes);
+      }
+    }
+  }
+
+  /**
+   * Find the ancestors of a tree node
+   * @param node
+   * @returns {Array}
+   */
+  public findTreeNodeAncestors(node) {
+    let fullName = node['fullName'];
+    let partsTemp = fullName.split('\\');
+    let parts = [];
+    for (let part of partsTemp) {
+      if (part !== '') {
+        parts.push(part);
+      }
+    }
+    let endingIndices = [];
+    for (let i = 0; i < parts.length - 1; i++) {
+      endingIndices.push(i);
+    }
+    let paths = [];
+    for (let index of endingIndices) {
+      let path = '\\';
+      for (let i = 0; i <= index; i++) {
+        path += parts[i] + '\\';
+      }
+      paths.push(path);
+    }
+    let foundNodes = [];
+    this.findTreeNodesByPaths(this.treeNodes, paths, foundNodes);
+    return foundNodes;
+  }
+
+  /**
+   * Update the patient sets, used for the saved patient set panel on the left
+   */
   updatePatientSets() {
     // reset patient sets
     this.resourceService.getPatientSets()

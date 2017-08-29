@@ -27,12 +27,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
 
-  // the tree nodes to be rendered in the tree, a subset of allTreeNodes
-  treeNodes: TreeNode[];
-  // the selected tree nodes from the PrimeNG tree API,
-  // which does not retain the origin tree structure, but could give us information
-  // about which tree nodes have been selected
-  selectedTreeNodes: TreeNode[];
   // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
   // a utility variable storing temporary information on the node that is being expanded
@@ -50,7 +44,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       treeNodeElm: null,
       treeNode: null
     };
-    this.treeNodes = dimensionRegistryService.treeNodes;
   }
 
   ngOnInit() {
@@ -271,7 +264,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * @param event
    */
   onNodeSelect(event) {
-    this.updateSelectedTreeNodes();
+    this.dimensionRegistryService.updateSelectedTreeNodes();
   }
 
   /**
@@ -279,41 +272,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * @param event
    */
   onNodeUnselect(event) {
-    this.updateSelectedTreeNodes();
+    this.dimensionRegistryService.updateSelectedTreeNodes();
   }
-
-  /**
-   * Update the selected tree nodes in the dimension registry service
-   */
-  updateSelectedTreeNodes() {
-    this.dimensionRegistryService.selectedTreeNodes = [];
-    for (let treeNode of this.treeNodes) {
-      const isSelected = this.selectedTreeNodes.indexOf(treeNode) !== -1;
-      const isPartiallySelected = treeNode['partialSelected'];
-      if (isSelected || isPartiallySelected) {
-        let treeNodeCopy = Object.assign({}, treeNode);
-        this.keepSelectedTreeNodes(treeNodeCopy);
-        this.dimensionRegistryService.selectedTreeNodes.push(treeNodeCopy);
-      }
-    }
-  }
-
-  keepSelectedTreeNodes(parentNode: TreeNode) {
-    let children = parentNode['children'];
-    if (children) {
-      let selectedChildren = [];
-      for (let child of children) {
-        const isChildSelected = this.selectedTreeNodes.indexOf(child) !== -1;
-        const isChildPartiallySelected = child['partialSelected'];
-        if (isChildSelected || isChildPartiallySelected) {
-          let childCopy = Object.assign({}, child);
-          this.keepSelectedTreeNodes(childCopy);
-          selectedChildren.push(childCopy);
-        }
-      }
-      parentNode['children'] = selectedChildren;
-    }
-  }
-
 
 }

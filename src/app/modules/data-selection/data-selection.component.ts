@@ -12,6 +12,7 @@ export class DataSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.dimensionRegistryService.treeSelectionMode = 'checkbox';
   }
 
   /**
