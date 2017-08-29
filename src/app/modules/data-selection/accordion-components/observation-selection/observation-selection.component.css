@@ -5,3 +5,27 @@
 #observationSetName {
   width: 23%;
 }
+
+.gb-observation-set-upload {
+  border: 1px solid darkgray;
+  display: inline-block;
+  border-radius: 6px;
+  background-color: transparent;
+  color: inherit;
+  font-size: 1em;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.gb-observation-set-upload:hover {
+  background-color: #339C90;
+  color: white;
+  padding-left: 6px;
+  padding-right: 6px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.gb-observation-set-upload:active {
+  background-color: #236d64;
+}
