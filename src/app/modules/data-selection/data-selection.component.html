@@ -1,12 +1,12 @@
 <md2-accordion [multiple]="false"
                (open)="openAccordion($event)"
                (close)="closeAccordion($event)">
-  <md2-accordion-tab>
+  <md2-accordion-tab [active]="true">
     <md2-accordion-header>Select patients</md2-accordion-header>
     <patient-selection></patient-selection>
   </md2-accordion-tab>
 
-  <md2-accordion-tab [active]="true">
+  <md2-accordion-tab>
     <md2-accordion-header>Select observations</md2-accordion-header>
     <observation-selection></observation-selection>
   </md2-accordion-tab>
