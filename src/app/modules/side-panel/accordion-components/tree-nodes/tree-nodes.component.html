@@ -8,9 +8,9 @@
                   (completeMethod)="onFiltering($event)"></p-autoComplete>
 
   <!-- the tree itself -->
-  <p-tree [value]="treeNodes"
+  <p-tree [value]="dimensionRegistryService.treeNodes"
           [selectionMode]="dimensionRegistryService.treeSelectionMode"
-          [(selection)]="selectedTreeNodes"
+          [(selection)]="dimensionRegistryService.selectedTreeNodesPrime"
           (onNodeExpand)="expandNode($event)"
           (onNodeSelect)="onNodeSelect($event)"
           (onNodeUnselect)="onNodeUnselect($event)"
