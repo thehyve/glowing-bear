@@ -1,11 +1,13 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
-import { EndpointService } from './endpoint.service';
+import {EndpointService} from './endpoint.service';
 
 describe('EndpointService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [EndpointService]
+      providers: [
+        EndpointService
+      ]
     });
   });
 

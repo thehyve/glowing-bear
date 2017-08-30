@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Endpoint} from '../models/endpoint';
-import {AppConfig} from "../../../config/app.config";
+import {AppConfig} from '../../../config/app.config';
 
 @Injectable()
 export class EndpointService {
 
   private endpoint: Endpoint;
 
-  constructor(private appConfig: AppConfig) {
+  constructor(private appConfig: AppConfig) { console.log('construct: ', this.appConfig);
     let apiUrl = appConfig.getConfig('api-url');
     let apiVersion = appConfig.getConfig('api-version');
     let appUrl = appConfig.getConfig('app-url');
@@ -20,8 +20,7 @@ export class EndpointService {
       this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
       // Save the endpoint
       this.saveEndpoint();
-    }
-    else {
+    } else {
       // Read the access token information from the local storage
       this.restoreEndpointAuthentication();
     }
@@ -64,7 +63,7 @@ export class EndpointService {
    * @returns {}
    */
   private parseUrl(url: string) {
-    var match = url.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)#?(.*)$/);
+    let match = url.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)#?(.*)$/);
     return match && {
         href: url,
         protocol: match[1],
