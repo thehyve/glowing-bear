@@ -19,7 +19,7 @@ describe('AnalysisComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create AnalysisComponent', () => {
     expect(component).toBeTruthy();
   });
 });

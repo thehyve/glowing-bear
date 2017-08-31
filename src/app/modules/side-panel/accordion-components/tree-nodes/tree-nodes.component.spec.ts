@@ -1,6 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TreeNodesComponent } from './tree-nodes.component';
+import {TreeNodesComponent} from './tree-nodes.component';
+import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
+import {ConstraintService} from '../../../shared/services/constraint.service';
+import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('TreeNodesComponent', () => {
   let component: TreeNodesComponent;
@@ -8,9 +15,27 @@ describe('TreeNodesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TreeNodesComponent ]
+      declarations: [TreeNodesComponent],
+      imports: [
+        BrowserAnimationsModule,
+        TreeModule,
+        OverlayPanelModule,
+        DragDropModule,
+        FormsModule,
+        AutoCompleteModule
+      ],
+      providers: [
+        {
+          provide: DimensionRegistryService,
+          useClass: DimensionRegistryServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +44,7 @@ describe('TreeNodesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create TreeNodesComponent', () => {
     expect(component).toBeTruthy();
   });
 });

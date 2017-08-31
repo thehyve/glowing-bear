@@ -18,7 +18,7 @@
 }
 
 .gb-observation-set-upload:hover {
-  background-color: #339C90;
+  background-color: #0370c2;
   color: white;
   padding-left: 6px;
   padding-right: 6px;
@@ -27,5 +27,5 @@
 }
 
 .gb-observation-set-upload:active {
-  background-color: #236d64;
+  background-color: #0365af;
 }

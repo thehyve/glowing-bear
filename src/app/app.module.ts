@@ -11,7 +11,6 @@ import {DataSelectionModule} from './modules/data-selection/data-selection.modul
 import {AnalysisModule} from './modules/analysis/analysis.module';
 import {ExportModule} from './modules/export/export.module';
 import {DashboardModule} from './modules/dashboard/dashboard.module';
-import {WorkflowService} from './modules/shared/services/workflow.service';
 import {ResourceService} from './modules/shared/services/resource.service';
 import {DimensionRegistryService} from './modules/shared/services/dimension-registry.service';
 import {AppConfig} from './config/app.config';
@@ -44,7 +43,6 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
-    WorkflowService,
     DimensionRegistryService,
     ConstraintService,
     AppConfig,

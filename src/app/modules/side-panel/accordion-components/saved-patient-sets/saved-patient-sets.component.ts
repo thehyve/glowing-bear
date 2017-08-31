@@ -1,8 +1,8 @@
 import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
-import {ConstraintService} from "../../../shared/services/constraint.service";
-import {DimensionRegistryService} from "../../../shared/services/dimension-registry.service";
-import {SavedSet} from "../../../shared/models/saved-set";
-import {DropMode} from "../../../shared/models/drop-mode";
+import {ConstraintService} from '../../../shared/services/constraint.service';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {SavedSet} from '../../../shared/models/saved-set';
+import {DropMode} from '../../../shared/models/drop-mode';
 
 @Component({
   selector: 'saved-patient-sets',

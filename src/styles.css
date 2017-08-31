@@ -69,6 +69,15 @@ body .ui-widget-content {
 }
 
 /*
+ * style fix to add padding for highlighted tree nodes
+ * padding: top, right, bottom, left
+ */
+body .ui-treenode-label.ui-corner-all.ui-state-highlight {
+  background-color: #0365AF !important;
+  padding: 1px 3px 1px 3px !important;
+}
+
+/*
  * style fix for the primeng tree-container in the side-panel
  */
 body .gb-tree-container {
@@ -187,7 +196,8 @@ legend {
 }
 
 .highlight-treenode {
-  color: orangered;
+  background-color: #ffa27f !important;
+  border-radius: 10px !important;
   font-weight: bold !important;
 }
 

@@ -19,7 +19,7 @@ describe('DashboardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 });

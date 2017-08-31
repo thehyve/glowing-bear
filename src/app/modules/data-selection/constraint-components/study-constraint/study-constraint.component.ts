@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Study} from "../../../shared/models/study";
-import {StudyConstraint} from "../../../shared/models/constraints/study-constraint";
-import {ConstraintComponent} from "../constraint/constraint.component";
-import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
+import {Study} from '../../../shared/models/study';
+import {StudyConstraint} from '../../../shared/models/constraints/study-constraint';
+import {ConstraintComponent} from '../constraint/constraint.component';
+import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 
 @Component({
   selector: 'study-constraint',
