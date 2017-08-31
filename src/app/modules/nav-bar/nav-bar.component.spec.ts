@@ -1,6 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NavBarComponent } from './nav-bar.component';
+import {NavBarComponent} from './nav-bar.component';
+import {TabMenuModule} from 'primeng/primeng';
+import {RouterModule} from '@angular/router';
+import {APP_BASE_HREF, CommonModule} from '@angular/common';
+import {routing} from '../../app.routing';
 
 describe('NavBarComponent', () => {
   let component: NavBarComponent;
@@ -8,9 +12,21 @@ describe('NavBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NavBarComponent ]
+      declarations: [NavBarComponent],
+      imports: [
+        CommonModule,
+        RouterModule,
+        TabMenuModule,
+        routing
+      ],
+      providers: [
+        {
+          provide: APP_BASE_HREF,
+          useValue: '/'
+        },
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +35,7 @@ describe('NavBarComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create NavBarComponent', () => {
     expect(component).toBeTruthy();
   });
 });

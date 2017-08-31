@@ -1,17 +1,27 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {EndpointService} from './endpoint.service';
+import {AppConfig} from '../../../config/app.config';
+import {HttpModule} from '@angular/http';
+import {AppConfigMock} from '../../../config/app.config.mock';
 
 describe('EndpointService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        HttpModule
+      ],
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         EndpointService
       ]
     });
   });
 
-  it('should ...', inject([EndpointService], (service: EndpointService) => {
+  it('should inject EndpointService', inject([EndpointService], (service: EndpointService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -1,19 +1,19 @@
 import {Constraint} from './constraint';
-import {Concept} from "../concept";
-import {ValueConstraint} from "./value-constraint";
-import {TimeConstraint} from "./time-constraint";
-import {TrialVisitConstraint} from "./trial-visit-constraint";
+import {Concept} from '../concept';
+import {ValueConstraint} from './value-constraint';
+import {TimeConstraint} from './time-constraint';
+import {TrialVisitConstraint} from './trial-visit-constraint';
 
 export class ConceptConstraint implements Constraint {
   private _concept: Concept;
   private _values: ValueConstraint[];
 
   // date range
-  applyDateConstraint: boolean = false;
+  applyDateConstraint = false;
   timeConstraint: TimeConstraint = new TimeConstraint();
 
   // trial visit
-  applyTrialVisitConstraint: boolean = false;
+  applyTrialVisitConstraint = false;
   trialVisitConstraint: TrialVisitConstraint = new TrialVisitConstraint();
 
 
@@ -55,23 +55,23 @@ export class ConceptConstraint implements Constraint {
     });
 
     if (this.values.length > 0) {
-      if (this._concept.type == 'NUMERIC') {
+      if (this._concept.type === 'NUMERIC') {
         // Add numerical values directly to the main constraint
         for (let value of this.values) {
           args.push({
-            type: "value",
+            type: 'value',
             valueType: value.valueType,
             operator: value.operator,
             value: value.value
           });
         }
       }
-      if (this._concept.type == 'CATEGORICAL_OPTION') {
+      if (this._concept.type === 'CATEGORICAL_OPTION') {
         // Wrap categorical values in an OR constraint
         args.push({
-          type: "or",
+          type: 'or',
           args: this.values.map((value: ValueConstraint) => value.toQueryObject())
-        })
+        });
       }
     }
 
@@ -84,7 +84,7 @@ export class ConceptConstraint implements Constraint {
     }
 
     return {
-      type: "and",
+      type: 'and',
       args: args
     };
   }

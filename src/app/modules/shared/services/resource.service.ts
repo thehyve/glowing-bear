@@ -119,8 +119,7 @@ export class ResourceService {
       })
         .map((response: Response) => response.json().patientSets as PatientSet[])
         .catch(this.handleError.bind(this));
-    }
-    else {
+    } else {
       console.error('Could not establish endpoint.');
     }
   }
@@ -184,8 +183,7 @@ export class ResourceService {
     let url = `${endpoint.getUrl()}/observations/aggregate?`;
     if (constraint.concept.type === 'NUMERIC') {
       url += `type=min&type=max&type=average&type=count&constraint=${constraintString}`;
-    }
-    else {
+    } else {
       url += `type=values&constraint=${constraintString}`;
     }
 
@@ -268,7 +266,7 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let url = `${endpoint.getUrl()}/export/job`;
-    if (name) url += `?name=${name}`;
+    if (name) { url += `?name=${name}`; }
 
     return this.http.post(url, {}, options)
       .map((res: Response) => res.json().exportJob as ExportJob)

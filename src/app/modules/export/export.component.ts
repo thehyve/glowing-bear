@@ -55,7 +55,7 @@ export class ExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
-          console.log('jobs: ', jobs);
+          console.log('update jobs: ', jobs);
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -93,7 +93,6 @@ export class ExportComponent implements OnInit {
       this.resourceService.createExportJob(name)
         .subscribe(
           newJob => {
-            console.log('new job: ', newJob);
             this.runExportJob(newJob.id);
           },
           err => console.error(err)
@@ -121,7 +120,7 @@ export class ExportComponent implements OnInit {
         returnedExportJob => {
           this.updateExportJobs();
         },
-        err => console.log(err)
+        err => console.error(err)
       );
   }
 
@@ -131,7 +130,6 @@ export class ExportComponent implements OnInit {
         (response: Response) => {
           let resBlob = response.blob();
           let length = resBlob.size;
-          console.log('job: ', job.id, ', length: ', length);
           let blob = new Blob([response.blob()], {type: 'application/zip'});
 
           /*

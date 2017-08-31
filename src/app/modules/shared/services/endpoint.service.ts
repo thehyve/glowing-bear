@@ -7,24 +7,25 @@ export class EndpointService {
 
   private endpoint: Endpoint;
 
-  constructor(private appConfig: AppConfig) { console.log('construct: ', this.appConfig);
+  constructor(private appConfig: AppConfig) {
     let apiUrl = appConfig.getConfig('api-url');
     let apiVersion = appConfig.getConfig('api-version');
     let appUrl = appConfig.getConfig('app-url');
-    this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
-    let parsedUrl = this.parseUrl(this.getCurrentUrl());
-    // Check if there is authentication data in the hash fragment of the url
-    let oauthGrantFragment: string = parsedUrl.hash;
-    if (oauthGrantFragment.length > 1) {
-      // Update the current endpoint with the received credentials
-      this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
-      // Save the endpoint
-      this.saveEndpoint();
-    } else {
-      // Read the access token information from the local storage
-      this.restoreEndpointAuthentication();
+    if (this.isValidUrl(apiUrl) && this.isValidUrl(appUrl)) {
+      this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
+      let parsedUrl = this.parseUrl(this.getCurrentUrl());
+      // Check if there is authentication data in the hash fragment of the url
+      let oauthGrantFragment: string = parsedUrl.hash;
+      if (oauthGrantFragment.length > 1) {
+        // Update the current endpoint with the received credentials
+        this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
+        // Save the endpoint
+        this.saveEndpoint();
+      } else {
+        // Read the access token information from the local storage
+        this.restoreEndpointAuthentication();
+      }
     }
-
   }
 
   public getEndpoint() {
@@ -65,15 +66,25 @@ export class EndpointService {
   private parseUrl(url: string) {
     let match = url.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)#?(.*)$/);
     return match && {
-        href: url,
-        protocol: match[1],
-        host: match[2],
-        hostname: match[3],
-        port: match[4],
-        path: match[5],
-        search: match[6],
-        hash: match[7]
-      };
+      href: url,
+      protocol: match[1],
+      host: match[2],
+      hostname: match[3],
+      port: match[4],
+      path: match[5],
+      search: match[6],
+      hash: match[7]
+    };
+  }
+
+  /**
+   * Check if the given string is a valid URL
+   * @param {string} str
+   * @returns {boolean}
+   */
+  private isValidUrl(str: string) {
+    let matcher = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+    return matcher.test(str);
   }
 
   /**
@@ -142,8 +153,8 @@ export class EndpointService {
     return JSON.parse('{"' +
       decodeURI(
         fragment
-          .replace(/&/g, "\",\"") // replace '&' with ','
-          .replace(/=/g, "\":\"")) + '"}' // replace '=' with ':'
+          .replace(/&/g, '","') // replace '&' with ','
+          .replace(/=/g, '":"')) + '"}' // replace '=' with ':'
     );
   }
 

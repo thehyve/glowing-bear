@@ -31,8 +31,6 @@ export class ObservationSelectionComponent implements OnInit {
       let nodes = this.dimensionRegistryService.treeNodes;
       this.dimensionRegistryService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
       this.dimensionRegistryService.updateSelectedTreeNodesPrime(foundTreeNodes);
-      // this.dimensionRegistryService.updateSelectedTreeNodes();
-      console.log('found nodes: ', foundTreeNodes);
     }).bind(this);
     let file = event.target.files[0];
     console.log('file: ', file);

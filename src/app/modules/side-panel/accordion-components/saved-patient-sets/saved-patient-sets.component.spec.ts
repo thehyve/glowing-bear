@@ -1,6 +1,12 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SavedPatientSetsComponent } from './saved-patient-sets.component';
+import {SavedPatientSetsComponent} from './saved-patient-sets.component';
+import {DataListModule, DragDropModule} from 'primeng/primeng';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
+import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
+import {ConstraintService} from '../../../shared/services/constraint.service';
 
 describe('SavedPatientSetsComponent', () => {
   let component: SavedPatientSetsComponent;
@@ -8,9 +14,24 @@ describe('SavedPatientSetsComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SavedPatientSetsComponent ]
+      declarations: [SavedPatientSetsComponent],
+      imports: [
+        BrowserAnimationsModule,
+        DataListModule,
+        DragDropModule
+      ],
+      providers: [
+        {
+          provide: DimensionRegistryService,
+          useClass: DimensionRegistryServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +40,7 @@ describe('SavedPatientSetsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create SavedPatientSetsComponent', () => {
     expect(component).toBeTruthy();
   });
 });

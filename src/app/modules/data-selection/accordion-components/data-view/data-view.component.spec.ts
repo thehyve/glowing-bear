@@ -19,7 +19,7 @@ describe('DataViewComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create DataViewComponent', () => {
     expect(component).toBeTruthy();
   });
 });

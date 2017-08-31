@@ -23,6 +23,7 @@ import {EndpointServiceMock} from './modules/shared/mocks/endpoint.service.mock'
 import {ResourceServiceMock} from './modules/shared/mocks/resource.service.mock';
 import {DimensionRegistryServiceMock} from './modules/shared/mocks/dimension-registry.service.mock';
 import {ConstraintServiceMock} from './modules/shared/mocks/constraint.service.mock';
+import {AppConfigMock} from './config/app.config.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -48,7 +49,10 @@ describe('AppComponent', () => {
         routing
       ],
       providers: [
-        AppConfig,
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: APP_BASE_HREF,
           useValue: '/'
@@ -79,22 +83,9 @@ describe('AppComponent', () => {
     }).compileComponents();
   }));
 
-  fit('should create the app', async(() => {
+  it('should create the app', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();
-  }));
-
-  it(`should have as title 'app works!'`, async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('app works!');
-  }));
-
-  it('should render title in a h1 tag', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('app works!');
   }));
 });

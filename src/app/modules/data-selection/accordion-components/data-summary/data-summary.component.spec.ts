@@ -19,7 +19,7 @@ describe('DataSummaryComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create DataSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 });
