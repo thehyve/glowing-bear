@@ -1,15 +1,27 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
-import { ResourceService } from './resource.service';
+import {ResourceService} from './resource.service';
+import {HttpModule} from '@angular/http';
+import {EndpointService} from './endpoint.service';
+import {EndpointServiceMock} from '../mocks/endpoint.service.mock';
 
 describe('ResourceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ResourceService]
+      imports: [
+        HttpModule
+      ],
+      providers: [
+        ResourceService,
+        {
+          provide: EndpointService,
+          useClass: EndpointServiceMock
+        }
+      ]
     });
   });
 
-  it('should ...', inject([ResourceService], (service: ResourceService) => {
+  it('should inject ResourceService', inject([ResourceService], (service: ResourceService) => {
     expect(service).toBeTruthy();
   }));
 });

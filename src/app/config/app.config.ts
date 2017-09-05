@@ -8,7 +8,7 @@ export class AppConfig {
   private config: Object = null;
   private env: Object = null;
 
-  //see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
+  // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
   constructor(private http: Http) {
   }
 

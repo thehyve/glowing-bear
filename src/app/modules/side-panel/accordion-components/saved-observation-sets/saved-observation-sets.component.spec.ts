@@ -19,7 +19,7 @@ describe('SavedObservationSetsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
+  it('should create SavedObservationSetsComponent', () => {
     expect(component).toBeTruthy();
   });
 });

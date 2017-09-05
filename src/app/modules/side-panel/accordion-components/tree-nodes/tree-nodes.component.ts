@@ -257,6 +257,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
+    this.removeFalsePrimeNgClasses();
   }
 
   /**
