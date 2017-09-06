@@ -7,42 +7,48 @@ import {ResourceService} from '../shared/services/resource.service';
 import {SelectItem} from 'primeng/components/common/api';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
+import {ExportJob} from '../shared/models/export-job';
+import {animate, style, transition, trigger} from '@angular/animations';
+
+type LoadingState = 'loading' | 'complete';
 
 @Component({
   selector: 'export',
   templateUrl: './export.component.html',
-  styleUrls: ['./export.component.css']
+  styleUrls: ['./export.component.css'],
+  animations: [
+    trigger('notifyState', [
+      transition('loading => complete', [
+        style({
+          background: 'rgba(51, 156, 144, 0.5)'
+        }),
+        animate('1000ms ease-out', style({
+          background: 'rgba(255, 255, 255, 0.0)'
+        }))
+      ])
+    ])
+  ]
 })
 export class ExportComponent implements OnInit {
 
-  availableSetOptions: SelectItem[];
-  selectedAvailableSetOption: string;
-  selectedFileFormat: string = "TSV";
+  selectedFileFormat = 'TSV';
+  alertMessages = [];
 
   selectedSets: SavedSet[];
   searchResults: any;
 
   dataFormats: Object[];
-  exportJobs: Object[];
+  updatingDataFormats: LoadingState;
+  exportJobs: ExportJob[];
   exportJobName: string;
-
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
-    let patientOpt: SelectItem = {
-      label: 'patient',
-      value: 'patient'
-    };
-    let observationOpt: SelectItem = {
-      label: 'observation',
-      value: 'observation'
-    };
-    this.availableSetOptions = [patientOpt, observationOpt];
-    this.selectedAvailableSetOption = 'patient';
     this.selectedSets = [];
     this.dataFormats = [];
+    this.updatingDataFormats = 'complete';
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', e => this.updateExportJobs());
@@ -55,15 +61,19 @@ export class ExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
-          console.log('update jobs: ', jobs);
           this.exportJobs = jobs;
         },
         err => console.error(err)
       );
   }
 
+  /**
+   * Update the data formats checkboxes whenever there is a change to the set selection
+   */
   updateDataFormats() {
     if (this.selectedSets.length > 0) {
+      this.updatingDataFormats = 'loading';
+      this.dataFormats = [];
       let ids: string[] = [];
       for (let set of this.selectedSets) {
         ids.push(set['id']);
@@ -71,37 +81,59 @@ export class ExportComponent implements OnInit {
       this.resourceService.getExportDataFormats(ids)
         .subscribe(
           formats => {
-            this.dataFormats = [];
             for (let name of formats) {
               this.dataFormats.push({
                 name: name,
                 checked: true
               });
             }
+            this.updatingDataFormats = 'complete';
           },
           err => console.error(err)
         );
-    }
-    else {
+    } else {
       this.dataFormats = [];
     }
   }
 
+  /**
+   * Create the export job when the user clicks the 'Export selected sets' button
+   */
   createExportJob() {
     if (this.selectedSets.length > 0) {
       let name = this.exportJobName ? this.exportJobName.trim() : undefined;
-      this.resourceService.createExportJob(name)
-        .subscribe(
-          newJob => {
-            this.runExportJob(newJob.id);
-          },
-          err => console.error(err)
-        );
+      let duplicateName = false;
+      for (let job of this.exportJobs) {
+        if (job['jobName'] === name) {
+          duplicateName = true;
+          break;
+        }
+      }
+
+      if (duplicateName) {
+        this.alertMessages.push({severity: 'info', summary: 'Duplicate job name, choose a new name.', detail: ''});
+      } else {
+        this.alertMessages = [];
+        this.alertMessages.push({severity: 'info', summary: 'Running the export job "' + name + '".', detail: ''});
+        this.resourceService.createExportJob(name)
+          .subscribe(
+            newJob => {
+              this.alertMessages = [];
+              this.alertMessages.push({severity: 'info', summary: 'The export job "' + name + '" is created.', detail: ''});
+              this.runExportJob(newJob);
+            },
+            err => console.error(err)
+          );
+      }
     }
   }
 
-  runExportJob(jobId: string) {
-    let setOption = this.selectedAvailableSetOption;
+  /**
+   * Run the just created export job
+   * @param job
+   */
+  runExportJob(job) {
+    let jobId = job['id'];
     let ids: string[] = [];
     for (let set of this.selectedSets) {
       ids.push(set['id']);
@@ -111,19 +143,28 @@ export class ExportComponent implements OnInit {
     for (let dataFormat of this.dataFormats) {
       elements.push({
         dataType: dataFormat['name'],
-        format: fileFormat
+        format: fileFormat,
+        tabular: true
       });
     }
 
-    this.resourceService.runExportJob(jobId, setOption, ids, elements)
+    this.resourceService.runExportJob(jobId, ids, elements)
       .subscribe(
         returnedExportJob => {
+          this.alertMessages = [];
+          let msg = 'The export job "' + returnedExportJob['jobName'] + '" is ready for download.';
+          this.alertMessages.push({severity: 'info', summary: msg, detail: ''});
           this.updateExportJobs();
         },
         err => console.error(err)
       );
   }
 
+  /**
+   * When an export job's status is 'completed', the user can click the Download button,
+   * then the files of that job can be downloaded
+   * @param job
+   */
   downloadExportJob(job) {
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
@@ -144,14 +185,23 @@ export class ExportComponent implements OnInit {
           anchor.remove();
         },
         err => console.error(err),
-        () => {}
+        () => {
+        }
       );
   }
 
+  /**
+   * The user can add a set that he wants to export
+   * @param event
+   */
   onSelect(event) {
     this.updateDataFormats();
   }
 
+  /**
+   * The user can remove a set that he wants to exclude from export
+   * @param event
+   */
   onUnselect(event) {
     // primeng does not update the selected sets,
     // so we need to manually remove the patient set
@@ -160,22 +210,19 @@ export class ExportComponent implements OnInit {
     this.updateDataFormats();
   }
 
+  /**
+   * The user can search for a specific set that he wants to export
+   * @param event
+   */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let sets = null;
-    if (this.selectedAvailableSetOption === 'patient') {
-      sets = this.dimensionRegistry.getPatientSets();
-    }
-    else if (this.selectedAvailableSetOption === 'observation') {
-      sets = this.dimensionRegistry.getObservationSets();
-    }
+    let sets = this.dimensionRegistry.getPatientSets().concat(this.dimensionRegistry.getObservationSets());
 
     if (query && sets) {
       this.searchResults = sets.filter(
         (set: SavedSet) => (set.name && set.name.toLowerCase().includes(query))
       );
-    }
-    else {
+    } else {
       this.searchResults = sets;
     }
   }

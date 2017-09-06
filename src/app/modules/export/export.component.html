@@ -3,8 +3,6 @@
 
     <!-- autocompletes to select patient sets or observation sets -->
     <div class="form-inline" (drop)="onExportAutoCompleteFormDrop($event)">
-      <p-dropdown [options]="availableSetOptions" [(ngModel)]="selectedAvailableSetOption"></p-dropdown>
-      <span>&nbsp;</span>
       <p-autoComplete [(ngModel)]="selectedSets"
                       [suggestions]="searchResults"
                       (completeMethod)="onSearch($event)"
@@ -35,18 +33,24 @@
 
 
     <!-- area to indicate which formats to export -->
-    <div *ngIf="dataFormats.length>0" class="gb-data-format-container">
-      <div class="gb-data-format-header">Select data formats:</div>
-      <p-dataList [value]="dataFormats">
-        <ng-template let-dataFormat let-i="index" pTemplate="item">
+    <div [@notifyState]="updatingDataFormats">
+      <div *ngIf="dataFormats.length > 0" class="gb-data-format-container">
+        <div class="gb-data-format-header">Select data formats:</div>
+        <p-dataList [value]="dataFormats">
+          <ng-template let-dataFormat let-i="index" pTemplate="item">
 
-          <div class="ui-grid ui-grid-responsive ui-fluid gb-data-format-item">
-            <p-checkbox [(ngModel)]="dataFormat.checked" binary="true"></p-checkbox>
-            {{dataFormat.name}}
-          </div>
+            <div class="ui-grid ui-grid-responsive ui-fluid gb-data-format-item">
+              <p-checkbox [(ngModel)]="dataFormat.checked" binary="true"></p-checkbox>
+              {{dataFormat.name}}
+            </div>
 
-        </ng-template>
-      </p-dataList>
+          </ng-template>
+        </p-dataList>
+      </div>
+
+      <!-- the spinning icon -->
+      <i class="fa fa-spin fa-refresh fa-fw gb-spinner"
+         [class.loading]="updatingDataFormats == 'loading'"></i>
     </div>
 
 
@@ -57,8 +61,12 @@
              (drop)="onExportJobNameInputDrop($event)"
              [(ngModel)]="exportJobName">
       <span>&nbsp;</span>
-      <button type="button" class="btn btn-primary btn-sm" (click)="createExportJob()">Export selected sets</button>
+      <button type="button" class="btn btn-primary btn-sm"
+              [disabled]="updatingDataFormats === loading"
+              (click)="createExportJob()">Export selected sets</button>
     </div>
+
+    <p-messages [(value)]="alertMessages"></p-messages>
 
   </p-panel>
 
@@ -69,6 +77,8 @@
       <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
     </div>
     <p-dataTable #dt
+                 sortField="jobStatusTime"
+                 sortOrder="-1"
                  [value]="exportJobs"
                  [rows]="10" [paginator]="true"
                  [globalFilter]="globalFilter">
