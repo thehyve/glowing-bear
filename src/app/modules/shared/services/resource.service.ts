@@ -220,16 +220,17 @@ export class ResourceService {
    * @param patientSetIds
    * @returns {Observable<string[]>}
    */
-  getExportDataFormats(patientSetIds: string[]): Observable<string[]> {
+  getExportDataFormats(setIds: string[]): Observable<string[]> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
 
     let idString = '';
-    for (let id of patientSetIds) {
+    for (let id of setIds) {
       idString += 'id=' + id + '&';
     }
-    let url = `${endpoint.getUrl()}/export/data_formats?${idString}typeOfSet=patient`;
+    idString = idString.substr(0, idString.length - 1);
+    let url = `${endpoint.getUrl()}/export/data_formats?${idString}`;
 
     return this.http.get(url, {
       headers: headers
@@ -266,7 +267,9 @@ export class ResourceService {
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
     let url = `${endpoint.getUrl()}/export/job`;
-    if (name) { url += `?name=${name}`; }
+    if (name) {
+      url += `?name=${name}`;
+    }
 
     return this.http.post(url, {}, options)
       .map((res: Response) => res.json().exportJob as ExportJob)
@@ -289,7 +292,6 @@ export class ResourceService {
    * @returns {Observable<R|T>}
    */
   runExportJob(jobId: string,
-               setOption: string,
                ids: string[],
                elements: Object[]): Observable<ExportJob> {
     let headers = new Headers();
@@ -297,14 +299,12 @@ export class ResourceService {
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     headers.append('Content-Type', 'application/json');
     let options = new RequestOptions({headers: headers});
-    let idString = '';
-    for (let id of ids) {
-      idString += 'id=' + id + '&';
-    }
-    let elementString = JSON.stringify(elements);
-    let url = `${endpoint.getUrl()}/export/${jobId}/run?typeOfSet=${setOption}&${idString}elements=${elementString}`;
+    let url = `${endpoint.getUrl()}/export/${jobId}/run`;
 
-    return this.http.post(url, {}, options)
+    return this.http.post(url, {
+      id: ids,
+      elements: elements
+    }, options)
       .map((res: Response) => res.json().exportJob as ExportJob)
       .catch(this.handleError.bind(this));
   }
