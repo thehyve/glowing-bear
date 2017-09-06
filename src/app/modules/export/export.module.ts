@@ -13,6 +13,7 @@ import {SharedModule} from 'primeng/components/common/shared';
 import {DropdownModule} from 'primeng/components/dropdown/dropdown';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {PanelModule} from 'primeng/components/panel/panel';
+import {MessagesModule} from 'primeng/primeng';
 
 @NgModule({
   imports: [
@@ -20,6 +21,7 @@ import {PanelModule} from 'primeng/components/panel/panel';
     routing,
     FormsModule,
     AutoCompleteModule,
+    MessagesModule,
     DataListModule,
     CheckboxModule,
     FieldsetModule,
