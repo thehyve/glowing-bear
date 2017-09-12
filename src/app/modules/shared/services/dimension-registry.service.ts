@@ -116,6 +116,7 @@ export class DimensionRegistryService {
         let path = node['constraint']['path'];
         concept.path = path ? path : node['fullName'];
         concept.type = node['type'];
+        concept.label = concept.path;
         this.concepts.push(concept);
 
         let constraint = new ConceptConstraint();

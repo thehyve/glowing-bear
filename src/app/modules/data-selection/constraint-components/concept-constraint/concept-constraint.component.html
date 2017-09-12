@@ -4,8 +4,11 @@
     <p-autoComplete #autoComplete
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
-                    field="path"
+                    field="label"
                     (completeMethod)="onSearch($event)"
+                    [style]="{'width':'100%'}"
+                    [inputStyle]="{'width':'100%'}"
+                    styleClass="gb-concept-constraint-input"
                     size="60"
                     dropdown="true"
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>

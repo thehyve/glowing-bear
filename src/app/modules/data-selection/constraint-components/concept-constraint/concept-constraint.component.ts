@@ -242,11 +242,10 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let concepts = this.dimensionRegistry.getConcepts();
+    let concepts = this.dimensionRegistry.getConcepts(); console.log('search: ', concepts);
     if (query) {
       this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
-    }
-    else {
+    } else {
       this.searchResults = concepts;
     }
   }
@@ -274,9 +273,9 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   updateConceptValues() {
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
 
-    //if the concept is numeric
+    // if the concept is numeric
     if (this.isNumeric()) {
-      //if to define a single value
+      // if to define a single value
       if (this.operatorState === ConceptOperatorState.EQUAL) {
         if (typeof this.equalVal === 'number') {
           let newVal: ValueConstraint = new ValueConstraint();
@@ -285,11 +284,8 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           newVal.value = this.equalVal;
           conceptConstraint.values = [];
           conceptConstraint.values.push(newVal);
-        }
-      }
-
-      //else if to define a value range
-      else if (this.operatorState === ConceptOperatorState.BETWEEN) {
+        } // else if to define a value range
+      } else if (this.operatorState === ConceptOperatorState.BETWEEN) {
         conceptConstraint.values = [];
         if (typeof this.minVal === 'number') {
           let newMinVal: ValueConstraint = new ValueConstraint();
@@ -308,10 +304,8 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
           newMaxVal.value = this.maxVal;
           conceptConstraint.values.push(newMaxVal);
         }
-      }
-    }
-    //else if the concept is categorical
-    else if (this.isCategorical()) {
+      } // else if the concept is categorical
+    } else if (this.isCategorical()) {
       conceptConstraint.values = [];
       for (let category of this.selectedCategories) {
         let newVal: ValueConstraint = new ValueConstraint();

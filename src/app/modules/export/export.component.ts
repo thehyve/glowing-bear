@@ -17,7 +17,7 @@ export class ExportComponent implements OnInit {
 
   availableSetOptions: SelectItem[];
   selectedAvailableSetOption: string;
-  selectedFileFormat: string = "TSV";
+  selectedFileFormat = 'TSV';
 
   selectedSets: SavedSet[];
   searchResults: any;
@@ -45,7 +45,7 @@ export class ExportComponent implements OnInit {
     this.dataFormats = [];
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
-    this.timer.subscribe('30sec', e => this.updateExportJobs());
+    this.timer.subscribe('30sec', () => this.updateExportJobs());
   }
 
   ngOnInit() {
