@@ -242,7 +242,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let concepts = this.dimensionRegistry.getConcepts(); console.log('search: ', concepts);
+    let concepts = this.dimensionRegistry.getConcepts();
     if (query) {
       this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
     } else {
