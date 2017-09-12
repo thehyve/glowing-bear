@@ -111,6 +111,16 @@ body .gb-patient-set-item {
 }
 
 /*
+ * style fix for a concept constraint input
+ * displayed text aligned from right to left
+ * text overflow is turned on
+ */
+body .gb-concept-constraint-input > input {
+  text-overflow: ellipsis;
+  direction: rtl;
+}
+
+/*
  * Style for the search box in the tree-node accordion on the left side
  */
 .gb-tree-filter-input > input{
