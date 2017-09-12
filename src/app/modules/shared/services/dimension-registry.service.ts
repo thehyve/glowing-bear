@@ -71,24 +71,6 @@ export class DimensionRegistryService {
       );
   }
 
-  loadTreeNext(parentNode) {
-    this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-            this.processTreeNode(parentNode);
-            children.forEach((function (node) {
-              this.loadTreeNext(node);
-            }).bind(this));
-          }
-        },
-        err => console.error(err)
-      );
-  }
-
   /** Extracts concepts (and later possibly other dimensions) from the
    *  provided TreeNode array and their children.
    *  And augment tree nodes with PrimeNG tree-ui specifications
@@ -159,6 +141,65 @@ export class DimensionRegistryService {
         node['icon'] = 'icon-abc';
       } else {
         node['icon'] = 'fa-folder-o';
+      }
+    }
+  }
+
+  /**
+   * Iteratively load the descendants of the given tree node
+   * @param parentNode
+   */
+  private loadTreeNext(parentNode) {
+    let depth = 16;
+    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+      .subscribe(
+        (treeNodes: object[]) => {
+          // console.log('parent node: ', parentNode);
+          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+          const children = refNode ? refNode['children'] : undefined;
+          if (children) {
+            parentNode['children'] = children;
+            this.processTreeNode(parentNode);
+          }
+
+          let descendants = [];
+          this.getTreeNodeDescendants(refNode, depth, descendants);
+          if (descendants.length > 0) {
+            // this.processTreeNode(parentNode);
+            for (let descendant of descendants) {
+              this.loadTreeNext(descendant);
+            }
+          }
+
+          // const children = refNode ? refNode['children'] : undefined;
+          // if (children) {
+          //   // console.log('children: ', children);
+          //   parentNode['children'] = children;
+          //   this.processTreeNode(parentNode);
+          //   children.forEach((function (node) {
+          //     this.loadTreeNext(node);
+          //   }).bind(this));
+          // }
+        },
+        err => console.error(err)
+      );
+  }
+
+  public getTreeNodeDescendants(treeNode: TreeNode, depth: number, descendants: TreeNode[]) {
+    if (treeNode) {
+      if (depth === 2) {
+        if (treeNode['children']) {
+          for (let child of treeNode['children']) {
+            descendants.push(child);
+          }
+        }
+      } else if (depth > 2) {
+        if (treeNode['children']) {
+          for (let child of treeNode['children']) {
+            let newDepth = depth - 1;
+            this.getTreeNodeDescendants(child, newDepth, descendants);
+          }
+        }
       }
     }
   }

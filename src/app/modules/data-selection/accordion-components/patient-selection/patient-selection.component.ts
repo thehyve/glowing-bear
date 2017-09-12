@@ -72,5 +72,4 @@ export class PatientSelectionComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
   }
-
 }

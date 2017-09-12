@@ -40,4 +40,13 @@ export class ObservationSelectionComponent implements OnInit {
   onSaveObservationSetBtnClick() {
     console.log('click to save observation set with name: ', this.observationSetName);
   }
+
+  test() {
+    let nodes = this.dimensionRegistryService.treeNodes;
+    console.log('--> ', nodes);
+    let node1 = nodes[1];
+    let descendants = [];
+    this.dimensionRegistryService.getTreeNodeDescendants(node1, 2, descendants);
+    console.log('descendants: ', descendants);
+  }
 }
