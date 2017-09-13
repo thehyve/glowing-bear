@@ -3,7 +3,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ExportComponent} from './export.component';
 import {SharedModule} from '../shared/shared.module';
 import {
-  AutoCompleteModule, CheckboxModule, DataListModule, DataTableModule, DropdownModule, FieldsetModule,
+  AutoCompleteModule, CheckboxModule, DataListModule, DataTableModule, DropdownModule, FieldsetModule, MessagesModule,
   PanelModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -37,7 +37,8 @@ describe('ExportComponent', () => {
         DataTableModule,
         PanelModule,
         DropdownModule,
-        SharedModule
+        SharedModule,
+        MessagesModule
       ],
       providers: [
         SimpleTimer,

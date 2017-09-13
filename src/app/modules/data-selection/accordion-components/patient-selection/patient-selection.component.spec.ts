@@ -4,7 +4,7 @@ import {PatientSelectionComponent} from './patient-selection.component';
 import {ConstraintService} from '../../../shared/services/constraint.service';
 import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
 import {FormsModule} from '@angular/forms';
-import {AutoCompleteModule, CalendarModule, CheckboxModule} from 'primeng/primeng';
+import {AutoCompleteModule, CalendarModule, CheckboxModule, MessagesModule} from 'primeng/primeng';
 import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
 import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
 import {ResourceService} from '../../../shared/services/resource.service';
@@ -28,6 +28,7 @@ describe('PatientSelectionComponent', () => {
         AutoCompleteModule,
         CheckboxModule,
         CalendarModule,
+        MessagesModule
       ],
       providers: [
         {

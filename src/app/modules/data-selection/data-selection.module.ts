@@ -16,7 +16,7 @@ import {AutoCompleteModule} from 'primeng/components/autocomplete/autocomplete';
 import {Md2AccordionModule} from 'md2';
 import {CheckboxModule} from 'primeng/components/checkbox/checkbox';
 import {CalendarModule} from 'primeng/components/calendar/calendar';
-import {TreeModule} from 'primeng/primeng';
+import {MessagesModule, TreeModule} from 'primeng/primeng';
 
 @NgModule({
   imports: [
@@ -27,6 +27,7 @@ import {TreeModule} from 'primeng/primeng';
     Md2AccordionModule,
     CheckboxModule,
     CalendarModule,
+    MessagesModule,
     TreeModule
   ],
   exports: [
