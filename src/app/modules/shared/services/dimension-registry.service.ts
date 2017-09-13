@@ -71,24 +71,6 @@ export class DimensionRegistryService {
       );
   }
 
-  loadTreeNext(parentNode) {
-    this.resourceService.getTreeNodes(parentNode['fullName'], 2, true, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-            this.processTreeNode(parentNode);
-            children.forEach((function (node) {
-              this.loadTreeNext(node);
-            }).bind(this));
-          }
-        },
-        err => console.error(err)
-      );
-  }
-
   /** Extracts concepts (and later possibly other dimensions) from the
    *  provided TreeNode array and their children.
    *  And augment tree nodes with PrimeNG tree-ui specifications
@@ -100,6 +82,9 @@ export class DimensionRegistryService {
     }
     for (let node of treeNodes) {
       this.processTreeNode(node);
+      if (node['children']) {
+        this.processTreeNodes(node['children']);
+      }
     }
   }
 
@@ -142,14 +127,11 @@ export class DimensionRegistryService {
     if (node['metadata']) {
       node['label'] = node['label'] + ' ⚆';
     }
-
-    // If this node has children, drill down
     if (node['children']) {
       // Recurse
       node['expandedIcon'] = 'fa-folder-open';
       node['collapsedIcon'] = 'fa-folder';
       node['icon'] = '';
-      this.processTreeNodes(node['children']);
     } else {
       if (node['type'] === 'NUMERIC') {
         node['icon'] = 'icon-123';
@@ -159,6 +141,54 @@ export class DimensionRegistryService {
         node['icon'] = 'icon-abc';
       } else {
         node['icon'] = 'fa-folder-o';
+      }
+    }
+    // console.log(node['name'], ': ', node['type'], node);
+  }
+
+  /**
+   * Iteratively load the descendants of the given tree node
+   * @param parentNode
+   */
+  private loadTreeNext(parentNode) {
+    let depth = 15;
+    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+      .subscribe(
+        (treeNodes: object[]) => {
+          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+          const children = refNode ? refNode['children'] : undefined;
+          if (children) {
+            parentNode['children'] = children;
+          }
+          this.processTreeNode(parentNode);
+          this.processTreeNodes(children);
+          let descendants = [];
+          this.getTreeNodeDescendants(refNode, depth, descendants);
+          if (descendants.length > 0) {
+            for (let descendant of descendants) {
+              this.loadTreeNext(descendant);
+            }
+          }
+        },
+        err => console.error(err)
+      );
+  }
+
+  public getTreeNodeDescendants(treeNode: TreeNode, depth: number, descendants: TreeNode[]) {
+    if (treeNode) {
+      if (depth === 2) {
+        if (treeNode['children']) {
+          for (let child of treeNode['children']) {
+            descendants.push(child);
+          }
+        }
+      } else if (depth > 2) {
+        if (treeNode['children']) {
+          for (let child of treeNode['children']) {
+            let newDepth = depth - 1;
+            this.getTreeNodeDescendants(child, newDepth, descendants);
+          }
+        }
       }
     }
   }
