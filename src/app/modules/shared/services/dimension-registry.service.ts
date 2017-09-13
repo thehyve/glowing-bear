@@ -82,6 +82,9 @@ export class DimensionRegistryService {
     }
     for (let node of treeNodes) {
       this.processTreeNode(node);
+      if (node['children']) {
+        this.processTreeNodes(node['children']);
+      }
     }
   }
 
@@ -124,14 +127,11 @@ export class DimensionRegistryService {
     if (node['metadata']) {
       node['label'] = node['label'] + ' ⚆';
     }
-
-    // If this node has children, drill down
     if (node['children']) {
       // Recurse
       node['expandedIcon'] = 'fa-folder-open';
       node['collapsedIcon'] = 'fa-folder';
       node['icon'] = '';
-      this.processTreeNodes(node['children']);
     } else {
       if (node['type'] === 'NUMERIC') {
         node['icon'] = 'icon-123';
@@ -143,6 +143,7 @@ export class DimensionRegistryService {
         node['icon'] = 'fa-folder-o';
       }
     }
+    // console.log(node['name'], ': ', node['type'], node);
   }
 
   /**
@@ -150,36 +151,24 @@ export class DimensionRegistryService {
    * @param parentNode
    */
   private loadTreeNext(parentNode) {
-    let depth = 16;
+    let depth = 15;
     this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
       .subscribe(
         (treeNodes: object[]) => {
-          // console.log('parent node: ', parentNode);
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
           const children = refNode ? refNode['children'] : undefined;
           if (children) {
             parentNode['children'] = children;
-            this.processTreeNode(parentNode);
           }
-
+          this.processTreeNode(parentNode);
+          this.processTreeNodes(children);
           let descendants = [];
           this.getTreeNodeDescendants(refNode, depth, descendants);
           if (descendants.length > 0) {
-            // this.processTreeNode(parentNode);
             for (let descendant of descendants) {
               this.loadTreeNext(descendant);
             }
           }
-
-          // const children = refNode ? refNode['children'] : undefined;
-          // if (children) {
-          //   // console.log('children: ', children);
-          //   parentNode['children'] = children;
-          //   this.processTreeNode(parentNode);
-          //   children.forEach((function (node) {
-          //     this.loadTreeNext(node);
-          //   }).bind(this));
-          // }
         },
         err => console.error(err)
       );
