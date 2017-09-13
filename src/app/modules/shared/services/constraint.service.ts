@@ -15,6 +15,12 @@ import {DimensionRegistryService} from './dimension-registry.service';
 
 type LoadingState = 'loading' | 'complete';
 
+/**
+ * This service concerns with
+ * (1) translating string or JSON objects into Constraint class instances
+ * (2) saving constraints as patient or observation sets
+ * (3) updating relevant patient or observation counts
+ */
 @Injectable()
 export class ConstraintService {
 
@@ -28,6 +34,13 @@ export class ConstraintService {
   private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+
+  /*
+   * The alert messages (for PrimeNg message UI) that informs the user
+   * whether there is an error saving patient/observation set,
+   * or the saving has been successful
+   */
+  private _alertMessages = [];
 
   loadingStateInclusion: LoadingState = 'complete';
   loadingStateExclusion: LoadingState = 'complete';
@@ -44,7 +57,7 @@ export class ConstraintService {
 
 
   constructor(private resourceService: ResourceService,
-              private dimensionReistryService: DimensionRegistryService) {
+              private dimensionRegistryService: DimensionRegistryService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
     this._validTreeNodeTypes = [
@@ -278,22 +291,41 @@ export class ConstraintService {
   }
 
   savePatients(patientSetName: string) {
-    // derive the intersection constraint
-    let intersectionConstraint =
-      this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+    let name = patientSetName ? patientSetName.trim() : undefined;
+    let duplicateName = false;
+    let savedPatientSets = this.dimensionRegistryService.getPatientSets();
+    for (let savedSet of savedPatientSets) {
+      if (savedSet['name'] === name) {
+        duplicateName = true;
+        break;
+      }
+    }
+    if (duplicateName) {
+      this.alertMessages.push({severity: 'info', summary: 'Duplicate patient set name, choose a new name.', detail: ''});
+    } else {
+      this.alertMessages = [];
+      // derive the intersection constraint
+      let intersectionConstraint =
+        this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
 
-    // call the backend api to save patient set of that constraint
-    // and update the dimension registry service for the patient set list
-    this.resourceService.savePatients(patientSetName, intersectionConstraint)
-      .subscribe(
-        result => {
-          this._patientSetPostResponse = result;
-          this.dimensionReistryService.updatePatientSets();
-        },
-        err => {
-          console.error(err);
-        }
-      );
+      // call the backend api to save patient set of that constraint
+      // and update the dimension registry service for the patient set list
+      this.resourceService.savePatients(patientSetName, intersectionConstraint)
+        .subscribe(
+          result => {
+            this._patientSetPostResponse = result;
+            this.dimensionRegistryService.updatePatientSets();
+            let message = 'Your patient set ' + this.patientSetPostResponse.description +
+              ' with ' + this.patientSetPostResponse.setSize + ' patients has been saved' +
+              ' with the identifier: ' + this.patientSetPostResponse.id + '.';
+            this.alertMessages.push({severity: 'info', summary: message, detail: ''});
+          },
+          err => {
+            console.error(err);
+            this.alertMessages.push({severity: 'info', summary: err, detail: ''});
+          }
+        );
+    }
   }
 
   get patientCount(): number {
@@ -360,4 +392,11 @@ export class ConstraintService {
     this._validTreeNodeTypes = value;
   }
 
+  get alertMessages(): Array<object> {
+    return this._alertMessages;
+  }
+
+  set alertMessages(value: Array<object>) {
+    this._alertMessages = value;
+  }
 }

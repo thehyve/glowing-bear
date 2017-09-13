@@ -7,6 +7,7 @@ import {
 import {ConstraintComponent} from '../../constraint-components/constraint/constraint.component';
 import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
 import {ConstraintService} from '../../../shared/services/constraint.service';
+import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
 
 
 @Component({
@@ -33,15 +34,15 @@ export class PatientSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
-  constructor(private _constraintService: ConstraintService) {
+  constructor(private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
     this.constraintService.update();
   }
 
-  get constraintService(): ConstraintService {
-    return this._constraintService;
+  get alertMessages(): Array<object> {
+    return this.constraintService.alertMessages;
   }
 
   get patientCount(): number {

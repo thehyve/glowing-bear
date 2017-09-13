@@ -137,13 +137,12 @@ export class DimensionRegistryService {
         node['icon'] = 'icon-123';
       } else if (node['type'] === 'HIGH_DIMENSIONAL') {
         node['icon'] = 'icon-hd';
-      } else if (node['type'] === 'CATEGORICAL_OPTION') {
+      } else if (node['type'] === 'CATEGORICAL') {
         node['icon'] = 'icon-abc';
       } else {
         node['icon'] = 'fa-folder-o';
       }
     }
-    // console.log(node['name'], ': ', node['type'], node);
   }
 
   /**
