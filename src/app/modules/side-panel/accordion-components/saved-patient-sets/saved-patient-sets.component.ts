@@ -13,6 +13,7 @@ export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
 
   patientSets: SavedSet[];
   observer: MutationObserver;
+  collapsed = false;
 
   constructor(private dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
@@ -25,7 +26,7 @@ export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.observer = new MutationObserver(this.update.bind(this));
-    var config = {
+    const config = {
       attributes: false,
       subtree: true,
       childList: true,
@@ -36,12 +37,11 @@ export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
   }
 
   update() {
-    let pDataList = this.element.nativeElement.querySelector('p-datalist');
-    let ul = pDataList.querySelector('.ui-datalist-data');
+    let panels = this.element.nativeElement.querySelectorAll('.gb-patient-set-panel');
     let index = 0;
-    for(let li of ul.children) {
+    for (let panel of panels) {
       let correspondingPatientSet = this.patientSets[index];
-      li.addEventListener('dragstart', (function () {
+      panel.addEventListener('dragstart', (function () {
         correspondingPatientSet['dropMode'] = DropMode.PatientSet;
         this.constraintService.selectedNode = correspondingPatientSet;
       }).bind(this));
@@ -49,4 +49,16 @@ export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
     }
   }
 
+  togglePatientSetPanel(pset) {
+    pset['collapsed'] = !pset['collapsed'];
+  }
+
+  getPatientSetToggleButtonIcon(patientSet) {
+    return patientSet['collapsed'] ? 'fa-angle-down' : 'fa-angle-up';
+  }
+
+  removePatientSet(patientSet) {
+    // TODO: implement removing patient set
+    console.log('remove patient set: ', patientSet);
+  }
 }

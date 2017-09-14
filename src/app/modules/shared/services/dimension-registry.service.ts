@@ -101,7 +101,6 @@ export class DimensionRegistryService {
         let path = node['constraint']['path'];
         concept.path = path ? path : node['fullName'];
         concept.type = node['type'];
-        concept.label = concept.path;
         this.concepts.push(concept);
 
         let constraint = new ConceptConstraint();
@@ -328,6 +327,7 @@ export class DimensionRegistryService {
           sets.reverse();
           sets.forEach(set => {
             set.name = set.description;
+            set['collapsed'] = true;
             this.patientSets.push(set);
           });
         },

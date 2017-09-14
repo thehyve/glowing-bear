@@ -4,7 +4,7 @@
     <p-autoComplete #autoComplete
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
-                    field="label"
+                    field="path"
                     (completeMethod)="onSearch($event)"
                     [style]="{'width':'100%'}"
                     [inputStyle]="{'width':'100%'}"
