@@ -1,11 +1,27 @@
-<p-dataList [value]="patientSets">
-  <ng-template let-patientSet let-i="index" pTemplate="item">
+<div>
 
-    <div class="ui-grid ui-grid-responsive ui-fluid gb-patient-set-item"
-         pDraggable="patient-set-drag-drop">
-      <i class="fa fa-circle" aria-hidden="true"></i>
-      {{patientSet.name}} ({{patientSet.setSize}})
-    </div>
+  <div *ngFor="let pset of patientSets"
+       class="gb-patient-set-panel"
+       pDraggable="patient-set-drag-drop">
+    <p-panel [collapsed]="pset['collapsed']">
+      <p-header>
+        <div class="ui-helper-clearfix">
+          <div class="ui-panel-title">{{pset['name']}}</div>
+          <div class="float-right">
+            <button pButton class="ui-button-secondary" type="button"
+                    (click)="togglePatientSetPanel(pset)"
+                    icon="{{getPatientSetToggleButtonIcon(pset)}}">
+            </button>
+            <button pButton class="ui-button-secondary" type="button"
+                    (click)="removePatientSet(pset)" icon="fa-times">
+            </button>
+          </div>
+        </div>
+      </p-header>
 
-  </ng-template>
-</p-dataList>
+      {{pset.name}} content
+
+    </p-panel>
+  </div>
+
+</div>

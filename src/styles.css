@@ -102,12 +102,23 @@ body .gb-spinner.loading {
 /*
  * style for a patient-set item on the side panel
  */
-body .gb-patient-set-item {
-  padding: 2px 2px 2px 6px;
+body .gb-patient-set-panel {
+  padding: 0px;
   border-radius: 5px;
   margin-bottom: 10px;
   background-color: #fafafa;
   border: 1px solid #D5D5D5;
+  font-size: small;
+}
+
+/*
+ * style patient-set item header text on the side panel
+ */
+body .ui-panel-title {
+  max-width: 90%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /*
