@@ -2,7 +2,11 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SidePanelComponent} from './side-panel.component';
 import {CommonModule} from '@angular/common';
-import {AccordionModule, AutoCompleteModule, DataListModule, DragDropModule, OverlayPanelModule, TreeModule} from 'primeng/primeng';
+import {
+  AccordionModule, AutoCompleteModule, ButtonModule, DataListModule, DragDropModule, InputTextModule, OverlayPanelModule, PanelModule,
+  TooltipModule,
+  TreeModule
+} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodesComponent} from './accordion-components/tree-nodes/tree-nodes.component';
 import {SavedPatientSetsComponent} from './accordion-components/saved-patient-sets/saved-patient-sets.component';
@@ -34,7 +38,11 @@ describe('SidePanelComponent', () => {
         DataListModule,
         DragDropModule,
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        PanelModule,
+        ButtonModule,
+        InputTextModule,
+        TooltipModule
       ],
       providers: [
         {
