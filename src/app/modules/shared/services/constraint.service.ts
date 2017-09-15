@@ -25,7 +25,7 @@ type LoadingState = 'loading' | 'complete';
 export class ConstraintService {
 
   /*
-   * The patient count variables and criterion constraints
+   * The patient count related variables and criterion constraints
    * in the patient-selection accordion in data-selection
    */
   private _patientCount = 0;
@@ -34,6 +34,12 @@ export class ConstraintService {
   private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+
+  /*
+   * The observation count related variables
+   */
+  private _observationCount = 0;
+  private _conceptCount = 0;
 
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
@@ -190,7 +196,7 @@ export class ConstraintService {
     return combination;
   }
 
-  generateConstraintFromSelectedNode(): Constraint {
+  generateConstraintFromSelectedNode(): Constraint { console.log('dropped node: ', this.selectedNode, ', type: ', this.selectedNode['type']);
     let constraint: Constraint = null;
     let dropMode: DropMode = this.selectedNode['dropMode'];
     // if the dropped node is a tree node
@@ -334,6 +340,22 @@ export class ConstraintService {
 
   set patientCount(value: number) {
     this._patientCount = value;
+  }
+
+  get observationCount(): number {
+    return this._observationCount;
+  }
+
+  set observationCount(value: number) {
+    this._observationCount = value;
+  }
+
+  get conceptCount(): number {
+    return this._conceptCount;
+  }
+
+  set conceptCount(value: number) {
+    this._conceptCount = value;
   }
 
   get inclusionPatientCount(): number {

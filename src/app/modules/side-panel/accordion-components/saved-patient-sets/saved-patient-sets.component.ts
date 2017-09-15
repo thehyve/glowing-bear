@@ -49,16 +49,46 @@ export class SavedPatientSetsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  togglePatientSetPanel(pset) {
-    pset['collapsed'] = !pset['collapsed'];
+  togglePatientSetPanel(patientSet) {
+    patientSet['collapsed'] = !patientSet['collapsed'];
   }
 
   getPatientSetToggleButtonIcon(patientSet) {
     return patientSet['collapsed'] ? 'fa-angle-down' : 'fa-angle-up';
   }
 
+  togglePatientSetBookmark(patientSet) {
+    patientSet['bookmarked'] = !patientSet['bookmarked'];
+  }
+
+  getPatientSetBookmarkButtonIcon(patientSet) {
+    return patientSet['bookmarked'] ? 'fa-star' : 'fa-star-o';
+  }
+
+  selectPatientSet(patientSet) {
+    for (let set of this.patientSets) {
+      set['selected'] = false;
+    }
+    patientSet['selected'] = true;
+    // TODO: fill the patient selection accordion with the selected patient set query
+  }
+
+  getPatientSetSelectionButtonIcon(patientSet) {
+    return patientSet['selected'] ? 'fa-arrow-circle-right' : 'fa-arrow-circle-o-right';
+  }
+
   removePatientSet(patientSet) {
     // TODO: implement removing patient set
     console.log('remove patient set: ', patientSet);
+  }
+
+  editPatientSetName(event, patientSet) {
+    event.preventDefault();
+    event.stopPropagation();
+    patientSet['nameEditable'] = true;
+  }
+
+  onPatientSetPanelClick(patientSet) {
+    patientSet['nameEditable'] = false;
   }
 }

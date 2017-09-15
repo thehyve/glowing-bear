@@ -112,16 +112,6 @@ body .gb-patient-set-panel {
 }
 
 /*
- * style patient-set item header text on the side panel
- */
-body .ui-panel-title {
-  max-width: 90%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-/*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
  * text overflow is turned on

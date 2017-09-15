@@ -5,3 +5,48 @@
   margin-right: 3px;
   margin-bottom: 3px;
 }
+
+/*
+ * Style the set name edit input
+ */
+input[type="text"] {
+  max-width: 100%;
+}
+input[type="text"]:disabled {
+  background: transparent;
+  opacity: 1;
+  border: none;
+  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+  font-size: 110%;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+
+/*
+ * Style the set name edit input
+ */
+input:-moz-read-only { /* For Firefox */
+  background: transparent;
+  opacity: 1;
+  border: none;
+  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+  font-size: 110%;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+input:read-only {
+  background: transparent;
+  opacity: 1;
+  border: none;
+  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+  font-size: 110%;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
