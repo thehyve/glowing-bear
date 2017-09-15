@@ -149,7 +149,7 @@ export class DimensionRegistryService {
    * @param parentNode
    */
   private loadTreeNext(parentNode) {
-    let depth = 15;
+    let depth = 20;
     this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
       .subscribe(
         (treeNodes: object[]) => {

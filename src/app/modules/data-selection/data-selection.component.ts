@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
+import {ConstraintService} from '../shared/services/constraint.service';
 
 @Component({
   selector: 'data-selection',
@@ -8,7 +9,8 @@ import {DimensionRegistryService} from '../shared/services/dimension-registry.se
 })
 export class DataSelectionComponent implements OnInit {
 
-  constructor(private dimensionRegistryService: DimensionRegistryService) {
+  constructor(private dimensionRegistryService: DimensionRegistryService,
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
@@ -38,4 +40,15 @@ export class DataSelectionComponent implements OnInit {
     }
   }
 
+  get patientCount(): number {
+    return this.constraintService.patientCount;
+  }
+
+  get observationCount(): number {
+    return this.constraintService.observationCount;
+  }
+
+  get conceptCount(): number {
+    return this.constraintService.conceptCount;
+  }
 }

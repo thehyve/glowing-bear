@@ -9,7 +9,7 @@ import {TreeDragDropService} from 'primeng/components/common/api';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {SavedPatientSetsComponent} from './accordion-components/saved-patient-sets/saved-patient-sets.component';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
-import {AutoCompleteModule, ButtonModule, PanelModule} from 'primeng/primeng';
+import {AutoCompleteModule, ButtonModule, InputTextModule, PanelModule, TooltipModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {SavedObservationSetsComponent} from './accordion-components/saved-observation-sets/saved-observation-sets.component';
 
@@ -24,7 +24,9 @@ import {SavedObservationSetsComponent} from './accordion-components/saved-observ
     FormsModule,
     AutoCompleteModule,
     PanelModule,
-    ButtonModule
+    ButtonModule,
+    InputTextModule,
+    TooltipModule
   ],
   declarations: [
     SidePanelComponent,

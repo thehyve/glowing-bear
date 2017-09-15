@@ -2,12 +2,17 @@
                (open)="openAccordion($event)"
                (close)="closeAccordion($event)">
   <md2-accordion-tab [active]="true">
-    <md2-accordion-header>Select patients</md2-accordion-header>
+    <md2-accordion-header>Select patients
+      <span class="gb-data-selection-accordion-sub-header">({{patientCount}} patients selected)</span>
+    </md2-accordion-header>
     <patient-selection></patient-selection>
   </md2-accordion-tab>
 
   <md2-accordion-tab>
-    <md2-accordion-header>Select observations</md2-accordion-header>
+    <md2-accordion-header>Select observations
+      <span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}
+        concepts selected)</span>
+    </md2-accordion-header>
     <observation-selection></observation-selection>
   </md2-accordion-tab>
 
