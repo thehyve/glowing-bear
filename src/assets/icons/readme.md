@@ -9,10 +9,10 @@ Use existing SVG sources or create our own, here we create our own SVG icons, PS
 
 #### Step 2: create icon fonts
 
-We then convert the exported SVG files to fonts, using [IcoMoon](https://icomoon.io). Import the SVG files to IcoMoon, click "Generate Font" and download the generated font-related file.
+We then convert the exported SVG files to fonts, using [IcoMoon](https://icomoon.io/app/#/select). Import the SVG files to IcoMoon, click "Generate Font" and download the generated font-related file.
 
 #### Step 3: Use the icon fonts to your own CSS file
 Unzip the downloaded font-related file, copy the /fonts folder and the content in style.css to your own project. In our case, we copy the /fonts folder to ../glowing-bear/src/assets folder, and copy the content of style.css into ../glowing-bear/src/assets/icons.style.css.
 
 
-The icon fonts used in this project are: 'icon-123' for numerical tree nodes, 'icon-abc' for nominal tree nodes and 'icon-hd' for high dimensional tree node.
+The icon fonts used in this project are: 'folder-study' and 'folder-study-open' for study folders, 'icon-123' for numerical tree nodes, 'icon-abc' for nominal tree nodes and 'icon-hd' for high dimensional tree node.
