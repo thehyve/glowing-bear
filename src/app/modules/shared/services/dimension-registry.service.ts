@@ -127,9 +127,13 @@ export class DimensionRegistryService {
       node['label'] = node['label'] + ' ⚆';
     }
     if (node['children']) {
-      // Recurse
-      node['expandedIcon'] = 'fa-folder-open';
-      node['collapsedIcon'] = 'fa-folder';
+      if (node['type'] === 'UNKNOWN') {
+        node['expandedIcon'] = 'fa-folder-open';
+        node['collapsedIcon'] = 'fa-folder';
+      } else if (node['type'] === 'STUDY') {
+        node['expandedIcon'] = 'icon-folder-study-open';
+        node['collapsedIcon'] = 'icon-folder-study';
+      }
       node['icon'] = '';
     } else {
       if (node['type'] === 'NUMERIC') {
