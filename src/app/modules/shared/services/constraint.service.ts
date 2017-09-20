@@ -68,8 +68,9 @@ export class ConstraintService {
     this._rootExclusionConstraint = new CombinationConstraint();
     this._validTreeNodeTypes = [
       'NUMERIC',
-      'CATEGORICAL_OPTION',
-      'STUDY'
+      'CATEGORICAL',
+      'STUDY',
+      'UNKNOWN'
     ];
   }
 
@@ -196,12 +197,11 @@ export class ConstraintService {
     return combination;
   }
 
-  generateConstraintFromSelectedNode(): Constraint { console.log('dropped node: ', this.selectedNode, ', type: ', this.selectedNode['type']);
+  generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
     let constraint: Constraint = null;
-    let dropMode: DropMode = this.selectedNode['dropMode'];
     // if the dropped node is a tree node
     if (dropMode === DropMode.TreeNode) {
-      let treeNode = this.selectedNode;
+      let treeNode = selectedNode;
       let treeNodeType = treeNode['type'];
       if (treeNodeType === 'STUDY') {
         let study: Study = new Study();
@@ -209,7 +209,7 @@ export class ConstraintService {
         constraint = new StudyConstraint();
         (<StudyConstraint>constraint).studies.push(study);
       } else if (treeNodeType === 'NUMERIC' ||
-        treeNodeType === 'CATEGORICAL_OPTION') {
+        treeNodeType === 'CATEGORICAL') {
         let concept = new Concept();
         if (treeNode['constraint']) {
           let constraintObject = treeNode['constraint'];
@@ -221,10 +221,28 @@ export class ConstraintService {
           constraint = new ConceptConstraint();
           (<ConceptConstraint>constraint).concept = concept;
         }
+      } else if (treeNodeType === 'UNKNOWN') {
+        let descendants = [];
+        this.dimensionRegistryService
+          .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
+            ['UNKNOWN'], descendants);
+        if (descendants.length < 6) {
+          constraint = new CombinationConstraint();
+          (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
+          for (let descendant of descendants) {
+            let dConstraint = this.generateConstraintFromSelectedNode(descendant, DropMode.TreeNode);
+            if (dConstraint) {
+              (<CombinationConstraint>constraint).children.push(dConstraint);
+            }
+          }
+          if ((<CombinationConstraint>constraint).children.length === 0) {
+            constraint = null;
+          }
+        }
       }
     } else if (dropMode === DropMode.PatientSet) { // if the dropped node is a patient set
-      if (this.selectedNode.requestConstraints) {
-        let constraintObject = JSON.parse(this.selectedNode.requestConstraints);
+      if (selectedNode['requestConstraints']) {
+        let constraintObject = JSON.parse(selectedNode['requestConstraints']);
         constraintObject = this.optimizeConstraintObject(constraintObject);
         constraint = this.generateConstraintFromConstraintObject(constraintObject);
       }

@@ -165,7 +165,7 @@ export class DimensionRegistryService {
           this.processTreeNode(parentNode);
           this.processTreeNodes(children);
           let descendants = [];
-          this.getTreeNodeDescendants(refNode, depth, descendants);
+          this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
           if (descendants.length > 0) {
             for (let descendant of descendants) {
               this.loadTreeNext(descendant);
@@ -176,7 +176,15 @@ export class DimensionRegistryService {
       );
   }
 
-  public getTreeNodeDescendants(treeNode: TreeNode, depth: number, descendants: TreeNode[]) {
+  /**
+   * Get the descendants of a tree node up to a predefined depth
+   * @param {TreeNode} treeNode
+   * @param {number} depth
+   * @param {TreeNode[]} descendants
+   */
+  public getTreeNodeDescendantsWithDepth(treeNode: TreeNode,
+                                         depth: number,
+                                         descendants: TreeNode[]) {
     if (treeNode) {
       if (depth === 2) {
         if (treeNode['children']) {
@@ -188,8 +196,31 @@ export class DimensionRegistryService {
         if (treeNode['children']) {
           for (let child of treeNode['children']) {
             let newDepth = depth - 1;
-            this.getTreeNodeDescendants(child, newDepth, descendants);
+            this.getTreeNodeDescendantsWithDepth(child, newDepth, descendants);
           }
+        }
+      }
+    }
+  }
+
+  /**
+   * Get the descendants of a tree node if a descendant has a type
+   * that is not excluded
+   * @param {TreeNode} treeNode
+   * @param {string[]} excludedTypes
+   * @param {TreeNode[]} descendants
+   */
+  public getTreeNodeDescendantsWithExcludedTypes(treeNode: TreeNode,
+                                                 excludedTypes: string[],
+                                                 descendants: TreeNode[]) {
+    if (treeNode) {
+      if (treeNode['children']) {
+        for (let child of treeNode['children']) {
+          let type = child['type'];
+          if (excludedTypes.indexOf(type) === -1) {
+            descendants.push(child);
+          }
+          this.getTreeNodeDescendantsWithExcludedTypes(child, excludedTypes, descendants);
         }
       }
     }
