@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {CombinationState} from "./combination-state";
+import {CombinationState} from './combination-state';
 
 export class CombinationConstraint implements Constraint {
 
@@ -16,7 +16,7 @@ export class CombinationConstraint implements Constraint {
     return 'CombinationConstraint';
   }
 
-  hasNonEmptyChildren():boolean {
+  hasNonEmptyChildren(): boolean {
     return this.getNonEmptyQueryObjects().length > 0;
   }
 
@@ -24,10 +24,10 @@ export class CombinationConstraint implements Constraint {
    * Collects all non-empty query objects
    * @returns {Object[]}
    */
-  getNonEmptyQueryObjects():Object[] {
-    let childQueryObjects:Object[] =
-      this._children.reduce((result:Object[], constraint:Constraint) => {
-        let queryObject:Object = constraint.toQueryObject();
+  getNonEmptyQueryObjects(): Object[] {
+    let childQueryObjects: Object[] =
+      this._children.reduce((result: Object[], constraint: Constraint) => {
+        let queryObject: Object = constraint.toQueryObject();
         if (queryObject && Object.keys(queryObject).length > 0) {
           result.push(queryObject);
         }
@@ -36,38 +36,41 @@ export class CombinationConstraint implements Constraint {
     return childQueryObjects;
   }
 
+  /**
+   *
+   * @returns {Object}
+   */
   toQueryObject(): Object {
     // Collect children query objects
-    let childQueryObjects:Object[] =  this.getNonEmptyQueryObjects();
-    if (childQueryObjects.length == 0) {
+    let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
+    if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
       return null;
     }
 
     // Combination
-    let queryObject:Object;
-    if (childQueryObjects.length == 1) {
+    let queryObject: Object;
+    if (childQueryObjects.length === 1) {
       // Only one child, so don't wrap it in and/or
       queryObject = {
-        "type": "subselection",
-        "dimension": "patient",
-        "constraint": childQueryObjects[0]
-      }
-    }
-    else {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': childQueryObjects[0]
+      };
+    } else {
       // Wrap the child query objects in subselections
       childQueryObjects = childQueryObjects.map(queryObject => {
         return {
-          "type": "subselection",
-          "dimension": "patient",
-          "constraint": queryObject
+          'type': 'subselection',
+          'dimension': 'patient',
+          'constraint': queryObject
         };
       });
 
       // Wrap in and/or constraint
       queryObject = {
-        type: this._combinationState === CombinationState.And ? "and" : "or",
+        type: this._combinationState === CombinationState.And ? 'and' : 'or',
         args: childQueryObjects
       };
     }
@@ -87,7 +90,7 @@ export class CombinationConstraint implements Constraint {
     return this._children;
   }
 
-  set children(value:Constraint[]) {
+  set children(value: Constraint[]) {
     this._children = value;
   }
 
@@ -104,7 +107,7 @@ export class CombinationConstraint implements Constraint {
       (this.combinationState === CombinationState.And) ? CombinationState.Or : CombinationState.And;
   }
 
-  removeChildConstraint(child:Constraint) {
+  removeChildConstraint(child: Constraint) {
     let index = this.children.indexOf(child);
     if (index > -1) {
       this.children.splice(index, 1);
