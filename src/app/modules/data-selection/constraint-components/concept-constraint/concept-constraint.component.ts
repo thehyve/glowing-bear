@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConstraintComponent} from "../constraint/constraint.component";
 import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
-import {Concept} from "../../../shared/models/concept";
-import {ConceptConstraint} from "../../../shared/models/constraints/concept-constraint";
+import {Concept} from "../../../../models/concept";
+import {ConceptConstraint} from "../../../../models/constraints/concept-constraint";
 import {ConceptOperatorState} from "./concept-operator-state";
-import {ValueConstraint} from "../../../shared/models/constraints/value-constraint";
+import {ValueConstraint} from "../../../../models/constraints/value-constraint";
 import {DateOperatorState} from "./date-operator-state";
-import {TrialVisit} from "../../../shared/models/trial-visit";
-import {TrialVisitConstraint} from "../../../shared/models/constraints/trial-visit-constraint";
+import {TrialVisit} from "../../../../models/trial-visit";
+import {TrialVisitConstraint} from "../../../../models/constraints/trial-visit-constraint";
 
 @Component({
   selector: 'concept-constraint',

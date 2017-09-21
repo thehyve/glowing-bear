@@ -1,10 +1,10 @@
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
-import {ConstraintService} from '../../../shared/services/constraint.service';
+import {ConstraintService} from '../../../../services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
-import {DropMode} from '../../../shared/models/drop-mode';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {DropMode} from '../../../../models/drop-mode';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
 
 @Component({
   selector: 'tree-nodes',

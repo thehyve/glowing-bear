@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {ConstraintComponent} from '../constraint/constraint.component';
-import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
-import {Constraint} from '../../../shared/models/constraints/constraint';
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {Constraint} from '../../../../models/constraints/constraint';
 import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
-import {CombinationState} from '../../../shared/models/constraints/combination-state';
+import {CombinationState} from '../../../../models/constraints/combination-state';
 
 @Component({
   selector: 'combination-constraint',

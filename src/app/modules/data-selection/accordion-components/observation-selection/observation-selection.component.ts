@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
 
 @Component({
   selector: 'observation-selection',

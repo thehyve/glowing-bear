@@ -5,9 +5,8 @@ import {
   trigger, style, animate, transition
 } from '@angular/animations';
 import {ConstraintComponent} from '../../constraint-components/constraint/constraint.component';
-import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 
 @Component({

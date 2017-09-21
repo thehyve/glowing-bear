@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
-import {SavedSet} from '../shared/models/saved-set';
-import {ConstraintService} from '../shared/services/constraint.service';
-import {DropMode} from '../shared/models/drop-mode';
-import {ResourceService} from '../shared/services/resource.service';
+import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {SavedSet} from '../../models/saved-set';
+import {ConstraintService} from '../../services/constraint.service';
+import {DropMode} from '../../models/drop-mode';
+import {ResourceService} from '../../services/resource.service';
 import {SelectItem} from 'primeng/components/common/api';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
-import {ExportJob} from '../shared/models/export-job';
+import {ExportJob} from '../../models/export-job';
 import {animate, style, transition, trigger} from '@angular/animations';
 
 type LoadingState = 'loading' | 'complete';

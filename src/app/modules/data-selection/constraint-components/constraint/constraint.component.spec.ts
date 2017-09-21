@@ -1,16 +1,16 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ConstraintComponent} from './constraint.component';
-import {GenericComponentMock} from '../../../shared/mocks/generic.component.mock';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
-import {ResourceService} from '../../../shared/services/resource.service';
-import {ResourceServiceMock} from '../../../shared/mocks/resource.service.mock';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
-import {StudyConstraint} from '../../../shared/models/constraints/study-constraint';
-import {ConceptConstraint} from '../../../shared/models/constraints/concept-constraint';
-import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
+import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {ResourceService} from '../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 
 describe('ConstraintComponent', () => {
   let component: ConstraintComponent;

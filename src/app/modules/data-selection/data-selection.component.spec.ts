@@ -5,17 +5,17 @@ import {AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule} from 'pr
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {EndpointService} from '../shared/services/endpoint.service';
-import {EndpointServiceMock} from '../shared/mocks/endpoint.service.mock';
-import {ResourceServiceMock} from '../shared/mocks/resource.service.mock';
-import {ResourceService} from '../shared/services/resource.service';
-import {DimensionRegistryServiceMock} from '../shared/mocks/dimension-registry.service.mock';
-import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
-import {ConstraintService} from '../shared/services/constraint.service';
-import {ConstraintServiceMock} from '../shared/mocks/constraint.service.mock';
+import {EndpointService} from '../../services/endpoint.service';
+import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
+import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
+import {ResourceService} from '../../services/resource.service';
+import {DimensionRegistryServiceMock} from '../../services/mocks/dimension-registry.service.mock';
+import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {ConstraintService} from '../../services/constraint.service';
+import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {routing} from './data-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {GenericComponentMock} from '../shared/mocks/generic.component.mock';
+import {GenericComponentMock} from '../../services/mocks/generic.component.mock';
 
 describe('DataSelectionComponent', () => {
   let component: DataSelectionComponent;
