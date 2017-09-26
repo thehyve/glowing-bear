@@ -46,7 +46,7 @@ export class ResourceService {
     return Observable.throw(errMsg || 'Server error');
   }
 
-  // -------------------------------------- study calls --------------------------------------
+  // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
@@ -66,7 +66,6 @@ export class ResourceService {
     } else {
       console.error('Could not establish endpoint.');
     }
-
   }
 
   /**
@@ -94,6 +93,50 @@ export class ResourceService {
         headers: headers
       })
         .map((response: Response) => response.json().tree_nodes)
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  // -------------------------------------- observations calls --------------------------------------
+  /**
+   * Get the patient count and observation count by providing a constraint
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const constraintString = JSON.stringify(constraint.toQueryObject());
+      let url = `${endpoint.getUrl()}/observations/counts_per_study?constraint=${constraintString}}`;
+
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json()['countsPerStudy'])
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const constraintString = JSON.stringify(constraint.toQueryObject());
+      let url = `${endpoint.getUrl()}/observations/counts_per_concept?constraint=${constraintString}`;
+
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json()['countsPerConcept'])
         .catch(this.handleError.bind(this));
     } else {
       console.error('Could not establish endpoint.');
