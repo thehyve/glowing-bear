@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {DateOperatorState} from "../../../data-selection/constraint-components/concept-constraint/date-operator-state";
+import {DateOperatorState} from "../../modules/data-selection/constraint-components/concept-constraint/date-operator-state";
 
 export class TimeConstraint implements Constraint {
 

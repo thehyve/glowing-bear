@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Study} from '../../../shared/models/study';
-import {StudyConstraint} from '../../../shared/models/constraints/study-constraint';
+import {Study} from '../../../../models/study';
+import {StudyConstraint} from '../../../../models/constraints/study-constraint';
 import {ConstraintComponent} from '../constraint/constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 

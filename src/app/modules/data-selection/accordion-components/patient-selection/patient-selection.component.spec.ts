@@ -1,16 +1,16 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {PatientSelectionComponent} from './patient-selection.component';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {FormsModule} from '@angular/forms';
 import {AutoCompleteModule, CalendarModule, CheckboxModule, MessagesModule} from 'primeng/primeng';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
-import {ResourceService} from '../../../shared/services/resource.service';
-import {ResourceServiceMock} from '../../../shared/mocks/resource.service.mock';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {ResourceService} from '../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {GenericComponentMock} from '../../../shared/mocks/generic.component.mock';
+import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 
 describe('PatientSelectionComponent', () => {
   let component: PatientSelectionComponent;

@@ -3,12 +3,12 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ObservationSelectionComponent} from './observation-selection.component';
 import {TreeModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
-import {ResourceService} from '../../../shared/services/resource.service';
-import {ResourceServiceMock} from '../../../shared/mocks/resource.service.mock';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {ResourceService} from '../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 
 describe('ObservationSelectionComponent', () => {
   let component: ObservationSelectionComponent;

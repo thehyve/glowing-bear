@@ -1,11 +1,11 @@
 import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
-import {Constraint} from '../../../shared/models/constraints/constraint';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {ResourceService} from '../../../shared/services/resource.service';
-import {CombinationConstraint} from '../../../shared/models/constraints/combination-constraint';
-import {StudyConstraint} from '../../../shared/models/constraints/study-constraint';
-import {ConceptConstraint} from '../../../shared/models/constraints/concept-constraint';
+import {Constraint} from '../../../../models/constraints/constraint';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ResourceService} from '../../../../services/resource.service';
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
 
 @Component({
   selector: 'constraint',

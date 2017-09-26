@@ -12,6 +12,7 @@ import {CombinationState} from '../models/constraints/combination-state';
 import {NegationConstraint} from '../models/constraints/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {DimensionRegistryService} from './dimension-registry.service';
+import {TreeNode} from 'primeng/primeng';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -74,7 +75,7 @@ export class ConstraintService {
     ];
   }
 
-  update() {
+  public update() {
     this.updatePatients();
   }
 
@@ -350,6 +351,109 @@ export class ConstraintService {
           }
         );
     }
+  }
+
+  saveObservations(observationSetName: string) {}
+
+  /**
+   * Append a count element to the given treenode-content element
+   * @param treeNodeContent
+   * @param {number} count
+   */
+  private appendCountElement(treeNodeContent, count: number) {
+    const countString = '(' + count + ')';
+    let countElm = treeNodeContent.querySelector('.gb-count-element');
+    if (countElm) {
+      const oldCountString = countElm.textContent;
+      if (countString !== oldCountString) {
+        treeNodeContent.removeChild(countElm);
+        countElm = document.createElement('span');
+        countElm.classList.add('gb-count-element');
+        countElm.textContent = countString;
+        treeNodeContent.appendChild(countElm);
+      }
+    } else {
+      countElm = document.createElement('span');
+      countElm.classList.add('gb-count-element');
+      countElm.textContent = countString;
+      treeNodeContent.appendChild(countElm);
+    }
+  }
+
+  /**
+   * Update the counts of given tree node elements
+   * @param treeNodeElements - the visual html elements p-treenode
+   * @param treeNodes - the underlying data objects
+   */
+  private updateTreeNodeCounts(treeNodeElements: any,
+                       treeNodeData: TreeNode,
+                       patientConstraint: Constraint) {
+    let index = 0;
+    for (let elm of treeNodeElements) {
+      let dataObject: TreeNode = treeNodeData[index];
+      let dataObjectType = dataObject['type'];
+      let treeNodeContent = elm.querySelector('.ui-treenode-content');
+
+      if (dataObjectType === 'STUDY') {
+        /*
+         * ------ If the tree node is a study node
+         */
+        const studyConstraint = this.generateConstraintFromConstraintObject(dataObject['constraint']);
+        const studyId = dataObject['studyId'];
+        let comboConstraint = new CombinationConstraint();
+        comboConstraint.combinationState = CombinationState.And;
+        comboConstraint.children.push(patientConstraint);
+        comboConstraint.children.push(studyConstraint);
+        this.resourceService.getCountsPerStudy(comboConstraint)
+          .subscribe(
+            (counts) => {
+              let patientCount = counts[studyId] ? counts[studyId]['patientCount'] : 0;
+              this.appendCountElement(treeNodeContent, patientCount);
+            },
+            err => console.error(err)
+          );
+      } else if (dataObjectType === 'NUMERIC' || dataObjectType === 'CATEGORICAL') {
+        /*
+         * ------ If the tree node is a concept node
+         */
+        const conceptConstraint = this.generateConstraintFromConstraintObject(dataObject['constraint']);
+        const conceptCode = dataObject['conceptCode'];
+        let comboConstraint = new CombinationConstraint();
+        comboConstraint.combinationState = CombinationState.And;
+        comboConstraint.children.push(patientConstraint);
+        comboConstraint.children.push(conceptConstraint);
+        this.resourceService.getCountsPerConcept(comboConstraint)
+          .subscribe(
+            (counts) => {
+              let patientCount = counts[conceptCode] ? counts[conceptCode]['patientCount'] : 0;
+              this.appendCountElement(treeNodeContent, patientCount);
+            },
+            err => console.error(err)
+          );
+      }
+      // If the tree node is currently expanded
+      if (dataObject['expanded']) {
+        let treeNodeChildrenElms = elm.querySelector('.ui-treenode-children').children;
+        let treeNodeChildren = dataObject.children;
+        this.updateTreeNodeCounts(treeNodeChildrenElms, treeNodeChildren, patientConstraint);
+      }
+      index++;
+    }
+  }
+
+  /**
+   * Update the tree nodes' counts on the left panel
+   */
+  public updateExpandedTreeNodesCounts() {
+    // let rootTreeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+    let rootTreeNodeElements = document
+      .getElementById('tree-nodes-component')
+      .querySelector('.ui-tree-container').children;
+    let rootTreeNodes = this.dimensionRegistryService.treeNodes;
+    const rootInclusionConstraint = this.rootInclusionConstraint;
+    const rootExclusionConstraint = this.rootExclusionConstraint;
+    let patientConstraint = this.generateIntersectionConstraint(rootInclusionConstraint, rootExclusionConstraint);
+    this.updateTreeNodeCounts(rootTreeNodeElements, rootTreeNodes, patientConstraint);
   }
 
   get patientCount(): number {

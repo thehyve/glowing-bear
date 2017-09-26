@@ -130,6 +130,24 @@ body .gb-concept-constraint-input > input {
   min-width: 150px;
 }
 
+/*
+ * Style for the count element in a tree node on the left side
+ * padding: top, right, bottom, left
+ */
+@keyframes gb-count-element-animation {
+  from {background-color: gold;}
+  to {background-color: transparent;}
+}
+
+.gb-count-element {
+  background-color: transparent;
+  padding: 1px 1px 1px 2px;
+  border-radius: 6px;
+  vertical-align: middle;
+  animation-name: gb-count-element-animation;
+  animation-duration: 2s;
+}
+
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
