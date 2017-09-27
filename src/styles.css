@@ -135,7 +135,7 @@ body .gb-concept-constraint-input > input {
  * padding: top, right, bottom, left
  */
 @keyframes gb-count-element-animation {
-  from {background-color: gold;}
+  from {background-color: #ffa27f;}
   to {background-color: transparent;}
 }
 
@@ -144,6 +144,9 @@ body .gb-concept-constraint-input > input {
   padding: 1px 1px 1px 2px;
   border-radius: 6px;
   vertical-align: middle;
+}
+
+.gb-count-element-updated {
   animation-name: gb-count-element-animation;
   animation-duration: 2s;
 }

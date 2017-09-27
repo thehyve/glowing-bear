@@ -129,7 +129,8 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   update() {
-    if (this.expansionStatus['expanded']) { this.constraintService.updateExpandedTreeNodesCounts();
+    if (this.expansionStatus['expanded']) {
+      this.constraintService.updateExpandedTreeNodesCounts(false);
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
@@ -142,6 +143,12 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     this.removeFalsePrimeNgClasses();
   }
 
+  /**
+   * Event handler when the user expands one of the tree nodes,
+   * once a tree node is expanded,
+   * it triggers the MutationObserver to do a further update.
+   * @param event
+   */
   expandNode(event) {
     if (event.node) {
       this.expansionStatus['expanded'] = true;

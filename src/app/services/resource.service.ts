@@ -101,7 +101,11 @@ export class ResourceService {
 
   // -------------------------------------- observations calls --------------------------------------
   /**
-   * Get the patient count and observation count by providing a constraint
+   * How to use this method:
+   * Get the patient count and observation count per study by providing a constraint,
+   * the constraint is the patient constraint that the user has composed on the right of the tree nodes,
+   * the resulting counts (per study) is an array of counts organized per study from
+   * the intersection of the patient constraint and the studies' constraints
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
@@ -113,7 +117,6 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
       const constraintString = JSON.stringify(constraint.toQueryObject());
       let url = `${endpoint.getUrl()}/observations/counts_per_study?constraint=${constraintString}}`;
-
       return this.http.get(url, {
         headers: headers
       })
@@ -124,6 +127,16 @@ export class ResourceService {
     }
   }
 
+  /**
+   * How to use this method:
+   * Get the patient count and observation count per concept by providing a constraint
+   * the constraint is the intersection of the patient constraint that the user composed
+   * on the right of the tree nodes and the constraint of the specific concept,
+   * the resulting counts (per concept) is a single object containing the counts for
+   * the specified concept.
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
   getCountsPerConcept(constraint: Constraint): Observable<object> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
@@ -132,7 +145,6 @@ export class ResourceService {
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
       const constraintString = JSON.stringify(constraint.toQueryObject());
       let url = `${endpoint.getUrl()}/observations/counts_per_concept?constraint=${constraintString}`;
-
       return this.http.get(url, {
         headers: headers
       })

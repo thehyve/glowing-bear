@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {ResourceService} from './resource.service';
 import {Study} from '../models/study';
 import {Constraint} from '../models/constraints/constraint';
 import {Concept} from '../models/concept';
@@ -8,6 +7,7 @@ import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {CombinationConstraint} from '../models/constraints/combination-constraint';
 import {SavedSet} from '../models/saved-set';
 import {TreeNode} from 'primeng/primeng';
+import {ResourceService} from './resource.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -110,18 +110,7 @@ export class DimensionRegistryService {
       }
     }
     // Add PrimeNG visual properties for tree nodes
-    let patientCount = node['patientCount'];
     let countStr = ' ';
-    if (patientCount) {
-      countStr += '(' + patientCount;
-    }
-    // let observationCount = node['observationCount'];
-    // if (observationCount) {
-    //   countStr += ' | ' + observationCount;
-    // }
-    if (countStr !== ' ') {
-      countStr += ')';
-    }
     node['label'] = node['name'] + countStr;
     if (node['metadata']) {
       node['label'] = node['label'] + ' ⚆';
@@ -247,7 +236,8 @@ export class DimensionRegistryService {
   }
 
   /**
-   * Update the selected tree nodes
+   * Update the selected tree nodes,
+   * used when the user is checking to select tree nodes in observation selection
    */
   public updateSelectedTreeNodes() {
     this.selectedTreeNodes.length = 0;
