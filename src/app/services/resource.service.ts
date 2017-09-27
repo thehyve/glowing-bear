@@ -46,7 +46,7 @@ export class ResourceService {
     return Observable.throw(errMsg || 'Server error');
   }
 
-  // -------------------------------------- study calls --------------------------------------
+  // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
@@ -66,7 +66,6 @@ export class ResourceService {
     } else {
       console.error('Could not establish endpoint.');
     }
-
   }
 
   /**
@@ -94,6 +93,62 @@ export class ResourceService {
         headers: headers
       })
         .map((response: Response) => response.json().tree_nodes)
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  // -------------------------------------- observations calls --------------------------------------
+  /**
+   * How to use this method:
+   * Get the patient count and observation count per study by providing a constraint,
+   * the constraint is the patient constraint that the user has composed on the right of the tree nodes,
+   * the resulting counts (per study) is an array of counts organized per study from
+   * the intersection of the patient constraint and the studies' constraints
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const constraintString = JSON.stringify(constraint.toQueryObject());
+      let url = `${endpoint.getUrl()}/observations/counts_per_study?constraint=${constraintString}}`;
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json()['countsPerStudy'])
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  /**
+   * How to use this method:
+   * Get the patient count and observation count per concept by providing a constraint
+   * the constraint is the intersection of the patient constraint that the user composed
+   * on the right of the tree nodes and the constraint of the specific concept,
+   * the resulting counts (per concept) is a single object containing the counts for
+   * the specified concept.
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const constraintString = JSON.stringify(constraint.toQueryObject());
+      let url = `${endpoint.getUrl()}/observations/counts_per_concept?constraint=${constraintString}`;
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json()['countsPerConcept'])
         .catch(this.handleError.bind(this));
     } else {
       console.error('Could not establish endpoint.');

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../shared/services/dimension-registry.service';
-import {ConstraintService} from '../shared/services/constraint.service';
+import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {ConstraintService} from '../../services/constraint.service';
 
 @Component({
   selector: 'data-selection',

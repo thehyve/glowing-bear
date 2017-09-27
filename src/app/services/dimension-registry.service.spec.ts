@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { DimensionRegistryService } from './dimension-registry.service';
 import {ResourceService} from './resource.service';
-import {ResourceServiceMock} from '../mocks/resource.service.mock';
+import {ResourceServiceMock} from './mocks/resource.service.mock';
 
 describe('DimensionRegistryService', () => {
   beforeEach(() => {

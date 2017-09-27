@@ -1,4 +1,4 @@
-import {SavedSet} from '../models/saved-set';
+import {SavedSet} from '../../models/saved-set';
 
 export class DimensionRegistryServiceMock {
   private patientSets: SavedSet[] = [];

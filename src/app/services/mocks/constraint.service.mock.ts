@@ -1,5 +1,5 @@
-import {PatientSetPostResponse} from '../models/patient-set-post-response';
-import {CombinationConstraint} from '../models/constraints/combination-constraint';
+import {PatientSetPostResponse} from '../../models/patient-set-post-response';
+import {CombinationConstraint} from '../../models/constraints/combination-constraint';
 
 export class ConstraintServiceMock {
   private _patientCount = 0;

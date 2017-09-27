@@ -3,10 +3,10 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {SavedPatientSetsComponent} from './saved-patient-sets.component';
 import {ButtonModule, DataListModule, DragDropModule, InputTextModule, PanelModule, TooltipModule} from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
-import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
-import {ConstraintService} from '../../../shared/services/constraint.service';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
 import {FormsModule} from '@angular/forms';
 
 describe('SavedPatientSetsComponent', () => {

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Endpoint} from '../models/endpoint';
-import {AppConfig} from '../../../config/app.config';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class EndpointService {

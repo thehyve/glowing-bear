@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs/Observable';
-import {Study} from '../models/study';
-import {PatientSet} from '../models/patient-set';
-import {ExportJob} from '../models/export-job';
+import {Study} from '../../models/study';
+import {PatientSet} from '../../models/patient-set';
+import {ExportJob} from '../../models/export-job';
 
 export class ResourceServiceMock {
   private studies: Study[];

@@ -1,10 +1,15 @@
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
-import {ConstraintService} from '../../../shared/services/constraint.service';
+import {ConstraintService} from '../../../../services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
-import {DropMode} from '../../../shared/models/drop-mode';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
+import {DropMode} from '../../../../models/drop-mode';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {ResourceService} from '../../../../services/resource.service';
+import {Constraint} from '../../../../models/constraints/constraint';
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {CombinationState} from '../../../../models/constraints/combination-state';
 
 @Component({
   selector: 'tree-nodes',
@@ -37,6 +42,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   searchTerm: string;
 
   constructor(private constraintService: ConstraintService,
+              private resourceService: ResourceService,
               public dimensionRegistryService: DimensionRegistryService,
               private element: ElementRef) {
     this.expansionStatus = {
@@ -124,6 +130,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   update() {
     if (this.expansionStatus['expanded']) {
+      this.constraintService.updateExpandedTreeNodesCounts(false);
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
@@ -136,6 +143,12 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     this.removeFalsePrimeNgClasses();
   }
 
+  /**
+   * Event handler when the user expands one of the tree nodes,
+   * once a tree node is expanded,
+   * it triggers the MutationObserver to do a further update.
+   * @param event
+   */
   expandNode(event) {
     if (event.node) {
       this.expansionStatus['expanded'] = true;

@@ -3,10 +3,10 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {TreeNodesComponent} from './tree-nodes.component';
 import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {ConstraintService} from '../../../shared/services/constraint.service';
-import {ConstraintServiceMock} from '../../../shared/mocks/constraint.service.mock';
-import {DimensionRegistryService} from '../../../shared/services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../shared/mocks/dimension-registry.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('TreeNodesComponent', () => {
