@@ -16,6 +16,8 @@ import {ConstraintServiceMock} from '../../services/mocks/constraint.service.moc
 import {DimensionRegistryServiceMock} from '../../services/mocks/dimension-registry.service.mock';
 import {DimensionRegistryService} from '../../services/dimension-registry.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
+import {ResourceService} from '../../services/resource.service';
 
 describe('SidePanelComponent', () => {
   let component: SidePanelComponent;
@@ -52,6 +54,10 @@ describe('SidePanelComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         }
       ]
     })
