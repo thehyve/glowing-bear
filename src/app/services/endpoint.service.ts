@@ -103,7 +103,7 @@ export class EndpointService {
       appUrl = appUrl.substring(0, appUrl.length - 1);
     }
 
-    var authorizationUrl = `${apiUrl}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${appUrl}`;
+    let authorizationUrl = `${apiUrl}/oauth/authorize?response_type=token&client_id=glowingbear-js&redirect_uri=${appUrl}`;
     this.navigateToUrl(authorizationUrl);
   }
 
@@ -124,8 +124,7 @@ export class EndpointService {
         port = ':' + port;
       }
       redirectUri = `${protocol}//${host}${port}`;
-    }
-    else {
+    } else {
       redirectUri = `${protocol}//${host}`;
     }
 
@@ -138,9 +137,9 @@ export class EndpointService {
    * @param oauthGrantFragment
    */
   private initializeEndpointWithCredentials(endpoint, oauthGrantFragment) {
-    var fragmentParams = this.getFragmentParameters(oauthGrantFragment);
+    let fragmentParams = this.getFragmentParameters(oauthGrantFragment);
     endpoint.accessToken = fragmentParams.access_token;
-    var time = new Date();
+    let time = new Date();
     endpoint.expiresAt = time.setTime(time.getTime() + fragmentParams.expires_in * 1000);
   }
 
@@ -175,8 +174,7 @@ export class EndpointService {
       let storedEndpoint = JSON.parse(endpointJSON);
       this.endpoint.accessToken = storedEndpoint._accessToken;
       this.endpoint.expiresAt = storedEndpoint._expiresAt;
-    }
-    else {
+    } else {
       this.navigateToAuthorizationPage(this.endpoint);
     }
   }

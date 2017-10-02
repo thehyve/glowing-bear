@@ -9,13 +9,15 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodesComponent} from './accordion-components/tree-nodes/tree-nodes.component';
-import {SavedPatientSetsComponent} from './accordion-components/saved-patient-sets/saved-patient-sets.component';
+import {SavedPatientSetsComponent} from './accordion-components/queries/queries.component';
 import {SavedObservationSetsComponent} from './accordion-components/saved-observation-sets/saved-observation-sets.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {DimensionRegistryServiceMock} from '../../services/mocks/dimension-registry.service.mock';
 import {DimensionRegistryService} from '../../services/dimension-registry.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
+import {ResourceService} from '../../services/resource.service';
 
 describe('SidePanelComponent', () => {
   let component: SidePanelComponent;
@@ -52,6 +54,10 @@ describe('SidePanelComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         }
       ]
     })

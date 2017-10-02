@@ -81,13 +81,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
       this.resourceService.getConceptAggregate(conceptOnlyConstraint)
         .subscribe(
-          aggregate => {
+          aggregate => { console.log('aggreager:', aggregate);
             constraint.concept.aggregate = aggregate;
             if (this.isNumeric()) {
               this.minLimit = aggregate.min;
               this.maxLimit = aggregate.max;
-            }
-            else if (this.isCategorical()) {
+            } else if (this.isCategorical()) { console.log('is categorical:');
               this.selectedCategories = aggregate.values;
               this.suggestedCategories = aggregate.values;
             }
@@ -334,8 +333,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (query) {
       this.suggestedCategories =
         categories.filter((category: string) => category.toLowerCase().includes(query));
-    }
-    else {
+    } else {
       this.suggestedCategories = categories;
     }
   }
@@ -427,7 +425,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (!concept) {
       return false;
     }
-    return concept.type === 'CATEGORICAL_OPTION';
+    return concept.type === 'CATEGORICAL';
   }
 
   isBetween() {

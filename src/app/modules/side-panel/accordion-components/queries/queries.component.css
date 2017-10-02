@@ -50,3 +50,11 @@ input:read-only {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+/*
+ * Style for the toggle button
+ */
+.gb-query-panel-toggle-button {
+  border: none;
+  background-color: transparent !important;
+}

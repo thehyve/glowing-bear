@@ -8,6 +8,8 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
 import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {ResourceService} from '../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 
 describe('TreeNodesComponent', () => {
   let component: TreeNodesComponent;
@@ -32,6 +34,10 @@ describe('TreeNodesComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         }
       ]
     })

@@ -1,14 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {DimensionRegistryService} from '../../services/dimension-registry.service';
-import {SavedSet} from '../../models/saved-set';
 import {ConstraintService} from '../../services/constraint.service';
 import {DropMode} from '../../models/drop-mode';
 import {ResourceService} from '../../services/resource.service';
-import {SelectItem} from 'primeng/components/common/api';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
 import {ExportJob} from '../../models/export-job';
 import {animate, style, transition, trigger} from '@angular/animations';
+import {Query} from '../../models/query';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -34,7 +33,7 @@ export class ExportComponent implements OnInit {
   selectedFileFormat = 'TSV';
   alertMessages = [];
 
-  selectedSets: SavedSet[];
+  selectedQueries: Query[];
   searchResults: any;
 
   dataFormats: Object[];
@@ -46,7 +45,7 @@ export class ExportComponent implements OnInit {
               private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
-    this.selectedSets = [];
+    this.selectedQueries = [];
     this.dataFormats = [];
     this.updatingDataFormats = 'complete';
     this.updateExportJobs();
@@ -71,11 +70,11 @@ export class ExportComponent implements OnInit {
    * Update the data formats checkboxes whenever there is a change to the set selection
    */
   updateDataFormats() {
-    if (this.selectedSets.length > 0) {
+    if (this.selectedQueries.length > 0) {
       this.updatingDataFormats = 'loading';
       this.dataFormats = [];
       let ids: string[] = [];
-      for (let set of this.selectedSets) {
+      for (let set of this.selectedQueries) {
         ids.push(set['id']);
       }
       this.resourceService.getExportDataFormats(ids)
@@ -100,7 +99,7 @@ export class ExportComponent implements OnInit {
    * Create the export job when the user clicks the 'Export selected sets' button
    */
   createExportJob() {
-    if (this.selectedSets.length > 0) {
+    if (this.selectedQueries.length > 0) {
       let name = this.exportJobName ? this.exportJobName.trim() : undefined;
       let duplicateName = false;
       for (let job of this.exportJobs) {
@@ -135,7 +134,7 @@ export class ExportComponent implements OnInit {
   runExportJob(job) {
     let jobId = job['id'];
     let ids: string[] = [];
-    for (let set of this.selectedSets) {
+    for (let set of this.selectedQueries) {
       ids.push(set['id']);
     }
     let elements: Object[] = [];
@@ -205,8 +204,8 @@ export class ExportComponent implements OnInit {
   onUnselect(event) {
     // primeng does not update the selected sets,
     // so we need to manually remove the patient set
-    let index = this.selectedSets.indexOf(event);
-    this.selectedSets.splice(index, 1);
+    let index = this.selectedQueries.indexOf(event);
+    this.selectedQueries.splice(index, 1);
     this.updateDataFormats();
   }
 
@@ -216,11 +215,11 @@ export class ExportComponent implements OnInit {
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let sets = this.dimensionRegistry.getPatientSets().concat(this.dimensionRegistry.getObservationSets());
+    let sets = this.dimensionRegistry.queries;
 
     if (query && sets) {
       this.searchResults = sets.filter(
-        (set: SavedSet) => (set.name && set.name.toLowerCase().includes(query))
+        (set: Query) => (set.name && set.name.toLowerCase().includes(query))
       );
     } else {
       this.searchResults = sets;
@@ -228,11 +227,8 @@ export class ExportComponent implements OnInit {
   }
 
   onDropdown(event) {
-    let patientSets = this.dimensionRegistry.getPatientSets();
-    let observationSets = this.dimensionRegistry.getObservationSets();
-
     this.searchResults = [];
-    this.searchResults = patientSets.concat(observationSets);
+    this.searchResults = this.dimensionRegistry.queries;
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
   }
@@ -248,9 +244,9 @@ export class ExportComponent implements OnInit {
 
     let selectedNode = this.constraintService.selectedNode;
     let dropMode = selectedNode.dropMode;
-    if ((dropMode === DropMode.PatientSet || dropMode === DropMode.ObservationSet)
-      && (this.selectedSets.indexOf(selectedNode) === -1)) {
-      this.selectedSets.push(selectedNode);
+    if ((dropMode === DropMode.PatientSet)
+      && (this.selectedQueries.indexOf(selectedNode) === -1)) {
+      this.selectedQueries.push(selectedNode);
     }
     this.updateDataFormats();
   }
