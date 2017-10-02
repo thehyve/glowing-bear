@@ -39,7 +39,7 @@ p-treenode {
 }
 
 /*
- * Make the font size in the saved patient-set list smaller
+ * Make the font size in the saved query list smaller
  */
 p-dataList {
   font-size: small;
@@ -62,7 +62,7 @@ body .ui-tabmenu-nav {
 }
 
 /*
- * style fix for hiding the border in data list in saved patient sets in the side panel
+ * style fix for hiding the border in data list in saved queries in the side panel
  */
 body .ui-widget-content {
   border: none;
@@ -100,9 +100,9 @@ body .gb-spinner.loading {
 }
 
 /*
- * style for a patient-set item on the side panel
+ * style for a query item on the side panel
  */
-body .gb-patient-set-panel {
+body .gb-query-panel {
   padding: 0px;
   border-radius: 5px;
   margin-bottom: 10px;

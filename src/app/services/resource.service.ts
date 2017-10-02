@@ -10,12 +10,11 @@ import {Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from '../models/constraints/constraint';
-import {PatientSetPostResponse} from '../models/patient-set-post-response';
 import {Aggregate} from '../models/aggregate';
 import {ConceptConstraint} from '../models/constraints/concept-constraint';
-import {PatientSet} from '../models/patient-set';
 import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
+import {Query} from '../models/query';
 
 @Injectable()
 export class ResourceService {
@@ -156,29 +155,6 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient calls --------------------------------------
-
-  /**
-   * Get the list of patient sets that the current user saved
-   * @returns {Observable<PatientSet[]>}
-   */
-  getPatientSets(): Observable<PatientSet[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      let url = `${endpoint.getUrl()}/patient_sets`;
-
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().patientSets as PatientSet[])
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
-  }
-
   /**
    * Given a constraint, return the corresponding patient list
    * @param constraint
@@ -196,30 +172,6 @@ export class ResourceService {
       headers: headers
     })
       .map((res: Response) => res.json().patients as Patient[])
-      .catch(this.handleError.bind(this));
-  }
-
-  /**
-   * Given the name and constraint of the patient set to be saved, save it to transmart
-   * @param name - the name of the patient set to be saved
-   * @param constraint - the constraint of the patient set to be saved
-   * @returns {Observable<PatientSetPostResponse>}
-   */
-  savePatients(name: string, constraint: Constraint): Observable<PatientSetPostResponse> {
-    if (!name) {
-      // Default name
-      name = 'patient set';
-    }
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    headers.append('Content-Type', 'application/json');
-    let options = new RequestOptions({headers: headers});
-    let body = JSON.stringify(constraint.toQueryObject());
-    let url = `${endpoint.getUrl()}/patient_sets?name=${name}`;
-
-    return this.http.post(url, body, options)
-      .map((res: Response) => res.json() as PatientSetPostResponse)
       .catch(this.handleError.bind(this));
   }
 
@@ -384,4 +336,51 @@ export class ResourceService {
       .catch(this.handleError.bind(this));
   }
 
+  // -------------------------------------- query calls --------------------------------------
+  /**
+   * Get the queries that the current user has saved.
+   * @returns {Observable<Query[]>}
+   */
+  getQueries(): Observable<Query[]> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      headers.append('Content-Type', 'application/json');
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      let url = `${endpoint.getUrl()}/queries`;
+      console.log('url: ', url);
+
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json().queries as Query[])
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  /**
+   * Save a query.
+   * @param {Object} queryBody
+   * @returns {Observable<Query>}
+   */
+  saveQuery(queryBody: object): Observable<Query> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      let options = new RequestOptions({headers: headers});
+      let body = JSON.stringify(queryBody);
+      let url = `${endpoint.getUrl()}/queries`;
+
+      return this.http.post(url, body, options)
+        .map((res: Response) => res.json() as Query)
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+
+  }
 }

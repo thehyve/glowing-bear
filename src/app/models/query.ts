@@ -1,7 +1,11 @@
-export class SavedSet {
+export class Query {
 
   private _id: string;
   private _name: string;
+  private _description: string;
+  private _createDate: string;
+  private _updateDate: string;
+  private _apiVersion: string;
   // Indicate if the set is bookmarked
   private _bookmarked: boolean;
   // Indicate if the set is collapsed
@@ -10,6 +14,10 @@ export class SavedSet {
   private _nameEditable: boolean;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
+  // The patient constraint part of the query
+  private _patientsQuery: object;
+  // The observation constraint part of the query
+  private _observationsQuery: object;
 
   constructor(id: string, name: string) {
     this.id = id;
@@ -34,6 +42,14 @@ export class SavedSet {
 
   set name(value: string) {
     this._name = value;
+  }
+
+  get description(): string {
+    return this._description;
+  }
+
+  set description(value: string) {
+    this._description = value;
   }
 
   get bookmarked(): boolean {
@@ -66,5 +82,45 @@ export class SavedSet {
 
   set selected(value: boolean) {
     this._selected = value;
+  }
+
+  get patientsQuery(): Object {
+    return this._patientsQuery;
+  }
+
+  set patientsQuery(value: Object) {
+    this._patientsQuery = value;
+  }
+
+  get observationsQuery(): Object {
+    return this._observationsQuery;
+  }
+
+  set observationsQuery(value: Object) {
+    this._observationsQuery = value;
+  }
+
+  get createDate(): string {
+    return this._createDate;
+  }
+
+  set createDate(value: string) {
+    this._createDate = value;
+  }
+
+  get updateDate(): string {
+    return this._updateDate;
+  }
+
+  set updateDate(value: string) {
+    this._updateDate = value;
+  }
+
+  get apiVersion(): string {
+    return this._apiVersion;
+  }
+
+  set apiVersion(value: string) {
+    this._apiVersion = value;
   }
 }

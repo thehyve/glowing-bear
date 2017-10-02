@@ -1,0 +1,39 @@
+<div>
+
+  <div *ngFor="let query of dimensionRegistry.queries"
+       class="gb-query-panel"
+       pDraggable="query-drag-drop">
+    <p-panel [collapsed]="query['collapsed']" (click)="onQueryPanelClick(query)">
+      <p-header>
+        <div class="ui-helper-clearfix">
+          <button pButton class="ui-button-secondary gb-query-panel-toggle-button" type="button"
+                  (click)="toggleQueryPanel(query)"
+                  icon="{{getQueryToggleButtonIcon(query)}}">
+          </button>
+          <input *ngIf="!query['nameEditable']" type="text" pInputText
+                 [(ngModel)]="query['name']"
+                 (dblclick)="editQueryName($event, query)" readonly/>
+          <input *ngIf="query['nameEditable']" type="text" pInputText
+                 [(ngModel)]="query['name']" (click)="editQueryName($event, query)"/>
+          <div class="float-right">
+            <button pButton class="ui-button-secondary" type="button"
+                    (click)="toggleQueryBookmark(query)"
+                    icon="{{getQueryBookmarkButtonIcon(query)}}">
+            </button>
+            <button pButton class="ui-button-secondary" type="button"
+                    (click)="selectQuery(query)"
+                    icon="{{getQuerySelectionButtonIcon(query)}}">
+            </button>
+            <button pButton class="ui-button-secondary" type="button"
+                    (click)="removeQuery(query)" icon="fa-times">
+            </button>
+          </div>
+        </div>
+      </p-header>
+
+      {{query.name}} content here
+
+    </p-panel>
+  </div>
+
+</div>

@@ -3,7 +3,6 @@ import {CombinationConstraint} from '../models/constraints/combination-constrain
 import {ResourceService} from './resource.service';
 import {Constraint} from '../models/constraints/constraint';
 import {TrueConstraint} from '../models/constraints/true-constraint';
-import {PatientSetPostResponse} from '../models/patient-set-post-response';
 import {StudyConstraint} from '../models/constraints/study-constraint';
 import {Study} from '../models/study';
 import {Concept} from '../models/concept';
@@ -19,7 +18,7 @@ type LoadingState = 'loading' | 'complete';
 /**
  * This service concerns with
  * (1) translating string or JSON objects into Constraint class instances
- * (2) saving constraints as patient or observation sets
+ * (2) saving constraints as queries (that contain patient or observation constraints)
  * (3) updating relevant patient or observation counts
  */
 @Injectable()
@@ -32,7 +31,6 @@ export class ConstraintService {
   private _patientCount = 0;
   private _inclusionPatientCount = 0;
   private _exclusionPatientCount = 0;
-  private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
 
@@ -248,7 +246,6 @@ export class ConstraintService {
         constraintObject = this.optimizeConstraintObject(constraintObject);
         constraint = this.generateConstraintFromConstraintObject(constraintObject);
       }
-    } else if (dropMode === DropMode.ObservationSet) {
     }
 
     return constraint;
@@ -317,44 +314,42 @@ export class ConstraintService {
   }
 
   savePatients(patientSetName: string) {
-    let name = patientSetName ? patientSetName.trim() : undefined;
-    let duplicateName = false;
-    let savedPatientSets = this.dimensionRegistryService.getPatientSets();
-    for (let savedSet of savedPatientSets) {
-      if (savedSet['name'] === name) {
-        duplicateName = true;
-        break;
-      }
-    }
-    if (duplicateName) {
-      this.alertMessages.push({severity: 'info', summary: 'Duplicate patient set name, choose a new name.', detail: ''});
-    } else {
-      this.alertMessages = [];
-      // derive the intersection constraint
-      let intersectionConstraint =
-        this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-
-      // call the backend api to save patient set of that constraint
-      // and update the dimension registry service for the patient set list
-      this.resourceService.savePatients(patientSetName, intersectionConstraint)
-        .subscribe(
-          result => {
-            this._patientSetPostResponse = result;
-            this.dimensionRegistryService.updatePatientSets();
-            let message = 'Your patient set ' + this.patientSetPostResponse.description +
-              ' with ' + this.patientSetPostResponse.setSize + ' patients has been saved' +
-              ' with the identifier: ' + this.patientSetPostResponse.id + '.';
-            this.alertMessages.push({severity: 'info', summary: message, detail: ''});
-          },
-          err => {
-            console.error(err);
-            this.alertMessages.push({severity: 'info', summary: err, detail: ''});
-          }
-        );
-    }
-  }
-
-  saveObservations(observationSetName: string) {
+    // TODO: refactor
+    // let name = patientSetName ? patientSetName.trim() : undefined;
+    // let duplicateName = false;
+    // let savedPatientSets = this.dimensionRegistryService.getPatientSets();
+    // for (let savedSet of savedPatientSets) {
+    //   if (savedSet['name'] === name) {
+    //     duplicateName = true;
+    //     break;
+    //   }
+    // }
+    // if (duplicateName) {
+    //   this.alertMessages.push({severity: 'info', summary: 'Duplicate patient set name, choose a new name.', detail: ''});
+    // } else {
+    //   this.alertMessages = [];
+    //   // derive the intersection constraint
+    //   let intersectionConstraint =
+    //     this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+    //
+    //   // call the backend api to save patient set of that constraint
+    //   // and update the dimension registry service for the patient set list
+    //   this.resourceService.savePatients(patientSetName, intersectionConstraint)
+    //     .subscribe(
+    //       result => {
+    //         this._patientSetPostResponse = result;
+    //         this.dimensionRegistryService.updatePatientSets();
+    //         let message = 'Your patient set ' + this.patientSetPostResponse.description +
+    //           ' with ' + this.patientSetPostResponse.setSize + ' patients has been saved' +
+    //           ' with the identifier: ' + this.patientSetPostResponse.id + '.';
+    //         this.alertMessages.push({severity: 'info', summary: message, detail: ''});
+    //       },
+    //       err => {
+    //         console.error(err);
+    //         this.alertMessages.push({severity: 'info', summary: err, detail: ''});
+    //       }
+    //     );
+    // }
   }
 
   /**
@@ -567,14 +562,6 @@ export class ConstraintService {
 
   set rootExclusionConstraint(value: CombinationConstraint) {
     this._rootExclusionConstraint = value;
-  }
-
-  get patientSetPostResponse(): PatientSetPostResponse {
-    return this._patientSetPostResponse;
-  }
-
-  set patientSetPostResponse(value: PatientSetPostResponse) {
-    this._patientSetPostResponse = value;
   }
 
   get selectedNode(): any {

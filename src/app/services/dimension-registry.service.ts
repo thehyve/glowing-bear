@@ -5,9 +5,9 @@ import {Concept} from '../models/concept';
 import {StudyConstraint} from '../models/constraints/study-constraint';
 import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {CombinationConstraint} from '../models/constraints/combination-constraint';
-import {SavedSet} from '../models/saved-set';
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
+import {Query} from '../models/query';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -31,9 +31,7 @@ export class DimensionRegistryService {
   private studyConstraints: Constraint[] = [];
   private concepts: Concept[] = [];
   private conceptConstraints: Constraint[] = [];
-
-  private patientSets: SavedSet[] = [];
-  private observationSets: SavedSet[] = [];
+  private _queries: Query[] = [];
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
@@ -44,7 +42,7 @@ export class DimensionRegistryService {
     this.updateEmptyConstraints();
     this.updateStudies();
     this.updateConcepts();
-    this.updatePatientSets();
+    this.updateQueries();
   }
 
   updateEmptyConstraints() {
@@ -338,22 +336,16 @@ export class DimensionRegistryService {
   }
 
   /**
-   * Update the patient sets, used for the saved patient set panel on the left
+   * Update the queries on the left-side panel
    */
-  updatePatientSets() {
-    // reset patient sets
-    this.resourceService.getPatientSets()
+  updateQueries() {
+    this.resourceService.getQueries()
       .subscribe(
-        sets => {
-          // this is to retain the original reference pointer to the array
-          this.patientSets.length = 0;
-
-          // reverse the sets so that the latest patient set is on top
-          sets.reverse();
-          sets.forEach(set => {
-            set.name = set.description;
-            set['collapsed'] = true;
-            this.patientSets.push(set);
+        (queries) => {
+          console.log('queries', queries);
+          queries.forEach(query => {
+            query['collapsed'] = true;
+            this.queries.push(query);
           });
         },
         err => console.error(err)
@@ -368,12 +360,12 @@ export class DimensionRegistryService {
     return this.concepts;
   }
 
-  getPatientSets() {
-    return this.patientSets;
+  get queries(): Query[] {
+    return this._queries;
   }
 
-  getObservationSets() {
-    return this.observationSets;
+  set queries(value: Query[]) {
+    this._queries = value;
   }
 
   /**

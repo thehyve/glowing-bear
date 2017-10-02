@@ -1,11 +1,9 @@
-import {PatientSetPostResponse} from '../../models/patient-set-post-response';
 import {CombinationConstraint} from '../../models/constraints/combination-constraint';
 
 export class ConstraintServiceMock {
   private _patientCount = 0;
   private _inclusionPatientCount = 0;
   private _exclusionPatientCount = 0;
-  private _patientSetPostResponse: PatientSetPostResponse;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
   private _selectedNode: any = null;

@@ -9,7 +9,7 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodesComponent} from './accordion-components/tree-nodes/tree-nodes.component';
-import {SavedPatientSetsComponent} from './accordion-components/saved-patient-sets/saved-patient-sets.component';
+import {SavedPatientSetsComponent} from './accordion-components/queries/queries.component';
 import {SavedObservationSetsComponent} from './accordion-components/saved-observation-sets/saved-observation-sets.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';

@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {SavedPatientSetsComponent} from './saved-patient-sets.component';
+import {QueriesComponent} from './queries.component';
 import {ButtonModule, DataListModule, DragDropModule, InputTextModule, PanelModule, TooltipModule} from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
@@ -9,13 +9,13 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {ConstraintService} from '../../../../services/constraint.service';
 import {FormsModule} from '@angular/forms';
 
-describe('SavedPatientSetsComponent', () => {
-  let component: SavedPatientSetsComponent;
-  let fixture: ComponentFixture<SavedPatientSetsComponent>;
+describe('QueriesComponent', () => {
+  let component: QueriesComponent;
+  let fixture: ComponentFixture<QueriesComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SavedPatientSetsComponent],
+      declarations: [QueriesComponent],
       imports: [
         BrowserAnimationsModule,
         DataListModule,
@@ -41,12 +41,12 @@ describe('SavedPatientSetsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SavedPatientSetsComponent);
+    fixture = TestBed.createComponent(QueriesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create SavedPatientSetsComponent', () => {
+  it('should create QueriesComponent', () => {
     expect(component).toBeTruthy();
   });
 });
