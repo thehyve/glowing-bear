@@ -5,7 +5,7 @@ import {DropMode} from '../../../../models/drop-mode';
 import {ResourceService} from '../../../../services/resource.service';
 
 @Component({
-  selector: 'app-queries',
+  selector: 'queries',
   templateUrl: './queries.component.html',
   styleUrls: ['./queries.component.css']
 })
@@ -94,8 +94,9 @@ export class QueriesComponent implements OnInit, AfterViewInit {
             this.dimensionRegistry.queries.splice(index, 1);
           }
           // An alternative would be to directly update the queries
-          // this.dimensionRegistry.updateQueries()
-          // but this approach leaves the all queries to remain collapsed
+          // using 'this.dimensionRegistry.updateQueries()'
+          // but this approach retrieves new query objects and
+          // leaves the all queries to remain collapsed
         },
         err => console.error(err)
       );
@@ -114,7 +115,6 @@ export class QueriesComponent implements OnInit, AfterViewInit {
       const queryObject = {
         name: query['name']
       };
-      console.log('save query: ', queryObject);
       this.resourceService.updateQuery(query['id'], queryObject)
         .subscribe(
           () => {

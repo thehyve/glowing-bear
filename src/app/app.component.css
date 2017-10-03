@@ -33,7 +33,6 @@
   -ms-overflow-style: none;
 }
 
-
 /*
     We can choose to explicitly hide the scroll bar if we want
  */
@@ -45,7 +44,7 @@
 .gb-left-panel {
   position: relative;
   display: inline;
-  width: 26%;
+  width: 30%;
   background-color: #ededed;
   margin-left: 0px;
 }
@@ -68,7 +67,3 @@
   margin-left: 3px;
   margin-right: 3px;
 }
-
-
-
-

@@ -1,11 +1,23 @@
-<div>
+<div class="gb-data-selection-container">
   <!-- The data selection overview panel -->
   <div class="gb-data-selection-overview-panel">
     <div class="row">
       <div class="col-3"><span>{{patientCount}} patients</span></div>
       <div class="col-3"><span>{{observationCount}} observations</span></div>
       <div class="col-3"><span>{{conceptCount}} concepts</span></div>
-      <div class="col-3 pull-right"><button type="button" class="btn btn-secondary btn-sm"> Save Query </button></div>
+      <div class="col-3">
+        <div class="row">
+          <input id="queryName" type="text"
+                 class="form-control gb-data-selection-overview-panel-input"
+                 placeholder="Query name"
+                 (drop)="preventNodeDrop($event)"
+                 [(ngModel)]="queryName" >
+        </div>
+        <div class="row">
+          <button class="btn btn-secondary btn-sm"
+                  type="button">Save query</button>
+        </div>
+      </div>
     </div>
   </div>
 
