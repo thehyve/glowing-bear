@@ -1,28 +1,41 @@
-<md2-accordion [multiple]="false"
-               (open)="openAccordion($event)"
-               (close)="closeAccordion($event)">
-  <md2-accordion-tab [active]="true">
-    <md2-accordion-header>Select patients
-      <span class="gb-data-selection-accordion-sub-header">({{patientCount}} patients selected)</span>
-    </md2-accordion-header>
-    <patient-selection></patient-selection>
-  </md2-accordion-tab>
+<div>
+  <!-- The data selection overview panel -->
+  <div class="gb-data-selection-overview-panel">
+    <div class="row">
+      <div class="col-3"><span>{{patientCount}} patients</span></div>
+      <div class="col-3"><span>{{observationCount}} observations</span></div>
+      <div class="col-3"><span>{{conceptCount}} concepts</span></div>
+      <div class="col-3 pull-right"><button type="button" class="btn btn-secondary btn-sm"> Save Query </button></div>
+    </div>
+  </div>
 
-  <md2-accordion-tab>
-    <md2-accordion-header>Select observations
-      <span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}
+  <!-- The accordions -->
+  <md2-accordion [multiple]="false"
+                 (open)="openAccordion($event)"
+                 (close)="closeAccordion($event)">
+    <md2-accordion-tab [active]="true">
+      <md2-accordion-header>Select patients
+        <span class="gb-data-selection-accordion-sub-header">({{patientCount}} patients selected)</span>
+      </md2-accordion-header>
+      <patient-selection></patient-selection>
+    </md2-accordion-tab>
+
+    <md2-accordion-tab>
+      <md2-accordion-header>Select observations
+        <span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}
         concepts selected)</span>
-    </md2-accordion-header>
-    <observation-selection></observation-selection>
-  </md2-accordion-tab>
+      </md2-accordion-header>
+      <observation-selection></observation-selection>
+    </md2-accordion-tab>
 
-  <md2-accordion-tab>
-    <md2-accordion-header>Data summary</md2-accordion-header>
-    <data-summary></data-summary>
-  </md2-accordion-tab>
+    <md2-accordion-tab>
+      <md2-accordion-header>Data summary</md2-accordion-header>
+      <data-summary></data-summary>
+    </md2-accordion-tab>
 
-  <md2-accordion-tab>
-    <md2-accordion-header>Data table</md2-accordion-header>
-    <data-view></data-view>
-  </md2-accordion-tab>
-</md2-accordion>
+    <md2-accordion-tab>
+      <md2-accordion-header>Data table</md2-accordion-header>
+      <data-view></data-view>
+    </md2-accordion-tab>
+  </md2-accordion>
+</div>

@@ -33,7 +33,7 @@ export class PatientSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
-  constructor(private constraintService: ConstraintService) {
+  constructor(public constraintService: ConstraintService) {
   }
 
   ngOnInit() {
