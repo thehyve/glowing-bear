@@ -18,7 +18,7 @@ install:
   - npm install
   - ng build
 script:
-  - ng build -prod
+  - ng test --single-run 
 notifications:
   webhooks:
     on_success: change

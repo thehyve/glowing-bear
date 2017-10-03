@@ -8,6 +8,8 @@ import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {FormsModule} from '@angular/forms';
+import {ResourceService} from '../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 
 describe('QueriesComponent', () => {
   let component: QueriesComponent;
@@ -34,6 +36,10 @@ describe('QueriesComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         }
       ]
     })

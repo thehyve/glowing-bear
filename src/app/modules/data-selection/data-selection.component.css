@@ -9,3 +9,14 @@
 .gb-data-selection-accordion-sub-header {
   color: darkgray;
 }
+
+/*
+ * padding: top, right, bottom, left
+ */
+.gb-data-selection-overview-panel {
+  background-color: #0365af;
+  border-radius: 3px;
+  padding: 0.5em 1em 0.5em 1em;
+  color: white;
+  border: 3px inset #0365af
+}

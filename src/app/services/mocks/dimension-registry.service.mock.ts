@@ -1,6 +1,5 @@
 
 export class DimensionRegistryServiceMock {
-
-  constructor() {}
-
+  constructor() {
+  }
 }
