@@ -348,7 +348,6 @@ export class ResourceService {
       headers.append('Content-Type', 'application/json');
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
       let url = `${endpoint.getUrl()}/queries`;
-      console.log('url: ', url);
 
       return this.http.get(url, {
         headers: headers
@@ -361,7 +360,7 @@ export class ResourceService {
   }
 
   /**
-   * Save a query.
+   * Save a new query.
    * @param {Object} queryBody
    * @returns {Observable<Query>}
    */
@@ -381,6 +380,50 @@ export class ResourceService {
     } else {
       console.error('Could not establish endpoint.');
     }
-
   }
+
+  /**
+   * Modify an existing query.
+   * @param {string} queryId
+   * @param {Object} queryBody
+   * @returns {Observable<Query>}
+   */
+  updateQuery(queryId: string, queryBody: object): Observable<null> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      let options = new RequestOptions({headers: headers});
+      let body = JSON.stringify(queryBody);
+      let url = `${endpoint.getUrl()}/queries/${queryId}`;
+
+      return this.http.put(url, body, options)
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
+  /**
+   * Delete an existing query.
+   * @param {string} queryId
+   * @returns {Observable<any>}
+   */
+  deleteQuery(queryId:string): Observable<null> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      let options = new RequestOptions({headers: headers});
+      let url = `${endpoint.getUrl()}/queries/${queryId}`;
+
+      return this.http.delete(url, options)
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
 }

@@ -2,6 +2,7 @@ import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
 import {DropMode} from '../../../../models/drop-mode';
+import {ResourceService} from '../../../../services/resource.service';
 
 @Component({
   selector: 'app-queries',
@@ -15,6 +16,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
 
   constructor(public dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
+              private resourceService: ResourceService,
               private element: ElementRef) {
   }
 
@@ -56,6 +58,15 @@ export class QueriesComponent implements OnInit, AfterViewInit {
 
   toggleQueryBookmark(query) {
     query['bookmarked'] = !query['bookmarked'];
+    const queryObject = {
+      bookmarked: query['bookmarked']
+    };
+    this.resourceService.updateQuery(query['id'], queryObject)
+      .subscribe(
+        () => {
+        },
+        err => console.error(err)
+      );
   }
 
   getQueryBookmarkButtonIcon(query) {
@@ -75,8 +86,19 @@ export class QueriesComponent implements OnInit, AfterViewInit {
   }
 
   removeQuery(query) {
-    // TODO: implement removing query
-    console.log('remove query: ', query);
+    this.resourceService.deleteQuery(query['id'])
+      .subscribe(
+        () => {
+          const index = this.dimensionRegistry.queries.indexOf(query);
+          if (index > -1) {
+            this.dimensionRegistry.queries.splice(index, 1);
+          }
+          // An alternative would be to directly update the queries
+          // this.dimensionRegistry.updateQueries()
+          // but this approach leaves the all queries to remain collapsed
+        },
+        err => console.error(err)
+      );
   }
 
   editQueryName(event, query) {
@@ -89,10 +111,16 @@ export class QueriesComponent implements OnInit, AfterViewInit {
     // Save the query if its name has been modified
     if (query['nameEditable']) {
       query['nameEditable'] = false;
-      let queryObject = {
+      const queryObject = {
         name: query['name']
       };
       console.log('save query: ', queryObject);
+      this.resourceService.updateQuery(query['id'], queryObject)
+        .subscribe(
+          () => {
+          },
+          err => console.error(err)
+        );
     }
   }
 }
