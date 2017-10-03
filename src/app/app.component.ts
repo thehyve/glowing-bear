@@ -27,44 +27,71 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    let parentContainerElm = this.parentContainer.nativeElement;
-    let gutterElm = this.gutter.nativeElement;
-    let leftPanelElm = this.leftPanel.nativeElement;
-    let rightPanelElm = this.rightPanel.nativeElement;
+    const parentContainerElm = this.parentContainer.nativeElement;
+    const gutterElm = this.gutter.nativeElement;
+    const leftPanelElm = this.leftPanel.nativeElement;
+    const rightPanelElm = this.rightPanel.nativeElement;
 
     this.isGutterDragged = false;
     this.x_pos = 0;
     this.x_gap = 0;
 
+    /*
+     * adjust the width of panel: .gb-data-selection-overview-panel
+     */
+    const adjustDataSelectionOverview = function () {
+      const dataSelectionOverviewPanel =
+        parentContainerElm.querySelector('.gb-data-selection-overview-panel');
+      if (dataSelectionOverviewPanel) {
+        const leftWidth = leftPanelElm.clientWidth;
+        const rightWidth = rightPanelElm.clientWidth;
+        const percentage = rightWidth / (rightWidth + leftWidth + 60);
+        dataSelectionOverviewPanel.style.width = (percentage * 100) + '%';
+      }
+    };
 
-    let onMouseDown = function (event) {
+    const adjustRightPanel = function () {
+    }
+
+    const onMouseDown = function (event) {
       // preventDefault() is used to
       // prevent browser change cursor icon while dragging
       event.preventDefault();
       this.isGutterDragged = true;
       this.x_gap = this.x_pos - gutterElm.offsetLeft;
       return false;
-    }
+    };
 
-    let onMouseMove = function (event) {
+    const onMouseMove = function (event) {
       this.x_pos = event.pageX;
       if (this.isGutterDragged) {
         let leftW = this.x_pos - this.x_gap;
         leftPanelElm.style.width = leftW + 'px';
-
         let bound = parentContainerElm.getBoundingClientRect();
         let rightW = bound.width - leftW - 10 - 2 * 3;
         rightPanelElm.style.width = rightW + 'px';
+        adjustDataSelectionOverview();
       }
-    }
+    };
 
-    let onMouseUp = function (event) {
+    const onMouseUp = function (event) {
       this.isGutterDragged = false;
-    }
+    };
+
+    const onResize = function (event) {
+      if (leftPanelElm.style.width !== '' ) {
+        leftPanelElm.style.width = '';
+      }
+      if (rightPanelElm.style.width !== '') {
+        rightPanelElm.style.width = '';
+      }
+      adjustDataSelectionOverview();
+    };
 
     gutterElm.addEventListener('mousedown', onMouseDown.bind(this));
     parentContainerElm.addEventListener('mousemove', onMouseMove.bind(this));
     parentContainerElm.addEventListener('mouseup', onMouseUp.bind(this));
+    window.addEventListener('resize', onResize.bind(this));
   }
 
 }

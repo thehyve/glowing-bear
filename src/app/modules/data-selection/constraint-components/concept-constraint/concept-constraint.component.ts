@@ -81,12 +81,12 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
 
       this.resourceService.getConceptAggregate(conceptOnlyConstraint)
         .subscribe(
-          aggregate => { console.log('aggreager:', aggregate);
+          aggregate => {
             constraint.concept.aggregate = aggregate;
             if (this.isNumeric()) {
               this.minLimit = aggregate.min;
               this.maxLimit = aggregate.max;
-            } else if (this.isCategorical()) { console.log('is categorical:');
+            } else if (this.isCategorical()) {
               this.selectedCategories = aggregate.values;
               this.suggestedCategories = aggregate.values;
             }

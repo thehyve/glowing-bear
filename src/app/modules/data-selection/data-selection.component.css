@@ -6,17 +6,33 @@
   font-weight: bolder;
 }
 
+.gb-data-selection-container {
+  margin-top: 133px;
+}
+
 .gb-data-selection-accordion-sub-header {
   color: darkgray;
 }
 
 /*
- * padding: top, right, bottom, left
+ * The style for the overview panel on top of data-selection
+ * padding and margin: top, right, bottom, left
  */
 .gb-data-selection-overview-panel {
   background-color: #0365af;
-  border-radius: 3px;
+  border-radius: 10px;
   padding: 0.5em 1em 0.5em 1em;
+  margin: 0px 10px 0px 0px;
   color: white;
-  border: 3px inset #0365af
+  border: 3px inset lightblue;
+  position: fixed;
+  width: 68%;
+  overflow: hidden;
+  top: 50px;
+  z-index: 99;
+}
+
+.gb-data-selection-overview-panel-input {
+  margin-bottom: 3px;
+  max-width: 66%;
 }

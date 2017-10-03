@@ -9,8 +9,11 @@ import {ConstraintService} from '../../services/constraint.service';
 })
 export class DataSelectionComponent implements OnInit {
 
+  private _queryName: string;
+
   constructor(private dimensionRegistryService: DimensionRegistryService,
               private constraintService: ConstraintService) {
+    this.queryName = '';
   }
 
   ngOnInit() {
@@ -40,6 +43,15 @@ export class DataSelectionComponent implements OnInit {
     }
   }
 
+  /**
+   * Prevent the default behavior of node drop
+   * @param event
+   */
+  preventNodeDrop(event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
   get patientCount(): number {
     return this.constraintService.patientCount;
   }
@@ -50,5 +62,13 @@ export class DataSelectionComponent implements OnInit {
 
   get conceptCount(): number {
     return this.constraintService.conceptCount;
+  }
+
+  get queryName(): string {
+    return this._queryName;
+  }
+
+  set queryName(value: string) {
+    this._queryName = value;
   }
 }
