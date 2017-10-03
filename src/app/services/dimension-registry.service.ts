@@ -338,15 +338,21 @@ export class DimensionRegistryService {
   /**
    * Update the queries on the left-side panel
    */
-  updateQueries() {
+  public updateQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries) => {
-          console.log('queries', queries);
+          this.queries.length = 0;
+          let bookmarkedQueries = [];
           queries.forEach(query => {
             query['collapsed'] = true;
-            this.queries.push(query);
+            if (query['bookmarked']) {
+              bookmarkedQueries.push(query);
+            } else {
+              this.queries.push(query);
+            }
           });
+          this.queries = bookmarkedQueries.concat(this.queries);
         },
         err => console.error(err)
       );
