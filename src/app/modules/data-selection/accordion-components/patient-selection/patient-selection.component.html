@@ -35,16 +35,4 @@
     <span [@notifyState]="constraintService.loadingStateTotal">{{patientCount}} patients match your selection.</span>
   </div>
 
-  <!-- Save patient set -->
-  <hr>
-  <div class="form-inline">
-    <input type="text" id="patientSetName" class="form-text"
-           placeholder="Patient set name (optional)"
-           (drop)="onTreeNodeDropOnPatientSetNameField($event)"
-           [(ngModel)]="patientSetName" >
-    <button type="button" class="btn btn-primary" (click)="onSavePatientSetBtnClick()"> Save patient set </button>
-  </div>
-
-  <p-messages [(value)]="alertMessages"></p-messages>
-
 </div>

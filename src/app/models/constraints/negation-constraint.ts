@@ -1,19 +1,18 @@
-
-import {Constraint} from "./constraint";
+import {Constraint} from './constraint';
 
 export class NegationConstraint implements Constraint {
 
-  private _constraint:Constraint;
+  private _constraint: Constraint;
 
   constructor(constraint: Constraint) {
     this._constraint = constraint;
   }
 
-  get constraint():Constraint {
+  get constraint(): Constraint {
     return this._constraint;
   }
 
-  set constraint(value:Constraint) {
+  set constraint(value: Constraint) {
     this._constraint = value;
   }
 
@@ -21,11 +20,22 @@ export class NegationConstraint implements Constraint {
     return 'NegationConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    return {
+      'type': 'subselection',
+      'dimension': 'patient',
+      'constraint': {
+        'type': 'negation',
+        'arg': this._constraint.toQueryObject()
+      }
+    };
+  }
+
   toQueryObject(): Object {
     return {
-      type: "negation",
+      type: 'negation',
       arg: this._constraint.toQueryObject()
-    }
+    };
   }
 
   get textRepresentation(): string {
