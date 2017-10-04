@@ -2,9 +2,27 @@
   <!-- The data selection overview panel -->
   <div class="gb-data-selection-overview-panel">
     <div class="row">
-      <div class="col-3"><span>{{patientCount}} patients</span></div>
-      <div class="col-3"><span>{{observationCount}} observations</span></div>
-      <div class="col-3"><span>{{conceptCount}} concepts</span></div>
+      <div class="col-3">
+        <span>
+          {{patientCount}}
+          <span *ngIf="patientCount > 1">patients</span>
+          <span *ngIf="patientCount < 2">patient</span>
+        </span>
+      </div>
+      <div class="col-3">
+        <span>
+          {{observationCount}}
+          <span *ngIf="observationCount > 1">observations</span>
+          <span *ngIf="observationCount < 2">observation</span>
+        </span>
+      </div>
+      <div class="col-3">
+        <span>
+          {{conceptCount}}
+          <span *ngIf="conceptCount > 1">concepts</span>
+          <span *ngIf="conceptCount < 2">concept</span>
+        </span>
+      </div>
       <div class="col-3">
         <div class="row">
           <input id="queryName" type="text"
@@ -14,7 +32,7 @@
                  [(ngModel)]="queryName" >
         </div>
         <div class="row">
-          <button class="btn btn-secondary btn-sm"
+          <button class="btn btn-outline-secondary btn-sm gb-data-selection-overview-panel-btn"
                   (click)="saveQuery()"
                   type="button">Save query</button>
         </div>
@@ -29,14 +47,16 @@
                  (open)="openAccordion($event)"
                  (close)="closeAccordion($event)">
     <md2-accordion-tab [active]="true">
-      <md2-accordion-header>Select patients
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Select patients</span>
         <span class="gb-data-selection-accordion-sub-header">({{patientCount}} patients selected)</span>
       </md2-accordion-header>
       <patient-selection></patient-selection>
     </md2-accordion-tab>
 
     <md2-accordion-tab>
-      <md2-accordion-header>Select observations
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Select observations</span>
         <span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}
         concepts selected)</span>
       </md2-accordion-header>
@@ -44,12 +64,16 @@
     </md2-accordion-tab>
 
     <md2-accordion-tab>
-      <md2-accordion-header>Data summary</md2-accordion-header>
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Data summary</span>
+      </md2-accordion-header>
       <data-summary></data-summary>
     </md2-accordion-tab>
 
     <md2-accordion-tab>
-      <md2-accordion-header>Data table</md2-accordion-header>
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Data table</span>
+      </md2-accordion-header>
       <data-view></data-view>
     </md2-accordion-tab>
   </md2-accordion>

@@ -16,7 +16,7 @@ import {DimensionRegistryService} from '../../../../services/dimension-registry.
         style({
           background: 'rgba(51, 156, 144, 0.5)'
         }),
-        animate('1000ms ease-out', style({
+        animate('500ms ease-out', style({
           background: 'rgba(255, 255, 255, 0.0)'
         }))
       ])
@@ -134,7 +134,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = null;
       this.expansionStatus['treeNode'] = null;
     }
-    this.removeFalsePrimeNgClasses(1000);
+    this.removeFalsePrimeNgClasses(500);
   }
 
   /**
@@ -267,7 +267,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
-    this.removeFalsePrimeNgClasses(1000);
+    this.removeFalsePrimeNgClasses(500);
   }
 
   /**
@@ -296,7 +296,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
     if (this.searchTerm !== '') { console.log('clear');
       const filterWord: string = this.searchTerm.trim().toLowerCase();
       this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', '');
-      this.removeFalsePrimeNgClasses(1000);
+      this.removeFalsePrimeNgClasses(500);
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';
     }

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 @Component({
   selector: 'observation-selection',
@@ -8,11 +9,13 @@ import {DimensionRegistryService} from '../../../../services/dimension-registry.
 })
 export class ObservationSelectionComponent implements OnInit {
 
-  constructor(public dimensionRegistryService: DimensionRegistryService) {
+  constructor(public dimensionRegistryService: DimensionRegistryService,
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
     this.updateObservationFileChooserEventListener();
+    this.constraintService.updateObservationCounts();
   }
 
   updateObservationFileChooserEventListener() {
