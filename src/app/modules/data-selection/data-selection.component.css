@@ -10,6 +10,10 @@
   margin-top: 133px;
 }
 
+.gb-data-selection-accordion-header {
+  font-family: 'Droid Sans', sans-serif;
+  font-weight: bold;
+}
 .gb-data-selection-accordion-sub-header {
   color: darkgray;
 }
@@ -30,9 +34,16 @@
   overflow: hidden;
   top: 50px;
   z-index: 99;
+  text-shadow: 2px 2px 11px black;
 }
 
 .gb-data-selection-overview-panel-input {
   margin-bottom: 3px;
   max-width: 66%;
+  font-size: small;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+}
+
+.gb-data-selection-overview-panel-btn {
+  width: 66%;
 }

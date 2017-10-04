@@ -168,6 +168,15 @@ body .ui-autocomplete-input-token input {
   width: 15em;
 }
 
+/*
+ * Fix the style of the md2-accordion-header
+ */
+.md2-accordion-header {
+  background-color: #dbf3ea;
+  border-radius: 5px !important;
+  padding-left: 5px;
+}
+
 /* Fix multiple autocomplete dropdown button new line break */
 .ui-autocomplete {
   display: inline-flex;
