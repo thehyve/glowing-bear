@@ -547,8 +547,16 @@ export class ConstraintService {
       .subscribe(
         (newlySavedQuery) => {
           this.dimensionRegistryService.queries.push(newlySavedQuery);
+          const summary = 'Query "' + queryName + '" is saved.';
+          this.alertMessages.length = 0;
+          this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
         },
-        err => console.error(err)
+        (err) => {
+          console.error(err);
+          const summary = 'Could not save the query "' + queryName + '".';
+          this.alertMessages.length = 0;
+          this.alertMessages.push({severity: 'error', summary: summary, detail: ''});
+        }
       );
   }
 

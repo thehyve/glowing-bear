@@ -22,6 +22,8 @@
     </div>
   </div>
 
+  <p-messages [(value)]="constraintService.alertMessages"></p-messages>
+
   <!-- The accordions -->
   <md2-accordion [multiple]="false"
                  (open)="openAccordion($event)"

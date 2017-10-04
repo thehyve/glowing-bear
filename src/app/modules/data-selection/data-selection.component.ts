@@ -12,7 +12,7 @@ export class DataSelectionComponent implements OnInit {
   private _queryName: string;
 
   constructor(private dimensionRegistryService: DimensionRegistryService,
-              private constraintService: ConstraintService) {
+              public constraintService: ConstraintService) {
     this.queryName = '';
   }
 
@@ -58,7 +58,9 @@ export class DataSelectionComponent implements OnInit {
     if (queryNameIsValid) {
       this.constraintService.saveQuery(name);
     } else {
-      console.log('query name is empty');
+      const summary = 'Please specify the query name.';
+      this.constraintService.alertMessages.length = 0;
+      this.constraintService.alertMessages.push({severity: 'warn', summary: summary, detail: ''});
     }
   }
 
