@@ -35,7 +35,7 @@ export class PatientSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   get alertMessages(): Array<object> {

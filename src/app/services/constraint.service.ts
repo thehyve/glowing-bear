@@ -73,12 +73,7 @@ export class ConstraintService {
     ];
   }
 
-  public update() {
-    this.updatePatients();
-    this.updateExpandedTreeNodesCounts(true);
-  }
-
-  public updatePatients() {
+  public updatePatientCounts() {
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
@@ -138,6 +133,23 @@ export class ConstraintService {
           this.loadingStateTotal = 'complete';
         }
       );
+
+    /*
+     * Patient counts on tree nodes
+     */
+    this.updateExpandedTreeNodesCounts(true);
+  }
+
+  public updateObservationCounts() {
+    // TODO: for some strange reason, only multiple options work, a single 'count' option does not, to fix
+    let aggregateOptions = ['count', 'min'];
+    this.resourceService.getAggregate(this.getObservationConstraint(), aggregateOptions)
+      .subscribe(
+        (aggregate) => {
+          this.observationCount = aggregate['count'];
+        },
+        err => console.log(err)
+      );
   }
 
   public getPatientConstraint() {
@@ -146,23 +158,30 @@ export class ConstraintService {
 
   public getObservationConstraint() {
     const nodes = this.dimensionRegistryService.selectedTreeNodes;
-    let allLeaves = [];
-    for (let node of nodes) {
-      let leaves = [];
-      this.dimensionRegistryService
-        .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
-      allLeaves = allLeaves.concat(leaves);
-    }
-    let constraint = new CombinationConstraint();
-    constraint.combinationState = CombinationState.Or;
-    for (let leaf of allLeaves) {
-      const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
-      if (leafConstraint) {
-        constraint.children.push(leafConstraint);
-      } else {
-        console.error('Failed to create constrain from: ', leaf);
+    let constraint = null;
+    if (nodes.length > 0) {
+      let allLeaves = [];
+      for (let node of nodes) {
+        let leaves = [];
+        this.dimensionRegistryService
+          .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
+        allLeaves = allLeaves.concat(leaves);
       }
+      this.conceptCount = allLeaves.length;
+      constraint = new CombinationConstraint();
+      constraint.combinationState = CombinationState.Or;
+      for (let leaf of allLeaves) {
+        const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
+        if (leafConstraint) {
+          constraint.children.push(leafConstraint);
+        } else {
+          console.error('Failed to create constrain from: ', leaf);
+        }
+      }
+    } else {
+      constraint = new TrueConstraint();
     }
+
     return constraint;
   }
 
@@ -337,45 +356,6 @@ export class ConstraintService {
     }
 
     return newConstraintObject;
-  }
-
-  savePatients(patientSetName: string) {
-    // TODO: refactor
-    // let name = patientSetName ? patientSetName.trim() : undefined;
-    // let duplicateName = false;
-    // let savedPatientSets = this.dimensionRegistryService.getPatientSets();
-    // for (let savedSet of savedPatientSets) {
-    //   if (savedSet['name'] === name) {
-    //     duplicateName = true;
-    //     break;
-    //   }
-    // }
-    // if (duplicateName) {
-    //   this.alertMessages.push({severity: 'info', summary: 'Duplicate patient set name, choose a new name.', detail: ''});
-    // } else {
-    //   this.alertMessages = [];
-    //   // derive the intersection constraint
-    //   let intersectionConstraint =
-    //     this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    //
-    //   // call the backend api to save patient set of that constraint
-    //   // and update the dimension registry service for the patient set list
-    //   this.resourceService.savePatients(patientSetName, intersectionConstraint)
-    //     .subscribe(
-    //       result => {
-    //         this._patientSetPostResponse = result;
-    //         this.dimensionRegistryService.updatePatientSets();
-    //         let message = 'Your patient set ' + this.patientSetPostResponse.description +
-    //           ' with ' + this.patientSetPostResponse.setSize + ' patients has been saved' +
-    //           ' with the identifier: ' + this.patientSetPostResponse.id + '.';
-    //         this.alertMessages.push({severity: 'info', summary: message, detail: ''});
-    //       },
-    //       err => {
-    //         console.error(err);
-    //         this.alertMessages.push({severity: 'info', summary: err, detail: ''});
-    //       }
-    //     );
-    // }
   }
 
   /**

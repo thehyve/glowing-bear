@@ -39,19 +39,19 @@ export class DimensionRegistryService {
   private allConstraints: Constraint[] = [];
 
   constructor(private resourceService: ResourceService) {
-    this.updateEmptyConstraints();
-    this.updateStudies();
-    this.updateConcepts();
-    this.updateQueries();
+    this.loadEmptyConstraints();
+    this.loadStudies();
+    this.loadTreeNodes();
+    this.loadQueries();
   }
 
-  updateEmptyConstraints() {
+  private loadEmptyConstraints() {
     this.allConstraints.push(new CombinationConstraint());
     this.allConstraints.push(new StudyConstraint());
     this.allConstraints.push(new ConceptConstraint());
   }
 
-  updateStudies() {
+  private loadStudies() {
     this.resourceService.getStudies()
       .subscribe(
         studies => {
@@ -213,7 +213,7 @@ export class DimensionRegistryService {
     }
   }
 
-  updateConcepts() {
+  loadTreeNodes() {
     this.loadingTreeNodes = 'loading';
     // Retrieve all tree nodes and extract the concepts iteratively
     this.resourceService.getTreeNodes('\\', 2, false, true)
@@ -248,6 +248,7 @@ export class DimensionRegistryService {
         this.selectedTreeNodes.push(treeNodeCopy);
       }
     }
+
   }
 
   private keepSelectedTreeNodes(parentNode: TreeNode) {
@@ -338,7 +339,7 @@ export class DimensionRegistryService {
   /**
    * Update the queries on the left-side panel
    */
-  public updateQueries() {
+  public loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries) => {

@@ -1,13 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ConstraintComponent} from "../constraint/constraint.component";
-import {AutoComplete} from "primeng/components/autocomplete/autocomplete";
-import {Concept} from "../../../../models/concept";
-import {ConceptConstraint} from "../../../../models/constraints/concept-constraint";
-import {ConceptOperatorState} from "./concept-operator-state";
-import {ValueConstraint} from "../../../../models/constraints/value-constraint";
-import {DateOperatorState} from "./date-operator-state";
-import {TrialVisit} from "../../../../models/trial-visit";
-import {TrialVisitConstraint} from "../../../../models/constraints/trial-visit-constraint";
+import {ConstraintComponent} from '../constraint/constraint.component';
+import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {Concept} from '../../../../models/concept';
+import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {ConceptOperatorState} from './concept-operator-state';
+import {ValueConstraint} from '../../../../models/constraints/value-constraint';
+import {DateOperatorState} from './date-operator-state';
+import {TrialVisit} from '../../../../models/trial-visit';
+import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
 
 @Component({
   selector: 'concept-constraint',
@@ -34,7 +34,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   suggestedCategories: string[];
 
   // date range
-  private _applyDateConstraint: boolean = false;
+  private _applyDateConstraint = false;
   private _dateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
   DateOperatorState = DateOperatorState; // make enum visible in template
   static readonly dateOperatorSequence = {
@@ -47,13 +47,13 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   private _date2: Date;
 
   // trial visit
-  private _applyTrialVisitConstraint: boolean = false;
+  private _applyTrialVisitConstraint = false;
   private _allTrialVisits: TrialVisit[];
   private _selectedTrialVisits: TrialVisit[];
   private _suggestedTrialVisits: TrialVisit[];
 
-  //modifier
-  private _applyModifierConstraint: boolean = false;
+  // modifier
+  private _applyModifierConstraint = false;
 
 
   ngOnInit() {
@@ -130,7 +130,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeConstraints();
-      this.constraintService.update();
+      this.constraintService.updatePatientCounts();
     }
   }
 
@@ -142,7 +142,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._applyDateConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyDateConstraint = this._applyDateConstraint;
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   get date1(): Date {
@@ -162,7 +162,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.timeConstraint.date1 = correctedDate;
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   get date2(): Date {
@@ -182,7 +182,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.timeConstraint.date2 = correctedDate;
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   get dateOperatorState(): DateOperatorState {
@@ -197,7 +197,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     this._applyTrialVisitConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   get applyModifierConstraint(): boolean {
@@ -315,7 +315,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
       }
     }
 
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
 
   }
 
@@ -400,7 +400,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   updateTrialVisitValues() {
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   onUnselectTrialVisit(visit) {
@@ -459,7 +459,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
     conceptConstraint.timeConstraint.dateOperator = this._dateOperatorState;
 
     // Notify constraint service
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
 }
