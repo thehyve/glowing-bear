@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {TrialVisit} from "../trial-visit";
+import {TrialVisit} from '../trial-visit';
 
 export class TrialVisitConstraint implements Constraint {
 
@@ -14,30 +14,35 @@ export class TrialVisitConstraint implements Constraint {
     return 'TrialVisitConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    // TODO: implement the 'subselection' wrapper on a normal query object
+    return null;
+  }
+
   /** Builds a query object for the date constraint.
    * @returns {Object}
    */
-  toQueryObject():Object {
+  toQueryObject(): Object {
     let values: number[] = [];
-    for(let visit of this.trialVisits) {
+    for (let visit of this.trialVisits) {
       values.push(Number(visit.id));
     }
     let queryObj = {
-      "type": "field",
-      "field": {
-        "dimension": "trial visit",
-        "fieldName": "id",
-        "type": "NUMERIC"
+      'type': 'field',
+      'field': {
+        'dimension': 'trial visit',
+        'fieldName': 'id',
+        'type': 'NUMERIC'
       },
-      "operator": "in",
-      "value": values
+      'operator': 'in',
+      'value': values
     };
 
     return queryObj;
   }
 
   get textRepresentation(): string {
-    return "Trial visit constraint";
+    return 'Trial visit constraint';
   }
 
   get trialVisits(): TrialVisit[] {

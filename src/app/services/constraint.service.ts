@@ -78,7 +78,7 @@ export class ConstraintService {
     this.updateExpandedTreeNodesCounts(true);
   }
 
-  updatePatients() {
+  public updatePatients() {
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
@@ -138,6 +138,32 @@ export class ConstraintService {
           this.loadingStateTotal = 'complete';
         }
       );
+  }
+
+  public getPatientConstraint() {
+    return this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+  }
+
+  public getObservationConstraint() {
+    const nodes = this.dimensionRegistryService.selectedTreeNodes;
+    let allLeaves = [];
+    for (let node of nodes) {
+      let leaves = [];
+      this.dimensionRegistryService
+        .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
+      allLeaves = allLeaves.concat(leaves);
+    }
+    let constraint = new CombinationConstraint();
+    constraint.combinationState = CombinationState.Or;
+    for (let leaf of allLeaves) {
+      const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
+      if (leafConstraint) {
+        constraint.children.push(leafConstraint);
+      } else {
+        console.error('Failed to create constrain from: ', leaf);
+      }
+    }
+    return constraint;
   }
 
   /**

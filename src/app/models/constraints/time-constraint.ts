@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {DateOperatorState} from "../../modules/data-selection/constraint-components/concept-constraint/date-operator-state";
+import {DateOperatorState} from '../../modules/data-selection/constraint-components/concept-constraint/date-operator-state';
 
 export class TimeConstraint implements Constraint {
 
@@ -14,16 +14,21 @@ export class TimeConstraint implements Constraint {
     return 'TimeConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    // TODO: implement the 'subselection' wrapper on a normal query object
+    return null;
+  }
+
   /** Builds a query object for the date constraint.
    * @returns {Object}
    */
-  toQueryObject():Object {
+  toQueryObject(): Object {
     // Operator
     let operator = {
-      [DateOperatorState.BETWEEN]: "<-->",
-      [DateOperatorState.NOT_BETWEEN]: "<-->", // we'll negate it later
-      [DateOperatorState.BEFORE]: "<-",
-      [DateOperatorState.AFTER]: "->"
+      [DateOperatorState.BETWEEN]: '<-->',
+      [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
+      [DateOperatorState.BEFORE]: '<-',
+      [DateOperatorState.AFTER]: '->'
     }[this.dateOperator];
 
     // Values (dates)
@@ -34,12 +39,12 @@ export class TimeConstraint implements Constraint {
     }
 
     // Construct the date constraint
-    let query:Object = {
-      type: "time",
+    let query: Object = {
+      type: 'time',
       field: {
-        dimension: "start time",
-        fieldName: "startDate",
-        type: "DATE"
+        dimension: 'start time',
+        fieldName: 'startDate',
+        type: 'DATE'
       },
       operator: operator,
       values: values
@@ -48,7 +53,7 @@ export class TimeConstraint implements Constraint {
     // Wrap date constraint in a negation if required
     if (this.dateOperator == DateOperatorState.NOT_BETWEEN) {
       query = {
-        type: "negation",
+        type: 'negation',
         arg: query
       };
     }
@@ -57,6 +62,6 @@ export class TimeConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return "Time constraint";
+    return 'Time constraint';
   }
 }

@@ -9,8 +9,16 @@ export class TrueConstraint implements Constraint {
     return 'TrueConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    return {
+      'type': 'subselection',
+      'dimension': 'patient',
+      'constraint': {'type': 'true'}
+    };
+  }
+
   toQueryObject(): Object {
-    return {"type": "true"};
+    return {'type': 'true'};
   }
 
   get textRepresentation(): string {
