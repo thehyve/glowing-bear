@@ -1,11 +1,17 @@
 <div id="tree-nodes-component" [@notifyState]="dimensionRegistryService.loadingTreeNodes">
 
   <!-- the search/filter input -->
-  <p-autoComplete [(ngModel)]="searchTerm"
-                  styleClass="gb-tree-filter-input"
-                  placeholder="Filter tree nodes"
-                  (onClear)="onFiltering($event)"
-                  (completeMethod)="onFiltering($event)"></p-autoComplete>
+  <div>
+    <p-autoComplete [(ngModel)]="searchTerm"
+                    styleClass="gb-tree-filter-input"
+                    placeholder="Filter tree nodes"
+                    (onClear)="onFiltering($event)"
+                    (completeMethod)="onFiltering($event)"></p-autoComplete>
+    <button class="btn btn-secondary btn-sm gb-treenodes-filter-btn"
+            (click)="clearFilter()"
+            type="button">clear</button>
+  </div>
+
 
   <!-- the tree itself -->
   <p-tree [value]="dimensionRegistryService.treeNodes"
