@@ -1,4 +1,4 @@
-import {Constraint} from "./constraint";
+import {Constraint} from './constraint';
 
 export class ValueConstraint implements Constraint {
   private _valueType: string;
@@ -36,9 +36,14 @@ export class ValueConstraint implements Constraint {
     return 'ValueConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    // TODO: implement the 'subselection' wrapper on a normal query object
+    return null;
+  }
+
   toQueryObject(): Object {
     return {
-      type: "value",
+      type: 'value',
       valueType: this._valueType,
       operator: this._operator,
       value: this._value

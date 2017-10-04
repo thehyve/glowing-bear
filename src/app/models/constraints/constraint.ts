@@ -1,5 +1,7 @@
 export interface Constraint {
 
+  textRepresentation: string;
+
   /**
    * Returns the name of the constraint class.
    */
@@ -11,6 +13,11 @@ export interface Constraint {
    */
   toQueryObject(): Object;
 
-  textRepresentation: string;
+  /**
+   * Returns a javascript object representation of the constraint to be used for patients retrieval,
+   * wrapped in subselction clause according to TranSMART api requirements
+   * @returns {Object}
+   */
+  toPatientQueryObject(): Object;
 
 }

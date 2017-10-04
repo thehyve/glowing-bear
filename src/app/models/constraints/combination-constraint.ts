@@ -37,10 +37,11 @@ export class CombinationConstraint implements Constraint {
   }
 
   /**
-   *
+   * This method is for querying patients,
+   * which requires a speicial subselection wrapper
    * @returns {Object}
    */
-  toQueryObject(): Object {
+  toPatientQueryObject(): Object {
     // Collect children query objects
     let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
     if (childQueryObjects.length === 0) {
@@ -60,14 +61,42 @@ export class CombinationConstraint implements Constraint {
       };
     } else {
       // Wrap the child query objects in subselections
-      childQueryObjects = childQueryObjects.map(queryObject => {
+      childQueryObjects = childQueryObjects.map(queryObj => {
         return {
           'type': 'subselection',
           'dimension': 'patient',
-          'constraint': queryObject
+          'constraint': queryObj
         };
       });
 
+      // Wrap in and/or constraint
+      queryObject = {
+        type: this._combinationState === CombinationState.And ? 'and' : 'or',
+        args: childQueryObjects
+      };
+    }
+
+    return queryObject;
+  }
+
+  /**
+   * The normal conversion from constraint to object
+   * @returns {Object}
+   */
+  toQueryObject(): Object {
+    // Collect children query objects
+    let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
+    if (childQueryObjects.length === 0) {
+      // No children, so ignore this constraint
+      // TODO: show validation error instead?
+      return null;
+    }
+
+    // Combination
+    let queryObject: Object;
+    if (childQueryObjects.length === 1) {
+      queryObject = childQueryObjects[0];
+    } else {
       // Wrap in and/or constraint
       queryObject = {
         type: this._combinationState === CombinationState.And ? 'and' : 'or',

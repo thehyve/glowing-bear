@@ -41,6 +41,11 @@ export class ConceptConstraint implements Constraint {
     return 'ConceptConstraint';
   }
 
+  toPatientQueryObject(): Object {
+    // TODO: implement the 'subselection' wrapper on a normal query object
+    return null;
+  }
+
   toQueryObject(): Object {
     // When no concept is selected, we cannot create a query object (it should be ignored)
     if (!this._concept) {

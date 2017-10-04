@@ -8,8 +8,6 @@ import {DimensionRegistryService} from '../../../../services/dimension-registry.
 })
 export class ObservationSelectionComponent implements OnInit {
 
-  observationSetName = '';
-
   constructor(public dimensionRegistryService: DimensionRegistryService) {
   }
 
@@ -37,7 +35,4 @@ export class ObservationSelectionComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  onSaveObservationSetBtnClick() {
-    console.log('click to save observation set with name: ', this.observationSetName);
-  }
 }

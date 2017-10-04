@@ -28,8 +28,6 @@ import {ConstraintService} from '../../../../services/constraint.service';
 })
 export class PatientSelectionComponent implements OnInit {
 
-  patientSetName = '';
-
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: ConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: ConstraintComponent;
 
@@ -64,12 +62,4 @@ export class PatientSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  onSavePatientSetBtnClick() {
-    this.constraintService.savePatients(this.patientSetName);
-  }
-
-  onTreeNodeDropOnPatientSetNameField(event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
 }
