@@ -18,7 +18,7 @@ type LoadingState = 'loading' | 'complete';
 /**
  * This service concerns with
  * (1) translating string or JSON objects into Constraint class instances
- * (2) saving constraints as queries (that contain patient or observation constraints)
+ * (2) saving / updating constraints as queries (that contain patient or observation constraints)
  * (3) updating relevant patient or observation counts
  */
 @Injectable()
@@ -532,6 +532,58 @@ export class ConstraintService {
      * Get the patient count per concept individually
      */
     this.updateConceptTreeNodeCounts(rootTreeNodeElements, rootTreeNodes, patientConstraint, refresh);
+  }
+
+  public saveQuery(queryName: string) {
+    const patientConstraintObj = this.getPatientConstraint().toPatientQueryObject();
+    const observationConstraintObj = this.getObservationConstraint().toQueryObject();
+    const queryObj = {
+      name: queryName,
+      patientsQuery: patientConstraintObj,
+      observationsQuery: observationConstraintObj,
+      bookmarked: false
+    };
+    this.resourceService.saveQuery(queryObj)
+      .subscribe(
+        (newlySavedQuery) => {
+          this.dimensionRegistryService.queries.push(newlySavedQuery);
+          const summary = 'Query "' + queryName + '" is saved.';
+          this.alertMessages.length = 0;
+          this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
+        },
+        (err) => {
+          console.error(err);
+          const summary = 'Could not save the query "' + queryName + '".';
+          this.alertMessages.length = 0;
+          this.alertMessages.push({severity: 'error', summary: summary, detail: ''});
+        }
+      );
+  }
+
+  public updateQuery(queryId: string, queryObject: object) {
+    this.resourceService.updateQuery(queryId, queryObject)
+      .subscribe(
+        () => {
+        },
+        err => console.error(err)
+      );
+  }
+
+  public deleteQuery(query) {
+    this.resourceService.deleteQuery(query['id'])
+      .subscribe(
+        () => {
+          const index = this.dimensionRegistryService.queries.indexOf(query);
+          if (index > -1) {
+            this.dimensionRegistryService.queries.splice(index, 1);
+          }
+          // An alternative would be to directly update the queries
+          // using 'dimensionRegistryService.updateQueries()'
+          // but this approach retrieves new query objects and
+          // leaves the all queries to remain collapsed
+        },
+        err => console.error(err)
+      );
   }
 
   get patientCount(): number {
