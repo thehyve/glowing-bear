@@ -176,6 +176,9 @@ export class ResourceService {
       .catch(this.handleError.bind(this));
   }
 
+  // -------------------------------------- observation calls --------------------------------------
+
+
   // -------------------------------------- aggregate calls --------------------------------------
 
   /**
@@ -194,6 +197,32 @@ export class ResourceService {
     } else {
       url += `type=values&constraint=${constraintString}`;
     }
+
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res: Response) => res.json() as Aggregate)
+      .catch(this.handleError.bind(this));
+  }
+
+  /**
+   * Get the aggregate based on the given constraint and aggregate options,
+   * the options can be {min, max, count, values, average}
+   * @param {Constraint} constraint
+   * @param {string[]} aggregateOptions
+   * @returns {Observable<Aggregate>}
+   */
+  getAggregate(constraint: Constraint, aggregateOptions: string[]): Observable<Aggregate> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintString = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/observations/aggregate?`;
+    let types = '';
+    for (let option of aggregateOptions) {
+      types += `type=${option}&`;
+    }
+    url += `${types}constraint=${constraintString}`;
 
     return this.http.get(url, {
       headers: headers
@@ -411,7 +440,7 @@ export class ResourceService {
    * @param {string} queryId
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId:string): Observable<null> {
+  deleteQuery(queryId: string): Observable<null> {
     let headers = new Headers();
     let endpoint = this.endpointService.getEndpoint();
     if (endpoint) {

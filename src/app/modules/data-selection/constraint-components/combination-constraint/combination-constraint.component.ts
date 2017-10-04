@@ -37,7 +37,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
   onSearch(event) {
@@ -80,7 +80,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
-      this.constraintService.update();
+      this.constraintService.updatePatientCounts();
     }
   }
 
@@ -90,7 +90,7 @@ export class CombinationConstraintComponent extends ConstraintComponent implemen
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.constraintService.update();
+    this.constraintService.updatePatientCounts();
   }
 
 

@@ -5,11 +5,6 @@ import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {ResourceService} from '../../../../services/resource.service';
-import {Constraint} from '../../../../models/constraints/constraint';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
-import {CombinationState} from '../../../../models/constraints/combination-state';
 
 @Component({
   selector: 'tree-nodes',
@@ -42,8 +37,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   searchTerm: string;
 
   constructor(private constraintService: ConstraintService,
-              private resourceService: ResourceService,
-              public dimensionRegistryService: DimensionRegistryService,
+              private dimensionRegistryService: DimensionRegistryService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -279,6 +273,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onNodeSelect(event) {
     this.dimensionRegistryService.updateSelectedTreeNodes();
+    this.constraintService.updateObservationCounts();
   }
 
   /**
@@ -287,6 +282,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onNodeUnselect(event) {
     this.dimensionRegistryService.updateSelectedTreeNodes();
+    this.constraintService.updateObservationCounts();
   }
 
 }
