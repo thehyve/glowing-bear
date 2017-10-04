@@ -2,7 +2,6 @@ import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
 import {DropMode} from '../../../../models/drop-mode';
-import {ResourceService} from '../../../../services/resource.service';
 
 @Component({
   selector: 'queries',
@@ -16,7 +15,6 @@ export class QueriesComponent implements OnInit, AfterViewInit {
 
   constructor(public dimensionRegistry: DimensionRegistryService,
               private constraintService: ConstraintService,
-              private resourceService: ResourceService,
               private element: ElementRef) {
   }
 
@@ -61,12 +59,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
     const queryObject = {
       bookmarked: query['bookmarked']
     };
-    this.resourceService.updateQuery(query['id'], queryObject)
-      .subscribe(
-        () => {
-        },
-        err => console.error(err)
-      );
+    this.constraintService.updateQuery(query['id'], queryObject);
   }
 
   getQueryBookmarkButtonIcon(query) {
@@ -86,20 +79,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
   }
 
   removeQuery(query) {
-    this.resourceService.deleteQuery(query['id'])
-      .subscribe(
-        () => {
-          const index = this.dimensionRegistry.queries.indexOf(query);
-          if (index > -1) {
-            this.dimensionRegistry.queries.splice(index, 1);
-          }
-          // An alternative would be to directly update the queries
-          // using 'this.dimensionRegistry.updateQueries()'
-          // but this approach retrieves new query objects and
-          // leaves the all queries to remain collapsed
-        },
-        err => console.error(err)
-      );
+    this.constraintService.deleteQuery(query);
   }
 
   editQueryName(event, query) {
@@ -115,12 +95,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
       const queryObject = {
         name: query['name']
       };
-      this.resourceService.updateQuery(query['id'], queryObject)
-        .subscribe(
-          () => {
-          },
-          err => console.error(err)
-        );
+      this.constraintService.updateQuery(query['id'], queryObject);
     }
   }
 }

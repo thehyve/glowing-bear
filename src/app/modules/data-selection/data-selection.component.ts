@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DimensionRegistryService} from '../../services/dimension-registry.service';
 import {ConstraintService} from '../../services/constraint.service';
-import {ResourceService} from '../../services/resource.service';
 
 @Component({
   selector: 'data-selection',
@@ -13,7 +12,6 @@ export class DataSelectionComponent implements OnInit {
   private _queryName: string;
 
   constructor(private dimensionRegistryService: DimensionRegistryService,
-              private resourceService: ResourceService,
               private constraintService: ConstraintService) {
     this.queryName = '';
   }
@@ -55,23 +53,10 @@ export class DataSelectionComponent implements OnInit {
   }
 
   saveQuery() {
-    let queryNameIsValid = this.queryName !== '';
+    let name = this.queryName ? this.queryName.trim() : '';
+    let queryNameIsValid = name !== '';
     if (queryNameIsValid) {
-      const patientConstraintObj = this.constraintService.getPatientConstraint().toPatientQueryObject();
-      const observationConstraintObj = this.constraintService.getObservationConstraint().toQueryObject();
-      const queryObj = {
-        name: this.queryName,
-        patientsQuery: patientConstraintObj,
-        observationsQuery: observationConstraintObj,
-        bookmarked: false
-      };
-      this.resourceService.saveQuery(queryObj)
-        .subscribe(
-          (newlySavedQuery) => {
-            this.dimensionRegistryService.queries.push(newlySavedQuery);
-          },
-          err => console.error(err)
-        );
+      this.constraintService.saveQuery(name);
     } else {
       console.log('query name is empty');
     }
