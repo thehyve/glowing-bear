@@ -34,7 +34,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   // the variable holding the current metadata overlay content being shown
   metadataContent: any = [];
   // the search term in the text input box to filter the tree
-  searchTerm: string;
+  searchTerm = '';
 
   constructor(private constraintService: ConstraintService,
               private dimensionRegistryService: DimensionRegistryService,
@@ -134,7 +134,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = null;
       this.expansionStatus['treeNode'] = null;
     }
-    this.removeFalsePrimeNgClasses();
+    this.removeFalsePrimeNgClasses(1000);
   }
 
   /**
@@ -244,17 +244,20 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   /**
    * PrimeNg tree is behaving strangely when dynamically adding custom class to tree nodes:
    * sometimes a tree node with children is marked with the 'ui-treenode-leaf' class.
-   * Therefore, this function is to remove any false ui-treenode-leaf classes.
+   * This function is to remove any false ui-treenode-leaf classes.
+   * Also add some delay to wait for the tree construction, typically 1 to 2 seconds.
    */
-  removeFalsePrimeNgClasses() {
-    let leaves = this.element.nativeElement.querySelectorAll('.ui-treenode-leaf');
-    if (leaves) {
-      for (let supposedLeaf of leaves) {
-        if (supposedLeaf.classList.contains('is-not-leaf')) {
-          supposedLeaf.classList.remove('ui-treenode-leaf');
+  removeFalsePrimeNgClasses(delay: number) {
+    window.setTimeout((function () {
+      let leaves = this.element.nativeElement.querySelectorAll('.ui-treenode-leaf');
+      if (leaves) {
+        for (let supposedLeaf of leaves) {
+          if (supposedLeaf.classList.contains('is-not-leaf')) {
+            supposedLeaf.classList.remove('ui-treenode-leaf');
+          }
         }
       }
-    }
+    }).bind(this), delay);
   }
 
   /**
@@ -264,7 +267,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
-    this.removeFalsePrimeNgClasses();
+    this.removeFalsePrimeNgClasses(1000);
   }
 
   /**
@@ -283,6 +286,20 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   onNodeUnselect(event) {
     this.dimensionRegistryService.updateSelectedTreeNodes();
     this.constraintService.updateObservationCounts();
+  }
+
+  /**
+   * Clear filtering words
+   * @param event
+   */
+  clearFilter(event) {
+    if (this.searchTerm !== '') { console.log('clear');
+      const filterWord: string = this.searchTerm.trim().toLowerCase();
+      this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', '');
+      this.removeFalsePrimeNgClasses(1000);
+      const input = this.element.nativeElement.querySelector('.ui-inputtext');
+      input.value = '';
+    }
   }
 
 }
