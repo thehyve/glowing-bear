@@ -54,11 +54,22 @@ md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
 }
 
 /*
- * style fix for hiding the border in tab menu bar
+ * Style fix for hiding the border in tab menu bar
  */
 body .ui-tabmenu-nav {
   border: none;
   background-color: #FCFCFC;
+}
+
+/*
+ * Style fix for adding border radius to navbar
+ */
+body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
+  border-radius: 50px;
+}
+
+body .ui-tabmenuitem .ui-state-active {
+  border-radius: 50px;
 }
 
 /*
@@ -131,6 +142,33 @@ body .gb-concept-constraint-input > input {
 }
 
 /*
+ * Style for PrimeNg alert messages
+ */
+.ui-messages.ui-messages-success {
+  background-color: #199afb;
+  border: none;
+  color: white;
+  width: 98.5%;
+  text-shadow: 1px 1px 1px black;
+}
+
+.ui-messages.ui-messages-warn {
+  background-color: #eb9414;
+  border: none;
+  color: white;
+  width: 98.5%;
+  text-shadow: 1px 1px 1px black;
+}
+
+.ui-messages.ui-messages-error {
+  background-color: tomato;
+  border: none;
+  color: white;
+  width: 98.5%;
+  text-shadow: 1px 1px 1px black;
+}
+
+/*
  * Style for the count element in a tree node on the left side
  * padding: top, right, bottom, left
  */
@@ -166,15 +204,6 @@ body .gb-concept-constraint-input > input {
  */
 body .ui-autocomplete-input-token input {
   width: 15em;
-}
-
-/*
- * Fix the style of the md2-accordion-header
- */
-.md2-accordion-header {
-  background-color: #dbf3ea;
-  border-radius: 5px !important;
-  padding-left: 5px;
 }
 
 /* Fix multiple autocomplete dropdown button new line break */

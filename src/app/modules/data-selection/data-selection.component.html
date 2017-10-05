@@ -5,22 +5,22 @@
       <div class="col-3">
         <span>
           {{patientCount}}
-          <span *ngIf="patientCount > 1">patients</span>
-          <span *ngIf="patientCount < 2">patient</span>
+          <span *ngIf="constraintService.patientCount > 1">patients</span>
+          <span *ngIf="constraintService.patientCount < 2 ">patient</span>
         </span>
       </div>
       <div class="col-3">
         <span>
           {{observationCount}}
-          <span *ngIf="observationCount > 1">observations</span>
-          <span *ngIf="observationCount < 2">observation</span>
+          <span *ngIf="constraintService.observationCount > 1 ">observations</span>
+          <span *ngIf="constraintService.observationCount < 2 ">observation</span>
         </span>
       </div>
       <div class="col-3">
         <span>
           {{conceptCount}}
-          <span *ngIf="conceptCount > 1">concepts</span>
-          <span *ngIf="conceptCount < 2">concept</span>
+          <span *ngIf="conceptCount === '1' || conceptCount === '0'; else elseBlock">concept</span>
+          <ng-template #elseBlock><span>concepts</span></ng-template>
         </span>
       </div>
       <div class="col-3">

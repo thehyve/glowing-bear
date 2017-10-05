@@ -64,16 +64,24 @@ export class DataSelectionComponent implements OnInit {
     }
   }
 
-  get patientCount(): number {
-    return this.constraintService.patientCount;
+  numberWithCommas(x: number): string {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   }
 
-  get observationCount(): number {
-    return this.constraintService.observationCount;
+  get patientCount(): string {
+    return this.numberWithCommas(this.constraintService.patientCount);
   }
 
-  get conceptCount(): number {
-    return this.constraintService.conceptCount;
+  get observationCount(): string {
+    return this.numberWithCommas(this.constraintService.observationCount);
+  }
+
+  get conceptCount(): string {
+    if (this.constraintService.conceptCount > 0) {
+      return this.numberWithCommas(this.constraintService.conceptCount);
+    } else {
+      return this.numberWithCommas(this.dimensionRegistryService.concepts.length);
+    }
   }
 
   get queryName(): string {

@@ -87,6 +87,10 @@ export class ConstraintService {
         patients => {
           this.inclusionPatientCount = patients.length;
           this.loadingStateInclusion = 'complete';
+          if (this.loadingStateExclusion === 'complete') {
+            this.patientCount = this.inclusionPatientCount - this.exclusionPatientCount;
+            this.loadingStateTotal = 'complete';
+          }
         },
         err => {
           console.error(err);
@@ -106,6 +110,10 @@ export class ConstraintService {
           patients => {
             this.exclusionPatientCount = patients.length;
             this.loadingStateExclusion = 'complete';
+            if (this.loadingStateInclusion === 'complete') {
+              this.patientCount = this.inclusionPatientCount - this.exclusionPatientCount;
+              this.loadingStateTotal = 'complete';
+            }
           },
           err => {
             console.error(err);
@@ -120,19 +128,25 @@ export class ConstraintService {
     /*
      * Intersection constraint patient count
      */
-    let intersectionConstraint: Constraint =
-      this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    this.resourceService.getPatients(intersectionConstraint, 'Intersection')
-      .subscribe(
-        patients => {
-          this.patientCount = patients.length;
-          this.loadingStateTotal = 'complete';
-        },
-        err => {
-          console.error(err);
-          this.loadingStateTotal = 'complete';
-        }
-      );
+
+    /*
+     * This is usually an expensive approach, when the final patients are not required,
+     * the final patient count can be calculated by (inclusionCount - exclusionCount)
+     */
+    // let intersectionConstraint: Constraint =
+    //   this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+    // this.resourceService.getPatients(intersectionConstraint, 'Intersection')
+    //   .subscribe(
+    //     patients => {
+    //       this.patientCount = patients.length;
+    //       this.loadingStateTotal = 'complete';
+    //     },
+    //     err => {
+    //       console.error(err);
+    //       this.loadingStateTotal = 'complete';
+    //     }
+    //   );
+
 
     /*
      * Patient counts on tree nodes
@@ -141,12 +155,10 @@ export class ConstraintService {
   }
 
   public updateObservationCounts() {
-    // TODO: for some strange reason, only multiple options work, a single 'count' option does not, to fix
-    let aggregateOptions = ['count', 'min'];
-    this.resourceService.getAggregate(this.getObservationConstraint(), aggregateOptions)
+    this.resourceService.getObservationCount(this.getObservationConstraint())
       .subscribe(
-        (aggregate) => {
-          this.observationCount = aggregate['count'];
+        (count) => {
+          this.observationCount = count;
         },
         err => console.log(err)
       );
@@ -180,6 +192,7 @@ export class ConstraintService {
       }
     } else {
       constraint = new TrueConstraint();
+      this.conceptCount = this.dimensionRegistryService.concepts.length;
     }
 
     return constraint;
@@ -526,6 +539,7 @@ export class ConstraintService {
     this.resourceService.saveQuery(queryObj)
       .subscribe(
         (newlySavedQuery) => {
+          newlySavedQuery['collapsed'] = true;
           this.dimensionRegistryService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
           this.alertMessages.length = 0;

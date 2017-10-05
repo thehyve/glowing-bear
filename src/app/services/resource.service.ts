@@ -166,7 +166,6 @@ export class ResourceService {
     let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     let constraintString: string = JSON.stringify(constraint.toPatientQueryObject());
-
     console.log(debugLabel, 'constraint:', constraintString);
     let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
     return this.http.get(url, {
@@ -177,7 +176,23 @@ export class ResourceService {
   }
 
   // -------------------------------------- observation calls --------------------------------------
-
+  /**
+   * Give a constraint, get the corresponding observation count.
+   * @param {Constraint} constraint
+   * @returns {Observable<number>}
+   */
+  getObservationCount(constraint: Constraint): Observable<number> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    let constraintString: string = JSON.stringify(constraint.toQueryObject());
+    let url = `${endpoint.getUrl()}/observations/count?constraint=${constraintString}`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res: Response) => res.json()['count'])
+      .catch(this.handleError.bind(this));
+  }
 
   // -------------------------------------- aggregate calls --------------------------------------
 

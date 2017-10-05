@@ -34,7 +34,7 @@
   overflow: hidden;
   top: 50px;
   z-index: 99;
-  text-shadow: 2px 2px 11px black;
+  text-shadow: 1px 1px 3px black;
 }
 
 .gb-data-selection-overview-panel-input {
