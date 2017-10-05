@@ -306,6 +306,8 @@ export class ConstraintService {
       }
     }
 
+    this.selectedNode = null;
+
     return constraint;
   }
 
