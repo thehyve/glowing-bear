@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DataSelectionComponent } from './data-selection.component';
-import {AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule} from 'primeng/primeng';
+import {AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule, MessagesModule} from 'primeng/primeng';
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -39,7 +39,8 @@ describe('DataSelectionComponent', () => {
         Md2AccordionModule,
         CheckboxModule,
         CalendarModule,
-        TreeModule
+        TreeModule,
+        MessagesModule
       ],
       providers: [
         {
