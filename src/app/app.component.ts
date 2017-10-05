@@ -39,19 +39,20 @@ export class AppComponent implements OnInit {
     /*
      * adjust the width of panel: .gb-data-selection-overview-panel
      */
-    const adjustDataSelectionOverview = function () {
+    const adjustRightWidths = function () {
+      const leftWidth = leftPanelElm.clientWidth;
+      const rightWidth = rightPanelElm.clientWidth;
+      const percentage = rightWidth / (rightWidth + leftWidth + 60);
       const dataSelectionOverviewPanel =
         parentContainerElm.querySelector('.gb-data-selection-overview-panel');
       if (dataSelectionOverviewPanel) {
-        const leftWidth = leftPanelElm.clientWidth;
-        const rightWidth = rightPanelElm.clientWidth;
-        const percentage = rightWidth / (rightWidth + leftWidth + 60);
         dataSelectionOverviewPanel.style.width = (percentage * 100) + '%';
       }
+      const navbar = parentContainerElm.querySelector('.gb-navbar');
+      if (navbar) {
+        navbar.style.width = (percentage * 100) + '%';
+      }
     };
-
-    const adjustRightPanel = function () {
-    }
 
     const onMouseDown = function (event) {
       // preventDefault() is used to
@@ -70,7 +71,7 @@ export class AppComponent implements OnInit {
         let bound = parentContainerElm.getBoundingClientRect();
         let rightW = bound.width - leftW - 10 - 2 * 3;
         rightPanelElm.style.width = rightW + 'px';
-        adjustDataSelectionOverview();
+        adjustRightWidths();
       }
     };
 
@@ -79,13 +80,13 @@ export class AppComponent implements OnInit {
     };
 
     const onResize = function (event) {
-      if (leftPanelElm.style.width !== '' ) {
+      if (leftPanelElm.style.width !== '') {
         leftPanelElm.style.width = '';
       }
       if (rightPanelElm.style.width !== '') {
         rightPanelElm.style.width = '';
       }
-      adjustDataSelectionOverview();
+      adjustRightWidths();
     };
 
     gutterElm.addEventListener('mousedown', onMouseDown.bind(this));

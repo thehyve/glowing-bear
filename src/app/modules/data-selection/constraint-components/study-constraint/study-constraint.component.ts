@@ -28,7 +28,7 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
 
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let studies = this.dimensionRegistry.getStudies();
+    let studies = this.dimensionRegistry.studies;
     if (query) {
       this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
     }
@@ -38,7 +38,7 @@ export class StudyConstraintComponent extends ConstraintComponent implements OnI
   }
 
   onDropdown(event) {
-    let studies = this.dimensionRegistry.getStudies();
+    let studies = this.dimensionRegistry.studies;
 
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745

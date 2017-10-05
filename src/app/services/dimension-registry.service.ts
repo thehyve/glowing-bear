@@ -27,9 +27,9 @@ export class DimensionRegistryService {
   public selectedTreeNodesPrime: TreeNode[] = [];
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
-  private studies: Study[] = [];
+  private _studies: Study[] = [];
   private studyConstraints: Constraint[] = [];
-  private concepts: Concept[] = [];
+  private _concepts: Concept[] = [];
   private conceptConstraints: Constraint[] = [];
   private _queries: Query[] = [];
 
@@ -359,12 +359,20 @@ export class DimensionRegistryService {
       );
   }
 
-  getStudies() {
-    return this.studies;
+  get concepts(): Concept[] {
+    return this._concepts;
   }
 
-  getConcepts() {
-    return this.concepts;
+  set concepts(value: Concept[]) {
+    this._concepts = value;
+  }
+
+  get studies(): Study[] {
+    return this._studies;
+  }
+
+  set studies(value: Study[]) {
+    this._studies = value;
   }
 
   get queries(): Query[] {

@@ -241,7 +241,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let concepts = this.dimensionRegistry.getConcepts();
+    let concepts = this.dimensionRegistry.concepts;
     if (query) {
       this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
     } else {
@@ -254,7 +254,7 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
    * @param event
    */
   onDropdown(event) {
-    let concepts = this.dimensionRegistry.getConcepts();
+    let concepts = this.dimensionRegistry.concepts;
 
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745
