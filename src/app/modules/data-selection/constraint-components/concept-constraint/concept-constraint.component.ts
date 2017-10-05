@@ -349,9 +349,6 @@ export class ConceptConstraintComponent extends ConstraintComponent implements O
   }
 
   onUnselectCategories(category) {
-    // For some funny reason, the category is still in the list when this handler is invoked
-    let index = this.selectedCategories.indexOf(category);
-    this.selectedCategories.splice(index, 1);
     this.updateConceptValues();
   }
 
