@@ -21,6 +21,7 @@
 /*
  * The style for the overview panel on top of data-selection
  * padding and margin: top, right, bottom, left
+ * shadow option: text-shadow: 1px 1px 3px black;
  */
 .gb-data-selection-overview-panel {
   background-color: #0365af;
@@ -28,13 +29,12 @@
   padding: 0.5em 1em 0.5em 1em;
   margin: 0px 10px 0px 0px;
   color: white;
-  border: 3px inset lightblue;
+  border: 3px inset lightgrey;
   position: fixed;
   width: 68%;
   overflow: hidden;
   top: 50px;
   z-index: 99;
-  text-shadow: 1px 1px 3px black;
 }
 
 .gb-data-selection-overview-panel-input {
