@@ -35,6 +35,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   metadataContent: any = [];
   // the search term in the text input box to filter the tree
   searchTerm = '';
+  // the delay before triggering updating methods
+  // as the PrimeNg tree nodes reconstruct DOM nodes and css styles when data changes,
+  // and this will take a while
+  delay: number;
 
   constructor(private constraintService: ConstraintService,
               private dimensionRegistryService: DimensionRegistryService,
@@ -44,6 +48,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       treeNodeElm: null,
       treeNode: null
     };
+    this.delay = 500;
   }
 
   ngOnInit() {
@@ -134,7 +139,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       this.expansionStatus['treeNodeElm'] = null;
       this.expansionStatus['treeNode'] = null;
     }
-    this.removeFalsePrimeNgClasses(500);
+    this.removeFalsePrimeNgClasses(this.delay);
   }
 
   /**
@@ -267,7 +272,14 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
-    this.removeFalsePrimeNgClasses(500);
+    this.removeFalsePrimeNgClasses(this.delay);
+    // this.updateEventListeners()
+
+    window.setTimeout((function () {
+      let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+      let treeNodes = this.dimensionRegistryService.treeNodes;
+      this.updateEventListeners(treeNodeElements, treeNodes);
+    }).bind(this), this.delay);
   }
 
   /**
@@ -293,10 +305,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * @param event
    */
   clearFilter(event) {
-    if (this.searchTerm !== '') { console.log('clear');
+    if (this.searchTerm !== '') {
       const filterWord: string = this.searchTerm.trim().toLowerCase();
       this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', '');
-      this.removeFalsePrimeNgClasses(500);
+      this.removeFalsePrimeNgClasses(this.delay);
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';
     }
