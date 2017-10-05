@@ -145,27 +145,27 @@ body .gb-concept-constraint-input > input {
  * Style for PrimeNg alert messages
  */
 .ui-messages.ui-messages-success {
-  background-color: #70b9b1;
+  /* #80bd9e: stem green */
+  background-color: #80bd9e;
   border: none;
   color: white;
   width: 98.5%;
-  text-shadow: 1px 1px 1px black;
 }
 
 .ui-messages.ui-messages-warn {
-  background-color: #eb9414;
+  /* #f98866: petal orange */
+  background-color: #f98866;
   border: none;
   color: white;
   width: 98.5%;
-  text-shadow: 1px 1px 1px black;
 }
 
 .ui-messages.ui-messages-error {
-  background-color: tomato;
+  /* #ff420e: poppy red */
+  background-color: #ff420e;
   border: none;
   color: white;
   width: 98.5%;
-  text-shadow: 1px 1px 1px black;
 }
 
 /*
