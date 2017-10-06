@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/build
 
 # dependencies
 /node_modules
@@ -43,6 +44,14 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Gradle
+gradle/wrapper
+/.gradle
+/gradlew
+/gradlew.bat
+out
+
 src/app/config/env.json
 /src/app/config/env.json
 yarn.lock
+

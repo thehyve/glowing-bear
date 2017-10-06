@@ -1,12 +1,14 @@
 {
   "name": "glowing-bear",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "license": "GPL-3.0+",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "package": "ng build --prod",
     "test": "ng test",
+    "testOnce": "ng test --single-run",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
