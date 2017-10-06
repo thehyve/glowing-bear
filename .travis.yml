@@ -31,7 +31,7 @@ install:
   - ${GRADLE_SCRIPT} assemble
   - ${GRADLE_SCRIPT} publishToMavenLocal
 script:
-  - ${GRADLE_SCRIPT} check 
+  - travis_retry ${GRADLE_SCRIPT} check 
 
 notifications:
   webhooks:
