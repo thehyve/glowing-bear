@@ -180,15 +180,44 @@ export class ConstraintService {
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  public getPatientConstraint() {
-    return this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
+  public getPatientConstraint(): Constraint {
+    let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
+    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
+    let trueInclusion = false;
+    // Inclusion part
+    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
+      inclusionConstraint = new TrueConstraint();
+      trueInclusion = true;
+    }
+
+    // Only use exclusion if there's something there
+    if ((<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
+      // Wrap exclusion in negation
+      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
+
+      // If there is some constraint other than a true constraint in the inclusion
+      // form a proper combination constraint to return
+      if (!trueInclusion) {
+        let combination = new CombinationConstraint();
+        combination.combinationState = CombinationState.And;
+        combination.children.push(inclusionConstraint);
+        combination.children.push(negatedExclusionConstraint);
+        return combination;
+      } else {
+        return negatedExclusionConstraint;
+      }
+
+    } else {
+      // Otherwise just return the inclusion part
+      return inclusionConstraint;
+    }
   }
 
   /**
    * Get the constraint of selected concept variables in the observation-selection section
    * @returns {any}
    */
-  public getObservationConstraint() {
+  public getObservationConstraint(): Constraint {
     const nodes = this.dimensionRegistryService.selectedTreeNodes;
     let constraint = null;
     if (nodes.length > 0) {
@@ -216,36 +245,6 @@ export class ConstraintService {
     }
 
     return constraint;
-  }
-
-  /**
-   * Generate the constraint for the intersection between
-   * the inclusion constraint and the negated exclusion constraint
-   * @param inclusionConstraint
-   * @param exclusionConstraint
-   * @returns {CombinationConstraint}
-   */
-  generateIntersectionConstraint(inclusionConstraint: Constraint,
-                                 exclusionConstraint: Constraint): Constraint {
-
-    // Inclusion part
-    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
-      inclusionConstraint = new TrueConstraint();
-    }
-
-    // Only use exclusion if there's something there
-    if ((<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
-      // Wrap exclusion in negation
-      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
-
-      let combination = new CombinationConstraint();
-      combination.children.push(inclusionConstraint);
-      combination.children.push(negatedExclusionConstraint);
-      return combination;
-    } else {
-      // Otherwise just return the inclusion part
-      return inclusionConstraint;
-    }
   }
 
   /**
@@ -529,9 +528,7 @@ export class ConstraintService {
       .getElementById('tree-nodes-component')
       .querySelector('.ui-tree-container').children;
     let rootTreeNodes = this.dimensionRegistryService.treeNodes;
-    const rootInclusionConstraint = this.rootInclusionConstraint;
-    const rootExclusionConstraint = this.rootExclusionConstraint;
-    let patientConstraint = this.generateIntersectionConstraint(rootInclusionConstraint, rootExclusionConstraint);
+    let patientConstraint = this.getPatientConstraint();
     /*
      * Get the patient count per study in one go,
      * then go into the tree nodes, find study nodes and assign the counts

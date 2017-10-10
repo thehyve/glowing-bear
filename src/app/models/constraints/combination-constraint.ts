@@ -54,19 +54,11 @@ export class CombinationConstraint implements Constraint {
     let queryObject: Object;
     if (childQueryObjects.length === 1) {
       // Only one child, so don't wrap it in and/or
-      queryObject = {
-        'type': 'subselection',
-        'dimension': 'patient',
-        'constraint': childQueryObjects[0]
-      };
+      queryObject = this.wrapWithSubselection(childQueryObjects[0]);
     } else {
       // Wrap the child query objects in subselections
       childQueryObjects = childQueryObjects.map(queryObj => {
-        return {
-          'type': 'subselection',
-          'dimension': 'patient',
-          'constraint': queryObj
-        };
+        return this.wrapWithSubselection(queryObj);
       });
 
       // Wrap in and/or constraint
@@ -77,6 +69,27 @@ export class CombinationConstraint implements Constraint {
     }
 
     return queryObject;
+  }
+
+  wrapWithSubselection(queryObject: object): object {
+    if (queryObject['type'] !== 'negation') {
+      return {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': queryObject
+      };
+    } else {
+      const arg = queryObject['arg'];
+      const sub = {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': arg
+      };
+      return {
+        'type': 'negation',
+        'arg': sub
+      };
+    }
   }
 
   /**

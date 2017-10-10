@@ -22,11 +22,11 @@ export class NegationConstraint implements Constraint {
 
   toPatientQueryObject(): Object {
     return {
-      'type': 'subselection',
-      'dimension': 'patient',
-      'constraint': {
-        'type': 'negation',
-        'arg': this._constraint.toQueryObject()
+      'type': 'negation',
+      'arg': {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': this._constraint.toQueryObject()
       }
     };
   }
