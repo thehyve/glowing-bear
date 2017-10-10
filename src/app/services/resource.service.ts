@@ -212,7 +212,7 @@ export class ResourceService {
         patientConstraint.toPatientQueryObject(),
         observationConstraint.toQueryObject()
       ]
-    }; console.log('udate p o cont: ', combination, JSON.stringify(combination));
+    };
     const constraintString = JSON.stringify(combination);
     let url = `${endpoint.getUrl()}/observations/count?constraint=${constraintString}`;
     return this.http.get(url, {
