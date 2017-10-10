@@ -10,7 +10,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 export class ObservationSelectionComponent implements OnInit {
 
   constructor(public dimensionRegistryService: DimensionRegistryService,
-              private constraintService: ConstraintService) {
+              public constraintService: ConstraintService) {
   }
 
   ngOnInit() {

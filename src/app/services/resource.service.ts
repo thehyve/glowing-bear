@@ -194,6 +194,34 @@ export class ResourceService {
       .catch(this.handleError.bind(this));
   }
 
+  /**
+   * Given the selected patients and observations,
+   * get the count of the observations on those selected patients.
+   * @param {Constraint} patientConstraint
+   * @param {Constraint} observationConstraint
+   * @returns {Observable<number>}
+   */
+  getPatientObservationCount(patientConstraint: Constraint,
+                             observationConstraint: Constraint): Observable<number> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+    const combination = {
+      type: 'and',
+      args: [
+        patientConstraint.toPatientQueryObject(),
+        observationConstraint.toQueryObject()
+      ]
+    };
+    const constraintString = JSON.stringify(combination);
+    let url = `${endpoint.getUrl()}/observations/count?constraint=${constraintString}`;
+    return this.http.get(url, {
+      headers: headers
+    })
+      .map((res: Response) => res.json()['count'])
+      .catch(this.handleError.bind(this));
+  }
+
   // -------------------------------------- aggregate calls --------------------------------------
 
   /**

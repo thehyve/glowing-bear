@@ -40,8 +40,8 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   // and this will take a while
   delay: number;
 
-  constructor(private constraintService: ConstraintService,
-              private dimensionRegistryService: DimensionRegistryService,
+  constructor(public constraintService: ConstraintService,
+              public dimensionRegistryService: DimensionRegistryService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -304,7 +304,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * Clear filtering words
    * @param event
    */
-  clearFilter(event) {
+  clearFilter() {
     if (this.searchTerm !== '') {
       const filterWord: string = this.searchTerm.trim().toLowerCase();
       this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', '');

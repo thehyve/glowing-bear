@@ -73,6 +73,9 @@ export class ConstraintService {
     ];
   }
 
+  /**
+   * update the count of the selected patients
+   */
   public updatePatientCounts() {
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
@@ -149,25 +152,42 @@ export class ConstraintService {
 
 
     /*
-     * Patient counts on tree nodes
+     * Also update patient counts on tree nodes
      */
     this.updateExpandedTreeNodesCounts(true);
+    /*
+     * Also update the observation count
+     */
+    this.updateObservationCounts();
   }
 
+  /**
+   * Update the count of observations on the selected patients
+   */
   public updateObservationCounts() {
-    this.resourceService.getObservationCount(this.getObservationConstraint())
+    const patientConstraint = this.getPatientConstraint();
+    const observationConstraint = this.getObservationConstraint();
+    this.resourceService.getPatientObservationCount(patientConstraint, observationConstraint)
       .subscribe(
         (count) => {
           this.observationCount = count;
         },
-        err => console.log(err)
+        err => console.error(err)
       );
   }
 
+  /**
+   * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
+   * @returns {Constraint}
+   */
   public getPatientConstraint() {
     return this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
   }
 
+  /**
+   * Get the constraint of selected concept variables in the observation-selection section
+   * @returns {any}
+   */
   public getObservationConstraint() {
     const nodes = this.dimensionRegistryService.selectedTreeNodes;
     let constraint = null;
