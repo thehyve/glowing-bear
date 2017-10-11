@@ -40,7 +40,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   // and this will take a while
   delay: number;
 
-  constructor(public constraintService: ConstraintService,
+  constructor(private constraintService: ConstraintService,
               public dimensionRegistryService: DimensionRegistryService,
               private element: ElementRef) {
     this.expansionStatus = {
@@ -302,7 +302,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   /**
    * Clear filtering words
-   * @param event
    */
   clearFilter() {
     if (this.searchTerm !== '') {
