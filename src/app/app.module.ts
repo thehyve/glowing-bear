@@ -9,7 +9,7 @@ import {AppComponent} from './app.component';
 import {EndpointService} from './services/endpoint.service';
 import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
 import {ResourceService} from './services/resource.service';
-import {DimensionRegistryService} from './services/dimension-registry.service';
+import {TreeNodeService} from './services/tree-node.service';
 import {AppConfig} from './config/app.config';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConstraintService} from './services/constraint.service';
@@ -41,7 +41,7 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
-    DimensionRegistryService,
+    TreeNodeService,
     ConstraintService,
     AppConfig,
     {

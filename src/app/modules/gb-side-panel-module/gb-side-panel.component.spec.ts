@@ -11,8 +11,8 @@ import {FormsModule} from '@angular/forms';
 import {TreeNodesComponent} from './accordion-components/tree-nodes/tree-nodes.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
-import {DimensionRegistryServiceMock} from '../../services/mocks/dimension-registry.service.mock';
-import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
+import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
@@ -46,8 +46,8 @@ describe('GbSidePanelComponent', () => {
       ],
       providers: [
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

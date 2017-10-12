@@ -7,8 +7,8 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
@@ -39,8 +39,8 @@ describe('GbExportComponent', () => {
       providers: [
         SimpleTimer,
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

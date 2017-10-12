@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 
 @Component({
@@ -9,7 +9,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 })
 export class ObservationSelectionComponent implements OnInit {
 
-  constructor(public dimensionRegistryService: DimensionRegistryService,
+  constructor(public treeNodeService: TreeNodeService,
               public constraintService: ConstraintService) {
   }
 
@@ -29,9 +29,9 @@ export class ObservationSelectionComponent implements OnInit {
     reader.onload = (function (e) {
       let paths = JSON.parse(e.target['result']);
       let foundTreeNodes = [];
-      let nodes = this.dimensionRegistryService.treeNodes;
-      this.dimensionRegistryService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
-      this.dimensionRegistryService.updateSelectedTreeNodesPrime(foundTreeNodes);
+      let nodes = this.treeNodeService.treeNodes;
+      this.treeNodeService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
+      this.treeNodeService.updateSelectedTreeNodesPrime(foundTreeNodes);
     }).bind(this);
     let file = event.target.files[0];
     console.log('file: ', file);

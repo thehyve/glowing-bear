@@ -3,8 +3,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbStudyConstraintComponent} from './gb-study-constraint.component';
 import {AutoCompleteModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
@@ -32,8 +32,8 @@ describe('GbStudyConstraintComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         }
       ]
     })

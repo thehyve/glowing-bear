@@ -5,8 +5,8 @@ import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule} from
 import {FormsModule} from '@angular/forms';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
@@ -28,8 +28,8 @@ describe('TreeNodesComponent', () => {
       ],
       providers: [
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

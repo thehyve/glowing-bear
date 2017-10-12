@@ -10,7 +10,7 @@ import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {CombinationState} from '../models/constraints/combination-state';
 import {NegationConstraint} from '../models/constraints/negation-constraint';
 import {DropMode} from '../models/drop-mode';
-import {DimensionRegistryService} from './dimension-registry.service';
+import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 
 type LoadingState = 'loading' | 'complete';
@@ -69,7 +69,7 @@ export class ConstraintService {
 
 
   constructor(private resourceService: ResourceService,
-              private dimensionRegistryService: DimensionRegistryService) {
+              private treeNodeService: TreeNodeService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
     this._validTreeNodeTypes = [
@@ -84,7 +84,6 @@ export class ConstraintService {
    * update the count of the selected patients
    */
   public updatePatientCounts() {
-    console.log('update patient coutn')
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
@@ -296,13 +295,13 @@ export class ConstraintService {
    * @returns {any}
    */
   public getObservationConstraint(): Constraint {
-    const nodes = this.dimensionRegistryService.selectedTreeNodes;
+    const nodes = this.treeNodeService.selectedTreeNodes;
     let constraint = null;
     if (nodes.length > 0) {
       let allLeaves = [];
       for (let node of nodes) {
         let leaves = [];
-        this.dimensionRegistryService
+        this.treeNodeService
           .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
         allLeaves = allLeaves.concat(leaves);
       }
@@ -319,7 +318,7 @@ export class ConstraintService {
       }
     } else {
       constraint = new TrueConstraint();
-      this.conceptCount = this.dimensionRegistryService.concepts.length;
+      this.conceptCount = this.treeNodeService.concepts.length;
     }
 
     return constraint;
@@ -337,10 +336,10 @@ export class ConstraintService {
     if (constraint.getClassName() === 'CombinationConstraint') {
       let paths = [];
       this.extractConceptPaths(constraint, paths);
-      let nodes = this.dimensionRegistryService.treeNodes;
+      let nodes = this.treeNodeService.treeNodes;
       let foundTreeNodes = [];
-      this.dimensionRegistryService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
-      this.dimensionRegistryService.updateSelectedTreeNodesPrime(foundTreeNodes);
+      this.treeNodeService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
+      this.treeNodeService.updateSelectedTreeNodesPrime(foundTreeNodes);
       this.updateObservationCounts();
     }
   }
@@ -357,9 +356,9 @@ export class ConstraintService {
   }
 
   public clearObservationConstraint() {
-    this.dimensionRegistryService.selectedTreeNodes.length = 0;
-    this.dimensionRegistryService.selectedTreeNodesPrime.length = 0;
-    this.dimensionRegistryService.selectAllTreeNodes(false);
+    this.treeNodeService.selectedTreeNodes.length = 0;
+    this.treeNodeService.selectedTreeNodesPrime.length = 0;
+    this.treeNodeService.selectAllTreeNodes(false);
   }
 
   /**
@@ -415,7 +414,7 @@ export class ConstraintService {
         }
       } else if (treeNodeType === 'UNKNOWN') {
         let descendants = [];
-        this.dimensionRegistryService
+        this.treeNodeService
           .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
             ['UNKNOWN'], descendants);
         if (descendants.length < 6) {
@@ -657,7 +656,7 @@ export class ConstraintService {
     let rootTreeNodeElements = document
       .getElementById('tree-nodes-component')
       .querySelector('.ui-tree-container').children;
-    let rootTreeNodes = this.dimensionRegistryService.treeNodes;
+    let rootTreeNodes = this.treeNodeService.treeNodes;
     let patientConstraint = this.getPatientConstraint();
     /*
      * Get the patient count per study in one go,
@@ -689,7 +688,7 @@ export class ConstraintService {
       .subscribe(
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
-          this.dimensionRegistryService.queries.push(newlySavedQuery);
+          this.treeNodeService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
           this.alertMessages.length = 0;
           this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
@@ -716,12 +715,12 @@ export class ConstraintService {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
-          const index = this.dimensionRegistryService.queries.indexOf(query);
+          const index = this.treeNodeService.queries.indexOf(query);
           if (index > -1) {
-            this.dimensionRegistryService.queries.splice(index, 1);
+            this.treeNodeService.queries.splice(index, 1);
           }
           // An alternative would be to directly update the queries
-          // using 'dimensionRegistryService.updateQueries()'
+          // using 'treeNodeService.updateQueries()'
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },

@@ -3,8 +3,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {QueriesComponent} from './queries.component';
 import {ButtonModule, DataListModule, DragDropModule, InputTextModule, PanelModule, TooltipModule} from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {FormsModule} from '@angular/forms';
@@ -30,8 +30,8 @@ describe('QueriesComponent', () => {
       ],
       providers: [
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

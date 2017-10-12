@@ -10,12 +10,12 @@ import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
 import {EndpointService} from './services/endpoint.service';
-import {DimensionRegistryService} from './services/dimension-registry.service';
+import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
 import {EndpointServiceMock} from './services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
-import {DimensionRegistryServiceMock} from './services/mocks/dimension-registry.service.mock';
+import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
@@ -70,8 +70,8 @@ describe('AppComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

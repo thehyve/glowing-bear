@@ -9,8 +9,8 @@ import {EndpointService} from '../../services/endpoint.service';
 import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
-import {DimensionRegistryServiceMock} from '../../services/mocks/dimension-registry.service.mock';
-import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
+import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {routing} from './gb-data-selection.routing';
@@ -50,8 +50,8 @@ describe('GbDataSelectionComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

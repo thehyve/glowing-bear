@@ -1,6 +1,6 @@
 import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
 import {Constraint} from '../../../../models/constraints/constraint';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
@@ -17,7 +17,7 @@ export class GbConstraintComponent implements OnInit {
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
 
-  constructor(protected dimensionRegistry: DimensionRegistryService,
+  constructor(protected treeNodeService: TreeNodeService,
               protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
               protected element: ElementRef) {

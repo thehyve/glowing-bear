@@ -1,8 +1,7 @@
 import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 import {DropMode} from '../../../../models/drop-mode';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 
 @Component({
   selector: 'queries',
@@ -14,7 +13,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
   observer: MutationObserver;
   collapsed = false;
 
-  constructor(public dimensionRegistry: DimensionRegistryService,
+  constructor(public treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private element: ElementRef) {
   }
@@ -38,7 +37,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
     let panels = this.element.nativeElement.querySelectorAll('.gb-query-panel');
     let index = 0;
     for (let panel of panels) {
-      let correspondingQuery = this.dimensionRegistry.queries[index];
+      let correspondingQuery = this.treeNodeService.queries[index];
       panel.addEventListener('dragstart', (function () {
         correspondingQuery['dropMode'] = DropMode.Query;
         this.constraintService.selectedNode = correspondingQuery;
@@ -68,7 +67,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
   }
 
   selectQuery(selectedQuery) {
-    for (let query of this.dimensionRegistry.queries) {
+    for (let query of this.treeNodeService.queries) {
       query['selected'] = false;
     }
     selectedQuery['selected'] = true;

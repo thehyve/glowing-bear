@@ -1,5 +1,5 @@
 
-export class DimensionRegistryServiceMock {
+export class TreeNodeServiceMock {
   treeSelectionMode = '';
   concepts = [];
 

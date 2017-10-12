@@ -4,8 +4,8 @@ import {GbCombinationConstraintComponent} from './gb-combination-constraint.comp
 import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 import {AutoCompleteModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
-import {DimensionRegistryServiceMock} from '../../../../services/mocks/dimension-registry.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
@@ -28,8 +28,8 @@ describe('GbCombinationConstraintComponent', () => {
       ],
       providers: [
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ResourceService,

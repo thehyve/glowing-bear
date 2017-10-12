@@ -1,10 +1,9 @@
 import { TestBed, inject } from '@angular/core/testing';
-
-import { DimensionRegistryService } from './dimension-registry.service';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
+import {TreeNodeService} from './tree-node.service';
 
-describe('DimensionRegistryService', () => {
+describe('TreeNodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -12,12 +11,12 @@ describe('DimensionRegistryService', () => {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
-        DimensionRegistryService
+        TreeNodeService
       ]
     });
   });
 
-  it('should inject DimensionRegistryService', inject([DimensionRegistryService], (service: DimensionRegistryService) => {
+  it('should inject TreeNodeService', inject([TreeNodeService], (service: TreeNodeService) => {
     expect(service).toBeTruthy();
   }));
 });

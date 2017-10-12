@@ -1,6 +1,6 @@
 <div>
 
-  <div *ngFor="let query of dimensionRegistry.queries"
+  <div *ngFor="let query of treeNodeService.queries"
        class="gb-query-panel"
        pDraggable="query-drag-drop">
     <p-panel [collapsed]="query['collapsed']" (click)="onQueryPanelClick(query)">

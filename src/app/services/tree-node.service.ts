@@ -12,7 +12,7 @@ import {Query} from '../models/query';
 type LoadingState = 'loading' | 'complete';
 
 @Injectable()
-export class DimensionRegistryService {
+export class TreeNodeService {
 
   // the variable that holds the entire tree structure
   public treeNodes: TreeNode[] = [];

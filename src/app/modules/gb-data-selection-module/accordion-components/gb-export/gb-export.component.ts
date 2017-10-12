@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {DropMode} from '../../../../models/drop-mode';
 import {ResourceService} from '../../../../services/resource.service';
@@ -41,7 +41,7 @@ export class GbExportComponent implements OnInit {
   exportJobs: ExportJob[];
   exportJobName: string;
 
-  constructor(private dimensionRegistry: DimensionRegistryService,
+  constructor(private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
@@ -215,7 +215,7 @@ export class GbExportComponent implements OnInit {
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let sets = this.dimensionRegistry.queries;
+    let sets = this.treeNodeService.queries;
 
     if (query && sets) {
       this.searchResults = sets.filter(
@@ -228,7 +228,7 @@ export class GbExportComponent implements OnInit {
 
   onDropdown(event) {
     this.searchResults = [];
-    this.searchResults = this.dimensionRegistry.queries;
+    this.searchResults = this.treeNodeService.queries;
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
   }

@@ -1,4 +1,4 @@
-<div id="tree-nodes-component" [@notifyState]="dimensionRegistryService.loadingTreeNodes">
+<div id="tree-nodes-component" [@notifyState]="treeNodeService.loadingTreeNodes">
 
   <!-- the search/filter input -->
   <div>
@@ -14,9 +14,9 @@
 
 
   <!-- the tree itself -->
-  <p-tree [value]="dimensionRegistryService.treeNodes"
-          [selectionMode]="dimensionRegistryService.treeSelectionMode"
-          [(selection)]="dimensionRegistryService.selectedTreeNodesPrime"
+  <p-tree [value]="treeNodeService.treeNodes"
+          [selectionMode]="treeNodeService.treeSelectionMode"
+          [(selection)]="treeNodeService.selectedTreeNodesPrime"
           (onNodeExpand)="expandNode($event)"
           (onNodeSelect)="onNodeSelect($event)"
           (onNodeUnselect)="onNodeUnselect($event)"
@@ -39,7 +39,7 @@
   <!-- the spinning icon -->
   <br>
   <i class="fa fa-spin fa-refresh fa-fw gb-spinner"
-     [class.loading]="dimensionRegistryService.loadingTreeNodes == 'loading'"></i>
+     [class.loading]="treeNodeService.loadingTreeNodes == 'loading'"></i>
 
 </div>
 

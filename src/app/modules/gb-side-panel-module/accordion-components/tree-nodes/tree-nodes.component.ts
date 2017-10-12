@@ -4,7 +4,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
-import {DimensionRegistryService} from '../../../../services/dimension-registry.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 
 @Component({
   selector: 'tree-nodes',
@@ -41,7 +41,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   delay: number;
 
   constructor(private constraintService: ConstraintService,
-              public dimensionRegistryService: DimensionRegistryService,
+              public treeNodeService: TreeNodeService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -271,13 +271,13 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', filterWord);
+    this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', filterWord);
     this.removeFalsePrimeNgClasses(this.delay);
     // this.updateEventListeners()
 
     window.setTimeout((function () {
       let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-      let treeNodes = this.dimensionRegistryService.treeNodes;
+      let treeNodes = this.treeNodeService.treeNodes;
       this.updateEventListeners(treeNodeElements, treeNodes);
     }).bind(this), this.delay);
   }
@@ -287,7 +287,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * @param event
    */
   onNodeSelect(event) {
-    this.dimensionRegistryService.updateSelectedTreeNodes();
+    this.treeNodeService.updateSelectedTreeNodes();
     this.constraintService.updateObservationCounts();
   }
 
@@ -296,7 +296,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    * @param event
    */
   onNodeUnselect(event) {
-    this.dimensionRegistryService.updateSelectedTreeNodes();
+    this.treeNodeService.updateSelectedTreeNodes();
     this.constraintService.updateObservationCounts();
   }
 
@@ -306,7 +306,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   clearFilter() {
     if (this.searchTerm !== '') {
       const filterWord: string = this.searchTerm.trim().toLowerCase();
-      this.filterWithHighlightTreeNodes(this.dimensionRegistryService.treeNodes, 'label', '');
+      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
       this.removeFalsePrimeNgClasses(this.delay);
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DimensionRegistryService} from '../../services/dimension-registry.service';
+import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
 
 @Component({
@@ -11,13 +11,13 @@ export class GbDataSelectionComponent implements OnInit {
 
   private _queryName: string;
 
-  constructor(private dimensionRegistryService: DimensionRegistryService,
+  constructor(private treeNodeService: TreeNodeService,
               public constraintService: ConstraintService) {
     this.queryName = '';
   }
 
   ngOnInit() {
-    this.dimensionRegistryService.treeSelectionMode = '';
+    this.treeNodeService.treeSelectionMode = '';
   }
 
   /**
@@ -28,7 +28,7 @@ export class GbDataSelectionComponent implements OnInit {
     // if the 'select observation' accordion is opened,
     // set tree selection mode to checkbox on the left side
     // else set to empty string
-    this.dimensionRegistryService.treeSelectionMode = event.index === 1 ? 'checkbox' : '';
+    this.treeNodeService.treeSelectionMode = event.index === 1 ? 'checkbox' : '';
   }
 
   /**
@@ -39,7 +39,7 @@ export class GbDataSelectionComponent implements OnInit {
     // if the 'select observation' accordion is closed,
     // set treeSelectionMode to empty string
     if (event.index === 1) {
-      this.dimensionRegistryService.treeSelectionMode = '';
+      this.treeNodeService.treeSelectionMode = '';
     }
   }
 
@@ -108,7 +108,7 @@ export class GbDataSelectionComponent implements OnInit {
     if (this.constraintService.conceptCount > 0) {
       return this.numberWithCommas(this.constraintService.conceptCount);
     } else {
-      return this.numberWithCommas(this.dimensionRegistryService.concepts.length);
+      return this.numberWithCommas(this.treeNodeService.concepts.length);
     }
   }
 
