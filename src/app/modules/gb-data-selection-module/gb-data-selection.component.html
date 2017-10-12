@@ -1,0 +1,88 @@
+<div class="gb-data-selection-container">
+  <!-- The data selection overview panel -->
+  <div class="gb-data-selection-overview-panel">
+    <div class="row">
+      <div class="col-3">
+        <span>
+          {{patientCount}} {{singularOrPlural('patient', patientCount)}}
+        </span>
+      </div>
+      <div class="col-3">
+        <span>
+          {{observationCount}} {{singularOrPlural('observation', observationCount)}}
+        </span>
+      </div>
+      <div class="col-3">
+        <span>
+          {{conceptCount}} {{singularOrPlural('concept', conceptCount)}}
+        </span>
+      </div>
+      <div class="col-3">
+        <div class="row">
+          <input id="queryName" type="text"
+                 class="form-control gb-data-selection-overview-panel-input"
+                 placeholder="Query name"
+                 (drop)="preventNodeDrop($event)"
+                 [(ngModel)]="queryName" >
+        </div>
+        <div class="row">
+          <button class="btn btn-outline-secondary btn-sm gb-data-selection-overview-panel-btn"
+                  (click)="saveQuery()"
+                  type="button">Save query</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p-messages [(value)]="constraintService.alertMessages"></p-messages>
+
+  <!-- The accordions -->
+  <md2-accordion [multiple]="false"
+                 (open)="openAccordion($event)"
+                 (close)="closeAccordion($event)">
+    <md2-accordion-tab [active]="true">
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Selection</span>
+        <span class="gb-data-selection-accordion-sub-header">
+          ({{patientCount}} {{singularOrPlural('patient', patientCount)}},
+          with {{patientObservationCount}} {{singularOrPlural('observation', patientObservationCount)}},
+          in {{patientConceptCount}} {{singularOrPlural('concept', patientConceptCount)}} and
+          {{patientStudyCount}} {{singularOrPlural('study', patientStudyCount)}})
+        </span>
+      </md2-accordion-header>
+      <gb-selection></gb-selection>
+    </md2-accordion-tab>
+
+    <md2-accordion-tab>
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Table</span>
+      </md2-accordion-header>
+      Table
+    </md2-accordion-tab>
+
+    <md2-accordion-tab>
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Visualization</span>
+      </md2-accordion-header>
+      Visualization
+    </md2-accordion-tab>
+
+    <md2-accordion-tab>
+      <md2-accordion-header>
+        <span class="gb-data-selection-accordion-header">Export</span>
+      </md2-accordion-header>
+      <gb-export></gb-export>
+    </md2-accordion-tab>
+
+    <!--<md2-accordion-tab>-->
+      <!--<md2-accordion-header>-->
+        <!--<span class="gb-data-selection-accordion-header">Select Concepts</span>-->
+        <!--<span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}-->
+        <!--concepts selected)</span>-->
+      <!--</md2-accordion-header>-->
+      <!--<observation-selection></observation-selection>-->
+    <!--</md2-accordion-tab>-->
+
+
+  </md2-accordion>
+</div>

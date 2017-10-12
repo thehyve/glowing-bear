@@ -10,19 +10,15 @@ export const routes: Routes = [
   },
   {
     path: 'dashboard',
-    loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
+    loadChildren: './modules/gb-dashboard-module/gb-dashboard.module#GbDashboardModule'
   },
   {
     path: 'data-selection',
-    loadChildren: './modules/data-selection/data-selection.module#DataSelectionModule'
+    loadChildren: './modules/gb-data-selection-module/gb-data-selection.module#GbDataSelectionModule'
   },
   {
     path: 'analysis',
-    loadChildren: './modules/analysis/analysis.module#AnalysisModule'
-  },
-  {
-    path: 'export',
-    loadChildren: './modules/export/export.module#ExportModule'
+    loadChildren: './modules/gb-analysis-module/gb-analysis.module#GbAnalysisModule'
   }
 ];
 

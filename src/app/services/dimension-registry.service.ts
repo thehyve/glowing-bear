@@ -69,7 +69,8 @@ export class DimensionRegistryService {
       );
   }
 
-  /** Extracts concepts (and later possibly other dimensions) from the
+  /**
+   * Extracts concepts (and later possibly other dimensions) from the
    *  provided TreeNode array and their children.
    *  And augment tree nodes with PrimeNG tree-ui specifications
    * @param treeNodes
@@ -234,6 +235,26 @@ export class DimensionRegistryService {
   }
 
   /**
+   * Flag all tree nodes' selelctions to true or false
+   * @param {boolean} flag
+   */
+  public selectAllTreeNodes(flag: boolean) {
+    this.selectAllTreeNodesIterative(this.treeNodes, flag);
+  }
+
+  private selectAllTreeNodesIterative(nodes: TreeNode[], flag: boolean) {
+    for (let node of nodes) {
+      node['selected'] = flag;
+      if (node['partialSelected']) {
+        node['partialSelected'] = false;
+      }
+      if (node['children']) {
+        this.selectAllTreeNodesIterative(node['children'], flag);
+      }
+    }
+  }
+
+  /**
    * Update the selected tree nodes,
    * used when the user is checking to select tree nodes in observation selection
    */
@@ -248,7 +269,6 @@ export class DimensionRegistryService {
         this.selectedTreeNodes.push(treeNodeCopy);
       }
     }
-
   }
 
   private keepSelectedTreeNodes(parentNode: TreeNode) {
@@ -270,7 +290,9 @@ export class DimensionRegistryService {
   }
 
   /**
-   * Update the PrimeNG version of selected tree nodes
+   * Update the PrimeNG version of selected tree nodes,
+   * this is where we set the flags of tree nodes that are selected or expanded
+   * @param {TreeNode[]} nodes -- flat array of tree nodes, regardless of hierarchy
    */
   public updateSelectedTreeNodesPrime(nodes: TreeNode[]) {
     for (let node of nodes) {
@@ -294,7 +316,7 @@ export class DimensionRegistryService {
    * @param {string[]} paths
    * @param {TreeNode[]} foundNodes
    */
-  private findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
+  public findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
     for (let node of nodes) {
       if (paths.indexOf(node['fullName']) !== -1) {
         foundNodes.push(node);

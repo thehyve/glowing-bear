@@ -154,6 +154,30 @@ export class ResourceService {
     }
   }
 
+  /**
+   * Given a constraint, get the patient counts and observation counts
+   * organized per study, then per concept
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    let headers = new Headers();
+    let endpoint = this.endpointService.getEndpoint();
+
+    if (endpoint) {
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const constraintString = JSON.stringify(constraint.toQueryObject());
+      let url = `${endpoint.getUrl()}/observations/counts_per_study_and_concept?constraint=${constraintString}`;
+      return this.http.get(url, {
+        headers: headers
+      })
+        .map((response: Response) => response.json()['countsPerStudy'])
+        .catch(this.handleError.bind(this));
+    } else {
+      console.error('Could not establish endpoint.');
+    }
+  }
+
   // -------------------------------------- patient calls --------------------------------------
   /**
    * Given a constraint, return the corresponding patient list
