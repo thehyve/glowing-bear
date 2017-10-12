@@ -26,6 +26,7 @@ describe('GbDataSelectionComponent', () => {
       declarations: [
         GbDataSelectionComponent,
         GenericComponentMock({selector: 'gb-selection'}),
+        GenericComponentMock({selector: 'gb-table'}),
         GenericComponentMock({selector: 'gb-export'})
       ],
       imports: [

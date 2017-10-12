@@ -14,9 +14,10 @@ import {AutoCompleteModule} from 'primeng/components/autocomplete/autocomplete';
 import {Md2AccordionModule} from 'md2';
 import {CheckboxModule} from 'primeng/components/checkbox/checkbox';
 import {CalendarModule} from 'primeng/components/calendar/calendar';
-import {MessagesModule, TreeModule, PanelModule, DataListModule, DataTableModule} from 'primeng/primeng';
+import {MessagesModule, TreeModule, PanelModule, DataListModule, DataTableModule, TreeTableModule} from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
+import { GbTableComponent } from './accordion-components/gb-table/gb-table.component';
 
 @NgModule({
   imports: [
@@ -31,7 +32,8 @@ import {SimpleTimer} from 'ng2-simple-timer';
     TreeModule,
     PanelModule,
     DataListModule,
-    DataTableModule
+    DataTableModule,
+    TreeTableModule
   ],
   exports: [
     RouterModule
@@ -47,7 +49,8 @@ import {SimpleTimer} from 'ng2-simple-timer';
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,
     GbConstraintComponent,
-    GbConceptConstraintComponent
+    GbConceptConstraintComponent,
+    GbTableComponent
   ],
   entryComponents: [
     GbConstraintComponent,

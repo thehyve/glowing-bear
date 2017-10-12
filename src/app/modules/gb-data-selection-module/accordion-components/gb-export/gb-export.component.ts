@@ -59,7 +59,7 @@ export class GbExportComponent implements OnInit {
   updateExportJobs() {
     this.resourceService.getExportJobs()
       .subscribe(
-        jobs => {
+        jobs => { console.log('jobs, ', jobs);
           this.exportJobs = jobs;
         },
         err => console.error(err)
