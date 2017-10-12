@@ -66,7 +66,12 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   numberWithCommas(x: number): string {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    } else {
+      return '0';
+    }
+
   }
 
   public singularOrPlural(noun: string, number: string) {

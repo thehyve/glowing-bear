@@ -20,7 +20,7 @@ describe('GbSelectionComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbSelectionComponent,
-        GenericComponentMock({selector: 'constraint', inputs: ['constraint', 'isRoot']})
+        GenericComponentMock({selector: 'gb-constraint', inputs: ['constraint', 'isRoot']})
       ],
       imports: [
         BrowserAnimationsModule,

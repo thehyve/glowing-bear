@@ -25,10 +25,8 @@ describe('GbDataSelectionComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbDataSelectionComponent,
-        GenericComponentMock({selector: 'patient-selection'}),
-        GenericComponentMock({selector: 'observation-selection'}),
-        GenericComponentMock({selector: 'data-view'}),
-        GenericComponentMock({selector: 'data-summary'})
+        GenericComponentMock({selector: 'gb-selection'}),
+        GenericComponentMock({selector: 'gb-export'})
       ],
       imports: [
         BrowserAnimationsModule,
