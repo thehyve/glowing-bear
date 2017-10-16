@@ -72,7 +72,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
     }
     selectedQuery['selected'] = true;
     // Update patient constraint
-    this.constraintService.clearPatientConstraint();
+    this.constraintService.clearSelectionConstraint();
     let patientConstraint =
       this.constraintService.generateConstraintFromConstraintObject(selectedQuery['patientsQuery']);
     this.constraintService.putPatientConstraint(patientConstraint);

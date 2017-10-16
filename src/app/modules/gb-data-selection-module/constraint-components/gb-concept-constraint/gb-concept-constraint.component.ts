@@ -130,7 +130,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeConstraints();
-      this.constraintService.updatePatientCounts();
+      this.constraintService.updateCounts_1();
     }
   }
 
@@ -142,7 +142,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyDateConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyDateConstraint = this._applyDateConstraint;
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   get date1(): Date {
@@ -162,7 +162,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.timeConstraint.date1 = correctedDate;
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   get date2(): Date {
@@ -182,7 +182,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.timeConstraint.date2 = correctedDate;
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   get dateOperatorState(): GbDateOperatorState {
@@ -197,7 +197,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyTrialVisitConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   get applyModifierConstraint(): boolean {
@@ -319,7 +319,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       }
     }
 
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
 
   }
 
@@ -400,7 +400,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateTrialVisitValues() {
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   onUnselectTrialVisit(visit) {
@@ -459,7 +459,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     conceptConstraint.timeConstraint.dateOperator = this._dateOperatorState;
 
     // Notify constraint service
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
 }

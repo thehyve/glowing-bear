@@ -84,32 +84,36 @@ export class GbDataSelectionComponent implements OnInit {
     }
   }
 
-  get patientCount(): string {
-    return this.numberWithCommas(this.constraintService.patientCount);
+  get patientCount_1(): string {
+    return this.numberWithCommas(this.constraintService.patientCount_1);
   }
 
-  get patientObservationCount(): string {
-    return this.numberWithCommas(this.constraintService.patientObservationCount);
+  get observationCount_1(): string {
+    return this.numberWithCommas(this.constraintService.observationCount_1);
   }
 
-  get patientConceptCount(): string {
-    return this.numberWithCommas(this.constraintService.patientConceptCount);
+  get conceptCount_1(): string {
+    return this.numberWithCommas(this.constraintService.conceptCount_1);
   }
 
-  get patientStudyCount(): string {
-    return this.numberWithCommas(this.constraintService.patientStudyCount);
+  get studyCount_1(): string {
+    return this.numberWithCommas(this.constraintService.studyCount_1);
   }
 
-  get observationCount(): string {
-    return this.numberWithCommas(this.constraintService.observationCount);
+  get patientCount_2(): string {
+    return this.numberWithCommas(this.constraintService.patientCount_2);
   }
 
-  get conceptCount(): string {
-    if (this.constraintService.conceptCount > 0) {
-      return this.numberWithCommas(this.constraintService.conceptCount);
-    } else {
-      return this.numberWithCommas(this.treeNodeService.concepts.length);
-    }
+  get observationCount_2(): string {
+    return this.numberWithCommas(this.constraintService.observationCount_2);
+  }
+
+  get conceptCount_2(): string {
+    return this.numberWithCommas(this.constraintService.conceptCount_2);
+  }
+
+  get studyCount_2(): string {
+    return this.numberWithCommas(this.constraintService.studyCount_2);
   }
 
   get queryName(): string {

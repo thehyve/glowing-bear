@@ -48,9 +48,9 @@ export class GbExportComponent implements OnInit {
     this.selectedQueries = [];
     this.dataFormats = [];
     this.updatingDataFormats = 'complete';
-    this.updateExportJobs();
-    this.timer.newTimer('30sec', 30);
-    this.timer.subscribe('30sec', () => this.updateExportJobs());
+    // this.updateExportJobs();
+    // this.timer.newTimer('30sec', 30);
+    // this.timer.subscribe('30sec', () => this.updateExportJobs());
   }
 
   ngOnInit() {

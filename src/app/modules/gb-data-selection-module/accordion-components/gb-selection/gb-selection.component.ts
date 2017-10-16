@@ -35,15 +35,15 @@ export class GbSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   get alertMessages(): Array<object> {
     return this.constraintService.alertMessages;
   }
 
-  get patientCount(): number {
-    return this.constraintService.patientCount;
+  get patientCount_1(): number {
+    return this.constraintService.patientCount_1;
   }
 
   get inclusionPatientCount(): number {

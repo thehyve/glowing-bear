@@ -37,7 +37,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
   onSearch(event) {
@@ -80,7 +80,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
-      this.constraintService.updatePatientCounts();
+      this.constraintService.updateCounts_1();
     }
   }
 
@@ -90,7 +90,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.constraintService.updatePatientCounts();
+    this.constraintService.updateCounts_1();
   }
 
 

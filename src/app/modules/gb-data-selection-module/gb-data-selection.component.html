@@ -4,17 +4,17 @@
     <div class="row">
       <div class="col-3">
         <span>
-          {{patientCount}} {{singularOrPlural('patient', patientCount)}}
+          {{patientCount}} {{singularOrPlural('patient', patientCount_2)}}
         </span>
       </div>
       <div class="col-3">
         <span>
-          {{observationCount}} {{singularOrPlural('observation', observationCount)}}
+          {{observationCount}} {{singularOrPlural('observation', observationCount_2)}}
         </span>
       </div>
       <div class="col-3">
         <span>
-          {{conceptCount}} {{singularOrPlural('concept', conceptCount)}}
+          {{conceptCount}} {{singularOrPlural('concept', conceptCount_2)}}
         </span>
       </div>
       <div class="col-3">
@@ -40,24 +40,32 @@
   <md2-accordion [multiple]="false"
                  (open)="openAccordion($event)"
                  (close)="closeAccordion($event)">
+    <!-- The 1st step -->
     <md2-accordion-tab [active]="true">
       <md2-accordion-header>
         <span class="gb-data-selection-accordion-header">Selection</span>
         <span class="gb-data-selection-accordion-sub-header">
-          ({{patientCount}} {{singularOrPlural('patient', patientCount)}},
-          with {{patientObservationCount}} {{singularOrPlural('observation', patientObservationCount)}},
-          in {{patientConceptCount}} {{singularOrPlural('concept', patientConceptCount)}} and
-          {{patientStudyCount}} {{singularOrPlural('study', patientStudyCount)}})
+          ({{patientCount_1}} {{singularOrPlural('patient', patientCount_1)}},
+          with {{observationCount_1}} {{singularOrPlural('observation', observationCount_1)}},
+          in {{conceptCount_1}} {{singularOrPlural('concept', conceptCount_1)}} and
+          {{studyCount_1}} {{singularOrPlural('study', studyCount_1)}})
         </span>
       </md2-accordion-header>
       <gb-selection></gb-selection>
     </md2-accordion-tab>
 
+    <!-- The 2nd step -->
     <md2-accordion-tab>
       <md2-accordion-header>
-        <span class="gb-data-selection-accordion-header">Table</span>
+        <span class="gb-data-selection-accordion-header">Projection</span>
+        <span class="gb-data-selection-accordion-sub-header">
+          ({{patientCount_2}} {{singularOrPlural('patient', patientCount_2)}},
+          with {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}},
+          in {{conceptCount_2}} {{singularOrPlural('concept', conceptCount_2)}} and
+          {{studyCount_2}} {{singularOrPlural('study', studyCount_2)}})
+        </span>
       </md2-accordion-header>
-      <gb-table></gb-table>
+      <gb-projection></gb-projection>
     </md2-accordion-tab>
 
     <md2-accordion-tab>

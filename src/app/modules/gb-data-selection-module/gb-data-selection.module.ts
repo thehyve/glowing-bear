@@ -17,7 +17,7 @@ import {CalendarModule} from 'primeng/components/calendar/calendar';
 import {MessagesModule, TreeModule, PanelModule, DataListModule, DataTableModule, TreeTableModule} from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
-import { GbTableComponent } from './accordion-components/gb-table/gb-table.component';
+import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 
 @NgModule({
   imports: [
@@ -50,7 +50,7 @@ import { GbTableComponent } from './accordion-components/gb-table/gb-table.compo
     GbCombinationConstraintComponent,
     GbConstraintComponent,
     GbConceptConstraintComponent,
-    GbTableComponent
+    GbProjectionComponent
   ],
   entryComponents: [
     GbConstraintComponent,

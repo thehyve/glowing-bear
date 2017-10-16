@@ -15,7 +15,7 @@ export class ObservationSelectionComponent implements OnInit {
 
   ngOnInit() {
     this.updateObservationFileChooserEventListener();
-    this.constraintService.updateObservationCounts();
+    this.constraintService.updateCounts_2();
   }
 
   updateObservationFileChooserEventListener() {

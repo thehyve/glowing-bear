@@ -14,8 +14,13 @@ type LoadingState = 'loading' | 'complete';
 @Injectable()
 export class TreeNodeService {
 
-  // the variable that holds the entire tree structure
+  // the variable that holds the entire tree structure, used by the tree on the left
   public treeNodes: TreeNode[] = [];
+  // the entire tree table data that holds the patients' observations in the 2nd step (projection)
+  private _treeTableData: TreeNode[] = [];
+  // the selected tree table data that holds the patients' observations in the 2nd step (projection)
+  private _selectedTreeTableData: TreeNode[] = [];
+
   // the selectionMode of the tree, default is '', alternative is 'checkbox'
   public treeSelectionMode = '';
   // the selected tree nodes by user in observation selection
@@ -142,7 +147,7 @@ export class TreeNodeService {
    */
   private loadTreeNext(parentNode) {
     let depth = 20;
-    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
       .subscribe(
         (treeNodes: object[]) => {
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
@@ -204,20 +209,70 @@ export class TreeNodeService {
     if (treeNode) {
       if (treeNode['children']) {
         for (let child of treeNode['children']) {
-          let type = child['type'];
-          if (excludedTypes.indexOf(type) === -1) {
+          if (child['children']) {
+            this.getTreeNodeDescendantsWithExcludedTypes(child, excludedTypes, descendants);
+          } else if (excludedTypes.indexOf(child['type']) === -1) {
             descendants.push(child);
           }
-          this.getTreeNodeDescendantsWithExcludedTypes(child, excludedTypes, descendants);
         }
       }
     }
   }
 
+  /**
+   * Update the tree table data for rendering the tree table in step 2, projection
+   * based on a given set of concept codes as filtering criteria.
+   * @param {string[]} conceptCodes
+   */
+  public updateTreeTableData(conceptCodes: string[]) {
+    this.treeTableData = this.updateTreeTableDataIterative(this.treeNodes, conceptCodes);
+    this.selectedTreeTableData = [];
+    this.checkTreeTableData(this.treeTableData);
+  }
+
+  private updateTreeTableDataIterative(nodes: TreeNode[], conceptCodes: string[]) {
+    let nodesWithCodes = [];
+    for (let node of nodes) {
+      if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
+        let nodeCopy = this.copyTreeTableDataItem(node);
+        nodesWithCodes.push(nodeCopy);
+      } else if (node['children']) {
+        let newNodeChildren = this.updateTreeTableDataIterative(node['children'], conceptCodes);
+        if (newNodeChildren.length > 0) {
+          let nodeCopy = this.copyTreeTableDataItem(node);
+          nodeCopy['children'] = newNodeChildren;
+          nodesWithCodes.push(nodeCopy);
+        }
+      }
+    }
+    return nodesWithCodes;
+  }
+
+  private copyTreeTableDataItem(item: TreeNode) {
+    let itemCopy = Object.assign({}, item);
+    itemCopy['data'] = {
+      name: item['name']
+    };
+    itemCopy['expanded'] = true;
+    return itemCopy;
+  }
+
+  private checkTreeTableData(nodes: TreeNode[]) {
+    for (let node of nodes) {
+      this.selectedTreeTableData.push(node);
+      if (node['children']) {
+        this.checkTreeTableData(node['children']);
+      }
+    }
+  }
+
+  /**
+   * Load the tree nodes for rendering the tree on the left side panel.
+   */
   loadTreeNodes() {
     this.loadingTreeNodes = 'loading';
     // Retrieve all tree nodes and extract the concepts iteratively
-    this.resourceService.getTreeNodes('\\', 2, false, true)
+    this.resourceService.getTreeNodes('\\', 2, false, false)
       .subscribe(
         (treeNodes: object[]) => {
           this.loadingTreeNodes = 'complete';
@@ -235,7 +290,7 @@ export class TreeNodeService {
   }
 
   /**
-   * Flag all tree nodes' selelctions to true or false
+   * Flag all tree nodes' selections to true or false
    * @param {boolean} flag
    */
   public selectAllTreeNodes(flag: boolean) {
@@ -288,6 +343,7 @@ export class TreeNodeService {
       parentNode['children'] = selectedChildren;
     }
   }
+
 
   /**
    * Update the PrimeNG version of selected tree nodes,
@@ -405,6 +461,22 @@ export class TreeNodeService {
     this._queries = value;
   }
 
+  get treeTableData(): TreeNode[] {
+    return this._treeTableData;
+  }
+
+  set treeTableData(value: TreeNode[]) {
+    this._treeTableData = value;
+  }
+
+  get selectedTreeTableData(): TreeNode[] {
+    return this._selectedTreeTableData;
+  }
+
+  set selectedTreeTableData(value: TreeNode[]) {
+    this._selectedTreeTableData = value;
+  }
+
   /**
    * Returns a list of all constraints that match the query string.
    * The constraints should be copied when editing them.
@@ -422,5 +494,4 @@ export class TreeNodeService {
     });
     return results;
   }
-
 }

@@ -288,7 +288,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onNodeSelect(event) {
     this.treeNodeService.updateSelectedTreeNodes();
-    this.constraintService.updateObservationCounts();
+    this.constraintService.updateCounts_2();
   }
 
   /**
@@ -297,7 +297,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
    */
   onNodeUnselect(event) {
     this.treeNodeService.updateSelectedTreeNodes();
-    this.constraintService.updateObservationCounts();
+    this.constraintService.updateCounts_2();
   }
 
   /**

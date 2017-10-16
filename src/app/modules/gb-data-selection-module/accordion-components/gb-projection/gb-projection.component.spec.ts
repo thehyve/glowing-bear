@@ -1,16 +1,16 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableComponent} from './gb-table.component';
+import {GbProjectionComponent} from './gb-projection.component';
 import {TreeTableModule} from 'primeng/primeng';
 
-describe('GbTableComponent', () => {
-  let component: GbTableComponent;
-  let fixture: ComponentFixture<GbTableComponent>;
+describe('GbProjectionComponent', () => {
+  let component: GbProjectionComponent;
+  let fixture: ComponentFixture<GbProjectionComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbTableComponent
+        GbProjectionComponent
       ],
       imports: [
         TreeTableModule
@@ -20,12 +20,12 @@ describe('GbTableComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbTableComponent);
+    fixture = TestBed.createComponent(GbProjectionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create GbTableComponent', () => {
+  it('should create GbProjectionComponent', () => {
     expect(component).toBeTruthy();
   });
 });
