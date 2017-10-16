@@ -10,7 +10,7 @@ import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {CombinationState} from '../models/constraints/combination-state';
 import {NegationConstraint} from '../models/constraints/negation-constraint';
 import {DropMode} from '../models/drop-mode';
-import {DimensionRegistryService} from './dimension-registry.service';
+import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 
 type LoadingState = 'loading' | 'complete';
@@ -20,25 +20,54 @@ type LoadingState = 'loading' | 'complete';
  * (1) translating string or JSON objects into Constraint class instances
  * (2) saving / updating constraints as queries (that contain patient or observation constraints)
  * (3) updating relevant patient or observation counts
+ * Remark: the patient set, observation set, concept set and study set used
+ * in the 2nd step (i.e. the projection step) are subsets of the corresponding sets
+ * in the 1st step (i.e. the selection step).
+ * Hence, each time the 1st sets updated, so should be the 2nd sets.
+ * However, each time the 2nd sets updated, the 1st sets remain unaffected.
  */
 @Injectable()
 export class ConstraintService {
 
   /*
-   * The patient count related variables and criterion constraints
-   * in the patient-selection accordion in data-selection
+   * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
    */
-  private _patientCount = 0;
   private _inclusionPatientCount = 0;
   private _exclusionPatientCount = 0;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+  // the number of patients selected in the first step
+  private _patientCount_1 = 0;
+  // the number of observations from the selected patients in the first step
+  private _observationCount_1 = 0;
+  // the number of concepts from the selected patients in the first step
+  private _conceptCount_1 = 0;
+  // the number of studies from the selected patients in the first step
+  private _studyCount_1 = 0;
+  // the codes of the concepts selected in the first step
+  private _conceptCodes_1 = [];
+  // the codes of the studies selected in the first step
+  private _studyCodes_1 = [];
 
   /*
-   * The observation count related variables
+   * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
    */
-  private _observationCount = 0;
-  private _conceptCount = 0;
+  // the number of patients further refined in the second step
+  // _patientCount_2 < or = _patientCount_1
+  private _patientCount_2 = 0;
+  // the number of observations further refined in the second step
+  // _observationCount_2 could be <, > or = _observationCount_1
+  private _observationCount_2 = 0;
+  // the number of concepts further refined in the second step
+  // _conceptCount_2 could be <, > or = _conceptCount_1
+  private _conceptCount_2 = 0;
+  // the number of studies further refined in the second step
+  // _studyCount_2 could be <, > or = _studyCount_1
+  private _studyCount_2 = 0;
+  // the codes of the concepts selected in the second step
+  private _conceptCodes_2 = [];
+  // the codes of the studies selected in the first step
+  private _studyCodes_2 = [];
 
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
@@ -62,21 +91,22 @@ export class ConstraintService {
 
 
   constructor(private resourceService: ResourceService,
-              private dimensionRegistryService: DimensionRegistryService) {
+              private treeNodeService: TreeNodeService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
     this._validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
+      'DATE',
       'STUDY',
       'UNKNOWN'
     ];
   }
 
   /**
-   * update the count of the selected patients
+   * update the patient, observation, concept and study counts in the first step
    */
-  public updatePatientCounts() {
+  public updateCounts_1() {
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
@@ -90,8 +120,8 @@ export class ConstraintService {
         patients => {
           this.inclusionPatientCount = patients.length;
           this.loadingStateInclusion = 'complete';
-          if (this.loadingStateExclusion === 'complete') {
-            this.patientCount = this.inclusionPatientCount - this.exclusionPatientCount;
+          if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
+            this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
             this.loadingStateTotal = 'complete';
           }
         },
@@ -113,8 +143,8 @@ export class ConstraintService {
           patients => {
             this.exclusionPatientCount = patients.length;
             this.loadingStateExclusion = 'complete';
-            if (this.loadingStateInclusion === 'complete') {
-              this.patientCount = this.inclusionPatientCount - this.exclusionPatientCount;
+            if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
+              this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
               this.loadingStateTotal = 'complete';
             }
           },
@@ -150,27 +180,99 @@ export class ConstraintService {
     //     }
     //   );
 
-
     /*
      * Also update patient counts on tree nodes
      */
-    this.updateExpandedTreeNodesCounts(true);
+    // this.updateExpandedTreeNodesCounts(true);
+
+
+    const selectionConstraint = this.getSelectionConstraint();
     /*
-     * Also update the observation count
+     * update observation count in the first step
      */
-    this.updateObservationCounts();
+    this.resourceService.getObservationCount(selectionConstraint)
+      .subscribe(
+        (count) => {
+          this.observationCount_1 = count;
+        },
+        err => console.error(err)
+      );
+    /*
+     * update concept and study counts in the first step
+     */
+    this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
+      .subscribe(
+        (countObj) => {
+          let studies = [];
+          let concepts = [];
+          for (let study in countObj) {
+            studies.push(study);
+            let _concepts_ = countObj[study];
+            for (let _concept_ in _concepts_) {
+              if (concepts.indexOf(_concept_) === -1) {
+                concepts.push(_concept_);
+              }
+            }
+          }
+          this.conceptCount_1 = concepts.length;
+          this.studyCount_1 = studies.length;
+          this.conceptCodes_1 = concepts;
+
+          // update the tree table in the 2nd step
+          this.treeNodeService.updateTreeTableData(concepts);
+          this.updateCounts_2();
+        },
+        err => console.error(err)
+      );
   }
 
   /**
-   * Update the count of observations on the selected patients
+   * update the patient, observation, concept and study counts in the second step
    */
-  public updateObservationCounts() {
-    const patientConstraint = this.getPatientConstraint();
-    const observationConstraint = this.getObservationConstraint();
-    this.resourceService.getPatientObservationCount(patientConstraint, observationConstraint)
+  public updateCounts_2() {
+    const selectionConstraint = this.getSelectionConstraint();
+    const projectionConstraint = this.getProjectionConstraint();
+
+    let combo = new CombinationConstraint();
+    combo.children.push(selectionConstraint);
+    combo.children.push(projectionConstraint);
+
+    // update the patient count in the 2nd step
+    this.resourceService.getPatients(combo, 'Patient Projection')
+      .subscribe(
+        (patients) => {
+          this.patientCount_2 = patients.length;
+        },
+        err => console.error(err)
+      );
+
+    // update the observation count in the 2nd step
+    this.resourceService.getPatientObservationCount(selectionConstraint, projectionConstraint)
       .subscribe(
         (count) => {
-          this.observationCount = count;
+          this.observationCount_2 = count;
+        },
+        err => console.error(err)
+      );
+
+    // update the concept and study counts in the 2nd step
+    this.resourceService.getCountsPerStudyAndConcept(combo)
+      .subscribe(
+        (countObj) => {
+          let studies = [];
+          let concepts = [];
+          for (let study in countObj) {
+            studies.push(study);
+            let _concepts_ = countObj[study];
+            for (let _concept_ in _concepts_) {
+              if (concepts.indexOf(_concept_) === -1) {
+                concepts.push(_concept_);
+              }
+            }
+          }
+          this.conceptCount_2 = concepts.length;
+          this.studyCount_2 = studies.length;
+          this.conceptCodes_2 = concepts;
         },
         err => console.error(err)
       );
@@ -180,7 +282,7 @@ export class ConstraintService {
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  public getPatientConstraint(): Constraint {
+  public getSelectionConstraint(): Constraint {
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
     let trueInclusion = false;
@@ -214,21 +316,90 @@ export class ConstraintService {
   }
 
   /**
+   * Clear the patient constraints
+   */
+  public clearSelectionConstraint() {
+    this.rootInclusionConstraint.children.length = 0;
+    this.rootExclusionConstraint.children.length = 0;
+  }
+
+  /**
+   * Replace the current patient constraints:
+   * rootInclusionConstraint and rootExclusionConstraint
+   * with the given constraint
+   * @param {Constraint} constraint
+   */
+  public putPatientConstraint(constraint: Constraint) {
+    if (constraint.getClassName() === 'CombinationConstraint') { // If it is a combination constraint
+      const children = (<CombinationConstraint>constraint).children;
+      let hasNegation = children.length === 2
+        && (children[1].getClassName() === 'NegationConstraint' || children[0].getClassName() === 'NegationConstraint');
+      if (hasNegation) {
+        let negationConstraint =
+          <NegationConstraint>(children[1].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+        this.rootExclusionConstraint.children.push(negationConstraint.constraint);
+        let remainingConstraint =
+          <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+        this.putPatientConstraint(remainingConstraint);
+      } else {
+        for (let child of children) {
+          this.putPatientConstraint(child);
+        }
+      }
+    } else { // If it is not a combination constraint
+      if (constraint.getClassName() !== 'TrueConstraint') {
+        this.rootInclusionConstraint.children.push(constraint);
+      }
+    }
+    this.updateCounts_1();
+  }
+
+  /**
    * Get the constraint of selected concept variables in the observation-selection section
    * @returns {any}
    */
-  public getObservationConstraint(): Constraint {
-    const nodes = this.dimensionRegistryService.selectedTreeNodes;
+  public getProjectionConstraint(): Constraint {
+    // const selectionConstraint = this.getSelectionConstraint();
+    // if (selectionConstraint.getClassName() === 'TrueConstraint') {
+    //   return new TrueConstraint();
+    // } else {
+    //   const nodes = this.treeNodeService.selectedTreeTableData;
+    //   let constraint = null;
+    //   if (nodes.length > 0) {
+    //     let allLeaves = [];
+    //     for (let node of nodes) {
+    //       let leaves = [];
+    //       this.treeNodeService
+    //         .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
+    //       allLeaves = allLeaves.concat(leaves);
+    //     }
+    //     constraint = new CombinationConstraint();
+    //     constraint.combinationState = CombinationState.Or;
+    //     for (let leaf of allLeaves) {
+    //       const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
+    //       if (leafConstraint) {
+    //         constraint.children.push(leafConstraint);
+    //       } else {
+    //         console.error('Failed to create constrain from: ', leaf);
+    //       }
+    //     }
+    //   } else {
+    //     constraint = new NegationConstraint(new TrueConstraint());
+    //   }
+    //
+    //   return constraint;
+    // }
+
+    const nodes = this.treeNodeService.selectedTreeTableData;
     let constraint = null;
     if (nodes.length > 0) {
       let allLeaves = [];
       for (let node of nodes) {
         let leaves = [];
-        this.dimensionRegistryService
+        this.treeNodeService
           .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
         allLeaves = allLeaves.concat(leaves);
       }
-      this.conceptCount = allLeaves.length;
       constraint = new CombinationConstraint();
       constraint.combinationState = CombinationState.Or;
       for (let leaf of allLeaves) {
@@ -240,11 +411,47 @@ export class ConstraintService {
         }
       }
     } else {
-      constraint = new TrueConstraint();
-      this.conceptCount = this.dimensionRegistryService.concepts.length;
+      constraint = new NegationConstraint(new TrueConstraint());
     }
 
     return constraint;
+  }
+
+
+  /**
+   * Replace the current observation constraint with the given constraint
+   * @param {Constraint} constraint
+   */
+  public putObservationConstraint(constraint: Constraint) {
+    console.log('put obser constraint: ', constraint, constraint.getClassName());
+    // The observation constraint must be a combination of selected concepts
+    // (sometimes with conditional study constraints)
+    if (constraint.getClassName() === 'CombinationConstraint') {
+      let paths = [];
+      this.extractConceptPaths(constraint, paths);
+      let nodes = this.treeNodeService.treeNodes;
+      let foundTreeNodes = [];
+      this.treeNodeService.findTreeNodesByPaths(nodes, paths, foundTreeNodes);
+      this.treeNodeService.updateSelectedTreeNodesPrime(foundTreeNodes);
+      this.updateCounts_2();
+    }
+  }
+
+  private extractConceptPaths(constraint: Constraint, paths: string[]) {
+    if (constraint.getClassName() === 'CombinationConstraint') {
+      const children = (<CombinationConstraint>constraint).children;
+      for (let child of children) {
+        this.extractConceptPaths(child, paths);
+      }
+    } else if (constraint.getClassName() === 'ConceptConstraint') {
+      paths.push((<ConceptConstraint>constraint).concept.path);
+    }
+  }
+
+  public clearObservationConstraint() {
+    this.treeNodeService.selectedTreeNodes.length = 0;
+    this.treeNodeService.selectedTreeNodesPrime.length = 0;
+    this.treeNodeService.selectAllTreeNodes(false);
   }
 
   /**
@@ -300,7 +507,7 @@ export class ConstraintService {
         }
       } else if (treeNodeType === 'UNKNOWN') {
         let descendants = [];
-        this.dimensionRegistryService
+        this.treeNodeService
           .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
             ['UNKNOWN'], descendants);
         if (descendants.length < 6) {
@@ -330,21 +537,22 @@ export class ConstraintService {
     return constraint;
   }
 
-  generateConstraintFromConstraintObject(constraintObject): Constraint {
+  generateConstraintFromConstraintObject(constraintObjectInput): Constraint {
+    let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
-    if (type === 'concept') {
+    if (type === 'concept') { // ------> If it is a concept constraint
       let concept = new Concept();
       concept.path = constraintObject['path'];
       concept.type = constraintObject['valueType'];
       constraint = new ConceptConstraint();
       (<ConceptConstraint>constraint).concept = concept;
-    } else if (type === 'study_name') {
+    } else if (type === 'study_name') { // ------> If it is a study constraint
       let study = new Study();
       study.studyId = constraintObject['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
-    } else if (type === 'combination') {
+    } else if (type === 'combination') { // ------> If it is a combination constraint
       let operator = constraintObject['operator'];
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
@@ -356,7 +564,7 @@ export class ConstraintService {
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
       }
-    } else if (type === 'and' || type === 'or') {
+    } else if (type === 'and' || type === 'or') { // ------> If it is a combination constraint of a different form
       let operator = type;
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
@@ -365,6 +573,14 @@ export class ConstraintService {
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
       }
+    } else if (type === 'true') { // ------> If it is a true constraint
+      constraint = new TrueConstraint();
+    } else if (type === 'negation') { // ------> If it is a negation constraint
+      const childConstraint = this.generateConstraintFromConstraintObject(constraintObject['arg']);
+      constraint = new NegationConstraint(childConstraint);
+    } else if (type === 'subselection'
+      && constraintObject['dimension'] === 'patient') { // ------> If it is a patient sub-selection
+      constraint = this.generateConstraintFromConstraintObject(constraintObject['constraint']);
     }
 
     return constraint;
@@ -467,9 +683,13 @@ export class ConstraintService {
       }
       // If the tree node is currently expanded
       if (dataObject['expanded']) {
-        let treeNodeChildrenElms = elm.querySelector('.ui-treenode-children').children;
-        let treeNodeChildren = dataObject.children;
-        this.updateConceptTreeNodeCounts(treeNodeChildrenElms, treeNodeChildren, patientConstraint, refresh);
+        const uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
+        if (uiTreenodeChildren) {
+          this.updateConceptTreeNodeCounts(uiTreenodeChildren.children,
+            dataObject.children,
+            patientConstraint,
+            refresh);
+        }
       }
       index++;
     }
@@ -508,12 +728,14 @@ export class ConstraintService {
       }
       // If the tree node is currently expanded
       if (dataObject['expanded']) {
-        const treeNodeChildrenElms = elm.querySelector('.ui-treenode-children').children;
-        this.updateStudyTreeNodeCounts(treeNodeChildrenElms,
-          dataObject.children,
-          patientConstraint,
-          refresh,
-          counts);
+        let uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
+        if (uiTreenodeChildren) {
+          this.updateStudyTreeNodeCounts(uiTreenodeChildren.children,
+            dataObject.children,
+            patientConstraint,
+            refresh,
+            counts);
+        }
       }
       index++;
     }
@@ -527,8 +749,8 @@ export class ConstraintService {
     let rootTreeNodeElements = document
       .getElementById('tree-nodes-component')
       .querySelector('.ui-tree-container').children;
-    let rootTreeNodes = this.dimensionRegistryService.treeNodes;
-    let patientConstraint = this.getPatientConstraint();
+    let rootTreeNodes = this.treeNodeService.treeNodes;
+    let patientConstraint = this.getSelectionConstraint();
     /*
      * Get the patient count per study in one go,
      * then go into the tree nodes, find study nodes and assign the counts
@@ -547,8 +769,8 @@ export class ConstraintService {
   }
 
   public saveQuery(queryName: string) {
-    const patientConstraintObj = this.getPatientConstraint().toPatientQueryObject();
-    const observationConstraintObj = this.getObservationConstraint().toQueryObject();
+    const patientConstraintObj = this.getSelectionConstraint().toPatientQueryObject();
+    const observationConstraintObj = this.getProjectionConstraint().toQueryObject();
     const queryObj = {
       name: queryName,
       patientsQuery: patientConstraintObj,
@@ -559,7 +781,7 @@ export class ConstraintService {
       .subscribe(
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
-          this.dimensionRegistryService.queries.push(newlySavedQuery);
+          this.treeNodeService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
           this.alertMessages.length = 0;
           this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
@@ -586,41 +808,17 @@ export class ConstraintService {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
-          const index = this.dimensionRegistryService.queries.indexOf(query);
+          const index = this.treeNodeService.queries.indexOf(query);
           if (index > -1) {
-            this.dimensionRegistryService.queries.splice(index, 1);
+            this.treeNodeService.queries.splice(index, 1);
           }
           // An alternative would be to directly update the queries
-          // using 'dimensionRegistryService.updateQueries()'
+          // using 'treeNodeService.updateQueries()'
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },
         err => console.error(err)
       );
-  }
-
-  get patientCount(): number {
-    return this._patientCount;
-  }
-
-  set patientCount(value: number) {
-    this._patientCount = value;
-  }
-
-  get observationCount(): number {
-    return this._observationCount;
-  }
-
-  set observationCount(value: number) {
-    this._observationCount = value;
-  }
-
-  get conceptCount(): number {
-    return this._conceptCount;
-  }
-
-  set conceptCount(value: number) {
-    this._conceptCount = value;
   }
 
   get inclusionPatientCount(): number {
@@ -653,6 +851,102 @@ export class ConstraintService {
 
   set rootExclusionConstraint(value: CombinationConstraint) {
     this._rootExclusionConstraint = value;
+  }
+
+  get patientCount_1(): number {
+    return this._patientCount_1;
+  }
+
+  set patientCount_1(value: number) {
+    this._patientCount_1 = value;
+  }
+
+  get observationCount_1(): number {
+    return this._observationCount_1;
+  }
+
+  set observationCount_1(value: number) {
+    this._observationCount_1 = value;
+  }
+
+  get conceptCount_1(): number {
+    return this._conceptCount_1;
+  }
+
+  set conceptCount_1(value: number) {
+    this._conceptCount_1 = value;
+  }
+
+  get studyCount_1(): number {
+    return this._studyCount_1;
+  }
+
+  set studyCount_1(value: number) {
+    this._studyCount_1 = value;
+  }
+
+  get conceptCodes_1(): Array<any> {
+    return this._conceptCodes_1;
+  }
+
+  set conceptCodes_1(value: Array<any>) {
+    this._conceptCodes_1 = value;
+  }
+
+  get studyCodes_1(): Array<any> {
+    return this._studyCodes_1;
+  }
+
+  set studyCodes_1(value: Array<any>) {
+    this._studyCodes_1 = value;
+  }
+
+  get observationCount_2(): number {
+    return this._observationCount_2;
+  }
+
+  set observationCount_2(value: number) {
+    this._observationCount_2 = value;
+  }
+
+  get studyCount_2(): number {
+    return this._studyCount_2;
+  }
+
+  set studyCount_2(value: number) {
+    this._studyCount_2 = value;
+  }
+
+  get patientCount_2(): number {
+    return this._patientCount_2;
+  }
+
+  set patientCount_2(value: number) {
+    this._patientCount_2 = value;
+  }
+
+  get conceptCount_2(): number {
+    return this._conceptCount_2;
+  }
+
+  set conceptCount_2(value: number) {
+    this._conceptCount_2 = value;
+  }
+
+  get studyCodes_2(): Array<any> {
+    return this._studyCodes_2;
+  }
+
+  set studyCodes_2(value: Array<any>) {
+    this._studyCodes_2 = value;
+  }
+
+  get conceptCodes_2(): Array<any> {
+    return this._conceptCodes_2;
+  }
+
+  set conceptCodes_2(value: Array<any>) {
+    this._conceptCodes_2 = value;
   }
 
   get selectedNode(): any {
