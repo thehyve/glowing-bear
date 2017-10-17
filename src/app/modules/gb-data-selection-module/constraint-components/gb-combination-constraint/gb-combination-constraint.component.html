@@ -1,0 +1,35 @@
+<div>
+
+  <!-- Child Constraints -->
+  <div *ngFor="let child of children; let i = index">
+    <div *ngIf="i > 0" class="constraint-state-container">
+      <button type="button" class="btn btn-outline-primary btn-sm"
+              (click)="toggleJunction()" [ngSwitch]="combinationState">
+        <i *ngSwitchCase="CombinationState.And">and</i>
+        <i *ngSwitchCase="CombinationState.Or">or</i>
+      </button>
+    </div>
+    <gb-constraint [constraint]="child"
+                (constraintRemoved)="onConstraintRemoved(child)"></gb-constraint>
+  </div>
+
+
+  <div class="form-inline">
+
+    <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
+    <p-autoComplete #autoComplete
+                    [(ngModel)]="selectedConstraint"
+                    [suggestions]="searchResults"
+                    field="textRepresentation"
+                    (completeMethod)="onSearch($event)"
+                    (onSelect)="onSelect($event)"
+                    [style]="{'width':'100%'}"
+                    [inputStyle]="{'width':'100%'}"
+                    size="60"
+                    dropdown="true"
+                    (onDropdownClick)="onDropdown($event)"
+                    placeholder="add criterion"></p-autoComplete>
+
+  </div>
+
+</div>

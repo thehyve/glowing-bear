@@ -2,22 +2,45 @@ import {CombinationConstraint} from '../../models/constraints/combination-constr
 
 export class ConstraintServiceMock {
   /*
-   * The patient count related variables and criterion constraints
-   * in the patient-selection accordion in data-selection
-   */
-  private _patientCount = 0;
+    * ------ variables used in the Selection accordion in Data Selection ------
+    */
   private _inclusionPatientCount = 0;
   private _exclusionPatientCount = 0;
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  private _selectedNode: any = null;
-  private _validTreeNodeTypes: string[] = [];
+  // the number of patients selected in the first step
+  private _patientCount_1 = 0;
+  // the number of observations from the selected patients in the first step
+  private _observationCount_1 = 0;
+  // the number of concepts from the selected patients in the first step
+  private _conceptCount_1 = 0;
+  // the number of studies from the selected patients in the first step
+  private _studyCount_1 = 0;
 
   /*
-   * The observation count related variables
+   * ------ variables used in the Projection accordion in Data Selection ------
    */
-  private _observationCount = 0;
-  private _conceptCount = 0;
+  // the number of patients further refined in the second step
+  // _patientCount_2 < or = _patientCount_1
+  private _patientCount_2 = 0;
+  // the number of observations further refined in the second step
+  // _observationCount_2 < or = _observationCount_1
+  private _observationCount_2 = 0;
+  // the number of concepts further refined in the second step
+  // _conceptCount_2 < or = _conceptCount_1
+  private _conceptCount_2 = 0;
+  // the number of studies further refined in the second step
+  // _studyCount_2 < or = _studyCount_1
+  private _studyCount_2 = 0;
+
+  /*
+   * The selected node (drag-start) in the side-panel of either
+   * (1) the tree
+   * (2) the patient sets
+   * or (3) the observation sets
+   */
+  private _selectedNode: any = null;
+  private _validTreeNodeTypes: string[] = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -30,31 +53,8 @@ export class ConstraintServiceMock {
     ];
   }
 
-  updatePatientCounts() {}
-  updateObservationCounts() {}
+  public updateCounts_1() {}
+  public updateCounts_2() {}
 
 
-  get observationCount(): number {
-    return this._observationCount;
-  }
-
-  set observationCount(value: number) {
-    this._observationCount = value;
-  }
-
-  get patientCount(): number {
-    return this._patientCount;
-  }
-
-  set patientCount(value: number) {
-    this._patientCount = value;
-  }
-
-  get conceptCount(): number {
-    return this._conceptCount;
-  }
-
-  set conceptCount(value: number) {
-    this._conceptCount = value;
-  }
 }

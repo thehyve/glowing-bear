@@ -1,0 +1,9 @@
+<div>
+  <p-treeTable [value]="treeTableData"
+               selectionMode="checkbox"
+               (onNodeSelect)="updateCounts($event)"
+               (onNodeUnselect)="updateCounts($event)"
+               [(selection)]="selectedTreeTableData">
+    <p-column field="name" header="Concepts"></p-column>
+  </p-treeTable>
+</div>

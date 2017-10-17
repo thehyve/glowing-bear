@@ -1,9 +1,9 @@
 import {Constraint} from './constraint';
-import {DateOperatorState} from '../../modules/data-selection/constraint-components/concept-constraint/date-operator-state';
+import {GbDateOperatorState} from '../../modules/gb-data-selection-module/constraint-components/gb-concept-constraint/gb-date-operator-state';
 
 export class TimeConstraint implements Constraint {
 
-  dateOperator: DateOperatorState = DateOperatorState.BETWEEN;
+  dateOperator: GbDateOperatorState = GbDateOperatorState.BETWEEN;
   date1: Date = new Date();
   date2: Date = new Date();
 
@@ -25,16 +25,16 @@ export class TimeConstraint implements Constraint {
   toQueryObject(): Object {
     // Operator
     let operator = {
-      [DateOperatorState.BETWEEN]: '<-->',
-      [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-      [DateOperatorState.BEFORE]: '<-',
-      [DateOperatorState.AFTER]: '->'
+      [GbDateOperatorState.BETWEEN]: '<-->',
+      [GbDateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
+      [GbDateOperatorState.BEFORE]: '<-',
+      [GbDateOperatorState.AFTER]: '->'
     }[this.dateOperator];
 
     // Values (dates)
     let values = [this.date1.toISOString()];
-    if (this.dateOperator == DateOperatorState.BETWEEN ||
-      this.dateOperator == DateOperatorState.NOT_BETWEEN) {
+    if (this.dateOperator === GbDateOperatorState.BETWEEN ||
+      this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
       values.push(this.date2.toISOString());
     }
 
@@ -51,7 +51,7 @@ export class TimeConstraint implements Constraint {
     };
 
     // Wrap date constraint in a negation if required
-    if (this.dateOperator == DateOperatorState.NOT_BETWEEN) {
+    if (this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
       query = {
         type: 'negation',
         arg: query

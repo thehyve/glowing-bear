@@ -1,8 +1,6 @@
 import {TestBed, async} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
-import {SidePanelModule} from './modules/side-panel/side-panel.module';
-import {NavBarModule} from './modules/nav-bar/nav-bar.module';
 import {routing} from './app.routing';
 import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER} from '@angular/core';
@@ -10,20 +8,21 @@ import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DashboardModule} from './modules/dashboard/dashboard.module';
-import {DataSelectionModule} from './modules/data-selection/data-selection.module';
-import {AnalysisModule} from './modules/analysis/analysis.module';
-import {ExportModule} from './modules/export/export.module';
 import {ResourceService} from './services/resource.service';
 import {EndpointService} from './services/endpoint.service';
-import {DimensionRegistryService} from './services/dimension-registry.service';
+import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
 import {EndpointServiceMock} from './services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
-import {DimensionRegistryServiceMock} from './services/mocks/dimension-registry.service.mock';
+import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
+import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
+import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
+import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
+import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
+import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -40,12 +39,11 @@ describe('AppComponent', () => {
         FormsModule,
         HttpModule,
         BrowserAnimationsModule,
-        NavBarModule,
-        SidePanelModule,
-        DashboardModule,
-        DataSelectionModule,
-        AnalysisModule,
-        ExportModule,
+        GbNavBarModule,
+        GbSidePanelModule,
+        GbDashboardModule,
+        GbDataSelectionModule,
+        GbAnalysisModule,
         routing
       ],
       providers: [
@@ -72,8 +70,8 @@ describe('AppComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: DimensionRegistryService,
-          useClass: DimensionRegistryServiceMock
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,
