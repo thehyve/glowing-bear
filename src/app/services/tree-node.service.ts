@@ -135,38 +135,14 @@ export class TreeNodeService {
         node['icon'] = 'icon-hd';
       } else if (node['type'] === 'CATEGORICAL') {
         node['icon'] = 'icon-abc';
+      } else if (node['type'] === 'DATE') {
+        node['icon'] = 'fa-calendar';
+      } else if (node['type'] === 'TEXT') {
+        node['icon'] = 'fa-newspaper-o';
       } else {
         node['icon'] = 'fa-folder-o';
       }
     }
-  }
-
-  /**
-   * Iteratively load the descendants of the given tree node
-   * @param parentNode
-   */
-  private loadTreeNext(parentNode) {
-    let depth = 20;
-    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
-      .subscribe(
-        (treeNodes: object[]) => {
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-          }
-          this.processTreeNode(parentNode);
-          this.processTreeNodes(children);
-          let descendants = [];
-          this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
-          if (descendants.length > 0) {
-            for (let descendant of descendants) {
-              this.loadTreeNext(descendant);
-            }
-          }
-        },
-        err => console.error(err)
-      );
   }
 
   /**
@@ -207,6 +183,7 @@ export class TreeNodeService {
                                                  excludedTypes: string[],
                                                  descendants: TreeNode[]) {
     if (treeNode) {
+      // If the tree node has children
       if (treeNode['children']) {
         for (let child of treeNode['children']) {
           if (child['children']) {
@@ -224,20 +201,25 @@ export class TreeNodeService {
    * based on a given set of concept codes as filtering criteria.
    * @param {string[]} conceptCodes
    */
-  public updateTreeTableData(conceptCodes: string[]) {
-    this.treeTableData = this.updateTreeTableDataIterative(this.treeNodes, conceptCodes);
+  public updateTreeTableData(conceptCodes: string[], conceptCountMap: object) {
+    this.treeTableData = this.updateTreeTableDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
     this.selectedTreeTableData = [];
     this.checkTreeTableData(this.treeTableData);
   }
 
-  private updateTreeTableDataIterative(nodes: TreeNode[], conceptCodes: string[]) {
+  private updateTreeTableDataIterative(nodes: TreeNode[], conceptCodes: string[], conceptCountMap: object) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
         let nodeCopy = this.copyTreeTableDataItem(node);
+        if (conceptCountMap[node['conceptCode']]) {
+          const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
+          const obsevationCount = conceptCountMap[node['conceptCode']]['observationCount'];
+          nodeCopy['data']['name'] = nodeCopy['data']['name'] + ` (sub: ${patientCount}, obs: ${obsevationCount})`;
+        }
         nodesWithCodes.push(nodeCopy);
       } else if (node['children']) {
-        let newNodeChildren = this.updateTreeTableDataIterative(node['children'], conceptCodes);
+        let newNodeChildren = this.updateTreeTableDataIterative(node['children'], conceptCodes, conceptCountMap);
         if (newNodeChildren.length > 0) {
           let nodeCopy = this.copyTreeTableDataItem(node);
           nodeCopy['children'] = newNodeChildren;
@@ -264,6 +246,34 @@ export class TreeNodeService {
         this.checkTreeTableData(node['children']);
       }
     }
+  }
+
+  /**
+   * Iteratively load the descendants of the given tree node
+   * @param parentNode
+   */
+  private loadTreeNext(parentNode) {
+    let depth = 20;
+    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
+      .subscribe(
+        (treeNodes: object[]) => {
+          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+          const children = refNode ? refNode['children'] : undefined;
+          if (children) {
+            parentNode['children'] = children;
+          }
+          this.processTreeNode(parentNode);
+          this.processTreeNodes(children);
+          let descendants = [];
+          this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
+          if (descendants.length > 0) {
+            for (let descendant of descendants) {
+              this.loadTreeNext(descendant);
+            }
+          }
+        },
+        err => console.error(err)
+      );
   }
 
   /**

@@ -30,7 +30,6 @@ export class GbProjectionComponent implements OnInit {
   }
 
   updateCounts(event) {
-    console.log('update counts: ', this.treeNodeService.selectedTreeTableData);
     this.constraintService.updateCounts_2();
   }
 }

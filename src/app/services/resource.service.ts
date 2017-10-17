@@ -228,7 +228,9 @@ export class ResourceService {
     const urlPart = 'patients';
     const constraintString: string = JSON.stringify(constraint.toPatientQueryObject());
     const body = {constraint: constraintString};
-    console.log(debugLabel, 'constraint:', constraintString);
+    if (debugLabel) {
+      console.log(debugLabel, 'constraint:', constraintString);
+    }
     return this.postCall(urlPart, body, 'patients');
   }
 

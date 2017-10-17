@@ -249,7 +249,9 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   /**
    * PrimeNg tree is behaving strangely when dynamically adding custom class to tree nodes:
    * sometimes a tree node with children is marked with the 'ui-treenode-leaf' class.
-   * This function is to remove any false ui-treenode-leaf classes.
+   * Furthermore, sometimes a loader element is unnecessarily attached (.ui-autocomplete-loader)
+   * This function is to remove any false ui-treenode-leaf classes and
+   * the loader element with ui-autocomplete-loader class.
    * Also add some delay to wait for the tree construction, typically 1 to 2 seconds.
    */
   removeFalsePrimeNgClasses(delay: number) {
@@ -261,6 +263,10 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
             supposedLeaf.classList.remove('ui-treenode-leaf');
           }
         }
+      }
+      let loaderIcon = this.element.nativeElement.querySelector('.ui-autocomplete-loader');
+      if (loaderIcon) {
+        loaderIcon.remove();
       }
     }).bind(this), delay);
   }

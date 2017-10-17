@@ -48,6 +48,19 @@ export class ConstraintService {
   private _conceptCodes_1 = [];
   // the codes of the studies selected in the first step
   private _studyCodes_1 = [];
+  // the map from concept codes to counts in the first step
+  // e.g.
+  /*
+   "EHR:DEM:AGE": {
+      "observationCount": 3,
+      "patientCount": 3
+   },
+   "EHR:VSIGN:HR": {
+      "observationCount": 9,
+      "patientCount": 3
+   }
+   */
+  private _conceptCountMap_1 = {};
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -99,6 +112,7 @@ export class ConstraintService {
       'CATEGORICAL',
       'DATE',
       'STUDY',
+      'TEXT',
       'UNKNOWN'
     ];
   }
@@ -180,12 +194,6 @@ export class ConstraintService {
     //     }
     //   );
 
-    /*
-     * Also update patient counts on tree nodes
-     */
-    // this.updateExpandedTreeNodesCounts(true);
-
-
     const selectionConstraint = this.getSelectionConstraint();
     /*
      * update observation count in the first step
@@ -212,6 +220,7 @@ export class ConstraintService {
               if (concepts.indexOf(_concept_) === -1) {
                 concepts.push(_concept_);
               }
+              this.conceptCountMap_1[_concept_] = countObj[study][_concept_];
             }
           }
           this.conceptCount_1 = concepts.length;
@@ -219,11 +228,17 @@ export class ConstraintService {
           this.conceptCodes_1 = concepts;
 
           // update the tree table in the 2nd step
-          this.treeNodeService.updateTreeTableData(concepts);
+          this.treeNodeService.updateTreeTableData(this.conceptCodes_1, this.conceptCountMap_1);
           this.updateCounts_2();
         },
         err => console.error(err)
       );
+
+    /*
+     * Also update patient counts on tree nodes on the left side
+     */
+    this.updateExpandedTreeNodesCounts(true);
+
   }
 
   /**
@@ -238,7 +253,7 @@ export class ConstraintService {
     combo.children.push(projectionConstraint);
 
     // update the patient count in the 2nd step
-    this.resourceService.getPatients(combo, 'Patient Projection')
+    this.resourceService.getPatients(combo, null)
       .subscribe(
         (patients) => {
           this.patientCount_2 = patients.length;
@@ -261,6 +276,7 @@ export class ConstraintService {
         (countObj) => {
           let studies = [];
           let concepts = [];
+          this.conceptCountMap_1 = {};
           for (let study in countObj) {
             studies.push(study);
             let _concepts_ = countObj[study];
@@ -359,46 +375,19 @@ export class ConstraintService {
    * @returns {any}
    */
   public getProjectionConstraint(): Constraint {
-    // const selectionConstraint = this.getSelectionConstraint();
-    // if (selectionConstraint.getClassName() === 'TrueConstraint') {
-    //   return new TrueConstraint();
-    // } else {
-    //   const nodes = this.treeNodeService.selectedTreeTableData;
-    //   let constraint = null;
-    //   if (nodes.length > 0) {
-    //     let allLeaves = [];
-    //     for (let node of nodes) {
-    //       let leaves = [];
-    //       this.treeNodeService
-    //         .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
-    //       allLeaves = allLeaves.concat(leaves);
-    //     }
-    //     constraint = new CombinationConstraint();
-    //     constraint.combinationState = CombinationState.Or;
-    //     for (let leaf of allLeaves) {
-    //       const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
-    //       if (leafConstraint) {
-    //         constraint.children.push(leafConstraint);
-    //       } else {
-    //         console.error('Failed to create constrain from: ', leaf);
-    //       }
-    //     }
-    //   } else {
-    //     constraint = new NegationConstraint(new TrueConstraint());
-    //   }
-    //
-    //   return constraint;
-    // }
-
     const nodes = this.treeNodeService.selectedTreeTableData;
     let constraint = null;
     if (nodes.length > 0) {
       let allLeaves = [];
       for (let node of nodes) {
-        let leaves = [];
-        this.treeNodeService
-          .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
-        allLeaves = allLeaves.concat(leaves);
+        if (node['children']) {
+          let leaves = [];
+          this.treeNodeService
+            .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
+          allLeaves = allLeaves.concat(leaves);
+        } else {
+          allLeaves.push(node);
+        }
       }
       constraint = new CombinationConstraint();
       constraint.combinationState = CombinationState.Or;
@@ -423,7 +412,6 @@ export class ConstraintService {
    * @param {Constraint} constraint
    */
   public putObservationConstraint(constraint: Constraint) {
-    console.log('put obser constraint: ', constraint, constraint.getClassName());
     // The observation constraint must be a combination of selected concepts
     // (sometimes with conditional study constraints)
     if (constraint.getClassName() === 'CombinationConstraint') {
@@ -899,6 +887,14 @@ export class ConstraintService {
 
   set studyCodes_1(value: Array<any>) {
     this._studyCodes_1 = value;
+  }
+
+  get conceptCountMap_1(): {} {
+    return this._conceptCountMap_1;
+  }
+
+  set conceptCountMap_1(value: {}) {
+    this._conceptCountMap_1 = value;
   }
 
   get observationCount_2(): number {

@@ -25,10 +25,9 @@ export class GbDataSelectionComponent implements OnInit {
    * @param event
    */
   openAccordion(event) {
-    // if the 'select observation' accordion is opened,
-    // set tree selection mode to checkbox on the left side
-    // else set to empty string
-    this.treeNodeService.treeSelectionMode = event.index === 1 ? 'checkbox' : '';
+    // If we want to make the tree 'checkable',
+    // change the treeSelectionMode to 'checkbox'
+    this.treeNodeService.treeSelectionMode = '';
   }
 
   /**

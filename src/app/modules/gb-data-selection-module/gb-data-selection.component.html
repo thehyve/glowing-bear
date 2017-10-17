@@ -4,18 +4,25 @@
     <div class="row">
       <div class="col-3">
         <span>
-          {{patientCount}} {{singularOrPlural('patient', patientCount_2)}}
+          {{patientCount_2}} {{singularOrPlural('patient', patientCount_2)}}
         </span>
       </div>
       <div class="col-3">
         <span>
-          {{observationCount}} {{singularOrPlural('observation', observationCount_2)}}
+          {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}}
         </span>
       </div>
       <div class="col-3">
-        <span>
-          {{conceptCount}} {{singularOrPlural('concept', conceptCount_2)}}
-        </span>
+        <div class="row">
+          <span>
+            {{conceptCount_2}} {{singularOrPlural('concept', conceptCount_2)}}
+          </span>
+        </div>
+        <div class="row">
+          <span>
+            {{studyCount_2}} {{singularOrPlural('study', studyCount_2)}}
+          </span>
+        </div>
       </div>
       <div class="col-3">
         <div class="row">
