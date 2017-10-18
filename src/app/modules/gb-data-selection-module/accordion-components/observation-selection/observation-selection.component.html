@@ -1,0 +1,20 @@
+<div>
+  <div class="form-inline">
+    <p class="form-text text-muted">
+      Check to select the tree nodes on the left, or directly
+
+      <label class="gb-observation-set-upload">
+        <input id="observationFileChooser"
+               type="file"
+               style="display: none"/>
+        choose
+      </label>
+
+      from file.
+    </p>
+  </div>
+
+  <!-- the selected tree from the tree panel on the left -->
+  <p-tree [value]="treeNodeService.selectedTreeNodes"></p-tree>
+
+</div>

@@ -45,26 +45,106 @@ export class ResourceService {
     return Observable.throw(errMsg || 'Server error');
   }
 
+  /**
+   * Make a post http request
+   * @param urlPart - the part used in baseUrl/urlPart
+   * @param body
+   * @param responseField
+   * @returns {any}
+   */
+  private postCall(urlPart, body, responseField) {
+    const endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      let headers = new Headers();
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      const options = new RequestOptions({headers: headers});
+      const url = `${endpoint.getUrl()}/${urlPart}`;
+      if (responseField) {
+        return this.http.post(url, body, options)
+          .map((res: Response) => res.json()[responseField])
+          .catch(this.handleError.bind(this));
+      } else {
+        return this.http.post(url, body, options)
+          .map((res: Response) => res.json())
+          .catch(this.handleError.bind(this));
+      }
+    } else {
+      this.handleError({message: 'Could not establish endpoint.'});
+    }
+  }
+
+  /**
+   * Make a get http request
+   * @param urlPart - the part used in baseUrl/urlPart
+   * @param responseField
+   * @returns {Observable<any | any>}
+   */
+  private getCall(urlPart, responseField) {
+    const endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      let headers = new Headers();
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      const options = new RequestOptions({headers: headers});
+      const url = `${endpoint.getUrl()}/${urlPart}`;
+      return this.http.get(url, options)
+        .map((response: Response) => response.json()[responseField])
+        .catch(this.handleError.bind(this));
+    } else {
+      this.handleError({message: 'Could not establish endpoint.'});
+    }
+  }
+
+  /**
+   * Make a put http request
+   * @param urlPart
+   * @param body
+   * @returns {Observable<any | any>}
+   */
+  private putCall(urlPart, body) {
+    const endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      let headers = new Headers();
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      let options = new RequestOptions({headers: headers});
+      let url = `${endpoint.getUrl()}/${urlPart}`;
+      return this.http.put(url, body, options)
+        .catch(this.handleError.bind(this));
+    } else {
+      this.handleError({message: 'Could not establish endpoint.'});
+    }
+  }
+
+  /**
+   * Make a delete http request
+   * @param urlPart
+   * @returns {Observable<any | any>}
+   */
+  private deleteCall(urlPart) {
+    const endpoint = this.endpointService.getEndpoint();
+    if (endpoint) {
+      let headers = new Headers();
+      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
+      let options = new RequestOptions({headers: headers});
+      let url = `${endpoint.getUrl()}/${urlPart}`;
+      return this.http.delete(url, options)
+        .catch(this.handleError.bind(this));
+    } else {
+      this.handleError({message: 'Could not establish endpoint.'});
+    }
+  }
+
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
    */
   getStudies(): Observable<Study[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      let url = `${endpoint.getUrl()}/studies`;
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().studies as Study[])
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = 'studies';
+    const responseField = 'studies';
+    return this.getCall(urlPart, responseField);
   }
 
   /**
@@ -76,26 +156,15 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      let url = `${endpoint.getUrl()}/tree_nodes?root=${root}&depth=${depth}`;
-      if (hasCounts) {
-        url += '&counts=true';
-      }
-      if (hasTags) {
-        url += '&tags=true';
-      }
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().tree_nodes)
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
+    let urlPart = `tree_nodes?root=${root}&depth=${depth}`;
+    if (hasCounts) {
+      urlPart += '&counts=true';
     }
+    if (hasTags) {
+      urlPart += '&tags=true';
+    }
+    const responseField = 'tree_nodes';
+    return this.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- observations calls --------------------------------------
@@ -109,21 +178,11 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudy(constraint: Constraint): Observable<object> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      const constraintString = JSON.stringify(constraint.toQueryObject());
-      let url = `${endpoint.getUrl()}/observations/counts_per_study?constraint=${constraintString}}`;
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json()['countsPerStudy'])
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = 'observations/counts_per_study';
+    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const body = {constraint: constraintString};
+    const responseField = 'countsPerStudy';
+    return this.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -137,21 +196,25 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerConcept(constraint: Constraint): Observable<object> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
+    const urlPart = 'observations/counts_per_concept';
+    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const body = {constraint: constraintString};
+    const responseField = 'countsPerConcept';
+    return this.postCall(urlPart, body, responseField);
+  }
 
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      const constraintString = JSON.stringify(constraint.toQueryObject());
-      let url = `${endpoint.getUrl()}/observations/counts_per_concept?constraint=${constraintString}`;
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json()['countsPerConcept'])
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+  /**
+   * Given a constraint, get the patient counts and observation counts
+   * organized per study, then per concept
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/counts_per_study_and_concept';
+    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const body = {constraint: constraintString};
+    const responseField = 'countsPerStudy';
+    return this.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- patient calls --------------------------------------
@@ -162,17 +225,13 @@ export class ResourceService {
    * @returns {Observable<R|T>}
    */
   getPatients(constraint: Constraint, debugLabel: string): Observable<Patient[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let constraintString: string = JSON.stringify(constraint.toPatientQueryObject());
-    console.log(debugLabel, 'constraint:', constraintString);
-    let url = `${endpoint.getUrl()}/patients?constraint=${constraintString}`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json().patients as Patient[])
-      .catch(this.handleError.bind(this));
+    const urlPart = 'patients';
+    const constraintString: string = JSON.stringify(constraint.toPatientQueryObject());
+    const body = {constraint: constraintString};
+    if (debugLabel) {
+      console.log(debugLabel, 'constraint:', constraintString);
+    }
+    return this.postCall(urlPart, body, 'patients');
   }
 
   // -------------------------------------- observation calls --------------------------------------
@@ -182,16 +241,11 @@ export class ResourceService {
    * @returns {Observable<number>}
    */
   getObservationCount(constraint: Constraint): Observable<number> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let constraintString: string = JSON.stringify(constraint.toQueryObject());
-    let url = `${endpoint.getUrl()}/observations/count?constraint=${constraintString}`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json()['count'])
-      .catch(this.handleError.bind(this));
+    const urlPart = 'observations/count';
+    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const body = {constraint: constraintString};
+    const responseField = 'count';
+    return this.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -203,9 +257,6 @@ export class ResourceService {
    */
   getPatientObservationCount(patientConstraint: Constraint,
                              observationConstraint: Constraint): Observable<number> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
     const combination = {
       type: 'and',
       args: [
@@ -213,13 +264,11 @@ export class ResourceService {
         observationConstraint.toQueryObject()
       ]
     };
+    const urlPart = 'observations/count';
     const constraintString = JSON.stringify(combination);
-    let url = `${endpoint.getUrl()}/observations/count?constraint=${constraintString}`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json()['count'])
-      .catch(this.handleError.bind(this));
+    const body = {constraint: constraintString};
+    const responseField = 'count';
+    return this.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -228,6 +277,7 @@ export class ResourceService {
    * Given a constraint, get its aggregate which includes min, max, average or categorical values
    * @param constraint
    * @returns {Observable<Aggregate>}
+   * TODO: refactor
    */
   getConceptAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
     let headers = new Headers();
@@ -254,6 +304,7 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @param {string[]} aggregateOptions
    * @returns {Observable<Aggregate>}
+   * TODO: refactor
    */
   getAggregate(constraint: Constraint, aggregateOptions: string[]): Observable<Aggregate> {
     let headers = new Headers();
@@ -281,17 +332,10 @@ export class ResourceService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let constraintString = JSON.stringify(constraint.toQueryObject());
-    let url = `${endpoint.getUrl()}/dimensions/trial visit/elements?constraint=${constraintString}`;
-
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json().elements as TrialVisit[])
-      .catch(this.handleError.bind(this));
+    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
+    const responseField = 'elements';
+    return this.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- export calls --------------------------------------
@@ -299,6 +343,7 @@ export class ResourceService {
    * Given a list of patient set ids as strings, get the corresponding data formats available for download
    * @param patientSetIds
    * @returns {Observable<string[]>}
+   * TODO: refactor
    */
   getExportDataFormats(setIds: string[]): Observable<string[]> {
     let headers = new Headers();
@@ -322,6 +367,7 @@ export class ResourceService {
   /**
    * Get the current user's existing export jobs
    * @returns {Observable<ExportJob[]>}
+   * TODO: refactor
    */
   getExportJobs(): Observable<ExportJob[]> {
     let headers = new Headers();
@@ -339,6 +385,7 @@ export class ResourceService {
    * Create a new export job for the current user, with a given name
    * @param name
    * @returns {Observable<ExportJob>}
+   * TODO: refactor
    */
   createExportJob(name: string): Observable<ExportJob> {
     let headers = new Headers();
@@ -370,6 +417,7 @@ export class ResourceService {
    * @param ids
    * @param elements
    * @returns {Observable<R|T>}
+   * TODO: refactor
    */
   runExportJob(jobId: string,
                ids: string[],
@@ -393,6 +441,7 @@ export class ResourceService {
    * Given an export job id, return the blob (zipped file) ready to be used on frontend
    * @param jobId
    * @returns {Observable<blob>}
+   * TODO: refactor
    */
   downloadExportJob(jobId: string) {
     let headers = new Headers();
@@ -415,21 +464,9 @@ export class ResourceService {
    * @returns {Observable<Query[]>}
    */
   getQueries(): Observable<Query[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      headers.append('Content-Type', 'application/json');
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      let url = `${endpoint.getUrl()}/queries`;
-
-      return this.http.get(url, {
-        headers: headers
-      })
-        .map((response: Response) => response.json().queries as Query[])
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = `queries`;
+    const responseField = 'queries';
+    return this.getCall(urlPart, responseField);
   }
 
   /**
@@ -438,21 +475,9 @@ export class ResourceService {
    * @returns {Observable<Query>}
    */
   saveQuery(queryBody: object): Observable<Query> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      let options = new RequestOptions({headers: headers});
-      let body = JSON.stringify(queryBody);
-      let url = `${endpoint.getUrl()}/queries`;
-
-      return this.http.post(url, body, options)
-        .map((res: Response) => res.json() as Query)
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = `queries`;
+    const body = JSON.stringify(queryBody);
+    return this.postCall(urlPart, body, null);
   }
 
   /**
@@ -462,20 +487,9 @@ export class ResourceService {
    * @returns {Observable<Query>}
    */
   updateQuery(queryId: string, queryBody: object): Observable<null> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      let options = new RequestOptions({headers: headers});
-      let body = JSON.stringify(queryBody);
-      let url = `${endpoint.getUrl()}/queries/${queryId}`;
-
-      return this.http.put(url, body, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = `queries/${queryId}`;
+    const body = JSON.stringify(queryBody);
+    return this.putCall(urlPart, body);
   }
 
   /**
@@ -484,19 +498,8 @@ export class ResourceService {
    * @returns {Observable<any>}
    */
   deleteQuery(queryId: string): Observable<null> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      let options = new RequestOptions({headers: headers});
-      let url = `${endpoint.getUrl()}/queries/${queryId}`;
-
-      return this.http.delete(url, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      console.error('Could not establish endpoint.');
-    }
+    const urlPart = `queries/${queryId}`;
+    return this.deleteCall(urlPart);
   }
 
 }

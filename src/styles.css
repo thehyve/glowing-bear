@@ -48,7 +48,7 @@ p-dataList {
 /*
  * Change the color theme of the accordion in data-selection to clinical green
  */
-md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-color: #339C90 !important;
   box-shadow: 0 1px 0 #339C90 !important;
 }
@@ -65,12 +65,13 @@ body .ui-tabmenu-nav {
  * Style fix for adding border radius to navbar
  */
 body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
-  border-radius: 50px;
+  border-radius: 10px;
 }
 
 body .ui-tabmenuitem .ui-state-active {
-  border-radius: 50px;
+  border-radius: 10px;
 }
+
 
 /*
  * style fix for hiding the border in data list in saved queries in the side panel
@@ -123,6 +124,27 @@ body .gb-query-panel {
 }
 
 /*
+ * Fix the style of checkbox in the table view of data-selection
+ */
+body .ui-treetable .ui-treetable-checkbox .ui-chkbox-icon {
+  color: black !important;
+}
+
+/*
+ * Fix the style of tree table row highlight color in the table view of data-selection
+ */
+body .ui-treetable-row.ui-state-highlight {
+  background-color: #0365af;
+}
+
+/*
+ * Fix the style of tree node toggle in tree table in the table view of data-selection
+ */
+tbody a {
+  color: black !important;
+}
+
+/*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
  * text overflow is turned on
@@ -135,7 +157,7 @@ body .gb-concept-constraint-input > input {
 /*
  * Style for the search box in the tree-node accordion on the left side
  */
-.gb-tree-filter-input > input{
+.gb-tree-filter-input > input {
   font-size: small !important;
   height: 1.8em;
   min-width: 150px;
@@ -173,8 +195,12 @@ body .gb-concept-constraint-input > input {
  * padding: top, right, bottom, left
  */
 @keyframes gb-count-element-animation {
-  from {background-color: #ffa27f;}
-  to {background-color: transparent;}
+  from {
+    background-color: #ffa27f;
+  }
+  to {
+    background-color: transparent;
+  }
 }
 
 .gb-count-element {
@@ -188,7 +214,6 @@ body .gb-concept-constraint-input > input {
   animation-name: gb-count-element-animation;
   animation-duration: 2s;
 }
-
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
 .ui-autocomplete-dropdown.ui-button {
@@ -219,33 +244,46 @@ body .ui-autocomplete-input-token input {
 /*
  * Change the primeng data table border to lightgrey
  */
-.ui-datatable .ui-datatable-thead>tr>th,
-.ui-datatable .ui-datatable-tfoot>tr>td,
-.ui-datatable .ui-datatable-data>tr>td {
+.ui-datatable .ui-datatable-thead > tr > th,
+.ui-datatable .ui-datatable-tfoot > tr > td,
+.ui-datatable .ui-datatable-data > tr > td {
   border-color: lightgrey;
 }
-
 
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
 }
+
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
   color: lightgray;
-  opacity:  1;
+  opacity: 1;
 }
+
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
   color: lightgray;
-  opacity:  1;
+  opacity: 1;
 }
+
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
   color: lightgray;
 }
 
-.form-control::-webkit-input-placeholder { color: lightgray; }
-.form-control:-moz-placeholder { color: lightgray; }
-.form-control::-moz-placeholder { color: lightgray; }
-.form-control:-ms-input-placeholder { color: lightgray; }
+.form-control::-webkit-input-placeholder {
+  color: lightgray;
+}
+
+.form-control:-moz-placeholder {
+  color: lightgray;
+}
+
+.form-control::-moz-placeholder {
+  color: lightgray;
+}
+
+.form-control:-ms-input-placeholder {
+  color: lightgray;
+}
 
 .fa-plus {
   color: lightgray;
@@ -275,4 +313,5 @@ legend {
  * A marker css class to indicate if a tree node is leaf or not,
  * should be left empty
  */
-.is-not-leaf {}
+.is-not-leaf {
+}

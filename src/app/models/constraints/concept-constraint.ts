@@ -8,9 +8,9 @@ export class ConceptConstraint implements Constraint {
   private _concept: Concept;
   private _values: ValueConstraint[];
 
-  // date range
-  applyDateConstraint = false;
-  timeConstraint: TimeConstraint = new TimeConstraint();
+  // observation date range
+  applyObsDateConstraint = false;
+  obsDateConstraint: TimeConstraint = new TimeConstraint();
 
   // trial visit
   applyTrialVisitConstraint = false;
@@ -71,7 +71,7 @@ export class ConceptConstraint implements Constraint {
           });
         }
       }
-      if (this._concept.type === 'CATEGORICAL_OPTION') {
+      if (this._concept.type === 'CATEGORICAL') {
         // Wrap categorical values in an OR constraint
         args.push({
           type: 'or',
@@ -80,8 +80,8 @@ export class ConceptConstraint implements Constraint {
       }
     }
 
-    if (this.applyDateConstraint) {
-      args.push(this.timeConstraint.toQueryObject());
+    if (this.applyObsDateConstraint) {
+      args.push(this.obsDateConstraint.toQueryObject());
     }
 
     if (this.applyTrialVisitConstraint) {

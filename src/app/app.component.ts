@@ -1,8 +1,8 @@
 import {Component, ViewChild, OnInit} from '@angular/core';
 import {EndpointService} from './services/endpoint.service';
 import {ResourceService} from './services/resource.service';
-import {DimensionRegistryService} from './services/dimension-registry.service';
 import {ConstraintService} from './services/constraint.service';
+import {TreeNodeService} from './services/tree-node.service';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +22,7 @@ export class AppComponent implements OnInit {
 
   constructor(private endpointService: EndpointService,
               private resourceService: ResourceService,
-              private dimensionRegistryService: DimensionRegistryService,
+              private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
   }
 

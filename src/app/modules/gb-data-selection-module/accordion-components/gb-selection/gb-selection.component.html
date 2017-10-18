@@ -1,0 +1,37 @@
+
+<div>
+
+  <!-- Inclusion criteria -->
+  <div #inclusionCriteriaBox
+       class="criteria-box">
+    <p><b>Inclusion</b> criteria:</p>
+    <div class="patient-count-box">
+      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateInclusion == 'loading'"></i>
+      <span [@notifyState]="constraintService.loadingStateInclusion">{{inclusionPatientCount}} patients included.</span>
+    </div>
+    <gb-constraint #rootInclusionConstraintComponent
+                [constraint]="rootInclusionConstraint"
+                [isRoot]="true"></gb-constraint>
+  </div>
+
+  <!-- Exclusion criteria -->
+  <div #exclusionCriteriaBox
+       class="criteria-box">
+    <p><b>Exclusion</b> criteria:</p>
+    <div class="patient-count-box">
+      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateExclusion == 'loading'"></i>
+      <span [@notifyState]="constraintService.loadingStateExclusion">{{exclusionPatientCount}} patients excluded.</span>
+    </div>
+    <gb-constraint #rootExclusionConstraintComponent
+                [constraint]="rootExclusionConstraint"
+                [isRoot]="true"></gb-constraint>
+  </div>
+
+
+  <!-- Intersection calculation -->
+  <div class="patient-count-box">
+    <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="constraintService.loadingStateTotal == 'loading'"></i>
+    <span [@notifyState]="constraintService.loadingStateTotal">{{patientCount_1}} patients match your selection.</span>
+  </div>
+
+</div>

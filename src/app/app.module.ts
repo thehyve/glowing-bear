@@ -7,17 +7,16 @@ import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 
 import {EndpointService} from './services/endpoint.service';
-import {DataSelectionModule} from './modules/data-selection/data-selection.module';
-import {AnalysisModule} from './modules/analysis/analysis.module';
-import {ExportModule} from './modules/export/export.module';
-import {DashboardModule} from './modules/dashboard/dashboard.module';
+import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
 import {ResourceService} from './services/resource.service';
-import {DimensionRegistryService} from './services/dimension-registry.service';
+import {TreeNodeService} from './services/tree-node.service';
 import {AppConfig} from './config/app.config';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConstraintService} from './services/constraint.service';
-import {SidePanelModule} from './modules/side-panel/side-panel.module';
-import {NavBarModule} from './modules/nav-bar/nav-bar.module';
+import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
+import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
+import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
+import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -33,17 +32,16 @@ export function initConfig(config: AppConfig) {
     HttpModule,
     BrowserAnimationsModule,
     routing,
-    NavBarModule,
-    DashboardModule,
-    DataSelectionModule,
-    AnalysisModule,
-    ExportModule,
-    SidePanelModule
+    GbNavBarModule,
+    GbDashboardModule,
+    GbDataSelectionModule,
+    GbAnalysisModule,
+    GbSidePanelModule
   ],
   providers: [
     EndpointService,
     ResourceService,
-    DimensionRegistryService,
+    TreeNodeService,
     ConstraintService,
     AppConfig,
     {
