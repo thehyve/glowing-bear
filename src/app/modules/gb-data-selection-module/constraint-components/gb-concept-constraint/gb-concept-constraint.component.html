@@ -14,7 +14,7 @@
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
   </div>
 
-  <!-- if the concept is numeric -->
+  <!-- if the concept is NUMERIC -->
   <div *ngIf="isNumeric()" class="form-inline">
     <span>with value</span>
     <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
@@ -48,7 +48,7 @@
 
   </div>
 
-  <!-- if the concept is categorical -->
+  <!-- if the concept is CATEGORICAL -->
   <div *ngIf="isCategorical()" class="v-align-center form-inline">
     <span>with values</span>
     <p-autoComplete #categoricalAutoComplete
@@ -68,13 +68,42 @@
     </button>
   </div>
 
+  <!--  if the concept is DATE -->
+  <div *ngIf="isDate()" class="form-inline">
+    <span>with date</span>
+    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+            (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
+      <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
+      <i *ngSwitchCase="DateOperatorState.AFTER">after </i>
+      <i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>
+      <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
+    </button>
+    &nbsp;
+    <p-calendar [(ngModel)]="valDate1"
+                dateFormat="dd-mm-yy"
+                showTime="true"
+                showSeconds="true"
+                hourFormat="24"
+                (ngModelChange)="updateConceptValues()"
+                utc="true"></p-calendar>
+    <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
+      <span>&nbsp;and&nbsp;</span>
+      <p-calendar [(ngModel)]="valDate2"
+                  dateFormat="dd-mm-yy"
+                  showTime="true"
+                  showSeconds="true"
+                  hourFormat="24"
+                  (ngModelChange)="updateConceptValues()"
+                  utc="true"></p-calendar>
+    </div>
+  </div>
 
-  <!-- date range constraint -->
+  <!-- observation date range constraint -->
   <div class="form-inline">
-    <p-checkbox [(ngModel)]="applyDateConstraint" binary="true"></p-checkbox>
-    <label *ngIf="!applyDateConstraint" class="gray-text">apply date constraint</label>
-    <div *ngIf="applyDateConstraint" class="form-inline">
-      <span>and start date &nbsp;</span>
+    <p-checkbox [(ngModel)]="applyObsDateConstraint" binary="true"></p-checkbox>
+    <label *ngIf="!applyObsDateConstraint" class="gray-text">apply observation-date constraint</label>
+    <div *ngIf="applyObsDateConstraint" class="form-inline">
+      <span>and observation date &nbsp;</span>
       <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
               (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
         <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
@@ -83,7 +112,7 @@
         <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
       </button>
       &nbsp;
-      <p-calendar [(ngModel)]="date1"
+      <p-calendar [(ngModel)]="obsDate1"
                   dateFormat="dd-mm-yy"
                   showTime="true"
                   showSeconds="true"
@@ -91,7 +120,7 @@
                   utc="true"></p-calendar>
       <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
         <span>&nbsp;and&nbsp;</span>
-        <p-calendar [(ngModel)]="date2"
+        <p-calendar [(ngModel)]="obsDate2"
                     dateFormat="dd-mm-yy"
                     showTime="true"
                     showSeconds="true"

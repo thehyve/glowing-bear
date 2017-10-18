@@ -48,19 +48,32 @@ export class ConstraintService {
   private _conceptCodes_1 = [];
   // the codes of the studies selected in the first step
   private _studyCodes_1 = [];
-  // the map from concept codes to counts in the first step
-  // e.g.
   /*
-   "EHR:DEM:AGE": {
-      "observationCount": 3,
-      "patientCount": 3
-   },
-   "EHR:VSIGN:HR": {
-      "observationCount": 9,
-      "patientCount": 3
-   }
+   * the map from concept codes to counts in the first step
+   * (note that _conceptCountMap_1 is a super set of _conceptCountMap_2,
+   * so there is no need to maintain _conceptCountMap_2)
+   * e.g.
+   * "EHR:DEM:AGE": {
+   *  "observationCount": 3,
+   *   "patientCount": 3
+   *  },
+   * "EHR:VSIGN:HR": {
+   *  "observationCount": 9,
+   *  "patientCount": 3
+   * }
    */
   private _conceptCountMap_1 = {};
+  /*
+   * the map from study codes to counts in the first step
+   * (note that _studyCountMap_1 is a super set of _studyCountMap_2,
+   * so there is no need to maintain _studyCountMap_2)
+   * e.g.
+   * "MIX_HD": {
+   *   "observationCount": 12,
+   *   "patientCount": 3
+   * }
+   */
+  private _studyCountMap_1 = {};
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -211,34 +224,43 @@ export class ConstraintService {
     this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
       .subscribe(
         (countObj) => {
-          let studies = [];
-          let concepts = [];
-          for (let study in countObj) {
-            studies.push(study);
-            let _concepts_ = countObj[study];
+          let studyKeys = [];
+          let conceptKeys = [];
+          this.conceptCountMap_1 = {};
+          this.studyCountMap_1 = {};
+          for (let studyKey in countObj) {
+            studyKeys.push(studyKey);
+            let _concepts_ = countObj[studyKey];
+            let patientCountUnderThisStudy = 0;
+            let observationCountUnderThisStudy = 0;
             for (let _concept_ in _concepts_) {
-              if (concepts.indexOf(_concept_) === -1) {
-                concepts.push(_concept_);
+              if (conceptKeys.indexOf(_concept_) === -1) {
+                conceptKeys.push(_concept_);
               }
-              this.conceptCountMap_1[_concept_] = countObj[study][_concept_];
+              this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
+              patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
+              observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
             }
+            this.studyCountMap_1[studyKey] = {
+              patientCount: patientCountUnderThisStudy,
+              observationCount: observationCountUnderThisStudy
+            };
           }
-          this.conceptCount_1 = concepts.length;
-          this.studyCount_1 = studies.length;
-          this.conceptCodes_1 = concepts;
-
-          // update the tree table in the 2nd step
+          this.conceptCount_1 = conceptKeys.length;
+          this.studyCount_1 = studyKeys.length;
+          this.conceptCodes_1 = conceptKeys;
+          /*
+           * update the tree table in the 2nd step
+           */
           this.treeNodeService.updateTreeTableData(this.conceptCodes_1, this.conceptCountMap_1);
           this.updateCounts_2();
+          /*
+           * update patient counts on tree nodes on the left side
+           */
+          this.updateTreeNodeCounts();
         },
         err => console.error(err)
       );
-
-    /*
-     * Also update patient counts on tree nodes on the left side
-     */
-    this.updateExpandedTreeNodesCounts(true);
-
   }
 
   /**
@@ -276,7 +298,6 @@ export class ConstraintService {
         (countObj) => {
           let studies = [];
           let concepts = [];
-          this.conceptCountMap_1 = {};
           for (let study in countObj) {
             studies.push(study);
             let _concepts_ = countObj[study];
@@ -481,7 +502,8 @@ export class ConstraintService {
         constraint = new StudyConstraint();
         (<StudyConstraint>constraint).studies.push(study);
       } else if (treeNodeType === 'NUMERIC' ||
-        treeNodeType === 'CATEGORICAL') {
+        treeNodeType === 'CATEGORICAL' ||
+        treeNodeType === 'DATE') {
         let concept = new Concept();
         if (treeNode['constraint']) {
           let constraintObject = treeNode['constraint'];
@@ -693,36 +715,31 @@ export class ConstraintService {
    *                            true: always retrieve counts,
    *                            false: only retrieve counts if the patientCount field is missing
    */
-  private updateStudyTreeNodeCounts(treeNodeElements: any,
-                                    treeNodeData: TreeNode[],
-                                    patientConstraint: Constraint,
-                                    refresh: boolean,
-                                    counts: any) {
+  private updateTreeNodeCountsIterative(treeNodeElements: any,
+                                        treeNodeData: TreeNode[],
+                                        studyCountMap: object,
+                                        conceptCountMap: object) {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodeData[index];
-      let dataObjectType = dataObject['type'];
-      if (dataObjectType === 'STUDY') {
+      if (this.treeNodeService.isTreeNodeAstudy(dataObject) ||
+          this.treeNodeService.isTreeNodeAconcept(dataObject)) {
         let treeNodeContent = elm.querySelector('.ui-treenode-content');
-        let go = (refresh) || ((!refresh) && !dataObject['patientCount']);
-        if (go) {
-          let identifier = dataObject['studyId'];
-          let patientCount = counts[identifier] ? counts[identifier]['patientCount'] : 0;
-          dataObject['patientCount'] = patientCount;
-          this.appendCountElement(treeNodeContent, patientCount, true);
-        } else {
-          this.appendCountElement(treeNodeContent, dataObject['patientCount'], false);
-        }
+        const identifier = this.treeNodeService.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
+        const map = this.treeNodeService.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
+        let patientCount = map[identifier] ? map[identifier]['patientCount'] : 0;
+        dataObject['patientCount'] = patientCount;
+        this.appendCountElement(treeNodeContent, patientCount, true);
       }
       // If the tree node is currently expanded
       if (dataObject['expanded']) {
         let uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
         if (uiTreenodeChildren) {
-          this.updateStudyTreeNodeCounts(uiTreenodeChildren.children,
+          this.updateTreeNodeCountsIterative(
+            uiTreenodeChildren.children,
             dataObject.children,
-            patientConstraint,
-            refresh,
-            counts);
+            studyCountMap,
+            conceptCountMap);
         }
       }
       index++;
@@ -732,28 +749,15 @@ export class ConstraintService {
   /**
    * Update the tree nodes' counts on the left panel
    */
-  public updateExpandedTreeNodesCounts(refresh: boolean) {
-    // let rootTreeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+  public updateTreeNodeCounts() {
     let rootTreeNodeElements = document
       .getElementById('tree-nodes-component')
       .querySelector('.ui-tree-container').children;
-    let rootTreeNodes = this.treeNodeService.treeNodes;
-    let patientConstraint = this.getSelectionConstraint();
-    /*
-     * Get the patient count per study in one go,
-     * then go into the tree nodes, find study nodes and assign the counts
-     */
-    this.resourceService.getCountsPerStudy(patientConstraint)
-      .subscribe(
-        (counts) => {
-          this.updateStudyTreeNodeCounts(rootTreeNodeElements, rootTreeNodes, patientConstraint, refresh, counts);
-        },
-        err => console.error(err)
-      );
-    /*
-     * Get the patient count per concept individually
-     */
-    this.updateConceptTreeNodeCounts(rootTreeNodeElements, rootTreeNodes, patientConstraint, refresh);
+    this.updateTreeNodeCountsIterative(
+      rootTreeNodeElements,
+      this.treeNodeService.treeNodes,
+      this.studyCountMap_1,
+      this.conceptCountMap_1);
   }
 
   public saveQuery(queryName: string) {
@@ -895,6 +899,14 @@ export class ConstraintService {
 
   set conceptCountMap_1(value: {}) {
     this._conceptCountMap_1 = value;
+  }
+
+  get studyCountMap_1(): {} {
+    return this._studyCountMap_1;
+  }
+
+  set studyCountMap_1(value: {}) {
+    this._studyCountMap_1 = value;
   }
 
   get observationCount_2(): number {

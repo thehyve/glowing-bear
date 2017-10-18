@@ -504,4 +504,24 @@ export class TreeNodeService {
     });
     return results;
   }
+
+  /**
+   * Check if a tree node is a concept node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public isTreeNodeAconcept(node: TreeNode): boolean {
+    const type = node['type'];
+    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE') ? true : false;
+  }
+
+  /**
+   * Check if a tree node is a study node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public isTreeNodeAstudy(node: TreeNode): boolean {
+    return node['type'] === 'STUDY' ? true : false;
+  }
+
 }

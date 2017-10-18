@@ -129,7 +129,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
 
   update() {
     if (this.expansionStatus['expanded']) {
-      this.constraintService.updateExpandedTreeNodesCounts(false);
+      this.constraintService.updateTreeNodeCounts();
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;

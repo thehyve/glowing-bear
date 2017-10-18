@@ -20,21 +20,36 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
   @ViewChild('trialVisitAutoComplete') trialVisitAutoComplete: AutoComplete;
 
-  searchResults: Concept[];
-  operatorState: GbConceptOperatorState;
-  isMinEqual: boolean;
-  isMaxEqual: boolean;
-  equalVal: number;
-  minVal: number;
-  maxVal: number;
-  minLimit: number;
-  maxLimit: number;
+  private _searchResults: Concept[];
+  private _operatorState: GbConceptOperatorState;
+  private _isMinEqual: boolean;
+  private _isMaxEqual: boolean;
 
+  /*
+   * numeric value range
+   */
+  private _equalVal: number;
+  private _minVal: number;
+  private _maxVal: number;
+  private _minLimit: number;
+  private _maxLimit: number;
+
+  /*
+   * date value range
+   */
+  private _valDate1: Date;
+  private _valDate2: Date;
+
+  /*
+   * categorical value range
+   */
   selectedCategories: string[];
   suggestedCategories: string[];
 
-  // date range
-  private _applyDateConstraint = false;
+  /*
+   * observation date range (i.e. the reported date range)
+   */
+  private _applyObsDateConstraint = false;
   private _dateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
   DateOperatorState = GbDateOperatorState; // make enum visible in template
   static readonly dateOperatorSequence = {
@@ -43,8 +58,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
     [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
   };
-  private _date1: Date;
-  private _date2: Date;
+  private _obsDate1: Date;
+  private _obsDate2: Date;
 
   // trial visit
   private _applyTrialVisitConstraint = false;
@@ -113,10 +128,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     // Initialize the dates from the time constraint
     // Because the date picker represents the date/time in the local timezone,
     // we need to correct the date that is actually used in the constraint.
-    let date1 = constraint.timeConstraint.date1;
-    this._date1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
-    let date2 = constraint.timeConstraint.date2;
-    this._date2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+    let date1 = constraint.obsDateConstraint.date1;
+    this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+    let date2 = constraint.obsDateConstraint.date2;
+    this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
   }
 
   /*
@@ -134,54 +149,54 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
-  get applyDateConstraint(): boolean {
-    return this._applyDateConstraint;
+  get applyObsDateConstraint(): boolean {
+    return this._applyObsDateConstraint;
   }
 
-  set applyDateConstraint(value: boolean) {
-    this._applyDateConstraint = value;
+  set applyObsDateConstraint(value: boolean) {
+    this._applyObsDateConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.applyDateConstraint = this._applyDateConstraint;
+    conceptConstraint.applyObsDateConstraint = this._applyObsDateConstraint;
     this.constraintService.updateCounts_1();
   }
 
-  get date1(): Date {
-    return this._date1;
+  get obsDate1(): Date {
+    return this._obsDate1;
   }
 
-  set date1(value: Date) {
+  set obsDate1(value: Date) {
     // Ignore invalid values
     if (!value) {
       return;
     }
 
-    this._date1 = value;
+    this._obsDate1 = value;
 
     // Because the date picker represents the date/time in the local timezone,
     // we need to correct the date that is actually used in the constraint.
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.timeConstraint.date1 = correctedDate;
+    conceptConstraint.obsDateConstraint.date1 = correctedDate;
     this.constraintService.updateCounts_1();
   }
 
-  get date2(): Date {
-    return this._date2;
+  get obsDate2(): Date {
+    return this._obsDate2;
   }
 
-  set date2(value: Date) {
+  set obsDate2(value: Date) {
     // Ignore invalid values
     if (!value) {
       return;
     }
 
-    this._date2 = value;
+    this._obsDate2 = value;
 
     // Because the date picker represents the date/time in the local timezone,
     // we need to correct the date that is actually used in the constraint.
     let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.timeConstraint.date2 = correctedDate;
+    conceptConstraint.obsDateConstraint.date2 = correctedDate;
     this.constraintService.updateCounts_1();
   }
 
@@ -317,10 +332,31 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         newVal.value = category;
         conceptConstraint.values.push(newVal);
       }
+    } else if (this.isDate()) {
+      // TODO: convert date to value, add new value object to concept
+      console.log('update: ', this.valDate1, this.valDate2);
     }
 
     this.constraintService.updateCounts_1();
+  }
 
+  /*
+   * -------------------- event handlers: value date change --------------------
+   */
+  get valDate1(): Date {
+    return this._valDate1;
+  }
+
+  set valDate1(value: Date) {
+    this._valDate1 = value;
+  }
+
+  get valDate2(): Date {
+    return this._valDate2;
+  }
+
+  set valDate2(value: Date) {
+    this._valDate2 = value;
   }
 
   /*
@@ -428,6 +464,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return concept.type === 'CATEGORICAL';
   }
 
+  isDate() {
+    let concept: Concept = (<ConceptConstraint>this.constraint).concept;
+    if (!concept) {
+      return false;
+    }
+    return concept.type === 'DATE';
+  }
+
   isBetween() {
     return this.operatorState === GbConceptOperatorState.BETWEEN;
   }
@@ -444,7 +488,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   getOperatorButtonName() {
     let name = '';
-    if (this.isNumeric()) {
+    if (this.isNumeric() || this.isDate()) {
       name = (this.operatorState === GbConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
     }
     return name;
@@ -456,10 +500,82 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
     // Update the constraint
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.timeConstraint.dateOperator = this._dateOperatorState;
+    conceptConstraint.obsDateConstraint.dateOperator = this._dateOperatorState;
 
     // Notify constraint service
     this.constraintService.updateCounts_1();
+  }
+
+  get operatorState(): GbConceptOperatorState {
+    return this._operatorState;
+  }
+
+  set operatorState(value: GbConceptOperatorState) {
+    this._operatorState = value;
+  }
+
+  get isMinEqual(): boolean {
+    return this._isMinEqual;
+  }
+
+  set isMinEqual(value: boolean) {
+    this._isMinEqual = value;
+  }
+
+  get isMaxEqual(): boolean {
+    return this._isMaxEqual;
+  }
+
+  set isMaxEqual(value: boolean) {
+    this._isMaxEqual = value;
+  }
+
+  get minVal(): number {
+    return this._minVal;
+  }
+
+  set minVal(value: number) {
+    this._minVal = value;
+  }
+
+  get maxVal(): number {
+    return this._maxVal;
+  }
+
+  set maxVal(value: number) {
+    this._maxVal = value;
+  }
+
+  get maxLimit(): number {
+    return this._maxLimit;
+  }
+
+  set maxLimit(value: number) {
+    this._maxLimit = value;
+  }
+
+  get minLimit(): number {
+    return this._minLimit;
+  }
+
+  set minLimit(value: number) {
+    this._minLimit = value;
+  }
+
+  get equalVal(): number {
+    return this._equalVal;
+  }
+
+  set equalVal(value: number) {
+    this._equalVal = value;
+  }
+
+  get searchResults(): Concept[] {
+    return this._searchResults;
+  }
+
+  set searchResults(value: Concept[]) {
+    this._searchResults = value;
   }
 
 }
