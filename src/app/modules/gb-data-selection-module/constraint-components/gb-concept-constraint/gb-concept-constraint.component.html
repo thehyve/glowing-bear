@@ -113,6 +113,7 @@
       </button>
       &nbsp;
       <p-calendar [(ngModel)]="obsDate1"
+                  (ngModelChange)="updateObservationDateValues()"
                   dateFormat="dd-mm-yy"
                   showTime="true"
                   showSeconds="true"
@@ -121,6 +122,7 @@
       <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
         <span>&nbsp;and&nbsp;</span>
         <p-calendar [(ngModel)]="obsDate2"
+                    (ngModelChange)="updateObservationDateValues()"
                     dateFormat="dd-mm-yy"
                     showTime="true"
                     showSeconds="true"

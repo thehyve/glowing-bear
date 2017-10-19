@@ -5,7 +5,6 @@ import {GbDataSelectionComponent} from './gb-data-selection.component';
 import {routing} from './gb-data-selection.routing';
 import {RouterModule} from '@angular/router';
 import {GbSelectionComponent} from './accordion-components/gb-selection/gb-selection.component';
-import {ObservationSelectionComponent} from './accordion-components/observation-selection/observation-selection.component';
 import {GbStudyConstraintComponent} from './constraint-components/gb-study-constraint/gb-study-constraint.component';
 import {GbCombinationConstraintComponent} from './constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
@@ -44,7 +43,6 @@ import {GbProjectionComponent} from './accordion-components/gb-projection/gb-pro
   declarations: [
     GbDataSelectionComponent,
     GbSelectionComponent,
-    ObservationSelectionComponent,
     GbExportComponent,
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,

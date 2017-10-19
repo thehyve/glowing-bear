@@ -50,7 +50,8 @@
     <!-- The 1st step -->
     <md2-accordion-tab [active]="true">
       <md2-accordion-header>
-        <span class="gb-data-selection-accordion-header">Selection</span>
+        <span class="gb-data-selection-accordion-header">Step 1: Define the group of subjects for which you
+          want to select data</span>
         <span class="gb-data-selection-accordion-sub-header">
           ({{patientCount_1}} {{singularOrPlural('patient', patientCount_1)}},
           with {{observationCount_1}} {{singularOrPlural('observation', observationCount_1)}},
@@ -64,7 +65,8 @@
     <!-- The 2nd step -->
     <md2-accordion-tab>
       <md2-accordion-header>
-        <span class="gb-data-selection-accordion-header">Projection</span>
+        <span class="gb-data-selection-accordion-header">Step 2: Select the relevant data of your group of
+          subjects</span>
         <span class="gb-data-selection-accordion-sub-header">
           ({{patientCount_2}} {{singularOrPlural('patient', patientCount_2)}},
           with {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}},
@@ -77,26 +79,17 @@
 
     <md2-accordion-tab>
       <md2-accordion-header>
-        <span class="gb-data-selection-accordion-header">Visualization</span>
+        <span class="gb-data-selection-accordion-header">Step 3: Visualize the selected data (optional)</span>
       </md2-accordion-header>
       Visualization
     </md2-accordion-tab>
 
     <md2-accordion-tab>
       <md2-accordion-header>
-        <span class="gb-data-selection-accordion-header">Export</span>
+        <span class="gb-data-selection-accordion-header">Step 4: Export the selected data (optional)</span>
       </md2-accordion-header>
       <gb-export></gb-export>
     </md2-accordion-tab>
-
-    <!--<md2-accordion-tab>-->
-      <!--<md2-accordion-header>-->
-        <!--<span class="gb-data-selection-accordion-header">Select Concepts</span>-->
-        <!--<span class="gb-data-selection-accordion-sub-header">({{observationCount}} observations, {{conceptCount}}-->
-        <!--concepts selected)</span>-->
-      <!--</md2-accordion-header>-->
-      <!--<observation-selection></observation-selection>-->
-    <!--</md2-accordion-tab>-->
 
 
   </md2-accordion>

@@ -11,35 +11,27 @@ export class GbDataSelectionComponent implements OnInit {
 
   private _queryName: string;
 
-  constructor(private treeNodeService: TreeNodeService,
-              public constraintService: ConstraintService) {
+  constructor(public constraintService: ConstraintService) {
     this.queryName = '';
   }
 
   ngOnInit() {
-    this.treeNodeService.treeSelectionMode = '';
   }
 
   /**
-   * The event handler for the accordion tab open event
+   * The event handler for the accordion tab open event,
+   * to access the accordion, use event.index
    * @param event
    */
   openAccordion(event) {
-    // If we want to make the tree 'checkable',
-    // change the treeSelectionMode to 'checkbox'
-    this.treeNodeService.treeSelectionMode = '';
   }
 
   /**
-   * The event handler for the accordion tab close event
+   * The event handler for the accordion tab close event,
+   * to access the accordion, use event.index
    * @param event
    */
   closeAccordion(event) {
-    // if the 'select observation' accordion is closed,
-    // set treeSelectionMode to empty string
-    if (event.index === 1) {
-      this.treeNodeService.treeSelectionMode = '';
-    }
   }
 
   /**

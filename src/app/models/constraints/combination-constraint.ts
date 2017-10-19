@@ -37,6 +37,53 @@ export class CombinationConstraint implements Constraint {
   }
 
   /**
+   * This method is used to unwrap nested combination constraint
+   * with single child
+   * @param {Object} queryObject
+   * @returns {Object}
+   */
+  unWrapNestedQueryObject(queryObject: object): object {
+    const type = queryObject['type'];
+    // If the query object is a combination constraint
+    if (type === 'and' || type === 'or') {
+      if (queryObject['args'].length === 1) {
+        return this.unWrapNestedQueryObject(queryObject['args'][0]);
+      } else {
+        return queryObject;
+      }
+    } else {
+      return queryObject;
+    }
+  }
+
+  /**
+   * Wrap a given query object with subselection clause
+   * @param {Object} queryObject
+   * @returns {Object}
+   */
+  wrapWithSubselection(queryObject: object): object {
+    let queryObj = this.unWrapNestedQueryObject(queryObject);
+    if (queryObj['type'] !== 'negation') {
+      return {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': queryObj
+      };
+    } else {
+      const arg = queryObj['arg'];
+      const sub = {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': arg
+      };
+      return {
+        'type': 'negation',
+        'arg': sub
+      };
+    }
+  }
+
+  /**
    * This method is for querying patients,
    * which requires a speicial subselection wrapper
    * @returns {Object}
@@ -69,27 +116,6 @@ export class CombinationConstraint implements Constraint {
     }
 
     return queryObject;
-  }
-
-  wrapWithSubselection(queryObject: object): object {
-    if (queryObject['type'] !== 'negation') {
-      return {
-        'type': 'subselection',
-        'dimension': 'patient',
-        'constraint': queryObject
-      };
-    } else {
-      const arg = queryObject['arg'];
-      const sub = {
-        'type': 'subselection',
-        'dimension': 'patient',
-        'constraint': arg
-      };
-      return {
-        'type': 'negation',
-        'arg': sub
-      };
-    }
   }
 
   /**

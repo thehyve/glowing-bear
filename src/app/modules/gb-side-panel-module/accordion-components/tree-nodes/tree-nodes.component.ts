@@ -289,24 +289,6 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
   }
 
   /**
-   * User selecting a tree node triggers this handler
-   * @param event
-   */
-  onNodeSelect(event) {
-    this.treeNodeService.updateSelectedTreeNodes();
-    this.constraintService.updateCounts_2();
-  }
-
-  /**
-   * User unselecting a tree node triggers this handler
-   * @param event
-   */
-  onNodeUnselect(event) {
-    this.treeNodeService.updateSelectedTreeNodes();
-    this.constraintService.updateCounts_2();
-  }
-
-  /**
    * Clear filtering words
    */
   clearFilter() {
