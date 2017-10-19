@@ -15,11 +15,8 @@
 
   <!-- the tree itself -->
   <p-tree [value]="treeNodeService.treeNodes"
-          [selectionMode]="treeNodeService.treeSelectionMode"
           [(selection)]="treeNodeService.selectedTreeNodesPrime"
           (onNodeExpand)="expandNode($event)"
-          (onNodeSelect)="onNodeSelect($event)"
-          (onNodeUnselect)="onNodeUnselect($event)"
           draggableNodes="true"
           styleClass="gb-tree-container"></p-tree>
 

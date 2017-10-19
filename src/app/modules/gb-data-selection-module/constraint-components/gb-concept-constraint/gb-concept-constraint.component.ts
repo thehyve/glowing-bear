@@ -169,15 +169,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!value) {
       return;
     }
-
     this._obsDate1 = value;
-
-    // Because the date picker represents the date/time in the local timezone,
-    // we need to correct the date that is actually used in the constraint.
-    let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
-    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.obsDateConstraint.date1 = correctedDate;
-    this.constraintService.updateCounts_1();
   }
 
   get obsDate2(): Date {
@@ -189,15 +181,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!value) {
       return;
     }
-
     this._obsDate2 = value;
-
-    // Because the date picker represents the date/time in the local timezone,
-    // we need to correct the date that is actually used in the constraint.
-    let correctedDate = new Date(value.getTime() - 60000 * value.getTimezoneOffset());
-    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.obsDateConstraint.date2 = correctedDate;
-    this.constraintService.updateCounts_1();
   }
 
   get dateOperatorState(): GbDateOperatorState {
@@ -245,6 +229,22 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   set suggestedTrialVisits(value: TrialVisit[]) {
     this._suggestedTrialVisits = value;
+  }
+
+  get valDate1(): Date {
+    return this._valDate1;
+  }
+
+  set valDate1(value: Date) {
+    this._valDate1 = value;
+  }
+
+  get valDate2(): Date {
+    return this._valDate2;
+  }
+
+  set valDate2(value: Date) {
+    this._valDate2 = value;
   }
 
   /*
@@ -336,27 +336,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       // TODO: convert date to value, add new value object to concept
       console.log('update: ', this.valDate1, this.valDate2);
     }
-
     this.constraintService.updateCounts_1();
-  }
-
-  /*
-   * -------------------- event handlers: value date change --------------------
-   */
-  get valDate1(): Date {
-    return this._valDate1;
-  }
-
-  set valDate1(value: Date) {
-    this._valDate1 = value;
-  }
-
-  get valDate2(): Date {
-    return this._valDate2;
-  }
-
-  set valDate2(value: Date) {
-    this._valDate2 = value;
   }
 
   /*
@@ -443,6 +423,22 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let index = this.selectedTrialVisits.indexOf(visit);
     this.selectedTrialVisits.splice(index, 1);
     this.updateTrialVisitValues();
+  }
+
+  /*
+   * -------------------- event handlers: observation-date --------------------
+   */
+  updateObservationDateValues() {
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    // Because the date picker represents the date/time in the local timezone,
+    // we need to correct the date that is actually used in the constraint.
+    const val1 = this.obsDate1;
+    let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
+    conceptConstraint.obsDateConstraint.date1 = correctedDate1;
+    const val2 = this.obsDate2;
+    let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
+    conceptConstraint.obsDateConstraint.date2 = correctedDate2;
+    this.constraintService.updateCounts_1();
   }
 
   /*

@@ -21,15 +21,6 @@ export class TreeNodeService {
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
   private _selectedTreeTableData: TreeNode[] = [];
 
-  // the selectionMode of the tree, default is '', alternative is 'checkbox'
-  public treeSelectionMode = '';
-  // the selected tree nodes by user in observation selection
-  public selectedTreeNodes: TreeNode[] = [];
-  // the PrimeNg version of selected tree nodes, an alternative version of selectedTreeNodes
-  // this version is specifically used to store the selected tree nodes checked by the user
-  // it does not retain the origin tree structure, but could give us information
-  // it is used by the tree-nodes.component
-  public selectedTreeNodesPrime: TreeNode[] = [];
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
   private _studies: Study[] = [];
@@ -199,12 +190,27 @@ export class TreeNodeService {
   /**
    * Update the tree table data for rendering the tree table in step 2, projection
    * based on a given set of concept codes as filtering criteria.
-   * @param {string[]} conceptCodes
+   * @param {Object} conceptCountMap
    */
-  public updateTreeTableData(conceptCodes: string[], conceptCountMap: object) {
+  public updateTreeTableData(conceptCountMap: object, checklist: Array<string>) {
+    let conceptCodes = [];
+    for (let code in conceptCountMap) {
+      conceptCodes.push(code);
+    }
     this.treeTableData = this.updateTreeTableDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
     this.selectedTreeTableData = [];
-    this.checkTreeTableData(this.treeTableData);
+    this.checkTreeTableData(this.treeTableData, checklist);
+  }
+
+  private checkTreeTableData(nodes: TreeNode[], checklist: Array<string>) {
+    for (let node of nodes) {
+      if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
+        this.selectedTreeTableData.push(node);
+      }
+      if (node['children']) {
+        this.checkTreeTableData(node['children'], checklist);
+      }
+    }
   }
 
   private updateTreeTableDataIterative(nodes: TreeNode[], conceptCodes: string[], conceptCountMap: object) {
@@ -237,15 +243,6 @@ export class TreeNodeService {
     };
     itemCopy['expanded'] = true;
     return itemCopy;
-  }
-
-  private checkTreeTableData(nodes: TreeNode[]) {
-    for (let node of nodes) {
-      this.selectedTreeTableData.push(node);
-      if (node['children']) {
-        this.checkTreeTableData(node['children']);
-      }
-    }
   }
 
   /**
@@ -320,60 +317,52 @@ export class TreeNodeService {
   }
 
   /**
-   * Update the selected tree nodes,
-   * used when the user is checking to select tree nodes in observation selection
+   * Given a list of tree nodes, find and return
+   * the node(s) that are on the topmost of the hierarchies of their respective branches
+   * e.g.
+   * given these nodes:
+   * [ A\B\C,
+   *   A\B
+   *   A\D\E,
+   *   A\D\E\F,
+   *   A\E ]
+   * --------------------------
+   * return:
+   * [ A\B,
+   *   A\D\E,
+   *   A\E ]
+   * @param {TreeNode[]} treeNodes
+   * @returns {TreeNode[]}
    */
-  public updateSelectedTreeNodes() {
-    this.selectedTreeNodes.length = 0;
-    for (let treeNode of this.treeNodes) {
-      const isSelected = this.selectedTreeNodesPrime.indexOf(treeNode) !== -1;
-      const isPartiallySelected = treeNode['partialSelected'];
-      if (isSelected || isPartiallySelected) {
-        let treeNodeCopy = Object.assign({}, treeNode);
-        this.keepSelectedTreeNodes(treeNodeCopy);
-        this.selectedTreeNodes.push(treeNodeCopy);
-      }
-    }
-  }
-
-  private keepSelectedTreeNodes(parentNode: TreeNode) {
-    // parentNode.parent = undefined;
-    let children = parentNode['children'];
-    if (children) {
-      let selectedChildren = [];
-      for (let child of children) {
-        const isChildSelected = this.selectedTreeNodesPrime.indexOf(child) !== -1;
-        const isChildPartiallySelected = child['partialSelected'];
-        if (isChildSelected || isChildPartiallySelected) {
-          let childCopy = Object.assign({}, child);
-          this.keepSelectedTreeNodes(childCopy);
-          selectedChildren.push(childCopy);
+  public getTopTreeNodes(treeNodes: TreeNode[]): TreeNode[] {
+    let candidates = [];
+    let result = [];
+    for (let node of treeNodes) {
+      const path = node['fullName'];
+      let isPathUsed = false;
+      for (let candidate of candidates) {
+        if (path.indexOf(candidate) > -1) {
+          // if the candidate is part of the path
+          isPathUsed = true;
+          break;
+        } else if (candidate.indexOf(path) > -1) {
+          // if the path is part of the candidate
+          // remove the candidate, replace it with the path
+          const index = candidates.indexOf(candidate);
+          candidates.splice(index, 1);
+          candidates.push(path);
+          result.splice(index, 1);
+          result.push(node);
+          isPathUsed = true;
+          break;
         }
       }
-      parentNode['children'] = selectedChildren;
-    }
-  }
-
-
-  /**
-   * Update the PrimeNG version of selected tree nodes,
-   * this is where we set the flags of tree nodes that are selected or expanded
-   * @param {TreeNode[]} nodes -- flat array of tree nodes, regardless of hierarchy
-   */
-  public updateSelectedTreeNodesPrime(nodes: TreeNode[]) {
-    for (let node of nodes) {
-      if (this.selectedTreeNodesPrime.indexOf(node) === -1) {
-        node['expanded'] = true;
-        node['isSelected'] = true;
-        let ancestors = this.findTreeNodeAncestors(node);
-        for (let ancestor of ancestors) {
-          ancestor['expanded'] = true;
-          ancestor['partialSelected'] = true;
-        }
-        this.selectedTreeNodesPrime.push(node);
+      if (!isPathUsed) {
+        candidates.push(path);
+        result.push(node);
       }
     }
-    this.updateSelectedTreeNodes();
+    return result;
   }
 
   /**

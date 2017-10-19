@@ -6,6 +6,7 @@ export class Concept {
   // the display text
   private _label: string;
   private _aggregate: Aggregate;
+  private _code: string;
 
   constructor() {
   }
@@ -40,5 +41,13 @@ export class Concept {
 
   set label(value: string) {
     this._label = value;
+  }
+
+  get code(): string {
+    return this._code;
+  }
+
+  set code(value: string) {
+    this._code = value;
   }
 }

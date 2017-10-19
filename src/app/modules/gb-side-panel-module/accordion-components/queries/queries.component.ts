@@ -66,22 +66,12 @@ export class QueriesComponent implements OnInit, AfterViewInit {
     return query['bookmarked'] ? 'fa-star' : 'fa-star-o';
   }
 
-  selectQuery(selectedQuery) {
+  putQuery(selectedQuery) {
     for (let query of this.treeNodeService.queries) {
       query['selected'] = false;
     }
     selectedQuery['selected'] = true;
-    // Update patient constraint
-    this.constraintService.clearSelectionConstraint();
-    let patientConstraint =
-      this.constraintService.generateConstraintFromConstraintObject(selectedQuery['patientsQuery']);
-    this.constraintService.putPatientConstraint(patientConstraint);
-
-    // Update observation constraint
-    this.constraintService.clearObservationConstraint();
-    let observationConstraint =
-      this.constraintService.generateConstraintFromConstraintObject(selectedQuery['observationsQuery']);
-    this.constraintService.putObservationConstraint(observationConstraint);
+    this.constraintService.putQuery(selectedQuery);
   }
 
   getQuerySelectionButtonIcon(query) {
