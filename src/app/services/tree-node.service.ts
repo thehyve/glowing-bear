@@ -250,7 +250,7 @@ export class TreeNodeService {
    * @param parentNode
    */
   private loadTreeNext(parentNode) {
-    let depth = 20;
+    let depth = 5;
     this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
       .subscribe(
         (treeNodes: object[]) => {
