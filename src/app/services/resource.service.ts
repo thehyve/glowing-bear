@@ -10,7 +10,6 @@ import {Study} from '../models/study';
 import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from '../models/constraints/constraint';
-import {Aggregate} from '../models/aggregate';
 import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
@@ -272,57 +271,17 @@ export class ResourceService {
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
-
-  /**
-   * Given a constraint, get its aggregate which includes min, max, average or categorical values
-   * @param constraint
-   * @returns {Observable<Aggregate>}
-   * TODO: refactor
-   */
-  getConceptAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let constraintString = JSON.stringify(constraint.toQueryObject());
-    let url = `${endpoint.getUrl()}/observations/aggregate?`;
-    if (constraint.concept.type === 'NUMERIC') {
-      url += `type=min&type=max&type=average&type=count&constraint=${constraintString}`;
-    } else {
-      url += `type=values&constraint=${constraintString}`;
-    }
-
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json() as Aggregate)
-      .catch(this.handleError.bind(this));
-  }
-
   /**
    * Get the aggregate based on the given constraint and aggregate options,
    * the options can be {min, max, count, values, average}
    * @param {Constraint} constraint
-   * @param {string[]} aggregateOptions
-   * @returns {Observable<Aggregate>}
-   * TODO: refactor
+   * @returns {Observable<object>}
    */
-  getAggregate(constraint: Constraint, aggregateOptions: string[]): Observable<Aggregate> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let constraintString = JSON.stringify(constraint.toQueryObject());
-    let url = `${endpoint.getUrl()}/observations/aggregate?`;
-    let types = '';
-    for (let option of aggregateOptions) {
-      types += `type=${option}&`;
-    }
-    url += `${types}constraint=${constraintString}`;
-
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json() as Aggregate)
-      .catch(this.handleError.bind(this));
+  getAggregate(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/aggregates_per_concept';
+    const body = {constraint: JSON.stringify(constraint.toQueryObject())};
+    const responseField = 'aggregatesPerConcept';
+    return this.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- trial visit calls --------------------------------------

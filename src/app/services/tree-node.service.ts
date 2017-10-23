@@ -96,6 +96,7 @@ export class TreeNodeService {
         let path = node['constraint']['path'];
         concept.path = path ? path : node['fullName'];
         concept.type = node['type'];
+        concept.code = node['conceptCode'];
         this.concepts.push(concept);
 
         let constraint = new ConceptConstraint();

@@ -93,22 +93,27 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       // (We don't want to apply value and date constraints when getting aggregates)
       let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
       conceptOnlyConstraint.concept = constraint.concept;
-
-      this.resourceService.getConceptAggregate(conceptOnlyConstraint)
+      this.resourceService.getAggregate(conceptOnlyConstraint)
         .subscribe(
-          aggregate => {
-            constraint.concept.aggregate = aggregate;
+          response => {
+            const code = constraint.concept.code;
+            const aggregateObj = response[code];
             if (this.isNumeric()) {
-              this.minLimit = aggregate.min;
-              this.maxLimit = aggregate.max;
+              let aggregate = aggregateObj['numericalValueAggregates'];
+              constraint.concept.aggregate = aggregate;
+              this.minLimit = aggregate['min'];
+              this.maxLimit = aggregate['max'];
             } else if (this.isCategorical()) {
-              this.selectedCategories = aggregate.values;
-              this.suggestedCategories = aggregate.values;
+              let aggregate = aggregateObj['categoricalValueAggregates'];
+              let values = [];
+              for (let key in aggregate['valueCounts']) {
+                values.push(key);
+              }
+              this.selectedCategories = values;
+              this.suggestedCategories = values;
             }
           },
-          err => {
-            console.error(err);
-          }
+          err => console.error(err)
         );
 
       // Initialize the available trial visits of the trial visit constraint
@@ -349,7 +354,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   onCategorySearch(event) {
     let query = event.query.toLowerCase().trim();
 
-    let categories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+    let categories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
     if (query) {
       this.suggestedCategories =
         categories.filter((category: string) => category.toLowerCase().includes(query));
@@ -359,7 +364,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   selectAllCategories() {
-    this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate.values;
+    this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
     this.updateConceptValues();
   }
 
