@@ -83,6 +83,7 @@ export class GbDataSelectionComponent implements OnInit {
             }
           };
           this.constraintService.putQuery(query);
+          this.constraintService.alert('Imported concept selection in Step 2.', '', 'info');
         }
       } else if (file.type === 'text/plain' ||
         file.type === 'text/tab-separated-values' ||
@@ -98,6 +99,7 @@ export class GbDataSelectionComponent implements OnInit {
           'observationsQuery': {}
         };
         this.constraintService.putQuery(query);
+        this.constraintService.alert('Imported subject selection in Step 1.', '', 'info');
       }
     }).bind(this);
     reader.readAsText(file);

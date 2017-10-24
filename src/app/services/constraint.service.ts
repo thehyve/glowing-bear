@@ -435,6 +435,11 @@ export class ConstraintService {
     this.updateCounts_1();
   }
 
+  public alert(summary: string, detail: string, severity: string) {
+    this.alertMessages.length = 0;
+    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
+  }
+
   /**
    * Generate the constraint for retrieving the patients with only the inclusion criteria
    * @param inclusionConstraint
@@ -712,14 +717,12 @@ export class ConstraintService {
           newlySavedQuery['collapsed'] = true;
           this.treeNodeService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
-          this.alertMessages.length = 0;
-          this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
+          this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
           const summary = 'Could not save the query "' + queryName + '".';
-          this.alertMessages.length = 0;
-          this.alertMessages.push({severity: 'error', summary: summary, detail: ''});
+          this.alert(summary, '', 'error');
         }
       );
   }
