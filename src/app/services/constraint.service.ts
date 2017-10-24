@@ -13,6 +13,7 @@ import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
+import {PatientSetConstraint} from "../models/constraints/patient-set-constraint";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -434,6 +435,11 @@ export class ConstraintService {
     this.updateCounts_1();
   }
 
+  public alert(summary: string, detail: string, severity: string) {
+    this.alertMessages.length = 0;
+    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
+  }
+
   /**
    * Generate the constraint for retrieving the patients with only the inclusion criteria
    * @param inclusionConstraint
@@ -533,6 +539,15 @@ export class ConstraintService {
       study.studyId = constraintObject['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
+    } else if (type === 'patient_set') { // ------> If it is a patient-set constraint
+      constraint = new PatientSetConstraint();
+      if (constraintObject['subjectIds']) {
+        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
+      } else if (constraintObject['patientIds']) {
+        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
+      } else if (constraintObject['patientSetId']) {
+        (<PatientSetConstraint>constraint).patientSetId = constraintObject['patientSetId'];
+      }
     } else if (type === 'combination') { // ------> If it is a combination constraint
       let operator = constraintObject['operator'];
       constraint = new CombinationConstraint();
@@ -702,14 +717,12 @@ export class ConstraintService {
           newlySavedQuery['collapsed'] = true;
           this.treeNodeService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
-          this.alertMessages.length = 0;
-          this.alertMessages.push({severity: 'success', summary: summary, detail: ''});
+          this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
           const summary = 'Could not save the query "' + queryName + '".';
-          this.alertMessages.length = 0;
-          this.alertMessages.push({severity: 'error', summary: summary, detail: ''});
+          this.alert(summary, '', 'error');
         }
       );
   }

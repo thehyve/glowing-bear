@@ -13,10 +13,18 @@ import {AutoCompleteModule} from 'primeng/components/autocomplete/autocomplete';
 import {Md2AccordionModule} from 'md2';
 import {CheckboxModule} from 'primeng/components/checkbox/checkbox';
 import {CalendarModule} from 'primeng/components/calendar/calendar';
-import {MessagesModule, TreeModule, PanelModule, DataListModule, DataTableModule, TreeTableModule} from 'primeng/primeng';
+import {
+  MessagesModule,
+  TreeModule,
+  PanelModule,
+  DataListModule,
+  DataTableModule,
+  TreeTableModule
+} from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
+import {GbPatientSetConstraintComponent} from './constraint-components/gb-patient-set-constraint/gb-patient-set-constraint.component';
 
 @NgModule({
   imports: [
@@ -48,7 +56,8 @@ import {GbProjectionComponent} from './accordion-components/gb-projection/gb-pro
     GbCombinationConstraintComponent,
     GbConstraintComponent,
     GbConceptConstraintComponent,
-    GbProjectionComponent
+    GbProjectionComponent,
+    GbPatientSetConstraintComponent
   ],
   entryComponents: [
     GbConstraintComponent,

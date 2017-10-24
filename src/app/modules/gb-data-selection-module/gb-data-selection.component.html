@@ -7,12 +7,12 @@
           {{patientCount_2}} {{singularOrPlural('subject', patientCount_2)}}
         </span>
       </div>
-      <div class="col-3">
-        <span>
-          {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}}
-        </span>
-      </div>
-      <div class="col-3">
+      <div class="col-6">
+        <div class="row">
+          <span>
+            {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}}
+          </span>
+        </div>
         <div class="row">
           <span>
             {{conceptCount_2}} {{singularOrPlural('concept', conceptCount_2)}}
@@ -33,9 +33,17 @@
                  [(ngModel)]="queryName" >
         </div>
         <div class="row">
-          <button class="btn btn-outline-secondary btn-sm gb-data-selection-overview-panel-btn"
+          <button class="btn btn-outline-secondary btn-sm gb-data-selection-overview-panel-save-btn"
                   (click)="saveQuery()"
                   type="button">Save query</button>
+        </div>
+        <div class="row">
+          <input id="queryFileUpload"
+                 type="file"
+                 style="display: none"/>
+          <button class="btn btn-outline-secondary btn-sm gb-data-selection-overview-panel-import-btn"
+                  (click)="importQuery()"
+                  type="button">Import query</button>
         </div>
       </div>
     </div>
