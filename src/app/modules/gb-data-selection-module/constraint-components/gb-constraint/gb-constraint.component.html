@@ -7,10 +7,12 @@
     <i class="fa fa-times" aria-hidden="true"></i>
   </button>
 
-  <gb-combination-constraint *ngIf="constraint.getClassName() == 'CombinationConstraint' "
-                          [constraint]="constraint"></gb-combination-constraint>
-  <gb-concept-constraint *ngIf="constraint.getClassName() == 'ConceptConstraint' "
-                      [constraint]="constraint"></gb-concept-constraint>
-  <gb-study-constraint *ngIf="constraint.getClassName() == 'StudyConstraint' "
-                    [constraint]="constraint"></gb-study-constraint>
+  <gb-combination-constraint *ngIf="constraint.getClassName() === 'CombinationConstraint' "
+                             [constraint]="constraint"></gb-combination-constraint>
+  <gb-concept-constraint *ngIf="constraint.getClassName() === 'ConceptConstraint' "
+                         [constraint]="constraint"></gb-concept-constraint>
+  <gb-study-constraint *ngIf="constraint.getClassName() === 'StudyConstraint' "
+                       [constraint]="constraint"></gb-study-constraint>
+  <gb-patient-set-constraint *ngIf="constraint.getClassName() === 'PatientSetConstraint' "
+                             [constraint]="constraint"></gb-patient-set-constraint>
 </div>

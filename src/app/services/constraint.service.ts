@@ -13,6 +13,7 @@ import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
+import {PatientSetConstraint} from "../models/constraints/patient-set-constraint";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -533,6 +534,15 @@ export class ConstraintService {
       study.studyId = constraintObject['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
+    } else if (type === 'patient_set') { // ------> If it is a patient-set constraint
+      constraint = new PatientSetConstraint();
+      if (constraintObject['subjectIds']) {
+        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
+      } else if (constraintObject['patientIds']) {
+        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
+      } else if (constraintObject['patientSetId']) {
+        (<PatientSetConstraint>constraint).patientSetId = constraintObject['patientSetId'];
+      }
     } else if (type === 'combination') { // ------> If it is a combination constraint
       let operator = constraintObject['operator'];
       constraint = new CombinationConstraint();

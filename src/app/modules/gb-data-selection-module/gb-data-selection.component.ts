@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
+import {PatientSetConstraint} from "../../models/constraints/patient-set-constraint";
 
 @Component({
   selector: 'gb-data-selection',
@@ -16,6 +17,9 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
+    document
+      .getElementById('queryFileUpload')
+      .addEventListener('change', this.queryFileUpload.bind(this), false);
   }
 
   /**
@@ -54,6 +58,49 @@ export class GbDataSelectionComponent implements OnInit {
       this.constraintService.alertMessages.length = 0;
       this.constraintService.alertMessages.push({severity: 'warn', summary: summary, detail: ''});
     }
+  }
+
+  importQuery() {
+    document.getElementById('queryFileUpload').click();
+  }
+
+  queryFileUpload(event) {
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onload = (function (e) {
+      if (file.type === 'application/json') {
+        let json = JSON.parse(e.target['result']);
+        // If the json is of standard format
+        if (json['patientsQuery'] || json['observationsQuery']) {
+          this.constraintService.putQuery(json);
+        } else {
+          // we assume it is a json array of tree node paths for observation query
+          let query = {
+            'name': 'imported temporary query',
+            'patientsQuery': {'type': 'true'},
+            'observationsQuery': {
+              data: json
+            }
+          };
+          this.constraintService.putQuery(query);
+        }
+      } else if (file.type === 'text/plain' ||
+        file.type === 'text/tab-separated-values' ||
+        file.type === 'text/csv' ||
+        file.type === '') {
+        // we assume the text contains a list of subject Ids
+        let query = {
+          'name': 'imported temporary query',
+          'patientsQuery': {
+            'type': 'patient_set',
+            'subjectIds': e.target['result'].split('\n')
+          },
+          'observationsQuery': {}
+        };
+        this.constraintService.putQuery(query);
+      }
+    }).bind(this);
+    reader.readAsText(file);
   }
 
   numberWithCommas(x: number): string {

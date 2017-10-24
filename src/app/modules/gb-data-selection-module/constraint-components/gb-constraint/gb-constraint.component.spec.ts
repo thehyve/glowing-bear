@@ -22,7 +22,8 @@ describe('GbConstraintComponent', () => {
         GbConstraintComponent,
         GenericComponentMock({selector: 'gb-combination-constraint', inputs: ['constraint']}),
         GenericComponentMock({selector: 'gb-study-constraint', inputs: ['constraint']}),
-        GenericComponentMock({selector: 'gb-concept-constraint', inputs: ['constraint']})
+        GenericComponentMock({selector: 'gb-concept-constraint', inputs: ['constraint']}),
+        GenericComponentMock({selector: 'gb-patient-set-constraint', inputs: ['constraint']})
       ],
       providers: [
         {
