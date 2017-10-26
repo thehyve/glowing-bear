@@ -4,7 +4,7 @@
     <p-autoComplete #autoComplete
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
-                    field="path"
+                    field="label"
                     (completeMethod)="onSearch($event)"
                     [style]="{'width':'100%'}"
                     [inputStyle]="{'width':'100%'}"
@@ -72,11 +72,11 @@
   <div *ngIf="isDate()" class="form-inline">
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
-            (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
-      <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
-      <i *ngSwitchCase="DateOperatorState.AFTER">after </i>
-      <i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>
-      <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
+            (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">
+      <i *ngSwitchCase="ValDateOperatorState.BEFORE">before </i>
+      <i *ngSwitchCase="ValDateOperatorState.AFTER">after </i>
+      <i *ngSwitchCase="ValDateOperatorState.BETWEEN">between </i>
+      <i *ngSwitchCase="ValDateOperatorState.NOT_BETWEEN">not between </i>
     </button>
     &nbsp;
     <p-calendar [(ngModel)]="valDate1"
@@ -86,7 +86,7 @@
                 hourFormat="24"
                 (ngModelChange)="updateConceptValues()"
                 utc="true"></p-calendar>
-    <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
+    <div *ngIf="[ValDateOperatorState.BETWEEN, ValDateOperatorState.NOT_BETWEEN].includes(valDateOperatorState)">
       <span>&nbsp;and&nbsp;</span>
       <p-calendar [(ngModel)]="valDate2"
                   dateFormat="dd-mm-yy"
@@ -105,11 +105,11 @@
     <div *ngIf="applyObsDateConstraint" class="form-inline">
       <span>and observation date &nbsp;</span>
       <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
-              (click)="switchDateOperatorState()" [ngSwitch]="dateOperatorState">
-        <i *ngSwitchCase="DateOperatorState.BEFORE">before </i>
-        <i *ngSwitchCase="DateOperatorState.AFTER">after </i>
-        <i *ngSwitchCase="DateOperatorState.BETWEEN">between </i>
-        <i *ngSwitchCase="DateOperatorState.NOT_BETWEEN">not between </i>
+              (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
+        <i *ngSwitchCase="ObsDateOperatorState.BEFORE">before </i>
+        <i *ngSwitchCase="ObsDateOperatorState.AFTER">after </i>
+        <i *ngSwitchCase="ObsDateOperatorState.BETWEEN">between </i>
+        <i *ngSwitchCase="ObsDateOperatorState.NOT_BETWEEN">not between </i>
       </button>
       &nbsp;
       <p-calendar [(ngModel)]="obsDate1"
@@ -119,7 +119,7 @@
                   showSeconds="true"
                   hourFormat="24"
                   utc="true"></p-calendar>
-      <div *ngIf="[DateOperatorState.BETWEEN, DateOperatorState.NOT_BETWEEN].includes(dateOperatorState)">
+      <div *ngIf="[ObsDateOperatorState.BETWEEN, ObsDateOperatorState.NOT_BETWEEN].includes(obsDateOperatorState)">
         <span>&nbsp;and&nbsp;</span>
         <p-calendar [(ngModel)]="obsDate2"
                     (ngModelChange)="updateObservationDateValues()"

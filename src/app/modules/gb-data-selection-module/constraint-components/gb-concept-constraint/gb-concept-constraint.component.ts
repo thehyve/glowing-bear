@@ -37,6 +37,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * date value range
    */
+  private _valDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
+  ValDateOperatorState = GbDateOperatorState; // make enum visible in template
+  static readonly valDateOperatorSequence = {
+    [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
+    [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
+    [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
+    [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
+  };
   private _valDate1: Date;
   private _valDate2: Date;
 
@@ -50,9 +58,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * observation date range (i.e. the reported date range)
    */
   private _applyObsDateConstraint = false;
-  private _dateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
-  DateOperatorState = GbDateOperatorState; // make enum visible in template
-  static readonly dateOperatorSequence = {
+  private _obsDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
+  ObsDateOperatorState = GbDateOperatorState; // make enum visible in template
+  static readonly obsDateOperatorSequence = {
     [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
     [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
     [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
@@ -84,7 +92,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.selectedCategories = [];
     this.suggestedCategories = [];
 
-    this._dateOperatorState = GbDateOperatorState.BETWEEN;
+    this._obsDateOperatorState = GbDateOperatorState.BETWEEN;
 
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
@@ -111,6 +119,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
               this.selectedCategories = values;
               this.suggestedCategories = values;
+            } else if (this.isDate()) {
+              let aggregate = aggregateObj['numericalValueAggregates'];
+              constraint.concept.aggregate = aggregate;
+              this.valDate1 = new Date(aggregate['min']);
+              this.valDate2 = new Date(aggregate['max']);
             }
           },
           err => console.error(err)
@@ -189,8 +202,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._obsDate2 = value;
   }
 
-  get dateOperatorState(): GbDateOperatorState {
-    return this._dateOperatorState;
+  get obsDateOperatorState(): GbDateOperatorState {
+    return this._obsDateOperatorState;
   }
 
   get applyTrialVisitConstraint(): boolean {
@@ -250,6 +263,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   set valDate2(value: Date) {
     this._valDate2 = value;
+  }
+
+  get valDateOperatorState(): GbDateOperatorState {
+    return this._valDateOperatorState;
+  }
+
+  set valDateOperatorState(value: GbDateOperatorState) {
+    this._valDateOperatorState = value;
   }
 
   /*
@@ -338,8 +359,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {
-      // TODO: convert date to value, add new value object to concept
-      console.log('update: ', this.valDate1, this.valDate2);
     }
     this.constraintService.updateCounts_1();
   }
@@ -495,16 +514,22 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return name;
   }
 
-  switchDateOperatorState() {
+  switchObsDateOperatorState() {
     // Select the next state in the operator sequence
-    this._dateOperatorState = GbConceptConstraintComponent.dateOperatorSequence[this._dateOperatorState];
+    this._obsDateOperatorState = GbConceptConstraintComponent.obsDateOperatorSequence[this._obsDateOperatorState];
 
     // Update the constraint
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.obsDateConstraint.dateOperator = this._dateOperatorState;
+    conceptConstraint.obsDateConstraint.dateOperator = this._obsDateOperatorState;
 
     // Notify constraint service
     this.constraintService.updateCounts_1();
+  }
+
+  switchValDateOperatorState() {
+    // Select the next state in the operator sequence
+    this._valDateOperatorState = GbConceptConstraintComponent.valDateOperatorSequence[this._valDateOperatorState];
+    this.updateConceptValues();
   }
 
   get operatorState(): GbConceptOperatorState {
