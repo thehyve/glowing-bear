@@ -13,7 +13,7 @@ import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
-import {PatientSetConstraint} from "../models/constraints/patient-set-constraint";
+import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -481,14 +481,10 @@ export class ConstraintService {
       } else if (treeNodeType === 'NUMERIC' ||
         treeNodeType === 'CATEGORICAL' ||
         treeNodeType === 'DATE') {
-        let concept = new Concept();
         if (treeNode['constraint']) {
-          let constraintObject = treeNode['constraint'];
-          constraintObject['valueType'] = treeNodeType;
-          constraint = this.generateConstraintFromConstraintObject(constraintObject);
+          constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {
-          concept.path = treeNode['conceptPath'];
-          concept.type = treeNodeType;
+          let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
           constraint = new ConceptConstraint();
           (<ConceptConstraint>constraint).concept = concept;
         }
@@ -511,12 +507,6 @@ export class ConstraintService {
           }
         }
       }
-    } else if (dropMode === DropMode.PatientSet) { // if the dropped node is a patient set
-      if (selectedNode['requestConstraints']) {
-        let constraintObject = JSON.parse(selectedNode['requestConstraints']);
-        constraintObject = this.optimizeConstraintObject(constraintObject);
-        constraint = this.generateConstraintFromConstraintObject(constraintObject);
-      }
     }
 
     this.selectedNode = null;
@@ -524,15 +514,20 @@ export class ConstraintService {
     return constraint;
   }
 
-  generateConstraintFromConstraintObject(constraintObjectInput): Constraint {
+  generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
     if (type === 'concept') { // ------> If it is a concept constraint
-      let concept = new Concept();
-      concept.path = constraintObject['path'];
-      concept.type = constraintObject['valueType'];
       constraint = new ConceptConstraint();
+      let concept = new Concept();
+      const tail = '\\' + constraintObject['name'] + '\\';
+      const fullName = constraintObject['fullName'];
+      let head = fullName.substring(0, fullName.length - tail.length);
+      concept.label = constraintObject['name'] + ' (' + head + ')';
+      concept.path = constraintObject['conceptPath'];
+      concept.type = constraintObject['valueType'];
+      concept.code = constraintObject['conceptCode'];
       (<ConceptConstraint>constraint).concept = concept;
     } else if (type === 'study_name') { // ------> If it is a study constraint
       let study = new Study();
@@ -556,6 +551,10 @@ export class ConstraintService {
       for (let arg of constraintObject['args']) {
         if (arg['type'] === 'concept') {
           arg['valueType'] = constraintObject['valueType'];
+          arg['conceptPath'] = constraintObject['conceptPath'];
+          arg['name'] = constraintObject['name'];
+          arg['fullName'] = constraintObject['fullName'];
+          arg['conceptCode'] = constraintObject['conceptCode'];
         }
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
@@ -566,6 +565,13 @@ export class ConstraintService {
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
       for (let arg of constraintObject['args']) {
+        if (arg['type'] === 'concept') {
+          arg['valueType'] = constraintObject['valueType'];
+          arg['conceptPath'] = constraintObject['conceptPath'];
+          arg['name'] = constraintObject['name'];
+          arg['fullName'] = constraintObject['fullName'];
+          arg['conceptCode'] = constraintObject['conceptCode'];
+        }
         let child = this.generateConstraintFromConstraintObject(arg);
         (<CombinationConstraint>constraint).children.push(child);
       }

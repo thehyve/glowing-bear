@@ -55,8 +55,7 @@ export class ConceptConstraint implements Constraint {
     let args = [];
     args.push({
       type: 'concept',
-      path: this._concept.path,
-      valueType: this._concept.type
+      conceptCode: this._concept.code
     });
 
     if (this.values.length > 0) {
@@ -95,8 +94,8 @@ export class ConceptConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    if (this._concept) {
-      return `Concept: ${this._concept.path}`;
+    if (this.concept) {
+      return `Concept: ${this.concept.label}`;
     }
     return 'Concept';
   }

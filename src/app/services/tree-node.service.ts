@@ -26,6 +26,7 @@ export class TreeNodeService {
   private _studies: Study[] = [];
   private studyConstraints: Constraint[] = [];
   private _concepts: Concept[] = [];
+  private _conceptLabels: string[] = [];
   private conceptConstraints: Constraint[] = [];
   private _queries: Query[] = [];
 
@@ -91,18 +92,23 @@ export class TreeNodeService {
       if (node['visualAttributes'].indexOf('FOLDER') === -1 &&
         node['visualAttributes'].indexOf('CONTAINER') === -1) {
 
-        let concept = new Concept();
-        // TODO: retrieve concept path in less hacky manner:
-        let path = node['constraint']['path'];
-        concept.path = path ? path : node['fullName'];
-        concept.type = node['type'];
-        concept.code = node['conceptCode'];
-        this.concepts.push(concept);
+        let concept = this.getConceptFromTreeNode(node);
+        if (this.conceptLabels.indexOf(concept.label) === -1) {
+          this.concepts.push(concept);
+          this.conceptLabels.push(concept.label);
+          let constraint = new ConceptConstraint();
+          constraint.concept = concept;
+          this.conceptConstraints.push(constraint);
+          this.allConstraints.push(constraint);
+        }
 
-        let constraint = new ConceptConstraint();
-        constraint.concept = concept;
-        this.conceptConstraints.push(constraint);
-        this.allConstraints.push(constraint);
+        if (node['constraint']) {
+          node['constraint']['fullName'] = node['fullName'];
+          node['constraint']['name'] = node['name'];
+          node['constraint']['conceptPath'] = node['conceptPath'];
+          node['constraint']['conceptCode'] = node['conceptCode'];
+          node['constraint']['valueType'] = node['type'];
+        }
       }
     }
     // Add PrimeNG visual properties for tree nodes
@@ -135,6 +141,23 @@ export class TreeNodeService {
         node['icon'] = 'fa-folder-o';
       }
     }
+  }
+
+  /**
+   * Parse a tree node and create the corresponding concept
+   * @param {TreeNode} treeNode
+   * @returns {Concept}
+   */
+  public getConceptFromTreeNode(treeNode: TreeNode): Concept {
+    let concept = new Concept();
+    const tail = '\\' + treeNode['name'] + '\\';
+    const fullName = treeNode['fullName'];
+    let head = fullName.substring(0, fullName.length - tail.length);
+    concept.label = treeNode['name'] + ' (' + head + ')';
+    concept.path = treeNode['conceptPath'];
+    concept.type = treeNode['type'];
+    concept.code = treeNode['conceptCode'];
+    return concept;
   }
 
   /**
@@ -278,6 +301,7 @@ export class TreeNodeService {
    * Load the tree nodes for rendering the tree on the left side panel.
    */
   loadTreeNodes() {
+    this.conceptLabels = [];
     this.loadingTreeNodes = 'loading';
     // Retrieve all tree nodes and extract the concepts iteratively
     this.resourceService.getTreeNodes('\\', 2, false, false)
@@ -443,6 +467,14 @@ export class TreeNodeService {
 
   set concepts(value: Concept[]) {
     this._concepts = value;
+  }
+
+  get conceptLabels(): string[] {
+    return this._conceptLabels;
+  }
+
+  set conceptLabels(value: string[]) {
+    this._conceptLabels = value;
   }
 
   get studies(): Study[] {
