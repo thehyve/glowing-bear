@@ -482,11 +482,6 @@ export class ConstraintService {
         treeNodeType === 'CATEGORICAL' ||
         treeNodeType === 'DATE') {
         if (treeNode['constraint']) {
-          // treeNode['constraint']['name'] = treeNode['name'];
-          // treeNode['constraint']['fullName'] = treeNode['fullName'];
-          // treeNode['constraint']['conceptPath'] = treeNode['conceptPath'];
-          // treeNode['constraint']['conceptCode'] = treeNode['conceptCode'];
-          // treeNode['constraint']['valueType'] = treeNode['type'];
           constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {
           let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
