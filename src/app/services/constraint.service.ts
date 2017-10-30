@@ -77,6 +77,11 @@ export class ConstraintService {
    * }
    */
   private _studyCountMap_1 = {};
+  loadingStateInclusion: LoadingState = 'complete';
+  loadingStateExclusion: LoadingState = 'complete';
+  loadingStateTotal: LoadingState = 'complete';
+  // the queue that holds the time stamps of the calls made in the 1st step
+  private _queueOfCalls_1 = [];
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -84,19 +89,25 @@ export class ConstraintService {
   // the number of patients further refined in the second step
   // _patientCount_2 < or = _patientCount_1
   private _patientCount_2 = 0;
+  private _isLoadingPatientCount_2 = true; // the flag indicating if the count is being loaded
   // the number of observations further refined in the second step
   // _observationCount_2 could be <, > or = _observationCount_1
   private _observationCount_2 = 0;
+  private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
   // the number of concepts further refined in the second step
   // _conceptCount_2 could be <, > or = _conceptCount_1
   private _conceptCount_2 = 0;
+  private _isLoadingConceptCount_2 = true; // the flag indicating if the count is being loaded
   // the number of studies further refined in the second step
   // _studyCount_2 could be <, > or = _studyCount_1
   private _studyCount_2 = 0;
+  private _isLoadingStudyCount_2 = true; // the flag indicating if the count is being loaded
   // the codes of the concepts selected in the second step
   private _conceptCodes_2 = [];
   // the codes of the studies selected in the first step
   private _studyCodes_2 = [];
+  // the queue that holds the time stamps of the calls made in the 2nd step
+  private _queueOfCalls_2 = [];
 
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
@@ -104,10 +115,6 @@ export class ConstraintService {
    * or the saving has been successful
    */
   private _alertMessages = [];
-
-  loadingStateInclusion: LoadingState = 'complete';
-  loadingStateExclusion: LoadingState = 'complete';
-  loadingStateTotal: LoadingState = 'complete';
 
   /*
    * The selected node (drag-start) in the side-panel of either
@@ -137,9 +144,20 @@ export class ConstraintService {
    * update the patient, observation, concept and study counts in the first step
    */
   public updateCounts_1() {
+    // add time stamp to the queue,
+    // only when the time stamp is at the end of the queue, the count is updated
+    this.clearQueueOfCalls(this.queueOfCalls_1);
+    let timestamp = new Date();
+    this.queueOfCalls_1.push(timestamp.getMilliseconds());
+    // set the flags
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
+    // also update the flags for the counts in the 2nd step
+    this.isLoadingPatientCount_2 = true;
+    this.isLoadingObservationCount_2 = true;
+    this.isLoadingConceptCount_2 = true;
+    this.isLoadingStudyCount_2 = true;
 
     /*
      * Inclusion constraint patient count
@@ -148,11 +166,14 @@ export class ConstraintService {
     this.resourceService.getPatients(inclusionConstraint, 'Inclusion')
       .subscribe(
         patients => {
-          this.inclusionPatientCount = patients.length;
-          this.loadingStateInclusion = 'complete';
-          if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
-            this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
-            this.loadingStateTotal = 'complete';
+          const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
+          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+            this.inclusionPatientCount = patients.length;
+            this.loadingStateInclusion = 'complete';
+            if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
+              this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
+              this.loadingStateTotal = 'complete';
+            }
           }
         },
         err => {
@@ -171,11 +192,14 @@ export class ConstraintService {
       this.resourceService.getPatients(exclusionConstraint, 'Exclusion')
         .subscribe(
           patients => {
-            this.exclusionPatientCount = patients.length;
-            this.loadingStateExclusion = 'complete';
-            if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
-              this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
-              this.loadingStateTotal = 'complete';
+            const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
+            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+              this.exclusionPatientCount = patients.length;
+              this.loadingStateExclusion = 'complete';
+              if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
+                this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
+                this.loadingStateTotal = 'complete';
+              }
             }
           },
           err => {
@@ -188,81 +212,64 @@ export class ConstraintService {
       this.loadingStateExclusion = 'complete';
     }
 
-    /*
-     * Intersection constraint patient count
-     */
-
-    /*
-     * This is usually an expensive approach, when the final patients are not required,
-     * the final patient count can be calculated by (inclusionCount - exclusionCount)
-     */
-    // let intersectionConstraint: Constraint =
-    //   this.generateIntersectionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-    // this.resourceService.getPatients(intersectionConstraint, 'Intersection')
-    //   .subscribe(
-    //     patients => {
-    //       this.patientCount = patients.length;
-    //       this.loadingStateTotal = 'complete';
-    //     },
-    //     err => {
-    //       console.error(err);
-    //       this.loadingStateTotal = 'complete';
-    //     }
-    //   );
-
     const selectionConstraint = this.getSelectionConstraint();
     /*
-     * update observation count in the first step
+     * Update observation count in the first step.
+     * Currently we do not use the observation count in the 1st step
      */
-    this.resourceService.getObservationCount(selectionConstraint)
-      .subscribe(
-        (count) => {
-          this.observationCount_1 = count;
-        },
-        err => console.error(err)
-      );
+    // this.resourceService.getObservationCount(selectionConstraint)
+    //   .subscribe(
+    //     (count) => {
+    //       this.observationCount_1 = count;
+    //     },
+    //     err => console.error(err)
+    //   );
+
     /*
      * update concept and study counts in the first step
      */
     this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
       .subscribe(
         (countObj) => {
-          let studyKeys = [];
-          let conceptKeys = [];
-          this.conceptCountMap_1 = {};
-          this.studyCountMap_1 = {};
-          for (let studyKey in countObj) {
-            studyKeys.push(studyKey);
-            let _concepts_ = countObj[studyKey];
-            let patientCountUnderThisStudy = 0;
-            let observationCountUnderThisStudy = 0;
-            for (let _concept_ in _concepts_) {
-              if (conceptKeys.indexOf(_concept_) === -1) {
-                conceptKeys.push(_concept_);
+          const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
+          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+            let studyKeys = [];
+            let conceptKeys = [];
+            this.conceptCountMap_1 = {};
+            this.studyCountMap_1 = {};
+            for (let studyKey in countObj) {
+              studyKeys.push(studyKey);
+              let _concepts_ = countObj[studyKey];
+              let patientCountUnderThisStudy = 0;
+              let observationCountUnderThisStudy = 0;
+              for (let _concept_ in _concepts_) {
+                if (conceptKeys.indexOf(_concept_) === -1) {
+                  conceptKeys.push(_concept_);
+                }
+                this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
+                patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
+                observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
               }
-              this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
-              patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
-              observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
+              this.studyCountMap_1[studyKey] = {
+                patientCount: patientCountUnderThisStudy,
+                observationCount: observationCountUnderThisStudy
+              };
             }
-            this.studyCountMap_1[studyKey] = {
-              patientCount: patientCountUnderThisStudy,
-              observationCount: observationCountUnderThisStudy
-            };
+            this.conceptCount_1 = conceptKeys.length;
+            this.studyCount_1 = studyKeys.length;
+            this.conceptCodes_1 = conceptKeys;
+            /*
+             * update the tree table in the 2nd step
+             */
+            let checklist = this.query ? this.query.observationsQuery['data'] : null;
+            this.treeNodeService.updateTreeTableData(this.conceptCountMap_1, checklist);
+            this.updateCounts_2();
+            this.query = null;
+            /*
+             * update patient counts on tree nodes on the left side
+             */
+            this.updateTreeNodeCounts();
           }
-          this.conceptCount_1 = conceptKeys.length;
-          this.studyCount_1 = studyKeys.length;
-          this.conceptCodes_1 = conceptKeys;
-          /*
-           * update the tree table in the 2nd step
-           */
-          let checklist = this.query ? this.query.observationsQuery['data'] : null;
-          this.treeNodeService.updateTreeTableData(this.conceptCountMap_1, checklist);
-          this.updateCounts_2();
-          this.query = null;
-          /*
-           * update patient counts on tree nodes on the left side
-           */
-          this.updateTreeNodeCounts();
         },
         err => console.error(err)
       );
@@ -272,6 +279,17 @@ export class ConstraintService {
    * update the patient, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
+    // add time stamp to the queue,
+    // only when the time stamp is at the end of the queue, the count is updated
+    this.clearQueueOfCalls(this.queueOfCalls_2);
+    let timestamp = new Date();
+    this.queueOfCalls_2.push(timestamp.getMilliseconds());
+    // set flags to true indicating the counts are being loaded
+    this.isLoadingPatientCount_2 = true;
+    this.isLoadingObservationCount_2 = true;
+    this.isLoadingConceptCount_2 = true;
+    this.isLoadingStudyCount_2 = true;
+
     this.query = null; // clear query
     const selectionConstraint = this.getSelectionConstraint();
     const projectionConstraint = this.getProjectionConstraint();
@@ -284,7 +302,11 @@ export class ConstraintService {
     this.resourceService.getPatients(combo, null)
       .subscribe(
         (patients) => {
-          this.patientCount_2 = patients.length;
+          const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
+          if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+            this.patientCount_2 = patients.length;
+            this.isLoadingPatientCount_2 = false;
+          }
         },
         err => console.error(err)
       );
@@ -293,7 +315,11 @@ export class ConstraintService {
     this.resourceService.getPatientObservationCount(selectionConstraint, projectionConstraint)
       .subscribe(
         (count) => {
-          this.observationCount_2 = count;
+          const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
+          if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+            this.observationCount_2 = count;
+            this.isLoadingObservationCount_2 = false;
+          }
         },
         err => console.error(err)
       );
@@ -302,23 +328,40 @@ export class ConstraintService {
     this.resourceService.getCountsPerStudyAndConcept(combo)
       .subscribe(
         (countObj) => {
-          let studies = [];
-          let concepts = [];
-          for (let study in countObj) {
-            studies.push(study);
-            let _concepts_ = countObj[study];
-            for (let _concept_ in _concepts_) {
-              if (concepts.indexOf(_concept_) === -1) {
-                concepts.push(_concept_);
+          const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
+          if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+            let studies = [];
+            let concepts = [];
+            for (let study in countObj) {
+              studies.push(study);
+              let _concepts_ = countObj[study];
+              for (let _concept_ in _concepts_) {
+                if (concepts.indexOf(_concept_) === -1) {
+                  concepts.push(_concept_);
+                }
               }
             }
+            this.conceptCount_2 = concepts.length;
+            this.studyCount_2 = studies.length;
+            this.conceptCodes_2 = concepts;
+            this.isLoadingConceptCount_2 = false;
+            this.isLoadingStudyCount_2 = false;
           }
-          this.conceptCount_2 = concepts.length;
-          this.studyCount_2 = studies.length;
-          this.conceptCodes_2 = concepts;
         },
         err => console.error(err)
       );
+  }
+
+  /**
+   * Clear the elements before the last element
+   * @param {Array<number>} queue
+   */
+  private clearQueueOfCalls(queue: Array<number>) {
+    if (queue && queue.length > 1) {
+      const lastElement = queue[queue.length - 1];
+      queue.length = 0;
+      queue.push(lastElement);
+    }
   }
 
   /**
@@ -933,5 +976,53 @@ export class ConstraintService {
 
   set query(value: Query) {
     this._query = value;
+  }
+
+  get isLoadingPatientCount_2(): boolean {
+    return this._isLoadingPatientCount_2;
+  }
+
+  set isLoadingPatientCount_2(value: boolean) {
+    this._isLoadingPatientCount_2 = value;
+  }
+
+  get isLoadingObservationCount_2(): boolean {
+    return this._isLoadingObservationCount_2;
+  }
+
+  set isLoadingObservationCount_2(value: boolean) {
+    this._isLoadingObservationCount_2 = value;
+  }
+
+  get isLoadingConceptCount_2(): boolean {
+    return this._isLoadingConceptCount_2;
+  }
+
+  set isLoadingConceptCount_2(value: boolean) {
+    this._isLoadingConceptCount_2 = value;
+  }
+
+  get isLoadingStudyCount_2(): boolean {
+    return this._isLoadingStudyCount_2;
+  }
+
+  set isLoadingStudyCount_2(value: boolean) {
+    this._isLoadingStudyCount_2 = value;
+  }
+
+  get queueOfCalls_1(): Array<number> {
+    return this._queueOfCalls_1;
+  }
+
+  set queueOfCalls_1(value: Array<number>) {
+    this._queueOfCalls_1 = value;
+  }
+
+  get queueOfCalls_2(): Array<number> {
+    return this._queueOfCalls_2;
+  }
+
+  set queueOfCalls_2(value: Array<number>) {
+    this._queueOfCalls_2 = value;
   }
 }
