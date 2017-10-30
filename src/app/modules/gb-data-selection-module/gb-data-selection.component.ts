@@ -144,16 +144,32 @@ export class GbDataSelectionComponent implements OnInit {
     return this.numberWithCommas(this.constraintService.patientCount_2);
   }
 
+  get isLoadingPatientCount_2(): boolean {
+    return this.constraintService.isLoadingPatientCount_2;
+  }
+
   get observationCount_2(): string {
     return this.numberWithCommas(this.constraintService.observationCount_2);
+  }
+
+  get isLoadingObservationCount_2(): boolean {
+    return this.constraintService.isLoadingObservationCount_2;
   }
 
   get conceptCount_2(): string {
     return this.numberWithCommas(this.constraintService.conceptCount_2);
   }
 
+  get isLoadingConceptCount_2(): boolean {
+    return this.constraintService.isLoadingConceptCount_2;
+  }
+
   get studyCount_2(): string {
     return this.numberWithCommas(this.constraintService.studyCount_2);
+  }
+
+  get isLoadingStudyCount_2(): boolean {
+    return this.constraintService.isLoadingStudyCount_2;
   }
 
   get queryName(): string {

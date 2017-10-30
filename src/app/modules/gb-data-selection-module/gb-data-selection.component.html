@@ -3,24 +3,36 @@
   <div class="gb-data-selection-overview-panel">
     <div class="row">
       <div class="col-3">
-        <span>
+        <span *ngIf="!isLoadingPatientCount_2">
           {{patientCount_2}} {{singularOrPlural('subject', patientCount_2)}}
+        </span>
+        <span *ngIf="isLoadingPatientCount_2">
+          <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> subjects
         </span>
       </div>
       <div class="col-6">
         <div class="row">
-          <span>
+          <span *ngIf="!isLoadingObservationCount_2">
             {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}}
           </span>
-        </div>
-        <div class="row">
-          <span>
-            {{conceptCount_2}} {{singularOrPlural('concept', conceptCount_2)}}
+          <span *ngIf="isLoadingObservationCount_2">
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> observations
           </span>
         </div>
         <div class="row">
-          <span>
+          <span *ngIf="!isLoadingConceptCount_2">
+            {{conceptCount_2}} {{singularOrPlural('concept', conceptCount_2)}}
+          </span>
+          <span *ngIf="isLoadingConceptCount_2">
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> concepts
+          </span>
+        </div>
+        <div class="row">
+          <span *ngIf="!isLoadingStudyCount_2">
             {{studyCount_2}} {{singularOrPlural('study', studyCount_2)}}
+          </span>
+          <span *ngIf="isLoadingStudyCount_2">
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> studies
           </span>
         </div>
       </div>
