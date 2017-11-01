@@ -111,7 +111,7 @@ export class TreeNodesComponent implements OnInit, AfterViewInit {
       }).bind(this);
 
       // if the data object type belongs to the listed types
-      if (this.constraintService.validTreeNodeTypes.includes(dataObjectType)) {
+      if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)) {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       // if metadata exits

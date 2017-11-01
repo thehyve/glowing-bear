@@ -79,15 +79,6 @@ body .ui-widget-content {
 }
 
 /*
- * style fix to add padding for highlighted tree nodes
- * padding: top, right, bottom, left
- */
-body .ui-treenode-label.ui-corner-all.ui-state-highlight {
-  background-color: #0365AF !important;
-  padding: 1px 3px 1px 3px !important;
-}
-
-/*
  * style fix for the primeng tree-container in the side-panel
  */
 body .gb-tree-container {
@@ -132,7 +123,7 @@ body .ui-treetable .ui-treetable-checkbox .ui-chkbox-icon {
  * Fix the style of tree table row highlight color in the table view of data-selection
  */
 body .ui-treetable-row.ui-state-highlight {
-  background-color: #0365af;
+  background-color: #67a2cf;
 }
 
 /*
