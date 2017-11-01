@@ -359,6 +359,13 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {
+      conceptConstraint.applyValDateConstraint = true;
+      const val1 = this.valDate1;
+      let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
+      conceptConstraint.valDateConstraint.date1 = correctedDate1;
+      const val2 = this.valDate2;
+      let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
+      conceptConstraint.valDateConstraint.date2 = correctedDate2;
     }
     this.constraintService.updateCounts_1();
   }
@@ -517,11 +524,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   switchObsDateOperatorState() {
     // Select the next state in the operator sequence
     this._obsDateOperatorState = GbConceptConstraintComponent.obsDateOperatorSequence[this._obsDateOperatorState];
-
     // Update the constraint
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    conceptConstraint.obsDateConstraint.dateOperator = this._obsDateOperatorState;
-
+    conceptConstraint.obsDateConstraint.dateOperator = this.obsDateOperatorState;
     // Notify constraint service
     this.constraintService.updateCounts_1();
   }
@@ -529,6 +534,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   switchValDateOperatorState() {
     // Select the next state in the operator sequence
     this._valDateOperatorState = GbConceptConstraintComponent.valDateOperatorSequence[this._valDateOperatorState];
+    // Update the constraint
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.valDateConstraint.dateOperator = this.valDateOperatorState;
     this.updateConceptValues();
   }
 

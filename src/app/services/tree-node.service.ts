@@ -72,13 +72,19 @@ export class TreeNodeService {
   }
 
   private loadPedigrees() {
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Parent));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Child));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Spouse));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Sibling));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.MonozygoticTwin));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.DizygoticTwin));
-    this.allConstraints.push(new PedigreeConstraint(PedigreeState.UnknownTwin));
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => {
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj['label']);
+            pedigreeConstraint.description = obj['description'];
+            pedigreeConstraint.biological = obj['biological'];
+            pedigreeConstraint.symmetrical = obj['symmetrical'];
+            this.allConstraints.push(pedigreeConstraint);
+          }
+        },
+        err => console.error(err)
+      );
   }
 
   /**
@@ -172,6 +178,8 @@ export class TreeNodeService {
     concept.path = treeNode['conceptPath'];
     concept.type = treeNode['type'];
     concept.code = treeNode['conceptCode'];
+    concept.fullName = treeNode['fullName'];
+    concept.name = treeNode['name'];
     return concept;
   }
 

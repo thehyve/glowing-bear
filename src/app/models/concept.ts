@@ -5,6 +5,8 @@ export class Concept {
   private _label: string;
   private _aggregate: object;
   private _code: string;
+  private _name: string;
+  private _fullName: string;
 
   constructor() {
   }
@@ -47,5 +49,21 @@ export class Concept {
 
   set code(value: string) {
     this._code = value;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  set name(value: string) {
+    this._name = value;
+  }
+
+  get fullName(): string {
+    return this._fullName;
+  }
+
+  set fullName(value: string) {
+    this._fullName = value;
   }
 }

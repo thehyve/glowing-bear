@@ -6,6 +6,9 @@ export class TimeConstraint implements Constraint {
   dateOperator: GbDateOperatorState = GbDateOperatorState.BETWEEN;
   date1: Date = new Date();
   date2: Date = new Date();
+  // the 'start time' dimension applies to the observations with observed date values
+  // the 'value' dimension applies to the observations with actual date values
+  private _dimension = 'start time';
 
   constructor() {
   }
@@ -39,11 +42,13 @@ export class TimeConstraint implements Constraint {
     }
 
     // Construct the date constraint
+    // we assume if the dimension is not 'start time', it would be 'value'
+    let fieldName = this.dimension === 'start time' ? 'startDate' : 'numberValue';
     let query: Object = {
       type: 'time',
       field: {
-        dimension: 'start time',
-        fieldName: 'startDate',
+        dimension: this.dimension,
+        fieldName: fieldName,
         type: 'DATE'
       },
       operator: operator,
@@ -63,5 +68,13 @@ export class TimeConstraint implements Constraint {
 
   get textRepresentation(): string {
     return 'Time constraint';
+  }
+
+  get dimension(): string {
+    return this._dimension;
+  }
+
+  set dimension(value: string) {
+    this._dimension = value;
   }
 }
