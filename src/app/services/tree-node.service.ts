@@ -8,6 +8,8 @@ import {CombinationConstraint} from '../models/constraints/combination-constrain
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {Query} from '../models/query';
+import {PedigreeConstraint} from "../models/constraints/pedigree-constraint";
+import {PedigreeState} from "../models/constraints/pedigree-state";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -38,8 +40,11 @@ export class TreeNodeService {
   constructor(private resourceService: ResourceService) {
     this.loadEmptyConstraints();
     this.loadStudies();
+    // also construct concepts while loading the tree nodes
     this.loadTreeNodes();
     this.loadQueries();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
   }
 
   private loadEmptyConstraints() {
@@ -61,6 +66,22 @@ export class TreeNodeService {
             this.studyConstraints.push(constraint);
             this.allConstraints.push(constraint);
           });
+        },
+        err => console.error(err)
+      );
+  }
+
+  private loadPedigrees() {
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => {
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj['label']);
+            pedigreeConstraint.description = obj['description'];
+            pedigreeConstraint.biological = obj['biological'];
+            pedigreeConstraint.symmetrical = obj['symmetrical'];
+            this.allConstraints.push(pedigreeConstraint);
+          }
         },
         err => console.error(err)
       );
@@ -157,6 +178,8 @@ export class TreeNodeService {
     concept.path = treeNode['conceptPath'];
     concept.type = treeNode['type'];
     concept.code = treeNode['conceptCode'];
+    concept.fullName = treeNode['fullName'];
+    concept.name = treeNode['name'];
     return concept;
   }
 
