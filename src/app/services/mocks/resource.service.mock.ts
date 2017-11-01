@@ -5,12 +5,14 @@ import {Query} from '../../models/query';
 
 export class ResourceServiceMock {
   private studies: Study[];
+  private pedigreeRelationTypes: object[];
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
 
   constructor() {
     this.studies = [];
+    this.pedigreeRelationTypes = [];
     this.queries = [];
     this.treeNodes = [];
     this.exportJobs = [];
@@ -18,6 +20,10 @@ export class ResourceServiceMock {
 
   getStudies(): Observable<Study[]> {
     return Observable.of(this.studies);
+  }
+
+  getPedigreeRelationTypes(): Observable<object[]> {
+    return Observable.of(this.pedigreeRelationTypes);
   }
 
   getQueries(): Observable<Query[]> {
