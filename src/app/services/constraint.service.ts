@@ -123,21 +123,12 @@ export class ConstraintService {
    * or (3) the observation sets
    */
   private _selectedNode: any = null;
-  private _validTreeNodeTypes: string[] = [];
 
 
   constructor(private resourceService: ResourceService,
               private treeNodeService: TreeNodeService) {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
-    this._validTreeNodeTypes = [
-      'NUMERIC',
-      'CATEGORICAL',
-      'DATE',
-      'STUDY',
-      'TEXT',
-      'UNKNOWN'
-    ];
   }
 
   /**
@@ -952,14 +943,6 @@ export class ConstraintService {
 
   set selectedNode(value: any) {
     this._selectedNode = value;
-  }
-
-  get validTreeNodeTypes(): string[] {
-    return this._validTreeNodeTypes;
-  }
-
-  set validTreeNodeTypes(value: string[]) {
-    this._validTreeNodeTypes = value;
   }
 
   get alertMessages(): Array<object> {

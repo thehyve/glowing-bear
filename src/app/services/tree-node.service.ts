@@ -26,18 +26,28 @@ export class TreeNodeService {
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
   private _studies: Study[] = [];
-  private studyConstraints: Constraint[] = [];
+  private _studyConstraints: Constraint[] = [];
   private _concepts: Concept[] = [];
   private _conceptLabels: string[] = [];
-  private conceptConstraints: Constraint[] = [];
+  private _conceptConstraints: Constraint[] = [];
   private _queries: Query[] = [];
 
   // List keeping track of all available constraints. By default, the empty
   // constraints are in here. In addition, (partially) filled constraints are
   // added. The constraints should be copied when editing them.
-  private allConstraints: Constraint[] = [];
+  private _allConstraints: Constraint[] = [];
+  private _validTreeNodeTypes: string[] = [];
+  private _validPedigreeTypes: object[] = [];
 
   constructor(private resourceService: ResourceService) {
+    this.validTreeNodeTypes = [
+      'NUMERIC',
+      'CATEGORICAL',
+      'DATE',
+      'STUDY',
+      'TEXT',
+      'UNKNOWN'
+    ];
     this.loadEmptyConstraints();
     this.loadStudies();
     // also construct concepts while loading the tree nodes
@@ -81,6 +91,10 @@ export class TreeNodeService {
             pedigreeConstraint.biological = obj['biological'];
             pedigreeConstraint.symmetrical = obj['symmetrical'];
             this.allConstraints.push(pedigreeConstraint);
+            this.validPedigreeTypes.push({
+              type: pedigreeConstraint.relationType,
+              text: pedigreeConstraint.textRepresentation
+            });
           }
         },
         err => console.error(err)
@@ -530,6 +544,46 @@ export class TreeNodeService {
 
   set selectedTreeTableData(value: TreeNode[]) {
     this._selectedTreeTableData = value;
+  }
+
+  get validTreeNodeTypes(): string[] {
+    return this._validTreeNodeTypes;
+  }
+
+  set validTreeNodeTypes(value: string[]) {
+    this._validTreeNodeTypes = value;
+  }
+
+  get studyConstraints(): Constraint[] {
+    return this._studyConstraints;
+  }
+
+  set studyConstraints(value: Constraint[]) {
+    this._studyConstraints = value;
+  }
+
+  get conceptConstraints(): Constraint[] {
+    return this._conceptConstraints;
+  }
+
+  set conceptConstraints(value: Constraint[]) {
+    this._conceptConstraints = value;
+  }
+
+  get allConstraints(): Constraint[] {
+    return this._allConstraints;
+  }
+
+  set allConstraints(value: Constraint[]) {
+    this._allConstraints = value;
+  }
+
+  get validPedigreeTypes(): object[] {
+    return this._validPedigreeTypes;
+  }
+
+  set validPedigreeTypes(value: object[]) {
+    this._validPedigreeTypes = value;
   }
 
   /**

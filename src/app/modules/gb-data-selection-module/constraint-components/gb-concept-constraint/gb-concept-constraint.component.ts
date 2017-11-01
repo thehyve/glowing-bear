@@ -361,11 +361,16 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     } else if (this.isDate()) {
       conceptConstraint.applyValDateConstraint = true;
       const val1 = this.valDate1;
-      let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
-      conceptConstraint.valDateConstraint.date1 = correctedDate1;
+      if (val1) {
+        let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
+        conceptConstraint.valDateConstraint.date1 = correctedDate1;
+      }
       const val2 = this.valDate2;
-      let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
-      conceptConstraint.valDateConstraint.date2 = correctedDate2;
+      if (val2) {
+        let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
+        conceptConstraint.valDateConstraint.date2 = correctedDate2;
+      }
+
     }
     this.constraintService.updateCounts_1();
   }

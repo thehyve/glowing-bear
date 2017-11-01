@@ -7,6 +7,11 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {ResourceService} from '../../../../services/resource.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {DropdownModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
+import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
+import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('GbPedigreeConstraintComponent', () => {
   let component: GbPedigreeConstraintComponent;
@@ -14,7 +19,15 @@ describe('GbPedigreeConstraintComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbPedigreeConstraintComponent],
+      declarations: [
+        GbPedigreeConstraintComponent,
+        GenericComponentMock({selector: 'gb-combination-constraint', inputs: ['constraint']}),
+      ],
+      imports: [
+        BrowserAnimationsModule,
+        FormsModule,
+        DropdownModule
+      ],
       providers: [
         {
           provide: ConstraintService,
@@ -36,6 +49,7 @@ describe('GbPedigreeConstraintComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbPedigreeConstraintComponent);
     component = fixture.componentInstance;
+    component.constraint = new PedigreeConstraint('PAR');
     fixture.detectChanges();
   });
 

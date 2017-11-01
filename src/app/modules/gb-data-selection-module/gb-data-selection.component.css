@@ -24,16 +24,19 @@
  * shadow option: text-shadow: 1px 1px 3px black;
  */
 .gb-data-selection-overview-panel {
-  background-color: #0365af;
-  border-radius: 10px;
+  background-color: #0382af;
+  border-radius: 3px;
   padding: 0.5em 1em 0.5em 1em;
   margin: -1px 10px 0px 0px;
   color: white;
-  border: 3px solid lightgrey;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: 3px solid whitesmoke;
   position: fixed;
   width: 68%;
   overflow: hidden;
-  top: 50px;
+  top: 49px;
   z-index: 99;
 }
 

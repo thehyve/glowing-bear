@@ -19,7 +19,7 @@ import {
   PanelModule,
   DataListModule,
   DataTableModule,
-  TreeTableModule
+  TreeTableModule, DropdownModule
 } from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
@@ -41,7 +41,8 @@ import { GbPedigreeConstraintComponent } from './constraint-components/gb-pedigr
     PanelModule,
     DataListModule,
     DataTableModule,
-    TreeTableModule
+    TreeTableModule,
+    DropdownModule
   ],
   exports: [
     RouterModule

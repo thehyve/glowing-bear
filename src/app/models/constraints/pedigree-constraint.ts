@@ -1,5 +1,6 @@
 import {Constraint} from './constraint';
 import {PedigreeState} from './pedigree-state';
+import {CombinationConstraint} from "./combination-constraint";
 
 export class PedigreeConstraint implements Constraint {
   private _label: string;
@@ -31,6 +32,7 @@ export class PedigreeConstraint implements Constraint {
         this.relationType = PedigreeState.UnknownTwin; break;
       }
     }
+    this.rightHandSideConstraint = new CombinationConstraint();
   }
 
   getClassName(): string {
