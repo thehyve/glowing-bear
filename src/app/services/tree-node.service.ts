@@ -8,6 +8,8 @@ import {CombinationConstraint} from '../models/constraints/combination-constrain
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {Query} from '../models/query';
+import {PedigreeConstraint} from "../models/constraints/pedigree-constraint";
+import {PedigreeState} from "../models/constraints/pedigree-state";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -38,8 +40,11 @@ export class TreeNodeService {
   constructor(private resourceService: ResourceService) {
     this.loadEmptyConstraints();
     this.loadStudies();
+    // also construct concepts while loading the tree nodes
     this.loadTreeNodes();
     this.loadQueries();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
   }
 
   private loadEmptyConstraints() {
@@ -64,6 +69,16 @@ export class TreeNodeService {
         },
         err => console.error(err)
       );
+  }
+
+  private loadPedigrees() {
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Parent));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Child));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Spouse));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.Sibling));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.MonozygoticTwin));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.DizygoticTwin));
+    this.allConstraints.push(new PedigreeConstraint(PedigreeState.UnknownTwin));
   }
 
   /**

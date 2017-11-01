@@ -14,11 +14,11 @@ export class GbPatientSetConstraintComponent extends GbConstraintComponent imple
   ngOnInit() {
     let psConstraint = (<PatientSetConstraint>this.constraint);
     if (psConstraint.subjectIds.length > 0) {
-      this.message += psConstraint.subjectIds.length + ' subjects selected via their external subject IDs.';
+      this.message += `constrained with ${psConstraint.subjectIds.length} external subject IDs.`;
     } else if (psConstraint.patientIds.length > 0) {
-      this.message += psConstraint.subjectIds.length + ' subjects selected via their internal subject IDs.';
+      this.message += `constrained with ${psConstraint.patientIds.length} internal subject IDs.`;
     } else if (psConstraint.patientSetId !== '') {
-      this.message += 'subject selection via the patient-set ID: ' + psConstraint.patientSetId;
+      this.message += `constrained with the patient-set ID: ${psConstraint.patientSetId}`;
     }
   }
 

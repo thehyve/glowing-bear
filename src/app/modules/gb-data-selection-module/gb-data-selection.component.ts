@@ -17,6 +17,10 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.updateEventListeners();
+  }
+
+  updateEventListeners() {
     document
       .getElementById('queryFileUpload')
       .addEventListener('change', this.queryFileUpload.bind(this), false);
@@ -101,6 +105,9 @@ export class GbDataSelectionComponent implements OnInit {
         this.constraintService.putQuery(query);
         this.constraintService.alert('Imported subject selection in Step 1.', '', 'info');
       }
+
+      // reset the input path so that it will take the same file again
+      document.getElementById('queryFileUpload')['value'] = '';
     }).bind(this);
     reader.readAsText(file);
   }
