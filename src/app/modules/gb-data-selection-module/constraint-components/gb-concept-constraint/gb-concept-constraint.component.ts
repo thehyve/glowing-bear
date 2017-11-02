@@ -117,6 +117,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               for (let key in aggregate['valueCounts']) {
                 values.push(key);
               }
+              aggregate.values = values;
+              constraint.concept.aggregate = aggregate;
               this.selectedCategories = values;
               this.suggestedCategories = values;
             } else if (this.isDate()) {

@@ -149,7 +149,6 @@ export class ConstraintService {
     this.isLoadingObservationCount_2 = true;
     this.isLoadingConceptCount_2 = true;
     this.isLoadingStudyCount_2 = true;
-
     /*
      * Inclusion constraint patient count
      */

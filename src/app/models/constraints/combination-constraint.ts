@@ -1,5 +1,6 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
+import {TrueConstraint} from "./true-constraint";
 
 export class CombinationConstraint implements Constraint {
 
@@ -94,7 +95,7 @@ export class CombinationConstraint implements Constraint {
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
-      return null;
+      return new TrueConstraint().toPatientQueryObject();
     }
 
     // Combination
@@ -120,6 +121,7 @@ export class CombinationConstraint implements Constraint {
 
   /**
    * The normal conversion from constraint to object
+   * TODO: optimize a nested combination constraint, detect empty or single child
    * @returns {Object}
    */
   toQueryObject(): Object {
@@ -128,7 +130,7 @@ export class CombinationConstraint implements Constraint {
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
-      return null;
+      return new TrueConstraint().toQueryObject();
     }
 
     // Combination
@@ -142,7 +144,6 @@ export class CombinationConstraint implements Constraint {
         args: childQueryObjects
       };
     }
-
     return queryObject;
   }
 

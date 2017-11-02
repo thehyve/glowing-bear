@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
     const adjustRightWidths = function () {
       const leftWidth = leftPanelElm.clientWidth;
       const rightWidth = rightPanelElm.clientWidth;
-      const percentage = rightWidth / (rightWidth + leftWidth + 60);
+      const percentage = rightWidth / (rightWidth + leftWidth + 50);
       const dataSelectionOverviewPanel =
         parentContainerElm.querySelector('.gb-data-selection-overview-panel');
       if (dataSelectionOverviewPanel) {
