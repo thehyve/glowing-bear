@@ -117,6 +117,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               for (let key in aggregate['valueCounts']) {
                 values.push(key);
               }
+              aggregate.values = values;
+              constraint.concept.aggregate = aggregate;
               this.selectedCategories = values;
               this.suggestedCategories = values;
             } else if (this.isDate()) {
@@ -394,7 +396,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
-  selectAllCategories() {
+  selectAllCategories() { console.log('(<ConceptConstraint>this.constraint).concept: ', (<ConceptConstraint>this.constraint).concept);
     this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
     this.updateConceptValues();
   }

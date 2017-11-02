@@ -3,6 +3,7 @@ import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SelectItem} from 'primeng/primeng';
 import {Constraint} from '../../../../models/constraints/constraint';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {PedigreeState} from "../../../../models/constraints/pedigree-state";
 
 @Component({
   selector: 'gb-pedigree-constraint',
@@ -24,6 +25,11 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
       });
     }
     this.rightHandSideConstraint = (<PedigreeConstraint>this.constraint).rightHandSideConstraint;
+  }
+
+  updateRelationType(event) {
+    (<PedigreeConstraint>this.constraint).relationType = event.value;
+    this.constraintService.updateCounts_1();
   }
 
   get selectedPedigreeType(): SelectItem {

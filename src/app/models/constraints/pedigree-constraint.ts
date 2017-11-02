@@ -39,12 +39,25 @@ export class PedigreeConstraint implements Constraint {
     return 'PedigreeConstraint';
   }
 
+  /**
+   * TODO
+   * @returns {Object}
+   */
   toPatientQueryObject(): object {
     return {};
   }
 
+  /**
+   * TODO: implement shareHousehold flag
+   * @returns {Object}
+   */
   toQueryObject(): object {
-    return {};
+    return {
+      type: 'relation',
+      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
+      relationTypeLabel: this.label,
+      biological: this.biological
+    };
   }
 
   get textRepresentation(): string {
@@ -96,6 +109,32 @@ export class PedigreeConstraint implements Constraint {
 
   set relationType(value: PedigreeState) {
     this._relationType = value;
+    switch (value) {
+      case PedigreeState.Parent: {
+        this.label = 'PAR';
+        break;
+      }
+      case PedigreeState.Spouse: {
+        this.label = 'SPO';
+        break;
+      }
+      case PedigreeState.Sibling: {
+        this.label = 'SIB';
+        break;
+      }
+      case PedigreeState.DizygoticTwin: {
+        this.label = 'DZ';
+        break;
+      }
+      case PedigreeState.MonozygoticTwin: {
+        this.label = 'MZ';
+        break;
+      }
+      case PedigreeState.UnknownTwin: {
+        this.label = 'COT';
+        break;
+      }
+    }
   }
 
   get label(): string {
