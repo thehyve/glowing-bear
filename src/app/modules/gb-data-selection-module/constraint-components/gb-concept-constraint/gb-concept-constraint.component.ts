@@ -396,7 +396,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
-  selectAllCategories() { console.log('(<ConceptConstraint>this.constraint).concept: ', (<ConceptConstraint>this.constraint).concept);
+  selectAllCategories() {
     this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
     this.updateConceptValues();
   }
