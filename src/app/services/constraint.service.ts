@@ -27,6 +27,12 @@ type LoadingState = 'loading' | 'complete';
  * in the 1st step (i.e. the selection step).
  * Hence, each time the 1st sets updated, so should be the 2nd sets.
  * However, each time the 2nd sets updated, the 1st sets remain unaffected.
+ *
+ * General workflow of data selection:
+ * select patients (rows), update the counts in the 1st step -->
+ * select concepts (columns), update the counts in the 2nd step -->
+ * update data table and charts (to be implemented) in 3rd/4th steps -->
+ * update data formats available for export based on the previous data selection
  */
 @Injectable()
 export class ConstraintService {
@@ -109,6 +115,11 @@ export class ConstraintService {
   // the queue that holds the time stamps of the calls made in the 2nd step
   private _queueOfCalls_2 = [];
 
+  /*
+   * ------ other variables ------
+   */
+  private _exportFormats: object[] = [];
+  private _isLoadingExportFormats = true;
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
    * whether there is an error saving patient/observation set,
@@ -249,12 +260,9 @@ export class ConstraintService {
             this.studyCount_1 = studyKeys.length;
             this.conceptCodes_1 = conceptKeys;
             /*
-             * update the tree table in the 2nd step
+             * update the tree nodes in the 2nd step
              */
-            let checklist = this.query ? this.query.observationsQuery['data'] : null;
-            this.treeNodeService.updateTreeTableData(this.conceptCountMap_1, checklist);
-            this.updateCounts_2();
-            this.query = null;
+            this.updateTreeNodes_2();
             /*
              * update patient counts on tree nodes on the left side
              */
@@ -263,6 +271,25 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
+  }
+
+  /**
+   * This function handles the asynchronicity
+   * between updating the 2nd-step counts and the loading of tree nodes:
+   * only when the tree nodes are completely loaded can we start updating
+   * the counts in the 2nd step
+   */
+  private updateTreeNodes_2() {
+    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
+      let checklist = this.query ? this.query.observationsQuery['data'] : null;
+      this.treeNodeService.updateTreeTableData(this.conceptCountMap_1, checklist);
+      this.updateCounts_2();
+      this.query = null;
+    } else {
+      window.setTimeout((function () {
+        this.updateTreeNodes_2();
+      }).bind(this), 500);
+    }
   }
 
   /**
@@ -337,6 +364,32 @@ export class ConstraintService {
             this.isLoadingConceptCount_2 = false;
             this.isLoadingStudyCount_2 = false;
           }
+        },
+        err => console.error(err)
+      );
+
+    // update the export info
+    this.isLoadingExportFormats = true;
+    this.resourceService.getExportDataFormats(combo)
+      .subscribe(
+        (dataFormatNames) => {
+          let fileFormatNames = ['TSV', 'SPSS'];
+          this.exportFormats = [];
+          for (let dataFormatName of dataFormatNames) {
+            let format = {
+              name: dataFormatName,
+              checked: true,
+              fileFormats: []
+            };
+            for (let fileFormatName of fileFormatNames) {
+              format.fileFormats.push({
+                name: fileFormatName,
+                checked: true
+              });
+            }
+            this.exportFormats.push(format);
+          }
+          this.isLoadingExportFormats = false;
         },
         err => console.error(err)
       );
@@ -1006,5 +1059,21 @@ export class ConstraintService {
 
   set queueOfCalls_2(value: Array<number>) {
     this._queueOfCalls_2 = value;
+  }
+
+  get exportFormats(): object[] {
+    return this._exportFormats;
+  }
+
+  set exportFormats(value: object[]) {
+    this._exportFormats = value;
+  }
+
+  get isLoadingExportFormats(): boolean {
+    return this._isLoadingExportFormats;
+  }
+
+  set isLoadingExportFormats(value: boolean) {
+    this._isLoadingExportFormats = value;
   }
 }

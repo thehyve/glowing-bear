@@ -84,11 +84,19 @@ export class ResourceService {
     if (endpoint) {
       let headers = new Headers();
       headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
+      headers.append('Content-Type', 'application/json');
       const options = new RequestOptions({headers: headers});
       const url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.get(url, options)
-        .map((response: Response) => response.json()[responseField])
-        .catch(this.handleError.bind(this));
+      if (responseField) {
+        return this.http.get(url, options)
+          .map((response: Response) => response.json()[responseField])
+          .catch(this.handleError.bind(this));
+      } else {
+        return this.http.get(url, options)
+          .map((response: Response) => response.json())
+          .catch(this.handleError.bind(this));
+      }
+
     } else {
       this.handleError({message: 'Could not establish endpoint.'});
     }
@@ -311,119 +319,78 @@ export class ResourceService {
   // -------------------------------------- export calls --------------------------------------
   /**
    * Given a list of patient set ids as strings, get the corresponding data formats available for download
-   * @param patientSetIds
+   * @param constraint
    * @returns {Observable<string[]>}
-   * TODO: refactor
    */
-  getExportDataFormats(setIds: string[]): Observable<string[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-
-    let idString = '';
-    for (let id of setIds) {
-      idString += 'id=' + id + '&';
-    }
-    idString = idString.substr(0, idString.length - 1);
-    let url = `${endpoint.getUrl()}/export/data_formats?${idString}`;
-
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json().dataFormats as string[])
-      .catch(this.handleError.bind(this));
+  getExportDataFormats(constraint: Constraint): Observable<string[]> {
+    const urlPart = 'export/data_formats';
+    const body = {constraint: constraint.toQueryObject()};
+    const responseField = 'dataFormats';
+    return this.postCall(urlPart, body, responseField);
   }
 
   /**
    * Get the current user's existing export jobs
    * @returns {Observable<ExportJob[]>}
-   * TODO: refactor
    */
-  getExportJobs(): Observable<ExportJob[]> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let url = `${endpoint.getUrl()}/export/jobs`;
-    return this.http.get(url, {
-      headers: headers
-    })
-      .map((res: Response) => res.json().exportJobs as ExportJob[])
-      .catch(this.handleError.bind(this));
+  getExportJobs(): Observable<any[]> {
+    const urlPart = 'export/jobs';
+    const responseField = 'exportJobs';
+    return this.getCall(urlPart, responseField);
   }
 
   /**
    * Create a new export job for the current user, with a given name
    * @param name
    * @returns {Observable<ExportJob>}
-   * TODO: refactor
    */
   createExportJob(name: string): Observable<ExportJob> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    headers.append('Content-Type', 'application/json');
-    let options = new RequestOptions({headers: headers});
-    let url = `${endpoint.getUrl()}/export/job`;
-    if (name) {
-      url += `?name=${name}`;
-    }
-
-    return this.http.post(url, {}, options)
-      .map((res: Response) => res.json().exportJob as ExportJob)
-      .catch(this.handleError.bind(this));
+    const urlPart = `export/job?name=${name}`;
+    const responseField = 'exportJob';
+    return this.postCall(urlPart, {}, responseField);
   }
 
   /**
    * Run an export job:
-   * the setOption should be either 'patient' or 'observation';
-   * the ids should be an array of patient-set ids or observation-set ids;
    * the elements should be an array of objects like this -
-   * {
+   * [{
    *    dataType: 'clinical',
    *    format: 'TSV'
-   * }
+   * }]
+   *
    * @param jobId
-   * @param setOption
-   * @param ids
    * @param elements
-   * @returns {Observable<R|T>}
-   * TODO: refactor
+   * @param constraint
+   * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
-               ids: string[],
-               elements: Object[]): Observable<ExportJob> {
-    let headers = new Headers();
-    let endpoint = this.endpointService.getEndpoint();
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    headers.append('Content-Type', 'application/json');
-    let options = new RequestOptions({headers: headers});
-    let url = `${endpoint.getUrl()}/export/${jobId}/run`;
-
-    return this.http.post(url, {
-      id: ids,
+               constraint: Constraint,
+               elements: object[]): Observable<ExportJob> {
+    const urlPart = `export/${jobId}/run`;
+    const responseField = 'exportJob';
+    const body = {
+      constraint: constraint.toQueryObject(),
       elements: elements
-    }, options)
-      .map((res: Response) => res.json().exportJob as ExportJob)
-      .catch(this.handleError.bind(this));
+    };
+    return this.postCall(urlPart, body, responseField);
   }
 
   /**
    * Given an export job id, return the blob (zipped file) ready to be used on frontend
    * @param jobId
    * @returns {Observable<blob>}
-   * TODO: refactor
    */
   downloadExportJob(jobId: string) {
+    let endpoint = this.endpointService.getEndpoint();
     let headers = new Headers();
     headers.append('Content-Type', 'application/zip');
-    let endpoint = this.endpointService.getEndpoint();
     headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-
     let url = `${endpoint.getUrl()}/export/${jobId}/download`;
-    return this.http.get(url, {
+    const options = new RequestOptions({
       headers: headers,
       responseType: ResponseContentType.Blob
-    })
+    });
+    return this.http.get(url, options)
       .map((res: Response) => res)
       .catch(this.handleError.bind(this));
   }

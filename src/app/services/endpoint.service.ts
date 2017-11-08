@@ -92,7 +92,6 @@ export class EndpointService {
    * @param endpoint
    */
   private navigateToAuthorizationPage(endpoint) {
-
     // Cut off any '/'
     let apiUrl = endpoint.apiUrl;
     let appUrl = endpoint.appUrl;
