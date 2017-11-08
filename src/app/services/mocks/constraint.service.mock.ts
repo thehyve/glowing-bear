@@ -42,6 +42,9 @@ export class ConstraintServiceMock {
   private _selectedNode: any = null;
   private _validTreeNodeTypes: string[] = [];
 
+  private _isLoadingExportFormats = true;
+  private _exportFormats = [];
+
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
@@ -57,4 +60,19 @@ export class ConstraintServiceMock {
   public updateCounts_2() {}
 
 
+  get isLoadingExportFormats(): boolean {
+    return this._isLoadingExportFormats;
+  }
+
+  set isLoadingExportFormats(value: boolean) {
+    this._isLoadingExportFormats = value;
+  }
+
+  get exportFormats(): Array<object> {
+    return this._exportFormats;
+  }
+
+  set exportFormats(value: Array<object>) {
+    this._exportFormats = value;
+  }
 }

@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
 import {ExportJob} from '../../../../models/export-job';
-import {Query} from '../../../../models/query';
-import {CombinationConstraint} from "../../../../models/constraints/combination-constraint";
+import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 
 @Component({
   selector: 'gb-export',

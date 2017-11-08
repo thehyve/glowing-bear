@@ -39,10 +39,6 @@ describe('GbExportComponent', () => {
       providers: [
         SimpleTimer,
         {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
-        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },

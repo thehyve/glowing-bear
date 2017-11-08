@@ -74,16 +74,22 @@ export class GbDataSelectionComponent implements OnInit {
     reader.onload = (function (e) {
       if (file.type === 'application/json') {
         let json = JSON.parse(e.target['result']);
+        let pathArray = null;
         // If the json is of standard format
         if (json['patientsQuery'] || json['observationsQuery']) {
           this.constraintService.putQuery(json);
-        } else {
-          // we assume it is a json array of tree node paths for observation query
+        } else if (json['paths']) {
+          pathArray = json['paths'];
+        } else if (json.constructor === Array) {
+          pathArray = json;
+        }
+
+        if (pathArray) {
           let query = {
             'name': 'imported temporary query',
             'patientsQuery': {'type': 'true'},
             'observationsQuery': {
-              data: json
+              data: pathArray
             }
           };
           this.constraintService.putQuery(query);
