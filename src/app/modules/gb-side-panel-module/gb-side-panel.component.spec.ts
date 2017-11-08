@@ -8,7 +8,7 @@ import {
   TreeModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {TreeNodesComponent} from './accordion-components/tree-nodes/tree-nodes.component';
+import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
@@ -16,7 +16,7 @@ import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
-import {QueriesComponent} from './accordion-components/queries/queries.component';
+import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -26,8 +26,8 @@ describe('GbSidePanelComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbSidePanelComponent,
-        TreeNodesComponent,
-        QueriesComponent
+        GbTreeNodesComponent,
+        GbQueriesComponent
       ],
       imports: [
         BrowserAnimationsModule,
