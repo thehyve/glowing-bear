@@ -1,6 +1,19 @@
 <div>
 
-  <div *ngFor="let query of treeNodeService.queries"
+  <!-- the search/filter input -->
+  <div>
+    <p-autoComplete [(ngModel)]="searchTerm"
+                    styleClass="gb-query-filter-input"
+                    placeholder="Search queries"
+                    (onClear)="onFiltering($event)"
+                    (completeMethod)="onFiltering($event)"></p-autoComplete>
+    <button class="btn btn-secondary btn-sm gb-query-filter-btn"
+            (click)="clearFilter()"
+            type="button">clear</button>
+  </div>
+  <br>
+
+  <div *ngFor="let query of queries"
        class="gb-query-panel"
        pDraggable="query-drag-drop">
     <p-panel [collapsed]="query['collapsed']" (click)="onQueryPanelClick(query)">
@@ -42,6 +55,7 @@
       </div>
 
     </p-panel>
+
   </div>
 
 </div>

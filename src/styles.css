@@ -153,6 +153,15 @@ body .gb-concept-constraint-input > input {
 }
 
 /*
+ * Style for the search box in the queries accordion on the left side
+ */
+.gb-query-filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  min-width: 150px;
+}
+
+/*
  * Style for PrimeNg alert messages
  */
 .ui-messages.ui-messages-success {

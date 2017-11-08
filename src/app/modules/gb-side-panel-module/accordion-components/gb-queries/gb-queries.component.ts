@@ -2,14 +2,17 @@ import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {DropMode} from '../../../../models/drop-mode';
+import {Query} from '../../../../models/query';
 
 @Component({
-  selector: 'queries',
-  templateUrl: './queries.component.html',
-  styleUrls: ['./queries.component.css']
+  selector: 'gb-queries',
+  templateUrl: './gb-queries.component.html',
+  styleUrls: ['./gb-queries.component.css']
 })
-export class QueriesComponent implements OnInit, AfterViewInit {
+export class GbQueriesComponent implements OnInit, AfterViewInit {
 
+  queries: Query[];
+  searchTerm = '';
   observer: MutationObserver;
   collapsed = false;
 
@@ -19,6 +22,7 @@ export class QueriesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.queries = this.treeNodeService.queries;
   }
 
   ngAfterViewInit() {
@@ -97,5 +101,32 @@ export class QueriesComponent implements OnInit, AfterViewInit {
       };
       this.constraintService.updateQuery(query['id'], queryObject);
     }
+  }
+
+  onFiltering(event) {
+    let filterWord = this.searchTerm.trim().toLowerCase();
+    let newQueries = [];
+    for (let query of this.treeNodeService.queries) {
+      if (query.name.indexOf(filterWord) !== -1) {
+        newQueries.push(query);
+      }
+    }
+    this.queries = newQueries;
+    this.removeFalsePrimeNgClasses(500);
+  }
+
+  clearFilter() {
+    this.searchTerm = '';
+    this.queries = this.treeNodeService.queries;
+    this.removeFalsePrimeNgClasses(500);
+  }
+
+  removeFalsePrimeNgClasses(delay: number) {
+    window.setTimeout((function () {
+      let loaderIcon = this.element.nativeElement.querySelector('.ui-autocomplete-loader');
+      if (loaderIcon) {
+        loaderIcon.remove();
+      }
+    }).bind(this), delay);
   }
 }

@@ -7,9 +7,9 @@ import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 
 @Component({
-  selector: 'tree-nodes',
-  templateUrl: './tree-nodes.component.html',
-  styleUrls: ['./tree-nodes.component.css'],
+  selector: 'gb-tree-nodes',
+  templateUrl: './gb-tree-nodes.component.html',
+  styleUrls: ['./gb-tree-nodes.component.css'],
   animations: [
     trigger('notifyState', [
       transition('loading => complete', [
@@ -23,7 +23,7 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
     ])
   ]
 })
-export class TreeNodesComponent implements OnInit, AfterViewInit {
+export class GbTreeNodesComponent implements OnInit, AfterViewInit {
 
   @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
 

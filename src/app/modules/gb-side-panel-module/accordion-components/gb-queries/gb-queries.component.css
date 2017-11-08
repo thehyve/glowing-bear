@@ -6,6 +6,12 @@
   margin-bottom: 3px;
 }
 
+.gb-query-filter-btn {
+  font-size: small;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
 /*
  * Style the set name edit input
  */
