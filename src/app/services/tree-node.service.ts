@@ -23,6 +23,9 @@ export class TreeNodeService {
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
   private _selectedTreeTableData: TreeNode[] = [];
 
+  public treeNodeCallsSent = 0; // the number of tree-node calls sent
+  public treeNodeCallsReceived = 0; // the number of tree-node calls received
+
   // the status indicating the when the tree is being loaded or finished loading
   public loadingTreeNodes: LoadingState = 'complete';
   private _studies: Study[] = [];
@@ -274,7 +277,9 @@ export class TreeNodeService {
     }
   }
 
-  private updateTreeTableDataIterative(nodes: TreeNode[], conceptCodes: string[], conceptCountMap: object) {
+  private updateTreeTableDataIterative(nodes: TreeNode[],
+                                       conceptCodes: string[],
+                                       conceptCountMap: object) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
@@ -311,10 +316,12 @@ export class TreeNodeService {
    * @param parentNode
    */
   private loadTreeNext(parentNode) {
-    let depth = 5;
+    this.treeNodeCallsSent++;
+    let depth = 20;
     this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
       .subscribe(
         (treeNodes: object[]) => {
+          this.treeNodeCallsReceived++;
           const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
           const children = refNode ? refNode['children'] : undefined;
           if (children) {
@@ -621,6 +628,14 @@ export class TreeNodeService {
    */
   public isTreeNodeAstudy(node: TreeNode): boolean {
     return node['type'] === 'STUDY' ? true : false;
+  }
+
+  /**
+   * Check if the tree_nodes calls are finished
+   * @returns {boolean}
+   */
+  public isTreeNodeLoadingComplete(): boolean {
+    return this.treeNodeCallsSent === this.treeNodeCallsReceived;
   }
 
 }

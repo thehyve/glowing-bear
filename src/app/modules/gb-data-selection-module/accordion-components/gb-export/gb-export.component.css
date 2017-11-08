@@ -5,6 +5,7 @@
 .export-container {
   margin-left: 10px;
   padding: 10px;
+  text-align: center;
 }
 
 .form-inline {
@@ -15,25 +16,21 @@
   margin-right: 10px;
 }
 
-.gb-auto-complete-removal-btn {
-  margin-left: 5px;
-}
-
-.gb-data-format-header {
+.gb-export-format-header {
   margin-bottom: 10px;
 }
 
-.gb-data-format-container {
-  padding: 6px;
-  border-radius: 10px;
+.gb-export-format-container {
+  text-align: left;
+  margin-left: 10px;
 }
 
 .gb-export-btn-container {
   margin-top: 20px;
 }
 
-.gb-data-format-item {
-  font-size: larger;
+.gb-export-format-item {
+  /*font-size: normal;*/
   background-color: transparent;
   /*border-bottom: 1px dashed #e0e0e0;*/
   /* padding: top right bottom left */
@@ -43,3 +40,14 @@
 #exportJobNameInput {
   margin-top: 0px;
 }
+
+.export-section-banner {
+  align-self: center;
+  color: darkgray;
+  text-align: center;
+  width: 76%;
+  padding: 0px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
