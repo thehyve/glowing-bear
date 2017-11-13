@@ -810,6 +810,7 @@ export class ConstraintService {
       .subscribe(
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
+          newlySavedQuery['visible'] = true;
           this.treeNodeService.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
           this.alert(summary, '', 'success');

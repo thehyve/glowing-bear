@@ -18,6 +18,8 @@ export class Query {
   private _patientsQuery: object;
   // The observation constraint part of the query
   private _observationsQuery: object;
+  // The visual indicator flags the visibility of the query
+  private _visible: boolean;
 
   constructor(id: string, name: string) {
     this.id = id;
@@ -122,5 +124,13 @@ export class Query {
 
   set apiVersion(value: string) {
     this._apiVersion = value;
+  }
+
+  get visible(): boolean {
+    return this._visible;
+  }
+
+  set visible(value: boolean) {
+    this._visible = value;
   }
 }

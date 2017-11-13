@@ -11,7 +11,6 @@ import {Query} from '../../../../models/query';
 })
 export class GbQueriesComponent implements OnInit, AfterViewInit {
 
-  queries: Query[];
   searchTerm = '';
   observer: MutationObserver;
   collapsed = false;
@@ -22,7 +21,6 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.queries = this.treeNodeService.queries;
   }
 
   ngAfterViewInit() {
@@ -105,19 +103,21 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
 
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    let newQueries = [];
     for (let query of this.treeNodeService.queries) {
-      if (query.name.indexOf(filterWord) !== -1) {
-        newQueries.push(query);
+      if (query.name.indexOf(filterWord) === -1) {
+        query['visible'] = false;
+      } else {
+        query['visible'] = true;
       }
     }
-    this.queries = newQueries;
     this.removeFalsePrimeNgClasses(500);
   }
 
   clearFilter() {
     this.searchTerm = '';
-    this.queries = this.treeNodeService.queries;
+    for (let query of this.treeNodeService.queries) {
+      query['visible'] = true;
+    }
     this.removeFalsePrimeNgClasses(500);
   }
 
@@ -129,4 +129,9 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
       }
     }).bind(this), delay);
   }
+
+  get queries(): Query[] {
+    return this.treeNodeService.queries;
+  }
+
 }
