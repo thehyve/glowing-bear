@@ -355,7 +355,8 @@ export class ResourceService {
    * the elements should be an array of objects like this -
    * [{
    *    dataType: 'clinical',
-   *    format: 'TSV'
+   *    format: 'TSV',
+   *    dataView: 'surveyTable' // NTR specific
    * }]
    *
    * @param jobId

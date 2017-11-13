@@ -83,7 +83,11 @@ export class GbExportComponent implements OnInit {
           if (fileFormat['checked']) {
             elements.push({
               dataType: dataFormat['name'],
-              format: fileFormat['name']
+              format: fileFormat['name'],
+              // NTR specific
+              // TODO: refactor, get a list of available dataFormats ['surveyTable', 'other', 'other1'],
+              // TODO: for each dataFormat, get the list of available fileFormats for export
+              dataView: 'surveyTable'
             });
           }
         }
