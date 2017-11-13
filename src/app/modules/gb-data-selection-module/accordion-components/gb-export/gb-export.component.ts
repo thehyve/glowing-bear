@@ -31,7 +31,6 @@ export class GbExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
-          console.log('jobs, ', jobs);
           this.exportJobs = jobs;
         },
         err => console.error(err)

@@ -139,7 +139,6 @@ export class TreeNodeService {
           this.conceptConstraints.push(constraint);
           this.allConstraints.push(constraint);
         }
-
         if (node['constraint']) {
           node['constraint']['fullName'] = node['fullName'];
           node['constraint']['name'] = node['name'];
@@ -493,6 +492,7 @@ export class TreeNodeService {
           let bookmarkedQueries = [];
           queries.forEach(query => {
             query['collapsed'] = true;
+            query['visible'] = true;
             if (query['bookmarked']) {
               bookmarkedQueries.push(query);
             } else {
