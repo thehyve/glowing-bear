@@ -4,6 +4,7 @@ import {TrialVisit} from '../trial-visit';
 export class TrialVisitConstraint implements Constraint {
 
   private _trialVisits: TrialVisit[];
+  private _isPatientSelection: boolean;
 
 
   constructor() {
@@ -23,22 +24,26 @@ export class TrialVisitConstraint implements Constraint {
    * @returns {Object}
    */
   toQueryObject(): Object {
-    let values: number[] = [];
-    for (let visit of this.trialVisits) {
-      values.push(Number(visit.id));
-    }
-    let queryObj = {
-      'type': 'field',
-      'field': {
-        'dimension': 'trial visit',
-        'fieldName': 'id',
-        'type': 'NUMERIC'
-      },
-      'operator': 'in',
-      'value': values
-    };
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      let values: number[] = [];
+      for (let visit of this.trialVisits) {
+        values.push(Number(visit.id));
+      }
+      let queryObj = {
+        'type': 'field',
+        'field': {
+          'dimension': 'trial visit',
+          'fieldName': 'id',
+          'type': 'NUMERIC'
+        },
+        'operator': 'in',
+        'value': values
+      };
 
-    return queryObj;
+      return queryObj;
+    }
   }
 
   get textRepresentation(): string {
@@ -51,5 +56,13 @@ export class TrialVisitConstraint implements Constraint {
 
   set trialVisits(value: TrialVisit[]) {
     this._trialVisits = value;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

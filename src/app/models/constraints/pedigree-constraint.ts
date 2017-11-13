@@ -9,6 +9,7 @@ export class PedigreeConstraint implements Constraint {
   private _symmetrical: boolean;
   private _relationType: PedigreeState;
   private _rightHandSideConstraint: Constraint;
+  private _isPatientSelection: boolean;
 
   constructor(label: string) {
     this.label = label;
@@ -52,12 +53,16 @@ export class PedigreeConstraint implements Constraint {
    * @returns {Object}
    */
   toQueryObject(): object {
-    return {
-      type: 'relation',
-      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
-      relationTypeLabel: this.label,
-      biological: this.biological
-    };
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      return {
+        type: 'relation',
+        relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
+        relationTypeLabel: this.label,
+        biological: this.biological
+      };
+    }
   }
 
   get textRepresentation(): string {
@@ -167,5 +172,13 @@ export class PedigreeConstraint implements Constraint {
 
   set symmetrical(value: boolean) {
     this._symmetrical = value;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

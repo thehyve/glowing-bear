@@ -3,8 +3,10 @@ import {Concept} from '../concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
+import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 export class ConceptConstraint implements Constraint {
+  private _isPatientSelection: boolean;
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
@@ -56,52 +58,56 @@ export class ConceptConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    // When no concept is selected, we cannot create a query object (it should be ignored)
-    if (!this.concept) {
-      return null;
-    }
-
-    let args = [];
-    args.push({
-      type: 'concept',
-      conceptCode: this.concept.code,
-      name: this.concept.name,
-      fullName: this.concept.fullName,
-      conceptPath: this.concept.path,
-      valueType: this.concept.type
-    });
-
-    if (this.values.length > 0) {
-      if (this.concept.type === 'NUMERIC') {
-        // Add numerical values directly to the main constraint
-        for (let value of this.values) {
-          args.push(value.toQueryObject());
-        }
-      } else if (this.concept.type === 'CATEGORICAL') {
-        // Wrap categorical values in an OR constraint
-        args.push({
-          type: 'or',
-          args: this.values.map((value: ValueConstraint) => value.toQueryObject())
-        });
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      // When no concept is selected, we cannot create a query object (it should be ignored)
+      if (!this.concept) {
+        return null;
       }
-    }
 
-    if (this.applyValDateConstraint) {
-      args.push(this.valDateConstraint.toQueryObject());
-    }
+      let args = [];
+      args.push({
+        type: 'concept',
+        conceptCode: this.concept.code,
+        name: this.concept.name,
+        fullName: this.concept.fullName,
+        conceptPath: this.concept.path,
+        valueType: this.concept.type
+      });
 
-    if (this.applyObsDateConstraint) {
-      args.push(this.obsDateConstraint.toQueryObject());
-    }
+      if (this.values.length > 0) {
+        if (this.concept.type === 'NUMERIC') {
+          // Add numerical values directly to the main constraint
+          for (let value of this.values) {
+            args.push(value.toQueryObject());
+          }
+        } else if (this.concept.type === 'CATEGORICAL') {
+          // Wrap categorical values in an OR constraint
+          args.push({
+            type: 'or',
+            args: this.values.map((value: ValueConstraint) => value.toQueryObject())
+          });
+        }
+      }
 
-    if (this.applyTrialVisitConstraint) {
-      args.push(this.trialVisitConstraint.toQueryObject());
-    }
+      if (this.applyValDateConstraint) {
+        args.push(this.valDateConstraint.toQueryObject());
+      }
 
-    return {
-      type: 'and',
-      args: args
-    };
+      if (this.applyObsDateConstraint) {
+        args.push(this.obsDateConstraint.toQueryObject());
+      }
+
+      if (this.applyTrialVisitConstraint) {
+        args.push(this.trialVisitConstraint.toQueryObject());
+      }
+
+      return {
+        type: 'and',
+        args: args
+      };
+    }
   }
 
   get textRepresentation(): string {
@@ -157,5 +163,13 @@ export class ConceptConstraint implements Constraint {
 
   set applyValDateConstraint(value: boolean) {
     this._applyValDateConstraint = value;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

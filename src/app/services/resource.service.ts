@@ -233,7 +233,7 @@ export class ResourceService {
    */
   getPatients(constraint: Constraint, debugLabel: string): Observable<Patient[]> {
     const urlPart = 'patients';
-    const constraintString: string = JSON.stringify(constraint.toPatientQueryObject());
+    const constraintString: string = JSON.stringify(constraint.toQueryObject());
     const body = {constraint: constraintString};
     if (debugLabel) {
       console.log(debugLabel, 'constraint:', constraintString);
@@ -250,29 +250,6 @@ export class ResourceService {
   getObservationCount(constraint: Constraint): Observable<number> {
     const urlPart = 'observations/count';
     const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
-    const responseField = 'count';
-    return this.postCall(urlPart, body, responseField);
-  }
-
-  /**
-   * Given the selected patients and observations,
-   * get the count of the observations on those selected patients.
-   * @param {Constraint} patientConstraint
-   * @param {Constraint} observationConstraint
-   * @returns {Observable<number>}
-   */
-  getPatientObservationCount(patientConstraint: Constraint,
-                             observationConstraint: Constraint): Observable<number> {
-    const combination = {
-      type: 'and',
-      args: [
-        patientConstraint.toPatientQueryObject(),
-        observationConstraint.toQueryObject()
-      ]
-    };
-    const urlPart = 'observations/count';
-    const constraintString = JSON.stringify(combination);
     const body = {constraint: constraintString};
     const responseField = 'count';
     return this.postCall(urlPart, body, responseField);

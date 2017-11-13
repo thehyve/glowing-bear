@@ -2,6 +2,8 @@ import {Constraint} from './constraint';
 
 export class TrueConstraint implements Constraint {
 
+  private _isPatientSelection: boolean;
+
   constructor() {
   }
 
@@ -18,10 +20,22 @@ export class TrueConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    return {'type': 'true'};
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      return {'type': 'true'};
+    }
   }
 
   get textRepresentation(): string {
     return 'True';
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

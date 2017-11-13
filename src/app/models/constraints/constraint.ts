@@ -1,6 +1,10 @@
 export interface Constraint {
 
+  // The textual representation of this contraint
   textRepresentation: string;
+  // The flag indicating if the output query object should be wrapped with
+  // the subselection clause for patient selection
+  isPatientSelection: boolean;
 
   /**
    * Returns the name of the constraint class.

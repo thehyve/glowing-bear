@@ -3,6 +3,7 @@ import {Constraint} from './constraint';
 export class NegationConstraint implements Constraint {
 
   private _constraint: Constraint;
+  private _isPatientSelection: boolean;
 
   constructor(constraint: Constraint) {
     this._constraint = constraint;
@@ -32,13 +33,25 @@ export class NegationConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    return {
-      type: 'negation',
-      arg: this._constraint.toQueryObject()
-    };
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      return {
+        type: 'negation',
+        arg: this._constraint.toQueryObject()
+      };
+    }
   }
 
   get textRepresentation(): string {
     return 'Negation';
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

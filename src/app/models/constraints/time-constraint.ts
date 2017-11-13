@@ -9,6 +9,7 @@ export class TimeConstraint implements Constraint {
   // the 'start time' dimension applies to the observations with observed date values
   // the 'value' dimension applies to the observations with actual date values
   private _dimension = 'start time';
+  private _isPatientSelection: boolean;
 
   constructor() {
   }
@@ -26,44 +27,48 @@ export class TimeConstraint implements Constraint {
    * @returns {Object}
    */
   toQueryObject(): Object {
-    // Operator
-    let operator = {
-      [GbDateOperatorState.BETWEEN]: '<-->',
-      [GbDateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-      [GbDateOperatorState.BEFORE]: '<-',
-      [GbDateOperatorState.AFTER]: '->'
-    }[this.dateOperator];
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
+    } else {
+      // Operator
+      let operator = {
+        [GbDateOperatorState.BETWEEN]: '<-->',
+        [GbDateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
+        [GbDateOperatorState.BEFORE]: '<-',
+        [GbDateOperatorState.AFTER]: '->'
+      }[this.dateOperator];
 
-    // Values (dates)
-    let values = [this.date1.toISOString()];
-    if (this.dateOperator === GbDateOperatorState.BETWEEN ||
-      this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
-      values.push(this.date2.toISOString());
-    }
+      // Values (dates)
+      let values = [this.date1.toISOString()];
+      if (this.dateOperator === GbDateOperatorState.BETWEEN ||
+        this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
+        values.push(this.date2.toISOString());
+      }
 
-    // Construct the date constraint
-    // we assume if the dimension is not 'start time', it would be 'value'
-    let fieldName = this.dimension === 'start time' ? 'startDate' : 'numberValue';
-    let query: Object = {
-      type: 'time',
-      field: {
-        dimension: this.dimension,
-        fieldName: fieldName,
-        type: 'DATE'
-      },
-      operator: operator,
-      values: values
-    };
-
-    // Wrap date constraint in a negation if required
-    if (this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
-      query = {
-        type: 'negation',
-        arg: query
+      // Construct the date constraint
+      // we assume if the dimension is not 'start time', it would be 'value'
+      let fieldName = this.dimension === 'start time' ? 'startDate' : 'numberValue';
+      let query: Object = {
+        type: 'time',
+        field: {
+          dimension: this.dimension,
+          fieldName: fieldName,
+          type: 'DATE'
+        },
+        operator: operator,
+        values: values
       };
-    }
 
-    return query;
+      // Wrap date constraint in a negation if required
+      if (this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
+        query = {
+          type: 'negation',
+          arg: query
+        };
+      }
+
+      return query;
+    }
   }
 
   get textRepresentation(): string {
@@ -76,5 +81,13 @@ export class TimeConstraint implements Constraint {
 
   set dimension(value: string) {
     this._dimension = value;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

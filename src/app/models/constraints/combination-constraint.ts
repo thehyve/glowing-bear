@@ -6,11 +6,12 @@ export class CombinationConstraint implements Constraint {
 
   private _children: Constraint[];
   private _combinationState: CombinationState;
-
+  private _isPatientSelection: boolean;
 
   constructor() {
     this._children = [];
     this.combinationState = CombinationState.And;
+    this.isPatientSelection = false;
   }
 
   getClassName(): string {
@@ -125,26 +126,29 @@ export class CombinationConstraint implements Constraint {
    * @returns {Object}
    */
   toQueryObject(): Object {
-    // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
-    if (childQueryObjects.length === 0) {
-      // No children, so ignore this constraint
-      // TODO: show validation error instead?
-      return new TrueConstraint().toQueryObject();
-    }
-
-    // Combination
-    let queryObject: Object;
-    if (childQueryObjects.length === 1) {
-      queryObject = childQueryObjects[0];
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
     } else {
-      // Wrap in and/or constraint
-      queryObject = {
-        type: this._combinationState === CombinationState.And ? 'and' : 'or',
-        args: childQueryObjects
-      };
+      // Collect children query objects
+      let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
+      if (childQueryObjects.length === 0) {
+        // No children, so ignore this constraint
+        // TODO: show validation error instead?
+        return new TrueConstraint().toQueryObject();
+      }
+      // Combination
+      let queryObject: Object;
+      if (childQueryObjects.length === 1) {
+        queryObject = childQueryObjects[0];
+      } else {
+        // Wrap in and/or constraint
+        queryObject = {
+          type: this._combinationState === CombinationState.And ? 'and' : 'or',
+          args: childQueryObjects
+        };
+      }
+      return queryObject;
     }
-    return queryObject;
   }
 
   get textRepresentation(): string {
@@ -183,4 +187,11 @@ export class CombinationConstraint implements Constraint {
     }
   }
 
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
+  }
 }
