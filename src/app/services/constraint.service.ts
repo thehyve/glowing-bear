@@ -329,7 +329,7 @@ export class ConstraintService {
       );
 
     // update the observation count in the 2nd step
-    this.resourceService.getPatientObservationCount(selectionConstraint, projectionConstraint)
+    this.resourceService.getObservationCount(combo)
       .subscribe(
         (count) => {
           const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
@@ -412,6 +412,7 @@ export class ConstraintService {
    * @returns {Constraint}
    */
   public getSelectionConstraint(): Constraint {
+    let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
     let trueInclusion = false;
@@ -433,15 +434,17 @@ export class ConstraintService {
         combination.combinationState = CombinationState.And;
         combination.children.push(inclusionConstraint);
         combination.children.push(negatedExclusionConstraint);
-        return combination;
+        resultConstraint = combination;
       } else {
-        return negatedExclusionConstraint;
+        resultConstraint = negatedExclusionConstraint;
       }
 
     } else {
       // Otherwise just return the inclusion part
-      return inclusionConstraint;
+      resultConstraint = inclusionConstraint;
     }
+    resultConstraint.isPatientSelection = true;
+    return resultConstraint;
   }
 
   /**

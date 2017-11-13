@@ -4,6 +4,7 @@ import {Study} from '../study';
 export class StudyConstraint implements Constraint {
 
   private _studies: Study[];
+  private _isPatientSelection: boolean;
 
   constructor() {
     this._studies = [];
@@ -27,30 +28,33 @@ export class StudyConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    if (this._studies.length === 0) {
-      return null;
-    }
-
-    // Construct query objects for all studies
-    let childQueryObjects: Object[] = [];
-    for (let study of this.studies) {
-      childQueryObjects.push({
-        'type': 'study_name',
-        'studyId': study.studyId
-      })
-    }
-
-    if (childQueryObjects.length === 1) {
-      // Don't wrap in 'or' if we only have one study
-      return childQueryObjects[0];
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
     } else {
-      // Wrap study query objects in 'or' constraint
-      return {
-        'type': 'or',
-        'args': childQueryObjects
-      };
-    }
+      if (this._studies.length === 0) {
+        return null;
+      }
 
+      // Construct query objects for all studies
+      let childQueryObjects: Object[] = [];
+      for (let study of this.studies) {
+        childQueryObjects.push({
+          'type': 'study_name',
+          'studyId': study.studyId
+        });
+      }
+
+      if (childQueryObjects.length === 1) {
+        // Don't wrap in 'or' if we only have one study
+        return childQueryObjects[0];
+      } else {
+        // Wrap study query objects in 'or' constraint
+        return {
+          'type': 'or',
+          'args': childQueryObjects
+        };
+      }
+    }
   }
 
   get textRepresentation(): string {
@@ -60,5 +64,13 @@ export class StudyConstraint implements Constraint {
     }
     result = (this.studies) ? result.substring(0, result.length - 2) : result;
     return result;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }

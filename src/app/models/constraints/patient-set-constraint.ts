@@ -9,6 +9,7 @@ export class PatientSetConstraint implements Constraint {
   private _patientIds = [];
   // internal subject set id
   private _patientSetId = '';
+  private _isPatientSelection: boolean;
 
   constructor() {
   }
@@ -25,24 +26,28 @@ export class PatientSetConstraint implements Constraint {
   }
 
   toQueryObject(): Object {
-    const type = 'patient_set';
-    if (this.subjectIds.length > 0) {
-      return {
-        'type': type,
-        'subjectIds': this.subjectIds
-      };
-    } else if (this.patientIds.length > 0) {
-      return {
-        'type': type,
-        'patientIds': this.patientIds
-      };
-    } else if (this.patientSetId !== '') {
-      return {
-        'type': type,
-        'patientSetId': this.patientSetId
-      };
+    if (this.isPatientSelection) {
+      return this.toPatientQueryObject();
     } else {
-      return null;
+      const type = 'patient_set';
+      if (this.subjectIds.length > 0) {
+        return {
+          'type': type,
+          'subjectIds': this.subjectIds
+        };
+      } else if (this.patientIds.length > 0) {
+        return {
+          'type': type,
+          'patientIds': this.patientIds
+        };
+      } else if (this.patientSetId !== '') {
+        return {
+          'type': type,
+          'patientSetId': this.patientSetId
+        };
+      } else {
+        return null;
+      }
     }
   }
 
@@ -72,5 +77,13 @@ export class PatientSetConstraint implements Constraint {
 
   set patientSetId(value: string) {
     this._patientSetId = value;
+  }
+
+  get isPatientSelection(): boolean {
+    return this._isPatientSelection;
+  }
+
+  set isPatientSelection(value: boolean) {
+    this._isPatientSelection = value;
   }
 }
