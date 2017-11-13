@@ -16,8 +16,7 @@
   <div *ngFor="let query of queries">
     <!-- ------ div wrapper for visibility of a query panel ------ -->
     <div *ngIf="query['visible']"
-         class="gb-query-panel"
-         pDraggable="query-drag-drop">
+         class="gb-query-panel">
       <p-panel [collapsed]="query['collapsed']"
                (click)="onQueryPanelClick(query)">
         <p-header>

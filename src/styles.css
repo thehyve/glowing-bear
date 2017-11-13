@@ -106,7 +106,7 @@ body .gb-spinner.loading {
 body .gb-query-panel {
   padding: 0px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   background-color: #fafafa;
   border: 1px solid #D5D5D5;
   font-size: small;
@@ -159,6 +159,13 @@ body .gb-concept-constraint-input > input {
   font-size: small !important;
   height: 1.8em;
   min-width: 150px;
+}
+
+/*
+ * Style for the paddings of the query panel
+ */
+body .ui-panel-titlebar {
+  padding: 1px !important;
 }
 
 /*
