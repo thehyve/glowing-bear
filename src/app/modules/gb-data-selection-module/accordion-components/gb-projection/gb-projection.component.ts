@@ -9,7 +9,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
   styleUrls: ['./gb-projection.component.css']
 })
 export class GbProjectionComponent implements OnInit {
-  selected=[];
+
   constructor(public treeNodeService: TreeNodeService,
               public constraintService: ConstraintService) {
   }
@@ -17,16 +17,16 @@ export class GbProjectionComponent implements OnInit {
   ngOnInit() {
   }
 
-  get treeTableData(): TreeNode[] {
-    return this.treeNodeService.treeTableData;
+  get projectionTreeData(): TreeNode[] {
+    return this.treeNodeService.projectionTreeData;
   }
 
-  get selectedTreeTableData(): TreeNode[] {
-    return this.treeNodeService.selectedTreeTableData;
+  get selectedProjectionTreeData(): TreeNode[] {
+    return this.treeNodeService.selectedProjectionTreeData;
   }
 
-  set selectedTreeTableData(value: TreeNode[]) {
-    this.treeNodeService.selectedTreeTableData = value;
+  set selectedProjectionTreeData(value: TreeNode[]) {
+    this.treeNodeService.selectedProjectionTreeData = value;
   }
 
   updateCounts(event) {

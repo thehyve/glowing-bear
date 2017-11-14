@@ -8,8 +8,7 @@ import {CombinationConstraint} from '../models/constraints/combination-constrain
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {Query} from '../models/query';
-import {PedigreeConstraint} from "../models/constraints/pedigree-constraint";
-import {PedigreeState} from "../models/constraints/pedigree-state";
+import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -19,9 +18,9 @@ export class TreeNodeService {
   // the variable that holds the entire tree structure, used by the tree on the left
   public treeNodes: TreeNode[] = [];
   // the entire tree table data that holds the patients' observations in the 2nd step (projection)
-  private _treeTableData: TreeNode[] = [];
+  private _projectionTreeData: TreeNode[] = [];
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
-  private _selectedTreeTableData: TreeNode[] = [];
+  private _selectedProjectionTreeData: TreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -255,44 +254,46 @@ export class TreeNodeService {
    * based on a given set of concept codes as filtering criteria.
    * @param {Object} conceptCountMap
    */
-  public updateTreeTableData(conceptCountMap: object, checklist: Array<string>) {
+  public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
     let conceptCodes = [];
     for (let code in conceptCountMap) {
       conceptCodes.push(code);
     }
-    this.treeTableData = this.updateTreeTableDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
-    this.selectedTreeTableData = [];
-    this.checkTreeTableData(this.treeTableData, checklist);
+    this.projectionTreeData =
+      this.updateProjectionTreeDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
+    this.selectedProjectionTreeData = [];
+    this.checkProjectionTreeData(this.projectionTreeData, checklist);
   }
 
-  private checkTreeTableData(nodes: TreeNode[], checklist: Array<string>) {
+  private checkProjectionTreeData(nodes: TreeNode[], checklist: Array<string>) {
     for (let node of nodes) {
       if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
-        this.selectedTreeTableData.push(node);
+        this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
-        this.checkTreeTableData(node['children'], checklist);
+        this.checkProjectionTreeData(node['children'], checklist);
       }
     }
   }
 
-  private updateTreeTableDataIterative(nodes: TreeNode[],
-                                       conceptCodes: string[],
-                                       conceptCountMap: object) {
+  private updateProjectionTreeDataIterative(nodes: TreeNode[],
+                                            conceptCodes: string[],
+                                            conceptCountMap: object) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
-        let nodeCopy = this.copyTreeTableDataItem(node);
+        let nodeCopy = this.copyProjectionTreeDataItem(node);
         if (conceptCountMap[node['conceptCode']]) {
           const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
-          const obsevationCount = conceptCountMap[node['conceptCode']]['observationCount'];
-          nodeCopy['data']['name'] = nodeCopy['data']['name'] + ` (sub: ${patientCount}, obs: ${obsevationCount})`;
+          const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
+          nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${patientCount}, obs: ${observationCount})`;
         }
         nodesWithCodes.push(nodeCopy);
       } else if (node['children']) {
-        let newNodeChildren = this.updateTreeTableDataIterative(node['children'], conceptCodes, conceptCountMap);
+        let newNodeChildren =
+          this.updateProjectionTreeDataIterative(node['children'], conceptCodes, conceptCountMap);
         if (newNodeChildren.length > 0) {
-          let nodeCopy = this.copyTreeTableDataItem(node);
+          let nodeCopy = this.copyProjectionTreeDataItem(node);
           nodeCopy['children'] = newNodeChildren;
           nodesWithCodes.push(nodeCopy);
         }
@@ -301,12 +302,14 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  private copyTreeTableDataItem(item: TreeNode) {
+  private depthOfTreeNode(node: TreeNode): number {
+    return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
+  }
+
+  private copyProjectionTreeDataItem(item: TreeNode) {
     let itemCopy = Object.assign({}, item);
-    itemCopy['data'] = {
-      name: item['name']
-    };
-    itemCopy['expanded'] = true;
+    const depth = this.depthOfTreeNode(itemCopy);
+    itemCopy['expanded'] = !(typeof depth === 'number' && depth > 1);
     return itemCopy;
   }
 
@@ -537,20 +540,20 @@ export class TreeNodeService {
     this._queries = value;
   }
 
-  get treeTableData(): TreeNode[] {
-    return this._treeTableData;
+  get projectionTreeData(): TreeNode[] {
+    return this._projectionTreeData;
   }
 
-  set treeTableData(value: TreeNode[]) {
-    this._treeTableData = value;
+  set projectionTreeData(value: TreeNode[]) {
+    this._projectionTreeData = value;
   }
 
-  get selectedTreeTableData(): TreeNode[] {
-    return this._selectedTreeTableData;
+  get selectedProjectionTreeData(): TreeNode[] {
+    return this._selectedProjectionTreeData;
   }
 
-  set selectedTreeTableData(value: TreeNode[]) {
-    this._selectedTreeTableData = value;
+  set selectedProjectionTreeData(value: TreeNode[]) {
+    this._selectedProjectionTreeData = value;
   }
 
   get validTreeNodeTypes(): string[] {

@@ -88,6 +88,21 @@ body .gb-tree-container {
 }
 
 /*
+ * style fix for the primeng tree-container in the 2nd step
+ * padding: top, right, bottom, left
+ */
+body .gb-projection-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+}
+
+div .gb-projection-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+  padding: 1px 6px 1px 6px;
+  background-color: #67a2cf;
+}
+
+/*
  * style class for loading tree nodes and patient counts
  */
 body .gb-spinner {
@@ -304,11 +319,7 @@ legend {
 /*
  * tree node styles for filtering
  */
-.disabled-treenode {
-  display: none;
-}
-
-.highlight-treenode {
+.gb-highlight-treenode {
   background-color: #ffa27f !important;
   border-radius: 10px !important;
   font-weight: bold !important;
@@ -318,5 +329,5 @@ legend {
  * A marker css class to indicate if a tree node is leaf or not,
  * should be left empty
  */
-.is-not-leaf {
+.gb-is-not-leaf {
 }

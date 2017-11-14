@@ -215,9 +215,9 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
           if (fieldString.includes(filterWord)) {
             result.hasMatching = true;
             if (node['children'] && node['children'].length > 0) {
-              node['styleClass'] = 'highlight-treenode is-not-leaf';
+              node['styleClass'] = 'gb-highlight-treenode gb-is-not-leaf';
             } else {
-              node['styleClass'] = 'highlight-treenode';
+              node['styleClass'] = 'gb-highlight-treenode';
             }
           } else {
             node['styleClass'] = undefined;
