@@ -40,7 +40,7 @@ input:-moz-read-only { /* For Firefox */
   border: none;
   font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
   font-size: 110%;
-  max-width: 100%;
+  max-width: 46% !important;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -51,7 +51,7 @@ input:read-only {
   border: none;
   font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
   font-size: 110%;
-  max-width: 100%;
+  max-width: 46% !important;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -63,4 +63,14 @@ input:read-only {
 .gb-query-panel-toggle-button {
   border: none;
   background-color: transparent !important;
+  margin-right: -10px;
+}
+
+/*
+ * margin: top right bottom left
+ */
+p-header .ui-button-secondary {
+  margin-top: 3px;
+  margin-left: -3px;
+  padding: 0px;
 }

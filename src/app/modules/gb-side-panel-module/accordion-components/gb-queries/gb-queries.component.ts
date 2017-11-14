@@ -77,11 +77,22 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   getQuerySelectionButtonIcon(query) {
-    return query['selected'] ? 'fa-arrow-circle-right' : 'fa-arrow-circle-o-right';
+    return query['selected'] ? 'fa-arrow-circle-right' : 'fa-arrow-right';
   }
 
   removeQuery(query) {
     this.constraintService.deleteQuery(query);
+  }
+
+  downloadQuery(query) {
+    let data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(query));
+    let el = document.createElement('a');
+    el.setAttribute('href', data);
+    el.setAttribute('download', query.name + '.json');
+    el.style.display = 'none';
+    document.body.appendChild(el);
+    el.click();
+    document.body.removeChild(el);
   }
 
   editQueryName(event, query) {

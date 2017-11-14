@@ -36,6 +36,10 @@
                       icon="{{getQueryBookmarkButtonIcon(query)}}">
               </button>
               <button pButton class="ui-button-secondary" type="button"
+                      (click)="downloadQuery(query)"
+                      icon="fa-download">
+              </button>
+              <button pButton class="ui-button-secondary" type="button"
                       (click)="putQuery(query)"
                       icon="{{getQuerySelectionButtonIcon(query)}}">
               </button>
