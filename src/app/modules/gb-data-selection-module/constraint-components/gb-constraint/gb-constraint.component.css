@@ -5,9 +5,19 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   background-color: #f7f7f7;
-  padding: 0px 5px 0px 5px;
+  padding: 0px 1px 0px 5px !important;
   /*box-shadow: 0px 0px 2px 2px grey; !* h-shadow v-shadow blur spread color *!*/
   min-height: 40px;
+  font-size: small;
+  margin: 0px 3em 0px 2em !important;
+  /*background-color: rgba(64, 135, 141, 0.3);*/
+}
+
+.gb-constraint-container-root {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f7f7f7;
+  padding: 0px 1px 0px 5px !important;
   font-size: small;
 }
 
@@ -17,16 +27,12 @@
   margin-bottom: -0.5em;
 }
 
-.constraint-btn {
-  margin-right: 6px;
-  margin-top: 3px;
-}
-
-.constraint-remove-btn {
+.gb-constraint-remove-btn {
   margin-right: 3px;
   margin-top: 3px;
   border: none;
   color: lightgray;
+  font-size: small;
 }
 
 .constraint-remove-btn:hover {

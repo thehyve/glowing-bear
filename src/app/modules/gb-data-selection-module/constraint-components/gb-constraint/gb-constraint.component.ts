@@ -92,4 +92,10 @@ export class GbConstraintComponent implements OnInit {
 
   }
 
+  get containerClass(): string {
+    return (this.constraint.getClassName() === 'CombinationConstraint'
+      && (<CombinationConstraint>this.constraint).isRoot) ?
+      'gb-constraint-container-root ' : 'gb-constraint-container';
+  }
+
 }

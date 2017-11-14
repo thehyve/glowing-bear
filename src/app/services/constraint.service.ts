@@ -138,8 +138,10 @@ export class ConstraintService {
 
   constructor(private resourceService: ResourceService,
               private treeNodeService: TreeNodeService) {
-    this._rootInclusionConstraint = new CombinationConstraint();
-    this._rootExclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint = new CombinationConstraint();
+    this.rootExclusionConstraint.isRoot = true;
   }
 
   /**

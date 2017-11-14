@@ -6,12 +6,17 @@
 }
 
 .gb-constraint-state-container {
-  margin: 3px 0px 3px 0px;
+  margin: 3px 0px 3px 2em;
 }
 
 .gb-combination-constraint-container {
   margin: 0px;
   padding-top: 5px;
+}
+
+.gb-combination-constraint-child-container {
+  /*margin-left: 6em;*/
+  /*margin-right: -6em;*/
 }
 
 .gb-combination-constraint-input-container {

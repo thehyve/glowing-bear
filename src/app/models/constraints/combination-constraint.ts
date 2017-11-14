@@ -7,11 +7,13 @@ export class CombinationConstraint implements Constraint {
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isPatientSelection: boolean;
+  private _isRoot: boolean;
 
   constructor() {
     this._children = [];
     this.combinationState = CombinationState.And;
     this.isPatientSelection = false;
+    this.isRoot = false;
   }
 
   getClassName(): string {
@@ -193,5 +195,13 @@ export class CombinationConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get isRoot(): boolean {
+    return this._isRoot;
+  }
+
+  set isRoot(value: boolean) {
+    this._isRoot = value;
   }
 }
