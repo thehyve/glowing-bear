@@ -138,8 +138,10 @@ export class ConstraintService {
 
   constructor(private resourceService: ResourceService,
               private treeNodeService: TreeNodeService) {
-    this._rootInclusionConstraint = new CombinationConstraint();
-    this._rootExclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint = new CombinationConstraint();
+    this.rootExclusionConstraint.isRoot = true;
   }
 
   /**
@@ -282,7 +284,7 @@ export class ConstraintService {
   private updateTreeNodes_2() {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
       let checklist = this.query ? this.query.observationsQuery['data'] : null;
-      this.treeNodeService.updateTreeTableData(this.conceptCountMap_1, checklist);
+      this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
       this.updateCounts_2();
       this.query = null;
     } else {
@@ -460,7 +462,7 @@ export class ConstraintService {
    * @returns {any}
    */
   public getProjectionConstraint(): Constraint {
-    let nodes = this.treeNodeService.getTopTreeNodes(this.treeNodeService.selectedTreeTableData);
+    let nodes = this.treeNodeService.getTopTreeNodes(this.treeNodeService.selectedProjectionTreeData);
     let constraint = null;
     if (nodes.length > 0) {
       let allLeaves = [];
@@ -794,7 +796,7 @@ export class ConstraintService {
   public saveQuery(queryName: string) {
     const patientConstraintObj = this.getSelectionConstraint().toPatientQueryObject();
     let data = [];
-    for (let item of this.treeNodeService.selectedTreeTableData) {
+    for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
     const observationConstraintObj = {

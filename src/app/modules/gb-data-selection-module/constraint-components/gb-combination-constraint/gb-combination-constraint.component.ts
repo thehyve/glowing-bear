@@ -93,5 +93,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.constraintService.updateCounts_1();
   }
 
+  get childContainerClass(): string {
+    return (<CombinationConstraint>this.constraint).isRoot ? '' : 'gb-combination-constraint-child-container';
+  }
 
 }

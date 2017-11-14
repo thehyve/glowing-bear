@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbProjectionComponent} from './gb-projection.component';
-import {TreeTableModule} from 'primeng/primeng';
+import {TreeModule} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
@@ -17,7 +17,7 @@ describe('GbProjectionComponent', () => {
         GbProjectionComponent
       ],
       imports: [
-        TreeTableModule
+        TreeModule
       ],
       providers: [
         {

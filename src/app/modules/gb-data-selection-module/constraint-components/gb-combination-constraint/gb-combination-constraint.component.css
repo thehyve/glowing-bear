@@ -1,12 +1,29 @@
+/*
+ * margin or padding: top right bottom left
+ */
 .form-check-label {
   margin-right: 3px;
 }
 
-.btn-group {
-  margin-top: 3px;
+.gb-constraint-state-container {
+  margin: 3px 0px 3px 2em;
 }
 
+.gb-combination-constraint-container {
+  margin: 0px;
+  padding-top: 5px;
+}
 
-.constraint-state-container {
-  margin-left: 16px;
+.gb-combination-constraint-child-container {
+  /*margin-left: 6em;*/
+  /*margin-right: -6em;*/
+}
+
+.gb-combination-constraint-input-container {
+  margin-left: -5px;
+}
+
+.btn-outline-primary {
+  font-size: small;
+  padding: 2px 5px 2px 5px;
 }

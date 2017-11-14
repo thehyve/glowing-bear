@@ -88,6 +88,21 @@ body .gb-tree-container {
 }
 
 /*
+ * style fix for the primeng tree-container in the 2nd step
+ * padding: top, right, bottom, left
+ */
+body .gb-projection-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+}
+
+div .gb-projection-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+  padding: 1px 6px 1px 6px;
+  background-color: #67a2cf;
+}
+
+/*
  * style class for loading tree nodes and patient counts
  */
 body .gb-spinner {
@@ -106,7 +121,7 @@ body .gb-spinner.loading {
 body .gb-query-panel {
   padding: 0px;
   border-radius: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   background-color: #fafafa;
   border: 1px solid #D5D5D5;
   font-size: small;
@@ -162,6 +177,13 @@ body .gb-concept-constraint-input > input {
 }
 
 /*
+ * Style for the paddings of the query panel
+ */
+body .ui-panel-titlebar {
+  padding: 1px !important;
+}
+
+/*
  * Style for PrimeNg alert messages
  */
 .ui-messages.ui-messages-success {
@@ -214,19 +236,34 @@ body .gb-concept-constraint-input > input {
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
-.ui-autocomplete-dropdown.ui-button {
-  height: 38px;
+body .ui-inputtext {
+  height: 2em;
 }
 
-.ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
-  height: 46px;
+body .ui-autocomplete .ui-autocomplete-dropdown {
+  height: 2em;
+}
+
+body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container{
+  padding: 0.1em;
+  height: 100%;
 }
 
 /*
  * Fix the width of placeholder in multiple autocomplete input field
  */
-body .ui-autocomplete-input-token input {
-  width: 15em;
+body .ui-autocomplete-input-token {
+  width: 10em;
+}
+
+/*
+ * Style for the p-panel in a concept constraint
+ */
+.gb-constraint-child-container p-panel .ui-panel{
+  margin-left: 5px;
+  padding: 0px;
+  background-color: transparent;
+  width: 90%;
 }
 
 /* Fix multiple autocomplete dropdown button new line break */
@@ -297,11 +334,7 @@ legend {
 /*
  * tree node styles for filtering
  */
-.disabled-treenode {
-  display: none;
-}
-
-.highlight-treenode {
+.gb-highlight-treenode {
   background-color: #ffa27f !important;
   border-radius: 10px !important;
   font-weight: bold !important;
@@ -311,5 +344,5 @@ legend {
  * A marker css class to indicate if a tree node is leaf or not,
  * should be left empty
  */
-.is-not-leaf {
+.gb-is-not-leaf {
 }
