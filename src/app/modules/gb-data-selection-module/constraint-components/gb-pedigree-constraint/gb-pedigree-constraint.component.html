@@ -3,10 +3,12 @@
     <div class="row">
       <p-dropdown [options]="pedigreeTypes"
                   [style]="{'margin-top':'6px', 'margin-left':'6px'}"
-                  [ngModel]="selectedPedigreeType"
+                  [(ngModel)]="selectedPedigreeType"
                   (onChange)="updateRelationType($event)"
                   optionLabel="text"></p-dropdown>
-      <gb-combination-constraint [constraint]="rightHandSideConstraint"></gb-combination-constraint>
+      <div style="margin-left: 4px; margin-top: -4px">
+        <gb-combination-constraint [constraint]="rightHandSideConstraint"></gb-combination-constraint>
+      </div>
     </div>
   </div>
 
