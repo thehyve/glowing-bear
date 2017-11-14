@@ -236,19 +236,34 @@ body .ui-panel-titlebar {
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
-.ui-autocomplete-dropdown.ui-button {
-  height: 38px;
+body .ui-inputtext {
+  height: 2em;
 }
 
-.ui-autocomplete-multiple > .ui-autocomplete-dropdown.ui-button {
-  height: 46px;
+body .ui-autocomplete .ui-autocomplete-dropdown {
+  height: 2em;
+}
+
+body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container{
+  padding: 0.1em;
+  height: 100%;
 }
 
 /*
  * Fix the width of placeholder in multiple autocomplete input field
  */
-body .ui-autocomplete-input-token input {
-  width: 15em;
+body .ui-autocomplete-input-token {
+  width: 10em;
+}
+
+/*
+ * Style for the p-panel in a concept constraint
+ */
+.gb-constraint-child-container p-panel .ui-panel{
+  margin-left: 5px;
+  padding: 0px;
+  background-color: transparent;
+  width: 90%;
 }
 
 /* Fix multiple autocomplete dropdown button new line break */

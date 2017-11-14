@@ -1,8 +1,8 @@
-<div>
+<div class="gb-combination-constraint-container">
 
   <!-- Child Constraints -->
   <div *ngFor="let child of children; let i = index">
-    <div *ngIf="i > 0" class="constraint-state-container">
+    <div *ngIf="i > 0" class="gb-constraint-state-container">
       <button type="button" class="btn btn-outline-primary btn-sm"
               (click)="toggleJunction()" [ngSwitch]="combinationState">
         <i *ngSwitchCase="CombinationState.And">and</i>
@@ -14,7 +14,7 @@
   </div>
 
 
-  <div class="form-inline">
+  <div class="form-inline gb-combination-constraint-input-container">
 
     <!--<i class="fa fa-circle fa-2x" aria-hidden="true" style="color: lightgrey"></i>-->
     <p-autoComplete #autoComplete
