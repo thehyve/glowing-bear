@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbConceptConstraintComponent} from './gb-concept-constraint.component';
 import {FormsModule} from '@angular/forms';
-import {AutoCompleteModule, CalendarModule, CheckboxModule} from 'primeng/primeng';
+import {AutoCompleteModule, CalendarModule, CheckboxModule, PanelModule} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
@@ -10,6 +10,7 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -21,10 +22,12 @@ describe('GbConceptConstraintComponent', () => {
         GbConceptConstraintComponent
       ],
       imports: [
+        BrowserAnimationsModule,
         FormsModule,
         AutoCompleteModule,
         CheckboxModule,
-        CalendarModule
+        CalendarModule,
+        PanelModule
       ],
       providers: [
         {
