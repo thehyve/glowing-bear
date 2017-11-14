@@ -17,6 +17,9 @@ export class PedigreeConstraint implements Constraint {
       case 'PAR': {
         this.relationType = PedigreeState.Parent; break;
       }
+      case 'CHI': {
+        this.relationType = PedigreeState.Child; break;
+      }
       case 'SPO': {
         this.relationType = PedigreeState.Spouse; break;
       }
@@ -118,6 +121,9 @@ export class PedigreeConstraint implements Constraint {
       case PedigreeState.Parent: {
         this.label = 'PAR';
         break;
+      }
+      case PedigreeState.Child: {
+        this.label = 'CHI';
       }
       case PedigreeState.Spouse: {
         this.label = 'SPO';

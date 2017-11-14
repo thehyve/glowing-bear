@@ -3,13 +3,13 @@ import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SelectItem} from 'primeng/primeng';
 import {Constraint} from '../../../../models/constraints/constraint';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
-import {PedigreeState} from "../../../../models/constraints/pedigree-state";
 
 @Component({
   selector: 'gb-pedigree-constraint',
   templateUrl: './gb-pedigree-constraint.component.html',
   styleUrls: ['./gb-pedigree-constraint.component.css', '../gb-constraint/gb-constraint.component.css']
 })
+
 export class GbPedigreeConstraintComponent extends GbConstraintComponent implements OnInit {
 
   private _selectedPedigreeType: SelectItem;
@@ -18,11 +18,15 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   ngOnInit() {
     this.pedigreeTypes = [];
+    const relationType = (<PedigreeConstraint>this.constraint).relationType;
     for (let typeObj of this.treeNodeService.validPedigreeTypes) {
       this.pedigreeTypes.push({
         label: typeObj['text'],
         value: typeObj['type']
       });
+      if (relationType === typeObj['type']) {
+        this.selectedPedigreeType = typeObj['type'];
+      }
     }
     this.rightHandSideConstraint = (<PedigreeConstraint>this.constraint).rightHandSideConstraint;
   }
