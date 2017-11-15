@@ -176,41 +176,6 @@ export class ResourceService {
 
   // -------------------------------------- observations calls --------------------------------------
   /**
-   * How to use this method:
-   * Get the patient count and observation count per study by providing a constraint,
-   * the constraint is the patient constraint that the user has composed on the right of the tree nodes,
-   * the resulting counts (per study) is an array of counts organized per study from
-   * the intersection of the patient constraint and the studies' constraints
-   * @param {Constraint} constraint
-   * @returns {Observable<Object>}
-   */
-  getCountsPerStudy(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_study';
-    const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
-    const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
-  }
-
-  /**
-   * How to use this method:
-   * Get the patient count and observation count per concept by providing a constraint
-   * the constraint is the intersection of the patient constraint that the user composed
-   * on the right of the tree nodes and the constraint of the specific concept,
-   * the resulting counts (per concept) is a single object containing the counts for
-   * the specified concept.
-   * @param {Constraint} constraint
-   * @returns {Observable<Object>}
-   */
-  getCountsPerConcept(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_concept';
-    const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
-    const responseField = 'countsPerConcept';
-    return this.postCall(urlPart, body, responseField);
-  }
-
-  /**
    * Given a constraint, get the patient counts and observation counts
    * organized per study, then per concept
    * @param {Constraint} constraint
@@ -224,34 +189,17 @@ export class ResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
-  // -------------------------------------- patient calls --------------------------------------
-  /**
-   * Given a constraint, return the corresponding patient list
-   * @param constraint
-   * @param debugLabel - for debugging purpose
-   * @returns {Observable<R|T>}
-   */
-  getPatients(constraint: Constraint, debugLabel: string): Observable<Patient[]> {
-    const urlPart = 'patients';
-    const constraintString: string = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
-    if (debugLabel) {
-      console.log(debugLabel, 'constraint:', constraintString);
-    }
-    return this.postCall(urlPart, body, 'patients');
-  }
-
   // -------------------------------------- observation calls --------------------------------------
   /**
-   * Give a constraint, get the corresponding observation count.
+   * Give a constraint, get the corresponding patient count and observation count.
    * @param {Constraint} constraint
-   * @returns {Observable<number>}
+   * @returns {Observable<Object>}
    */
-  getObservationCount(constraint: Constraint): Observable<number> {
-    const urlPart = 'observations/count';
+  getCounts(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/counts';
     const constraintString = JSON.stringify(constraint.toQueryObject());
     const body = {constraint: constraintString};
-    const responseField = 'count';
+    const responseField = false;
     return this.postCall(urlPart, body, responseField);
   }
 
