@@ -17,7 +17,12 @@
 
     <div class="form-inline gb-combination-constraint-input-container">
 
-      <!--<i class="fa fa-circle fa-2x" aria-hidden="true" style="color: lightgrey"></i>-->
+      <button type="button"
+              (click)="addChildCombinationConstraint()"
+              class="btn btn-outline-secondary gb-combination-constraint-add-btn"
+              pTooltip="Add group constraint">
+        <span class="fa fa-plus"></span>
+      </button>
       <p-autoComplete #autoComplete
                       [(ngModel)]="selectedConstraint"
                       [suggestions]="searchResults"

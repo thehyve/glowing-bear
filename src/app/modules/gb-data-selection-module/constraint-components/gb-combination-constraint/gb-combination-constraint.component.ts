@@ -97,4 +97,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     return (<CombinationConstraint>this.constraint).isRoot ? '' : 'gb-combination-constraint-child-container';
   }
 
+  addChildCombinationConstraint() {
+    (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+  }
+
 }
