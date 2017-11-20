@@ -76,10 +76,6 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     this.constraintService.putQuery(selectedQuery);
   }
 
-  getQuerySelectionButtonIcon(query) {
-    return query['selected'] ? 'fa-arrow-circle-right' : 'fa-arrow-right';
-  }
-
   removeQuery(query) {
     this.constraintService.deleteQuery(query);
   }
