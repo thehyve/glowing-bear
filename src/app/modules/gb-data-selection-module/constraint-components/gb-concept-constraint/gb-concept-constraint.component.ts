@@ -54,6 +54,12 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   selectedCategories: string[];
   suggestedCategories: string[];
 
+  // ------ more options ------
+  /*
+   * flag indicating if to show more options
+   */
+  private _showMoreOptions = false;
+
   /*
    * observation date range (i.e. the reported date range)
    */
@@ -547,6 +553,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.updateConceptValues();
   }
 
+  toggleMoreOptions() {
+    this.showMoreOptions = !this.showMoreOptions;
+  }
+
   get operatorState(): GbConceptOperatorState {
     return this._operatorState;
   }
@@ -619,4 +629,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._searchResults = value;
   }
 
+  get showMoreOptions(): boolean {
+    return this._showMoreOptions;
+  }
+
+  set showMoreOptions(value: boolean) {
+    this._showMoreOptions = value;
+  }
 }

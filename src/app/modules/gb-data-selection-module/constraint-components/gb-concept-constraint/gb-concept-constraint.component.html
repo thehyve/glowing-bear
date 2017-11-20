@@ -17,7 +17,7 @@
   <!-- if the concept is NUMERIC -->
   <div *ngIf="isNumeric()" class="form-inline gb-constraint-child-container">
     <span>with value</span>
-    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+    <button type="button" class="btn btn-outline-secondary"
             (click)="switchOperatorState()">
       {{getOperatorButtonName()}}
     </button>
@@ -70,7 +70,7 @@
   <!--  if the concept is DATE -->
   <div *ngIf="isDate()" class="form-inline gb-constraint-child-container">
     <span>with date</span>
-    <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+    <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">
       <i *ngSwitchCase="ValDateOperatorState.BEFORE">before </i>
       <i *ngSwitchCase="ValDateOperatorState.AFTER">after </i>
@@ -99,14 +99,21 @@
 
   <!-- ---------- more options ---------- -->
   <div class="gb-constraint-child-container" style="margin-top: 2px">
-    <p-panel header="and more options" [toggleable]="true" [collapsed]="true">
+    <p-panel [collapsed]="!showMoreOptions">
+      <p-header class="form-inline" style="margin-left: -0.8em">
+        <button type="button"
+                (click)="toggleMoreOptions()"
+                class="btn btn-outline-secondary">
+          and more options
+        </button>
+      </p-header>
       <!-- observation date range constraint -->
       <div class="form-inline" style="margin-top: -1em">
         <p-checkbox [(ngModel)]="applyObsDateConstraint" binary="true"></p-checkbox>
         <label *ngIf="!applyObsDateConstraint" class="gray-text">apply observation-date constraint</label>
         <div *ngIf="applyObsDateConstraint" class="form-inline">
           <span>and observation date &nbsp;</span>
-          <button type="button" class="btn btn-outline-secondary concept-constraint-operator-state-btn"
+          <button type="button" class="btn btn-outline-secondary"
                   (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
             <i *ngSwitchCase="ObsDateOperatorState.BEFORE">before </i>
             <i *ngSwitchCase="ObsDateOperatorState.AFTER">after </i>

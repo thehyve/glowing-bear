@@ -16,25 +16,25 @@
  * Alternative colors:
  * light soda green: rgba(64, 135, 141, 0.3),
  * light blue: #67a2cf
- * light orange: #FFA047
- * light tomato: #FF8247
- * tomato: #FF6347
- * dark tomato: #D9391C
+ * light orange: #FFA047 or rgba(255, 160, 71, 0.6)
+ * light tomato: #FF8247 or rgba(255, 130, 71, 0.6)
+ * tomato: #FF6347 or rgba(255, 99, 71, 0.6)
+ * dark tomato: #D9391C or rgba(217, 57, 28, 0.6)
  */
 .gb-constraint-container-border-left-1 {
-  border-left: 2em solid #FFA047;
+  border-left: 2em solid rgba(255, 160, 71, 0.6);
 }
 
 .gb-constraint-container-border-left-2 {
-  border-left: 1.5em solid #FF8247;
+  border-left: 1.5em solid rgba(255, 130, 71, 0.6);
 }
 
 .gb-constraint-container-border-left-3 {
-  border-left: 1em solid #FF6347;
+  border-left: 1.1em solid rgba(255, 99, 71, 0.6);
 }
 
 .gb-constraint-container-border-left-4 {
-  border-left: 0.5em solid #D9391C;
+  border-left: 0.7em solid rgba(217, 57, 28, 0.6);
 }
 
 .gb-constraint-container-root {
