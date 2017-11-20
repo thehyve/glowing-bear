@@ -75,7 +75,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
       // Add it as a new child
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      combinationConstraint.children.push(newConstraint);
+      combinationConstraint.addChild(newConstraint);
 
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
@@ -95,6 +95,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   get childContainerClass(): string {
     return (<CombinationConstraint>this.constraint).isRoot ? '' : 'gb-combination-constraint-child-container';
+  }
+
+  addChildCombinationConstraint() {
+    (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
   }
 
 }

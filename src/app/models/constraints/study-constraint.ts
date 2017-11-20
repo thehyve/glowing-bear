@@ -3,11 +3,13 @@ import {Study} from '../study';
 
 export class StudyConstraint implements Constraint {
 
+  private _parent: Constraint;
   private _studies: Study[];
   private _isPatientSelection: boolean;
 
   constructor() {
     this._studies = [];
+    this.parent = null;
   }
 
   get studies(): Study[] {
@@ -72,5 +74,13 @@ export class StudyConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

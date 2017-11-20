@@ -96,8 +96,8 @@ export class GbExportComponent implements OnInit {
       const selectionConstraint = this.constraintService.getSelectionConstraint();
       const projectionConstraint = this.constraintService.getProjectionConstraint();
       let combo = new CombinationConstraint();
-      combo.children.push(selectionConstraint);
-      combo.children.push(projectionConstraint);
+      combo.addChild(selectionConstraint);
+      combo.addChild(projectionConstraint);
 
       this.resourceService.runExportJob(jobId, combo, elements)
         .subscribe(

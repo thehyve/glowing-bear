@@ -10,14 +10,37 @@
   min-height: 40px;
   font-size: small;
   margin: 0px 3em 0px 2em !important;
-  /*background-color: rgba(64, 135, 141, 0.3);*/
+}
+
+/*
+ * Alternative colors:
+ * light soda green: rgba(64, 135, 141, 0.3),
+ * light blue: #67a2cf
+ * light orange: #FFA047 or rgba(255, 160, 71, 0.6)
+ * light tomato: #FF8247 or rgba(255, 130, 71, 0.6)
+ * tomato: #FF6347 or rgba(255, 99, 71, 0.6)
+ * dark tomato: #D9391C or rgba(217, 57, 28, 0.6)
+ */
+.gb-constraint-container-border-left-1 {
+  border-left: 2em solid rgba(255, 160, 71, 0.6);
+}
+
+.gb-constraint-container-border-left-2 {
+  border-left: 1.5em solid rgba(255, 130, 71, 0.6);
+}
+
+.gb-constraint-container-border-left-3 {
+  border-left: 1.1em solid rgba(255, 99, 71, 0.6);
+}
+
+.gb-constraint-container-border-left-4 {
+  border-left: 0.7em solid rgba(217, 57, 28, 0.6);
 }
 
 .gb-constraint-container-root {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background-color: #f7f7f7;
-  padding: 0px 1px 0px 5px !important;
+  border: none;
+  background-color: transparent;
+  padding: 0px 1px 0px 0px !important;
   font-size: small;
 }
 

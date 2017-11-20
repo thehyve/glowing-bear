@@ -59,7 +59,9 @@ export class ConstraintServiceMock {
   public updateCounts_1() {}
   public updateCounts_2() {}
 
-
+  public depthOfConstraint(constraint) {
+    return 1;
+  }
   get isLoadingExportFormats(): boolean {
     return this._isLoadingExportFormats;
   }

@@ -3,6 +3,7 @@ import {Constraint} from './constraint';
 
 export class PatientSetConstraint implements Constraint {
 
+  private _parent: Constraint;
   // external subject Ids
   private _subjectIds = [];
   // internal subject Ids
@@ -12,6 +13,7 @@ export class PatientSetConstraint implements Constraint {
   private _isPatientSelection: boolean;
 
   constructor() {
+    this.parent = null;
   }
 
   getClassName(): string {
@@ -85,5 +87,13 @@ export class PatientSetConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

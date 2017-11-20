@@ -3,6 +3,7 @@ import {PedigreeState} from './pedigree-state';
 import {CombinationConstraint} from "./combination-constraint";
 
 export class PedigreeConstraint implements Constraint {
+  private _parent: Constraint;
   private _label: string;
   private _description: string;
   private _biological: boolean;
@@ -12,6 +13,7 @@ export class PedigreeConstraint implements Constraint {
   private _isPatientSelection: boolean;
 
   constructor(label: string) {
+    this.parent = null;
     this.label = label;
     switch (label) {
       case 'PAR': {
@@ -186,5 +188,13 @@ export class PedigreeConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

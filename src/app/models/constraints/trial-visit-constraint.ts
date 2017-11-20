@@ -3,12 +3,14 @@ import {TrialVisit} from '../trial-visit';
 
 export class TrialVisitConstraint implements Constraint {
 
+  private _parent: Constraint;
   private _trialVisits: TrialVisit[];
   private _isPatientSelection: boolean;
 
 
   constructor() {
     this.trialVisits = [];
+    this.parent = null;
   }
 
   getClassName(): string {
@@ -64,5 +66,13 @@ export class TrialVisitConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }
