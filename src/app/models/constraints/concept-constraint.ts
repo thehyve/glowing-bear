@@ -6,6 +6,7 @@ import {TrialVisitConstraint} from './trial-visit-constraint';
 import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 export class ConceptConstraint implements Constraint {
+  private _parent: Constraint;
   private _isPatientSelection: boolean;
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
@@ -30,6 +31,7 @@ export class ConceptConstraint implements Constraint {
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.dimension = 'start time';
     this.trialVisitConstraint = new TrialVisitConstraint();
+    this.parent = null;
   }
 
   get concept(): Concept {
@@ -171,5 +173,13 @@ export class ConceptConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

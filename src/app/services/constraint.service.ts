@@ -307,7 +307,8 @@ export class ConstraintService {
   /**
    * update the patient, observation, concept and study counts in the second step
    */
-  public updateCounts_2() { console.log('updateCounts_2');
+  public updateCounts_2() {
+    console.log('updateCounts_2');
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_2);
@@ -324,8 +325,8 @@ export class ConstraintService {
     const projectionConstraint = this.getProjectionConstraint();
 
     let combo = new CombinationConstraint();
-    combo.children.push(selectionConstraint);
-    combo.children.push(projectionConstraint);
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
 
     // update the patient count and observation count in the 2nd step
     this.resourceService.getCounts(combo)
@@ -433,8 +434,8 @@ export class ConstraintService {
       if (!trueInclusion) {
         let combination = new CombinationConstraint();
         combination.combinationState = CombinationState.And;
-        combination.children.push(inclusionConstraint);
-        combination.children.push(negatedExclusionConstraint);
+        combination.addChild(inclusionConstraint);
+        combination.addChild(negatedExclusionConstraint);
         resultConstraint = combination;
       } else {
         resultConstraint = negatedExclusionConstraint;
@@ -480,7 +481,7 @@ export class ConstraintService {
       for (let leaf of allLeaves) {
         const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
         if (leafConstraint) {
-          constraint.children.push(leafConstraint);
+          constraint.addChild(leafConstraint);
         } else {
           console.error('Failed to create constrain from: ', leaf);
         }
@@ -501,7 +502,7 @@ export class ConstraintService {
       if (hasNegation) {
         let negationConstraint =
           <NegationConstraint>(children[1].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
-        this.rootExclusionConstraint.children.push(negationConstraint.constraint);
+        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
         this.putSelectionConstraint(remainingConstraint);
@@ -512,7 +513,7 @@ export class ConstraintService {
       }
     } else { // If it is not a combination constraint
       if (constraint.getClassName() !== 'TrueConstraint') {
-        this.rootInclusionConstraint.children.push(constraint);
+        this.rootInclusionConstraint.addChild(constraint);
       }
     }
   }
@@ -552,8 +553,8 @@ export class ConstraintService {
     inclusionConstraint = this.generateInclusionConstraint(inclusionConstraint);
 
     let combination = new CombinationConstraint();
-    combination.children.push(inclusionConstraint);
-    combination.children.push(exclusionConstraint);
+    combination.addChild(inclusionConstraint);
+    combination.addChild(exclusionConstraint);
     return combination;
   }
 
@@ -589,7 +590,7 @@ export class ConstraintService {
           for (let descendant of descendants) {
             let dConstraint = this.generateConstraintFromSelectedNode(descendant, DropMode.TreeNode);
             if (dConstraint) {
-              (<CombinationConstraint>constraint).children.push(dConstraint);
+              (<CombinationConstraint>constraint).addChild(dConstraint);
             }
           }
           if ((<CombinationConstraint>constraint).children.length === 0) {
@@ -647,7 +648,7 @@ export class ConstraintService {
           arg['conceptCode'] = constraintObject['conceptCode'];
         }
         let child = this.generateConstraintFromConstraintObject(arg);
-        (<CombinationConstraint>constraint).children.push(child);
+        (<CombinationConstraint>constraint).addChild(child);
       }
     } else if (type === 'and' || type === 'or') { // ------> If it is a combination constraint of a different form
       let operator = type;
@@ -663,7 +664,7 @@ export class ConstraintService {
           arg['conceptCode'] = constraintObject['conceptCode'];
         }
         let child = this.generateConstraintFromConstraintObject(arg);
-        (<CombinationConstraint>constraint).children.push(child);
+        (<CombinationConstraint>constraint).addChild(child);
       }
     } else if (type === 'true') { // ------> If it is a true constraint
       constraint = new TrueConstraint();
@@ -848,6 +849,15 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
+  }
+
+  public depthOfConstraint(constraint: Constraint): number {
+    let depth = 0;
+    if (constraint.parent !== null) {
+      depth++;
+      depth += this.depthOfConstraint(constraint.parent);
+    }
+    return depth;
   }
 
   get inclusionPatientCount(): number {

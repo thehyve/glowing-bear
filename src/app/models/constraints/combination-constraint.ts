@@ -4,6 +4,7 @@ import {TrueConstraint} from "./true-constraint";
 
 export class CombinationConstraint implements Constraint {
 
+  private _parent: Constraint;
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isPatientSelection: boolean;
@@ -14,6 +15,7 @@ export class CombinationConstraint implements Constraint {
     this.combinationState = CombinationState.And;
     this.isPatientSelection = false;
     this.isRoot = false;
+    this.parent = null;
   }
 
   getClassName(): string {
@@ -22,6 +24,11 @@ export class CombinationConstraint implements Constraint {
 
   hasNonEmptyChildren(): boolean {
     return this.getNonEmptyQueryObjects().length > 0;
+  }
+
+  addChild(constraint: Constraint) {
+    constraint.parent = this;
+    this.children.push(constraint);
   }
 
   /**
@@ -203,5 +210,13 @@ export class CombinationConstraint implements Constraint {
 
   set isRoot(value: boolean) {
     this._isRoot = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

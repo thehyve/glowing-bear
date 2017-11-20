@@ -3,6 +3,7 @@ import {GbDateOperatorState} from '../../modules/gb-data-selection-module/constr
 
 export class TimeConstraint implements Constraint {
 
+  private _parent: Constraint;
   dateOperator: GbDateOperatorState = GbDateOperatorState.BETWEEN;
   date1: Date = new Date();
   date2: Date = new Date();
@@ -12,6 +13,7 @@ export class TimeConstraint implements Constraint {
   private _isPatientSelection: boolean;
 
   constructor() {
+    this.parent = null;
   }
 
   getClassName(): string {
@@ -89,5 +91,13 @@ export class TimeConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

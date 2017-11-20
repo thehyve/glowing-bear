@@ -2,11 +2,13 @@ import {Constraint} from './constraint';
 
 export class NegationConstraint implements Constraint {
 
+  private _parent: Constraint;
   private _constraint: Constraint;
   private _isPatientSelection: boolean;
 
   constructor(constraint: Constraint) {
     this._constraint = constraint;
+    this.parent = null;
   }
 
   get constraint(): Constraint {
@@ -53,5 +55,13 @@ export class NegationConstraint implements Constraint {
 
   set isPatientSelection(value: boolean) {
     this._isPatientSelection = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
   }
 }

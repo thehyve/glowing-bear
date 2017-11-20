@@ -1,12 +1,14 @@
 import {Constraint} from './constraint';
 
 export class ValueConstraint implements Constraint {
+  private _parent: Constraint;
   private _valueType: string;
   private _operator: string;
   private _value: any;
   private _isPatientSelection: boolean;
 
   constructor() {
+    this.parent = null;
   }
 
   get valueType(): string {
@@ -67,4 +69,11 @@ export class ValueConstraint implements Constraint {
     this._isPatientSelection = value;
   }
 
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
+  }
 }

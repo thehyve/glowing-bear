@@ -5,6 +5,8 @@ export interface Constraint {
   // The flag indicating if the output query object should be wrapped with
   // the subselection clause for patient selection
   isPatientSelection: boolean;
+  // The parent constraint
+  parent: Constraint;
 
   /**
    * Returns the name of the constraint class.

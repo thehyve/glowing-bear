@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
-import {PatientSetConstraint} from "../../models/constraints/patient-set-constraint";
 
 @Component({
   selector: 'gb-data-selection',
