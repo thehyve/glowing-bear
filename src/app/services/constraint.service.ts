@@ -308,7 +308,6 @@ export class ConstraintService {
    * update the patient, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
-    console.log('updateCounts_2');
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_2);
@@ -507,23 +506,13 @@ export class ConstraintService {
           <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
         this.putSelectionConstraint(remainingConstraint);
       } else {
-        for (let child of children) {
-          this.putSelectionConstraint(child);
-        }
+        this.rootInclusionConstraint.addChild(constraint);
       }
     } else { // If it is not a combination constraint
       if (constraint.getClassName() !== 'TrueConstraint') {
         this.rootInclusionConstraint.addChild(constraint);
       }
     }
-  }
-
-  public putQuery(query: Query) {
-    this.query = query;
-    this.clearSelectionConstraint();
-    let selectionConstraint = this.generateConstraintFromConstraintObject(query['patientsQuery']);
-    this.putSelectionConstraint(selectionConstraint);
-    this.updateCounts_1();
   }
 
   public alert(summary: string, detail: string, severity: string) {
@@ -656,7 +645,7 @@ export class ConstraintService {
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
       for (let arg of constraintObject['args']) {
-        if (arg['type'] === 'concept') {
+        if (arg['type'] === 'concept' && !arg['fullName']) {
           arg['valueType'] = constraintObject['valueType'];
           arg['conceptPath'] = constraintObject['conceptPath'];
           arg['name'] = constraintObject['name'];
@@ -675,27 +664,26 @@ export class ConstraintService {
       && constraintObject['dimension'] === 'patient') { // ------> If it is a patient sub-selection
       constraint = this.generateConstraintFromConstraintObject(constraintObject['constraint']);
     }
-
     return constraint;
   }
 
   optimizeConstraintObject(constraintObject) {
-    let newConstraintObject = constraintObject;
+    let newConstraintObject = Object.assign({}, constraintObject);
 
     // if the object has 'args' property
-    if (constraintObject['args']) {
-      if (constraintObject['args'].length === 1) {
-        newConstraintObject = this.optimizeConstraintObject(constraintObject['args'][0]);
-      } else if (constraintObject['args'].length > 1) {
+    if (newConstraintObject['args']) {
+      if (newConstraintObject['args'].length === 1) {
+        newConstraintObject = this.optimizeConstraintObject(newConstraintObject['args'][0]);
+      } else if (newConstraintObject['args'].length > 1) {
         let newArgs = [];
-        for (let arg of constraintObject['args']) {
+        for (let arg of newConstraintObject['args']) {
           let newArg = this.optimizeConstraintObject(arg);
           newArgs.push(newArg);
         }
         newConstraintObject['args'] = newArgs;
       }
-    } else if (constraintObject['constraint']) { // if the object has the 'constraint' property
-      newConstraintObject = this.optimizeConstraintObject(constraintObject['constraint']);
+    } else if (newConstraintObject['constraint']) { // if the object has the 'constraint' property
+      newConstraintObject = this.optimizeConstraintObject(newConstraintObject['constraint']);
     }
 
     return newConstraintObject;
@@ -794,7 +782,7 @@ export class ConstraintService {
   }
 
   public saveQuery(queryName: string) {
-    const patientConstraintObj = this.getSelectionConstraint().toPatientQueryObject();
+    const patientConstraintObj = this.getSelectionConstraint().toQueryObject();
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
@@ -823,6 +811,14 @@ export class ConstraintService {
           this.alert(summary, '', 'error');
         }
       );
+  }
+
+  public putQuery(query: Query) {
+    this.query = query;
+    this.clearSelectionConstraint();
+    let selectionConstraint = this.generateConstraintFromConstraintObject(query['patientsQuery']);
+    this.putSelectionConstraint(selectionConstraint);
+    this.updateCounts_1();
   }
 
   public updateQuery(queryId: string, queryObject: object) {
