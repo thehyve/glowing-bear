@@ -14,6 +14,7 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
+import {PedigreeConstraint} from "../models/constraints/pedigree-constraint";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -669,6 +670,12 @@ export class ConstraintService {
     } else if (type === 'subselection'
       && constraintObject['dimension'] === 'patient') { // ------> If it is a patient sub-selection
       constraint = this.generateConstraintFromConstraintObject(constraintObject['constraint']);
+    } else if (type === 'relation') { // ------> If it is a pedigree constraint
+      constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
+      (<PedigreeConstraint>constraint).biological = constraintObject['biological'];
+      (<PedigreeConstraint>constraint).symmetrical = constraintObject['symmetrical'];
+      (<PedigreeConstraint>constraint).rightHandSideConstraint =
+        this.generateConstraintFromConstraintObject(constraintObject['relatedSubjectsConstraint']);
     }
     return constraint;
   }
