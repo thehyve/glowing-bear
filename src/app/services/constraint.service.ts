@@ -274,6 +274,10 @@ export class ConstraintService {
              * update patient counts on tree nodes on the left side
              */
             this.updateTreeNodeCounts();
+            /*
+             * update the export info
+             */
+            this.updateExports();
           }
         },
         err => console.error(err)
@@ -290,12 +294,6 @@ export class ConstraintService {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
       let checklist = this.query ? this.query.observationsQuery['data'] : null;
       this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
-      /*
-       * TODO: think more about whether to update the 2nd counts here, normally there is no such need, since when
-       * the user is modifying the constraints in step 1, the tree in the 2nd step is not changed, so the 1st counts
-       * should be equal to the 2nd counts at this point, thus no need to do an explicit 2nd counts update here
-       */
-      // this.updateCounts_2();
       this.query = null;
     } else {
       window.setTimeout((function () {
@@ -368,7 +366,15 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
+    this.updateExports();
+  }
 
+  public updateExports() {
+    const selectionConstraint = this.getSelectionConstraint();
+    const projectionConstraint = this.getProjectionConstraint();
+    let combo = new CombinationConstraint();
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
     // update the export info
     this.isLoadingExportFormats = true;
     this.resourceService.getExportDataFormats(combo)

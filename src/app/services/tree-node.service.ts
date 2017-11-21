@@ -265,17 +265,6 @@ export class TreeNodeService {
     this.checkProjectionTreeData(this.projectionTreeData, checklist);
   }
 
-  private checkProjectionTreeData(nodes: TreeNode[], checklist: Array<string>) {
-    for (let node of nodes) {
-      if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
-        this.selectedProjectionTreeData.push(node);
-      }
-      if (node['children']) {
-        this.checkProjectionTreeData(node['children'], checklist);
-      }
-    }
-  }
-
   private updateProjectionTreeDataIterative(nodes: TreeNode[],
                                             conceptCodes: string[],
                                             conceptCountMap: object) {
@@ -302,6 +291,17 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
+  private checkProjectionTreeData(nodes: TreeNode[], checklist: Array<string>) {
+    for (let node of nodes) {
+      if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
+        this.selectedProjectionTreeData.push(node);
+      }
+      if (node['children']) {
+        this.checkProjectionTreeData(node['children'], checklist);
+      }
+    }
+  }
+
   private depthOfTreeNode(node: TreeNode): number {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
@@ -309,7 +309,8 @@ export class TreeNodeService {
   private copyProjectionTreeDataItem(item: TreeNode) {
     let itemCopy = Object.assign({}, item);
     const depth = this.depthOfTreeNode(itemCopy);
-    itemCopy['expanded'] = !(typeof depth === 'number' && depth > 1);
+    // itemCopy['expanded'] = !(typeof depth === 'number' && depth > 1);
+    itemCopy['expanded'] = true;
     return itemCopy;
   }
 
