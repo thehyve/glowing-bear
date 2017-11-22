@@ -14,7 +14,7 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
-import {PedigreeConstraint} from "../models/constraints/pedigree-constraint";
+import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -148,7 +148,7 @@ export class ConstraintService {
   /**
    * update the patient, observation, concept and study counts in the first step
    */
-  public updateCounts_1() {
+  public updateCounts_1(continueUpdate?: boolean) {
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_1);
@@ -268,10 +268,6 @@ export class ConstraintService {
             this.isLoadingConceptCount_2 = false;
             this.isLoadingStudyCount_2 = false;
             /*
-             * update the tree nodes in the 2nd step
-             */
-            this.updateTreeNodes_2();
-            /*
              * update patient counts on tree nodes on the left side
              */
             this.updateTreeNodeCounts();
@@ -279,6 +275,10 @@ export class ConstraintService {
              * update the export info
              */
             this.updateExports();
+            /*
+             * update the tree nodes in the 2nd step
+             */
+            this.updateTreeNodes_2(continueUpdate);
           }
         },
         err => console.error(err)
@@ -291,11 +291,14 @@ export class ConstraintService {
    * only when the tree nodes are completely loaded can we start updating
    * the counts in the 2nd step
    */
-  private updateTreeNodes_2() {
+  private updateTreeNodes_2(continueUpdate: boolean) {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
       let checklist = this.query ? this.query.observationsQuery['data'] : null;
       this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
       this.query = null;
+      if (continueUpdate) {
+        this.updateCounts_2();
+      }
     } else {
       window.setTimeout((function () {
         this.updateTreeNodes_2();
@@ -833,7 +836,7 @@ export class ConstraintService {
     this.clearSelectionConstraint();
     let selectionConstraint = this.generateConstraintFromConstraintObject(query['patientsQuery']);
     this.putSelectionConstraint(selectionConstraint);
-    this.updateCounts_1();
+    this.updateCounts_1(true);
   }
 
   public updateQuery(queryId: string, queryObject: object) {
