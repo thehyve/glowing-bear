@@ -256,7 +256,7 @@ export class TreeNodeService {
     this.projectionTreeData =
       this.updateProjectionTreeDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
     this.selectedProjectionTreeData = [];
-    this.checkProjectionTreeData(this.projectionTreeData, checklist);
+    this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
   }
 
   private updateProjectionTreeDataIterative(nodes: TreeNode[],
@@ -285,13 +285,13 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  private checkProjectionTreeData(nodes: TreeNode[], checklist: Array<string>) {
+  public checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
       if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
         this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
-        this.checkProjectionTreeData(node['children'], checklist);
+        this.checkProjectionTreeDataIterative(node['children'], checklist);
       }
     }
   }
