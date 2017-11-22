@@ -308,6 +308,15 @@ export class TreeNodeService {
     return itemCopy;
   }
 
+  public expandProjectionTreeDataIterative(nodes: TreeNode[], value: boolean) {
+    for (let node of nodes) {
+      node['expanded'] = value;
+      if (node['children']) {
+        this.expandProjectionTreeDataIterative(node['children'], value)
+      }
+    }
+  }
+
   /**
    * Iteratively load the descendants of the given tree node
    * @param parentNode

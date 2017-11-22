@@ -41,4 +41,8 @@ export class GbProjectionComponent implements OnInit {
     }
     this.constraintService.updateCounts_2();
   }
+
+  expandAll(value: boolean) {
+    this.treeNodeService.expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
+  }
 }

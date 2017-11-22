@@ -96,6 +96,10 @@ body .gb-projection-tree-container {
   border: none;
 }
 
+body .gb-projection-tree-container .ui-tree-container {
+  width: 100%;
+}
+
 div .gb-projection-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
   padding: 1px 6px 1px 6px;
   background-color: #67a2cf;
