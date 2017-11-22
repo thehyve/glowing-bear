@@ -123,28 +123,22 @@ export class TreeNodeService {
 
   private processTreeNode(node: Object) {
     // Extract concept
-    if (node['dimension'] === 'concept') {
-
-      // Only include non-FOLDERs and non-CONTAINERs
-      if (node['visualAttributes'].indexOf('FOLDER') === -1 &&
-        node['visualAttributes'].indexOf('CONTAINER') === -1) {
-
-        let concept = this.getConceptFromTreeNode(node);
-        if (this.conceptLabels.indexOf(concept.label) === -1) {
-          this.concepts.push(concept);
-          this.conceptLabels.push(concept.label);
-          let constraint = new ConceptConstraint();
-          constraint.concept = concept;
-          this.conceptConstraints.push(constraint);
-          this.allConstraints.push(constraint);
-        }
-        if (node['constraint']) {
-          node['constraint']['fullName'] = node['fullName'];
-          node['constraint']['name'] = node['name'];
-          node['constraint']['conceptPath'] = node['conceptPath'];
-          node['constraint']['conceptCode'] = node['conceptCode'];
-          node['constraint']['valueType'] = node['type'];
-        }
+    if (node['visualAttributes'].includes('LEAF')) {
+      let concept = this.getConceptFromTreeNode(node);
+      if (this.conceptLabels.indexOf(concept.label) === -1) {
+        this.concepts.push(concept);
+        this.conceptLabels.push(concept.label);
+        let constraint = new ConceptConstraint();
+        constraint.concept = concept;
+        this.conceptConstraints.push(constraint);
+        this.allConstraints.push(constraint);
+      }
+      if (node['constraint']) {
+        node['constraint']['fullName'] = node['fullName'];
+        node['constraint']['name'] = node['name'];
+        node['constraint']['conceptPath'] = node['conceptPath'];
+        node['constraint']['conceptCode'] = node['conceptCode'];
+        node['constraint']['valueType'] = node['type'];
       }
     }
     // Add PrimeNG visual properties for tree nodes

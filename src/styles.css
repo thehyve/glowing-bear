@@ -70,7 +70,6 @@ body .ui-tabmenuitem .ui-state-active {
   border-radius: 10px;
 }
 
-
 /*
  * style fix for hiding the border in data list in saved queries in the side panel
  */
@@ -188,7 +187,7 @@ body .ui-panel-titlebar {
  */
 .ui-messages.ui-messages-success {
   /* #80bd9e: stem green */
-  background-color: #80bd9e;
+  background-color: rgba(51, 156, 144, 0.8);
   border: none;
   color: white;
   width: 98.5%;
@@ -196,7 +195,7 @@ body .ui-panel-titlebar {
 
 .ui-messages.ui-messages-warn {
   /* #f98866: petal orange */
-  background-color: #f98866;
+  background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
   width: 98.5%;
@@ -204,7 +203,7 @@ body .ui-panel-titlebar {
 
 .ui-messages.ui-messages-error {
   /* #ff420e: poppy red */
-  background-color: #ff420e;
+  background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
   width: 98.5%;
@@ -244,7 +243,7 @@ body .ui-autocomplete .ui-autocomplete-dropdown {
   height: 2em;
 }
 
-body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container{
+body .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
   padding: 0.1em;
   height: 100%;
 }
@@ -259,7 +258,7 @@ body .ui-autocomplete-input-token {
 /*
  * Style for the p-panel in a concept constraint
  */
-.gb-constraint-child-container p-panel .ui-panel{
+.gb-constraint-child-container p-panel .ui-panel {
   margin-left: 5px;
   padding: 0px;
   background-color: transparent;

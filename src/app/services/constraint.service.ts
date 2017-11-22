@@ -610,7 +610,9 @@ export class ConstraintService {
       let concept = new Concept();
       const tail = '\\' + constraintObject['name'] + '\\';
       const fullName = constraintObject['fullName'];
+      concept.fullName = fullName;
       let head = fullName.substring(0, fullName.length - tail.length);
+      concept.name = constraintObject['name'];
       concept.label = constraintObject['name'] + ' (' + head + ')';
       concept.path = constraintObject['conceptPath'];
       concept.type = constraintObject['valueType'];
