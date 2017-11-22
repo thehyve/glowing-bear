@@ -105,10 +105,14 @@ export class ConceptConstraint implements Constraint {
         args.push(this.trialVisitConstraint.toQueryObject());
       }
 
-      return {
-        type: 'and',
-        args: args
-      };
+      if (args.length === 1) {
+        return args[0];
+      } else {
+        return {
+          type: 'and',
+          args: args
+        };
+      }
     }
   }
 
