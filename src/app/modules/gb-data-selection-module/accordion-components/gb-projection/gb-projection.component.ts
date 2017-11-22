@@ -32,4 +32,13 @@ export class GbProjectionComponent implements OnInit {
   updateCounts(event) {
     this.constraintService.updateCounts_2();
   }
+
+  checkAll(value: boolean) {
+    if (value) {
+      this.treeNodeService.checkProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
+    } else {
+      this.treeNodeService.selectedProjectionTreeData = [];
+    }
+    this.constraintService.updateCounts_2();
+  }
 }
