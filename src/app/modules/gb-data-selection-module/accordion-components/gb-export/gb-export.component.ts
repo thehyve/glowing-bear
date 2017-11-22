@@ -5,6 +5,7 @@ import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
 import {ExportJob} from '../../../../models/export-job';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {saveAs} from 'file-saver';
 
 @Component({
   selector: 'gb-export',
@@ -119,16 +120,7 @@ export class GbExportComponent implements OnInit {
       .subscribe(
         (response: Response) => {
           let blob = new Blob([response.blob()], {type: 'application/zip'});
-          /*
-           * The document anchor click approach
-           * Alternative: The file-saver approach: FileSaver.saveAs(blob, `${job.jobName}.zip`);
-           */
-          let url = window.URL.createObjectURL(blob);
-          let anchor = document.createElement('a');
-          anchor.download = `${job.jobName}.zip`;
-          anchor.href = url;
-          anchor.click();
-          anchor.remove();
+          saveAs(blob, `${job.jobName}.zip`, true);
         },
         err => console.error(err),
         () => {
