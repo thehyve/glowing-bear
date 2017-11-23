@@ -15,6 +15,9 @@ import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
+import {TimeConstraint} from "../models/constraints/time-constraint";
+import {TrialVisitConstraint} from "../models/constraints/trial-visit-constraint";
+import {TrialVisit} from "../models/trial-visit";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -608,7 +611,7 @@ export class ConstraintService {
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
-    if (type === 'concept') { // ------> If it is a concept constraint
+    if (type === 'concept') { // ------------------------------------> If it is a concept constraint
       constraint = new ConceptConstraint();
       let concept = new Concept();
       const tail = '\\' + constraintObject['name'] + '\\';
@@ -621,41 +624,24 @@ export class ConstraintService {
       concept.type = constraintObject['valueType'];
       concept.code = constraintObject['conceptCode'];
       (<ConceptConstraint>constraint).concept = concept;
-    } else if (type === 'study_name') { // ------> If it is a study constraint
+    } else if (type === 'study_name') { // ----------------------------> If it is a study constraint
       let study = new Study();
       study.studyId = constraintObject['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
-    } else if (type === 'patient_set') { // ------> If it is a patient-set constraint
-      constraint = new PatientSetConstraint();
-      if (constraintObject['subjectIds']) {
-        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
-      } else if (constraintObject['patientIds']) {
-        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
-      } else if (constraintObject['patientSetId']) {
-        (<PatientSetConstraint>constraint).patientSetId = constraintObject['patientSetId'];
-      }
-    } else if (type === 'combination') { // ------> If it is a combination constraint
-      let operator = constraintObject['operator'];
+    } else if (type === 'and' ||
+      type === 'or' ||
+      type === 'combination') { // ------------------------------> If it is a combination constraint
+      let operator = type !== 'combination' ? type : constraintObject['operator'];
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
-      for (let arg of constraintObject['args']) {
-        if (arg['type'] === 'concept') {
-          arg['valueType'] = constraintObject['valueType'];
-          arg['conceptPath'] = constraintObject['conceptPath'];
-          arg['name'] = constraintObject['name'];
-          arg['fullName'] = constraintObject['fullName'];
-          arg['conceptCode'] = constraintObject['conceptCode'];
-        }
-        let child = this.generateConstraintFromConstraintObject(arg);
-        (<CombinationConstraint>constraint).addChild(child);
-      }
-    } else if (type === 'and' || type === 'or') { // ------> If it is a combination constraint of a different form
-      let operator = type;
-      constraint = new CombinationConstraint();
-      (<CombinationConstraint>constraint).combinationState =
-        (operator === 'and') ? CombinationState.And : CombinationState.Or;
+      // sometimes a combination constraint is actually a concept constraint
+      // which has an observation date constraint and/or trial-visit constraint,
+      // in such case, output only the concept constraint
+      let prospectConcept: ConceptConstraint = null;
+      let prospectObsDate: TimeConstraint = null;
+      let prospectTrialVisit: TrialVisitConstraint = null;
       for (let arg of constraintObject['args']) {
         if (arg['type'] === 'concept' && !arg['fullName']) {
           arg['valueType'] = constraintObject['valueType'];
@@ -665,22 +651,63 @@ export class ConstraintService {
           arg['conceptCode'] = constraintObject['conceptCode'];
         }
         let child = this.generateConstraintFromConstraintObject(arg);
+        if (arg['type'] === 'concept') {
+          prospectConcept = <ConceptConstraint>child;
+        } else if (arg['type'] === 'time') {
+          prospectObsDate = <TimeConstraint>child;
+        } else if (arg['type'] === 'field') {
+          prospectTrialVisit = <TrialVisitConstraint>child;
+        }
         (<CombinationConstraint>constraint).addChild(child);
       }
-    } else if (type === 'true') { // ------> If it is a true constraint
-      constraint = new TrueConstraint();
-    } else if (type === 'negation') { // ------> If it is a negation constraint
-      const childConstraint = this.generateConstraintFromConstraintObject(constraintObject['arg']);
-      constraint = new NegationConstraint(childConstraint);
-    } else if (type === 'subselection'
-      && constraintObject['dimension'] === 'patient') { // ------> If it is a patient sub-selection
-      constraint = this.generateConstraintFromConstraintObject(constraintObject['constraint']);
-    } else if (type === 'relation') { // ------> If it is a pedigree constraint
+
+      if (prospectConcept && (prospectObsDate || prospectTrialVisit)) {
+        if (prospectObsDate) {
+          prospectConcept.applyObsDateConstraint = true;
+          prospectConcept.obsDateConstraint = prospectObsDate;
+        }
+        if (prospectTrialVisit) {
+          prospectConcept.applyTrialVisitConstraint = true;
+          prospectConcept.trialVisitConstraint = prospectTrialVisit;
+        }
+        constraint = prospectConcept;
+      }
+
+    } else if (type === 'relation') { // ---------------------------> If it is a pedigree constraint
       constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
       (<PedigreeConstraint>constraint).biological = constraintObject['biological'];
       (<PedigreeConstraint>constraint).symmetrical = constraintObject['symmetrical'];
       (<PedigreeConstraint>constraint).rightHandSideConstraint =
         this.generateConstraintFromConstraintObject(constraintObject['relatedSubjectsConstraint']);
+    } else if (type === 'time') { // -----------------------------------> If it is a time constraint
+      constraint = new TimeConstraint(constraintObject['operator']);
+      (<TimeConstraint>constraint).date1 = new Date(constraintObject['values'][0]);
+      if (constraintObject['values'].len === 2) {
+        (<TimeConstraint>constraint).date2 = new Date(constraintObject['values'][1]);
+      }
+    } else if (type === 'field') { // ---------------------------> If it is a trial-visit constraint
+      constraint = new TrialVisitConstraint();
+      for (let id of constraintObject['value']) {
+        let visit = new TrialVisit(id);
+        (<TrialVisitConstraint>constraint).trialVisits.push(visit);
+      }
+    } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
+      constraint = new PatientSetConstraint();
+      if (constraintObject['subjectIds']) {
+        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
+      } else if (constraintObject['patientIds']) {
+        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
+      } else if (constraintObject['patientSetId']) {
+        (<PatientSetConstraint>constraint).patientSetId = constraintObject['patientSetId'];
+      }
+    } else if (type === 'subselection'
+      && constraintObject['dimension'] === 'patient') { // -------> If it is a patient sub-selection
+      constraint = this.generateConstraintFromConstraintObject(constraintObject['constraint']);
+    } else if (type === 'true') { // -----------------------------------> If it is a true constraint
+      constraint = new TrueConstraint();
+    } else if (type === 'negation') { // ---------------------------> If it is a negation constraint
+      const childConstraint = this.generateConstraintFromConstraintObject(constraintObject['arg']);
+      constraint = new NegationConstraint(childConstraint);
     }
     return constraint;
   }

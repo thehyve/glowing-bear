@@ -9,8 +9,8 @@ export class TrialVisitConstraint implements Constraint {
 
 
   constructor() {
-    this.trialVisits = [];
     this.parent = null;
+    this.trialVisits = [];
   }
 
   getClassName(): string {
