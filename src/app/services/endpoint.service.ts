@@ -21,6 +21,7 @@ export class EndpointService {
         this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
         // Save the endpoint
         this.saveEndpoint();
+        this.navigateToUrl(appUrl + '/data-selection');
       } else {
         // Read the access token information from the local storage
         this.restoreEndpointAuthentication();
