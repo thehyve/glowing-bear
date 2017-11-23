@@ -144,8 +144,10 @@ export class ConstraintService {
               private treeNodeService: TreeNodeService) {
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
+    this.rootInclusionConstraint.parent = new CombinationConstraint();
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint.parent = new CombinationConstraint();
   }
 
   /**
