@@ -12,8 +12,24 @@ export class TimeConstraint implements Constraint {
   private _dimension = 'start time';
   private _isPatientSelection: boolean;
 
-  constructor() {
+  constructor(operator?: string) {
     this.parent = null;
+    if (operator) {
+      switch (operator) {
+        case '<-->': {
+          this.dateOperator = GbDateOperatorState.BETWEEN;
+          break;
+        }
+        case '<-': {
+          this.dateOperator = GbDateOperatorState.BEFORE;
+          break;
+        }
+        case '->': {
+          this.dateOperator = GbDateOperatorState.AFTER;
+          break;
+        }
+      }
+    }
   }
 
   getClassName(): string {

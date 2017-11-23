@@ -137,7 +137,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           err => console.error(err)
         );
 
+      // Initialize the dates from the time constraint
+      // Because the date picker represents the date/time in the local timezone,
+      // we need to correct the date that is actually used in the constraint.
+      this.applyObsDateConstraint = constraint.applyObsDateConstraint;
+      let date1 = constraint.obsDateConstraint.date1;
+      this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+      let date2 = constraint.obsDateConstraint.date2;
+      this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+
       // Initialize the available trial visits of the trial visit constraint
+      this.applyTrialVisitConstraint = constraint.applyTrialVisitConstraint;
       this.allTrialVisits = [];
       this.selectedTrialVisits = [];
       this.suggestedTrialVisits = [];
@@ -149,15 +159,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
             constraint.trialVisitConstraint.trialVisits = visits.slice(0);
           }
         );
-    }
 
-    // Initialize the dates from the time constraint
-    // Because the date picker represents the date/time in the local timezone,
-    // we need to correct the date that is actually used in the constraint.
-    let date1 = constraint.obsDateConstraint.date1;
-    this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
-    let date2 = constraint.obsDateConstraint.date2;
-    this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+      // Initialize flags
+      this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
+    }
   }
 
   /*
