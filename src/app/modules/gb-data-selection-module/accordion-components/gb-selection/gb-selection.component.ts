@@ -63,8 +63,7 @@ export class GbSelectionComponent implements OnInit {
   }
 
   clearCriteria() {
-    this.constraintService.rootInclusionConstraint.children.length = 0;
-    this.constraintService.rootExclusionConstraint.children.length = 0;
+    this.constraintService.clearSelectionConstraint();
     this.constraintService.updateCounts_1();
   }
 
