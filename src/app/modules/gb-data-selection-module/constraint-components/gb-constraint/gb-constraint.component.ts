@@ -83,7 +83,7 @@ export class GbConstraintComponent implements OnInit {
           }
         } else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;
-          // TODO: still needs to find a way to update the aggregates fo the CocneptConstraintComponent
+          // TODO: still needs to find a way to update the aggregates fo the ConceptConstraintComponent
           this.constraintService.updateCounts_1();
         }
       }

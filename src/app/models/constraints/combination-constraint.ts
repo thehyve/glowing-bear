@@ -1,8 +1,7 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {TrueConstraint} from './true-constraint';
-import {PedigreeConstraint} from "./pedigree-constraint";
-import {PedigreeState} from "./pedigree-state";
+
 
 export class CombinationConstraint implements Constraint {
 
@@ -29,7 +28,10 @@ export class CombinationConstraint implements Constraint {
   }
 
   addChild(constraint: Constraint) {
-    constraint.parent = this;
+    if (!(constraint.getClassName() === 'CombinationConstraint'
+        && (<CombinationConstraint>constraint).isRoot)) {
+      constraint.parent = this;
+    }
     this.children.push(constraint);
   }
 
