@@ -15,9 +15,9 @@ import {TreeNode} from 'primeng/primeng';
 import {Query} from '../models/query';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
-import {TimeConstraint} from "../models/constraints/time-constraint";
-import {TrialVisitConstraint} from "../models/constraints/trial-visit-constraint";
-import {TrialVisit} from "../models/trial-visit";
+import {TimeConstraint} from '../models/constraints/time-constraint';
+import {TrialVisitConstraint} from '../models/constraints/trial-visit-constraint';
+import {TrialVisit} from '../models/trial-visit';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -144,10 +144,12 @@ export class ConstraintService {
               private treeNodeService: TreeNodeService) {
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.parent = new CombinationConstraint();
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.parent = new CombinationConstraint();
+
+    let virtualParent = new CombinationConstraint();
+    this.rootInclusionConstraint.parent = virtualParent;
+    this.rootExclusionConstraint.parent = virtualParent;
   }
 
   /**
@@ -443,7 +445,7 @@ export class ConstraintService {
       // Wrap exclusion in negation
       let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
 
-      // If there is some constraint other than a true constraint in the inclusion
+      // If there is some constraint other than a true constraint in the inclusion,
       // form a proper combination constraint to return
       if (!trueInclusion) {
         let combination = new CombinationConstraint();
@@ -541,8 +543,8 @@ export class ConstraintService {
    * @returns {TrueConstraint|Constraint}
    */
   generateInclusionConstraint(inclusionConstraint: Constraint): Constraint {
-    return !(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
-      new TrueConstraint() : inclusionConstraint;
+    return (<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
+      inclusionConstraint : new TrueConstraint();
   }
 
   /**

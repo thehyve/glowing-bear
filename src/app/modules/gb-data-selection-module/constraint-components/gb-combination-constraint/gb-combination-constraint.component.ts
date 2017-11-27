@@ -68,6 +68,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
 
+
       // But we don't want to copy a CombinationConstraint's children
       if (newConstraint instanceof CombinationConstraint) {
         (<CombinationConstraint>newConstraint).children = [];

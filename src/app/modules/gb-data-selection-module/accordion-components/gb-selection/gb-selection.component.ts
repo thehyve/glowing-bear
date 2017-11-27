@@ -38,10 +38,6 @@ export class GbSelectionComponent implements OnInit {
     this.constraintService.updateCounts_1();
   }
 
-  get alertMessages(): Array<object> {
-    return this.constraintService.alertMessages;
-  }
-
   get patientCount_1(): number {
     return this.constraintService.patientCount_1;
   }
