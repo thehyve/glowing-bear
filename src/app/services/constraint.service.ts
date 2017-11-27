@@ -18,6 +18,7 @@ import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
 import {TimeConstraint} from '../models/constraints/time-constraint';
 import {TrialVisitConstraint} from '../models/constraints/trial-visit-constraint';
 import {TrialVisit} from '../models/trial-visit';
+import {ValueConstraint} from "../models/constraints/value-constraint";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -640,12 +641,17 @@ export class ConstraintService {
       constraint = new CombinationConstraint();
       (<CombinationConstraint>constraint).combinationState =
         (operator === 'and') ? CombinationState.And : CombinationState.Or;
-      // sometimes a combination constraint is actually a concept constraint
-      // which has an observation date constraint and/or trial-visit constraint,
-      // in such case, output only the concept constraint
+      /*
+       * sometimes a combination constraint is actually a concept constraint
+       * which has:
+       * a) has an observation date constraint and/or
+       * b) a trial-visit constraint and/or
+       * c) a or-junction of value constraints
+       */
       let prospectConcept: ConceptConstraint = null;
       let prospectObsDate: TimeConstraint = null;
       let prospectTrialVisit: TrialVisitConstraint = null;
+      let prospectValues: CombinationConstraint = null;
       for (let arg of constraintObject['args']) {
         if (arg['type'] === 'concept' && !arg['fullName']) {
           arg['valueType'] = constraintObject['valueType'];
@@ -661,11 +667,22 @@ export class ConstraintService {
           prospectObsDate = <TimeConstraint>child;
         } else if (arg['type'] === 'field') {
           prospectTrialVisit = <TrialVisitConstraint>child;
+        } else if (arg['type'] === 'or') {
+          let isValues = true;
+          for (let val of (<CombinationConstraint>child).children) {
+            if (val.getClassName() !== 'ValueConstraint') {
+              isValues = false;
+            }
+          }
+          if (isValues) {
+            prospectValues = <CombinationConstraint>child;
+          }
         }
         (<CombinationConstraint>constraint).addChild(child);
       }
 
-      if (prospectConcept && (prospectObsDate || prospectTrialVisit)) {
+      if (prospectConcept &&
+        (prospectObsDate || prospectTrialVisit || prospectValues)) {
         if (prospectObsDate) {
           prospectConcept.applyObsDateConstraint = true;
           prospectConcept.obsDateConstraint = prospectObsDate;
@@ -673,6 +690,11 @@ export class ConstraintService {
         if (prospectTrialVisit) {
           prospectConcept.applyTrialVisitConstraint = true;
           prospectConcept.trialVisitConstraint = prospectTrialVisit;
+        }
+        if (prospectValues) {
+          for (let val of (<CombinationConstraint>prospectValues).children) {
+            prospectConcept.values.push(<ValueConstraint>val);
+          }
         }
         constraint = prospectConcept;
       }
@@ -695,6 +717,11 @@ export class ConstraintService {
         let visit = new TrialVisit(id);
         (<TrialVisitConstraint>constraint).trialVisits.push(visit);
       }
+    } else if (type === 'value') {
+      constraint = new ValueConstraint();
+      (<ValueConstraint>constraint).operator = constraintObject['operator'];
+      (<ValueConstraint>constraint).value = constraintObject['value'];
+      (<ValueConstraint>constraint).valueType = constraintObject['valueType'];
     } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
       constraint = new PatientSetConstraint();
       if (constraintObject['subjectIds']) {

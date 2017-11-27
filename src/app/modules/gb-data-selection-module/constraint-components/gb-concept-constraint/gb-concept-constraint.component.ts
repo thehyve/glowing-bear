@@ -102,7 +102,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
-
       // Construct a new constraint that only has the concept as sub constraint
       // (We don't want to apply value and date constraints when getting aggregates)
       let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
@@ -125,8 +124,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
               aggregate.values = values;
               constraint.concept.aggregate = aggregate;
-              this.selectedCategories = values;
-              this.suggestedCategories = values;
+              // if there is existing value constraints
+              // use their values as selected categories
+              console.log('constraint.values: ', constraint.values);
+              if (constraint.values.length > 0) {
+                for (let val of constraint.values) {
+                  this.selectedCategories.push(val.value);
+                }
+              } else {
+                this.selectedCategories = [].concat(values);
+              }
+              this.suggestedCategories = [].concat(values);
             } else if (this.isDate()) {
               let aggregate = aggregateObj['numericalValueAggregates'];
               constraint.concept.aggregate = aggregate;
@@ -408,7 +416,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   selectAllCategories() {
-    this.selectedCategories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
+    const values = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
+    this.selectedCategories = [].concat(values);
     this.updateConceptValues();
   }
 
@@ -418,6 +427,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   onUnselectCategories(category) {
+    // For some funny reason, the selection model always lags behind the current selection
+    const index = this.selectedCategories.indexOf(category);
+    this.selectedCategories.splice(index, 1);
     this.updateConceptValues();
   }
 
