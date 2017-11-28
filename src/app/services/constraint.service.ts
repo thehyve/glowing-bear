@@ -615,6 +615,7 @@ export class ConstraintService {
   }
 
   generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
+    console.log('generate: ', constraintObjectInput);
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
@@ -784,17 +785,30 @@ export class ConstraintService {
       if (newConstraintObject['args'].length === 1) {
         newConstraintObject = this.optimizeConstraintObject(newConstraintObject['args'][0]);
       } else if (newConstraintObject['args'].length > 1) {
+        let isOr = newConstraintObject['type'] === 'or';
+        let hasTrue = false;
         let newArgs = [];
         for (let arg of newConstraintObject['args']) {
-          let newArg = this.optimizeConstraintObject(arg);
-          newArgs.push(newArg);
+          if (arg['type'] === 'true') {
+            hasTrue = true;
+          } else {
+            let newArg = this.optimizeConstraintObject(arg);
+            if (newArg['type'] === 'true') {
+              hasTrue = true;
+            } else {
+              newArgs.push(newArg);
+            }
+          }
         }
-        newConstraintObject['args'] = newArgs;
+        if (isOr && hasTrue) {
+          newConstraintObject['args'] = [];
+        } else {
+          newConstraintObject['args'] = newArgs;
+        }
       }
     } else if (newConstraintObject['constraint']) { // if the object has the 'constraint' property
       newConstraintObject = this.optimizeConstraintObject(newConstraintObject['constraint']);
     }
-
     return newConstraintObject;
   }
 

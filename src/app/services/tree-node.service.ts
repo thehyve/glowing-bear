@@ -324,7 +324,7 @@ export class TreeNodeService {
   private loadTreeNext(parentNode) {
     this.treeNodeCallsSent++;
     let depth = 20;
-    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, false)
+    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
       .subscribe(
         (treeNodes: object[]) => {
           this.treeNodeCallsReceived++;
