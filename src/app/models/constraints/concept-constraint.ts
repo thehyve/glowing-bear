@@ -30,6 +30,7 @@ export class ConceptConstraint implements Constraint {
     this.valDateConstraint.dimension = 'value';
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.dimension = 'start time';
+    this.obsDateConstraint.isObservationDate = true;
     this.trialVisitConstraint = new TrialVisitConstraint();
     this.parent = null;
   }

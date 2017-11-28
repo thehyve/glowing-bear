@@ -1,10 +1,6 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {TrueConstraint} from './true-constraint';
-<<<<<<< HEAD
-
-=======
->>>>>>> fix concept value constraint
 
 export class CombinationConstraint implements Constraint {
 
