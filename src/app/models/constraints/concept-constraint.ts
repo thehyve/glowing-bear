@@ -30,6 +30,7 @@ export class ConceptConstraint implements Constraint {
     this.valDateConstraint.dimension = 'value';
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.dimension = 'start time';
+    this.obsDateConstraint.isObservationDate = true;
     this.trialVisitConstraint = new TrialVisitConstraint();
     this.parent = null;
   }
@@ -86,10 +87,15 @@ export class ConceptConstraint implements Constraint {
           }
         } else if (this.concept.type === 'CATEGORICAL') {
           // Wrap categorical values in an OR constraint
-          args.push({
+          let categorical = {
             type: 'or',
             args: this.values.map((value: ValueConstraint) => value.toQueryObject())
-          });
+          };
+          if (categorical.args.length === 1) {
+            args.push(categorical.args[0]);
+          } else {
+            args.push(categorical);
+          }
         }
       }
 
