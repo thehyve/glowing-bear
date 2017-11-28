@@ -23,7 +23,7 @@ export class CombinationConstraint implements Constraint {
   }
 
   hasNonEmptyChildren(): boolean {
-    return this.getNonEmptyQueryObjects().length > 0;
+    return this.getNonEmptyChildObjects().length > 0;
   }
 
   addChild(constraint: Constraint) {
@@ -38,7 +38,7 @@ export class CombinationConstraint implements Constraint {
    * Collects all non-empty query objects
    * @returns {Object[]}
    */
-  getNonEmptyQueryObjects(): Object[] {
+  getNonEmptyChildObjects(): Object[] {
     let childQueryObjects: Object[] =
       this._children.reduce((result: Object[], constraint: Constraint) => {
         let queryObject: Object = constraint.toQueryObject();
@@ -104,7 +104,7 @@ export class CombinationConstraint implements Constraint {
    */
   toPatientQueryObject(): Object {
     // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
+    let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
@@ -142,7 +142,7 @@ export class CombinationConstraint implements Constraint {
       return this.toPatientQueryObject();
     } else {
       // Collect children query objects
-      let childQueryObjects: Object[] = this.getNonEmptyQueryObjects();
+      let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
       if (childQueryObjects.length === 0) {
         // No children, so ignore this constraint
         // TODO: show validation error instead?
