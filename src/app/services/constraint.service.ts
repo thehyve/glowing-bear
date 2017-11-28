@@ -524,7 +524,9 @@ export class ConstraintService {
           <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
         this.putSelectionConstraint(remainingConstraint);
       } else {
-        this.rootInclusionConstraint.addChild(constraint);
+        for (let child of children) {
+          this.rootInclusionConstraint.addChild(child);
+        }
       }
     } else { // If it is not a combination constraint
       if (constraint.getClassName() !== 'TrueConstraint') {
