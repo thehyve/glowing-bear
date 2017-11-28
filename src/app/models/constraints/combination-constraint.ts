@@ -2,7 +2,6 @@ import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {TrueConstraint} from './true-constraint';
 
-
 export class CombinationConstraint implements Constraint {
 
   private _parent: Constraint;
@@ -189,8 +188,8 @@ export class CombinationConstraint implements Constraint {
   }
 
   switchCombinationState() {
-    this.combinationState =
-      (this.combinationState === CombinationState.And) ? CombinationState.Or : CombinationState.And;
+    this.combinationState = (this.combinationState === CombinationState.And) ?
+      CombinationState.Or : CombinationState.And;
   }
 
   removeChildConstraint(child: Constraint) {

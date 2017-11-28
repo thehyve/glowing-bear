@@ -12,6 +12,11 @@ export class TimeConstraint implements Constraint {
   private _dimension = 'start time';
   private _isPatientSelection: boolean;
 
+  // the flag indicating if the constraint is negated
+  private _isNegated = false;
+  // the flag indicating if the constraint is related to observation date
+  private _isObservationDate = false;
+
   constructor(operator?: string) {
     this.parent = null;
     if (operator) {
@@ -74,7 +79,9 @@ export class TimeConstraint implements Constraint {
           type: 'DATE'
         },
         operator: operator,
-        values: values
+        values: values,
+        isNegated: this.isNegated,
+        isObservationDate: this.isObservationDate
       };
 
       // Wrap date constraint in a negation if required
@@ -115,5 +122,24 @@ export class TimeConstraint implements Constraint {
 
   set parent(value: Constraint) {
     this._parent = value;
+  }
+
+  get isNegated(): boolean {
+    return this._isNegated;
+  }
+
+  set isNegated(value: boolean) {
+    this._isNegated = value;
+    if (value) {
+      this.dateOperator = GbDateOperatorState.NOT_BETWEEN;
+    }
+  }
+
+  get isObservationDate(): boolean {
+    return this._isObservationDate;
+  }
+
+  set isObservationDate(value: boolean) {
+    this._isObservationDate = value;
   }
 }

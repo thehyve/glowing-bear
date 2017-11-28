@@ -72,10 +72,10 @@
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">
-      <i *ngSwitchCase="ValDateOperatorState.BEFORE">before </i>
-      <i *ngSwitchCase="ValDateOperatorState.AFTER">after </i>
-      <i *ngSwitchCase="ValDateOperatorState.BETWEEN">between </i>
-      <i *ngSwitchCase="ValDateOperatorState.NOT_BETWEEN">not between </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.BEFORE">before </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.AFTER">after </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.BETWEEN">between </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.NOT_BETWEEN">not between </i>
     </button>
     &nbsp;
     <p-calendar [(ngModel)]="valDate1"
@@ -85,7 +85,7 @@
                 hourFormat="24"
                 (ngModelChange)="updateConceptValues()"
                 utc="true"></p-calendar>
-    <div *ngIf="[ValDateOperatorState.BETWEEN, ValDateOperatorState.NOT_BETWEEN].includes(valDateOperatorState)">
+    <div *ngIf="[ValDateOperatorStateEnum.BETWEEN, ValDateOperatorStateEnum.NOT_BETWEEN].includes(valDateOperatorState)">
       <span>&nbsp;and&nbsp;</span>
       <p-calendar [(ngModel)]="valDate2"
                   dateFormat="dd-mm-yy"
@@ -115,10 +115,10 @@
           <span>and observation date &nbsp;</span>
           <button type="button" class="btn btn-outline-secondary"
                   (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
-            <i *ngSwitchCase="ObsDateOperatorState.BEFORE">before </i>
-            <i *ngSwitchCase="ObsDateOperatorState.AFTER">after </i>
-            <i *ngSwitchCase="ObsDateOperatorState.BETWEEN">between </i>
-            <i *ngSwitchCase="ObsDateOperatorState.NOT_BETWEEN">not between </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.BEFORE">before </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.AFTER">after </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.BETWEEN">between </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.NOT_BETWEEN">not between </i>
           </button>
           &nbsp;
           <p-calendar [(ngModel)]="obsDate1"
@@ -128,7 +128,7 @@
                       showSeconds="true"
                       hourFormat="24"
                       utc="true"></p-calendar>
-          <div *ngIf="[ObsDateOperatorState.BETWEEN, ObsDateOperatorState.NOT_BETWEEN].includes(obsDateOperatorState)">
+          <div *ngIf="[ObsDateOperatorStateEnum.BETWEEN, ObsDateOperatorStateEnum.NOT_BETWEEN].includes(obsDateOperatorState)">
             <span>&nbsp;and&nbsp;</span>
             <p-calendar [(ngModel)]="obsDate2"
                         (ngModelChange)="updateObservationDateValues()"
