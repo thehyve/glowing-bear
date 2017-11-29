@@ -528,10 +528,10 @@ export class ConstraintService {
           this.rootInclusionConstraint.addChild(child);
         }
       }
-    } else { // If it is not a combination constraint
-      if (constraint.getClassName() !== 'TrueConstraint') {
-        this.rootInclusionConstraint.addChild(constraint);
-      }
+    } else if (constraint.getClassName() === 'NegationConstraint') {
+      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
+    } else if (constraint.getClassName() !== 'TrueConstraint') {
+      this.rootInclusionConstraint.addChild(constraint);
     }
   }
 
@@ -615,7 +615,6 @@ export class ConstraintService {
   }
 
   generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
-    console.log('generate: ', constraintObjectInput);
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
