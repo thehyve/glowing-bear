@@ -651,12 +651,17 @@ export class ConstraintService {
        * b) a trial-visit constraint and/or
        * c) value constraints and/or
        * d) time constraints (value date for a DATE concept and/or observation date constraints)
+       * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+       * sometimes a combination contains purely study constraints,
+       * in which case we can reduce this combination to a single study constraint containing multiple studies
        */
       let prospectConcept: ConceptConstraint = null;
       let prospectValDate: TimeConstraint = null;
       let prospectObsDate: TimeConstraint = null;
       let prospectTrialVisit: TrialVisitConstraint = null;
       let prospectValues: ValueConstraint[] = [];
+      let hasOnlyStudies = true;
+      let allStudyIds = [];
       /*
        * go through each argument, construct potential sub-constraints for the concept constraint
        */
@@ -708,9 +713,17 @@ export class ConstraintService {
           }
         }
         (<CombinationConstraint>constraint).addChild(child);
+        if (arg['type'] === 'study_name') {
+          allStudyIds.push(arg['studyId']);
+        } else {
+          hasOnlyStudies = false;
+        }
       }
       // -------------------------------- end for -------------------------------------------
 
+      /*
+       * Check conditions for a concept constraint
+       */
       if (prospectConcept &&
         (prospectValDate || prospectObsDate || prospectTrialVisit || prospectValues.length > 0)) {
         if (prospectValDate) {
@@ -729,6 +742,17 @@ export class ConstraintService {
           prospectConcept.values = prospectValues;
         }
         constraint = prospectConcept;
+      }
+      /*
+       * Check conditions for a study constraint
+       */
+      if (type === 'or' && hasOnlyStudies) {
+        constraint = new StudyConstraint();
+        for (let sid of allStudyIds) {
+          let study = new Study();
+          study.studyId = sid;
+          (<StudyConstraint>constraint).studies.push(study);
+        }
       }
     } else if (type === 'relation') { // ---------------------------> If it is a pedigree constraint
       constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
