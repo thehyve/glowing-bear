@@ -17,25 +17,32 @@ export class PedigreeConstraint implements Constraint {
     this.label = label;
     switch (label) {
       case 'PAR': {
-        this.relationType = PedigreeState.Parent; break;
+        this.relationType = PedigreeState.Parent;
+        break;
       }
       case 'CHI': {
-        this.relationType = PedigreeState.Child; break;
+        this.relationType = PedigreeState.Child;
+        break;
       }
       case 'SPO': {
-        this.relationType = PedigreeState.Spouse; break;
+        this.relationType = PedigreeState.Spouse;
+        break;
       }
       case 'SIB': {
-        this.relationType = PedigreeState.Sibling; break;
+        this.relationType = PedigreeState.Sibling;
+        break;
       }
       case 'MZ': {
-        this.relationType = PedigreeState.MonozygoticTwin; break;
+        this.relationType = PedigreeState.MonozygoticTwin;
+        break;
       }
       case 'DZ': {
-        this.relationType = PedigreeState.DizygoticTwin; break;
+        this.relationType = PedigreeState.DizygoticTwin;
+        break;
       }
       case 'COT': {
-        this.relationType = PedigreeState.UnknownTwin; break;
+        this.relationType = PedigreeState.UnknownTwin;
+        break;
       }
     }
     this.rightHandSideConstraint = new CombinationConstraint();
@@ -111,7 +118,12 @@ export class PedigreeConstraint implements Constraint {
   }
 
   set rightHandSideConstraint(value: Constraint) {
-    this._rightHandSideConstraint = value;
+    if (value.getClassName() === 'CombinationConstraint') {
+      this._rightHandSideConstraint = value;
+    } else {
+      this._rightHandSideConstraint = new CombinationConstraint();
+      (<CombinationConstraint>this._rightHandSideConstraint).addChild(value);
+    }
     this._rightHandSideConstraint.parent = this;
   }
 
