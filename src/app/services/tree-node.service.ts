@@ -145,7 +145,7 @@ export class TreeNodeService {
     let countStr = ' ';
     node['label'] = node['name'] + countStr;
     if (node['metadata']) {
-      node['label'] = node['label'] + ' ⚆';
+      node['label'] = node['label'] + ' \t\u2139';
     }
     if (node['children']) {
       if (node['type'] === 'UNKNOWN') {

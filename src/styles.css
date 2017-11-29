@@ -152,6 +152,14 @@ tbody a {
 }
 
 /*
+ * Fix the style of the PrimeNg overlay panel so that it always stays on top
+ * (overlay panel is used in the tree section on the left side)
+ */
+body .ui-overlaypanel {
+  position: fixed !important;
+}
+
+/*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
  * text overflow is turned on

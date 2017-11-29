@@ -92,7 +92,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
       let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
       let metadata = dataObject['metadata'];
-      let treeNodeElm = elm.querySelector('li.ui-treenode');
+      let treeNodeElm = elm.querySelector('li.ui-treenode .ui-treenode-icon');
 
       let handleDragstart = (function (event) {
         event.stopPropagation();
@@ -100,14 +100,14 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
         this.constraintService.selectedNode = dataObject;
       }).bind(this);
 
-      let handleContextmenu = (function (event) {
-        event.stopPropagation();
-        event.preventDefault();
+      let showInfo = (function (event) {
         this.updateMetadataContent(metadata);
-        this.treeNodeMetadataPanel.toggle(event);
-        let div = this.treeNodeMetadataPanel.el.nativeElement.children[0];
-        div.style.left = event.clientX + 'px';
-        div.style.top = (event.layerY + 75) + 'px';
+        this.treeNodeMetadataPanel.show(event);
+      }).bind(this);
+
+      let hideInfo = (function (event) {
+        this.updateMetadataContent(metadata);
+        this.treeNodeMetadataPanel.hide(event);
       }).bind(this);
 
       // if the data object type belongs to the listed types
@@ -116,7 +116,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
       }
       // if metadata exits
       if (metadata) {
-        treeNodeElm.addEventListener('contextmenu', handleContextmenu);
+        treeNodeElm.addEventListener('mouseenter', showInfo);
+        treeNodeElm.addEventListener('mouseleave', hideInfo);
       }
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
