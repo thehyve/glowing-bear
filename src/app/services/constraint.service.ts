@@ -202,8 +202,8 @@ export class ConstraintService {
 
     /*
      * Exclusion constraint patient count
+     * (Only execute the exclusion constraint if it has non-empty children)
      */
-    // Only execute the exclusion constraint if it has non-empty children
     if ((<CombinationConstraint>this.rootExclusionConstraint).hasNonEmptyChildren()) {
       let exclusionConstraint =
         this.generateExclusionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
