@@ -122,7 +122,9 @@ export class PedigreeConstraint implements Constraint {
       this._rightHandSideConstraint = value;
     } else {
       this._rightHandSideConstraint = new CombinationConstraint();
-      (<CombinationConstraint>this._rightHandSideConstraint).addChild(value);
+      if (value.getClassName() !== 'TrueConstraint') {
+        (<CombinationConstraint>this._rightHandSideConstraint).addChild(value);
+      }
     }
     this._rightHandSideConstraint.parent = this;
   }
