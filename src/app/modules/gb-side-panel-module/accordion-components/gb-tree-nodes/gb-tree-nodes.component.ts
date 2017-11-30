@@ -92,7 +92,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
       let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
       let metadata = dataObject['metadata'];
-      let treeNodeElm = elm.querySelector('li.ui-treenode .ui-treenode-icon');
+      let treeNodeElm = elm.querySelector('li.ui-treenode');
+      let treeNodeElmIcon = elm.querySelector('li.ui-treenode .ui-treenode-icon');
 
       let handleDragstart = (function (event) {
         event.stopPropagation();
@@ -116,8 +117,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
       }
       // if metadata exits
       if (metadata) {
-        treeNodeElm.addEventListener('mouseenter', showInfo);
-        treeNodeElm.addEventListener('mouseleave', hideInfo);
+        treeNodeElmIcon.addEventListener('mouseenter', showInfo);
+        treeNodeElmIcon.addEventListener('mouseleave', hideInfo);
       }
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
