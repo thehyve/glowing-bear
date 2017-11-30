@@ -17,6 +17,8 @@ export class TreeNodeService {
 
   // the variable that holds the entire tree structure, used by the tree on the left
   public treeNodes: TreeNode[] = [];
+  // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
+  public treeNodesCopy: TreeNode[] = [];
   // the entire tree table data that holds the patients' observations in the 2nd step (projection)
   private _projectionTreeData: TreeNode[] = [];
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
@@ -249,14 +251,37 @@ export class TreeNodeService {
    * @param {Object} conceptCountMap
    */
   public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
+    // If the tree nodes copy is empty, create it by duplicating the tree nodes
+    if (this.treeNodesCopy.length === 0) {
+      this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
+    }
     let conceptCodes = [];
     for (let code in conceptCountMap) {
       conceptCodes.push(code);
     }
     this.projectionTreeData =
-      this.updateProjectionTreeDataIterative(this.treeNodes, conceptCodes, conceptCountMap);
+      this.updateProjectionTreeDataIterative(this.treeNodesCopy, conceptCodes, conceptCountMap);
     this.selectedProjectionTreeData = [];
     this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
+  }
+
+  private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    let nodesCopy = [];
+    for (let node of nodes) {
+      let parent = node['parent'];
+      let children = node['children'];
+      node['parent'] = null;
+      node['children'] = null;
+      let nodeCopy = JSON.parse(JSON.stringify(node));
+      if (children) {
+        let childrenCopy = this.copyTreeNodes(children);
+        nodeCopy['children'] = childrenCopy;
+      }
+      nodesCopy.push(nodeCopy);
+      node['parent'] = parent;
+      node['children'] = children;
+    }
+    return nodesCopy;
   }
 
   private updateProjectionTreeDataIterative(nodes: TreeNode[],
@@ -265,7 +290,8 @@ export class TreeNodeService {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
-        let nodeCopy = this.copyProjectionTreeDataItem(node);
+        let nodeCopy = node;
+        nodeCopy['expanded'] = false;
         if (conceptCountMap[node['conceptCode']]) {
           const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
           const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
@@ -276,7 +302,8 @@ export class TreeNodeService {
         let newNodeChildren =
           this.updateProjectionTreeDataIterative(node['children'], conceptCodes, conceptCountMap);
         if (newNodeChildren.length > 0) {
-          let nodeCopy = this.copyProjectionTreeDataItem(node);
+          let nodeCopy = node;
+          nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) > 2 ? false : true;
           nodeCopy['children'] = newNodeChildren;
           nodesWithCodes.push(nodeCopy);
         }
@@ -300,19 +327,11 @@ export class TreeNodeService {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
-  private copyProjectionTreeDataItem(item: TreeNode) {
-    let itemCopy = Object.assign({}, item);
-    const depth = this.depthOfTreeNode(itemCopy);
-    // itemCopy['expanded'] = !(typeof depth === 'number' && depth > 1);
-    itemCopy['expanded'] = true;
-    return itemCopy;
-  }
-
   public expandProjectionTreeDataIterative(nodes: TreeNode[], value: boolean) {
     for (let node of nodes) {
       node['expanded'] = value;
       if (node['children']) {
-        this.expandProjectionTreeDataIterative(node['children'], value)
+        this.expandProjectionTreeDataIterative(node['children'], value);
       }
     }
   }
