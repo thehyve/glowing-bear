@@ -747,12 +747,14 @@ export class ConstraintService {
        * Check conditions for a study constraint
        */
       if (type === 'or' && hasOnlyStudies) {
-        constraint = new StudyConstraint();
+        let studyConstraint = new StudyConstraint();
         for (let sid of allStudyIds) {
           let study = new Study();
           study.studyId = sid;
-          (<StudyConstraint>constraint).studies.push(study);
+          studyConstraint.studies.push(study);
         }
+        (<CombinationConstraint>constraint).children.length = 0;
+        (<CombinationConstraint>constraint).addChild(studyConstraint);
       }
     } else if (type === 'relation') { // ---------------------------> If it is a pedigree constraint
       constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
