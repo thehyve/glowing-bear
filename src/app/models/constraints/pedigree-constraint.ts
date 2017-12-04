@@ -9,7 +9,7 @@ export class PedigreeConstraint implements Constraint {
   private _biological: boolean;
   private _symmetrical: boolean;
   private _relationType: PedigreeState;
-  private _rightHandSideConstraint: Constraint;
+  private _rightHandSideConstraint: CombinationConstraint;
   private _isPatientSelection: boolean;
 
   constructor(label: string) {
@@ -113,19 +113,12 @@ export class PedigreeConstraint implements Constraint {
     return `Pedigree: ${relation}`;
   }
 
-  get rightHandSideConstraint(): Constraint {
+  get rightHandSideConstraint(): CombinationConstraint {
     return this._rightHandSideConstraint;
   }
 
-  set rightHandSideConstraint(value: Constraint) {
-    if (value.getClassName() === 'CombinationConstraint') {
-      this._rightHandSideConstraint = value;
-    } else {
-      this._rightHandSideConstraint = new CombinationConstraint();
-      if (value.getClassName() !== 'TrueConstraint') {
-        (<CombinationConstraint>this._rightHandSideConstraint).addChild(value);
-      }
-    }
+  set rightHandSideConstraint(value: CombinationConstraint) {
+    this._rightHandSideConstraint = value;
     this._rightHandSideConstraint.parent = this;
   }
 
@@ -142,6 +135,7 @@ export class PedigreeConstraint implements Constraint {
       }
       case PedigreeState.Child: {
         this.label = 'CHI';
+        break;
       }
       case PedigreeState.Spouse: {
         this.label = 'SPO';
@@ -212,5 +206,9 @@ export class PedigreeConstraint implements Constraint {
 
   set parent(value: Constraint) {
     this._parent = value;
+    if (this.rightHandSideConstraint &&
+      this.rightHandSideConstraint.parent !== this) {
+      this.rightHandSideConstraint.parent = this;
+    }
   }
 }

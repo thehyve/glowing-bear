@@ -147,10 +147,6 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-
-    let virtualParent = new CombinationConstraint();
-    this.rootInclusionConstraint.parent = virtualParent;
-    this.rootExclusionConstraint.parent = virtualParent;
   }
 
   /**
@@ -760,8 +756,19 @@ export class ConstraintService {
       constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
       (<PedigreeConstraint>constraint).biological = constraintObject['biological'];
       (<PedigreeConstraint>constraint).symmetrical = constraintObject['symmetrical'];
-      (<PedigreeConstraint>constraint).rightHandSideConstraint =
+      let rightHandSide =
         this.generateConstraintFromConstraintObject(constraintObject['relatedSubjectsConstraint']);
+      (<PedigreeConstraint>constraint).rightHandSideConstraint.children.length = 0;
+      if (rightHandSide.getClassName() === 'CombinationConstraint') {
+        (<PedigreeConstraint>constraint).rightHandSideConstraint = <CombinationConstraint>rightHandSide;
+        for (let child of (<CombinationConstraint>rightHandSide).children) {
+          (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(child);
+        }
+      } else {
+        if (rightHandSide.getClassName() !== 'TrueConstraint') {
+          (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(rightHandSide);
+        }
+      }
     } else if (type === 'time') { // -----------------------------------> If it is a time constraint
       constraint = new TimeConstraint(constraintObject['operator']);
       (<TimeConstraint>constraint).date1 = new Date(constraintObject['values'][0]);

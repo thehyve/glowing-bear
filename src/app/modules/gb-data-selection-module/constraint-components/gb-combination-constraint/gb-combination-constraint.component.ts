@@ -6,6 +6,7 @@ import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraints/combination-state';
+import {PedigreeConstraint} from "../../../../models/constraints/pedigree-constraint";
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -62,16 +63,18 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   onSelect(selectedConstraint) {
-    if (this.selectedConstraint != null) {
+    if (selectedConstraint != null) {
 
       // Create a copy of the selected constraint
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
 
-
-      // But we don't want to copy a CombinationConstraint's children
-      if (newConstraint instanceof CombinationConstraint) {
+      if (newConstraint.getClassName() === 'CombinationConstraint') {
+        // we don't want to copy a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
+      } else if (newConstraint.getClassName() === 'PedigreeConstraint') {
+        // we don't want to copy a PedigreeConstraint's right-hand-side constraint
+        (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
       }
 
       // Add it as a new child
