@@ -327,6 +327,24 @@ export class TreeNodeService {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
+  /**
+   * Givena tree node path, find the parent tree node paths
+   * @param {string} path - taking the form of '\a\tree\node\path\'
+   * @returns {string[]}
+   */
+  public getParentTreeNodePaths(path: string): string[] {
+    let paths: string[] = [];
+    const parts = path.split('\\');
+    if (parts.length - 2 > 1) {
+      let parentPath = '\\';
+      for (let i = 1; i < parts.length - 2; i++) {
+        parentPath += parts[i] + '\\';
+        paths.push(parentPath);
+      }
+    }
+    return paths;
+  }
+
   public expandProjectionTreeDataIterative(nodes: TreeNode[], value: boolean) {
     for (let node of nodes) {
       node['expanded'] = value;

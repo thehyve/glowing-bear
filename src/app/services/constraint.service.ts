@@ -298,6 +298,18 @@ export class ConstraintService {
   private updateTreeNodes_2(continueUpdate: boolean) {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
       let checklist = this.query ? this.query.observationsQuery['data'] : null;
+      if (checklist) {
+        let parentPaths = [];
+        for (let path of checklist) {
+          let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
+          for (let _parentPath of _parentPaths) {
+            if (!parentPaths.includes(_parentPath)) {
+              parentPaths.push(_parentPath);
+            }
+          }
+        }
+        checklist = checklist.concat(parentPaths);
+      }
       this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
       this.query = null;
       if (continueUpdate) {
@@ -453,7 +465,6 @@ export class ConstraintService {
       } else {
         resultConstraint = negatedExclusionConstraint;
       }
-
     } else {
       // Otherwise just return the inclusion part
       resultConstraint = inclusionConstraint;
