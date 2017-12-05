@@ -974,6 +974,8 @@ export class ConstraintService {
     let selectionConstraint = this.generateConstraintFromConstraintObject(query['patientsQuery']);
     this.putSelectionConstraint(selectionConstraint);
     this.updateCounts_1(true);
+    const summary = 'Query "' + query['name'] + '" imported';
+    this.alert(summary, '', 'info');
   }
 
   public updateQuery(queryId: string, queryObject: object) {
