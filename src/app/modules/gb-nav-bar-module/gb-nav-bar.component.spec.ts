@@ -1,10 +1,13 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbNavBarComponent} from './gb-nav-bar.component';
-import {TabMenuModule} from 'primeng/primeng';
+import {MessagesModule, TabMenuModule} from 'primeng/primeng';
 import {RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
 import {routing} from '../../app.routing';
+import {FormsModule} from '@angular/forms';
+import {ConstraintService} from '../../services/constraint.service';
+import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 
 describe('GbNavBarComponent', () => {
   let component: GbNavBarComponent;
@@ -17,6 +20,8 @@ describe('GbNavBarComponent', () => {
         CommonModule,
         RouterModule,
         TabMenuModule,
+        FormsModule,
+        MessagesModule,
         routing
       ],
       providers: [
@@ -24,6 +29,10 @@ describe('GbNavBarComponent', () => {
           provide: APP_BASE_HREF,
           useValue: '/'
         },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        }
       ]
     })
       .compileComponents();

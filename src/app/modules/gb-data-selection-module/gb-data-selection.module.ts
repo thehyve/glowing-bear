@@ -14,7 +14,6 @@ import {Md2AccordionModule} from 'md2';
 import {CheckboxModule} from 'primeng/components/checkbox/checkbox';
 import {CalendarModule} from 'primeng/components/calendar/calendar';
 import {
-  MessagesModule,
   TreeModule,
   PanelModule,
   DataListModule,
@@ -36,7 +35,6 @@ import { GbPedigreeConstraintComponent } from './constraint-components/gb-pedigr
     Md2AccordionModule,
     CheckboxModule,
     CalendarModule,
-    MessagesModule,
     TreeModule,
     PanelModule,
     DataListModule,
