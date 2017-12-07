@@ -7,5 +7,40 @@
   z-index: 100;
   border-bottom: 3px solid lightgray;
   padding-bottom: 2px;
-  width: 69.5%;
+  width: 68%;
+}
+
+/*
+ * The style for the overview panel on top of data-selection
+ * padding and margin: top, right, bottom, left
+ * shadow option: text-shadow: 1px 1px 3px black;
+ */
+.gb-data-selection-overview-panel {
+  background-color: #0382af;
+  border-radius: 3px;
+  padding: 0.5em 1em 0.5em 1em;
+  margin: 3px 16px 0px 0px;
+  color: white;
+  border: none;
+  overflow: hidden;
+  width: 100%;
+}
+
+.gb-data-selection-overview-panel-input {
+  margin-bottom: 3px;
+  margin-right: 7px;
+  max-width: 100%;
+  font-size: small;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+}
+
+.gb-data-selection-overview-panel-save-btn {
+  margin-bottom: 3px;
+  margin-right: 7px;
+  width: 100%;
+}
+
+.gb-data-selection-overview-panel-import-btn {
+  margin-right: 7px;
+  width: 100%;
 }

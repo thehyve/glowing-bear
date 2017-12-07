@@ -202,7 +202,6 @@ body .ui-panel-titlebar {
   background-color: rgba(51, 156, 144, 0.8);
   border: none;
   color: white;
-  width: 98.5%;
 }
 
 .ui-messages.ui-messages-warn {
@@ -210,7 +209,7 @@ body .ui-panel-titlebar {
   background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
-  width: 98.5%;
+  position: relative;
 }
 
 .ui-messages.ui-messages-error {
@@ -218,7 +217,6 @@ body .ui-panel-titlebar {
   background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
-  width: 98.5%;
 }
 
 /*
