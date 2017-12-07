@@ -16,12 +16,12 @@
  * shadow option: text-shadow: 1px 1px 3px black;
  */
 .gb-data-selection-overview-panel {
-  background-color: #0382af;
+  background-color: rgba(51, 156, 144, 0.1);
   border-radius: 3px;
+  border: 1px solid lightgray;
   padding: 0.5em 1em 0.5em 1em;
-  margin: 3px 16px 0px 0px;
-  color: white;
-  border: none;
+  margin: 3px 16px -2px 0px;
+  color: darkslategrey;
   overflow: hidden;
   width: 100%;
 }
