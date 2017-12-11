@@ -10,6 +10,7 @@
   font-size: small;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
+  color: gray;
 }
 
 /*
@@ -28,6 +29,7 @@ input[type="text"]:disabled {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: #606060;
 }
 
 
@@ -44,6 +46,7 @@ input:-moz-read-only { /* For Firefox */
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: #606060;
 }
 input:read-only {
   background: transparent;
@@ -55,6 +58,7 @@ input:read-only {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  color: #606060;
 }
 
 /*
@@ -73,4 +77,28 @@ p-header .ui-button-secondary {
   margin-top: 3px;
   margin-left: -3px;
   padding: 0px;
+  color: #505050;
+}
+
+.gb-query-sort-btn {
+  color: #606060 !important;
+  background-color: transparent !important;
+  border: black;
+  padding: 0px;
+  margin: 0px -3px 0px 0px;
+}
+
+.gb-query-sort-btn:hover {
+  background-color: #339C90 !important;
+  opacity: 0.8 !important;
+  color: white !important;
+}
+
+.gb-query-sort-btn:active {
+  background-color: #236d64 !important;
+  opacity: 0.8 !important;
+}
+
+.gb-query-panel-body {
+  color: #606060;
 }

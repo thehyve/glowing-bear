@@ -8,6 +8,8 @@ export class Query {
   private _apiVersion: string;
   // Indicate if the set is bookmarked
   private _bookmarked: boolean;
+  // Indicate if the set is subscribed
+  private _subscribed: boolean;
   // Indicate if the set is collapsed
   private _collapsed: boolean;
   // Indicate if the set name is being edited
@@ -60,6 +62,14 @@ export class Query {
 
   set bookmarked(value: boolean) {
     this._bookmarked = value;
+  }
+
+  get subscribed(): boolean {
+    return this._subscribed;
+  }
+
+  set subscribed(value: boolean) {
+    this._subscribed = value;
   }
 
   get collapsed(): boolean {

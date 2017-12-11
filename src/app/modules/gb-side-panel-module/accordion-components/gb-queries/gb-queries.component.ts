@@ -48,6 +48,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // query panel collapse and expansion
   toggleQueryPanel(query) {
     query['collapsed'] = !query['collapsed'];
   }
@@ -56,6 +57,20 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     return query['collapsed'] ? 'fa-angle-down' : 'fa-angle-up';
   }
 
+  // query subscription
+  toggleQuerySubscription(query) {
+    query['subscribed'] = !query['subscribed'];
+    const queryObject = {
+      bookmarked: query['subscribed']
+    };
+    this.constraintService.updateQuery(query['id'], queryObject);
+  }
+
+  getQuerySubscriptionButtonIcon(query) {
+    return query['subscribed'] ? 'fa-rss-square' : 'fa-rss';
+  }
+
+  // query bookmark
   toggleQueryBookmark(query) {
     query['bookmarked'] = !query['bookmarked'];
     const queryObject = {
@@ -141,4 +156,51 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     return this.treeNodeService.queries;
   }
 
+  sortByName() {
+    this.queries.sort((q1, q2) => {
+      if (q1.name > q2.name) {
+        return 1;
+      } else if (q1['name'] < q2['name']) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortBySubscription() {
+    this.queries.sort((q1, q2) => {
+      if (!q1.subscribed && q2.subscribed) {
+        return 1;
+      } else if (q1.subscribed && !q2.subscribed) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortByDate() {
+    this.queries.sort((q1, q2) => {
+      if (q1.updateDate > q2.updateDate) {
+        return 1;
+      } else if (q1.updateDate < q2.updateDate) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortByBookmark() {
+    this.queries.sort((q1, q2) => {
+      if (q1.bookmarked && !q2.bookmarked) {
+        return -1;
+      } else if (!q1.bookmarked && q2.bookmarked) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
 }

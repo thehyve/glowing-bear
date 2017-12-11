@@ -1,6 +1,6 @@
 <div>
 
-  <!-- the search/filter input -->
+  <!-- the search/filter input and sorting buttons -->
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-query-filter-input"
@@ -10,58 +10,88 @@
     <button class="btn btn-secondary btn-sm gb-query-filter-btn"
             (click)="clearFilter()"
             type="button">clear</button>
-  </div>
-  <br>
 
-  <div *ngFor="let query of queries">
-    <!-- ------ div wrapper for visibility of a query panel ------ -->
-    <div *ngIf="query['visible']"
-         class="gb-query-panel">
-      <p-panel [collapsed]="query['collapsed']"
-               (click)="onQueryPanelClick(query)">
-        <p-header>
-          <div class="ui-helper-clearfix">
-            <button pButton class="ui-button-secondary gb-query-panel-toggle-button" type="button"
-                    (click)="toggleQueryPanel(query)"
-                    icon="{{getQueryToggleButtonIcon(query)}}">
-            </button>
-            <input *ngIf="!query['nameEditable']" type="text" pInputText
-                   [(ngModel)]="query['name']"
-                   (dblclick)="editQueryName($event, query)" readonly/>
-            <input *ngIf="query['nameEditable']" type="text" pInputText
-                   [(ngModel)]="query['name']" (click)="editQueryName($event, query)"/>
-            <div class="float-right">
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="toggleQueryBookmark(query)"
-                      icon="{{getQueryBookmarkButtonIcon(query)}}">
+    <div class="float-right">
+      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+              (click)="sortByName()"
+              icon="icon-sort-alphabet">
+      </button>
+      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+              (click)="sortByBookmark()"
+              icon="icon-sort-star">
+      </button>
+      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+              (click)="sortByDate()"
+              icon="icon-sort-time">
+      </button>
+      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+              (click)="sortBySubscription()"
+              icon="icon-sort-subscription">
+      </button>
+    </div>
+  </div>
+  <br><br>
+
+
+  <!-- queries -->
+  <div>
+    <div *ngFor="let query of queries">
+      <!-- ------ div wrapper for visibility of a query panel ------ -->
+      <div *ngIf="query['visible']"
+           class="gb-query-panel">
+        <p-panel [collapsed]="query['collapsed']"
+                 (click)="onQueryPanelClick(query)">
+          <p-header>
+            <div class="ui-helper-clearfix">
+              <button pButton class="ui-button-secondary gb-query-panel-toggle-button" type="button"
+                      (click)="toggleQueryPanel(query)"
+                      icon="{{getQueryToggleButtonIcon(query)}}">
               </button>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="downloadQuery(query)"
-                      icon="fa-download">
-              </button>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="putQuery(query)" icon="fa-arrow-right">
-              </button>
-              <span>&nbsp;</span>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="removeQuery(query)" icon="fa-times">
-              </button>
+              <input *ngIf="!query['nameEditable']" type="text" pInputText
+                     [(ngModel)]="query['name']"
+                     (dblclick)="editQueryName($event, query)" readonly/>
+              <input *ngIf="query['nameEditable']" type="text" pInputText
+                     [(ngModel)]="query['name']" (click)="editQueryName($event, query)"/>
+              <div class="float-right">
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="toggleQuerySubscription(query)"
+                        icon="{{getQuerySubscriptionButtonIcon(query)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="toggleQueryBookmark(query)"
+                        icon="{{getQueryBookmarkButtonIcon(query)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="downloadQuery(query)"
+                        icon="fa-download">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="putQuery(query)" icon="fa-arrow-right">
+                </button>
+                <span>&nbsp;</span>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="removeQuery(query)" icon="fa-times">
+                </button>
+              </div>
+            </div>
+          </p-header>
+
+          <div class="container gb-query-panel-body">
+            <div class="row">
+              Name: {{query.name}}
+            </div>
+            <div class="row">
+              Created: {{query.createDate}}
+            </div>
+            <div class="row">
+              Updated: {{query.updateDate}}
             </div>
           </div>
-        </p-header>
 
-        <div class="row">
-          <div class="col-2">Created: </div>
-          <div class="col-6">{{query.createDate}}</div>
-        </div>
-        <div class="row">
-          <div class="col-2">Updated: </div>
-          <div class="col-6">{{query.updateDate}}</div>
-        </div>
-
-      </p-panel>
+        </p-panel>
+      </div>
+      <!-- ------ div wrapper for visibility of a query panel ------ -->
     </div>
-    <!-- ------ div wrapper for visibility of a query panel ------ -->
   </div>
 
 </div>
