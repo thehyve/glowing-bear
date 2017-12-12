@@ -5,6 +5,8 @@ export class ConstraintServiceMock {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+  concepts = [];
+  validPedigreeTypes = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();

@@ -26,8 +26,10 @@ type LoadingState = 'loading' | 'complete';
  */
 @Injectable()
 export class QueryService {
-  // The current query
+  // The currently selected query
   private _query: Query;
+  // The list of queries of the user
+  private _queries: Query[] = [];
   /*
    * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
    */
@@ -119,6 +121,31 @@ export class QueryService {
   constructor(private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
+    this.loadQueries();
+  }
+
+  /**
+   * Update the queries on the left-side panel
+   */
+  public loadQueries() {
+    this.resourceService.getQueries()
+      .subscribe(
+        (queries) => {
+          this.queries.length = 0;
+          let bookmarkedQueries = [];
+          queries.forEach(query => {
+            query['collapsed'] = true;
+            query['visible'] = true;
+            if (query['bookmarked']) {
+              bookmarkedQueries.push(query);
+            } else {
+              this.queries.push(query);
+            }
+          });
+          this.queries = bookmarkedQueries.concat(this.queries);
+        },
+        err => console.error(err)
+      );
   }
 
   /**
@@ -430,7 +457,7 @@ export class QueryService {
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
           newlySavedQuery['visible'] = true;
-          this.treeNodeService.queries.push(newlySavedQuery);
+          this.queries.push(newlySavedQuery);
           const summary = 'Query "' + queryName + '" is saved.';
           this.alert(summary, '', 'success');
         },
@@ -465,9 +492,9 @@ export class QueryService {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
-          const index = this.treeNodeService.queries.indexOf(query);
+          const index = this.queries.indexOf(query);
           if (index > -1) {
-            this.treeNodeService.queries.splice(index, 1);
+            this.queries.splice(index, 1);
           }
           // An alternative would be to directly update the queries
           // using 'treeNodeService.updateQueries()'
@@ -684,5 +711,13 @@ export class QueryService {
 
   set isLoadingExportFormats(value: boolean) {
     this._isLoadingExportFormats = value;
+  }
+
+  get queries(): Query[] {
+    return this._queries;
+  }
+
+  set queries(value: Query[]) {
+    this._queries = value;
   }
 }

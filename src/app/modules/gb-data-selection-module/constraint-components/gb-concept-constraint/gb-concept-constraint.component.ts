@@ -329,7 +329,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    */
   onSearch(event) {
     let query = event.query.toLowerCase();
-    let concepts = this.treeNodeService.concepts;
+    let concepts = this.constraintService.concepts;
     if (query) {
       this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
     } else {
@@ -342,7 +342,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * @param event
    */
   onDropdown(event) {
-    let concepts = this.treeNodeService.concepts;
+    let concepts = this.constraintService.concepts;
 
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745

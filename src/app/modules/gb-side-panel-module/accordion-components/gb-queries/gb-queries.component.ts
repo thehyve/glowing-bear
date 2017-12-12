@@ -39,7 +39,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     let panels = this.element.nativeElement.querySelectorAll('.gb-query-panel');
     let index = 0;
     for (let panel of panels) {
-      let correspondingQuery = this.treeNodeService.queries[index];
+      let correspondingQuery = this.queryService.queries[index];
       panel.addEventListener('dragstart', (function () {
         correspondingQuery['dropMode'] = DropMode.Query;
         this.constraintService.selectedNode = correspondingQuery;
@@ -84,7 +84,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   putQuery(selectedQuery) {
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       query['selected'] = false;
     }
     selectedQuery['selected'] = true;
@@ -125,7 +125,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
 
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       if (query.name.indexOf(filterWord) === -1) {
         query['visible'] = false;
       } else {
@@ -137,7 +137,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
 
   clearFilter() {
     this.searchTerm = '';
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       query['visible'] = true;
     }
     this.removeFalsePrimeNgClasses(500);
@@ -153,7 +153,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   get queries(): Query[] {
-    return this.treeNodeService.queries;
+    return this.queryService.queries;
   }
 
   sortByName() {

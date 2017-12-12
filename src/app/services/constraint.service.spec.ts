@@ -3,6 +3,8 @@ import {TestBed, inject} from '@angular/core/testing';
 import {ConstraintService} from './constraint.service';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
+import {ResourceService} from './resource.service';
+import {ResourceServiceMock} from './mocks/resource.service.mock';
 
 describe('ConstraintService', () => {
   beforeEach(() => {
@@ -11,6 +13,10 @@ describe('ConstraintService', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         },
         ConstraintService
       ]

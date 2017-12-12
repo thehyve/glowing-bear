@@ -16,6 +16,7 @@ import {TimeConstraint} from '../models/constraints/time-constraint';
 import {TrialVisitConstraint} from '../models/constraints/trial-visit-constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ValueConstraint} from '../models/constraints/value-constraint';
+import {ResourceService} from './resource.service';
 
 
 /**
@@ -28,17 +29,105 @@ export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+
+  /*
+   * List keeping track of all available constraints.
+   * By default, the empty, constraints are in here.
+   * In addition, (partially) filled constraints are added.
+   * The constraints should be copied when editing them.
+   */
+  private _allConstraints: Constraint[] = [];
+  private _studies: Study[] = [];
+  private _studyConstraints: Constraint[] = [];
+  private _validPedigreeTypes: object[] = [];
+  private _concepts: Concept[] = [];
+  private _conceptLabels: string[] = [];
+  private _conceptConstraints: Constraint[] = [];
+
   /*
    * The selected tree node (drag-start) in the side-panel of either
    */
   private _selectedNode: any = null;
 
-  constructor(private treeNodeService: TreeNodeService) {
+  constructor(private treeNodeService: TreeNodeService,
+              private resourceService: ResourceService) {
+
+    this.loadEmptyConstraints();
+    this.loadStudies();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
+    // also construct concepts while loading the tree nodes
+    this.treeNodeService.loadTreeNodes(this);
+
+    // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
   }
+
+  private loadEmptyConstraints() {
+    this.allConstraints.push(new CombinationConstraint());
+    this.allConstraints.push(new StudyConstraint());
+    this.allConstraints.push(new ConceptConstraint());
+  }
+
+  private loadStudies() {
+    this.resourceService.getStudies()
+      .subscribe(
+        studies => {
+          // reset studies and study constraints
+          this.studies = studies;
+          this.studyConstraints = [];
+          studies.forEach(study => {
+            let constraint = new StudyConstraint();
+            constraint.studies.push(study);
+            this.studyConstraints.push(constraint);
+            this.allConstraints.push(constraint);
+          });
+        },
+        err => console.error(err)
+      );
+  }
+
+  private loadPedigrees() {
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => {
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj['label']);
+            pedigreeConstraint.description = obj['description'];
+            pedigreeConstraint.biological = obj['biological'];
+            pedigreeConstraint.symmetrical = obj['symmetrical'];
+            this.allConstraints.push(pedigreeConstraint);
+            this.validPedigreeTypes.push({
+              type: pedigreeConstraint.relationType,
+              text: pedigreeConstraint.textRepresentation
+            });
+          }
+        },
+        err => console.error(err)
+      );
+  }
+
+  /**
+   * Returns a list of all constraints that match the query string.
+   * The constraints should be copied when editing them.
+   * @param query
+   * @returns {Array}
+   */
+  searchAllConstraints(query: string): Constraint[] {
+    query = query.toLowerCase();
+    let results = [];
+    this.allConstraints.forEach((constraint: Constraint) => {
+      let text = constraint.textRepresentation.toLowerCase();
+      if (text.indexOf(query) > -1) {
+        results.push(constraint);
+      }
+    });
+    return results;
+  }
+
 
   /*
    * ------------ constraint generation in the 1st step ------------
@@ -501,4 +590,61 @@ export class ConstraintService {
   set rootExclusionConstraint(value: CombinationConstraint) {
     this._rootExclusionConstraint = value;
   }
+
+  get allConstraints(): Constraint[] {
+    return this._allConstraints;
+  }
+
+  set allConstraints(value: Constraint[]) {
+    this._allConstraints = value;
+  }
+
+  get studies(): Study[] {
+    return this._studies;
+  }
+
+  set studies(value: Study[]) {
+    this._studies = value;
+  }
+
+  get studyConstraints(): Constraint[] {
+    return this._studyConstraints;
+  }
+
+  set studyConstraints(value: Constraint[]) {
+    this._studyConstraints = value;
+  }
+
+  get validPedigreeTypes(): object[] {
+    return this._validPedigreeTypes;
+  }
+
+  set validPedigreeTypes(value: object[]) {
+    this._validPedigreeTypes = value;
+  }
+
+  get conceptConstraints(): Constraint[] {
+    return this._conceptConstraints;
+  }
+
+  set conceptConstraints(value: Constraint[]) {
+    this._conceptConstraints = value;
+  }
+
+  get concepts(): Concept[] {
+    return this._concepts;
+  }
+
+  set concepts(value: Concept[]) {
+    this._concepts = value;
+  }
+
+  get conceptLabels(): string[] {
+    return this._conceptLabels;
+  }
+
+  set conceptLabels(value: string[]) {
+    this._conceptLabels = value;
+  }
+
 }

@@ -19,7 +19,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
   ngOnInit() {
     this.pedigreeTypes = [];
     const relationType = (<PedigreeConstraint>this.constraint).relationType;
-    for (let typeObj of this.treeNodeService.validPedigreeTypes) {
+    for (let typeObj of this.constraintService.validPedigreeTypes) {
       this.pedigreeTypes.push({
         label: typeObj['text'],
         value: typeObj['type']
