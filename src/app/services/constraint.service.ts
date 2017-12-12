@@ -51,7 +51,13 @@ export class ConstraintService {
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {
+    // Initialize the root inclusion and exclusion constraints in the 1st step
+    this.rootInclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint = new CombinationConstraint();
+    this.rootExclusionConstraint.isRoot = true;
 
+    // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
     // create the pedigree-related constraints
@@ -149,8 +155,6 @@ export class ConstraintService {
    * In the 1st step,
    * Generate the constraint for retrieving the patients with the exclusion criteria,
    * but also in the inclusion set
-   * @param inclusionConstraint
-   * @param exclusionConstraint
    * @returns {CombinationConstraint}
    */
   public generateExclusionConstraint(): Constraint {
@@ -568,7 +572,6 @@ export class ConstraintService {
     }
     return depth;
   }
-
 
   get selectedNode(): any {
     return this._selectedNode;
