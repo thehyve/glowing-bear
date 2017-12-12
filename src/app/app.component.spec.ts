@@ -23,6 +23,8 @@ import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
+import {QueryService} from './services/query.service';
+import {QueryServiceMock} from './services/mocks/query.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -76,6 +78,10 @@ describe('AppComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     }).compileComponents();

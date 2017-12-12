@@ -17,6 +17,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
 import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
+import {QueryService} from "../../services/query.service";
+import {QueryServiceMock} from "../../services/mocks/query.service.mock";
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -56,6 +58,10 @@ describe('GbSidePanelComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

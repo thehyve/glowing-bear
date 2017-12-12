@@ -33,7 +33,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   updateRelationType(event) {
     (<PedigreeConstraint>this.constraint).relationType = event.value;
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   get selectedPedigreeType(): SelectItem {

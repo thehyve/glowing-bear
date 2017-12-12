@@ -6,8 +6,8 @@ import {RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
-import {ConstraintService} from '../../services/constraint.service';
-import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
+import {QueryService} from '../../services/query.service';
+import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 
 describe('GbNavBarComponent', () => {
   let component: GbNavBarComponent;
@@ -30,8 +30,8 @@ describe('GbNavBarComponent', () => {
           useValue: '/'
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

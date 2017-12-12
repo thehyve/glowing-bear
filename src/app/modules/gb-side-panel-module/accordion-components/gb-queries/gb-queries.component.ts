@@ -1,8 +1,8 @@
 import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {DropMode} from '../../../../models/drop-mode';
 import {Query} from '../../../../models/query';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-queries',
@@ -16,7 +16,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   collapsed = false;
 
   constructor(public treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
+              private queryService: QueryService,
               private element: ElementRef) {
   }
 
@@ -63,7 +63,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     const queryObject = {
       bookmarked: query['subscribed']
     };
-    this.constraintService.updateQuery(query['id'], queryObject);
+    this.queryService.updateQuery(query['id'], queryObject);
   }
 
   getQuerySubscriptionButtonIcon(query) {
@@ -76,7 +76,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     const queryObject = {
       bookmarked: query['bookmarked']
     };
-    this.constraintService.updateQuery(query['id'], queryObject);
+    this.queryService.updateQuery(query['id'], queryObject);
   }
 
   getQueryBookmarkButtonIcon(query) {
@@ -88,11 +88,11 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
       query['selected'] = false;
     }
     selectedQuery['selected'] = true;
-    this.constraintService.putQuery(selectedQuery);
+    this.queryService.restoreQuery(selectedQuery);
   }
 
   removeQuery(query) {
-    this.constraintService.deleteQuery(query);
+    this.queryService.deleteQuery(query);
   }
 
   downloadQuery(query) {
@@ -119,7 +119,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
       const queryObject = {
         name: query['name']
       };
-      this.constraintService.updateQuery(query['id'], queryObject);
+      this.queryService.updateQuery(query['id'], queryObject);
     }
   }
 

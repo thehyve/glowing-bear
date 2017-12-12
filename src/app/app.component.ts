@@ -3,6 +3,7 @@ import {EndpointService} from './services/endpoint.service';
 import {ResourceService} from './services/resource.service';
 import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
+import {QueryService} from './services/query.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,8 @@ export class AppComponent implements OnInit {
   constructor(private endpointService: EndpointService,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private queryService: QueryService) {
   }
 
   ngOnInit() {

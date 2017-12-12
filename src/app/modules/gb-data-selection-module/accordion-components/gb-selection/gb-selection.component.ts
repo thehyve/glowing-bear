@@ -6,6 +6,7 @@ import {
 } from '@angular/animations';
 import {GbConstraintComponent} from '../../constraint-components/gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 
 
@@ -31,23 +32,24 @@ export class GbSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
 
-  constructor(public constraintService: ConstraintService) {
+  constructor(private constraintService: ConstraintService,
+              private queryService: QueryService) {
   }
 
   ngOnInit() {
-    this.constraintService.updateCounts_1();
+    this.queryService.updateCounts_1();
   }
 
   get patientCount_1(): number {
-    return this.constraintService.patientCount_1;
+    return this.queryService.patientCount_1;
   }
 
   get inclusionPatientCount(): number {
-    return this.constraintService.inclusionPatientCount;
+    return this.queryService.inclusionPatientCount;
   }
 
   get exclusionPatientCount(): number {
-    return this.constraintService.exclusionPatientCount;
+    return this.queryService.exclusionPatientCount;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
@@ -60,7 +62,7 @@ export class GbSelectionComponent implements OnInit {
 
   clearCriteria() {
     this.constraintService.clearSelectionConstraint();
-    this.constraintService.updateCounts_1();
+    this.queryService.updateCounts_1();
   }
 
 }

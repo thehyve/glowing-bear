@@ -206,7 +206,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeConstraints();
-      this.constraintService.updateCounts_1();
+      this.updateCounts();
     }
   }
 
@@ -218,7 +218,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyObsDateConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyObsDateConstraint = this._applyObsDateConstraint;
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   get obsDate1(): Date {
@@ -261,7 +261,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyTrialVisitConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   get applyModifierConstraint(): boolean {
@@ -419,7 +419,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       }
 
     }
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   /*
@@ -503,7 +503,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateTrialVisitValues() {
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   onUnselectTrialVisit(visit) {
@@ -525,7 +525,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     const val2 = this.obsDate2;
     let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
     conceptConstraint.obsDateConstraint.date2 = correctedDate2;
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   /*
@@ -593,7 +593,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     conceptConstraint.obsDateConstraint.isNegated =
       (this.obsDateOperatorState === GbDateOperatorState.NOT_BETWEEN);
     // Notify constraint service
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   /**
@@ -611,6 +611,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.updateConceptValues();
   }
 
+  /**
+   * Toggle the 'more options' panel
+   */
   toggleMoreOptions() {
     this.showMoreOptions = !this.showMoreOptions;
   }

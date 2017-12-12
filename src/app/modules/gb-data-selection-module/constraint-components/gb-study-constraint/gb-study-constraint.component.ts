@@ -56,11 +56,11 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     // For some funny reason, the study is still in the list when this handler is invoked
     let index = this.selectedStudies.indexOf(studyObject);
     this.selectedStudies.splice(index, 1);
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   updateStudies(studyObject) {
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
 }

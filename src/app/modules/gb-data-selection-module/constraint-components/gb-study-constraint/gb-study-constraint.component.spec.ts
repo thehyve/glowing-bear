@@ -10,6 +10,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {QueryService} from '../../../../services/query.service';
 
 describe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
@@ -34,6 +36,10 @@ describe('GbStudyConstraintComponent', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

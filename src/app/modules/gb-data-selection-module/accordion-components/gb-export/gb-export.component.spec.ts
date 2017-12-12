@@ -7,14 +7,14 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {TreeNodeService} from '../../../../services/tree-node.service';
-import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {QueryService} from '../../../../services/query.service';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -45,6 +45,10 @@ describe('GbExportComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })
