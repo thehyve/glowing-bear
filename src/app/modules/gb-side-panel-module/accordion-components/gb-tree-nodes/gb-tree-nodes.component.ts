@@ -41,7 +41,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
   // and this will take a while
   delay: number;
 
-  constructor(private treeNodeService: TreeNodeService,
+  constructor(public treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
               private element: ElementRef) {
@@ -133,7 +133,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
 
   update() {
     if (this.expansionStatus['expanded']) {
-      this.constraintService
+      this.treeNodeService
         .updateTreeNodeCounts(this.queryService.studyCountMap_1, this.queryService.conceptCountMap_1);
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];

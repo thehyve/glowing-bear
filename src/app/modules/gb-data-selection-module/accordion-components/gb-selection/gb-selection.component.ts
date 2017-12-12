@@ -9,6 +9,7 @@ import {CombinationConstraint} from '../../../../models/constraints/combination-
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 
+type LoadingState = 'loading' | 'complete';
 
 @Component({
   selector: 'gb-selection',
@@ -63,6 +64,18 @@ export class GbSelectionComponent implements OnInit {
   clearCriteria() {
     this.constraintService.clearSelectionConstraint();
     this.queryService.updateCounts_1();
+  }
+
+  get loadingStateInclusion(): LoadingState {
+    return this.queryService.loadingStateInclusion;
+  }
+
+  get loadingStateExclusion(): LoadingState {
+    return this.queryService.loadingStateExclusion;
+  }
+
+  get loadingStateTotal(): LoadingState {
+    return this.queryService.loadingStateTotal;
   }
 
 }

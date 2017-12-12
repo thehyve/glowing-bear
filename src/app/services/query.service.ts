@@ -245,7 +245,7 @@ export class QueryService {
             /*
              * update patient counts on tree nodes on the left side
              */
-            this.constraintService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
+            this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
             /*
              * update the export info
              */

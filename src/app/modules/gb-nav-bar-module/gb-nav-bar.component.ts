@@ -21,7 +21,7 @@ export class GbNavBarComponent implements OnInit {
   private isUploadListenerNotAdded: boolean;
 
   constructor(private router: Router,
-              private queryService: QueryService) {
+              public queryService: QueryService) {
     this.queryName = '';
     this.isUploadListenerNotAdded = true;
   }
@@ -200,10 +200,6 @@ export class GbNavBarComponent implements OnInit {
 
   get isLoadingStudyCount_2(): boolean {
     return this.queryService.isLoadingStudyCount_2;
-  }
-
-  get alertMessages(): Array<object>  {
-    return this.queryService.alertMessages;
   }
 }
 

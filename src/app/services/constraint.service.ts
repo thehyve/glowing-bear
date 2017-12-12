@@ -10,7 +10,6 @@ import {CombinationState} from '../models/constraints/combination-state';
 import {NegationConstraint} from '../models/constraints/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {TreeNode} from 'primeng/primeng';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
 import {TimeConstraint} from '../models/constraints/time-constraint';
@@ -467,99 +466,6 @@ export class ConstraintService {
       newConstraintObject = this.optimizeConstraintObject(newConstraintObject['constraint']);
     }
     return newConstraintObject;
-  }
-
-  /**
-   * Append a count element to the given treenode-content element
-   * @param treeNodeContent
-   * @param {number} count
-   * @param {boolean} updated - true: add animation to indicate updated count
-   */
-  private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString = '(' + count + ')';
-    let countElm = treeNodeContent.querySelector('.gb-count-element');
-    if (!countElm) {
-      countElm = document.createElement('span');
-      countElm.classList.add('gb-count-element');
-      if (updated) {
-        countElm.classList.add('gb-count-element-updated');
-      }
-      countElm.textContent = countString;
-      treeNodeContent.appendChild(countElm);
-    } else {
-      const oldCountString = countElm.textContent;
-      if (countString !== oldCountString) {
-        treeNodeContent.removeChild(countElm);
-        countElm = document.createElement('span');
-        countElm.classList.add('gb-count-element');
-        if (updated) {
-          countElm.classList.add('gb-count-element-updated');
-        }
-        countElm.textContent = countString;
-        treeNodeContent.appendChild(countElm);
-      }
-    }
-  }
-
-  /**
-   * Update the counts of the study tree nodes of given tree node elements
-   *
-   * @param treeNodeElements - the visual html elements p-treenode
-   * @param {TreeNode} treeNodeData - the underlying data objects
-   * @param {Constraint} patientConstraint - the constraint that the user selects patients
-   * @param {boolean} refresh -
-   *                            true: always retrieve counts,
-   *                            false: only retrieve counts if the patientCount field is missing
-   */
-  private updateTreeNodeCountsIterative(treeNodeElements: any,
-                                        treeNodeData: TreeNode[],
-                                        studyCountMap: object,
-                                        conceptCountMap: object) {
-    let index = 0;
-    for (let elm of treeNodeElements) {
-      let dataObject: TreeNode = treeNodeData[index];
-      if (this.treeNodeService.isTreeNodeAstudy(dataObject) ||
-        this.treeNodeService.isTreeNodeAconcept(dataObject)) {
-        let treeNodeContent = elm.querySelector('.ui-treenode-content');
-        const identifier =
-          this.treeNodeService.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
-        const map =
-          this.treeNodeService.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
-        const patientCount =
-          map[identifier] ? map[identifier]['patientCount'] : 0;
-        const updated =
-          (dataObject['patientCount'] && dataObject['patientCount'] !== patientCount) || !dataObject['patientCount'];
-        dataObject['patientCount'] = patientCount;
-        this.appendCountElement(treeNodeContent, patientCount, updated);
-      }
-      // If the tree node is currently expanded
-      if (dataObject['expanded']) {
-        let uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
-        if (uiTreenodeChildren) {
-          this.updateTreeNodeCountsIterative(
-            uiTreenodeChildren.children,
-            dataObject.children,
-            studyCountMap,
-            conceptCountMap);
-        }
-      }
-      index++;
-    }
-  }
-
-  /**
-   * Update the tree nodes' counts on the left panel
-   */
-  public updateTreeNodeCounts(studyCountMap: object,
-                              conceptCountMap: object) {
-    let rootTreeNodeElements = document
-      .getElementById('tree-nodes-component')
-      .querySelector('.ui-tree-container').children;
-    this.updateTreeNodeCountsIterative(
-      rootTreeNodeElements,
-      this.treeNodeService.treeNodes,
-      studyCountMap,
-      conceptCountMap);
   }
 
   public depthOfConstraint(constraint: Constraint): number {
