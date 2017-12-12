@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {ConstraintService} from '../../../../services/constraint.service';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-projection',
@@ -10,8 +10,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 })
 export class GbProjectionComponent implements OnInit {
 
-  constructor(public treeNodeService: TreeNodeService,
-              public constraintService: ConstraintService) {
+  constructor(private treeNodeService: TreeNodeService,
+              private queryService: QueryService) {
   }
 
   ngOnInit() {
@@ -30,7 +30,7 @@ export class GbProjectionComponent implements OnInit {
   }
 
   updateCounts(event) {
-    this.constraintService.updateCounts_2();
+    this.queryService.updateCounts_2();
   }
 
   checkAll(value: boolean) {
@@ -39,7 +39,7 @@ export class GbProjectionComponent implements OnInit {
     } else {
       this.treeNodeService.selectedProjectionTreeData = [];
     }
-    this.constraintService.updateCounts_2();
+    this.queryService.updateCounts_2();
   }
 
   expandAll(value: boolean) {

@@ -11,6 +11,8 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {StudyConstraint} from '../../../../models/constraints/study-constraint';
 import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {QueryService} from '../../../../services/query.service';
 
 describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
@@ -38,6 +40,10 @@ describe('GbConstraintComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

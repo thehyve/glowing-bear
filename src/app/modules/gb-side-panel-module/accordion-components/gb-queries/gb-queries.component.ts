@@ -1,8 +1,8 @@
 import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {DropMode} from '../../../../models/drop-mode';
 import {Query} from '../../../../models/query';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-queries',
@@ -16,7 +16,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   collapsed = false;
 
   constructor(public treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
+              private queryService: QueryService,
               private element: ElementRef) {
   }
 
@@ -39,7 +39,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     let panels = this.element.nativeElement.querySelectorAll('.gb-query-panel');
     let index = 0;
     for (let panel of panels) {
-      let correspondingQuery = this.treeNodeService.queries[index];
+      let correspondingQuery = this.queryService.queries[index];
       panel.addEventListener('dragstart', (function () {
         correspondingQuery['dropMode'] = DropMode.Query;
         this.constraintService.selectedNode = correspondingQuery;
@@ -48,6 +48,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // query panel collapse and expansion
   toggleQueryPanel(query) {
     query['collapsed'] = !query['collapsed'];
   }
@@ -56,12 +57,26 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     return query['collapsed'] ? 'fa-angle-down' : 'fa-angle-up';
   }
 
+  // query subscription
+  toggleQuerySubscription(query) {
+    query['subscribed'] = !query['subscribed'];
+    const queryObject = {
+      bookmarked: query['subscribed']
+    };
+    this.queryService.updateQuery(query['id'], queryObject);
+  }
+
+  getQuerySubscriptionButtonIcon(query) {
+    return query['subscribed'] ? 'fa-rss-square' : 'fa-rss';
+  }
+
+  // query bookmark
   toggleQueryBookmark(query) {
     query['bookmarked'] = !query['bookmarked'];
     const queryObject = {
       bookmarked: query['bookmarked']
     };
-    this.constraintService.updateQuery(query['id'], queryObject);
+    this.queryService.updateQuery(query['id'], queryObject);
   }
 
   getQueryBookmarkButtonIcon(query) {
@@ -69,15 +84,15 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   putQuery(selectedQuery) {
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       query['selected'] = false;
     }
     selectedQuery['selected'] = true;
-    this.constraintService.putQuery(selectedQuery);
+    this.queryService.restoreQuery(selectedQuery);
   }
 
   removeQuery(query) {
-    this.constraintService.deleteQuery(query);
+    this.queryService.deleteQuery(query);
   }
 
   downloadQuery(query) {
@@ -104,13 +119,13 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
       const queryObject = {
         name: query['name']
       };
-      this.constraintService.updateQuery(query['id'], queryObject);
+      this.queryService.updateQuery(query['id'], queryObject);
     }
   }
 
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       if (query.name.indexOf(filterWord) === -1) {
         query['visible'] = false;
       } else {
@@ -122,7 +137,7 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
 
   clearFilter() {
     this.searchTerm = '';
-    for (let query of this.treeNodeService.queries) {
+    for (let query of this.queryService.queries) {
       query['visible'] = true;
     }
     this.removeFalsePrimeNgClasses(500);
@@ -138,7 +153,54 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   get queries(): Query[] {
-    return this.treeNodeService.queries;
+    return this.queryService.queries;
   }
 
+  sortByName() {
+    this.queries.sort((q1, q2) => {
+      if (q1.name > q2.name) {
+        return 1;
+      } else if (q1['name'] < q2['name']) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortBySubscription() {
+    this.queries.sort((q1, q2) => {
+      if (!q1.subscribed && q2.subscribed) {
+        return 1;
+      } else if (q1.subscribed && !q2.subscribed) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortByDate() {
+    this.queries.sort((q1, q2) => {
+      if (q1.updateDate > q2.updateDate) {
+        return 1;
+      } else if (q1.updateDate < q2.updateDate) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  sortByBookmark() {
+    this.queries.sort((q1, q2) => {
+      if (q1.bookmarked && !q2.bookmarked) {
+        return -1;
+      } else if (!q1.bookmarked && q2.bookmarked) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
 }

@@ -6,6 +6,7 @@ import {Response} from '@angular/http';
 import {ExportJob} from '../../../../models/export-job';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import {saveAs} from 'file-saver';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-export',
@@ -18,6 +19,7 @@ export class GbExportComponent implements OnInit {
   exportJobName: string;
 
   constructor(private constraintService: ConstraintService,
+              private queryService: QueryService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
     this.updateExportJobs();
@@ -53,15 +55,15 @@ export class GbExportComponent implements OnInit {
 
     if (duplicateName) {
       const summary = 'Duplicate job name, choose a new name.';
-      this.constraintService.alert(summary, '', 'warn');
+      this.queryService.alert(summary, '', 'warn');
     } else {
       let summary = 'Running export job "' + name + '".';
-      this.constraintService.alert(summary, '', 'info');
+      this.queryService.alert(summary, '', 'info');
       this.resourceService.createExportJob(name)
         .subscribe(
           newJob => {
             summary = 'Export job "' + name + '" is created.';
-            this.constraintService.alert(summary, '', 'success');
+            this.queryService.alert(summary, '', 'success');
             this.exportJobName = '';
             this.runExportJob(newJob);
           },
@@ -94,8 +96,8 @@ export class GbExportComponent implements OnInit {
       }
     }
     if (elements.length > 0) {
-      const selectionConstraint = this.constraintService.getSelectionConstraint();
-      const projectionConstraint = this.constraintService.getProjectionConstraint();
+      const selectionConstraint = this.constraintService.generateSelectionConstraint();
+      const projectionConstraint = this.constraintService.generateProjectionConstraint();
       let combo = new CombinationConstraint();
       combo.addChild(selectionConstraint);
       combo.addChild(projectionConstraint);
@@ -134,11 +136,11 @@ export class GbExportComponent implements OnInit {
   }
 
   get isLoadingExportFormats(): boolean {
-    return this.constraintService.isLoadingExportFormats;
+    return this.queryService.isLoadingExportFormats;
   }
 
   get exportFormats(): object[] {
-    return this.constraintService.exportFormats;
+    return this.queryService.exportFormats;
   }
 
 }

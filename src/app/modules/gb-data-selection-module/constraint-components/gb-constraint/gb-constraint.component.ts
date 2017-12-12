@@ -6,6 +6,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import {StudyConstraint} from '../../../../models/constraints/study-constraint';
 import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-constraint',
@@ -20,6 +21,7 @@ export class GbConstraintComponent implements OnInit {
   constructor(protected treeNodeService: TreeNodeService,
               protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
+              protected queryService: QueryService,
               protected element: ElementRef) {
   }
 
@@ -71,7 +73,7 @@ export class GbConstraintComponent implements OnInit {
       if (this.constraint instanceof CombinationConstraint) {
         let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
         combinationConstraint.addChild(droppedConstraint);
-        this.constraintService.updateCounts_1();
+        this.updateCounts();
       } else if (this.constraint.getClassName() === droppedConstraint.getClassName()) {
         if (this.constraint instanceof StudyConstraint) {
           let study = (<StudyConstraint>droppedConstraint).studies[0];
@@ -79,17 +81,20 @@ export class GbConstraintComponent implements OnInit {
           studies = studies.filter(item => item.studyId === study.studyId);
           if (studies.length === 0) {
             (<StudyConstraint>this.constraint).studies.push(study);
-            this.constraintService.updateCounts_1();
+            this.updateCounts();
           }
         } else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;
           // TODO: still needs to find a way to update the aggregates fo the ConceptConstraintComponent
-          this.constraintService.updateCounts_1();
+          this.updateCounts();
         }
       }
 
     }// if dropped constraint exists
+  }
 
+  protected updateCounts() {
+    this.queryService.updateCounts_1();
   }
 
   get containerClass(): string {

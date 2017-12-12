@@ -1,12 +1,14 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {ConstraintService} from './constraint.service';
-import {TreeNodeService} from './tree-node.service';
-import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
+import {TreeNodeService} from './tree-node.service';
+import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
+import {QueryService} from './query.service';
+import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 
-describe('ConstraintService', () => {
+describe('QueryService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -18,7 +20,11 @@ describe('ConstraintService', () => {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
-        ConstraintService
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        QueryService
       ]
     });
   });

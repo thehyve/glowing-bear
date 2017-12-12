@@ -4,8 +4,8 @@ import {GbProjectionComponent} from './gb-projection.component';
 import {TreeModule} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {QueryService} from '../../../../services/query.service';
 
 describe('GbProjectionComponent', () => {
   let component: GbProjectionComponent;
@@ -25,8 +25,8 @@ describe('GbProjectionComponent', () => {
           useClass: TreeNodeServiceMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

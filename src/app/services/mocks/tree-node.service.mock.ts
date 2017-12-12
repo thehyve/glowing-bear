@@ -1,9 +1,12 @@
 
+import {ConstraintService} from '../constraint.service';
+
 export class TreeNodeServiceMock {
   treeSelectionMode = '';
-  concepts = [];
-  validPedigreeTypes = [];
 
   constructor() {
+  }
+
+  public loadTreeNodes(constraintService: ConstraintService) {
   }
 }

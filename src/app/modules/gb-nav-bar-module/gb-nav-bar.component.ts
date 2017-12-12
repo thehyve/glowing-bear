@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
 import {MenuItem} from 'primeng/components/common/api';
-import {ConstraintService} from '../../services/constraint.service';
+import {QueryService} from '../../services/query.service';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -21,7 +21,7 @@ export class GbNavBarComponent implements OnInit {
   private isUploadListenerNotAdded: boolean;
 
   constructor(private router: Router,
-              public constraintService: ConstraintService) {
+              public queryService: QueryService) {
     this.queryName = '';
     this.isUploadListenerNotAdded = true;
   }
@@ -103,12 +103,12 @@ export class GbNavBarComponent implements OnInit {
     let name = this.queryName ? this.queryName.trim() : '';
     let queryNameIsValid = name !== '';
     if (queryNameIsValid) {
-      this.constraintService.saveQuery(name);
+      this.queryService.saveQuery(name);
       this.queryName = '';
     } else {
       const summary = 'Please specify the query name.';
-      this.constraintService.alertMessages.length = 0;
-      this.constraintService.alertMessages.push({severity: 'warn', summary: summary, detail: ''});
+      this.queryService.alertMessages.length = 0;
+      this.queryService.alertMessages.push({severity: 'warn', summary: summary, detail: ''});
     }
   }
 
@@ -171,35 +171,35 @@ export class GbNavBarComponent implements OnInit {
   }
 
   get patientCount_2(): string {
-    return this.numberWithCommas(this.constraintService.patientCount_2);
+    return this.numberWithCommas(this.queryService.patientCount_2);
   }
 
   get isLoadingPatientCount_2(): boolean {
-    return this.constraintService.isLoadingPatientCount_2;
+    return this.queryService.isLoadingPatientCount_2;
   }
 
   get observationCount_2(): string {
-    return this.numberWithCommas(this.constraintService.observationCount_2);
+    return this.numberWithCommas(this.queryService.observationCount_2);
   }
 
   get isLoadingObservationCount_2(): boolean {
-    return this.constraintService.isLoadingObservationCount_2;
+    return this.queryService.isLoadingObservationCount_2;
   }
 
   get conceptCount_2(): string {
-    return this.numberWithCommas(this.constraintService.conceptCount_2);
+    return this.numberWithCommas(this.queryService.conceptCount_2);
   }
 
   get isLoadingConceptCount_2(): boolean {
-    return this.constraintService.isLoadingConceptCount_2;
+    return this.queryService.isLoadingConceptCount_2;
   }
 
   get studyCount_2(): string {
-    return this.numberWithCommas(this.constraintService.studyCount_2);
+    return this.numberWithCommas(this.queryService.studyCount_2);
   }
 
   get isLoadingStudyCount_2(): boolean {
-    return this.constraintService.isLoadingStudyCount_2;
+    return this.queryService.isLoadingStudyCount_2;
   }
 }
 

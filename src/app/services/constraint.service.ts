@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {CombinationConstraint} from '../models/constraints/combination-constraint';
-import {ResourceService} from './resource.service';
 import {Constraint} from '../models/constraints/constraint';
 import {TrueConstraint} from '../models/constraints/true-constraint';
 import {StudyConstraint} from '../models/constraints/study-constraint';
@@ -11,278 +10,100 @@ import {CombinationState} from '../models/constraints/combination-state';
 import {NegationConstraint} from '../models/constraints/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {TreeNode} from 'primeng/primeng';
-import {Query} from '../models/query';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
 import {TimeConstraint} from '../models/constraints/time-constraint';
 import {TrialVisitConstraint} from '../models/constraints/trial-visit-constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ValueConstraint} from '../models/constraints/value-constraint';
+import {ResourceService} from './resource.service';
 
-type LoadingState = 'loading' | 'complete';
 
 /**
  * This service concerns with
  * (1) translating string or JSON objects into Constraint class instances
- * (2) saving / updating constraints as queries (that contain patient or observation constraints)
- * (3) updating relevant patient or observation counts
- * Remark: the patient set, observation set, concept set and study set used
- * in the 2nd step (i.e. the projection step) are subsets of the corresponding sets
- * in the 1st step (i.e. the selection step).
- * Hence, each time the 1st sets updated, so should be the 2nd sets.
- * However, each time the 2nd sets updated, the 1st sets remain unaffected.
- *
- * General workflow of data selection:
- * select patients (rows), update the counts in the 1st step -->
- * select concepts (columns), update the counts in the 2nd step -->
- * update data table and charts (to be implemented) in 3rd/4th steps -->
- * update data formats available for export based on the previous data selection
+ * (2) clear or restore constraints
  */
 @Injectable()
 export class ConstraintService {
-  // The current query
-  private _query: Query;
-  /*
-   * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
-   */
-  private _inclusionPatientCount = 0;
-  private _exclusionPatientCount = 0;
+
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  // the number of patients selected in the first step
-  private _patientCount_1 = 0;
-  // the number of observations from the selected patients in the first step
-  private _observationCount_1 = 0;
-  // the number of concepts from the selected patients in the first step
-  private _conceptCount_1 = 0;
-  // the number of studies from the selected patients in the first step
-  private _studyCount_1 = 0;
-  // the codes of the concepts selected in the first step
-  private _conceptCodes_1 = [];
-  // the codes of the studies selected in the first step
-  private _studyCodes_1 = [];
-  /*
-   * the map from concept codes to counts in the first step
-   * (note that _conceptCountMap_1 is a super set of _conceptCountMap_2,
-   * so there is no need to maintain _conceptCountMap_2)
-   * e.g.
-   * "EHR:DEM:AGE": {
-   *  "observationCount": 3,
-   *   "patientCount": 3
-   *  },
-   * "EHR:VSIGN:HR": {
-   *  "observationCount": 9,
-   *  "patientCount": 3
-   * }
-   */
-  private _conceptCountMap_1 = {};
-  /*
-   * the map from study codes to counts in the first step
-   * (note that _studyCountMap_1 is a super set of _studyCountMap_2,
-   * so there is no need to maintain _studyCountMap_2)
-   * e.g.
-   * "MIX_HD": {
-   *   "observationCount": 12,
-   *   "patientCount": 3
-   * }
-   */
-  private _studyCountMap_1 = {};
-  loadingStateInclusion: LoadingState = 'complete';
-  loadingStateExclusion: LoadingState = 'complete';
-  loadingStateTotal: LoadingState = 'complete';
-  // the queue that holds the time stamps of the calls made in the 1st step
-  private _queueOfCalls_1 = [];
 
   /*
-   * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
+   * List keeping track of all available constraints.
+   * By default, the empty, constraints are in here.
+   * In addition, (partially) filled constraints are added.
+   * The constraints should be copied when editing them.
    */
-  // the number of patients further refined in the second step
-  // _patientCount_2 < or = _patientCount_1
-  private _patientCount_2 = 0;
-  private _isLoadingPatientCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of observations further refined in the second step
-  // _observationCount_2 could be <, > or = _observationCount_1
-  private _observationCount_2 = 0;
-  private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of concepts further refined in the second step
-  // _conceptCount_2 could be <, > or = _conceptCount_1
-  private _conceptCount_2 = 0;
-  private _isLoadingConceptCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of studies further refined in the second step
-  // _studyCount_2 could be <, > or = _studyCount_1
-  private _studyCount_2 = 0;
-  private _isLoadingStudyCount_2 = true; // the flag indicating if the count is being loaded
-  // the codes of the concepts selected in the second step
-  private _conceptCodes_2 = [];
-  // the codes of the studies selected in the first step
-  private _studyCodes_2 = [];
-  // the queue that holds the time stamps of the calls made in the 2nd step
-  private _queueOfCalls_2 = [];
+  private _allConstraints: Constraint[] = [];
+  private _studies: Study[] = [];
+  private _studyConstraints: Constraint[] = [];
+  private _validPedigreeTypes: object[] = [];
+  private _concepts: Concept[] = [];
+  private _conceptLabels: string[] = [];
+  private _conceptConstraints: Constraint[] = [];
 
   /*
-   * ------ other variables ------
-   */
-  private _exportFormats: object[] = [];
-  private _isLoadingExportFormats = true;
-  /*
-   * The alert messages (for PrimeNg message UI) that informs the user
-   * whether there is an error saving patient/observation set,
-   * or the saving has been successful
-   */
-  private _alertMessages = [];
-
-  /*
-   * The selected node (drag-start) in the side-panel of either
-   * (1) the tree
-   * (2) the patient sets
-   * or (3) the observation sets
+   * The selected tree node (drag-start) in the side-panel of either
    */
   private _selectedNode: any = null;
 
+  constructor(private treeNodeService: TreeNodeService,
+              private resourceService: ResourceService) {
 
-  constructor(private resourceService: ResourceService,
-              private treeNodeService: TreeNodeService) {
+    this.loadEmptyConstraints();
+    this.loadStudies();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
+    // also construct concepts while loading the tree nodes
+    this.treeNodeService.loadTreeNodes(this);
+
+    // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
   }
 
-  /**
-   * update the patient, observation, concept and study counts in the first step
-   */
-  public updateCounts_1(continueUpdate?: boolean) {
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_1);
-    let timestamp = new Date();
-    this.queueOfCalls_1.push(timestamp.getMilliseconds());
-    // set the flags
-    this.loadingStateInclusion = 'loading';
-    this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal = 'loading';
-    // also update the flags for the counts in the 2nd step
-    this.isLoadingPatientCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    this.isLoadingConceptCount_2 = true;
-    this.isLoadingStudyCount_2 = true;
-    /*
-     * Inclusion constraint patient count
-     */
-    let inclusionConstraint = this.generateInclusionConstraint(this.rootInclusionConstraint);
-    this.resourceService.getCounts(inclusionConstraint)
-      .subscribe(
-        countResponse => {
-          const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            this.inclusionPatientCount = countResponse['patientCount'];
-            this.loadingStateInclusion = 'complete';
-            if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
-              this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
-              this.loadingStateTotal = 'complete';
-              this.observationCount_1 = countResponse['observationCount'];
-              // Update the final counts: patients and observations
-              this.patientCount_2 = this.patientCount_1;
-              this.observationCount_2 = this.observationCount_1;
-              this.isLoadingPatientCount_2 = false;
-              this.isLoadingObservationCount_2 = false;
-            }
-          }
-        },
-        err => {
-          console.error(err);
-          this.loadingStateInclusion = 'complete';
-        }
-      );
+  private loadEmptyConstraints() {
+    this.allConstraints.push(new CombinationConstraint());
+    this.allConstraints.push(new StudyConstraint());
+    this.allConstraints.push(new ConceptConstraint());
+  }
 
-    /*
-     * Exclusion constraint patient count
-     * (Only execute the exclusion constraint if it has non-empty children)
-     */
-    if ((<CombinationConstraint>this.rootExclusionConstraint).hasNonEmptyChildren()) {
-      let exclusionConstraint =
-        this.generateExclusionConstraint(this.rootInclusionConstraint, this.rootExclusionConstraint);
-      this.resourceService.getCounts(exclusionConstraint)
-        .subscribe(
-          countResponse => {
-            const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-              this.exclusionPatientCount = countResponse['patientCount'];
-              this.loadingStateExclusion = 'complete';
-              if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
-                this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
-                this.loadingStateTotal = 'complete';
-                this.observationCount_1 = countResponse['observationCount'];
-                // Update the final counts: patients and observations
-                this.patientCount_2 = this.patientCount_1;
-                this.observationCount_2 = this.observationCount_1;
-                this.isLoadingPatientCount_2 = false;
-                this.isLoadingObservationCount_2 = false;
-              }
-            }
-          },
-          err => {
-            console.error(err);
-            this.loadingStateExclusion = 'complete';
-          }
-        );
-    } else {
-      this.exclusionPatientCount = 0;
-      this.loadingStateExclusion = 'complete';
-    }
-    /*
-     * update concept and study counts in the first step
-     */
-    const selectionConstraint = this.getSelectionConstraint();
-    this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
+  private loadStudies() {
+    this.resourceService.getStudies()
       .subscribe(
-        (countObj) => {
-          const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            let studyKeys = [];
-            let conceptKeys = [];
-            this.conceptCountMap_1 = {};
-            this.studyCountMap_1 = {};
-            for (let studyKey in countObj) {
-              studyKeys.push(studyKey);
-              let _concepts_ = countObj[studyKey];
-              let patientCountUnderThisStudy = 0;
-              let observationCountUnderThisStudy = 0;
-              for (let _concept_ in _concepts_) {
-                if (conceptKeys.indexOf(_concept_) === -1) {
-                  conceptKeys.push(_concept_);
-                }
-                this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
-                patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
-                observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
-              }
-              this.studyCountMap_1[studyKey] = {
-                patientCount: patientCountUnderThisStudy,
-                observationCount: observationCountUnderThisStudy
-              };
-            }
-            this.conceptCount_1 = conceptKeys.length;
-            this.studyCount_1 = studyKeys.length;
-            this.conceptCodes_1 = conceptKeys;
-            // Update the final counts: concepts and studies
-            this.conceptCount_2 = this.conceptCount_1;
-            this.studyCount_2 = this.studyCount_1;
-            this.conceptCodes_2 = this.conceptCodes_1;
-            this.isLoadingConceptCount_2 = false;
-            this.isLoadingStudyCount_2 = false;
-            /*
-             * update patient counts on tree nodes on the left side
-             */
-            this.updateTreeNodeCounts();
-            /*
-             * update the export info
-             */
-            this.updateExports();
-            /*
-             * update the tree nodes in the 2nd step
-             */
-            this.updateTreeNodes_2(continueUpdate);
+        studies => {
+          // reset studies and study constraints
+          this.studies = studies;
+          this.studyConstraints = [];
+          studies.forEach(study => {
+            let constraint = new StudyConstraint();
+            constraint.studies.push(study);
+            this.studyConstraints.push(constraint);
+            this.allConstraints.push(constraint);
+          });
+        },
+        err => console.error(err)
+      );
+  }
+
+  private loadPedigrees() {
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => {
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj['label']);
+            pedigreeConstraint.description = obj['description'];
+            pedigreeConstraint.biological = obj['biological'];
+            pedigreeConstraint.symmetrical = obj['symmetrical'];
+            this.allConstraints.push(pedigreeConstraint);
+            this.validPedigreeTypes.push({
+              type: pedigreeConstraint.relationType,
+              text: pedigreeConstraint.textRepresentation
+            });
           }
         },
         err => console.error(err)
@@ -290,155 +111,64 @@ export class ConstraintService {
   }
 
   /**
-   * This function handles the asynchronicity
-   * between updating the 2nd-step counts and the loading of tree nodes:
-   * only when the tree nodes are completely loaded can we start updating
-   * the counts in the 2nd step
+   * Returns a list of all constraints that match the query string.
+   * The constraints should be copied when editing them.
+   * @param query
+   * @returns {Array}
    */
-  private updateTreeNodes_2(continueUpdate: boolean) {
-    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
-      let checklist = this.query ? this.query.observationsQuery['data'] : null;
-      if (checklist) {
-        let parentPaths = [];
-        for (let path of checklist) {
-          let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
-          for (let _parentPath of _parentPaths) {
-            if (!parentPaths.includes(_parentPath)) {
-              parentPaths.push(_parentPath);
-            }
-          }
-        }
-        checklist = checklist.concat(parentPaths);
+  searchAllConstraints(query: string): Constraint[] {
+    query = query.toLowerCase();
+    let results = [];
+    this.allConstraints.forEach((constraint: Constraint) => {
+      let text = constraint.textRepresentation.toLowerCase();
+      if (text.indexOf(query) > -1) {
+        results.push(constraint);
       }
-      this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
-      this.query = null;
-      if (continueUpdate) {
-        this.updateCounts_2();
-      }
-    } else {
-      window.setTimeout((function () {
-        this.updateTreeNodes_2();
-      }).bind(this), 500);
-    }
+    });
+    return results;
   }
 
-  /**
-   * update the patient, observation, concept and study counts in the second step
+
+  /*
+   * ------------ constraint generation in the 1st step ------------
    */
-  public updateCounts_2() {
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_2);
-    let timestamp = new Date();
-    this.queueOfCalls_2.push(timestamp.getMilliseconds());
-    // set flags to true indicating the counts are being loaded
-    this.isLoadingPatientCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    this.isLoadingConceptCount_2 = true;
-    this.isLoadingStudyCount_2 = true;
-
-    this.query = null; // clear query
-    const selectionConstraint = this.getSelectionConstraint();
-    const projectionConstraint = this.getProjectionConstraint();
-
-    let combo = new CombinationConstraint();
-    combo.addChild(selectionConstraint);
-    combo.addChild(projectionConstraint);
-
-    // update the patient count and observation count in the 2nd step
-    this.resourceService.getCounts(combo)
-      .subscribe(
-        (countResponse) => {
-          const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-            this.patientCount_2 = countResponse['patientCount'];
-            this.isLoadingPatientCount_2 = false;
-            this.observationCount_2 = countResponse['observationCount'];
-            this.isLoadingObservationCount_2 = false;
-          }
-        },
-        err => console.error(err)
-      );
-
-    // update the concept and study counts in the 2nd step
-    this.resourceService.getCountsPerStudyAndConcept(combo)
-      .subscribe(
-        (countObj) => {
-          const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-            let studies = [];
-            let concepts = [];
-            for (let study in countObj) {
-              studies.push(study);
-              let _concepts_ = countObj[study];
-              for (let _concept_ in _concepts_) {
-                if (concepts.indexOf(_concept_) === -1) {
-                  concepts.push(_concept_);
-                }
-              }
-            }
-            this.conceptCount_2 = concepts.length;
-            this.studyCount_2 = studies.length;
-            this.conceptCodes_2 = concepts;
-            this.isLoadingConceptCount_2 = false;
-            this.isLoadingStudyCount_2 = false;
-          }
-        },
-        err => console.error(err)
-      );
-    this.updateExports();
-  }
-
-  public updateExports() {
-    const selectionConstraint = this.getSelectionConstraint();
-    const projectionConstraint = this.getProjectionConstraint();
-    let combo = new CombinationConstraint();
-    combo.addChild(selectionConstraint);
-    combo.addChild(projectionConstraint);
-    // update the export info
-    this.isLoadingExportFormats = true;
-    this.resourceService.getExportDataFormats(combo)
-      .subscribe(
-        (dataFormatNames) => {
-          let fileFormatNames = ['TSV', 'SPSS'];
-          this.exportFormats = [];
-          for (let dataFormatName of dataFormatNames) {
-            let format = {
-              name: dataFormatName,
-              checked: true,
-              fileFormats: []
-            };
-            for (let fileFormatName of fileFormatNames) {
-              format.fileFormats.push({
-                name: fileFormatName,
-                checked: true
-              });
-            }
-            this.exportFormats.push(format);
-          }
-          this.isLoadingExportFormats = false;
-        },
-        err => console.error(err)
-      );
-  }
-
   /**
-   * Clear the elements before the last element
-   * @param {Array<number>} queue
+   * In the 1st step,
+   * Generate the constraint for retrieving the patients with only the inclusion criteria
+   * @param inclusionConstraint
+   * @returns {TrueConstraint|Constraint}
    */
-  private clearQueueOfCalls(queue: Array<number>) {
-    if (queue && queue.length > 1) {
-      const lastElement = queue[queue.length - 1];
-      queue.length = 0;
-      queue.push(lastElement);
-    }
+  public generateInclusionConstraint(): Constraint {
+    let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
+    return (<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
+      inclusionConstraint : new TrueConstraint();
   }
 
   /**
+   * In the 1st step,
+   * Generate the constraint for retrieving the patients with the exclusion criteria,
+   * but also in the inclusion set
+   * @param inclusionConstraint
+   * @param exclusionConstraint
+   * @returns {CombinationConstraint}
+   */
+  public generateExclusionConstraint(): Constraint {
+    // Inclusion part, which is what the exclusion count is calculated from
+    let inclusionConstraint = this.generateInclusionConstraint();
+    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
+
+    let combination = new CombinationConstraint();
+    combination.addChild(inclusionConstraint);
+    combination.addChild(exclusionConstraint);
+    return combination;
+  }
+
+  /**
+   * In the 1st step,
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  public getSelectionConstraint(): Constraint {
+  public generateSelectionConstraint(): Constraint {
     let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
@@ -481,11 +211,38 @@ export class ConstraintService {
     this.rootExclusionConstraint.children.length = 0;
   }
 
+  public restoreSelectionConstraint(constraint: Constraint) {
+    if (constraint.getClassName() === 'CombinationConstraint') { // If it is a combination constraint
+      const children = (<CombinationConstraint>constraint).children;
+      let hasNegation = children.length === 2
+        && (children[1].getClassName() === 'NegationConstraint' || children[0].getClassName() === 'NegationConstraint');
+      if (hasNegation) {
+        let negationConstraint =
+          <NegationConstraint>(children[1].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
+        let remainingConstraint =
+          <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+        this.restoreSelectionConstraint(remainingConstraint);
+      } else {
+        for (let child of children) {
+          this.rootInclusionConstraint.addChild(child);
+        }
+      }
+    } else if (constraint.getClassName() === 'NegationConstraint') {
+      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
+    } else if (constraint.getClassName() !== 'TrueConstraint') {
+      this.rootInclusionConstraint.addChild(constraint);
+    }
+  }
+
+  /*
+   * ------------ constraint generation in the 2nd step ------------
+   */
   /**
-   * Get the constraint of selected concept variables in the observation-selection section
+   * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}
    */
-  public getProjectionConstraint(): Constraint {
+  public generateProjectionConstraint(): Constraint {
     let nodes = this.treeNodeService.getTopTreeNodes(this.treeNodeService.selectedProjectionTreeData);
     let constraint = null;
     if (nodes.length > 0) {
@@ -517,63 +274,7 @@ export class ConstraintService {
     return constraint;
   }
 
-
-  private putSelectionConstraint(constraint: Constraint) {
-    if (constraint.getClassName() === 'CombinationConstraint') { // If it is a combination constraint
-      const children = (<CombinationConstraint>constraint).children;
-      let hasNegation = children.length === 2
-        && (children[1].getClassName() === 'NegationConstraint' || children[0].getClassName() === 'NegationConstraint');
-      if (hasNegation) {
-        let negationConstraint =
-          <NegationConstraint>(children[1].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
-        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
-        let remainingConstraint =
-          <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
-        this.putSelectionConstraint(remainingConstraint);
-      } else {
-        for (let child of children) {
-          this.rootInclusionConstraint.addChild(child);
-        }
-      }
-    } else if (constraint.getClassName() === 'NegationConstraint') {
-      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
-    } else if (constraint.getClassName() !== 'TrueConstraint') {
-      this.rootInclusionConstraint.addChild(constraint);
-    }
-  }
-
-  public alert(summary: string, detail: string, severity: string) {
-    this.alertMessages.length = 0;
-    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
-  }
-
-  /**
-   * Generate the constraint for retrieving the patients with only the inclusion criteria
-   * @param inclusionConstraint
-   * @returns {TrueConstraint|Constraint}
-   */
-  generateInclusionConstraint(inclusionConstraint: Constraint): Constraint {
-    return (<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
-      inclusionConstraint : new TrueConstraint();
-  }
-
-  /**
-   * Generate the constraint for retrieving the patients with the exclusion criteria,
-   * but also in the inclusion set
-   * @param inclusionConstraint
-   * @param exclusionConstraint
-   * @returns {CombinationConstraint}
-   */
-  generateExclusionConstraint(inclusionConstraint: Constraint, exclusionConstraint: Constraint): Constraint {
-    // Inclusion part, which is what the exclusion count is calculated from
-    inclusionConstraint = this.generateInclusionConstraint(inclusionConstraint);
-
-    let combination = new CombinationConstraint();
-    combination.addChild(inclusionConstraint);
-    combination.addChild(exclusionConstraint);
-    return combination;
-  }
-
+  // generate the constraint instance based on given node (e.g. tree node)
   generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
     let constraint: Constraint = null;
     // if the dropped node is a tree node
@@ -621,6 +322,7 @@ export class ConstraintService {
     return constraint;
   }
 
+  // generate the constraint instance based on given constraint object input
   generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
@@ -855,166 +557,6 @@ export class ConstraintService {
     return newConstraintObject;
   }
 
-  /**
-   * Append a count element to the given treenode-content element
-   * @param treeNodeContent
-   * @param {number} count
-   * @param {boolean} updated - true: add animation to indicate updated count
-   */
-  private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString = '(' + count + ')';
-    let countElm = treeNodeContent.querySelector('.gb-count-element');
-    if (!countElm) {
-      countElm = document.createElement('span');
-      countElm.classList.add('gb-count-element');
-      if (updated) {
-        countElm.classList.add('gb-count-element-updated');
-      }
-      countElm.textContent = countString;
-      treeNodeContent.appendChild(countElm);
-    } else {
-      const oldCountString = countElm.textContent;
-      if (countString !== oldCountString) {
-        treeNodeContent.removeChild(countElm);
-        countElm = document.createElement('span');
-        countElm.classList.add('gb-count-element');
-        if (updated) {
-          countElm.classList.add('gb-count-element-updated');
-        }
-        countElm.textContent = countString;
-        treeNodeContent.appendChild(countElm);
-      }
-    }
-  }
-
-  /**
-   * Update the counts of the study tree nodes of given tree node elements
-   *
-   * @param treeNodeElements - the visual html elements p-treenode
-   * @param {TreeNode} treeNodeData - the underlying data objects
-   * @param {Constraint} patientConstraint - the constraint that the user selects patients
-   * @param {boolean} refresh -
-   *                            true: always retrieve counts,
-   *                            false: only retrieve counts if the patientCount field is missing
-   */
-  private updateTreeNodeCountsIterative(treeNodeElements: any,
-                                        treeNodeData: TreeNode[],
-                                        studyCountMap: object,
-                                        conceptCountMap: object) {
-    let index = 0;
-    for (let elm of treeNodeElements) {
-      let dataObject: TreeNode = treeNodeData[index];
-      if (this.treeNodeService.isTreeNodeAstudy(dataObject) ||
-        this.treeNodeService.isTreeNodeAconcept(dataObject)) {
-        let treeNodeContent = elm.querySelector('.ui-treenode-content');
-        const identifier =
-          this.treeNodeService.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
-        const map =
-          this.treeNodeService.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
-        const patientCount =
-          map[identifier] ? map[identifier]['patientCount'] : 0;
-        const updated =
-          (dataObject['patientCount'] && dataObject['patientCount'] !== patientCount) || !dataObject['patientCount'];
-        dataObject['patientCount'] = patientCount;
-        this.appendCountElement(treeNodeContent, patientCount, updated);
-      }
-      // If the tree node is currently expanded
-      if (dataObject['expanded']) {
-        let uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
-        if (uiTreenodeChildren) {
-          this.updateTreeNodeCountsIterative(
-            uiTreenodeChildren.children,
-            dataObject.children,
-            studyCountMap,
-            conceptCountMap);
-        }
-      }
-      index++;
-    }
-  }
-
-  /**
-   * Update the tree nodes' counts on the left panel
-   */
-  public updateTreeNodeCounts() {
-    let rootTreeNodeElements = document
-      .getElementById('tree-nodes-component')
-      .querySelector('.ui-tree-container').children;
-    this.updateTreeNodeCountsIterative(
-      rootTreeNodeElements,
-      this.treeNodeService.treeNodes,
-      this.studyCountMap_1,
-      this.conceptCountMap_1);
-  }
-
-  public saveQuery(queryName: string) {
-    const patientConstraintObj = this.getSelectionConstraint().toQueryObject();
-    let data = [];
-    for (let item of this.treeNodeService.selectedProjectionTreeData) {
-      data.push(item['fullName']);
-    }
-    const observationConstraintObj = {
-      data: data
-    };
-    const queryObj = {
-      name: queryName,
-      patientsQuery: patientConstraintObj,
-      observationsQuery: observationConstraintObj,
-      bookmarked: false
-    };
-    this.resourceService.saveQuery(queryObj)
-      .subscribe(
-        (newlySavedQuery) => {
-          newlySavedQuery['collapsed'] = true;
-          newlySavedQuery['visible'] = true;
-          this.treeNodeService.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryName + '" is saved.';
-          this.alert(summary, '', 'success');
-        },
-        (err) => {
-          console.error(err);
-          const summary = 'Could not save the query "' + queryName + '".';
-          this.alert(summary, '', 'error');
-        }
-      );
-  }
-
-  public putQuery(query: Query) {
-    this.query = query;
-    this.clearSelectionConstraint();
-    let selectionConstraint = this.generateConstraintFromConstraintObject(query['patientsQuery']);
-    this.putSelectionConstraint(selectionConstraint);
-    this.updateCounts_1(true);
-    const summary = 'Query "' + query['name'] + '" imported';
-    this.alert(summary, '', 'info');
-  }
-
-  public updateQuery(queryId: string, queryObject: object) {
-    this.resourceService.updateQuery(queryId, queryObject)
-      .subscribe(
-        () => {
-        },
-        err => console.error(err)
-      );
-  }
-
-  public deleteQuery(query) {
-    this.resourceService.deleteQuery(query['id'])
-      .subscribe(
-        () => {
-          const index = this.treeNodeService.queries.indexOf(query);
-          if (index > -1) {
-            this.treeNodeService.queries.splice(index, 1);
-          }
-          // An alternative would be to directly update the queries
-          // using 'treeNodeService.updateQueries()'
-          // but this approach retrieves new query objects and
-          // leaves the all queries to remain collapsed
-        },
-        err => console.error(err)
-      );
-  }
-
   public depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
     if (constraint.parent !== null) {
@@ -1024,20 +566,13 @@ export class ConstraintService {
     return depth;
   }
 
-  get inclusionPatientCount(): number {
-    return this._inclusionPatientCount;
+
+  get selectedNode(): any {
+    return this._selectedNode;
   }
 
-  set inclusionPatientCount(value: number) {
-    this._inclusionPatientCount = value;
-  }
-
-  get exclusionPatientCount(): number {
-    return this._exclusionPatientCount;
-  }
-
-  set exclusionPatientCount(value: number) {
-    this._exclusionPatientCount = value;
+  set selectedNode(value: any) {
+    this._selectedNode = value;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
@@ -1056,203 +591,60 @@ export class ConstraintService {
     this._rootExclusionConstraint = value;
   }
 
-  get patientCount_1(): number {
-    return this._patientCount_1;
+  get allConstraints(): Constraint[] {
+    return this._allConstraints;
   }
 
-  set patientCount_1(value: number) {
-    this._patientCount_1 = value;
+  set allConstraints(value: Constraint[]) {
+    this._allConstraints = value;
   }
 
-  get observationCount_1(): number {
-    return this._observationCount_1;
+  get studies(): Study[] {
+    return this._studies;
   }
 
-  set observationCount_1(value: number) {
-    this._observationCount_1 = value;
+  set studies(value: Study[]) {
+    this._studies = value;
   }
 
-  get conceptCount_1(): number {
-    return this._conceptCount_1;
+  get studyConstraints(): Constraint[] {
+    return this._studyConstraints;
   }
 
-  set conceptCount_1(value: number) {
-    this._conceptCount_1 = value;
+  set studyConstraints(value: Constraint[]) {
+    this._studyConstraints = value;
   }
 
-  get studyCount_1(): number {
-    return this._studyCount_1;
+  get validPedigreeTypes(): object[] {
+    return this._validPedigreeTypes;
   }
 
-  set studyCount_1(value: number) {
-    this._studyCount_1 = value;
+  set validPedigreeTypes(value: object[]) {
+    this._validPedigreeTypes = value;
   }
 
-  get conceptCodes_1(): Array<any> {
-    return this._conceptCodes_1;
+  get conceptConstraints(): Constraint[] {
+    return this._conceptConstraints;
   }
 
-  set conceptCodes_1(value: Array<any>) {
-    this._conceptCodes_1 = value;
+  set conceptConstraints(value: Constraint[]) {
+    this._conceptConstraints = value;
   }
 
-  get studyCodes_1(): Array<any> {
-    return this._studyCodes_1;
+  get concepts(): Concept[] {
+    return this._concepts;
   }
 
-  set studyCodes_1(value: Array<any>) {
-    this._studyCodes_1 = value;
+  set concepts(value: Concept[]) {
+    this._concepts = value;
   }
 
-  get conceptCountMap_1(): {} {
-    return this._conceptCountMap_1;
+  get conceptLabels(): string[] {
+    return this._conceptLabels;
   }
 
-  set conceptCountMap_1(value: {}) {
-    this._conceptCountMap_1 = value;
+  set conceptLabels(value: string[]) {
+    this._conceptLabels = value;
   }
 
-  get studyCountMap_1(): {} {
-    return this._studyCountMap_1;
-  }
-
-  set studyCountMap_1(value: {}) {
-    this._studyCountMap_1 = value;
-  }
-
-  get observationCount_2(): number {
-    return this._observationCount_2;
-  }
-
-  set observationCount_2(value: number) {
-    this._observationCount_2 = value;
-  }
-
-  get studyCount_2(): number {
-    return this._studyCount_2;
-  }
-
-  set studyCount_2(value: number) {
-    this._studyCount_2 = value;
-  }
-
-  get patientCount_2(): number {
-    return this._patientCount_2;
-  }
-
-  set patientCount_2(value: number) {
-    this._patientCount_2 = value;
-  }
-
-  get conceptCount_2(): number {
-    return this._conceptCount_2;
-  }
-
-  set conceptCount_2(value: number) {
-    this._conceptCount_2 = value;
-  }
-
-  get studyCodes_2(): Array<any> {
-    return this._studyCodes_2;
-  }
-
-  set studyCodes_2(value: Array<any>) {
-    this._studyCodes_2 = value;
-  }
-
-  get conceptCodes_2(): Array<any> {
-    return this._conceptCodes_2;
-  }
-
-  set conceptCodes_2(value: Array<any>) {
-    this._conceptCodes_2 = value;
-  }
-
-  get selectedNode(): any {
-    return this._selectedNode;
-  }
-
-  set selectedNode(value: any) {
-    this._selectedNode = value;
-  }
-
-  get alertMessages(): Array<object> {
-    return this._alertMessages;
-  }
-
-  set alertMessages(value: Array<object>) {
-    this._alertMessages = value;
-  }
-
-  get query(): Query {
-    return this._query;
-  }
-
-  set query(value: Query) {
-    this._query = value;
-  }
-
-  get isLoadingPatientCount_2(): boolean {
-    return this._isLoadingPatientCount_2;
-  }
-
-  set isLoadingPatientCount_2(value: boolean) {
-    this._isLoadingPatientCount_2 = value;
-  }
-
-  get isLoadingObservationCount_2(): boolean {
-    return this._isLoadingObservationCount_2;
-  }
-
-  set isLoadingObservationCount_2(value: boolean) {
-    this._isLoadingObservationCount_2 = value;
-  }
-
-  get isLoadingConceptCount_2(): boolean {
-    return this._isLoadingConceptCount_2;
-  }
-
-  set isLoadingConceptCount_2(value: boolean) {
-    this._isLoadingConceptCount_2 = value;
-  }
-
-  get isLoadingStudyCount_2(): boolean {
-    return this._isLoadingStudyCount_2;
-  }
-
-  set isLoadingStudyCount_2(value: boolean) {
-    this._isLoadingStudyCount_2 = value;
-  }
-
-  get queueOfCalls_1(): Array<number> {
-    return this._queueOfCalls_1;
-  }
-
-  set queueOfCalls_1(value: Array<number>) {
-    this._queueOfCalls_1 = value;
-  }
-
-  get queueOfCalls_2(): Array<number> {
-    return this._queueOfCalls_2;
-  }
-
-  set queueOfCalls_2(value: Array<number>) {
-    this._queueOfCalls_2 = value;
-  }
-
-  get exportFormats(): object[] {
-    return this._exportFormats;
-  }
-
-  set exportFormats(value: object[]) {
-    this._exportFormats = value;
-  }
-
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
-  }
-
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
-  }
 }

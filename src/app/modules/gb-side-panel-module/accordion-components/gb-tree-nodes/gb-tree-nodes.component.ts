@@ -5,6 +5,7 @@ import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -40,8 +41,9 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
   // and this will take a while
   delay: number;
 
-  constructor(private constraintService: ConstraintService,
-              public treeNodeService: TreeNodeService,
+  constructor(public treeNodeService: TreeNodeService,
+              private constraintService: ConstraintService,
+              private queryService: QueryService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -131,7 +133,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
 
   update() {
     if (this.expansionStatus['expanded']) {
-      this.constraintService.updateTreeNodeCounts();
+      this.treeNodeService
+        .updateTreeNodeCounts(this.queryService.studyCountMap_1, this.queryService.conceptCountMap_1);
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;

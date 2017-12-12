@@ -6,7 +6,7 @@ import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraints/combination-state';
-import {PedigreeConstraint} from "../../../../models/constraints/pedigree-constraint";
+import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -38,16 +38,16 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   onSearch(event) {
-    let results = this.treeNodeService.searchAllConstraints(event.query);
+    let results = this.constraintService.searchAllConstraints(event.query);
     this.searchResults = results;
   }
 
   onDropdown(event) {
-    let results = this.treeNodeService.searchAllConstraints('');
+    let results = this.constraintService.searchAllConstraints('');
 
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745
@@ -84,7 +84,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
-      this.constraintService.updateCounts_1();
+      this.updateCounts();
     }
   }
 
@@ -94,7 +94,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.constraintService.updateCounts_1();
+    this.updateCounts();
   }
 
   get childContainerClass(): string {

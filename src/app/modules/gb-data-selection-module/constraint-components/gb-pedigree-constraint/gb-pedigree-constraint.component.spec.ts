@@ -12,6 +12,8 @@ import {FormsModule} from '@angular/forms';
 import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {QueryService} from '../../../../services/query.service';
 
 describe('GbPedigreeConstraintComponent', () => {
   let component: GbPedigreeConstraintComponent;
@@ -40,6 +42,10 @@ describe('GbPedigreeConstraintComponent', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })

@@ -7,6 +7,8 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {PatientSetConstraint} from '../../../../models/constraints/patient-set-constraint';
+import {QueryService} from '../../../../services/query.service';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 
 describe('GbPatientSetConstraintComponent', () => {
   let component: GbPatientSetConstraintComponent;
@@ -27,6 +29,10 @@ describe('GbPatientSetConstraintComponent', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })
