@@ -30,7 +30,7 @@ export class GbProjectionComponent implements OnInit {
     this.treeNodeService.selectedProjectionTreeData = value;
   }
 
-  protected updateCounts() {
+  updateCounts() {
     this.queryService.step = Step.II;
     if (this.queryService.instantCountUpdate_2) {
       this.queryService.updateCounts_2();
