@@ -7,6 +7,7 @@ import {CombinationConstraint} from '../../../../models/constraints/combination-
 import {StudyConstraint} from '../../../../models/constraints/study-constraint';
 import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
 import {QueryService} from '../../../../services/query.service';
+import {Step} from '../../../../models/step';
 
 @Component({
   selector: 'gb-constraint',
@@ -62,6 +63,7 @@ export class GbConstraintComponent implements OnInit {
   }
 
   onDrop(event) {
+    console.log('--- inside constraint, on drop, update counts');
     event.stopPropagation();
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
@@ -94,7 +96,10 @@ export class GbConstraintComponent implements OnInit {
   }
 
   protected updateCounts() {
-    this.queryService.updateCounts_1();
+    this.queryService.step = Step.I;
+    if (this.queryService.instantCountUpdate_1) {
+      this.queryService.updateCounts_1();
+    }
   }
 
   get containerClass(): string {

@@ -4,6 +4,8 @@ import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
 import {Query} from '../models/query';
 import {ConstraintService} from './constraint.service';
+import {AppConfig} from '../config/app.config';
+import {Step} from '../models/step';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -26,6 +28,8 @@ type LoadingState = 'loading' | 'complete';
  */
 @Injectable()
 export class QueryService {
+  // The current step at which the user is composing query
+  private _step: Step = Step.I;
   // The currently selected query
   private _query: Query;
   // The list of queries of the user
@@ -116,11 +120,30 @@ export class QueryService {
    * or the saving has been successful
    */
   private _alertMessages = [];
+  /*
+   * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
+   * used in gb-constraint-component
+   */
+  private _instantCountUpdate_1: boolean;
+  /*
+   * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
+   * used in gb-projection-component
+   */
+  private _instantCountUpdate_2: boolean;
+  /*
+   * during the updateCounts_1 call, whether to update the final counts immediately,
+   * used inside this.updateCounts_1()
+   */
+  private _syncFinalCounts: boolean;
 
 
-  constructor(private resourceService: ResourceService,
+  constructor(private appConfig: AppConfig,
+              private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
+    this.instantCountUpdate_1 = appConfig.getConfig('step-1-instant-counts-update');
+    this.instantCountUpdate_2 = appConfig.getConfig('step-2-instant-counts-update');
+    this.syncFinalCounts = appConfig.getConfig('final-counts-sync');
     this.loadQueries();
   }
 
@@ -151,7 +174,10 @@ export class QueryService {
   /**
    * update the patient, observation, concept and study counts in the first step
    */
-  public updateCounts_1(continueUpdate?: boolean) {
+  public updateCounts_1(continuousUpdate?: boolean, initialUpdate?: boolean) {
+    /*
+     * ====== function updateCounts_1 starts ======
+     */
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_1);
@@ -182,10 +208,12 @@ export class QueryService {
               this.loadingStateTotal = 'complete';
               this.observationCount_1 = countResponse['observationCount'];
               // Update the final counts: patients and observations
-              this.patientCount_2 = this.patientCount_1;
-              this.observationCount_2 = this.observationCount_1;
-              this.isLoadingPatientCount_2 = false;
-              this.isLoadingObservationCount_2 = false;
+              if (this.syncFinalCounts || initialUpdate) {
+                this.patientCount_2 = this.patientCount_1;
+                this.observationCount_2 = this.observationCount_1;
+                this.isLoadingPatientCount_2 = false;
+                this.isLoadingObservationCount_2 = false;
+              }
             }
           }
         },
@@ -213,10 +241,12 @@ export class QueryService {
                 this.loadingStateTotal = 'complete';
                 this.observationCount_1 = countResponse['observationCount'];
                 // Update the final counts: patients and observations
-                this.patientCount_2 = this.patientCount_1;
-                this.observationCount_2 = this.observationCount_1;
-                this.isLoadingPatientCount_2 = false;
-                this.isLoadingObservationCount_2 = false;
+                if (this.syncFinalCounts || initialUpdate) {
+                  this.patientCount_2 = this.patientCount_1;
+                  this.observationCount_2 = this.observationCount_1;
+                  this.isLoadingPatientCount_2 = false;
+                  this.isLoadingObservationCount_2 = false;
+                }
               }
             }
           },
@@ -264,11 +294,13 @@ export class QueryService {
             this.studyCount_1 = studyKeys.length;
             this.conceptCodes_1 = conceptKeys;
             // Update the final counts: concepts and studies
-            this.conceptCount_2 = this.conceptCount_1;
-            this.studyCount_2 = this.studyCount_1;
-            this.conceptCodes_2 = this.conceptCodes_1;
-            this.isLoadingConceptCount_2 = false;
-            this.isLoadingStudyCount_2 = false;
+            if (this.syncFinalCounts || initialUpdate) {
+              this.conceptCount_2 = this.conceptCount_1;
+              this.studyCount_2 = this.studyCount_1;
+              this.conceptCodes_2 = this.conceptCodes_1;
+              this.isLoadingConceptCount_2 = false;
+              this.isLoadingStudyCount_2 = false;
+            }
             /*
              * update patient counts on tree nodes on the left side
              */
@@ -280,11 +312,14 @@ export class QueryService {
             /*
              * update the tree nodes in the 2nd step
              */
-            this.updateTreeNodes_2(continueUpdate);
+            this.updateTreeNodes_2(continuousUpdate);
           }
         },
         err => console.error(err)
       );
+    /*
+     * ====== function updateCounts_1 ends ======
+     */
   }
 
   /**
@@ -293,24 +328,34 @@ export class QueryService {
    * only when the tree nodes are completely loaded can we start updating
    * the counts in the 2nd step
    */
-  private updateTreeNodes_2(continueUpdate: boolean) {
+  private updateTreeNodes_2(continuousUpdate: boolean) {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
-      let checklist = this.query ? this.query.observationsQuery['data'] : null;
-      if (checklist) {
-        let parentPaths = [];
-        for (let path of checklist) {
-          let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
-          for (let _parentPath of _parentPaths) {
-            if (!parentPaths.includes(_parentPath)) {
-              parentPaths.push(_parentPath);
+
+      // Only update the tree in the 2nd step when the user changes sth. in the 1st step
+      if (this.step !== Step.II) {
+        let checklist = this.query ? this.query.observationsQuery['data'] : null;
+        if (checklist) {
+          let parentPaths = [];
+          for (let path of checklist) {
+            let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
+            for (let _parentPath of _parentPaths) {
+              if (!parentPaths.includes(_parentPath)) {
+                parentPaths.push(_parentPath);
+              }
             }
           }
+          checklist = checklist.concat(parentPaths);
+        } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
+          checklist = [];
+          for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
+            checklist.push(selectedNode['fullName']);
+          }
         }
-        checklist = checklist.concat(parentPaths);
+        this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
       }
-      this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
+
       this.query = null;
-      if (continueUpdate) {
+      if (continuousUpdate) {
         this.updateCounts_2();
       }
     } else {
@@ -324,6 +369,9 @@ export class QueryService {
    * update the patient, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
+    /*
+     * ====== function updateCounts_2 starts ======
+     */
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_2);
@@ -385,6 +433,9 @@ export class QueryService {
         err => console.error(err)
       );
     this.updateExports();
+    /*
+     * ====== function updateCounts_2 ends ======
+     */
   }
 
   public updateExports() {
@@ -719,5 +770,37 @@ export class QueryService {
 
   set queries(value: Query[]) {
     this._queries = value;
+  }
+
+  get instantCountUpdate_1(): boolean {
+    return this._instantCountUpdate_1;
+  }
+
+  set instantCountUpdate_1(value: boolean) {
+    this._instantCountUpdate_1 = value;
+  }
+
+  get instantCountUpdate_2(): boolean {
+    return this._instantCountUpdate_2;
+  }
+
+  set instantCountUpdate_2(value: boolean) {
+    this._instantCountUpdate_2 = value;
+  }
+
+  get syncFinalCounts(): boolean {
+    return this._syncFinalCounts;
+  }
+
+  set syncFinalCounts(value: boolean) {
+    this._syncFinalCounts = value;
+  }
+
+  get step(): Step {
+    return this._step;
+  }
+
+  set step(value: Step) {
+    this._step = value;
   }
 }

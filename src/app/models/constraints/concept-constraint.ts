@@ -3,7 +3,6 @@ import {Concept} from '../concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
-import {el} from "@angular/platform-browser/testing/src/browser_util";
 
 export class ConceptConstraint implements Constraint {
   private _parent: Constraint;

@@ -112,6 +112,11 @@ export class GbNavBarComponent implements OnInit {
     }
   }
 
+  updateQuery() {
+    // console.log(this.queryService);
+    this.queryService.updateCounts_1(true);
+  }
+
   queryFileUpload(event) {
     let reader = new FileReader();
     let file = event.target.files[0];

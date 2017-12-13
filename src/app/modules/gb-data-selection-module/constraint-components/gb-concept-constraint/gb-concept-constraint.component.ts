@@ -218,7 +218,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyObsDateConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyObsDateConstraint = this._applyObsDateConstraint;
-    this.updateCounts();
+    if (conceptConstraint.applyObsDateConstraint) {
+      this.updateCounts();
+    }
   }
 
   get obsDate1(): Date {
@@ -261,7 +263,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._applyTrialVisitConstraint = value;
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
-    this.updateCounts();
+    if (conceptConstraint.applyTrialVisitConstraint) {
+      this.updateCounts();
+    }
   }
 
   get applyModifierConstraint(): boolean {

@@ -5,14 +5,21 @@
   <div *ngIf="isDataSelection" class="gb-data-selection-overview-panel">
     <div class="row">
       <div class="col-3">
-        <span *ngIf="!isLoadingPatientCount_2">
-          {{patientCount_2}} {{singularOrPlural('subject', patientCount_2)}}
-        </span>
-        <span *ngIf="isLoadingPatientCount_2">
-          <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> subjects
-        </span>
+        <button type="button"
+                (click)="updateQuery()"
+                class="btn btn-secondary btn-sm gb-data-selection-control-btn
+                gb-data-selection-overview-panel-update-btn">
+          Update</button>
       </div>
       <div class="col-5">
+        <div class="row">
+          <span *ngIf="!isLoadingObservationCount_2">
+            {{patientCount_2}} {{singularOrPlural('subject', subject)}}
+          </span>
+          <span *ngIf="isLoadingObservationCount_2">
+            <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i> subjects
+          </span>
+        </div>
         <div class="row">
           <span *ngIf="!isLoadingObservationCount_2">
             {{observationCount_2}} {{singularOrPlural('observation', observationCount_2)}}
