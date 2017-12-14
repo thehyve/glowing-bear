@@ -40,6 +40,7 @@
       <div *ngIf="query['visible']"
            class="gb-query-panel">
         <p-panel [collapsed]="query['collapsed']"
+                 (keypress)="onQueryPanelKeyEnter($event, query)"
                  (click)="onQueryPanelClick(query)">
           <p-header>
             <div class="ui-helper-clearfix">
