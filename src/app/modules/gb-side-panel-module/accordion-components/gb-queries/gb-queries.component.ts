@@ -1,6 +1,5 @@
-import {Component, OnInit, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {DropMode} from '../../../../models/drop-mode';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
 
@@ -9,10 +8,9 @@ import {QueryService} from '../../../../services/query.service';
   templateUrl: './gb-queries.component.html',
   styleUrls: ['./gb-queries.component.css']
 })
-export class GbQueriesComponent implements OnInit, AfterViewInit {
+export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
-  observer: MutationObserver;
   collapsed = false;
 
   constructor(public treeNodeService: TreeNodeService,
@@ -21,31 +19,6 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-  }
-
-  ngAfterViewInit() {
-    this.observer = new MutationObserver(this.update.bind(this));
-    const config = {
-      attributes: false,
-      subtree: true,
-      childList: true,
-      characterData: false
-    };
-
-    this.observer.observe(this.element.nativeElement, config);
-  }
-
-  update() {
-    let panels = this.element.nativeElement.querySelectorAll('.gb-query-panel');
-    let index = 0;
-    for (let panel of panels) {
-      let correspondingQuery = this.queryService.queries[index];
-      panel.addEventListener('dragstart', (function () {
-        correspondingQuery['dropMode'] = DropMode.Query;
-        this.constraintService.selectedNode = correspondingQuery;
-      }).bind(this));
-      index++;
-    }
   }
 
   // query panel collapse and expansion
@@ -112,7 +85,18 @@ export class GbQueriesComponent implements OnInit, AfterViewInit {
     query['nameEditable'] = true;
   }
 
+  onQueryPanelKeyEnter(event, query) {
+    if (event.key === 'Enter' && query['nameEditable']) {
+      query['nameEditable'] = false;
+      const queryObject = {
+        name: query['name']
+      };
+      this.queryService.updateQuery(query['id'], queryObject);
+    }
+  }
+
   onQueryPanelClick(query) {
+    // console.log('on query click, ', query);
     // Save the query if its name has been modified
     if (query['nameEditable']) {
       query['nameEditable'] = false;
