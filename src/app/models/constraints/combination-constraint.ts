@@ -13,7 +13,6 @@ export class CombinationConstraint implements Constraint {
   constructor() {
     this._children = [];
     this.combinationState = CombinationState.And;
-    this.isPatientSelection = false;
     this.isRoot = false;
     this.parent = null;
   }

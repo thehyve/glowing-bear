@@ -24,6 +24,7 @@
   color: darkslategrey;
   overflow: hidden;
   width: 100%;
+  font-size: 0.9em;
 }
 
 .gb-data-selection-overview-panel-input {
@@ -34,13 +35,44 @@
   padding: 0.3em 0.3em 0.3em 0.5em;
 }
 
+/* save btn */
 .gb-data-selection-overview-panel-save-btn {
   margin-bottom: 3px;
   margin-right: 7px;
   width: 100%;
 }
+.gb-data-selection-overview-panel-save-btn:hover {
+  background-color: rgba(51, 156, 144, 0.7);
+}
+.gb-data-selection-overview-panel-save-btn:active {
+  background-color: rgba(51, 156, 144, 0.9);
+}
 
+/* import btn */
 .gb-data-selection-overview-panel-import-btn {
   margin-right: 7px;
   width: 100%;
+}
+.gb-data-selection-overview-panel-import-btn:hover {
+  background-color: rgba(51, 156, 144, 0.7);
+}
+.gb-data-selection-overview-panel-import-btn:active {
+  background-color: rgba(51, 156, 144, 0.9);
+}
+
+/* update btn */
+.gb-data-selection-overview-panel-update-btn {
+  background-color: #339c90;
+  border-color: transparent;
+  color: white;
+}
+
+.gb-data-selection-overview-panel-update-btn:hover {
+  background-color: #287c73;
+  border-color: #287c73;
+}
+
+.gb-data-selection-overview-panel-update-btn:active {
+  background-color: #236d64;
+  border-color: #287c73;
 }

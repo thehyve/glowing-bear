@@ -266,6 +266,14 @@ body .ui-autocomplete-input-token {
 }
 
 /*
+ * Style for buttons such as update, clear criteria, expand all/none, check all/none
+ * in Data Selection
+ */
+.gb-data-selection-control-btn {
+  border-radius: 2em;
+}
+
+/*
  * Style for the p-panel in a concept constraint
  */
 .gb-constraint-child-container p-panel .ui-panel {

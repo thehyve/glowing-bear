@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
+import {Step} from '../../../../models/step';
 
 @Component({
   selector: 'gb-projection',
@@ -29,20 +30,26 @@ export class GbProjectionComponent implements OnInit {
     this.treeNodeService.selectedProjectionTreeData = value;
   }
 
-  updateCounts(event) {
-    this.queryService.updateCounts_2();
+  updateCounts() {
+    this.queryService.step = Step.II;
+    if (this.queryService.instantCountUpdate_2) {
+      this.queryService.updateCounts_2();
+    }
   }
 
   checkAll(value: boolean) {
     if (value) {
-      this.treeNodeService.checkProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
+      this.treeNodeService
+        .checkProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
     } else {
-      this.treeNodeService.selectedProjectionTreeData = [];
+      this.treeNodeService
+        .selectedProjectionTreeData = [];
     }
-    this.queryService.updateCounts_2();
+    this.updateCounts();
   }
 
   expandAll(value: boolean) {
-    this.treeNodeService.expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
+    this.treeNodeService
+      .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
   }
 }

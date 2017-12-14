@@ -38,7 +38,7 @@ export class GbSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.queryService.updateCounts_1();
+    this.queryService.updateCounts_1(false, true);
   }
 
   get patientCount_1(): number {
@@ -63,7 +63,7 @@ export class GbSelectionComponent implements OnInit {
 
   clearCriteria() {
     this.constraintService.clearSelectionConstraint();
-    this.queryService.updateCounts_1();
+    this.queryService.updateCounts_1(false, true);
   }
 
   get loadingStateInclusion(): LoadingState {

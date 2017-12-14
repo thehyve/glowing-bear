@@ -62,8 +62,10 @@ export class ConstraintService {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
+    this.rootInclusionConstraint.isPatientSelection = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint.isPatientSelection = true;
   }
 
   private loadEmptyConstraints() {
@@ -127,7 +129,6 @@ export class ConstraintService {
     });
     return results;
   }
-
 
   /*
    * ------------ constraint generation in the 1st step ------------

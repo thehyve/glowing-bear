@@ -1,22 +1,22 @@
 <div>
   <div class="container form-inline">
     <button type="button" (click)="expandAll(true)"
-            class="btn btn-primary btn-sm">Expand All</button>
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Expand All</button>
     <span>&nbsp;</span>
     <button type="button" (click)="expandAll(false)"
-            class="btn btn-primary btn-sm">Collapse All</button>
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Collapse All</button>
     <span style="color: lightgray">&nbsp;&middot;&nbsp;</span>
     <button type="button" (click)="checkAll(true)"
-            class="btn btn-primary btn-sm">Check All</button>
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Check All</button>
     <span>&nbsp;</span>
     <button type="button" (click)="checkAll(false)"
-            class="btn btn-primary btn-sm">Check None</button>
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Check None</button>
   </div>
 
   <p-tree [value]="projectionTreeData"
           selectionMode="checkbox"
-          (onNodeSelect)="updateCounts($event)"
-          (onNodeUnselect)="updateCounts($event)"
+          (onNodeSelect)="updateCounts()"
+          (onNodeUnselect)="updateCounts()"
           [(selection)]="selectedProjectionTreeData"
           styleClass="gb-projection-tree-container">
   </p-tree>
