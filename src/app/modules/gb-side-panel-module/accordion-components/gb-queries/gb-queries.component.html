@@ -7,10 +7,19 @@
                     placeholder="Search queries"
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
-    <button class="btn btn-secondary btn-sm gb-query-filter-btn"
+    <button class="btn btn-secondary btn-sm gb-query-panel-clear-btn"
             (click)="clearFilter()"
             type="button">clear</button>
+    <input id="queryFileUpload"
+           type="file"
+           style="display: none"/>
+    <button class="btn btn-outline-primary gb-query-panel-import-btn"
+            (click)="importQuery()"
+            type="button">import query</button>
+  </div>
 
+
+  <div class="container gb-query-panel-sort-btn-container">
     <div class="float-right">
       <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
               (click)="sortByName()"
@@ -29,8 +38,8 @@
               icon="icon-sort-subscription">
       </button>
     </div>
+    <br><br>
   </div>
-  <br><br>
 
 
   <!-- queries -->

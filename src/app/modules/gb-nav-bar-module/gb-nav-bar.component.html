@@ -11,13 +11,6 @@
     <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-save-btn"
             (click)="saveQuery()"
             type="button">Save query</button>
-    <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-    <input id="queryFileUpload"
-           type="file"
-           style="display: none"/>
-    <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-import-btn"
-            (click)="importQuery()"
-            type="button">Import query</button>
   </div>
 
   <p-messages [(value)]="queryService.alertMessages"></p-messages>

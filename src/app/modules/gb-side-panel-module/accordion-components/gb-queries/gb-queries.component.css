@@ -6,11 +6,22 @@
   margin-bottom: 3px;
 }
 
-.gb-query-filter-btn {
+.gb-query-panel-clear-btn {
   font-size: small;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
   color: gray;
+}
+
+.gb-query-panel-import-btn {
+  font-size: small;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+}
+
+.gb-query-panel-sort-btn-container {
+  margin-top: 6px;
+  margin-bottom: -10px;
 }
 
 /*

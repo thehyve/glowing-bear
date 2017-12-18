@@ -12,13 +12,75 @@ export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
   collapsed = false;
+  private isUploadListenerNotAdded: boolean;
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
               private element: ElementRef) {
+    this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
+  }
+
+  importQuery() {
+    let uploadElm = document.getElementById('queryFileUpload');
+    if (this.isUploadListenerNotAdded) {
+      uploadElm
+        .addEventListener('change', this.queryFileUpload.bind(this), false);
+      this.isUploadListenerNotAdded = false;
+    }
+    uploadElm.click();
+  }
+
+  queryFileUpload(event) {
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onload = (function (e) {
+      if (file.type === 'application/json') {
+        let json = JSON.parse(e.target['result']);
+        let pathArray = null;
+        // If the json is of standard format
+        if (json['patientsQuery'] || json['observationsQuery']) {
+          this.queryService.restoreQuery(json);
+        } else if (json['paths']) {
+          pathArray = json['paths'];
+        } else if (json.constructor === Array) {
+          pathArray = json;
+        }
+
+        if (pathArray) {
+          let query = {
+            'name': 'imported temporary query',
+            'patientsQuery': {'type': 'true'},
+            'observationsQuery': {
+              data: pathArray
+            }
+          };
+          this.queryService.restoreQuery(query);
+          this.queryService.alert('Imported concept selection in Step 2.', '', 'info');
+        }
+      } else if (file.type === 'text/plain' ||
+        file.type === 'text/tab-separated-values' ||
+        file.type === 'text/csv' ||
+        file.type === '') {
+        // we assume the text contains a list of subject Ids
+        let query = {
+          'name': 'imported temporary query',
+          'patientsQuery': {
+            'type': 'patient_set',
+            'subjectIds': e.target['result'].split('\n')
+          },
+          'observationsQuery': {}
+        };
+        this.queryService.restoreQuery(query);
+        this.queryService.alert('Imported subject selection in Step 1.', '', 'info');
+      }
+
+      // reset the input path so that it will take the same file again
+      document.getElementById('queryFileUpload')['value'] = '';
+    }).bind(this);
+    reader.readAsText(file);
   }
 
   // query panel collapse and expansion
