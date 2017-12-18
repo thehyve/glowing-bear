@@ -19,7 +19,7 @@
   </div>
 
 
-  <div class="container gb-query-panel-sort-btn-container">
+  <div *ngIf="queries.length > 0" class="container gb-query-panel-sort-btn-container">
     <div class="float-right">
       <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
               (click)="sortByName()"
