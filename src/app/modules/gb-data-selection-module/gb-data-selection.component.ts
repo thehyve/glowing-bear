@@ -30,10 +30,6 @@ export class GbDataSelectionComponent implements OnInit {
   closeAccordion(event) {
   }
 
-  upateCountBtnClick(event) {
-    event.stopPropagation(); console.log(event);
-  }
-
   numberWithCommas(x: number): string {
     if (x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -70,12 +66,26 @@ export class GbDataSelectionComponent implements OnInit {
     return this.numberWithCommas(this.queryService.observationCount_1);
   }
 
+  get observationCount_2(): string {
+    return this.numberWithCommas(this.queryService.observationCount_2);
+  }
+
   get observationCountPercentage_1(): string {
-    return '(' + Math.floor(100 * this.queryService.observationCount_1 / this.queryService.observationCount_0) + '%)';
+    return '(' + Math.ceil(100 * this.queryService.observationCount_1 / this.queryService.observationCount_0) + '%)';
   }
 
   get observationCountPercentage_2(): string {
-    return '(' + Math.floor(100 * this.queryService.observationCount_2 / this.queryService.observationCount_1) + '%)';
+    return '(' + Math.ceil(100 * this.queryService.observationCount_2 / this.queryService.observationCount_1) + '%)';
+  }
+
+  updateCounts_1(event) {
+    event.stopPropagation();
+    this.queryService.updateCounts_1();
+  }
+
+  updateCounts_2(event) {
+    event.stopPropagation();
+    this.queryService.updateCounts_2();
   }
 
 }
