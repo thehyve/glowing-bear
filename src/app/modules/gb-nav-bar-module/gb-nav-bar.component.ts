@@ -70,16 +70,6 @@ export class GbNavBarComponent implements OnInit {
     this._activeItem = value;
   }
 
-  public singularOrPlural(noun: string, number: string) {
-    if (number === '1' || number === '0') {
-      return noun;
-    } else if (noun === 'study') {
-      return 'studies';
-    } else {
-      return noun + 's';
-    }
-  }
-
   /**
    * Prevent the default behavior of node drop
    * @param event
@@ -165,46 +155,6 @@ export class GbNavBarComponent implements OnInit {
       document.getElementById('queryFileUpload')['value'] = '';
     }).bind(this);
     reader.readAsText(file);
-  }
-
-  numberWithCommas(x: number): string {
-    if (x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    } else {
-      return '0';
-    }
-  }
-
-  get patientCount_2(): string {
-    return this.numberWithCommas(this.queryService.patientCount_2);
-  }
-
-  get isLoadingPatientCount_2(): boolean {
-    return this.queryService.isLoadingPatientCount_2;
-  }
-
-  get observationCount_2(): string {
-    return this.numberWithCommas(this.queryService.observationCount_2);
-  }
-
-  get isLoadingObservationCount_2(): boolean {
-    return this.queryService.isLoadingObservationCount_2;
-  }
-
-  get conceptCount_2(): string {
-    return this.numberWithCommas(this.queryService.conceptCount_2);
-  }
-
-  get isLoadingConceptCount_2(): boolean {
-    return this.queryService.isLoadingConceptCount_2;
-  }
-
-  get studyCount_2(): string {
-    return this.numberWithCommas(this.queryService.studyCount_2);
-  }
-
-  get isLoadingStudyCount_2(): boolean {
-    return this.queryService.isLoadingStudyCount_2;
   }
 }
 

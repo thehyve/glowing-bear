@@ -2,23 +2,23 @@ export class QueryServiceMock {
   /*
     * ------ variables used in the Selection accordion in Data Selection ------
     */
-  private _inclusionPatientCount = 0;
-  private _exclusionPatientCount = 0;
-  // the number of patients selected in the first step
-  private _patientCount_1 = 0;
-  // the number of observations from the selected patients in the first step
+  private _inclusionSubjectCount = 0;
+  private _exclusionSubjectCount = 0;
+  // the number of subjects selected in the first step
+  private _subjectCount_1 = 0;
+  // the number of observations from the selected subjects in the first step
   private _observationCount_1 = 0;
-  // the number of concepts from the selected patients in the first step
+  // the number of concepts from the selected subjects in the first step
   private _conceptCount_1 = 0;
-  // the number of studies from the selected patients in the first step
+  // the number of studies from the selected subjects in the first step
   private _studyCount_1 = 0;
 
   /*
    * ------ variables used in the Projection accordion in Data Selection ------
    */
-  // the number of patients further refined in the second step
-  // _patientCount_2 < or = _patientCount_1
-  private _patientCount_2 = 0;
+  // the number of subjects further refined in the second step
+  // _subjectCount_2 < or = _subjectCount_1
+  private _subjectCount_2 = 0;
   // the number of observations further refined in the second step
   // _observationCount_2 < or = _observationCount_1
   private _observationCount_2 = 0;

@@ -31,15 +31,13 @@
   margin-bottom: 3px;
   margin-right: 7px;
   max-width: 100%;
-  font-size: small;
+  font-size: medium;
   padding: 0.3em 0.3em 0.3em 0.5em;
 }
 
 /* save btn */
 .gb-data-selection-overview-panel-save-btn {
-  margin-bottom: 3px;
-  margin-right: 7px;
-  width: 100%;
+  margin: .1em;
 }
 .gb-data-selection-overview-panel-save-btn:hover {
   background-color: rgba(51, 156, 144, 0.7);
@@ -50,8 +48,7 @@
 
 /* import btn */
 .gb-data-selection-overview-panel-import-btn {
-  margin-right: 7px;
-  width: 100%;
+  margin: .1em;
 }
 .gb-data-selection-overview-panel-import-btn:hover {
   background-color: rgba(51, 156, 144, 0.7);
