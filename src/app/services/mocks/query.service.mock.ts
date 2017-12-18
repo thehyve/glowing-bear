@@ -1,4 +1,7 @@
+import {Query} from '../../models/query';
+
 export class QueryServiceMock {
+  private _queries: Query[] = [];
   /*
     * ------ variables used in the Selection accordion in Data Selection ------
     */
@@ -61,5 +64,13 @@ export class QueryServiceMock {
 
   set exportFormats(value: Array<object>) {
     this._exportFormats = value;
+  }
+
+  get queries(): Query[] {
+    return this._queries;
+  }
+
+  set queries(value: Query[]) {
+    this._queries = value;
   }
 }
