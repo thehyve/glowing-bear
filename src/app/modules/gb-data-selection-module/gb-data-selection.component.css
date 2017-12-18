@@ -20,6 +20,7 @@
 }
 
 .gb-data-selection-accordion-sub-header-2 {
+  background-color: rgba(51, 156, 144, 0.1);
   border-left: 1px solid lightgray;
   border-right: 1px solid lightgray;
   border-radius: 6px;

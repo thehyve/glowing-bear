@@ -10,18 +10,18 @@
           <div class="gb-data-selection-accordion-sub-header-1">
             Step 1: Define the group of subjects for which you want to select data
           </div>
-          <div class="form-inline gb-data-selection-accordion-sub-header-2">
-            <div class="gb-data-selection-accordion-sub-header-3">
+          <div class="gb-data-selection-accordion-sub-header-2">
+            <span class="gb-data-selection-accordion-sub-header-3">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_1}}</span> / {{subjectCount_0}}
               <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}},
               <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
-            </div>
-            <div class="float-right">
+            </span>
+            <span class="float-right">
               <button type="button"
                       (click)="updateCounts_1($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
-            </div>
+            </span>
           </div>
         </div>
       </md2-accordion-header>
@@ -36,18 +36,18 @@
             Step 2: Select the relevant data of your group of
             subjects
           </div>
-          <div class="form-inline gb-data-selection-accordion-sub-header-2">
-            <div class="gb-data-selection-accordion-sub-header-3">
+          <div class="gb-data-selection-accordion-sub-header-2">
+            <span class="gb-data-selection-accordion-sub-header-3">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}}</span> / {{subjectCount_1}}
               <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}},
               <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
-            </div>
-            <div class="float-right">
+            </span>
+            <span class="float-right">
               <button type="button"
                       (click)="updateCounts_2($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
-            </div>
+            </span>
           </div>
         </div>
       </md2-accordion-header>
