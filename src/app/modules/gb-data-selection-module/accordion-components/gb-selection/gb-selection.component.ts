@@ -41,16 +41,16 @@ export class GbSelectionComponent implements OnInit {
     this.queryService.updateCounts_1(false, true);
   }
 
-  get patientCount_1(): number {
-    return this.queryService.patientCount_1;
+  get subjectCount_1(): number {
+    return this.queryService.subjectCount_1;
   }
 
-  get inclusionPatientCount(): number {
-    return this.queryService.inclusionPatientCount;
+  get inclusionSubjectCount(): number {
+    return this.queryService.inclusionSubjectCount;
   }
 
-  get exclusionPatientCount(): number {
-    return this.queryService.exclusionPatientCount;
+  get exclusionSubjectCount(): number {
+    return this.queryService.exclusionSubjectCount;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

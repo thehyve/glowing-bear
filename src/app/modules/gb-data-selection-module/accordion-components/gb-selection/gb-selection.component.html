@@ -10,7 +10,7 @@
        class="criteria-box">
     <div class="patient-count-box">
       <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateInclusion == 'loading'"></i>
-      <span [@notifyState]="loadingStateInclusion">{{inclusionPatientCount}} patients included.</span>
+      <span [@notifyState]="loadingStateInclusion">{{inclusionSubjectCount}} patients included.</span>
     </div>
     <gb-constraint #rootInclusionConstraintComponent
                 [constraint]="rootInclusionConstraint"
@@ -22,7 +22,7 @@
        class="criteria-box">
     <div class="patient-count-box">
       <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateExclusion == 'loading'"></i>
-      <span [@notifyState]="loadingStateExclusion">{{exclusionPatientCount}} patients excluded.</span>
+      <span [@notifyState]="loadingStateExclusion">{{exclusionSubjectCount}} patients excluded.</span>
     </div>
     <gb-constraint #rootExclusionConstraintComponent
                 [constraint]="rootExclusionConstraint"
@@ -33,7 +33,7 @@
   <!-- Intersection calculation -->
   <div class="patient-count-box">
     <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateTotal == 'loading'"></i>
-    <span [@notifyState]="loadingStateTotal">{{patientCount_1}} patients match your selection.</span>
+    <span [@notifyState]="loadingStateTotal">{{subjectCount_1}} patients match your selection.</span>
   </div>
 
 </div>

@@ -11,17 +11,17 @@ type LoadingState = 'loading' | 'complete';
 
 /**
  * This service concerns with
- * (1) Updating patient and observation counts in the steps in data-selection
+ * (1) Updating subject and observation counts in the steps in data-selection
  * (2) Saving / Updating / Restoring / Deleting queries in the queries panel on the left
  *
- * Remark: the patient set, observation set, concept set and study set used
+ * Remark: the subject set, observation set, concept set and study set used
  * in the 2nd step (i.e. the projection step) are subsets of the corresponding sets
  * in the 1st step (i.e. the selection step).
  * Hence, each time the 1st sets updated, so should be the 2nd sets.
  * However, each time the 2nd sets updated, the 1st sets remain unaffected.
  *
  * General workflow of data selection:
- * select patients (rows), update the counts in the 1st step -->
+ * select subjects (rows), update the counts in the 1st step -->
  * select concepts (columns), update the counts in the 2nd step -->
  * update data table and charts (to be implemented) in 3rd/4th steps -->
  * update data formats available for export based on the previous data selection
@@ -35,17 +35,22 @@ export class QueryService {
   // The list of queries of the user
   private _queries: Query[] = [];
   /*
+   * ------ variables used in the 0th step, i.e. the total numbers of things ------
+   */
+  private _subjectCount_0 = 0;
+  private _observationCount_0 = 0;
+  /*
    * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
    */
-  private _inclusionPatientCount = 0;
-  private _exclusionPatientCount = 0;
-  // the number of patients selected in the first step
-  private _patientCount_1 = 0;
-  // the number of observations from the selected patients in the first step
+  private _inclusionSubjectCount = 0;
+  private _exclusionSubjectCount = 0;
+  // the number of subjects selected in the first step
+  private _subjectCount_1 = 0;
+  // the number of observations from the selected subjects in the first step
   private _observationCount_1 = 0;
-  // the number of concepts from the selected patients in the first step
+  // the number of concepts from the selected subjects in the first step
   private _conceptCount_1 = 0;
-  // the number of studies from the selected patients in the first step
+  // the number of studies from the selected subjects in the first step
   private _studyCount_1 = 0;
   // the codes of the concepts selected in the first step
   private _conceptCodes_1 = [];
@@ -86,10 +91,10 @@ export class QueryService {
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
    */
-  // the number of patients further refined in the second step
-  // _patientCount_2 < or = _patientCount_1
-  private _patientCount_2 = 0;
-  private _isLoadingPatientCount_2 = true; // the flag indicating if the count is being loaded
+  // the number of subjects further refined in the second step
+  // _subjectCount_2 < or = _subjectCount_1
+  private _subjectCount_2 = 0;
+  private _isLoadingSubjectCount_2 = true; // the flag indicating if the count is being loaded
   // the number of observations further refined in the second step
   // _observationCount_2 could be <, > or = _observationCount_1
   private _observationCount_2 = 0;
@@ -116,7 +121,7 @@ export class QueryService {
   private _isLoadingExportFormats = true;
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
-   * whether there is an error saving patient/observation set,
+   * whether there is an error saving subject/observation set,
    * or the saving has been successful
    */
   private _alertMessages = [];
@@ -172,7 +177,7 @@ export class QueryService {
   }
 
   /**
-   * update the patient, observation, concept and study counts in the first step
+   * update the subject, observation, concept and study counts in the first step
    */
   public updateCounts_1(continuousUpdate?: boolean, initialUpdate?: boolean) {
     /*
@@ -188,12 +193,12 @@ export class QueryService {
     this.loadingStateExclusion = 'loading';
     this.loadingStateTotal = 'loading';
     // also update the flags for the counts in the 2nd step
-    this.isLoadingPatientCount_2 = true;
+    this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
     this.isLoadingConceptCount_2 = true;
     this.isLoadingStudyCount_2 = true;
     /*
-     * Inclusion constraint patient count
+     * Inclusion constraint subject count
      */
     let inclusionConstraint = this.constraintService.generateInclusionConstraint();
     this.resourceService.getCounts(inclusionConstraint)
@@ -201,17 +206,19 @@ export class QueryService {
         countResponse => {
           const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            this.inclusionPatientCount = countResponse['patientCount'];
+            this.inclusionSubjectCount = countResponse['patientCount'];
             this.loadingStateInclusion = 'complete';
             if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
-              this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
+              this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
               this.loadingStateTotal = 'complete';
               this.observationCount_1 = countResponse['observationCount'];
-              // Update the final counts: patients and observations
+              // Update the final counts: subjects and observations
               if (this.syncFinalCounts || initialUpdate) {
-                this.patientCount_2 = this.patientCount_1;
+                this.subjectCount_0 = this.subjectCount_1;
+                this.observationCount_0 = this.observationCount_1;
+                this.subjectCount_2 = this.subjectCount_1;
                 this.observationCount_2 = this.observationCount_1;
-                this.isLoadingPatientCount_2 = false;
+                this.isLoadingSubjectCount_2 = false;
                 this.isLoadingObservationCount_2 = false;
               }
             }
@@ -224,7 +231,7 @@ export class QueryService {
       );
 
     /*
-     * Exclusion constraint patient count
+     * Exclusion constraint subject count
      * (Only execute the exclusion constraint if it has non-empty children)
      */
     if (this.constraintService.rootExclusionConstraint.hasNonEmptyChildren()) {
@@ -234,17 +241,18 @@ export class QueryService {
           countResponse => {
             const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
             if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-              this.exclusionPatientCount = countResponse['patientCount'];
+              this.exclusionSubjectCount = countResponse['patientCount'];
               this.loadingStateExclusion = 'complete';
               if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
-                this.patientCount_1 = this.inclusionPatientCount - this.exclusionPatientCount;
+                this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
                 this.loadingStateTotal = 'complete';
                 this.observationCount_1 = countResponse['observationCount'];
-                // Update the final counts: patients and observations
+                // Update the final counts: subjects and observations
                 if (this.syncFinalCounts || initialUpdate) {
-                  this.patientCount_2 = this.patientCount_1;
+                  this.subjectCount_0 = this.subjectCount_1;
+                  this.subjectCount_2 = this.subjectCount_1;
                   this.observationCount_2 = this.observationCount_1;
-                  this.isLoadingPatientCount_2 = false;
+                  this.isLoadingSubjectCount_2 = false;
                   this.isLoadingObservationCount_2 = false;
                 }
               }
@@ -256,7 +264,7 @@ export class QueryService {
           }
         );
     } else {
-      this.exclusionPatientCount = 0;
+      this.exclusionSubjectCount = 0;
       this.loadingStateExclusion = 'complete';
     }
     /*
@@ -302,7 +310,7 @@ export class QueryService {
               this.isLoadingStudyCount_2 = false;
             }
             /*
-             * update patient counts on tree nodes on the left side
+             * update subject counts on tree nodes on the left side
              */
             this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
             /*
@@ -366,7 +374,7 @@ export class QueryService {
   }
 
   /**
-   * update the patient, observation, concept and study counts in the second step
+   * update the subject, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
     /*
@@ -378,7 +386,7 @@ export class QueryService {
     let timestamp = new Date();
     this.queueOfCalls_2.push(timestamp.getMilliseconds());
     // set flags to true indicating the counts are being loaded
-    this.isLoadingPatientCount_2 = true;
+    this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
     this.isLoadingConceptCount_2 = true;
     this.isLoadingStudyCount_2 = true;
@@ -391,14 +399,14 @@ export class QueryService {
     combo.addChild(selectionConstraint);
     combo.addChild(projectionConstraint);
 
-    // update the patient count and observation count in the 2nd step
+    // update the subject count and observation count in the 2nd step
     this.resourceService.getCounts(combo)
       .subscribe(
         (countResponse) => {
           const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-            this.patientCount_2 = countResponse['patientCount'];
-            this.isLoadingPatientCount_2 = false;
+            this.subjectCount_2 = countResponse['patientCount'];
+            this.isLoadingSubjectCount_2 = false;
             this.observationCount_2 = countResponse['observationCount'];
             this.isLoadingObservationCount_2 = false;
           }
@@ -556,28 +564,44 @@ export class QueryService {
       );
   }
 
-  get inclusionPatientCount(): number {
-    return this._inclusionPatientCount;
+  get inclusionSubjectCount(): number {
+    return this._inclusionSubjectCount;
   }
 
-  set inclusionPatientCount(value: number) {
-    this._inclusionPatientCount = value;
+  set inclusionSubjectCount(value: number) {
+    this._inclusionSubjectCount = value;
   }
 
-  get exclusionPatientCount(): number {
-    return this._exclusionPatientCount;
+  get exclusionSubjectCount(): number {
+    return this._exclusionSubjectCount;
   }
 
-  set exclusionPatientCount(value: number) {
-    this._exclusionPatientCount = value;
+  set exclusionSubjectCount(value: number) {
+    this._exclusionSubjectCount = value;
   }
 
-  get patientCount_1(): number {
-    return this._patientCount_1;
+  get subjectCount_0(): number {
+    return this._subjectCount_0;
   }
 
-  set patientCount_1(value: number) {
-    this._patientCount_1 = value;
+  set subjectCount_0(value: number) {
+    this._subjectCount_0 = value;
+  }
+
+  get observationCount_0(): number {
+    return this._observationCount_0;
+  }
+
+  set observationCount_0(value: number) {
+    this._observationCount_0 = value;
+  }
+
+  get subjectCount_1(): number {
+    return this._subjectCount_1;
+  }
+
+  set subjectCount_1(value: number) {
+    this._subjectCount_1 = value;
   }
 
   get observationCount_1(): number {
@@ -636,6 +660,14 @@ export class QueryService {
     this._studyCountMap_1 = value;
   }
 
+  get subjectCount_2(): number {
+    return this._subjectCount_2;
+  }
+
+  set subjectCount_2(value: number) {
+    this._subjectCount_2 = value;
+  }
+
   get observationCount_2(): number {
     return this._observationCount_2;
   }
@@ -650,14 +682,6 @@ export class QueryService {
 
   set studyCount_2(value: number) {
     this._studyCount_2 = value;
-  }
-
-  get patientCount_2(): number {
-    return this._patientCount_2;
-  }
-
-  set patientCount_2(value: number) {
-    this._patientCount_2 = value;
   }
 
   get conceptCount_2(): number {
@@ -700,12 +724,12 @@ export class QueryService {
     this._query = value;
   }
 
-  get isLoadingPatientCount_2(): boolean {
-    return this._isLoadingPatientCount_2;
+  get isLoadingSubjectCount_2(): boolean {
+    return this._isLoadingSubjectCount_2;
   }
 
-  set isLoadingPatientCount_2(value: boolean) {
-    this._isLoadingPatientCount_2 = value;
+  set isLoadingSubjectCount_2(value: boolean) {
+    this._isLoadingSubjectCount_2 = value;
   }
 
   get isLoadingObservationCount_2(): boolean {
