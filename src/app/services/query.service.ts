@@ -179,7 +179,7 @@ export class QueryService {
   /**
    * update the subject, observation, concept and study counts in the first step
    */
-  public updateCounts_1(continuousUpdate?: boolean, initialUpdate?: boolean) {
+  public updateCounts_1(initialUpdate?: boolean) {
     /*
      * ====== function updateCounts_1 starts ======
      */
@@ -314,13 +314,9 @@ export class QueryService {
              */
             this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
             /*
-             * update the export info
-             */
-            this.updateExports();
-            /*
              * update the tree nodes in the 2nd step
              */
-            this.updateTreeNodes_2(continuousUpdate);
+            this.updateTreeNodes_2();
           }
         },
         err => console.error(err)
@@ -336,7 +332,7 @@ export class QueryService {
    * only when the tree nodes are completely loaded can we start updating
    * the counts in the 2nd step
    */
-  private updateTreeNodes_2(continuousUpdate: boolean) {
+  private updateTreeNodes_2() {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
 
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
@@ -363,9 +359,6 @@ export class QueryService {
       }
 
       this.query = null;
-      if (continuousUpdate) {
-        this.updateCounts_2();
-      }
     } else {
       window.setTimeout((function () {
         this.updateTreeNodes_2();
