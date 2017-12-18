@@ -51,11 +51,15 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   get subjectCountPercentage_1(): string {
-    return '(' + Math.floor(100 * this.queryService.subjectCount_1 / this.queryService.subjectCount_0) + '%)';
+    return this.queryService.subjectCount_1 !== 0 ?
+      '(' + Math.ceil(100 * this.queryService.subjectCount_1 / this.queryService.subjectCount_0) + '%)' :
+      '(0%)';
   }
 
   get subjectCountPercentage_2(): string {
-    return '(' + Math.floor(100 * this.queryService.subjectCount_2 / this.queryService.subjectCount_1) + '%)';
+    return this.queryService.subjectCount_2 !== 0 ?
+      '(' + Math.ceil(100 * this.queryService.subjectCount_2 / this.queryService.subjectCount_1) + '%)' :
+      '(0%)';
   }
 
   get observationCount_0(): string {
