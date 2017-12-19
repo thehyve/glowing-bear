@@ -230,8 +230,9 @@ export class QueryService {
     /*
      * create patient set for the current query in step 1
      */
-    this.resourceService.createPatientSet(name, selectionConstraint).subscribe(
-      (patientSetObj) => {
+    this.resourceService.createPatientSet(name, selectionConstraint)
+      .subscribe(
+      patientSetObj => {
         this.handle_createPatientSet_1(patientSetObj, timeStamp);
       },
       err => this.handle_error(err)
