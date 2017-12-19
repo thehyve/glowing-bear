@@ -8,6 +8,7 @@ import {GbConstraintComponent} from '../../constraint-components/gb-constraint/g
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
+import {Step} from '../../../../models/step';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -62,8 +63,9 @@ export class GbSelectionComponent implements OnInit {
   }
 
   clearCriteria() {
+    this.queryService.step = Step.I;
     this.constraintService.clearSelectionConstraint();
-    this.queryService.updateCounts_1(true);
+    this.queryService.updateCounts_1();
   }
 
   get loadingStateInclusion(): LoadingState {

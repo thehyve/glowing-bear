@@ -96,7 +96,7 @@ export class GbConstraintComponent implements OnInit {
 
   protected updateCounts() {
     this.queryService.step = Step.I;
-    if (this.queryService.instantCountUpdate_1) {
+    if (this.queryService.instantCountsUpdate_1) {
       this.queryService.updateCounts_1();
     } else {
       this.queryService.isDirty_1 = true;

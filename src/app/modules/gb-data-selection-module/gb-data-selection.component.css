@@ -25,6 +25,7 @@
   border-right: 1px solid lightgray;
   border-radius: 6px;
   padding-left: 2em;
+  overflow: hidden;
 }
 
 .gb-data-selection-accordion-sub-header-3 {
@@ -46,4 +47,8 @@
 .gb-data-selection-update-btn-dirty {
   border: 2px solid;
   font-weight: bolder;
+}
+
+.fa-circle-o-notch {
+  opacity: .5;
 }
