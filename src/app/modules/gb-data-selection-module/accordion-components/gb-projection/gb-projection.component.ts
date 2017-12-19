@@ -32,13 +32,20 @@ export class GbProjectionComponent implements OnInit {
 
   updateCounts() {
     this.queryService.step = Step.II;
+    this.queryService.dirty_2 = true;
     if (this.queryService.instantCountUpdate_2) {
       this.queryService.updateCounts_2();
     }
+    this.treeNodeService.updateSelectionCount();
+  }
+
+  isLoading() {
+      return this.queryService.isLoadingTreeCounts_2;
   }
 
   checkAll(value: boolean) {
     if (value) {
+      this.selectedProjectionTreeData.length = 0;
       this.treeNodeService
         .checkProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
     } else {
@@ -52,4 +59,9 @@ export class GbProjectionComponent implements OnInit {
     this.treeNodeService
       .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
   }
+
+  get hasSelectionCount(): boolean {
+    return this.treeNodeService.selectionCount !== undefined;
+  }
+
 }

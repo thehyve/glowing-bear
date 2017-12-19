@@ -8,6 +8,12 @@ import {ConstraintService} from './constraint.service';
 
 type LoadingState = 'loading' | 'complete';
 
+export class SelectionCount {
+  observations: number;
+  concepts: number;
+  studies: number;
+}
+
 @Injectable()
 export class TreeNodeService {
 
@@ -19,6 +25,8 @@ export class TreeNodeService {
   private _projectionTreeData: TreeNode[] = [];
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
   private _selectedProjectionTreeData: TreeNode[] = [];
+  // counts based on the projection tree selection
+  private _selectionCount: SelectionCount = null;
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -27,6 +35,24 @@ export class TreeNodeService {
   public loadingTreeNodes: LoadingState = 'complete';
   private _validTreeNodeTypes: string[] = [];
 
+  /**
+   * Check if a tree node is a concept node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public static isTreeNodeAconcept(node: TreeNode): boolean {
+    let type = node['type'];
+    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE' || type === 'TEXT');
+  }
+
+  /**
+   * Check if a tree node is a study node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public static isTreeNodeAstudy(node: TreeNode): boolean {
+    return node['type'] === 'STUDY';
+  }
 
   constructor(private resourceService: ResourceService) {
     this.validTreeNodeTypes = [
@@ -37,6 +63,26 @@ export class TreeNodeService {
       'TEXT',
       'UNKNOWN'
     ];
+  }
+
+  public updateSelectionCount() {
+    let conceptCodes = new Set<string>();
+    let studies = new Set<string>();
+    let observationCount = 0;
+    for (let node of this.selectedProjectionTreeData) {
+      if (TreeNodeService.isTreeNodeAconcept(node)) {
+        if (node['conceptCode']) {
+          conceptCodes.add(node['conceptCode']);
+        }
+        if (node['studyId']) {
+          studies.add(node['studyId']);
+        }
+        if (node['observationCount']) {
+          observationCount += node['observationCount'];
+        }
+      }
+    }
+    this.selectionCount = {observations: observationCount, concepts: conceptCodes.size, studies: studies.size};
   }
 
   /**
@@ -249,8 +295,8 @@ export class TreeNodeService {
     }
     this.projectionTreeData =
       this.updateProjectionTreeDataIterative(this.treeNodesCopy, conceptCodes, conceptCountMap);
-    this.selectedProjectionTreeData = [];
-    this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
+    this.selectedProjectionTreeData.length = 0;
+    this.updateSelectionCount();
   }
 
   private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
@@ -284,6 +330,8 @@ export class TreeNodeService {
           const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
           const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
           nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${patientCount}, obs: ${observationCount})`;
+          // save the observation count as property of the node
+          nodeCopy['observationCount'] = observationCount;
         }
         nodesWithCodes.push(nodeCopy);
       } else if (node['children']) {
@@ -360,13 +408,13 @@ export class TreeNodeService {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodeData[index];
-      if (this.isTreeNodeAstudy(dataObject) ||
-        this.isTreeNodeAconcept(dataObject)) {
+      if (TreeNodeService.isTreeNodeAstudy(dataObject) ||
+          TreeNodeService.isTreeNodeAconcept(dataObject)) {
         let treeNodeContent = elm.querySelector('.ui-treenode-content');
         const identifier =
-          this.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
+            TreeNodeService.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
         const map =
-          this.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
+            TreeNodeService.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
         const patientCount =
           map[identifier] ? map[identifier]['patientCount'] : 0;
         const updated =
@@ -548,31 +596,20 @@ export class TreeNodeService {
     this._selectedProjectionTreeData = value;
   }
 
+  get selectionCount(): SelectionCount {
+    return this._selectionCount;
+  }
+
+  set selectionCount(value: SelectionCount) {
+    this._selectionCount = value;
+  }
+
   get validTreeNodeTypes(): string[] {
     return this._validTreeNodeTypes;
   }
 
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
-  }
-
-  /**
-   * Check if a tree node is a concept node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeAconcept(node: TreeNode): boolean {
-    const type = node['type'];
-    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE') ? true : false;
-  }
-
-  /**
-   * Check if a tree node is a study node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeAstudy(node: TreeNode): boolean {
-    return node['type'] === 'STUDY' ? true : false;
   }
 
   /**

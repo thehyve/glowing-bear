@@ -8,6 +8,7 @@ import {GbConstraintComponent} from '../../constraint-components/gb-constraint/g
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import { LoadingState, QueryService } from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
+import { TrueConstraint } from '../../../../models/constraints/true-constraint';
 import { FormatHelper } from '../../../../util/format-helper';
 
 @Component({
@@ -40,6 +41,7 @@ export class GbSelectionComponent implements OnInit {
 
   ngOnInit() {
     this.queryService.updateCounts_1(true);
+    this.queryService.updateStudyAndConceptCounts(new TrueConstraint());
   }
 
   get subjectCount_1(): number {
@@ -65,6 +67,7 @@ export class GbSelectionComponent implements OnInit {
   clearCriteria() {
     this.constraintService.clearSelectionConstraint();
     this.queryService.updateCounts_1(true);
+    this.queryService.updateStudyAndConceptCounts(new TrueConstraint());
   }
 
   get loadingStateInclusion(): LoadingState {

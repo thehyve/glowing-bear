@@ -5,7 +5,7 @@
     <h5>Create new export for the currently selected data</h5>
   </div>
 
-  <div *ngIf="exportFormats.length > 0" class="gb-export-format-container">
+  <div *ngIf="!isLoadingExportFormats && exportFormats.length > 0" class="gb-export-format-container">
 
     <!-- area to indicate which data formats to export -->
     <div class="gb-export-format-header">Select data types and formats to export:</div>
