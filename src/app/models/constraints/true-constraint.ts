@@ -3,7 +3,7 @@ import {Constraint} from './constraint';
 export class TrueConstraint implements Constraint {
 
   private _parent: Constraint;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
   constructor() {
     this.parent = null;
@@ -13,7 +13,7 @@ export class TrueConstraint implements Constraint {
     return 'TrueConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): Object {
     return {
       'type': 'subselection',
       'dimension': 'patient',
@@ -21,11 +21,15 @@ export class TrueConstraint implements Constraint {
     };
   }
 
+  toQueryObjectWithoutSubselection(): object {
+    return {'type': 'true'};
+  }
+
   toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      return {'type': 'true'};
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -33,12 +37,12 @@ export class TrueConstraint implements Constraint {
     return 'True';
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

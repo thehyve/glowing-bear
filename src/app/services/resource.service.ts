@@ -7,10 +7,8 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
 import {Study} from '../models/study';
-import {Patient} from '../models/patient';
 import {EndpointService} from './endpoint.service';
 import {Constraint} from '../models/constraints/constraint';
-import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
@@ -239,6 +237,13 @@ export class ResourceService {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
     return this.getCall(urlPart, responseField);
+  }
+
+  // -------------------------------------- patient set calls --------------------------------------
+  createPatientSet(name: string, constraint: Constraint): Observable<object> {
+    const urlPart = `patient_sets?name=${name}`;
+    const body = constraint.toQueryObjectWithoutSubselection();
+    return this.postCall(urlPart, body, null);
   }
 
   // -------------------------------------- export calls --------------------------------------

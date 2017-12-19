@@ -5,7 +5,7 @@ export class StudyConstraint implements Constraint {
 
   private _parent: Constraint;
   private _studies: Study[];
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
   constructor() {
     this._studies = [];
@@ -24,38 +24,42 @@ export class StudyConstraint implements Constraint {
     return 'StudyConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): Object {
     // TODO: implement the 'subselection' wrapper on a normal query object
     return null;
   }
 
-  toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+  toQueryObjectWithoutSubselection(): object {
+    if (this._studies.length === 0) {
+      return null;
+    }
+
+    // Construct query objects for all studies
+    let childQueryObjects: Object[] = [];
+    for (let study of this.studies) {
+      childQueryObjects.push({
+        'type': 'study_name',
+        'studyId': study.studyId
+      });
+    }
+
+    if (childQueryObjects.length === 1) {
+      // Don't wrap in 'or' if we only have one study
+      return childQueryObjects[0];
     } else {
-      if (this._studies.length === 0) {
-        return null;
-      }
+      // Wrap study query objects in 'or' constraint
+      return {
+        'type': 'or',
+        'args': childQueryObjects
+      };
+    }
+  }
 
-      // Construct query objects for all studies
-      let childQueryObjects: Object[] = [];
-      for (let study of this.studies) {
-        childQueryObjects.push({
-          'type': 'study_name',
-          'studyId': study.studyId
-        });
-      }
-
-      if (childQueryObjects.length === 1) {
-        // Don't wrap in 'or' if we only have one study
-        return childQueryObjects[0];
-      } else {
-        // Wrap study query objects in 'or' constraint
-        return {
-          'type': 'or',
-          'args': childQueryObjects
-        };
-      }
+  toQueryObject(): Object {
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
+    } else {
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -68,12 +72,12 @@ export class StudyConstraint implements Constraint {
     return result;
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

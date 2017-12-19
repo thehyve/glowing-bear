@@ -6,7 +6,7 @@ import {TrialVisitConstraint} from './trial-visit-constraint';
 
 export class ConceptConstraint implements Constraint {
   private _parent: Constraint;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
@@ -54,70 +54,74 @@ export class ConceptConstraint implements Constraint {
     return 'ConceptConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): object {
     // TODO: implement the 'subselection' wrapper on a normal query object
     return null;
   }
 
-  toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
-    } else {
-      // When no concept is selected, we cannot create a query object (it should be ignored)
-      if (!this.concept) {
-        return null;
-      }
+  toQueryObjectWithoutSubselection(): object {
+    // When no concept is selected, we cannot create a query object (it should be ignored)
+    if (!this.concept) {
+      return null;
+    }
 
-      let args = [];
-      args.push({
-        type: 'concept',
-        conceptCode: this.concept.code,
-        name: this.concept.name,
-        fullName: this.concept.fullName,
-        conceptPath: this.concept.path,
-        valueType: this.concept.type
-      });
+    let args = [];
+    args.push({
+      type: 'concept',
+      conceptCode: this.concept.code,
+      name: this.concept.name,
+      fullName: this.concept.fullName,
+      conceptPath: this.concept.path,
+      valueType: this.concept.type
+    });
 
-      if (this.values.length > 0) {
-        if (this.concept.type === 'NUMERIC') {
-          // Add numerical values directly to the main constraint
-          for (let value of this.values) {
-            args.push(value.toQueryObject());
-          }
-        } else if (this.concept.type === 'CATEGORICAL') {
-          // Wrap categorical values in an OR constraint
-          let categorical = {
-            type: 'or',
-            args: this.values.map((value: ValueConstraint) => value.toQueryObject())
-          };
-          if (categorical.args.length === 1) {
-            args.push(categorical.args[0]);
-          } else {
-            args.push(categorical);
-          }
+    if (this.values.length > 0) {
+      if (this.concept.type === 'NUMERIC') {
+        // Add numerical values directly to the main constraint
+        for (let value of this.values) {
+          args.push(value.toQueryObject());
+        }
+      } else if (this.concept.type === 'CATEGORICAL') {
+        // Wrap categorical values in an OR constraint
+        let categorical = {
+          type: 'or',
+          args: this.values.map((value: ValueConstraint) => value.toQueryObject())
+        };
+        if (categorical.args.length === 1) {
+          args.push(categorical.args[0]);
+        } else {
+          args.push(categorical);
         }
       }
+    }
 
-      if (this.applyValDateConstraint) {
-        args.push(this.valDateConstraint.toQueryObject());
-      }
+    if (this.applyValDateConstraint) {
+      args.push(this.valDateConstraint.toQueryObject());
+    }
 
-      if (this.applyObsDateConstraint) {
-        args.push(this.obsDateConstraint.toQueryObject());
-      }
+    if (this.applyObsDateConstraint) {
+      args.push(this.obsDateConstraint.toQueryObject());
+    }
 
-      if (this.applyTrialVisitConstraint) {
-        args.push(this.trialVisitConstraint.toQueryObject());
-      }
+    if (this.applyTrialVisitConstraint) {
+      args.push(this.trialVisitConstraint.toQueryObject());
+    }
 
-      if (args.length === 1) {
-        return args[0];
-      } else {
-        return {
-          type: 'and',
-          args: args
-        };
-      }
+    if (args.length === 1) {
+      return args[0];
+    } else {
+      return {
+        type: 'and',
+        args: args
+      };
+    }
+  }
+
+  toQueryObject(): Object {
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
+    } else {
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -176,12 +180,12 @@ export class ConceptConstraint implements Constraint {
     this._applyValDateConstraint = value;
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

@@ -4,7 +4,7 @@ export interface Constraint {
   textRepresentation: string;
   // The flag indicating if the output query object should be wrapped with
   // the subselection clause for patient selection
-  isPatientSelection: boolean;
+  isSubselection: boolean;
   // The parent constraint
   parent: Constraint;
 
@@ -17,13 +17,10 @@ export interface Constraint {
    * Returns a javascript object representation of the constraint to be used
    * in queries to the backend.
    */
-  toQueryObject(): Object;
+  toQueryObject(): object;
 
-  /**
-   * Returns a javascript object representation of the constraint to be used for patients retrieval,
-   * wrapped in subselction clause according to TranSMART api requirements
-   * @returns {Object}
-   */
-  toPatientQueryObject(): Object;
+  toQueryObjectWithSubselection(): object;
+
+  toQueryObjectWithoutSubselection(): object;
 
 }

@@ -4,7 +4,7 @@ export class NegationConstraint implements Constraint {
 
   private _parent: Constraint;
   private _constraint: Constraint;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
   constructor(constraint: Constraint) {
     this._constraint = constraint;
@@ -23,7 +23,7 @@ export class NegationConstraint implements Constraint {
     return 'NegationConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): Object {
     return {
       'type': 'negation',
       'arg': {
@@ -34,14 +34,18 @@ export class NegationConstraint implements Constraint {
     };
   }
 
+  toQueryObjectWithoutSubselection(): object {
+    return {
+      type: 'negation',
+      arg: this._constraint.toQueryObject()
+    };
+  }
+
   toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      return {
-        type: 'negation',
-        arg: this._constraint.toQueryObject()
-      };
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -49,12 +53,12 @@ export class NegationConstraint implements Constraint {
     return 'Negation';
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {
