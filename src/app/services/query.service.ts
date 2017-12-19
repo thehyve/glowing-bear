@@ -162,7 +162,7 @@ export class QueryService {
           });
           this.queries = bookmarkedQueries.concat(this.queries);
         },
-        err => console.error(err)
+        err => this.handle_error(err)
       );
   }
 
@@ -476,7 +476,7 @@ export class QueryService {
           }
           this.isLoadingExportFormats = false;
         },
-        err => console.error(err)
+        err => this.handle_error(err)
       );
   }
 
@@ -549,7 +549,7 @@ export class QueryService {
       .subscribe(
         () => {
         },
-        err => console.error(err)
+        err => this.handle_error(err)
       );
   }
 
@@ -566,7 +566,7 @@ export class QueryService {
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },
-        err => console.error(err)
+        err => this.handle_error(err)
       );
   }
 
