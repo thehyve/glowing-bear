@@ -5,7 +5,7 @@ export class ValueConstraint implements Constraint {
   private _valueType: string;
   private _operator: string;
   private _value: any;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
   constructor() {
     this.parent = null;
@@ -39,21 +39,25 @@ export class ValueConstraint implements Constraint {
     return 'ValueConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): Object {
     // TODO: implement the 'subselection' wrapper on a normal query object
     return null;
   }
 
+  toQueryObjectWithoutSubselection(): object {
+    return {
+      type: 'value',
+      valueType: this._valueType,
+      operator: this._operator,
+      value: this._value
+    };
+  }
+
   toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      return {
-        type: 'value',
-        valueType: this._valueType,
-        operator: this._operator,
-        value: this._value
-      };
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -61,12 +65,12 @@ export class ValueConstraint implements Constraint {
     return 'Value';
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

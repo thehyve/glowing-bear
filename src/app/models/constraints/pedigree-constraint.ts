@@ -10,7 +10,7 @@ export class PedigreeConstraint implements Constraint {
   private _symmetrical: boolean;
   private _relationType: PedigreeState;
   private _rightHandSideConstraint: CombinationConstraint;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
   constructor(label: string) {
     this.parent = null;
@@ -57,8 +57,17 @@ export class PedigreeConstraint implements Constraint {
    * TODO
    * @returns {Object}
    */
-  toPatientQueryObject(): object {
+  toQueryObjectWithSubselection(): object {
     return {};
+  }
+
+  toQueryObjectWithoutSubselection(): object {
+    return {
+      type: 'relation',
+      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
+      relationTypeLabel: this.label,
+      biological: this.biological
+    };
   }
 
   /**
@@ -66,15 +75,10 @@ export class PedigreeConstraint implements Constraint {
    * @returns {Object}
    */
   toQueryObject(): object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      return {
-        type: 'relation',
-        relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
-        relationTypeLabel: this.label,
-        biological: this.biological
-      };
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -192,12 +196,12 @@ export class PedigreeConstraint implements Constraint {
     this._symmetrical = value;
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

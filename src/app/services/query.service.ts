@@ -6,6 +6,8 @@ import {Query} from '../models/query';
 import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {Step} from '../models/step';
+import {Constraint} from '../models/constraints/constraint';
+import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -57,14 +59,6 @@ export class QueryService {
   private _subjectCount_1 = 0;
   // the number of observations from the selected subjects in the first step
   private _observationCount_1 = 0;
-  // the number of concepts from the selected subjects in the first step
-  private _conceptCount_1 = 0;
-  // the number of studies from the selected subjects in the first step
-  private _studyCount_1 = 0;
-  // the codes of the concepts selected in the first step
-  private _conceptCodes_1 = [];
-  // the codes of the studies selected in the first step
-  private _studyCodes_1 = [];
   /*
    * the map from concept codes to counts in the first step
    * (note that _conceptCountMap_1 is a super set of _conceptCountMap_2,
@@ -96,6 +90,7 @@ export class QueryService {
   loadingStateTotal: LoadingState = 'complete';
   // the queue that holds the time stamps of the calls made in the 1st step
   private _queueOfCalls_1 = [];
+  private _patientSet_1: PatientSetConstraint = null;
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -117,18 +112,6 @@ export class QueryService {
   // _observationCount_2 could be <, > or = _observationCount_1
   private _observationCount_2 = 0;
   private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of concepts further refined in the second step
-  // _conceptCount_2 could be <, > or = _conceptCount_1
-  private _conceptCount_2 = 0;
-  private _isLoadingConceptCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of studies further refined in the second step
-  // _studyCount_2 could be <, > or = _studyCount_1
-  private _studyCount_2 = 0;
-  private _isLoadingStudyCount_2 = true; // the flag indicating if the count is being loaded
-  // the codes of the concepts selected in the second step
-  private _conceptCodes_2 = [];
-  // the codes of the studies selected in the first step
-  private _studyCodes_2 = [];
   // the queue that holds the time stamps of the calls made in the 2nd step
   private _queueOfCalls_2 = [];
 
@@ -188,6 +171,7 @@ export class QueryService {
    */
   public updateCounts_1(initialUpdate?: boolean) {
     this.isUpdating_1 = true;
+    this.patientSet_1 = null;
     /*
      * ====== function updateCounts_1 starts ======
      */
@@ -203,8 +187,6 @@ export class QueryService {
     // also update the flags for the counts in the 2nd step
     this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
-    this.isLoadingConceptCount_2 = true;
-    this.isLoadingStudyCount_2 = true;
     /*
      * Inclusion constraint subject count
      */
@@ -289,19 +271,13 @@ export class QueryService {
         (countObj) => {
           const index = this.queueOfCalls_1.indexOf(timestamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            let studyKeys = [];
-            let conceptKeys = [];
             this.conceptCountMap_1 = {};
             this.studyCountMap_1 = {};
             for (let studyKey in countObj) {
-              studyKeys.push(studyKey);
               let _concepts_ = countObj[studyKey];
               let patientCountUnderThisStudy = 0;
               let observationCountUnderThisStudy = 0;
               for (let _concept_ in _concepts_) {
-                if (conceptKeys.indexOf(_concept_) === -1) {
-                  conceptKeys.push(_concept_);
-                }
                 this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
                 patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
                 observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
@@ -310,17 +286,6 @@ export class QueryService {
                 patientCount: patientCountUnderThisStudy,
                 observationCount: observationCountUnderThisStudy
               };
-            }
-            this.conceptCount_1 = conceptKeys.length;
-            this.studyCount_1 = studyKeys.length;
-            this.conceptCodes_1 = conceptKeys;
-            // relay the current counts to the next step
-            if (this.countsRelay) {
-              this.conceptCount_2 = this.conceptCount_1;
-              this.studyCount_2 = this.studyCount_1;
-              this.conceptCodes_2 = this.conceptCodes_1;
-              this.isLoadingConceptCount_2 = false;
-              this.isLoadingStudyCount_2 = false;
             }
             /*
              * update subject counts on tree nodes on the left side
@@ -335,8 +300,25 @@ export class QueryService {
         err => console.error(err)
       );
     /*
+     * create patient set for the current query in step 1
+     */
+    this.createPatientSet_1(selectionConstraint);
+    /*
      * ====== function updateCounts_1 ends ======
      */
+  }
+
+  private createPatientSet_1(constraint: Constraint) {
+    const name = 'temp';
+    this.resourceService.createPatientSet(name, constraint).subscribe(
+      (response) => {
+        this.patientSet_1 = new PatientSetConstraint();
+        this.patientSet_1.setSize = response['setSize'];
+        this.patientSet_1.id = response['id'];
+        this.patientSet_1.status = response['status'];
+      },
+      err => console.error(err)
+    );
   }
 
   /**
@@ -398,11 +380,10 @@ export class QueryService {
       // set flags to true indicating the counts are being loaded
       this.isLoadingSubjectCount_2 = true;
       this.isLoadingObservationCount_2 = true;
-      this.isLoadingConceptCount_2 = true;
-      this.isLoadingStudyCount_2 = true;
 
       this.query = null; // clear query
-      const selectionConstraint = this.constraintService.generateSelectionConstraint();
+      const selectionConstraint = this.patientSet_1 ?
+        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
       const projectionConstraint = this.constraintService.generateProjectionConstraint();
 
       let combo = new CombinationConstraint();
@@ -603,38 +584,6 @@ export class QueryService {
     this._observationCount_1 = value;
   }
 
-  get conceptCount_1(): number {
-    return this._conceptCount_1;
-  }
-
-  set conceptCount_1(value: number) {
-    this._conceptCount_1 = value;
-  }
-
-  get studyCount_1(): number {
-    return this._studyCount_1;
-  }
-
-  set studyCount_1(value: number) {
-    this._studyCount_1 = value;
-  }
-
-  get conceptCodes_1(): Array<any> {
-    return this._conceptCodes_1;
-  }
-
-  set conceptCodes_1(value: Array<any>) {
-    this._conceptCodes_1 = value;
-  }
-
-  get studyCodes_1(): Array<any> {
-    return this._studyCodes_1;
-  }
-
-  set studyCodes_1(value: Array<any>) {
-    this._studyCodes_1 = value;
-  }
-
   get conceptCountMap_1(): {} {
     return this._conceptCountMap_1;
   }
@@ -667,38 +616,6 @@ export class QueryService {
     this._observationCount_2 = value;
   }
 
-  get studyCount_2(): number {
-    return this._studyCount_2;
-  }
-
-  set studyCount_2(value: number) {
-    this._studyCount_2 = value;
-  }
-
-  get conceptCount_2(): number {
-    return this._conceptCount_2;
-  }
-
-  set conceptCount_2(value: number) {
-    this._conceptCount_2 = value;
-  }
-
-  get studyCodes_2(): Array<any> {
-    return this._studyCodes_2;
-  }
-
-  set studyCodes_2(value: Array<any>) {
-    this._studyCodes_2 = value;
-  }
-
-  get conceptCodes_2(): Array<any> {
-    return this._conceptCodes_2;
-  }
-
-  set conceptCodes_2(value: Array<any>) {
-    this._conceptCodes_2 = value;
-  }
-
   get alertMessages(): Array<object> {
     return this._alertMessages;
   }
@@ -729,22 +646,6 @@ export class QueryService {
 
   set isLoadingObservationCount_2(value: boolean) {
     this._isLoadingObservationCount_2 = value;
-  }
-
-  get isLoadingConceptCount_2(): boolean {
-    return this._isLoadingConceptCount_2;
-  }
-
-  set isLoadingConceptCount_2(value: boolean) {
-    this._isLoadingConceptCount_2 = value;
-  }
-
-  get isLoadingStudyCount_2(): boolean {
-    return this._isLoadingStudyCount_2;
-  }
-
-  set isLoadingStudyCount_2(value: boolean) {
-    this._isLoadingStudyCount_2 = value;
   }
 
   get queueOfCalls_1(): Array<number> {
@@ -849,5 +750,13 @@ export class QueryService {
 
   set isDirty_2(value: boolean) {
     this._isDirty_2 = value;
+  }
+
+  get patientSet_1(): PatientSetConstraint {
+    return this._patientSet_1;
+  }
+
+  set patientSet_1(value: PatientSetConstraint) {
+    this._patientSet_1 = value;
   }
 }

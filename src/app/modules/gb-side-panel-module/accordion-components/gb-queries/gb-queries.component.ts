@@ -158,7 +158,6 @@ export class GbQueriesComponent implements OnInit {
   }
 
   onQueryPanelClick(query) {
-    // console.log('on query click, ', query);
     // Save the query if its name has been modified
     if (query['nameEditable']) {
       query['nameEditable'] = false;

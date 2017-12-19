@@ -7,7 +7,7 @@ export class CombinationConstraint implements Constraint {
   private _parent: Constraint;
   private _children: Constraint[];
   private _combinationState: CombinationState;
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
   private _isRoot: boolean;
 
   constructor() {
@@ -101,13 +101,13 @@ export class CombinationConstraint implements Constraint {
    * which requires a speicial subselection wrapper
    * @returns {Object}
    */
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): object {
     // Collect children query objects
     let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
-      return new TrueConstraint().toPatientQueryObject();
+      return new TrueConstraint().toQueryObjectWithSubselection();
     }
 
     // Combination
@@ -131,34 +131,38 @@ export class CombinationConstraint implements Constraint {
     return queryObject;
   }
 
+  toQueryObjectWithoutSubselection(): object {
+    // Collect children query objects
+    let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
+    if (childQueryObjects.length === 0) {
+      // No children, so ignore this constraint
+      // TODO: show validation error instead?
+      return new TrueConstraint().toQueryObject();
+    }
+    // Combination
+    let queryObject: Object;
+    if (childQueryObjects.length === 1) {
+      queryObject = childQueryObjects[0];
+    } else {
+      // Wrap in and/or constraint
+      queryObject = {
+        type: this._combinationState === CombinationState.And ? 'and' : 'or',
+        args: childQueryObjects
+      };
+    }
+    return queryObject;
+  }
+
   /**
    * The normal conversion from constraint to object
    * TODO: optimize a nested combination constraint, detect empty or single child
    * @returns {Object}
    */
   toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      // Collect children query objects
-      let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
-      if (childQueryObjects.length === 0) {
-        // No children, so ignore this constraint
-        // TODO: show validation error instead?
-        return new TrueConstraint().toQueryObject();
-      }
-      // Combination
-      let queryObject: Object;
-      if (childQueryObjects.length === 1) {
-        queryObject = childQueryObjects[0];
-      } else {
-        // Wrap in and/or constraint
-        queryObject = {
-          type: this._combinationState === CombinationState.And ? 'and' : 'or',
-          args: childQueryObjects
-        };
-      }
-      return queryObject;
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -198,12 +202,12 @@ export class CombinationConstraint implements Constraint {
     }
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get isRoot(): boolean {

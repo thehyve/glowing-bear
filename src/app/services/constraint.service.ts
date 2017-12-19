@@ -62,10 +62,10 @@ export class ConstraintService {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.isPatientSelection = true;
+    this.rootInclusionConstraint.isSubselection = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.isPatientSelection = true;
+    this.rootExclusionConstraint.isSubselection = true;
   }
 
   private loadEmptyConstraints() {
@@ -200,7 +200,7 @@ export class ConstraintService {
       // Otherwise just return the inclusion part
       resultConstraint = inclusionConstraint;
     }
-    resultConstraint.isPatientSelection = true;
+    resultConstraint.isSubselection = true;
     return resultConstraint;
   }
 
@@ -509,7 +509,7 @@ export class ConstraintService {
       } else if (constraintObject['patientIds']) {
         (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
       } else if (constraintObject['patientSetId']) {
-        (<PatientSetConstraint>constraint).patientSetId = constraintObject['patientSetId'];
+        (<PatientSetConstraint>constraint).id = constraintObject['patientSetId'];
       }
     } else if (type === 'subselection'
       && constraintObject['dimension'] === 'patient') { // -------> If it is a patient sub-selection

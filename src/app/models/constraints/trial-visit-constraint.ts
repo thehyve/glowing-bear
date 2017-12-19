@@ -5,7 +5,7 @@ export class TrialVisitConstraint implements Constraint {
 
   private _parent: Constraint;
   private _trialVisits: TrialVisit[];
-  private _isPatientSelection: boolean;
+  private _isSubselection: boolean;
 
 
   constructor() {
@@ -17,34 +17,38 @@ export class TrialVisitConstraint implements Constraint {
     return 'TrialVisitConstraint';
   }
 
-  toPatientQueryObject(): Object {
+  toQueryObjectWithSubselection(): Object {
     // TODO: implement the 'subselection' wrapper on a normal query object
     return null;
+  }
+
+  toQueryObjectWithoutSubselection(): object {
+    let values: number[] = [];
+    for (let visit of this.trialVisits) {
+      values.push(Number(visit.id));
+    }
+    let queryObj = {
+      'type': 'field',
+      'field': {
+        'dimension': 'trial visit',
+        'fieldName': 'id',
+        'type': 'NUMERIC'
+      },
+      'operator': 'in',
+      'value': values
+    };
+
+    return queryObj;
   }
 
   /** Builds a query object for the date constraint.
    * @returns {Object}
    */
   toQueryObject(): Object {
-    if (this.isPatientSelection) {
-      return this.toPatientQueryObject();
+    if (this.isSubselection) {
+      return this.toQueryObjectWithSubselection();
     } else {
-      let values: number[] = [];
-      for (let visit of this.trialVisits) {
-        values.push(Number(visit.id));
-      }
-      let queryObj = {
-        'type': 'field',
-        'field': {
-          'dimension': 'trial visit',
-          'fieldName': 'id',
-          'type': 'NUMERIC'
-        },
-        'operator': 'in',
-        'value': values
-      };
-
-      return queryObj;
+      return this.toQueryObjectWithoutSubselection();
     }
   }
 
@@ -60,12 +64,12 @@ export class TrialVisitConstraint implements Constraint {
     this._trialVisits = value;
   }
 
-  get isPatientSelection(): boolean {
-    return this._isPatientSelection;
+  get isSubselection(): boolean {
+    return this._isSubselection;
   }
 
-  set isPatientSelection(value: boolean) {
-    this._isPatientSelection = value;
+  set isSubselection(value: boolean) {
+    this._isSubselection = value;
   }
 
   get parent(): Constraint {

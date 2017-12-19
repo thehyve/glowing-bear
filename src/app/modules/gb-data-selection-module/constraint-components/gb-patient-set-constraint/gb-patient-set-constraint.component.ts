@@ -17,8 +17,8 @@ export class GbPatientSetConstraintComponent extends GbConstraintComponent imple
       this.message += `constrained with ${psConstraint.subjectIds.length} external subject IDs.`;
     } else if (psConstraint.patientIds.length > 0) {
       this.message += `constrained with ${psConstraint.patientIds.length} internal subject IDs.`;
-    } else if (psConstraint.patientSetId !== '') {
-      this.message += `constrained with the patient-set ID: ${psConstraint.patientSetId}`;
+    } else if (psConstraint.id) {
+      this.message += `constrained with the patient-set ID: ${psConstraint.id}`;
     }
   }
 
