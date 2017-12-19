@@ -50,6 +50,8 @@ export class QueryServiceMock {
   public updateCounts_1() {}
   public updateCounts_2() {}
 
+  public updateStudyAndConceptCounts() {}
+
   get isLoadingExportFormats(): boolean {
     return this._isLoadingExportFormats;
   }

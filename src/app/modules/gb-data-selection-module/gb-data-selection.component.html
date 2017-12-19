@@ -11,16 +11,25 @@
             Step 1: Define the group of subjects for which you want to select data
           </div>
           <div class="gb-data-selection-accordion-sub-header-2">
-            <span class="gb-data-selection-accordion-sub-header-3">
-              <span class="gb-data-selection-emphasis-text">{{subjectCount_1}}</span> / {{subjectCount_0}}
-              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}},
-              <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
+            <span class="gb-data-selection-accordion-sub-header-3 float-left">
+              <span *ngIf="counting_1"><i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i></span>
+              <span *ngIf="!counting_1" class="gb-data-selection-emphasis-text">{{subjectCount_1}}</span>
+              / {{subjectCount_0}}
+              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}}
+              &nbsp;&nbsp;
+              <span *ngIf="counting_1"><i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i></span>
+              <span *ngIf="!counting_1" class="gb-data-selection-emphasis-text">{{observationCount_1}}</span>
+              / {{observationCount_0}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
             </span>
             <span class="float-right">
               <button type="button"
+                      [disabled]="counting_1"
                       (click)="updateCounts_1($event)"
-                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
+                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                       {{dirty_1 ? 'gb-data-selection-dirty': ''}}">
+                {{counting_1 ? 'Updating counts ...' : 'Update counts'}}
+              </button>
             </span>
           </div>
         </div>
@@ -37,16 +46,30 @@
             subjects
           </div>
           <div class="gb-data-selection-accordion-sub-header-2">
-            <span class="gb-data-selection-accordion-sub-header-3">
-              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}}</span> / {{subjectCount_1}}
-              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}},
-              <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
+            <span class="gb-data-selection-accordion-sub-header-3 float-left">
+              <span *ngIf="counting_2"><i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i></span>
+              <span *ngIf="!counting_2" class="gb-data-selection-emphasis-text">{{subjectCount_2}}</span>
+              / {{subjectCount_1}}
+              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}}
+              &nbsp;&nbsp;
+              <span *ngIf="counting_2"><i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i></span>
+              <span *ngIf="!counting_2" class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
+              &nbsp;&nbsp;
+              <span class="gb-data-selection-emphasis-text">{{selectedConceptCount}}</span> / {{conceptCount_2}}
+              <span class="gb-data-selection-emphasis-text">concepts</span> {{selectedConceptCountPercentage}}
+              &nbsp;&nbsp;
+              <span class="gb-data-selection-emphasis-text">{{selectedStudyCount}}</span> / {{studyCount_2}}
+              <span class="gb-data-selection-emphasis-text">concepts</span> {{selectedStudyCountPercentage}}
             </span>
             <span class="float-right">
               <button type="button"
+                      [disabled]="counting_2"
                       (click)="updateCounts_2($event)"
-                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
+                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                        {{dirty_2 ? 'gb-data-selection-dirty': ''}}">
+                {{counting_2 ? 'Updating counts ...' : 'Update counts'}}
+              </button>
             </span>
           </div>
         </div>
@@ -69,7 +92,8 @@
           </div>
           <div class="form-inline gb-data-selection-accordion-sub-header-2">
             <div class="gb-data-selection-accordion-sub-header-3">
-              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
+              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>
+              &nbsp;&nbsp;
               <span class="gb-data-selection-emphasis-text">{{observationCount_2}} observations</span>
             </div>
           </div>

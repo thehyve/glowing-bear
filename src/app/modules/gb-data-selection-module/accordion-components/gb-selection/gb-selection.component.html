@@ -10,7 +10,7 @@
        class="criteria-box">
     <div class="subject-count-box">
       <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateInclusion == 'loading'"></i>
-      <span [@notifyState]="loadingStateInclusion">{{inclusionSubjectCount}} subjects included.</span>
+      <span [@notifyState]="loadingStateInclusion">{{formatNumber(inclusionSubjectCount)}} subjects included.</span>
     </div>
     <gb-constraint #rootInclusionConstraintComponent
                 [constraint]="rootInclusionConstraint"
@@ -22,7 +22,7 @@
        class="criteria-box">
     <div class="subject-count-box">
       <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateExclusion == 'loading'"></i>
-      <span [@notifyState]="loadingStateExclusion">{{exclusionSubjectCount}} subjects excluded.</span>
+      <span [@notifyState]="loadingStateExclusion">{{formatNumber(exclusionSubjectCount)}} subjects excluded.</span>
     </div>
     <gb-constraint #rootExclusionConstraintComponent
                 [constraint]="rootExclusionConstraint"
@@ -33,7 +33,7 @@
   <!-- Intersection calculation -->
   <div class="subject-count-box">
     <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingStateTotal == 'loading'"></i>
-    <span [@notifyState]="loadingStateTotal">{{subjectCount_1}} subjects match your selection.</span>
+    <span [@notifyState]="loadingStateTotal">{{formatNumber(subjectCount_1)}} subjects match your selection.</span>
   </div>
 
 </div>

@@ -96,10 +96,15 @@ export class GbConstraintComponent implements OnInit {
   }
 
   protected updateCounts() {
-    this.queryService.step = Step.I;
-    if (this.queryService.instantCountUpdate_1) {
-      this.queryService.updateCounts_1();
-    }
+      this.queryService.step = Step.I;
+      if (this.queryService.instantCountUpdate_1) {
+          this.queryService.updateCounts_1();
+      } else {
+          this.queryService.dirty_1 = true;
+      }
+      if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
+        this.queryService.dirty_2 = true;
+      }
   }
 
   get containerClass(): string {

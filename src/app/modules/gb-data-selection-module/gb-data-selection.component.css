@@ -25,6 +25,7 @@
   border-right: 1px solid lightgray;
   border-radius: 6px;
   padding-left: 2em;
+  overflow: hidden;
 }
 
 .gb-data-selection-accordion-sub-header-3 {
@@ -40,4 +41,14 @@
 .gb-data-selection-update-btn {
   margin-left: 1em;
   margin-right: 1em;
+}
+
+.gb-data-selection-dirty {
+  color: #1d5952;
+  background-color: rgba(255, 255, 121, 0.4);
+  border-color: rgba(140, 140, 0, 0.6);
+}
+.gb-data-selection-dirty:hover, .gb-data-selection-dirty:active {
+  background-color: rgba(255, 255, 0, 0.43);
+  border-color: #e2e200;
 }

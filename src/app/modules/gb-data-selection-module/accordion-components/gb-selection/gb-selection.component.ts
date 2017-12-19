@@ -6,10 +6,10 @@ import {
 } from '@angular/animations';
 import {GbConstraintComponent} from '../../constraint-components/gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {QueryService} from '../../../../services/query.service';
+import { LoadingState, QueryService } from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
-
-type LoadingState = 'loading' | 'complete';
+import { TrueConstraint } from '../../../../models/constraints/true-constraint';
+import { FormatHelper } from '../../../../util/format-helper';
 
 @Component({
   selector: 'gb-selection',
@@ -33,12 +33,15 @@ export class GbSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
 
+  get formatNumber() { return FormatHelper.formatNumber; }
+
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService) {
   }
 
   ngOnInit() {
     this.queryService.updateCounts_1(true);
+    this.queryService.updateStudyAndConceptCounts(new TrueConstraint());
   }
 
   get subjectCount_1(): number {
@@ -64,6 +67,7 @@ export class GbSelectionComponent implements OnInit {
   clearCriteria() {
     this.constraintService.clearSelectionConstraint();
     this.queryService.updateCounts_1(true);
+    this.queryService.updateStudyAndConceptCounts(new TrueConstraint());
   }
 
   get loadingStateInclusion(): LoadingState {
