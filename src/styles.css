@@ -20,18 +20,28 @@ textarea {
 }
 
 .loading-message {
-  color: #339C90;
+  background-color: #28AA9D;
+  color: white;
   font-family: 'Roboto', sans-serif;
   font-size: 300%;
   text-align: center;
   padding: 200px;
   opacity: .8;
   border-color: transparent;
+  height: 100vh;
+  width: 100%;
+  display: block;
 }
 
-/*
- * Make the font size in the tree smaller
- */
+.loading-message img {
+  margin-top: -100px;
+  width: 60%;
+  height: auto;
+}
+
+  /*
+   * Make the font size in the tree smaller
+   */
 p-treenode {
   font-size: small;
 }
