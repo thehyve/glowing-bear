@@ -34,6 +34,8 @@ export class GbProjectionComponent implements OnInit {
     this.queryService.step = Step.II;
     if (this.queryService.instantCountUpdate_2) {
       this.queryService.updateCounts_2();
+    } else {
+      this.queryService.isDirty_2 = true;
     }
   }
 

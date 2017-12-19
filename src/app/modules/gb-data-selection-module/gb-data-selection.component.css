@@ -40,4 +40,10 @@
 .gb-data-selection-update-btn {
   margin-left: 1em;
   margin-right: 1em;
+  border: 1px dashed;
+}
+
+.gb-data-selection-update-btn-dirty {
+  border: 2px solid;
+  font-weight: bolder;
 }

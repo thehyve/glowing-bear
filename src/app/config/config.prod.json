@@ -4,5 +4,5 @@
   "app-url": "http://glowingbear2-head.thehyve.net",
   "step-1-instant-counts-update": false,
   "step-2-instant-counts-update": false,
-  "final-counts-sync": false
+  "final-counts-sync": true
 }
