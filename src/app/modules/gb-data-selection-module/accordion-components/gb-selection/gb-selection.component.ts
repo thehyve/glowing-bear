@@ -10,6 +10,7 @@ import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 
 type LoadingState = 'loading' | 'complete';
+import { FormatHelper } from '../../../../util/format-helper';
 
 @Component({
   selector: 'gb-selection',
@@ -32,6 +33,8 @@ export class GbSelectionComponent implements OnInit {
 
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
+
+  get formatNumber() { return FormatHelper.formatNumber; }
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService) {
