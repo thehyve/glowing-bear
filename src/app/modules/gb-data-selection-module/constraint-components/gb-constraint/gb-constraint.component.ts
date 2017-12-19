@@ -63,7 +63,6 @@ export class GbConstraintComponent implements OnInit {
   }
 
   onDrop(event) {
-    console.log('--- inside constraint, on drop, update counts');
     event.stopPropagation();
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
@@ -99,6 +98,8 @@ export class GbConstraintComponent implements OnInit {
     this.queryService.step = Step.I;
     if (this.queryService.instantCountUpdate_1) {
       this.queryService.updateCounts_1();
+    } else {
+      this.queryService.isDirty_1 = true;
     }
   }
 

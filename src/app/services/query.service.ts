@@ -44,8 +44,15 @@ export class QueryService {
    */
   private _inclusionSubjectCount = 0;
   private _exclusionSubjectCount = 0;
+  /*
+   * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
+   * used in gb-constraint-component
+   */
+  private _instantCountUpdate_1: boolean;
   // flag indicating if the counts in the first step are being updated
   private _isUpdating_1 = false;
+  // flag indicating if the query in the 1st step has been changed
+  private _isDirty_1 = false;
   // the number of subjects selected in the first step
   private _subjectCount_1 = 0;
   // the number of observations from the selected subjects in the first step
@@ -93,8 +100,15 @@ export class QueryService {
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
    */
+  /*
+   * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
+   * used in gb-projection-component
+   */
+  private _instantCountUpdate_2: boolean;
   // flag indicating if the counts in the first step are being updated
   private _isUpdating_2 = false;
+  // flag indicating if the query in the 2nd step has been changed
+  private _isDirty_2 = false;
   // the number of subjects further refined in the second step
   // _subjectCount_2 < or = _subjectCount_1
   private _subjectCount_2 = 0;
@@ -129,16 +143,6 @@ export class QueryService {
    * or the saving has been successful
    */
   private _alertMessages = [];
-  /*
-   * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
-   * used in gb-constraint-component
-   */
-  private _instantCountUpdate_1: boolean;
-  /*
-   * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
-   * used in gb-projection-component
-   */
-  private _instantCountUpdate_2: boolean;
   /*
    * during the updateCounts_1 call, whether to update the final counts immediately,
    * used inside this.updateCounts_1()
@@ -365,6 +369,7 @@ export class QueryService {
 
       this.query = null;
       this.isUpdating_1 = false;
+      this.isDirty_1 = false;
     } else {
       window.setTimeout((function () {
         this.updateTreeNodes_2();
@@ -380,6 +385,7 @@ export class QueryService {
      * ====== function updateCounts_2 starts ======
      */
     if (!this.isUpdating_1) {
+      this.isUpdating_2 = true;
       // add time stamp to the queue,
       // only when the time stamp is at the end of the queue, the count is updated
       this.clearQueueOfCalls(this.queueOfCalls_2);
@@ -436,6 +442,8 @@ export class QueryService {
               this.conceptCodes_2 = concepts;
               this.isLoadingConceptCount_2 = false;
               this.isLoadingStudyCount_2 = false;
+              this.isUpdating_2 = false;
+              this.isDirty_2 = false;
             }
           },
           err => console.error(err)
@@ -849,5 +857,21 @@ export class QueryService {
 
   set isUpdating_2(value: boolean) {
     this._isUpdating_2 = value;
+  }
+
+  get isDirty_1(): boolean {
+    return this._isDirty_1;
+  }
+
+  set isDirty_1(value: boolean) {
+    this._isDirty_1 = value;
+  }
+
+  get isDirty_2(): boolean {
+    return this._isDirty_2;
+  }
+
+  set isDirty_2(value: boolean) {
+    this._isDirty_2 = value;
   }
 }

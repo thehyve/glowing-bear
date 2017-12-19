@@ -17,10 +17,14 @@
               <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
             </span>
-            <span class="float-right">
+            <span *ngIf="!queryService.instantCountUpdate_1" class="float-right">
+              <i *ngIf="queryService.isUpdating_1" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="updateCounts_1($event)"
-                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
+                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                      {{queryService.isDirty_1? 'gb-data-selection-update-btn-dirty' : ''}}">
+                Update counts
+              </button>
             </span>
           </div>
         </div>
@@ -43,10 +47,14 @@
               <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
             </span>
-            <span class="float-right">
+            <span *ngIf="!queryService.instantCountUpdate_2" class="float-right">
+              <i *ngIf="queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="updateCounts_2($event)"
-                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">Update counts</button>
+                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                      {{queryService.isDirty_2? 'gb-data-selection-update-btn-dirty' : ''}}">
+                Update counts
+              </button>
             </span>
           </div>
         </div>
@@ -55,10 +63,10 @@
     </md2-accordion-tab>
 
     <!--<md2-accordion-tab>-->
-      <!--<md2-accordion-header>-->
-        <!--<span class="gb-data-selection-accordion-header">Step 3: Visualize the selected data (optional)</span>-->
-      <!--</md2-accordion-header>-->
-      <!--Visualization-->
+    <!--<md2-accordion-header>-->
+    <!--<span class="gb-data-selection-accordion-header">Step 3: Visualize the selected data (optional)</span>-->
+    <!--</md2-accordion-header>-->
+    <!--Visualization-->
     <!--</md2-accordion-tab>-->
 
     <md2-accordion-tab>
