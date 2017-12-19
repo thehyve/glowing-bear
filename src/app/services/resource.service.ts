@@ -242,7 +242,7 @@ export class ResourceService {
   // -------------------------------------- patient set calls --------------------------------------
   createPatientSet(name: string, constraint: Constraint): Observable<object> {
     const urlPart = `patient_sets?name=${name}`;
-    const body = constraint.toQueryObjectWithoutSubselection();
+    const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
   }
 
