@@ -7,7 +7,7 @@ import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {Step} from '../models/step';
 
-type LoadingState = 'loading' | 'complete';
+export type LoadingState = 'loading' | 'complete';
 
 /**
  * This service concerns with

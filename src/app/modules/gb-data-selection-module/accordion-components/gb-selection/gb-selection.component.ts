@@ -6,10 +6,8 @@ import {
 } from '@angular/animations';
 import {GbConstraintComponent} from '../../constraint-components/gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {QueryService} from '../../../../services/query.service';
+import { LoadingState, QueryService } from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
-
-type LoadingState = 'loading' | 'complete';
 import { FormatHelper } from '../../../../util/format-helper';
 
 @Component({
