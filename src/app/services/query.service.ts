@@ -48,7 +48,7 @@ export class QueryService {
    * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
    * used in gb-constraint-component
    */
-  private _instantCountUpdate_1: boolean;
+  private _instantCountsUpdate_1: boolean;
   // flag indicating if the counts in the first step are being updated
   private _isUpdating_1 = false;
   // flag indicating if the query in the 1st step has been changed
@@ -104,7 +104,7 @@ export class QueryService {
    * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
    * used in gb-projection-component
    */
-  private _instantCountUpdate_2: boolean;
+  private _instantCountsUpdate_2: boolean;
   // flag indicating if the counts in the first step are being updated
   private _isUpdating_2 = false;
   // flag indicating if the query in the 2nd step has been changed
@@ -144,19 +144,18 @@ export class QueryService {
    */
   private _alertMessages = [];
   /*
-   * during the updateCounts_1 call, whether to update the final counts immediately,
-   * used inside this.updateCounts_1()
+   * Flag indicating if to relay the counts in the current step to the next
    */
-  private _syncFinalCounts: boolean;
+  private _countsRelay: boolean;
 
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
-    this.instantCountUpdate_1 = appConfig.getConfig('step-1-instant-counts-update');
-    this.instantCountUpdate_2 = appConfig.getConfig('step-2-instant-counts-update');
-    this.syncFinalCounts = appConfig.getConfig('final-counts-sync');
+    this.instantCountsUpdate_1 = appConfig.getConfig('step-1-instant-counts-update');
+    this.instantCountsUpdate_2 = appConfig.getConfig('step-2-instant-counts-update');
+    this.countsRelay = appConfig.getConfig('counts-relay');
     this.loadQueries();
   }
 
@@ -221,10 +220,12 @@ export class QueryService {
               this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
               this.loadingStateTotal = 'complete';
               this.observationCount_1 = countResponse['observationCount'];
-              // Update the final counts: subjects and observations
-              if (this.syncFinalCounts || initialUpdate) {
+              if (initialUpdate) {
                 this.subjectCount_0 = this.subjectCount_1;
                 this.observationCount_0 = this.observationCount_1;
+              }
+              // relay the current counts to the next step: subjects and observations
+              if (this.countsRelay) {
                 this.subjectCount_2 = this.subjectCount_1;
                 this.observationCount_2 = this.observationCount_1;
                 this.isLoadingSubjectCount_2 = false;
@@ -256,9 +257,12 @@ export class QueryService {
                 this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
                 this.loadingStateTotal = 'complete';
                 this.observationCount_1 = countResponse['observationCount'];
-                // Update the final counts: subjects and observations
-                if (this.syncFinalCounts || initialUpdate) {
+                if (initialUpdate) {
                   this.subjectCount_0 = this.subjectCount_1;
+                  this.observationCount_0 = this.observationCount_1;
+                }
+                // relay the current counts to the next step: subjects and observations
+                if (this.countsRelay) {
                   this.subjectCount_2 = this.subjectCount_1;
                   this.observationCount_2 = this.observationCount_1;
                   this.isLoadingSubjectCount_2 = false;
@@ -310,8 +314,8 @@ export class QueryService {
             this.conceptCount_1 = conceptKeys.length;
             this.studyCount_1 = studyKeys.length;
             this.conceptCodes_1 = conceptKeys;
-            // Update the final counts: concepts and studies
-            if (this.syncFinalCounts || initialUpdate) {
+            // relay the current counts to the next step
+            if (this.countsRelay) {
               this.conceptCount_2 = this.conceptCount_1;
               this.studyCount_2 = this.studyCount_1;
               this.conceptCodes_2 = this.conceptCodes_1;
@@ -415,33 +419,6 @@ export class QueryService {
               this.isLoadingSubjectCount_2 = false;
               this.observationCount_2 = countResponse['observationCount'];
               this.isLoadingObservationCount_2 = false;
-            }
-          },
-          err => console.error(err)
-        );
-
-      // update the concept and study counts in the 2nd step
-      this.resourceService.getCountsPerStudyAndConcept(combo)
-        .subscribe(
-          (countObj) => {
-            const index = this.queueOfCalls_2.indexOf(timestamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-              let studies = [];
-              let concepts = [];
-              for (let study in countObj) {
-                studies.push(study);
-                let _concepts_ = countObj[study];
-                for (let _concept_ in _concepts_) {
-                  if (concepts.indexOf(_concept_) === -1) {
-                    concepts.push(_concept_);
-                  }
-                }
-              }
-              this.conceptCount_2 = concepts.length;
-              this.studyCount_2 = studies.length;
-              this.conceptCodes_2 = concepts;
-              this.isLoadingConceptCount_2 = false;
-              this.isLoadingStudyCount_2 = false;
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
             }
@@ -454,7 +431,6 @@ export class QueryService {
         this.updateCounts_2();
       }).bind(this), 500);
     }
-
     /*
      * ====== function updateCounts_2 ends ======
      */
@@ -547,7 +523,7 @@ export class QueryService {
     this.constraintService.clearSelectionConstraint();
     let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
     this.constraintService.restoreSelectionConstraint(selectionConstraint);
-    this.updateCounts_1(false);
+    this.updateCounts_1();
     this.updateCounts_2();
     const summary = 'Query "' + query['name'] + '" imported';
     this.alert(summary, '', 'info');
@@ -811,28 +787,28 @@ export class QueryService {
     this._queries = value;
   }
 
-  get instantCountUpdate_1(): boolean {
-    return this._instantCountUpdate_1;
+  get instantCountsUpdate_1(): boolean {
+    return this._instantCountsUpdate_1;
   }
 
-  set instantCountUpdate_1(value: boolean) {
-    this._instantCountUpdate_1 = value;
+  set instantCountsUpdate_1(value: boolean) {
+    this._instantCountsUpdate_1 = value;
   }
 
-  get instantCountUpdate_2(): boolean {
-    return this._instantCountUpdate_2;
+  get instantCountsUpdate_2(): boolean {
+    return this._instantCountsUpdate_2;
   }
 
-  set instantCountUpdate_2(value: boolean) {
-    this._instantCountUpdate_2 = value;
+  set instantCountsUpdate_2(value: boolean) {
+    this._instantCountsUpdate_2 = value;
   }
 
-  get syncFinalCounts(): boolean {
-    return this._syncFinalCounts;
+  get countsRelay(): boolean {
+    return this._countsRelay;
   }
 
-  set syncFinalCounts(value: boolean) {
-    this._syncFinalCounts = value;
+  set countsRelay(value: boolean) {
+    this._countsRelay = value;
   }
 
   get step(): Step {

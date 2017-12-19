@@ -11,13 +11,13 @@
             Step 1: Define the group of subjects for which you want to select data
           </div>
           <div class="gb-data-selection-accordion-sub-header-2">
-            <span class="gb-data-selection-accordion-sub-header-3">
+            <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_1}}</span> / {{subjectCount_0}}
               <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}},
               <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
             </span>
-            <span *ngIf="!queryService.instantCountUpdate_1" class="float-right">
+            <span *ngIf="!queryService.instantCountsUpdate_1" class="float-right">
               <i *ngIf="queryService.isUpdating_1" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="updateCounts_1($event)"
@@ -37,17 +37,16 @@
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
           <div class="gb-data-selection-accordion-sub-header-1">
-            Step 2: Select the relevant data of your group of
-            subjects
+            Step 2: Select the relevant data of your group of subjects
           </div>
           <div class="gb-data-selection-accordion-sub-header-2">
-            <span class="gb-data-selection-accordion-sub-header-3">
+            <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}}</span> / {{subjectCount_1}}
               <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}},
               <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
             </span>
-            <span *ngIf="!queryService.instantCountUpdate_2" class="float-right">
+            <span *ngIf="!queryService.instantCountsUpdate_2" class="float-right">
               <i *ngIf="queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="updateCounts_2($event)"

@@ -4,5 +4,5 @@
   "app-url": "http://localhost:4200",
   "step-1-instant-counts-update": false,
   "step-2-instant-counts-update": false,
-  "final-counts-sync": true
+  "counts-relay": false
 }

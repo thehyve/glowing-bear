@@ -300,13 +300,22 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  public checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
+  private checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
-      if (!checklist || checklist.indexOf(node['fullName']) !== -1) {
+      if (checklist && checklist.indexOf(node['fullName']) !== -1) {
         this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
         this.checkProjectionTreeDataIterative(node['children'], checklist);
+      }
+    }
+  }
+
+  public checkAllProjectionTreeDataIterative(nodes: TreeNode[]) {
+    for (let node of nodes) {
+      this.selectedProjectionTreeData.push(node);
+      if (node['children']) {
+        this.checkAllProjectionTreeDataIterative(node['children']);
       }
     }
   }

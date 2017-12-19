@@ -5,7 +5,7 @@
   <div *ngIf="isDataSelection" class="container form-inline gb-data-selection-overview-panel">
     <input id="queryName" type="text"
            class="form-control gb-data-selection-overview-panel-input"
-           placeholder="Query name"
+           placeholder="Specify query name"
            (drop)="preventNodeDrop($event)"
            [(ngModel)]="queryName" >
     <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-save-btn"

@@ -32,7 +32,7 @@ export class GbProjectionComponent implements OnInit {
 
   updateCounts() {
     this.queryService.step = Step.II;
-    if (this.queryService.instantCountUpdate_2) {
+    if (this.queryService.instantCountsUpdate_2) {
       this.queryService.updateCounts_2();
     } else {
       this.queryService.isDirty_2 = true;
@@ -42,7 +42,7 @@ export class GbProjectionComponent implements OnInit {
   checkAll(value: boolean) {
     if (value) {
       this.treeNodeService
-        .checkProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
+        .checkAllProjectionTreeDataIterative(this.treeNodeService.projectionTreeData);
     } else {
       this.treeNodeService
         .selectedProjectionTreeData = [];
