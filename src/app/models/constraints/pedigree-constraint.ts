@@ -57,14 +57,14 @@ export class PedigreeConstraint implements Constraint {
    * TODO
    * @returns {Object}
    */
-  toQueryObjectWithSubselection(): object {
+  toQueryObjectWithSubselection(full?: boolean): object {
     return {};
   }
 
-  toQueryObjectWithoutSubselection(): object {
+  toQueryObjectWithoutSubselection(full?: boolean): object {
     return {
       type: 'relation',
-      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(),
+      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(full),
       relationTypeLabel: this.label,
       biological: this.biological
     };
@@ -74,11 +74,11 @@ export class PedigreeConstraint implements Constraint {
    * TODO: implement shareHousehold flag
    * @returns {Object}
    */
-  toQueryObject(): object {
+  toQueryObject(full?: boolean): object {
     if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
+      return this.toQueryObjectWithSubselection(full);
     } else {
-      return this.toQueryObjectWithoutSubselection();
+      return this.toQueryObjectWithoutSubselection(full);
     }
   }
 
