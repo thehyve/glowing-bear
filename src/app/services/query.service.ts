@@ -6,7 +6,6 @@ import {Query} from '../models/query';
 import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {Step} from '../models/step';
-import {Constraint} from '../models/constraints/constraint';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 
 type LoadingState = 'loading' | 'complete';
