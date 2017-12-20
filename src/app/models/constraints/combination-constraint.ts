@@ -37,10 +37,10 @@ export class CombinationConstraint implements Constraint {
    * Collects all non-empty query objects
    * @returns {Object[]}
    */
-  getNonEmptyChildObjects(): Object[] {
+  getNonEmptyChildObjects(full?: boolean): Object[] {
     let childQueryObjects: Object[] =
       this._children.reduce((result: Object[], constraint: Constraint) => {
-        let queryObject: Object = constraint.toQueryObject();
+        let queryObject: Object = constraint.toQueryObject(full);
         if (queryObject && Object.keys(queryObject).length > 0) {
           result.push(queryObject);
         }
@@ -76,7 +76,9 @@ export class CombinationConstraint implements Constraint {
    */
   wrapWithSubselection(queryObject: object): object {
     let queryObj = this.unWrapNestedQueryObject(queryObject);
-    if (queryObj['type'] !== 'negation') {
+    if (queryObj['type'] === 'true') {
+      return {'type': 'true'};
+    } else if (queryObj['type'] !== 'negation') {
       return {
         'type': 'subselection',
         'dimension': 'patient',
@@ -101,9 +103,9 @@ export class CombinationConstraint implements Constraint {
    * which requires a speicial subselection wrapper
    * @returns {Object}
    */
-  toQueryObjectWithSubselection(): object {
+  toQueryObjectWithSubselection(full?: boolean): object {
     // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
+    let childQueryObjects: Object[] = this.getNonEmptyChildObjects(full);
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
@@ -127,13 +129,12 @@ export class CombinationConstraint implements Constraint {
         args: childQueryObjects
       };
     }
-
     return queryObject;
   }
 
-  toQueryObjectWithoutSubselection(): object {
+  toQueryObjectWithoutSubselection(full?: boolean): object {
     // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyChildObjects();
+    let childQueryObjects: Object[] = this.getNonEmptyChildObjects(full);
     if (childQueryObjects.length === 0) {
       // No children, so ignore this constraint
       // TODO: show validation error instead?
@@ -158,11 +159,11 @@ export class CombinationConstraint implements Constraint {
    * TODO: optimize a nested combination constraint, detect empty or single child
    * @returns {Object}
    */
-  toQueryObject(): Object {
+  toQueryObject(full?: boolean): Object {
     if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
+      return this.toQueryObjectWithSubselection(full);
     } else {
-      return this.toQueryObjectWithoutSubselection();
+      return this.toQueryObjectWithoutSubselection(full);
     }
   }
 

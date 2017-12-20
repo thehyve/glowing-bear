@@ -120,11 +120,11 @@ export class ConceptConstraint implements Constraint {
     }
   }
 
-  toQueryObject(): Object {
+  toQueryObject(full?: boolean): Object {
     if (this.isSubselection) {
       return this.toQueryObjectWithSubselection();
     } else {
-      return this.toQueryObjectWithoutSubselection();
+      return this.toQueryObjectWithoutSubselection(full);
     }
   }
 
