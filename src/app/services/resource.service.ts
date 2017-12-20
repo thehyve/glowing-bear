@@ -196,7 +196,7 @@ export class ResourceService {
   getCounts(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts';
     const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
+    const body = {constraint: constraintString};console.log('str: ', constraintString);
     const responseField = false;
     return this.postCall(urlPart, body, responseField);
   }

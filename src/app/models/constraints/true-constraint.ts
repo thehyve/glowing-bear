@@ -14,11 +14,12 @@ export class TrueConstraint implements Constraint {
   }
 
   toQueryObjectWithSubselection(): Object {
-    return {
-      'type': 'subselection',
-      'dimension': 'patient',
-      'constraint': {'type': 'true'}
-    };
+    // return {
+    //   'type': 'subselection',
+    //   'dimension': 'patient',
+    //   'constraint': {'type': 'true'}
+    // };
+    return {'type': 'true'};
   }
 
   toQueryObjectWithoutSubselection(): object {

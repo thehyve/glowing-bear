@@ -16,8 +16,10 @@ export interface Constraint {
   /**
    * Returns a javascript object representation of the constraint to be used
    * in queries to the backend.
+   * The flag 'full' indicates if the to concept query object contains extra info,
+   * which is used in saved queries
    */
-  toQueryObject(): object;
+  toQueryObject(full?: boolean): object;
 
   toQueryObjectWithSubselection(): object;
 
