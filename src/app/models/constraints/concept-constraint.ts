@@ -59,21 +59,24 @@ export class ConceptConstraint implements Constraint {
     return null;
   }
 
-  toQueryObjectWithoutSubselection(): object {
+  toQueryObjectWithoutSubselection(full?: boolean): object {
     // When no concept is selected, we cannot create a query object (it should be ignored)
     if (!this.concept) {
       return null;
     }
 
     let args = [];
-    args.push({
+    let conceptObj = {
       type: 'concept',
       conceptCode: this.concept.code,
-      name: this.concept.name,
-      fullName: this.concept.fullName,
-      conceptPath: this.concept.path,
-      valueType: this.concept.type
-    });
+    };
+    if (full) {
+      conceptObj['name'] = this.concept.name;
+      conceptObj['fullName'] = this.concept.fullName;
+      conceptObj['conceptPath'] = this.concept.path;
+      conceptObj['valueType'] = this.concept.type;
+    }
+    args.push(conceptObj);
 
     if (this.values.length > 0) {
       if (this.concept.type === 'NUMERIC') {
