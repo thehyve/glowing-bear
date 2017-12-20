@@ -540,6 +540,7 @@ export class QueryService {
     this.constraintService.clearSelectionConstraint();
     let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
     this.constraintService.restoreSelectionConstraint(selectionConstraint);
+    this.step = Step.I;
     this.updateCounts_1();
     this.updateCounts_2();
     const summary = 'Query "' + query['name'] + '" imported';
