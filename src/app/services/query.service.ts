@@ -230,13 +230,24 @@ export class QueryService {
     /*
      * create patient set for the current query in step 1
      */
-    this.resourceService.createPatientSet(name, selectionConstraint)
+    // this.resourceService.createPatientSet(name, selectionConstraint)
+    //   .subscribe(
+    //   patientSetObj => {
+    //     this.handle_createPatientSet_1(patientSetObj, timeStamp);
+    //   },
+    //   err => this.handle_error(err)
+    // );
+
+    /*
+     * update concept and study counts in the first step
+     */
+    this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
       .subscribe(
-      patientSetObj => {
-        this.handle_createPatientSet_1(patientSetObj, timeStamp);
-      },
-      err => this.handle_error(err)
-    );
+        (countObj) => {
+          this.handle_getCountsPerStudyAndConcept_1(countObj, timeStamp);
+        },
+        err => this.handle_error(err)
+      );
     /*
      * ====== function updateCounts_1 ends ======
      */
