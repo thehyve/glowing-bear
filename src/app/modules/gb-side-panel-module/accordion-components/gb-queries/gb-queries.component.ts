@@ -48,11 +48,9 @@ export class GbQueriesComponent implements OnInit {
         } else if (json.constructor === Array) {
           pathArray = json;
         }
-
         if (pathArray) {
           let query = {
             'name': 'imported temporary query',
-            'patientsQuery': {'type': 'true'},
             'observationsQuery': {
               data: pathArray
             }
