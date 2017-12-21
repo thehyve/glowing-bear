@@ -196,6 +196,9 @@ export class QueryService {
                 this.isLoadingSubjectCount_2 = false;
                 this.isLoadingObservationCount_2 = false;
               }
+              // finish updating, no longer dirty
+              this.isUpdating_1 = false;
+              this.isDirty_1 = false;
             }
           }
         },
@@ -205,6 +208,7 @@ export class QueryService {
         }
       );
   }
+
   private updateExclusionCounts(timeStamp: Date, initialUpdate: boolean) {
     if (this.constraintService.rootExclusionConstraint.hasNonEmptyChildren()) {
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
@@ -230,6 +234,9 @@ export class QueryService {
                   this.isLoadingSubjectCount_2 = false;
                   this.isLoadingObservationCount_2 = false;
                 }
+                // finish updating, no longer dirty
+                this.isUpdating_1 = false;
+                this.isDirty_1 = false;
               }
             }
           },
@@ -243,6 +250,7 @@ export class QueryService {
       this.loadingStateExclusion = 'complete';
     }
   }
+
   private updateConceptsAndStudies(timeStamp: Date) {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
@@ -279,6 +287,7 @@ export class QueryService {
         err => this.handle_error(err)
       );
   }
+
   /**
    * update the subject, observation, concept and study counts in the first step
    */
@@ -379,14 +388,13 @@ export class QueryService {
       }
 
       this.query = null;
-      this.isUpdating_1 = false;
-      this.isDirty_1 = false;
     } else {
       window.setTimeout((function () {
         this.prepareStep2();
       }).bind(this), 500);
     }
   }
+
   /**
    * ------------------------------------------------- END: step 1 ---------------------------------------------------
    */
@@ -536,11 +544,16 @@ export class QueryService {
 
   public restoreQuery(query: Query) {
     this.query = query;
-    this.constraintService.clearSelectionConstraint();
-    let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
-    this.constraintService.restoreSelectionConstraint(selectionConstraint);
-    this.step = Step.I;
-    this.updateCounts_1();
+    if (query['patientsQuery']) {
+      this.constraintService.clearSelectionConstraint();
+      let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
+      this.constraintService.restoreSelectionConstraint(selectionConstraint);
+      this.step = Step.I;
+      this.updateCounts_1();
+    } else {
+      this.prepareStep2();
+      this.step = Step.II;
+    }
     this.updateCounts_2();
     const summary = 'Query "' + query['name'] + '" imported';
     this.alert(summary, '', 'info');
