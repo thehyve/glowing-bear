@@ -196,8 +196,7 @@ export class QueryService {
                 this.isLoadingSubjectCount_2 = false;
                 this.isLoadingObservationCount_2 = false;
               }
-              // finish updating, no longer dirty
-              this.isUpdating_1 = false;
+              // no longer dirty
               this.isDirty_1 = false;
             }
           }
@@ -234,8 +233,7 @@ export class QueryService {
                   this.isLoadingSubjectCount_2 = false;
                   this.isLoadingObservationCount_2 = false;
                 }
-                // finish updating, no longer dirty
-                this.isUpdating_1 = false;
+                // no longer dirty
                 this.isDirty_1 = false;
               }
             }
@@ -286,6 +284,47 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
+  }
+
+  /**
+   * This function handles the asynchronicity
+   * between updating the 2nd-step counts and the loading of tree nodes:
+   * only when the tree nodes are completely loaded can we start updating
+   * the counts in the 2nd step
+   */
+  private prepareStep2() {
+    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
+
+      // Only update the tree in the 2nd step when the user changes sth. in the 1st step
+      if (this.step !== Step.II) {
+        let checklist = this.query ? this.query.observationsQuery['data'] : null;
+        if (checklist) {
+          let parentPaths = [];
+          for (let path of checklist) {
+            let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
+            for (let _parentPath of _parentPaths) {
+              if (!parentPaths.includes(_parentPath)) {
+                parentPaths.push(_parentPath);
+              }
+            }
+          }
+          checklist = checklist.concat(parentPaths);
+        } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
+          checklist = [];
+          for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
+            checklist.push(selectedNode['fullName']);
+          }
+        }
+        this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
+      }
+
+      this.query = null;
+      this.isUpdating_1 = false;
+    } else {
+      window.setTimeout((function () {
+        this.prepareStep2();
+      }).bind(this), 500);
+    }
   }
 
   /**
@@ -354,46 +393,6 @@ export class QueryService {
   //       err => this.handle_error(err)
   //     );
   // }
-
-  /**
-   * This function handles the asynchronicity
-   * between updating the 2nd-step counts and the loading of tree nodes:
-   * only when the tree nodes are completely loaded can we start updating
-   * the counts in the 2nd step
-   */
-  private prepareStep2() {
-    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
-
-      // Only update the tree in the 2nd step when the user changes sth. in the 1st step
-      if (this.step !== Step.II) {
-        let checklist = this.query ? this.query.observationsQuery['data'] : null;
-        if (checklist) {
-          let parentPaths = [];
-          for (let path of checklist) {
-            let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
-            for (let _parentPath of _parentPaths) {
-              if (!parentPaths.includes(_parentPath)) {
-                parentPaths.push(_parentPath);
-              }
-            }
-          }
-          checklist = checklist.concat(parentPaths);
-        } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
-          checklist = [];
-          for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
-            checklist.push(selectedNode['fullName']);
-          }
-        }
-        this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
-      }
-
-      this.query = null;
-    } else {
-      window.setTimeout((function () {
-        this.prepareStep2();
-      }).bind(this), 500);
-    }
-  }
 
   /**
    * ------------------------------------------------- END: step 1 ---------------------------------------------------
