@@ -9,6 +9,7 @@ import {CombinationConstraint} from '../../../../models/constraints/combination-
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/step';
+import {FormatHelper} from "../../../../utilities/FormatHelper";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -42,16 +43,16 @@ export class GbSelectionComponent implements OnInit {
     this.queryService.updateCounts_1(true);
   }
 
-  get subjectCount_1(): number {
-    return this.queryService.subjectCount_1;
+  get subjectCount_1(): string {
+    return FormatHelper.formatNumber(this.queryService.subjectCount_1);
   }
 
-  get inclusionSubjectCount(): number {
-    return this.queryService.inclusionSubjectCount;
+  get inclusionSubjectCount(): string {
+    return FormatHelper.formatNumber(this.queryService.inclusionSubjectCount);
   }
 
-  get exclusionSubjectCount(): number {
-    return this.queryService.exclusionSubjectCount;
+  get exclusionSubjectCount(): string {
+    return FormatHelper.formatNumber(this.queryService.exclusionSubjectCount);
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
