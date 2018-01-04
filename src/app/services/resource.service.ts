@@ -12,6 +12,7 @@ import {Constraint} from '../models/constraints/constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
+import { PatientSetResponse } from '../models/patient-set-response';
 
 @Injectable()
 export class ResourceService {
@@ -240,7 +241,7 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  createPatientSet(name: string, constraint: Constraint): Observable<object> {
+  createPatientSet(name: string, constraint: Constraint): Observable<PatientSetResponse> {
     const urlPart = `patient_sets?name=${name}`;
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
