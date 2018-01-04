@@ -182,8 +182,7 @@ export class ResourceService {
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_study_and_concept';
-    const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
+    const body = {constraint: constraint.toQueryObject()};
     const responseField = 'countsPerStudy';
     return this.postCall(urlPart, body, responseField);
   }
@@ -196,8 +195,7 @@ export class ResourceService {
    */
   getCounts(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts';
-    const constraintString = JSON.stringify(constraint.toQueryObject());
-    const body = {constraint: constraintString};
+    const body = {constraint: constraint.toQueryObject()};
     const responseField = false;
     return this.postCall(urlPart, body, responseField);
   }
@@ -211,7 +209,7 @@ export class ResourceService {
    */
   getAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_concept';
-    const body = {constraint: JSON.stringify(constraint.toQueryObject())};
+    const body = {constraint: constraint.toQueryObject()};
     const responseField = 'aggregatesPerConcept';
     return this.postCall(urlPart, body, responseField);
   }
@@ -345,8 +343,7 @@ export class ResourceService {
    */
   saveQuery(queryBody: object): Observable<Query> {
     const urlPart = `queries`;
-    const body = JSON.stringify(queryBody);
-    return this.postCall(urlPart, body, null);
+    return this.postCall(urlPart, queryBody, null);
   }
 
   /**
@@ -357,8 +354,7 @@ export class ResourceService {
    */
   updateQuery(queryId: string, queryBody: object): Observable<null> {
     const urlPart = `queries/${queryId}`;
-    const body = JSON.stringify(queryBody);
-    return this.putCall(urlPart, body);
+    return this.putCall(urlPart, queryBody);
   }
 
   /**
