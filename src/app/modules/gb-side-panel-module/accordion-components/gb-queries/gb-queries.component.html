@@ -52,38 +52,33 @@
         <p-panel [collapsed]="query['collapsed']"
                  (keypress)="onQueryPanelKeyEnter($event, query)"
                  (click)="onQueryPanelClick(query)">
+                 [toggleable]="true" [expandIcon]="'fa-angle-down'" [collapseIcon]="'fa-angle-up'">
           <p-header>
-            <div class="ui-helper-clearfix">
-              <button pButton class="ui-button-secondary gb-query-panel-toggle-button" type="button"
-                      (click)="toggleQueryPanel(query)"
-                      icon="{{getQueryToggleButtonIcon(query)}}">
+            <input *ngIf="!query['nameEditable']" type="text" pInputText
+                   [(ngModel)]="query['name']"
+                   (dblclick)="editQueryName($event, query)" readonly/>
+            <input *ngIf="query['nameEditable']" type="text" pInputText
+                   [(ngModel)]="query['name']" (click)="editQueryName($event, query)"/>
+            <div class="float-right">
+              <button pButton class="ui-button-secondary" type="button"
+                      (click)="toggleQuerySubscription(query)"
+                      icon="{{getQuerySubscriptionButtonIcon(query)}}">
               </button>
-              <input *ngIf="!query['nameEditable']" type="text" pInputText
-                     [(ngModel)]="query['name']"
-                     (dblclick)="editQueryName($event, query)" readonly/>
-              <input *ngIf="query['nameEditable']" type="text" pInputText
-                     [(ngModel)]="query['name']" (click)="editQueryName($event, query)"/>
-              <div class="float-right">
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="toggleQuerySubscription(query)"
-                        icon="{{getQuerySubscriptionButtonIcon(query)}}">
-                </button>
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="toggleQueryBookmark(query)"
-                        icon="{{getQueryBookmarkButtonIcon(query)}}">
-                </button>
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="downloadQuery(query)"
-                        icon="fa-download">
-                </button>
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="putQuery(query)" icon="fa-arrow-right">
-                </button>
-                <span>&nbsp;</span>
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="confirmRemoval(query)" icon="fa-times">
-                </button>
-              </div>
+              <button pButton class="ui-button-secondary" type="button"
+                      (click)="toggleQueryBookmark(query)"
+                      icon="{{getQueryBookmarkButtonIcon(query)}}">
+              </button>
+              <button pButton class="ui-button-secondary" type="button"
+                      (click)="downloadQuery(query)"
+                      icon="fa-download">
+              </button>
+              <button pButton class="ui-button-secondary" type="button"
+                      (click)="putQuery(query)" icon="fa-arrow-right">
+              </button>
+              <span>&nbsp;</span>
+              <button pButton class="ui-button-secondary" type="button"
+                      (click)="removeQuery(query)" icon="fa-times">
+              </button>
             </div>
           </p-header>
 
