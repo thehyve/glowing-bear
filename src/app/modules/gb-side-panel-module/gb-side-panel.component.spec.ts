@@ -3,7 +3,9 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbSidePanelComponent} from './gb-side-panel.component';
 import {CommonModule} from '@angular/common';
 import {
-  AccordionModule, AutoCompleteModule, ButtonModule, DataListModule, DragDropModule, InputTextModule, OverlayPanelModule, PanelModule,
+  AccordionModule, AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, DataListModule,
+  DragDropModule,
+  InputTextModule, OverlayPanelModule, PanelModule,
   TooltipModule,
   TreeModule
 } from 'primeng/primeng';
@@ -44,7 +46,8 @@ describe('GbSidePanelComponent', () => {
         PanelModule,
         ButtonModule,
         InputTextModule,
-        TooltipModule
+        TooltipModule,
+        ConfirmDialogModule
       ],
       providers: [
         {
@@ -62,7 +65,8 @@ describe('GbSidePanelComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
-        }
+        },
+        ConfirmationService
       ]
     })
       .compileComponents();
