@@ -47,7 +47,7 @@
               <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
             </span>
             <span *ngIf="!queryService.instantCountsUpdate_2" class="float-right">
-              <i *ngIf="queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
+              <i *ngIf="queryService.isPreparing_2 || queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="updateCounts_2($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
