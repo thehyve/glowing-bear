@@ -43,6 +43,7 @@
 
 
   <!-- queries -->
+  <p-confirmDialog></p-confirmDialog>
   <div>
     <div *ngFor="let query of queries">
       <!-- ------ div wrapper for visibility of a query panel ------ -->
@@ -88,13 +89,20 @@
 
           <div class="container gb-query-panel-body">
             <div class="row">
-              Name: {{query.name}}
+              <div class="col-md-12">Name: {{query.name}}</div>
             </div>
             <div class="row">
-              Created: {{query.createDate}}
+              <div class="col-md-12">Created: {{query.createDate}}</div>
             </div>
             <div class="row">
-              Updated: {{query.updateDate}}
+              <div class="col-md-12">Updated: {{query.updateDate}}</div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-secondary btn-sm gb-query-remove-btn pull-right"
+                        (click)="query.bookmarked ? confirmRemoval(query) : removeQuery(query)"
+                        type="button">remove</button>
+              </div>
             </div>
           </div>
 
