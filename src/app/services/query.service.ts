@@ -99,8 +99,10 @@ export class QueryService {
    * used in gb-projection-component
    */
   private _instantCountsUpdate_2: boolean;
-  // flag indicating if the counts in the first step are being updated
+  // flag indicating if the counts in the 2nd step are being updated
   private _isUpdating_2 = false;
+  // flag indicating if the counts in the 2nd step caused by the changes in the 1st step are being updated
+  private _isPreparing_2 = false;
   // flag indicating if the query in the 2nd step has been changed
   private _isDirty_2 = false;
   // the number of subjects further refined in the second step
@@ -184,6 +186,7 @@ export class QueryService {
             if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
               this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
               this.loadingStateTotal = 'complete';
+              this.isUpdating_1 = false;
               this.observationCount_1 = countResponse['observationCount'];
               if (initialUpdate) {
                 this.subjectCount_0 = this.subjectCount_1;
@@ -221,6 +224,7 @@ export class QueryService {
               if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
                 this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
                 this.loadingStateTotal = 'complete';
+                this.isUpdating_1 = false;
                 this.observationCount_1 = countResponse['observationCount'];
                 if (initialUpdate) {
                   this.subjectCount_0 = this.subjectCount_1;
@@ -319,7 +323,7 @@ export class QueryService {
       }
 
       this.query = null;
-      this.isUpdating_1 = false;
+      this.isPreparing_2 = false;
     } else {
       window.setTimeout((function () {
         this.prepareStep2();
@@ -332,6 +336,7 @@ export class QueryService {
    */
   public updateCounts_1(initialUpdate?: boolean) {
     this.isUpdating_1 = true;
+    this.isPreparing_2 = true;
     this.patientSet_1 = null;
     /*
      * ====== function updateCounts_1 starts ======
@@ -408,7 +413,7 @@ export class QueryService {
     /*
      * ====== function updateCounts_2 starts ======
      */
-    if (!this.isUpdating_1) {
+    if (!this.isUpdating_1 && !this.isPreparing_2) {
       this.isUpdating_2 = true;
       // add time stamp to the queue,
       // only when the time stamp is at the end of the queue, the count is updated
@@ -782,6 +787,14 @@ export class QueryService {
 
   set isUpdating_2(value: boolean) {
     this._isUpdating_2 = value;
+  }
+
+  get isPreparing_2(): boolean {
+    return this._isPreparing_2;
+  }
+
+  set isPreparing_2(value: boolean) {
+    this._isPreparing_2 = value;
   }
 
   get isDirty_1(): boolean {
