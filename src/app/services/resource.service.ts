@@ -13,6 +13,7 @@ import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
 import { PatientSetResponse } from '../models/patient-set-response';
+import {PedigreeRelationTypeResponse} from "../models/pedigree-relation-type-response";
 
 @Injectable()
 export class ResourceService {
@@ -232,7 +233,7 @@ export class ResourceService {
    * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
    * @returns {Observable<Object[]>}
    */
-  getPedigreeRelationTypes(): Observable<object[]> {
+  getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
     return this.getCall(urlPart, responseField);
