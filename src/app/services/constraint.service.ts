@@ -97,10 +97,10 @@ export class ConstraintService {
       .subscribe(
         relationTypeObjects => {
           for (let obj of relationTypeObjects) {
-            let pedigreeConstraint = new PedigreeConstraint(obj['label']);
-            pedigreeConstraint.description = obj['description'];
-            pedigreeConstraint.biological = obj['biological'];
-            pedigreeConstraint.symmetrical = obj['symmetrical'];
+            let pedigreeConstraint = new PedigreeConstraint(obj.label);
+            pedigreeConstraint.description = obj.description;
+            pedigreeConstraint.biological = obj.biological;
+            pedigreeConstraint.symmetrical = obj.symmetrical;
             this.allConstraints.push(pedigreeConstraint);
             this.validPedigreeTypes.push({
               type: pedigreeConstraint.relationType,
