@@ -261,6 +261,12 @@ body .ui-panel-titlebar {
 body .ui-inputtext {
   height: 2em;
 }
+/* Fix cutting off letters inside inputtext field.
+ Rendering engines of Firefox and Safari render line height slightly different than Chrome.
+ Editing component css doesn't work. */
+body .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+  padding-bottom: 3px;
+}
 
 body .ui-autocomplete .ui-autocomplete-dropdown {
   height: 2em;
