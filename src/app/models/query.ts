@@ -16,6 +16,11 @@ export class Query {
   private _subscribed: boolean;
   // Indicate if the set is collapsed
   private _collapsed: boolean;
+  // Indicate if the subscription panel is collapsed
+  // note that this panel only appears if the query is subscribed
+  private _subscriptionCollapsed: boolean;
+  // The frequency of the subscription: daily or monthly
+  private _subscriptionFreq;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
   // The patient constraint part of the query
@@ -151,5 +156,13 @@ export class Query {
 
   set updateDateInfo(value: string) {
     this._updateDateInfo = value;
+  }
+
+  get subscriptionCollapsed(): boolean {
+    return this._subscriptionCollapsed;
+  }
+
+  set subscriptionCollapsed(value: boolean) {
+    this._subscriptionCollapsed = value;
   }
 }
