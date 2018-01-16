@@ -90,7 +90,7 @@ export class GbQueriesComponent implements OnInit {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
     const queryObject = {
-      bookmarked: query.subscribed
+      subscribed: query.subscribed
     };
     this.queryService.updateQuery(query.id, queryObject);
   }
