@@ -60,8 +60,6 @@ export class ConstraintService {
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
-    // create the pedigree-related constraints
-    this.loadPedigrees();
     // also construct concepts while loading the tree nodes
     this.treeNodeService.loadTreeNodes(this);
 
@@ -93,26 +91,6 @@ export class ConstraintService {
             this.studyConstraints.push(constraint);
             this.allConstraints.push(constraint);
           });
-        },
-        err => console.error(err)
-      );
-  }
-
-  private loadPedigrees() {
-    this.resourceService.getPedigreeRelationTypes()
-      .subscribe(
-        relationTypeObjects => {
-          for (let obj of relationTypeObjects) {
-            let pedigreeConstraint = new PedigreeConstraint(obj.label);
-            pedigreeConstraint.description = obj.description;
-            pedigreeConstraint.biological = obj.biological;
-            pedigreeConstraint.symmetrical = obj.symmetrical;
-            this.allConstraints.push(pedigreeConstraint);
-            this.validPedigreeTypes.push({
-              type: pedigreeConstraint.relationType,
-              text: pedigreeConstraint.textRepresentation
-            });
-          }
         },
         err => console.error(err)
       );
