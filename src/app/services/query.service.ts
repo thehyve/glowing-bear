@@ -153,12 +153,12 @@ export class QueryService {
   public loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
-        (queries) => {
+        (queries: Query[]) => {
           this.queries.length = 0;
           let bookmarkedQueries = [];
           queries.forEach(query => {
-            query['collapsed'] = true;
-            query['visible'] = true;
+            query.collapsed = true;
+            query.visible = true;
             if (query.createDate) {
               let str = query.createDate.split('T');
               if (str.length === 2) {
@@ -171,7 +171,7 @@ export class QueryService {
                 query.updateDate = str[0] + ', ' + str[1].substring(0, str[1].length - 1);
               }
             }
-            if (query['bookmarked']) {
+            if (query.bookmarked) {
               bookmarkedQueries.push(query);
             } else {
               this.queries.push(query);
