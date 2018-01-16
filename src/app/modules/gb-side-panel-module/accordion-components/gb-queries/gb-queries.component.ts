@@ -82,53 +82,53 @@ export class GbQueriesComponent implements OnInit {
   }
 
   // query panel collapse and expansion
-  toggleQueryPanel(query) {
-    query['collapsed'] = !query['collapsed'];
+  toggleQueryPanel(query: Query) {
+    query.collapsed = !query.collapsed;
   }
 
-  getQueryToggleButtonIcon(query) {
-    return query['collapsed'] ? 'fa-angle-down' : 'fa-angle-up';
+  getQueryToggleButtonIcon(query: Query) {
+    return query.collapsed ? 'fa-angle-down' : 'fa-angle-up';
   }
 
   // query subscription
-  toggleQuerySubscription(query) {
-    query['subscribed'] = !query['subscribed'];
+  toggleQuerySubscription(query: Query) {
+    query.subscribed = !query.subscribed;
     const queryObject = {
-      bookmarked: query['subscribed']
+      bookmarked: query.subscribed
     };
-    this.queryService.updateQuery(query['id'], queryObject);
+    this.queryService.updateQuery(query.id, queryObject);
   }
 
-  getQuerySubscriptionButtonIcon(query) {
-    return query['subscribed'] ? 'fa-rss-square' : 'fa-rss';
+  getQuerySubscriptionButtonIcon(query: Query) {
+    return query.subscribed ? 'fa-rss-square' : 'fa-rss';
   }
 
   // query bookmark
-  toggleQueryBookmark(query) {
-    query['bookmarked'] = !query['bookmarked'];
+  toggleQueryBookmark(query: Query) {
+    query.bookmarked = !query.bookmarked;
     const queryObject = {
-      bookmarked: query['bookmarked']
+      bookmarked: query.bookmarked
     };
-    this.queryService.updateQuery(query['id'], queryObject);
+    this.queryService.updateQuery(query.id, queryObject);
   }
 
-  getQueryBookmarkButtonIcon(query) {
-    return query['bookmarked'] ? 'fa-star' : 'fa-star-o';
+  getQueryBookmarkButtonIcon(query: Query) {
+    return query.bookmarked ? 'fa-star' : 'fa-star-o';
   }
 
-  putQuery(selectedQuery) {
+  putQuery(selectedQuery: Query) {
     for (let query of this.queryService.queries) {
-      query['selected'] = false;
+      query.selected = false;
     }
-    selectedQuery['selected'] = true;
+    selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
   }
 
-  removeQuery(query) {
+  removeQuery(query: Query) {
     this.queryService.deleteQuery(query);
   }
 
-  downloadQuery(query) {
+  downloadQuery(query: Query) {
     let data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(query));
     let el = document.createElement('a');
     el.setAttribute('href', data);
@@ -139,30 +139,30 @@ export class GbQueriesComponent implements OnInit {
     document.body.removeChild(el);
   }
 
-  editQueryName(event, query) {
+  editQueryName(event, query: Query) {
     event.preventDefault();
     event.stopPropagation();
-    query['nameEditable'] = true;
+    query.nameEditable = true;
   }
 
-  onQueryPanelKeyEnter(event, query) {
-    if (event.key === 'Enter' && query['nameEditable']) {
-      query['nameEditable'] = false;
+  onQueryPanelKeyEnter(event, query: Query) {
+    if (event.key === 'Enter' && query.nameEditable) {
+      query.nameEditable = false;
       const queryObject = {
-        name: query['name']
+        name: query.name
       };
-      this.queryService.updateQuery(query['id'], queryObject);
+      this.queryService.updateQuery(query.id, queryObject);
     }
   }
 
-  onQueryPanelClick(query) {
+  onQueryPanelClick(query: Query) {
     // Save the query if its name has been modified
-    if (query['nameEditable']) {
-      query['nameEditable'] = false;
+    if (query.nameEditable) {
+      query.nameEditable = false;
       const queryObject = {
-        name: query['name']
+        name: query.name
       };
-      this.queryService.updateQuery(query['id'], queryObject);
+      this.queryService.updateQuery(query.id, queryObject);
     }
   }
 
@@ -170,9 +170,9 @@ export class GbQueriesComponent implements OnInit {
     let filterWord = this.searchTerm.trim().toLowerCase();
     for (let query of this.queryService.queries) {
       if (query.name.indexOf(filterWord) === -1) {
-        query['visible'] = false;
+        query.visible = false;
       } else {
-        query['visible'] = true;
+        query.visible = true;
       }
     }
     this.removeFalsePrimeNgClasses(500);
@@ -181,7 +181,7 @@ export class GbQueriesComponent implements OnInit {
   clearFilter() {
     this.searchTerm = '';
     for (let query of this.queryService.queries) {
-      query['visible'] = true;
+      query.visible = true;
     }
     this.removeFalsePrimeNgClasses(500);
   }
