@@ -41,8 +41,11 @@ export class QueryServiceMock {
   constructor() {
     this._validTreeNodeTypes = [
       'NUMERIC',
-      'CATEGORICAL_OPTION',
+      'CATEGORICAL',
+      'DATE',
       'STUDY',
+      'TEXT',
+      'HIGH_DIMENSIONAL',
       'UNKNOWN'
     ];
   }
