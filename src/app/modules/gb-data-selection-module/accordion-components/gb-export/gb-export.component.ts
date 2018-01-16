@@ -44,31 +44,39 @@ export class GbExportComponent implements OnInit {
    * Create the export job when the user clicks the 'Export selected sets' button
    */
   createExportJob() {
-    let name = this.exportJobName ? this.exportJobName.trim() : undefined;
+    let name = this.exportJobName ? this.exportJobName.trim() : '';
+    let validName = name !== '';
     let duplicateName = false;
-    for (let job of this.exportJobs) {
-      if (job['jobName'] === name) {
-        duplicateName = true;
-        break;
-      }
-    }
 
-    if (duplicateName) {
-      const summary = 'Duplicate job name, choose a new name.';
+    if(!validName) {
+      const summary = 'Please specify the job name.';
       this.queryService.alert(summary, '', 'warn');
     } else {
-      let summary = 'Running export job "' + name + '".';
-      this.queryService.alert(summary, '', 'info');
-      this.resourceService.createExportJob(name)
-        .subscribe(
-          newJob => {
-            summary = 'Export job "' + name + '" is created.';
-            this.queryService.alert(summary, '', 'success');
-            this.exportJobName = '';
-            this.runExportJob(newJob);
-          },
-          err => console.error(err)
-        );
+
+      for (let job of this.exportJobs) {
+        if (job['jobName'] === name) {
+          duplicateName = true;
+          break;
+        }
+      }
+
+      if (duplicateName) {
+        const summary = 'Duplicate job name, choose a new name.';
+        this.queryService.alert(summary, '', 'warn');
+      } else {
+        let summary = 'Running export job "' + name + '".';
+        this.queryService.alert(summary, '', 'info');
+        this.resourceService.createExportJob(name)
+          .subscribe(
+            newJob => {
+              summary = 'Export job "' + name + '" is created.';
+              this.queryService.alert(summary, '', 'success');
+              this.exportJobName = '';
+              this.runExportJob(newJob);
+            },
+            err => console.error(err)
+          );
+      }
     }
   }
 
