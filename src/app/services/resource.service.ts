@@ -239,13 +239,6 @@ export class ResourceService {
     return this.getCall(urlPart, responseField);
   }
 
-  // -------------------------------------- patient set calls --------------------------------------
-  createPatientSet(name: string, constraint: Constraint): Observable<PatientSetResponse> {
-    const urlPart = `patient_sets?name=${name}`;
-    const body = constraint.toQueryObject();
-    return this.postCall(urlPart, body, null);
-  }
-
   // -------------------------------------- export calls --------------------------------------
   /**
    * Given a list of patient set ids as strings, get the corresponding data formats available for download
@@ -366,6 +359,13 @@ export class ResourceService {
   deleteQuery(queryId: string): Observable<null> {
     const urlPart = `queries/${queryId}`;
     return this.deleteCall(urlPart);
+  }
+
+  // -------------------------------------- patient set calls --------------------------------------
+  savePatientSet(name: string, constraint: Constraint): Observable<PatientSetResponse> {
+    const urlPart = `patient_sets?name=${name}`;
+    const body = constraint.toQueryObject();
+    return this.postCall(urlPart, body, null);
   }
 
 }
