@@ -241,17 +241,6 @@ export class ResourceService {
     return this.getCall(urlPart, responseField);
   }
 
-  // -------------------------------------- pedigree calls --------------------------------------
-  /**
-   * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
-   * @returns {Observable<Object[]>}
-   */
-  getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
-    const urlPart = 'pedigree/relation_types';
-    const responseField = 'relationTypes';
-    return this.getCall(urlPart, responseField);
-  }
-
   // -------------------------------------- export calls --------------------------------------
   /**
    * Given a list of patient set ids as strings, get the corresponding data formats available for download
