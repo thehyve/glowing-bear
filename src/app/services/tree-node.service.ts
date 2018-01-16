@@ -35,6 +35,7 @@ export class TreeNodeService {
       'DATE',
       'STUDY',
       'TEXT',
+      'HIGH_DIMENSIONAL',
       'UNKNOWN'
     ];
   }
@@ -572,7 +573,8 @@ export class TreeNodeService {
    */
   public isTreeNodeAconcept(node: TreeNode): boolean {
     const type = node['type'];
-    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE') ? true : false;
+    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE'
+      || type === 'TEXT' || type === 'HIGH_DIMENSIONAL') ? true : false;
   }
 
   /**
