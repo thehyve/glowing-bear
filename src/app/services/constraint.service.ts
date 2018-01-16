@@ -289,7 +289,9 @@ export class ConstraintService {
         (<StudyConstraint>constraint).studies.push(study);
       } else if (treeNodeType === 'NUMERIC' ||
         treeNodeType === 'CATEGORICAL' ||
-        treeNodeType === 'DATE') {
+        treeNodeType === 'DATE' ||
+        treeNodeType === 'HIGH_DIMENSIONAL' ||
+        treeNodeType === 'TEXT' ) {
         if (treeNode['constraint']) {
           constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {
