@@ -174,6 +174,7 @@ export class QueryService {
           queries.forEach(query => {
             query.collapsed = true;
             query.visible = true;
+            query.subscriptionCollapsed = true;
             if (query.createDate) {
               query.createDateInfo = FormatHelper.formatDateSemantics(query.createDate);
             }
@@ -640,7 +641,7 @@ export class QueryService {
     this.alert(alertSummary, alertDetails, 'info');
   }
 
-  public updateQuery(queryId: string, queryObject: object) {
+  public updateQuery(queryId: string, queryObject: object) {console.log('update query: ', queryObject);
     this.resourceService.updateQuery(queryId, queryObject)
       .subscribe(
         () => {
