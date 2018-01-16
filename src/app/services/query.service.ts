@@ -562,7 +562,8 @@ export class QueryService {
   }
 
   public saveQuery(queryName: string) {
-    const patientConstraintObj = this.constraintService.generateSelectionConstraint().toQueryObject(true);
+    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const patientConstraintObj = selectionConstraint.toQueryObject(true);
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
@@ -592,6 +593,19 @@ export class QueryService {
         (err) => {
           console.error(err);
           const summary = 'Could not add the query "' + queryObj['name'] + '".';
+          this.alert(summary, '', 'error');
+        }
+      );
+    // save the corresponding patient set,
+    // necessary for the subscription feature to work in TranSMART
+    this.resourceService.savePatientSet(queryName, selectionConstraint)
+      .subscribe(
+        (patientSetResponse: PatientSetResponse) => {
+          console.log('patient set response saved: ', patientSetResponse);
+        },
+        (err) => {
+          console.error(err);
+          const summary = 'Could not save the corresponding patient set.';
           this.alert(summary, '', 'error');
         }
       );
