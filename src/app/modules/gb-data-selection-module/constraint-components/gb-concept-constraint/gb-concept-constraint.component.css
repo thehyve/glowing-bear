@@ -2,7 +2,12 @@
   color: #333333;
 }
 .btn-outline-secondary:hover {
-  background-color: #c8eae6;
+  background-color: var(--gb-clinical-green-light-light);
+  color: black;
+}
+
+.btn-outline-secondary:active {
+  background-color: var(--gb-clinical-green-light);
   color: black;
 }
 

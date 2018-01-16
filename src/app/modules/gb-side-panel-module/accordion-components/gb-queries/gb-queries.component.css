@@ -100,7 +100,7 @@ p-header .ui-button-secondary {
 }
 
 .gb-query-sort-btn:hover {
-  background-color: #339C90 !important;
+  background-color: var(--gb-clinical-green) !important;
   opacity: 0.8 !important;
   color: white !important;
 }

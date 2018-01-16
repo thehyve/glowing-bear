@@ -1,4 +1,16 @@
 /*
+  custom colors
+*/
+:root  {
+  --gb-loading-bg-color: #28AA9D;
+  --gb-navbar-bg-color: #fdfdfd;
+  --gb-light-orange: #ffa27f;
+  --gb-clinical-green: #339C90;
+  --gb-clinical-green-light: #84c3bc;
+  --gb-clinical-green-light-light: #c8eae6;
+}
+
+/*
   All elements have padding and border
   included in the element's total width and height
  */
@@ -20,7 +32,7 @@ textarea {
 }
 
 .loading-message {
-  background-color: #28AA9D;
+  background-color: var(--gb-loading-bg-color);
   color: white;
   font-family: 'Roboto', sans-serif;
   font-size: 300%;
@@ -57,8 +69,8 @@ p-dataList {
  * Change the color theme of the accordion in data-selection to clinical green
  */
 md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
-  border-color: #339C90 !important;
-  box-shadow: 0 1px 0 #339C90 !important;
+  border-color: var(--gb-clinical-green) !important;
+  box-shadow: 0 1px 0 var(--gb-clinical-green) !important;
 }
 
 /*
@@ -148,13 +160,6 @@ body .ui-treetable .ui-treetable-checkbox .ui-chkbox-icon {
 }
 
 /*
- * Fix the style of tree table row highlight color in the table view of data-selection
- */
-body .ui-treetable-row.ui-state-highlight {
-  background-color: #67a2cf;
-}
-
-/*
  * Fix the style of tree node toggle in tree table in the table view of data-selection
  */
 tbody a {
@@ -215,7 +220,6 @@ body .ui-panel-titlebar {
 }
 
 .ui-messages.ui-messages-warn {
-  /* #f98866: petal orange */
   background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
@@ -223,7 +227,6 @@ body .ui-panel-titlebar {
 }
 
 .ui-messages.ui-messages-error {
-  /* #ff420e: poppy red */
   background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
@@ -235,7 +238,7 @@ body .ui-panel-titlebar {
  */
 @keyframes gb-count-element-animation {
   from {
-    background-color: #ffa27f;
+    background-color: var(--gb-light-orange);
   }
   to {
     background-color: transparent;
@@ -358,7 +361,7 @@ legend {
  * tree node styles for filtering
  */
 .gb-highlight-treenode {
-  background-color: #ffa27f !important;
+  background-color: var(--gb-light-orange) !important;
   border-radius: 10px !important;
   font-weight: bold !important;
 }

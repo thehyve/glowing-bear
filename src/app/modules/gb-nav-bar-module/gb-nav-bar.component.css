@@ -1,5 +1,5 @@
 .gb-navbar {
-  background-color: #fdfdfd;
+  background-color: var(--gb-navbar-bg-color);
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -40,36 +40,11 @@
   margin: .1em;
 }
 .gb-data-selection-overview-panel-save-btn:hover {
-  background-color: rgba(51, 156, 144, 0.7);
+  background-color: var(--gb-clinical-green);
+  opacity: 0.7;
 }
 .gb-data-selection-overview-panel-save-btn:active {
-  background-color: rgba(51, 156, 144, 0.9);
+  background-color: var(--gb-clinical-green);
+  opacity: 0.9;
 }
 
-/* import btn */
-.gb-data-selection-overview-panel-import-btn {
-  margin: .1em;
-}
-.gb-data-selection-overview-panel-import-btn:hover {
-  background-color: rgba(51, 156, 144, 0.7);
-}
-.gb-data-selection-overview-panel-import-btn:active {
-  background-color: rgba(51, 156, 144, 0.9);
-}
-
-/* update btn */
-.gb-data-selection-overview-panel-update-btn {
-  background-color: #339c90;
-  border-color: transparent;
-  color: white;
-}
-
-.gb-data-selection-overview-panel-update-btn:hover {
-  background-color: #287c73;
-  border-color: #287c73;
-}
-
-.gb-data-selection-overview-panel-update-btn:active {
-  background-color: #236d64;
-  border-color: #287c73;
-}
