@@ -159,6 +159,18 @@ export class QueryService {
           queries.forEach(query => {
             query['collapsed'] = true;
             query['visible'] = true;
+            if (query.createDate) {
+              let str = query.createDate.split('T');
+              if (str.length === 2) {
+                query.createDate = str[0] + ', ' + str[1].substring(0, str[1].length - 1);
+              }
+            }
+            if (query.updateDate) {
+              let str = query.updateDate.split('T');
+              if (str.length === 2) {
+                query.updateDate = str[0] + ', ' + str[1].substring(0, str[1].length - 1);
+              }
+            }
             if (query['bookmarked']) {
               bookmarkedQueries.push(query);
             } else {
