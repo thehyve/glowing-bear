@@ -74,6 +74,38 @@
                 </button>
               </div>
             </div>
+
+            <!-- start: if the query is subscribed, should the subscription panel -->
+            <div *ngIf="query.subscribed">
+              <div class="row gb-subscription-panel-header"
+                   (click)="toggleSubscriptionPanel(query)">Subscription</div>
+              <div *ngIf="!query.subscriptionCollapsed"
+                   class="gb-subscription-panel-body">
+                <div *ngFor="let record of query.diffRecords"
+                     class="gb-subscription-panel-body-record"
+                     (click)="toggleSubscriptionRecordPanel(record)">
+                  <hr>
+                  <div>
+                    timestamp: {{record.date}}
+                  </div>
+                  <div *ngIf="record.showCompleteRepresentation">
+                    <div *ngFor="let diffType of record.diffTypes">
+                      {{record.countRepresentation[diffType]}}
+                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                      {{record.completeRepresentation[diffType]}}
+                    </div>
+                  </div>
+                  <div *ngIf="!record.showCompleteRepresentation">
+                    <div *ngFor="let diffType of record.diffTypes">
+                      {{record.countRepresentation[diffType]}}
+                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                      {{record.partialRepresentation[diffType]}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end subscription section -->
           </div>
         </md2-accordion-header>
         <div *ngIf="query.visible" class="gb-query-body">
