@@ -2,6 +2,7 @@ import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
+import {QueryDiffRecord} from '../../../../models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
@@ -80,6 +81,9 @@ export class GbQueriesComponent implements OnInit {
     const queryObject = {
       subscribed: query.subscribed
     };
+    if (query.subscribed) {
+      queryObject['subscriptionFreq'] = query.subscriptionFreq;
+    }
     this.queryService.updateQuery(query.id, queryObject);
   }
 
@@ -108,6 +112,14 @@ export class GbQueriesComponent implements OnInit {
     }
     selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
+  }
+
+  toggleSubscriptionPanel(query: Query) {
+    query.subscriptionCollapsed = !query.subscriptionCollapsed;
+  }
+
+  toggleSubscriptionRecordPanel(record: QueryDiffRecord) {
+    record.showCompleteRepresentation = !record.showCompleteRepresentation;
   }
 
   removeQuery(event: Event, query: Query) {
