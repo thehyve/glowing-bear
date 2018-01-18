@@ -16,6 +16,7 @@ import {
   ConfirmDialogModule,
   InputTextModule,
   PanelModule,
+  RadioButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -36,7 +37,8 @@ import {Md2AccordionModule} from 'md2';
     InputTextModule,
     TooltipModule,
     ConfirmDialogModule,
-    Md2AccordionModule
+    Md2AccordionModule,
+    RadioButtonModule
   ],
   declarations: [
     GbSidePanelComponent,

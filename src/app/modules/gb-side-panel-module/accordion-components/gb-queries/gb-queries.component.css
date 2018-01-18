@@ -31,6 +31,7 @@
   padding-left: 6px;
   margin-left: -20px;
   margin-top: 3px;
+  cursor: pointer;
 }
 .gb-subscription-panel-header:hover {
   background-color: var(--gb-clinical-green-light-light);
@@ -49,6 +50,8 @@
 
 .gb-subscription-panel-body-record {
   margin-bottom: 1px;
+  margin-top: 5px;
+  cursor: pointer;
 }
 .gb-subscription-panel-body-record:hover {
   background-color: var(--gb-clinical-green-light-light);

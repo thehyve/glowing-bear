@@ -14,6 +14,7 @@ import {QueryDiffRecord} from '../models/query-diff-record';
 import {QuerySetType} from '../models/query-set-type';
 import {QueryDiffItem} from '../models/query-diff-item';
 import {QueryDiffType} from '../models/query-diff-type';
+import {QuerySubscriptionFrequency} from '../models/query-subscription-frequency';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -185,9 +186,14 @@ export class QueryService {
             if (query.updateDate) {
               query.updateDateInfo = FormatHelper.formatDateSemantics(query.updateDate);
             }
+            if (query.subscribed) {
+              if (!query.subscriptionFreq) {
+                query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+              }
+            }
             /*
-             * load query diff records for this query
-             */
+              * load query diff records for this query
+              */
             let records = [
               {
                 id: 16,
@@ -714,9 +720,11 @@ export class QueryService {
   }
 
   public updateQuery(queryId: string, queryObject: object) {
+    console.log('update query: ', queryObject);
     this.resourceService.updateQuery(queryId, queryObject)
       .subscribe(
-        () => {
+        (r) => {
+          console.log('respnse: ', r);
         },
         err => this.handle_error(err)
       );

@@ -75,19 +75,26 @@
               </div>
             </div>
 
-            <!-- start: if the query is subscribed, should the subscription panel -->
+            <!-- start: if the query is subscribed, show the subscription panel -->
             <div *ngIf="query.subscribed">
               <div class="row gb-subscription-panel-header"
                    (click)="toggleSubscriptionPanel(query)">Subscription</div>
+              <div class="row">
+                <span>frequency:</span>
+                <p-radioButton name="freq-group" value="DAILY" label="Daily"
+                               (click)="radioCheckSubscriptionFrequency(query)"
+                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+                <p-radioButton name="freq-group" value="WEEKLY" label="Weekly"
+                               (click)="radioCheckSubscriptionFrequency(query)"
+                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+              </div>
               <div *ngIf="!query.subscriptionCollapsed"
                    class="gb-subscription-panel-body">
                 <div *ngFor="let record of query.diffRecords"
                      class="gb-subscription-panel-body-record"
                      (click)="toggleSubscriptionRecordPanel(record)">
                   <hr>
-                  <div>
-                    timestamp: {{record.date}}
-                  </div>
+                  <span><b>{{record.date}}</b></span>
                   <div *ngIf="record.showCompleteRepresentation">
                     <div *ngFor="let diffType of record.diffTypes">
                       {{record.countRepresentation[diffType]}}
