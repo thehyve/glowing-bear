@@ -6,6 +6,7 @@ import {QueryDiffRecord} from '../../../../models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
+import {QuerySubscriptionFrequency} from '../../../../models/query-subscription-frequency';
 
 @Component({
   selector: 'gb-queries',
@@ -94,7 +95,8 @@ export class GbQueriesComponent implements OnInit {
       subscribed: query.subscribed
     };
     if (query.subscribed) {
-      queryObject['subscriptionFreq'] = query.subscriptionFreq;
+      queryObject['subscriptionFreq'] =
+        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
     }
     this.queryService.updateQuery(query.id, queryObject);
   }
@@ -139,6 +141,14 @@ export class GbQueriesComponent implements OnInit {
     this.queryService.deleteQuery(query);
   }
 
+  putQuery(selectedQuery: Query) {
+    for (let query of this.queryService.queries) {
+      query.selected = false;
+    }
+    selectedQuery.selected = true;
+    this.queryService.restoreQuery(selectedQuery);
+  }
+
   confirmRemoval(event: Event, query: Query) {
     event.stopPropagation();
     this.confirmationService.confirm({
@@ -156,6 +166,13 @@ export class GbQueriesComponent implements OnInit {
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
     DownloadHelper.downloadJSON(query, query.name);
+  }
+
+  radioCheckSubscriptionFrequency(query) {
+    const queryObject = {
+      subscriptionFreq: query.subscriptionFreq
+    };
+    this.queryService.updateQuery(query.id, queryObject);
   }
 
   onFiltering(event) {
