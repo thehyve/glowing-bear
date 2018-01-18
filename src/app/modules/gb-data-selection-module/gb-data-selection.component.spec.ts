@@ -30,9 +30,15 @@ describe('GbDataSelectionComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbDataSelectionComponent,
+<<<<<<< HEAD
         MockComponent({selector: 'gb-selection'}),
         MockComponent({selector: 'gb-projection'}),
         MockComponent({selector: 'gb-export'})
+=======
+        MockComponent({ selector: 'gb-selection' }),
+        MockComponent({ selector: 'gb-projection' }),
+        MockComponent({ selector: 'gb-export' })
+>>>>>>> fit tests with new typescript by using a mock-component library
       ],
       imports: [
         BrowserAnimationsModule,
