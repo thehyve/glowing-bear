@@ -10,6 +10,7 @@ import {
   DragDropModule,
   InputTextModule,
   PanelModule,
+  RadioButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -38,7 +39,8 @@ describe('QueriesComponent', () => {
         FormsModule,
         AutoCompleteModule,
         ConfirmDialogModule,
-        Md2AccordionModule
+        Md2AccordionModule,
+        RadioButtonModule
       ],
       providers: [
         {
