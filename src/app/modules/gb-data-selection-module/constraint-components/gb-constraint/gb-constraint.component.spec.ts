@@ -1,7 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbConstraintComponent} from './gb-constraint.component';
-import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
@@ -13,6 +12,7 @@ import {ConceptConstraint} from '../../../../models/constraints/concept-constrai
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
@@ -22,11 +22,11 @@ describe('GbConstraintComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbConstraintComponent,
-        GenericComponentMock({selector: 'gb-combination-constraint', inputs: ['constraint']}),
-        GenericComponentMock({selector: 'gb-study-constraint', inputs: ['constraint']}),
-        GenericComponentMock({selector: 'gb-concept-constraint', inputs: ['constraint']}),
-        GenericComponentMock({selector: 'gb-patient-set-constraint', inputs: ['constraint']}),
-        GenericComponentMock({selector: 'gb-pedigree-constraint', inputs: ['constraint']})
+        MockComponent({selector: 'gb-combination-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-study-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-concept-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-patient-set-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-pedigree-constraint', inputs: ['constraint']})
       ],
       providers: [
         {

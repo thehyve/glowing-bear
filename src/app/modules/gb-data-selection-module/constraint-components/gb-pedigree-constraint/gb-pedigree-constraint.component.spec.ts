@@ -9,11 +9,11 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {DropdownModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbPedigreeConstraintComponent', () => {
   let component: GbPedigreeConstraintComponent;
@@ -23,7 +23,7 @@ describe('GbPedigreeConstraintComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbPedigreeConstraintComponent,
-        GenericComponentMock({selector: 'gb-combination-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-combination-constraint', inputs: ['constraint']})
       ],
       imports: [
         BrowserAnimationsModule,

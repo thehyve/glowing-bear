@@ -1,7 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbCombinationConstraintComponent} from './gb-combination-constraint.component';
-import {GenericComponentMock} from '../../../../services/mocks/generic.component.mock';
 import {AutoCompleteModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodeService} from '../../../../services/tree-node.service';
@@ -13,6 +12,7 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -22,7 +22,7 @@ describe('GbCombinationConstraintComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbCombinationConstraintComponent,
-        GenericComponentMock({selector: 'gb-constraint', inputs: ['constraint']})
+        MockComponent({selector: 'gb-constraint', inputs: ['constraint']})
       ],
       imports: [
         FormsModule,
