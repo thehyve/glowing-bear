@@ -18,9 +18,9 @@ import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {routing} from './gb-data-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {GenericComponentMock} from '../../services/mocks/generic.component.mock';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
@@ -30,9 +30,9 @@ describe('GbDataSelectionComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbDataSelectionComponent,
-        GenericComponentMock({selector: 'gb-selection'}),
-        GenericComponentMock({selector: 'gb-projection'}),
-        GenericComponentMock({selector: 'gb-export'})
+        MockComponent({selector: 'gb-selection'}),
+        MockComponent({selector: 'gb-projection'}),
+        MockComponent({selector: 'gb-export'})
       ],
       imports: [
         BrowserAnimationsModule,

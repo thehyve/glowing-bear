@@ -346,7 +346,7 @@ export class ResourceService {
    * @param {Object} queryBody
    * @returns {Observable<Query>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<null> {
+  updateQuery(queryId: string, queryBody: object): Observable<{}> {
     const urlPart = `queries/${queryId}`;
     return this.putCall(urlPart, queryBody);
   }
@@ -356,7 +356,7 @@ export class ResourceService {
    * @param {string} queryId
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId: string): Observable<null> {
+  deleteQuery(queryId: string): Observable<{}> {
     const urlPart = `queries/${queryId}`;
     return this.deleteCall(urlPart);
   }
