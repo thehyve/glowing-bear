@@ -4,5 +4,6 @@
   "app-url": "http://glowingbear2-head.thehyve.net",
   "step-1-instant-counts-update": false,
   "step-2-instant-counts-update": false,
+  "tree-node-counts-update": false,
   "counts-relay": false
 }

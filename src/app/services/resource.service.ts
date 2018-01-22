@@ -188,6 +188,19 @@ export class ResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
+  /**
+   * Give a constraint, get the patient counts and observation counts
+   * organized per study
+   * @param {Constraint} constraint
+   * @returns {Observable<Object>}
+   */
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/counts_per_study';
+    const body = {constraint: constraint.toQueryObject()};
+    const responseField = 'countsPerStudy';
+    return this.postCall(urlPart, body, responseField);
+  }
+
   // -------------------------------------- observation calls --------------------------------------
   /**
    * Give a constraint, get the corresponding patient count and observation count.

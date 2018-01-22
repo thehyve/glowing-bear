@@ -4,5 +4,6 @@
   "app-url": "http://localhost:4200",
   "step-1-instant-counts-update": false,
   "step-2-instant-counts-update": false,
+  "tree-node-counts-update": false,
   "counts-relay": false
 }

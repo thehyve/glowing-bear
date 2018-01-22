@@ -119,6 +119,8 @@ export class QueryService {
   /*
    * ------ other variables ------
    */
+  // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
+  private _treeNodeCountsUpdate: boolean;
   private _exportFormats: object[] = [];
   private _isLoadingExportFormats = true;
   /*
@@ -139,6 +141,7 @@ export class QueryService {
               private constraintService: ConstraintService) {
     this.instantCountsUpdate_1 = appConfig.getConfig('step-1-instant-counts-update');
     this.instantCountsUpdate_2 = appConfig.getConfig('step-2-instant-counts-update');
+    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update');
     this.countsRelay = appConfig.getConfig('counts-relay');
     this.loadQueries();
   }
@@ -269,29 +272,27 @@ export class QueryService {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
       .subscribe(
-        (countObj) => {
+        (conceptCountObj) => {
           const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+            // construct concept count map in the 1st step
             this.conceptCountMap_1 = {};
-            this.studyCountMap_1 = {};
-            for (let studyKey in countObj) {
-              let _concepts_ = countObj[studyKey];
-              let patientCountUnderThisStudy = 0;
-              let observationCountUnderThisStudy = 0;
-              for (let _concept_ in _concepts_) {
-                this.conceptCountMap_1[_concept_] = countObj[studyKey][_concept_];
-                patientCountUnderThisStudy += this.conceptCountMap_1[_concept_]['patientCount'];
-                observationCountUnderThisStudy += this.conceptCountMap_1[_concept_]['observationCount'];
+            for (let studyKey in conceptCountObj) {
+              for (let _concept_ in conceptCountObj[studyKey]) {
+                this.conceptCountMap_1[_concept_] = conceptCountObj[studyKey][_concept_];
               }
-              this.studyCountMap_1[studyKey] = {
-                patientCount: patientCountUnderThisStudy,
-                observationCount: observationCountUnderThisStudy
-              };
             }
-            /*
-             * update subject counts on tree nodes on the left side
-             */
-            this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
+            // construct study count map in the 1st step if flag is true
+            if (this.treeNodeCountsUpdate) {
+              this.resourceService.getCountsPerStudy(selectionConstraint)
+                .subscribe(
+                  (studyCountObj) => {
+                    this.studyCountMap_1 = studyCountObj;
+                    this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
+                  },
+                  err => this.handle_error(err)
+                );
+            }
             /*
              * update the tree nodes in the 2nd step
              */
@@ -831,5 +832,13 @@ export class QueryService {
 
   set patientSet_1(value: PatientSetConstraint) {
     this._patientSet_1 = value;
+  }
+
+  get treeNodeCountsUpdate(): boolean {
+    return this._treeNodeCountsUpdate;
+  }
+
+  set treeNodeCountsUpdate(value: boolean) {
+    this._treeNodeCountsUpdate = value;
   }
 }
