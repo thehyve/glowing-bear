@@ -2,6 +2,7 @@ import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
+import {ConfirmationService} from "primeng/primeng";
 
 @Component({
   selector: 'gb-queries',
@@ -16,7 +17,8 @@ export class GbQueriesComponent implements OnInit {
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
-              private element: ElementRef) {
+              private element: ElementRef,
+              private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -126,6 +128,19 @@ export class GbQueriesComponent implements OnInit {
 
   removeQuery(query: Query) {
     this.queryService.deleteQuery(query);
+  }
+
+  confirmRemoval(query: Query) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to remove the bookmarked query?',
+      header: 'Delete Confirmation',
+      icon: 'fa fa-trash',
+      accept: () => {
+        this.removeQuery(query);
+      },
+      reject: () => {
+      }
+    });
   }
 
   downloadQuery(query: Query) {
