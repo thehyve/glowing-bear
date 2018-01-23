@@ -97,8 +97,9 @@ export class GbQueriesComponent implements OnInit {
     if (query.subscribed) {
       queryObject['subscriptionFreq'] =
         query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
+      query.subscriptionFreq = queryObject['subscriptionFreq'];
     }
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.updateQuery(query, queryObject);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -112,7 +113,7 @@ export class GbQueriesComponent implements OnInit {
     const queryObject = {
       bookmarked: query.bookmarked
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.updateQuery(query, queryObject);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -164,7 +165,7 @@ export class GbQueriesComponent implements OnInit {
     const queryObject = {
       subscriptionFreq: query.subscriptionFreq
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.updateQuery(query, queryObject);
   }
 
   onFiltering(event) {
