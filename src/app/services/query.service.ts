@@ -192,86 +192,14 @@ export class QueryService {
               }
             }
             /*
-              * load query diff records for this query
-              */
-            let records = [
-              {
-                id: 16,
-                queryName: 'true query',
-                queryUsername: 'admin',
-                setId: 28766,
-                setType: 'PATIENT',
-                date: '2018-01-17T13:04:32Z',
-                queryDiffEntries: [
-                  {
-                    id: 151,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384676
-                  },
-                  {
-                    id: 152,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384675
-                  },
-                  {
-                    id: 153,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384674
-                  },
-                  {
-                    id: 154,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384673
-                  },
-                  {
-                    id: 155,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384672
-                  },
-                  {
-                    id: 156,
-                    changeFlag: 'DELETED',
-                    objectId: 1000384671
-                  },
-                  {
-                    id: 157,
-                    changeFlag: 'DELETED',
-                    objectId: 1000384670
-                  },
-                  {
-                    id: 158,
-                    changeFlag: 'ADDED',
-                    objectId: 1000384669
-                  }
-                ]
-              },
-              {
-                id: 17,
-                queryName: 'true query 2',
-                queryUsername: 'admin',
-                setId: 28767,
-                setType: 'PATIENT',
-                date: '2018-01-17T13:04:32Z',
-                queryDiffEntries: [
-                  {
-                    id: 161,
-                    changeFlag: 'ADDED',
-                    objectId: 2000384676
-                  },
-                  {
-                    id: 162,
-                    changeFlag: 'ADDED',
-                    objectId: 2000384675
-                  },
-                  {
-                    id: 167,
-                    changeFlag: 'ADDED',
-                    objectId: 2000384670
-                  },
-                ]
-              }
-            ];
-            query.diffRecords = this.parseQueryDiffRecords(records);
+             * load query diff records for this query
+             */
+            this.resourceService.diffQuery(query.id)
+              .subscribe(
+                (records) => {
+                  query.diffRecords = this.parseQueryDiffRecords(records);
+                }
+              );
 
             if (query.bookmarked) {
               bookmarkedQueries.push(query);
@@ -721,11 +649,9 @@ export class QueryService {
   }
 
   public updateQuery(queryId: string, queryObject: object) {
-    console.log('update query: ', queryObject);
     this.resourceService.updateQuery(queryId, queryObject)
       .subscribe(
-        (r) => {
-          console.log('respnse: ', r);
+        () => {
         },
         err => this.handle_error(err)
       );
@@ -758,8 +684,7 @@ export class QueryService {
       diffRecord.setId = record['setId'];
       diffRecord.setType = record['setType'] === 'PATIENT' ?
         QuerySetType.PATIENT : QuerySetType.SAMPLE;
-      let dateSplits = record['date'].split('T');
-      diffRecord.date = dateSplits[0] + ', ' + dateSplits[1].substring(0, dateSplits[1].length - 1);
+      diffRecord.createDate = record['createDate'];
       let items = [];
       for (let entry of record['queryDiffEntries']) {
         let item = new QueryDiffItem();
