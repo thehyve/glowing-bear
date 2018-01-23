@@ -1,7 +1,7 @@
 {
-  "api-url": "https://localhost:8080",
+  "api-url": "http://localhost:8080",
   "api-version": "v2",
-  "app-url": "https://localhost:4200",
+  "app-url": "http://localhost:4200",
   "step-1-instant-counts-update": false,
   "step-2-instant-counts-update": false,
   "final-counts-sync": false
