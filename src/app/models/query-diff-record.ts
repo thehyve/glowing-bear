@@ -2,12 +2,13 @@ import {QuerySetType} from './query-set-type';
 import {QueryDiffItem} from './query-diff-item';
 
 export class QueryDiffRecord {
+
   private _id: number;
   private _queryName: string;
   private _queryUsername: string;
   private _setId: number;
   private _setType: QuerySetType;
-  private _date: string;
+  private _createDate: string;
   private _diffItems: QueryDiffItem[];
   private _diffTypes: string[];
   private _partialRepresentation: object;
@@ -60,12 +61,12 @@ export class QueryDiffRecord {
     this._setType = value;
   }
 
-  get date(): string {
-    return this._date;
+  get createDate(): string {
+    return this._createDate;
   }
 
-  set date(value: string) {
-    this._date = value;
+  set createDate(value: string) {
+    this._createDate = value;
   }
 
   get diffItems(): QueryDiffItem[] {

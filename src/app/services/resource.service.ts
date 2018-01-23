@@ -388,4 +388,11 @@ export class ResourceService {
     return this.postCall(urlPart, body, null);
   }
 
+  // -------------------------------------- query differences --------------------------------------
+  diffQuery(queryId: string): Observable<object[]> {
+    const urlPart = `query_sets/${queryId}/diffs`;
+    const responseField = 'querySetDiffs';
+    return this.getCall(urlPart, responseField);
+  }
+
 }
