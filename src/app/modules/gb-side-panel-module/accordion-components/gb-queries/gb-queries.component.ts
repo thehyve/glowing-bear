@@ -11,7 +11,6 @@ import {QueryService} from '../../../../services/query.service';
 export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
-  collapsed = false;
   private isUploadListenerNotAdded: boolean;
 
   constructor(public treeNodeService: TreeNodeService,
@@ -79,15 +78,6 @@ export class GbQueriesComponent implements OnInit {
       document.getElementById('queryFileUpload')['value'] = '';
     }).bind(this);
     reader.readAsText(file);
-  }
-
-  // query panel collapse and expansion
-  toggleQueryPanel(query: Query) {
-    query.collapsed = !query.collapsed;
-  }
-
-  getQueryToggleButtonIcon(query: Query) {
-    return query.collapsed ? 'fa-angle-down' : 'fa-angle-up';
   }
 
   // query subscription

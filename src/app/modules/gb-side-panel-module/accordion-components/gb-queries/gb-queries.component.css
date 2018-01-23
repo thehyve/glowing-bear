@@ -24,6 +24,11 @@
   margin-bottom: -10px;
 }
 
+.gb-query-remove-btn {
+position: absolute;
+    float: right;
+}
+
 /*
  * Style the set name edit input
  */
@@ -70,15 +75,6 @@ input:read-only {
   text-overflow: ellipsis;
   overflow: hidden;
   color: #606060;
-}
-
-/*
- * Style for the toggle button
- */
-.gb-query-panel-toggle-button {
-  border: none;
-  background-color: transparent !important;
-  margin-right: -10px;
 }
 
 /*

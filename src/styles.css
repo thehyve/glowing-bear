@@ -321,6 +321,17 @@ body .ui-autocomplete-input-token {
   border-color: lightgrey;
 }
 
+/*
+ * Change the primeng toggle button in a query panel
+ */
+.gb-query-panel .ui-panel .ui-panel-titlebar-icon {
+  float: left;
+  border: none;
+  background-color: transparent !important;
+  margin-top: 5px;
+  outline: 0;
+}
+
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
