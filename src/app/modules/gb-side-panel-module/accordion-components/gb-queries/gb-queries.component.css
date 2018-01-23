@@ -60,6 +60,19 @@
   background-color: var(--gb-clinical-green-light);
 }
 
+.gb-query-log-download-btn {
+  background-color: transparent;
+  border: none;
+  color: grey;
+}
+.gb-query-log-download-btn:hover {
+  background-color: lightgray;
+  opacity: 0.9;
+}
+.gb-query-log-download-btn:active {
+  opacity: 1;
+}
+
 hr {
   margin-top: 1px;
   margin-bottom: 2px;
