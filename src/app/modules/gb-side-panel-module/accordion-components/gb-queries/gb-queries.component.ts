@@ -2,6 +2,7 @@ import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
+import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 
 @Component({
   selector: 'gb-queries',
@@ -11,7 +12,6 @@ import {QueryService} from '../../../../services/query.service';
 export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
-  collapsed = false;
   private isUploadListenerNotAdded: boolean;
 
   constructor(public treeNodeService: TreeNodeService,
@@ -129,14 +129,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   downloadQuery(query: Query) {
-    let data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(query));
-    let el = document.createElement('a');
-    el.setAttribute('href', data);
-    el.setAttribute('download', query.name + '.json');
-    el.style.display = 'none';
-    document.body.appendChild(el);
-    el.click();
-    document.body.removeChild(el);
+    DownloadHelper.downloadJSON(query, query.name);
   }
 
   editQueryName(event, query: Query) {
