@@ -141,14 +141,6 @@ export class GbQueriesComponent implements OnInit {
     this.queryService.deleteQuery(query);
   }
 
-  putQuery(selectedQuery: Query) {
-    for (let query of this.queryService.queries) {
-      query.selected = false;
-    }
-    selectedQuery.selected = true;
-    this.queryService.restoreQuery(selectedQuery);
-  }
-
   confirmRemoval(event: Event, query: Query) {
     event.stopPropagation();
     this.confirmationService.confirm({

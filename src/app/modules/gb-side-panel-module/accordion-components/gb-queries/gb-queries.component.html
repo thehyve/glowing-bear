@@ -95,7 +95,7 @@
                      class="gb-subscription-panel-body-record"
                      (click)="toggleSubscriptionRecordPanel(record)">
                   <hr>
-                  <span><b>{{record.date}}</b></span>
+                  <span><b>{{record.createDate}}</b></span>
                   <div *ngIf="record.showCompleteRepresentation">
                     <div *ngFor="let diffType of record.diffTypes">
                       {{record.countRepresentation[diffType]}}
@@ -110,6 +110,10 @@
                       {{record.partialRepresentation[diffType]}}
                     </div>
                   </div>
+                </div>
+
+                <div *ngIf="query.diffRecords.length === 0">
+                  no record
                 </div>
               </div>
             </div>
