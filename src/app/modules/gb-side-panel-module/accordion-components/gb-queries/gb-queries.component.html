@@ -81,11 +81,11 @@
                    (click)="toggleSubscriptionPanel(query)">Subscription</div>
               <div class="row">
                 <span>frequency:</span>
-                <p-radioButton name="freq-group" value="DAILY" label="Daily"
+                <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
                                (click)="radioCheckSubscriptionFrequency(query)"
                                [(ngModel)]="query.subscriptionFreq"></p-radioButton>
                 ,&nbsp;&nbsp;
-                <p-radioButton name="freq-group" value="WEEKLY" label="Weekly"
+                <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
                                (click)="radioCheckSubscriptionFrequency(query)"
                                [(ngModel)]="query.subscriptionFreq"></p-radioButton>
               </div>
