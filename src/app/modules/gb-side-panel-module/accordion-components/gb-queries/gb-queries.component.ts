@@ -168,6 +168,10 @@ export class GbQueriesComponent implements OnInit {
     this.queryService.updateQuery(query, queryObject);
   }
 
+  downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
+    console.log(query, record);
+  }
+
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     for (let query of this.queryService.queries) {
