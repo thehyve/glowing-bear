@@ -158,6 +158,8 @@ export class GbQueriesComponent implements OnInit {
 
   downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
     console.log(query, record);
+    const filename = query.name + '-record-' + record.createDate;
+    DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }
 
   onFiltering(event) {
