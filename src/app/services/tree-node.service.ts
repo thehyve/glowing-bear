@@ -328,7 +328,7 @@ export class TreeNodeService {
    * @param {boolean} updated - true: add animation to indicate updated count
    */
   private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString = '(' + count + ')';
+    const countString =  count < 1 ? '...':'(' + count + ')';
     let countElm = treeNodeContent.querySelector('.gb-count-element');
     if (!countElm) {
       countElm = document.createElement('span');
@@ -358,10 +358,8 @@ export class TreeNodeService {
    *
    * @param treeNodeElements - the visual html elements p-treenode
    * @param {TreeNode} treeNodeData - the underlying data objects
-   * @param {Constraint} patientConstraint - the constraint that the user selects patients
-   * @param {boolean} refresh -
-   *                            true: always retrieve counts,
-   *                            false: only retrieve counts if the patientCount field is missing
+   * @param {object} studyCountMap
+   * @param {object} conceptCountMap
    */
   private updateTreeNodeCountsIterative(treeNodeElements: any,
                                         treeNodeData: TreeNode[],
