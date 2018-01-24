@@ -49,6 +49,7 @@ export class Query {
     this.bookmarked = false;
     this.selected = false;
     this.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+    this.diffRecords = [];
   }
 
   get id(): string {
