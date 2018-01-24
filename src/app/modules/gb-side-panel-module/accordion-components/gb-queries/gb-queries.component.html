@@ -76,7 +76,7 @@
             </div>
 
             <!-- start: if the query is subscribed, show the subscription panel -->
-            <div *ngIf="query.subscribed">
+            <div *ngIf="query.subscribed && query.diffRecords && query.diffRecords.length > 0">
               <div class="row gb-subscription-panel-header"
                    (click)="toggleSubscriptionPanel(query)">Subscription</div>
               <div *ngIf="!query.subscriptionCollapsed"
