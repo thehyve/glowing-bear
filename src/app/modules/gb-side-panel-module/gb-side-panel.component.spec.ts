@@ -19,8 +19,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
 import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
-import {QueryService} from "../../services/query.service";
-import {QueryServiceMock} from "../../services/mocks/query.service.mock";
+import {QueryService} from '../../services/query.service';
+import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {Md2AccordionModule} from 'md2';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -47,7 +48,8 @@ describe('GbSidePanelComponent', () => {
         ButtonModule,
         InputTextModule,
         TooltipModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        Md2AccordionModule
       ],
       providers: [
         {
