@@ -50,14 +50,10 @@
       <div *ngIf="query['visible']"
            class="gb-query-panel">
         <p-panel [collapsed]="query['collapsed']"
-                 (keypress)="onQueryPanelKeyEnter($event, query)"
-                 (click)="onQueryPanelClick(query)">
+                 (keypress)="onQueryPanelKeyEnter($event, query)" (click)="onQueryPanelClick(query)"
+                 [toggleable]=true [expandIcon]="'fa-angle-down'" [collapseIcon]="'fa-angle-up'">
           <p-header>
             <div class="ui-helper-clearfix">
-              <button pButton class="ui-button-secondary gb-query-panel-toggle-button" type="button"
-                      (click)="toggleQueryPanel(query)"
-                      icon="{{getQueryToggleButtonIcon(query)}}">
-              </button>
               <input *ngIf="!query['nameEditable']" type="text" pInputText
                      [(ngModel)]="query['name']"
                      (dblclick)="editQueryName($event, query)" readonly/>

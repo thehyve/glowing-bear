@@ -83,15 +83,6 @@ export class GbQueriesComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  // query panel collapse and expansion
-  toggleQueryPanel(query: Query) {
-    query.collapsed = !query.collapsed;
-  }
-
-  getQueryToggleButtonIcon(query: Query) {
-    return query.collapsed ? 'fa-angle-down' : 'fa-angle-up';
-  }
-
   // query subscription
   toggleQuerySubscription(query: Query) {
     query.subscribed = !query.subscribed;

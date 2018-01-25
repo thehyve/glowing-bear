@@ -73,15 +73,6 @@ input:read-only {
 }
 
 /*
- * Style for the toggle button
- */
-.gb-query-panel-toggle-button {
-  border: none;
-  background-color: transparent !important;
-  margin-right: -10px;
-}
-
-/*
  * margin: top right bottom left
  */
 p-header .ui-button-secondary {
