@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {Constraint} from '../models/constraints/constraint';
 import {Concept} from '../models/concept';
 import {ConceptConstraint} from '../models/constraints/concept-constraint';
 import {TreeNode} from 'primeng/primeng';
@@ -313,7 +312,7 @@ export class TreeNodeService {
           this.updateProjectionTreeDataIterative(node['children'], conceptCodes, conceptCountMap);
         if (newNodeChildren.length > 0) {
           let nodeCopy = this.copyTreeNodeUpward(node);
-          nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) > 2 ? false : true;
+          nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
           nodeCopy['children'] = newNodeChildren;
           nodesWithCodes.push(nodeCopy);
         }
@@ -613,4 +612,23 @@ export class TreeNodeService {
     return this.treeNodeCallsSent === this.treeNodeCallsReceived;
   }
 
+  /**
+   * Convert item names to paths
+   * @param {TreeNode[]} nodes
+   * @param {string[]} items
+   * @param {string[]} retval
+   */
+  public convertItemsToPaths(nodes: TreeNode[], items: string[], retval: string[]) {
+    nodes.forEach( (node: TreeNode) => {
+        if (node) {
+          const itemName = ((node || {})['metadata']   || {})['item_name'];
+          if (items.indexOf(itemName) > -1 ) {
+            retval.push(node['fullName']);
+          }
+          if (node['children']) {
+            this.convertItemsToPaths(node['children'], items, retval);
+          }
+        }
+    });
+  }
 }
