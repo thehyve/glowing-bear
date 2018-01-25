@@ -273,6 +273,27 @@ export class TreeNodeService {
     return nodesCopy;
   }
 
+  /**
+   * Copy the given treenode upward, i.e. excluding its children
+   * @param {TreeNode} node
+   * @returns {TreeNode}
+   */
+  private copyTreeNodeUpward(node: TreeNode): TreeNode {
+    let nodeCopy = {};
+    let parentCopy = null;
+    for (let key in node) {
+      if (key === 'parent') {
+        parentCopy = this.copyTreeNodeUpward(node[key]);
+      } else if (key !== 'children') {
+        nodeCopy[key] = JSON.parse(JSON.stringify(node[key]));
+      }
+    }
+    if (parentCopy) {
+      nodeCopy['parent'] = parentCopy;
+    }
+    return nodeCopy;
+  }
+
   private updateProjectionTreeDataIterative(nodes: TreeNode[],
                                             conceptCodes: string[],
                                             conceptCountMap: object) {
@@ -291,7 +312,7 @@ export class TreeNodeService {
         let newNodeChildren =
           this.updateProjectionTreeDataIterative(node['children'], conceptCodes, conceptCountMap);
         if (newNodeChildren.length > 0) {
-          let nodeCopy = node;
+          let nodeCopy = this.copyTreeNodeUpward(node);
           nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) > 2 ? false : true;
           nodeCopy['children'] = newNodeChildren;
           nodesWithCodes.push(nodeCopy);
@@ -328,7 +349,7 @@ export class TreeNodeService {
    * @param {boolean} updated - true: add animation to indicate updated count
    */
   private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString =  count < 0 ? '...':'(' + count + ')';
+    const countString = count < 0 ? '...' : '(' + count + ')';
     let countElm = treeNodeContent.querySelector('.gb-count-element');
     if (!countElm) {
       countElm = document.createElement('span');

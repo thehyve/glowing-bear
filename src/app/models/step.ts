@@ -3,6 +3,6 @@
  * where the user is currently composing her query
  */
 export enum Step {
-  I,
-  II
+  I = 'I',
+  II = 'II'
 }
