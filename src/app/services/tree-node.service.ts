@@ -328,7 +328,7 @@ export class TreeNodeService {
    * @param {boolean} updated - true: add animation to indicate updated count
    */
   private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString =  count < 1 ? '...':'(' + count + ')';
+    const countString =  count < 0 ? '...':'(' + count + ')';
     let countElm = treeNodeContent.querySelector('.gb-count-element');
     if (!countElm) {
       countElm = document.createElement('span');
@@ -373,10 +373,10 @@ export class TreeNodeService {
         let treeNodeContent = elm.querySelector('.ui-treenode-content');
         const identifier =
           this.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
-        const map =
+        const _map =
           this.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
         const patientCount =
-          map[identifier] ? map[identifier]['patientCount'] : 0;
+          _map[identifier] ? _map[identifier]['patientCount'] : -1;
         const updated =
           (dataObject['patientCount'] && dataObject['patientCount'] !== patientCount) || !dataObject['patientCount'];
         dataObject['patientCount'] = patientCount;
