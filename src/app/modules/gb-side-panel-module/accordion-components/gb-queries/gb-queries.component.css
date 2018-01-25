@@ -84,11 +84,12 @@ input:read-only {
 /*
  * margin: top right bottom left
  */
-p-header .ui-button-secondary {
+md2-accordion-header .ui-button-secondary {
   margin-top: 3px;
   margin-left: -3px;
   padding: 0px;
   color: #505050;
+  border: none;
 }
 
 .gb-query-sort-btn {
