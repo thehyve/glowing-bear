@@ -55,7 +55,6 @@ export class GbQueriesComponent implements OnInit {
         if (pathArray || itemNames) {
           let query = {
             'name': 'imported temporary query',
-            'type': Object.keys(_json)[0],
             'observationsQuery': {
               data: pathArray ? pathArray : [],
               items: itemNames ? itemNames : []

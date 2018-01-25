@@ -616,17 +616,17 @@ export class TreeNodeService {
    * Convert item names to paths
    * @param {TreeNode[]} nodes
    * @param {string[]} items
-   * @param {string[]} retval
+   * @param {string[]} checklist
    */
-  public convertItemsToPaths(nodes: TreeNode[], items: string[], retval: string[]) {
+  public convertItemsToPaths(nodes: TreeNode[], items: string[], checklist: string[]) {
     nodes.forEach( (node: TreeNode) => {
         if (node) {
           const itemName = ((node || {})['metadata']   || {})['item_name'];
           if (items.indexOf(itemName) > -1 ) {
-            retval.push(node['fullName']);
+            checklist.push(node['fullName']);
           }
           if (node['children']) {
-            this.convertItemsToPaths(node['children'], items, retval);
+            this.convertItemsToPaths(node['children'], items, checklist);
           }
         }
     });
