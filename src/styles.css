@@ -321,6 +321,14 @@ body .ui-autocomplete-input-token {
   border-color: lightgrey;
 }
 
+/*
+ * Change the primeng confirmation dialog of deleting the query
+ */
+.ui-confirmdialog.ui-dialog .ui-dialog-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;

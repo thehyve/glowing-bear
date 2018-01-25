@@ -9,7 +9,10 @@ import {TreeDragDropService} from 'primeng/components/common/api';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
-import {AutoCompleteModule, ButtonModule, InputTextModule, PanelModule, TooltipModule} from 'primeng/primeng';
+import {
+  AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, InputTextModule, PanelModule,
+  TooltipModule
+} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 
 @NgModule({
@@ -25,14 +28,15 @@ import {FormsModule} from '@angular/forms';
     PanelModule,
     ButtonModule,
     InputTextModule,
-    TooltipModule
+    TooltipModule,
+    ConfirmDialogModule
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
     GbQueriesComponent
   ],
-  providers: [TreeDragDropService],
+  providers: [TreeDragDropService,ConfirmationService],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {

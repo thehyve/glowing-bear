@@ -43,6 +43,7 @@
 
 
   <!-- queries -->
+  <p-confirmDialog></p-confirmDialog>
   <div>
     <div *ngFor="let query of queries">
       <!-- ------ div wrapper for visibility of a query panel ------ -->
@@ -80,7 +81,7 @@
                 </button>
                 <span>&nbsp;</span>
                 <button pButton class="ui-button-secondary" type="button"
-                        (click)="removeQuery(query)" icon="fa-times">
+                        (click)="confirmRemoval(query)" icon="fa-times">
                 </button>
               </div>
             </div>
