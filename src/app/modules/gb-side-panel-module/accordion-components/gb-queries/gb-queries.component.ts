@@ -40,15 +40,18 @@ export class GbQueriesComponent implements OnInit {
     let file = event.target.files[0];
     reader.onload = (function (e) {
       if (file.type === 'application/json') {
-        let json = JSON.parse(e.target['result']);
+        let _json = JSON.parse(e.target['result']);
         let pathArray = null;
         // If the json is of standard format
-        if (json['patientsQuery'] || json['observationsQuery']) {
-          this.queryService.restoreQuery(json);
-        } else if (json['paths']) {
-          pathArray = json['paths'];
-        } else if (json.constructor === Array) {
-          pathArray = json;
+        if (_json['patientsQuery'] || _json['observationsQuery']) {
+          this.queryService.restoreQuery(_json);
+        } else if (_json['names']) {
+          pathArray = [];
+          this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
+        } else if (_json['paths']) {
+          pathArray = _json['paths'];
+        } else if (_json.constructor === Array) {
+          pathArray = _json;
         }
         if (pathArray) {
           let query = {
