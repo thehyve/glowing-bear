@@ -14,7 +14,7 @@ buildscript {
 }
 
 ext {
-    glowingBearVersion = '0.0.1-luke-test-SNAPSHOT'
+    glowingBearVersion = '0.0.1-luke-acc-SNAPSHOT'
     nodeVersion = '7.10.1'
     gradleWrapperVersion = '4.0'
 }
