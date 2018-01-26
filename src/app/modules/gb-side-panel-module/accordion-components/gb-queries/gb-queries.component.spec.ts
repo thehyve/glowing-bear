@@ -2,8 +2,14 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbQueriesComponent} from './gb-queries.component';
 import {
-  AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, DataListModule, DragDropModule,
-  InputTextModule, PanelModule,
+  AutoCompleteModule,
+  ButtonModule,
+  ConfirmationService,
+  ConfirmDialogModule,
+  DataListModule,
+  DragDropModule,
+  InputTextModule,
+  PanelModule,
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -12,6 +18,7 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {FormsModule} from '@angular/forms';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {Md2AccordionModule} from 'md2';
 
 describe('QueriesComponent', () => {
   let component: GbQueriesComponent;
@@ -30,7 +37,8 @@ describe('QueriesComponent', () => {
         TooltipModule,
         FormsModule,
         AutoCompleteModule,
-        ConfirmDialogModule
+        ConfirmDialogModule,
+        Md2AccordionModule
       ],
       providers: [
         {

@@ -10,10 +10,16 @@ import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
-  AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, InputTextModule, PanelModule,
+  AutoCompleteModule,
+  ButtonModule,
+  ConfirmationService,
+  ConfirmDialogModule,
+  InputTextModule,
+  PanelModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
+import {Md2AccordionModule} from 'md2';
 
 @NgModule({
   imports: [
@@ -29,14 +35,15 @@ import {FormsModule} from '@angular/forms';
     ButtonModule,
     InputTextModule,
     TooltipModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    Md2AccordionModule
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
     GbQueriesComponent
   ],
-  providers: [TreeDragDropService,ConfirmationService],
+  providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {

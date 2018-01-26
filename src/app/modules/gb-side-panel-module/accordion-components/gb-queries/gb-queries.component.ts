@@ -83,17 +83,9 @@ export class GbQueriesComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  // query panel collapse and expansion
-  toggleQueryPanel(query: Query) {
-    query.collapsed = !query.collapsed;
-  }
-
-  getQueryToggleButtonIcon(query: Query) {
-    return query.collapsed ? 'fa-angle-down' : 'fa-angle-up';
-  }
-
   // query subscription
-  toggleQuerySubscription(query: Query) {
+  toggleQuerySubscription(event: Event, query: Query) {
+    event.stopPropagation();
     query.subscribed = !query.subscribed;
     const queryObject = {
       bookmarked: query.subscribed
@@ -106,7 +98,8 @@ export class GbQueriesComponent implements OnInit {
   }
 
   // query bookmark
-  toggleQueryBookmark(query: Query) {
+  toggleQueryBookmark(event: Event, query: Query) {
+    event.stopPropagation();
     query.bookmarked = !query.bookmarked;
     const queryObject = {
       bookmarked: query.bookmarked
@@ -118,7 +111,8 @@ export class GbQueriesComponent implements OnInit {
     return query.bookmarked ? 'fa-star' : 'fa-star-o';
   }
 
-  putQuery(selectedQuery: Query) {
+  restoreQuery(event: Event, selectedQuery: Query) {
+    event.stopPropagation();
     for (let query of this.queryService.queries) {
       query.selected = false;
     }
@@ -126,52 +120,28 @@ export class GbQueriesComponent implements OnInit {
     this.queryService.restoreQuery(selectedQuery);
   }
 
-  removeQuery(query: Query) {
+  removeQuery(event: Event, query: Query) {
+    event.stopPropagation();
     this.queryService.deleteQuery(query);
   }
 
-  confirmRemoval(query: Query) {
+  confirmRemoval(event: Event, query: Query) {
+    event.stopPropagation();
     this.confirmationService.confirm({
       message: 'Are you sure you want to remove the query?',
       header: 'Delete Confirmation',
       icon: 'fa fa-trash',
       accept: () => {
-        this.removeQuery(query);
+        this.removeQuery(event, query);
       },
       reject: () => {
       }
     });
   }
 
-  downloadQuery(query: Query) {
-    DownloadHelper.downloadJSON(query, query.name);
-  }
-
-  editQueryName(event, query: Query) {
-    event.preventDefault();
+  downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    query.nameEditable = true;
-  }
-
-  onQueryPanelKeyEnter(event, query: Query) {
-    if (event.key === 'Enter' && query.nameEditable) {
-      query.nameEditable = false;
-      const queryObject = {
-        name: query.name
-      };
-      this.queryService.updateQuery(query.id, queryObject);
-    }
-  }
-
-  onQueryPanelClick(query: Query) {
-    // Save the query if its name has been modified
-    if (query.nameEditable) {
-      query.nameEditable = false;
-      const queryObject = {
-        name: query.name
-      };
-      this.queryService.updateQuery(query.id, queryObject);
-    }
+    DownloadHelper.downloadJSON(query, query.name);
   }
 
   onFiltering(event) {
