@@ -1,0 +1,11 @@
+.gb-pedigree-constraint-container {
+  background-color: transparent;
+  padding: 0px;
+  margin: 0px 0px 0px 0px;
+}
+
+.gb-pedigree-checkbox-container {
+  color: dimgray;
+  padding-left: 1em;
+  padding-top: 6px;
+}

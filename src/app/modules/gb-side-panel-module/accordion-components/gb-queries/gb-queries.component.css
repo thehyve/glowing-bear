@@ -90,6 +90,7 @@ md2-accordion-header .ui-button-secondary {
   padding: 0px;
   color: #505050;
   border: none;
+  background-color: transparent;
 }
 
 .gb-query-sort-btn {

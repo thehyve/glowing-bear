@@ -15,9 +15,13 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
   private _selectedPedigreeType: SelectItem;
   private _pedigreeTypes: SelectItem[];
   private _rightHandSideConstraint: Constraint;
+  private _isBiological: boolean;
+  private _isShareHousehold: boolean;
 
   ngOnInit() {
     this.pedigreeTypes = [];
+    this.isBiological = (<PedigreeConstraint>this.constraint).biological;
+    this.isShareHousehold = (<PedigreeConstraint>this.constraint).shareHousehold;
     const relationType = (<PedigreeConstraint>this.constraint).relationType;
     for (let typeObj of this.constraintService.validPedigreeTypes) {
       this.pedigreeTypes.push({
@@ -58,5 +62,23 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set rightHandSideConstraint(value: Constraint) {
     this._rightHandSideConstraint = value;
+  }
+
+  get isBiological(): boolean {
+    return this._isBiological;
+  }
+
+  set isBiological(value: boolean) {
+    this._isBiological = value;
+    (<PedigreeConstraint>this.constraint).biological = value;
+  }
+
+  get isShareHousehold(): boolean {
+    return this._isShareHousehold;
+  }
+
+  set isShareHousehold(value: boolean) {
+    this._isShareHousehold = value;
+    (<PedigreeConstraint>this.constraint).shareHousehold = value;
   }
 }

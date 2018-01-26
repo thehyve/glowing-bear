@@ -6,9 +6,13 @@
                   [(ngModel)]="selectedPedigreeType"
                   (onChange)="updateRelationType($event)"
                   optionLabel="text"></p-dropdown>
-      <div style="margin-left: 4px; margin-top: -4px">
-        <gb-combination-constraint [constraint]="rightHandSideConstraint"></gb-combination-constraint>
+      <div class="gb-pedigree-checkbox-container">
+        <p-checkbox [(ngModel)]="isBiological" binary="true" label="biological"></p-checkbox> &nbsp; &nbsp;
+        <p-checkbox [(ngModel)]="isShareHousehold" binary="true" label="share household"></p-checkbox>
       </div>
+    </div>
+    <div class="row gb-pedigree-constraint-container">
+      <gb-combination-constraint [constraint]="rightHandSideConstraint"></gb-combination-constraint>
     </div>
   </div>
 

@@ -7,6 +7,7 @@ export class PedigreeConstraint implements Constraint {
   private _label: string;
   private _description: string;
   private _biological: boolean;
+  private _shareHousehold: boolean;
   private _symmetrical: boolean;
   private _relationType: PedigreeState;
   private _rightHandSideConstraint: CombinationConstraint;
@@ -66,7 +67,8 @@ export class PedigreeConstraint implements Constraint {
       type: 'relation',
       relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(full),
       relationTypeLabel: this.label,
-      biological: this.biological
+      biological: this.biological,
+      shareHousehold: this.shareHousehold
     };
   }
 
@@ -186,6 +188,14 @@ export class PedigreeConstraint implements Constraint {
 
   set biological(value: boolean) {
     this._biological = value;
+  }
+
+  get shareHousehold(): boolean {
+    return this._shareHousehold;
+  }
+
+  set shareHousehold(value: boolean) {
+    this._shareHousehold = value;
   }
 
   get symmetrical(): boolean {
