@@ -21,7 +21,7 @@ export class Query {
   // The patient constraint part of the query
   private _patientsQuery: object;
   // The observation constraint part of the query
-  private _observationsQuery: {data: string[], items: string[]};
+  private _observationsQuery: {data: string[]};
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
 
@@ -97,11 +97,11 @@ export class Query {
     this._patientsQuery = value;
   }
 
-  get observationsQuery(): {data: string[], items: string[]} {
+  get observationsQuery(): {data: string[]} {
     return this._observationsQuery;
   }
 
-  set observationsQuery(value: {data: string[], items: string[]}) {
+  set observationsQuery(value: {data: string[]}) {
     this._observationsQuery = value;
   }
 

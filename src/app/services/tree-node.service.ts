@@ -613,22 +613,22 @@ export class TreeNodeService {
   }
 
   /**
-   * Convert item names to paths
+   * Convert item names to treenode paths
    * @param {TreeNode[]} nodes
    * @param {string[]} items
-   * @param {string[]} checklist
+   * @param {string[]} paths
    */
-  public convertItemsToPaths(nodes: TreeNode[], items: string[], checklist: string[]) {
-    nodes.forEach( (node: TreeNode) => {
-        if (node) {
-          const itemName = ((node || {})['metadata']   || {})['item_name'];
-          if (items.indexOf(itemName) > -1 ) {
-            checklist.push(node['fullName']);
-          }
-          if (node['children']) {
-            this.convertItemsToPaths(node['children'], items, checklist);
-          }
+  public convertItemsToPaths(nodes: TreeNode[], items: string[], paths: string[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node) {
+        const itemName = ((node || {})['metadata'] || {})['item_name'];
+        if (items.indexOf(itemName) > -1) {
+          paths.push(node['fullName']);
         }
+        if (node['children']) {
+          this.convertItemsToPaths(node['children'], items, paths);
+        }
+      }
     });
   }
 }
