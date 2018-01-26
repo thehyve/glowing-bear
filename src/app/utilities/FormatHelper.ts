@@ -7,8 +7,7 @@ export class FormatHelper {
       return '0';
     }
   }
-
-
+  
   public static formatDateSemantics(s: string): string {
     const then = new Date(s);
     const now = new Date();

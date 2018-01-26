@@ -592,8 +592,11 @@ export class TreeNodeService {
    */
   public isTreeNodeAconcept(node: TreeNode): boolean {
     const type = node['type'];
-    return (type === 'NUMERIC' || type === 'CATEGORICAL' || type === 'DATE'
-      || type === 'TEXT' || type === 'HIGH_DIMENSIONAL') ? true : false;
+    return type === 'NUMERIC' ||
+           type === 'CATEGORICAL' ||
+           type === 'DATE' ||
+           type === 'TEXT' ||
+           type === 'HIGH_DIMENSIONAL';
   }
 
   /**
@@ -602,7 +605,7 @@ export class TreeNodeService {
    * @returns {boolean}
    */
   public isTreeNodeAstudy(node: TreeNode): boolean {
-    return node['type'] === 'STUDY' ? true : false;
+    return node['type'] === 'STUDY';
   }
 
   /**
