@@ -55,13 +55,12 @@ export class GbQueriesComponent implements OnInit {
         }
         if (pathArray) {
           let query = {
-            'name': 'imported temporary query',
+            'name': file.name,
             'observationsQuery': {
               data: pathArray
             }
           };
           this.queryService.restoreQuery(query);
-          this.queryService.alert('Imported concept selection in Step 2.', '', 'info');
         }
       } else if (file.type === 'text/plain' ||
         file.type === 'text/tab-separated-values' ||
@@ -69,7 +68,7 @@ export class GbQueriesComponent implements OnInit {
         file.type === '') {
         // we assume the text contains a list of subject Ids
         let query = {
-          'name': 'imported temporary query',
+          'name': file.name,
           'patientsQuery': {
             'type': 'patient_set',
             'subjectIds': e.target['result'].split('\n')
@@ -77,7 +76,6 @@ export class GbQueriesComponent implements OnInit {
           'observationsQuery': {}
         };
         this.queryService.restoreQuery(query);
-        this.queryService.alert('Imported subject selection in Step 1.', '', 'info');
       }
 
       // reset the input path so that it will take the same file again

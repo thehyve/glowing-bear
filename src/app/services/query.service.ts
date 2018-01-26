@@ -554,6 +554,10 @@ export class QueryService {
       );
   }
 
+  /**
+   * Restore query
+   * @param {Query} query
+   */
   public restoreQuery(query: Query) {
     this.query = query;
     if (query['patientsQuery']) {
@@ -567,8 +571,15 @@ export class QueryService {
       this.step = Step.II;
     }
     this.updateCounts_2();
-    const summary = 'Query "' + query['name'] + '" imported';
-    this.alert(summary, '', 'info');
+
+    // TODO: To display more information in the alertDetails:
+    // - total number of imported nodes/items
+    // - total number of items not found in tree
+    // - total number of matched/selected tree-nodes
+    const alertSummary = 'Success';
+    const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
+
+    this.alert(alertSummary, alertDetails, 'info');
   }
 
   public updateQuery(queryId: string, queryObject: object) {
