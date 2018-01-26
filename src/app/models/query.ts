@@ -4,7 +4,11 @@ export class Query {
   private _name: string;
   private _description: string;
   private _createDate: string;
+  // The information about the creation date, e.g. 3 days ago
+  private _createDateInfo: string;
   private _updateDate: string;
+  // The information about the update date, e.g. 3 days ago
+  private _updateDateInfo: string;
   private _apiVersion: string;
   // Indicate if the set is bookmarked
   private _bookmarked: boolean;
@@ -12,8 +16,6 @@ export class Query {
   private _subscribed: boolean;
   // Indicate if the set is collapsed
   private _collapsed: boolean;
-  // Indicate if the set name is being edited
-  private _nameEditable: boolean;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
   // The patient constraint part of the query
@@ -28,7 +30,6 @@ export class Query {
     this.name = name;
     this.collapsed = false;
     this.bookmarked = false;
-    this.nameEditable = false;
     this.selected = false;
   }
 
@@ -78,14 +79,6 @@ export class Query {
 
   set collapsed(value: boolean) {
     this._collapsed = value;
-  }
-
-  get nameEditable(): boolean {
-    return this._nameEditable;
-  }
-
-  set nameEditable(value: boolean) {
-    this._nameEditable = value;
   }
 
   get selected(): boolean {
@@ -142,5 +135,21 @@ export class Query {
 
   set visible(value: boolean) {
     this._visible = value;
+  }
+
+  get createDateInfo(): string {
+    return this._createDateInfo;
+  }
+
+  set createDateInfo(value: string) {
+    this._createDateInfo = value;
+  }
+
+  get updateDateInfo(): string {
+    return this._updateDateInfo;
+  }
+
+  set updateDateInfo(value: string) {
+    this._updateDateInfo = value;
   }
 }
