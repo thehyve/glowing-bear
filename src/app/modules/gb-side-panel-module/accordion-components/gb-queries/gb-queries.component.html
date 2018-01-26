@@ -9,13 +9,15 @@
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <button class="btn btn-secondary btn-sm gb-query-panel-clear-btn"
             (click)="clearFilter()"
-            type="button">clear</button>
+            type="button">clear
+    </button>
     <input id="queryFileUpload"
            type="file"
            style="display: none"/>
     <button class="btn btn-outline-primary gb-query-panel-import-btn"
             (click)="importQuery()"
-            type="button">import query</button>
+            type="button">import query
+    </button>
   </div>
 
 
@@ -74,63 +76,68 @@
                 </button>
               </div>
             </div>
-
-            <!-- start: if the query is subscribed, show the subscription panel -->
-            <div *ngIf="query.subscribed && query.diffRecords && query.diffRecords.length > 0">
-              <div class="row gb-subscription-panel-header"
-                   (click)="toggleSubscriptionPanel(query)">Subscription</div>
-              <div *ngIf="!query.subscriptionCollapsed"
-                   class="gb-subscription-panel-body">
-                <div>
-                  <span>frequency:</span>
-                  <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
-                                 (click)="radioCheckSubscriptionFrequency(query)"
-                                 [(ngModel)]="query.subscriptionFreq"></p-radioButton>
-                  ,&nbsp;&nbsp;
-                  <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
-                                 (click)="radioCheckSubscriptionFrequency(query)"
-                                 [(ngModel)]="query.subscriptionFreq"></p-radioButton>
-                </div>
-                <div *ngFor="let record of query.diffRecords">
-                  <hr>
-                  <span>
+          </div>
+        </md2-accordion-header>
+        <div *ngIf="query.visible">
+          <div>Name: {{query.name}}</div>
+          <div>Created: {{query.createDateInfo}}</div>
+          <div>Updated: {{query.updateDateInfo}}</div>
+          <!-- start: if the query is subscribed, show the subscription panel -->
+          <div *ngIf="query.subscribed && query.diffRecords && query.diffRecords.length > 0">
+            <div class="gb-subscription-panel-header"
+                 (click)="toggleSubscriptionPanel(query)">Subscription
+            </div>
+            <div *ngIf="!query.subscriptionCollapsed"
+                 class="gb-subscription-panel-body">
+              <div>
+                <span>frequency:</span>
+                <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
+                               (click)="radioCheckSubscriptionFrequency(query)"
+                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+                ,&nbsp;&nbsp;
+                <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
+                               (click)="radioCheckSubscriptionFrequency(query)"
+                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+              </div>
+              <div *ngFor="let record of query.diffRecords">
+                <hr>
+                <span>
                     <b>{{record.createDate}}</b>
                     <button class="gb-query-log-download-btn"
                             (click)="downloadSubscriptionRecord(query, record)">
                       <i class="fa fa-arrow-down"></i>
                     </button>
                   </span>
-                  <div class="gb-subscription-panel-body-record"
-                       (click)="toggleSubscriptionRecordPanel(record)">
-                    <div *ngIf="record.showCompleteRepresentation">
-                      <div *ngFor="let diffType of record.diffTypes">
-                        {{record.countRepresentation[diffType]}}
-                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                        {{record.completeRepresentation[diffType]}}
-                      </div>
+                <div class="gb-subscription-panel-body-record"
+                     (click)="toggleSubscriptionRecordPanel(record)">
+                  <div *ngIf="record.showCompleteRepresentation">
+                    <div *ngFor="let diffType of record.diffTypes">
+                      {{record.countRepresentation[diffType]}}
+                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                      {{record.completeRepresentation[diffType]}}
                     </div>
-                    <div *ngIf="!record.showCompleteRepresentation">
-                      <div *ngFor="let diffType of record.diffTypes">
-                        {{record.countRepresentation[diffType]}}
-                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                        {{record.partialRepresentation[diffType]}}
-                      </div>
+                  </div>
+                  <div *ngIf="!record.showCompleteRepresentation">
+                    <div *ngFor="let diffType of record.diffTypes">
+                      {{record.countRepresentation[diffType]}}
+                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                      {{record.partialRepresentation[diffType]}}
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div *ngIf="query.diffRecords.length === 0">
-                  no record
-                </div>
+              <div *ngIf="query.diffRecords.length === 0">
+                no record
               </div>
             </div>
-            <!-- end subscription section -->
           </div>
-        </md2-accordion-header>
-        <div *ngIf="query.visible" class="gb-query-body">
-          <div>Name: {{query.name}}</div>
-          <div>Created: {{query.createDateInfo}}</div>
-          <div>Updated: {{query.updateDateInfo}}</div>
+          </md2-accordion-header>
+          <div *ngIf="query.visible" class="gb-query-body">
+            <div>Name: {{query.name}}</div>
+            <div>Created: {{query.createDateInfo}}</div>
+            <div>Updated: {{query.updateDateInfo}}</div>
+          </div>
         </div>
       </md2-accordion-tab>
     </md2-accordion>

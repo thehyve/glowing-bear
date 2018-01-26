@@ -28,8 +28,6 @@
 .gb-subscription-panel-header {
   background-color: #fafafa;
   border-radius: 6px;
-  padding-left: 6px;
-  margin-left: -20px;
   margin-top: 3px;
   cursor: pointer;
 }
@@ -44,7 +42,6 @@
   background-color: #fafafa;
   border-radius: 6px;
   padding-left: 6px;
-  margin-left: -10px;
   margin-top: 3px;
 }
 
