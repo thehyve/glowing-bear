@@ -7,7 +7,7 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {ResourceService} from '../../../../services/resource.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {DropdownModule} from 'primeng/primeng';
+import {CheckboxModule, DropdownModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -28,7 +28,8 @@ describe('GbPedigreeConstraintComponent', () => {
       imports: [
         BrowserAnimationsModule,
         FormsModule,
-        DropdownModule
+        DropdownModule,
+        CheckboxModule
       ],
       providers: [
         {
