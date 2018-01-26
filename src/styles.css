@@ -179,6 +179,10 @@ gb-data-selection .gb-data-selection-control-btn {
 /*
  * ------------------------------ Styles for gb-selection component -------------------------------
  */
+/*Style for the padding of the constraint*/
+gb-selection .ui-panel-titlebar {
+  padding: 1px !important;
+}
 /*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
@@ -338,10 +342,6 @@ gb-queries .gb-query-filter-input > input {
   height: 1.8em;
   min-width: 150px;
 }
-/*Style for the padding of the query panel*/
-gb-queries .ui-panel-titlebar {
-  padding: 1px !important;
-}
 
 /*style fix for hiding the border in data list in saved queries in the side panel*/
 gb-queries .ui-widget-content {
@@ -375,7 +375,12 @@ gb-queries md2-accordion-tab>.md2-accordion-header {
 }
 
 gb-queries md2-accordion-tab>.md2-accordion-tab-body {
+  background-color: #fbfbfb;
   padding-left: 0.5em;
   font-size: small;
   color: dimgray;
+}
+
+gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
+  color: transparent;
 }
