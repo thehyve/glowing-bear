@@ -53,11 +53,11 @@ export class GbQueriesComponent implements OnInit {
         } else if (_json.constructor === Array) {
           pathArray = _json;
         }
-        if (pathArray) { console.log('paths: ', pathArray);
+        if (pathArray) {
           let query = {
             'name': 'imported temporary query',
             'observationsQuery': {
-              data: pathArray ? pathArray : []
+              data: pathArray
             }
           };
           this.queryService.restoreQuery(query);
