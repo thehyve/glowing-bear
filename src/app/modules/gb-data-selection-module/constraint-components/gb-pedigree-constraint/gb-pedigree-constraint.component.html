@@ -7,8 +7,12 @@
                   (onChange)="updateRelationType($event)"
                   optionLabel="text"></p-dropdown>
       <div class="gb-pedigree-checkbox-container">
-        <p-checkbox [(ngModel)]="isBiological" binary="true" label="biological"></p-checkbox> &nbsp; &nbsp;
-        <p-checkbox [(ngModel)]="isShareHousehold" binary="true" label="share household"></p-checkbox>
+        <span>biological:</span>
+        <p-dropdown [options]="triStateOptions"
+                    [(ngModel)]="isBiological"></p-dropdown> &nbsp;
+        <span>share household:</span>
+        <p-dropdown [options]="triStateOptions"
+                    [(ngModel)]="shareHousehold"></p-dropdown>
       </div>
     </div>
     <div class="row gb-pedigree-constraint-container">

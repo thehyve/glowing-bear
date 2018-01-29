@@ -4,24 +4,27 @@ import {SelectItem} from 'primeng/primeng';
 import {Constraint} from '../../../../models/constraints/constraint';
 import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
 
+type TriState = true | false | undefined;
+
 @Component({
   selector: 'gb-pedigree-constraint',
   templateUrl: './gb-pedigree-constraint.component.html',
   styleUrls: ['./gb-pedigree-constraint.component.css', '../gb-constraint/gb-constraint.component.css']
 })
-
 export class GbPedigreeConstraintComponent extends GbConstraintComponent implements OnInit {
 
   private _selectedPedigreeType: SelectItem;
   private _pedigreeTypes: SelectItem[];
   private _rightHandSideConstraint: Constraint;
-  private _isBiological: boolean;
-  private _isShareHousehold: boolean;
+  public triStateOptions: object[];
 
   ngOnInit() {
     this.pedigreeTypes = [];
-    this.isBiological = (<PedigreeConstraint>this.constraint).biological;
-    this.isShareHousehold = (<PedigreeConstraint>this.constraint).shareHousehold;
+    this.triStateOptions = [
+      {label: 'both', value: undefined},
+      {label: 'yes', value: true},
+      {label: 'no', value: false}
+      ];
     const relationType = (<PedigreeConstraint>this.constraint).relationType;
     for (let typeObj of this.constraintService.validPedigreeTypes) {
       this.pedigreeTypes.push({
@@ -64,21 +67,19 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
     this._rightHandSideConstraint = value;
   }
 
-  get isBiological(): boolean {
-    return this._isBiological;
+  get isBiological(): TriState {
+    return (<PedigreeConstraint>this.constraint).biological;
   }
 
-  set isBiological(value: boolean) {
-    this._isBiological = value;
+  set isBiological(value: TriState) {
     (<PedigreeConstraint>this.constraint).biological = value;
   }
 
-  get isShareHousehold(): boolean {
-    return this._isShareHousehold;
+  get isShareHousehold(): TriState {
+    return (<PedigreeConstraint>this.constraint).shareHousehold;
   }
 
-  set isShareHousehold(value: boolean) {
-    this._isShareHousehold = value;
+  set isShareHousehold(value: TriState) {
     (<PedigreeConstraint>this.constraint).shareHousehold = value;
   }
 }
