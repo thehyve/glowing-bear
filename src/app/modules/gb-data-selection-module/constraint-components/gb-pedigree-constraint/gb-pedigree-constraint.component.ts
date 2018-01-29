@@ -67,19 +67,19 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
     this._rightHandSideConstraint = value;
   }
 
-  get isBiological(): TriState {
+  get biological(): TriState {
     return (<PedigreeConstraint>this.constraint).biological;
   }
 
-  set isBiological(value: TriState) {
+  set biological(value: TriState) {
     (<PedigreeConstraint>this.constraint).biological = value;
   }
 
-  get isShareHousehold(): TriState {
+  get shareHousehold(): TriState {
     return (<PedigreeConstraint>this.constraint).shareHousehold;
   }
 
-  set isShareHousehold(value: TriState) {
+  set shareHousehold(value: TriState) {
     (<PedigreeConstraint>this.constraint).shareHousehold = value;
   }
 }
