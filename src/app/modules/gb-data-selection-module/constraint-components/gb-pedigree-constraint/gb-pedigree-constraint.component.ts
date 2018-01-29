@@ -73,6 +73,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set biological(value: TriState) {
     (<PedigreeConstraint>this.constraint).biological = value;
+    this.updateCounts();
   }
 
   get shareHousehold(): TriState {
@@ -81,5 +82,6 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set shareHousehold(value: TriState) {
     (<PedigreeConstraint>this.constraint).shareHousehold = value;
+    this.updateCounts();
   }
 }
