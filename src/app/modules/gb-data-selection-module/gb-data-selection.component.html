@@ -1,4 +1,8 @@
 <div class="gb-data-selection-container">
+
+  <!--Alert message-->
+  <p-messages [(value)]="queryService.alertMessages"></p-messages>
+
   <!-- The accordions -->
   <md2-accordion [multiple]="false"
                  (open)="openAccordion($event)"

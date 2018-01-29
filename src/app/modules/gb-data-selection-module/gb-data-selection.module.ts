@@ -18,13 +18,16 @@ import {
   PanelModule,
   DataListModule,
   DataTableModule,
-  TreeTableModule, DropdownModule, TooltipModule
+  TreeTableModule,
+  DropdownModule,
+  TooltipModule,
+  MessagesModule
 } from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbPatientSetConstraintComponent} from './constraint-components/gb-patient-set-constraint/gb-patient-set-constraint.component';
-import { GbPedigreeConstraintComponent } from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
+import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
 
 @NgModule({
   imports: [
@@ -41,7 +44,8 @@ import { GbPedigreeConstraintComponent } from './constraint-components/gb-pedigr
     DataTableModule,
     TreeTableModule,
     DropdownModule,
-    TooltipModule
+    TooltipModule,
+    MessagesModule
   ],
   exports: [
     RouterModule

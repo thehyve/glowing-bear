@@ -75,7 +75,6 @@ body .gb-spinner.loading {
   background-color: rgba(255, 0, 0, 0.5);
   border: none;
   color: white;
-  position: relative;
 }
 
 .ui-messages.ui-messages-error {
