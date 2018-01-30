@@ -12,8 +12,8 @@ import {Constraint} from '../models/constraints/constraint';
 import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
-import { PatientSetResponse } from '../models/patient-set-response';
-import {PedigreeRelationTypeResponse} from "../models/pedigree-relation-type-response";
+import {PatientSetResponse} from '../models/patient-set-response';
+import {PedigreeRelationTypeResponse} from '../models/pedigree-relation-type-response';
 
 @Injectable()
 export class ResourceService {
@@ -151,7 +151,623 @@ export class ResourceService {
   getStudies(): Observable<Study[]> {
     const urlPart = 'studies';
     const responseField = 'studies';
-    return this.getCall(urlPart, responseField);
+    let studiesString = '[\n' +
+      '        {\n' +
+      '            "id": -20,\n' +
+      '            "studyId": "CATEGORICAL_VALUES",\n' +
+      '            "bioExperimentId": -10,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -21,\n' +
+      '            "studyId": "CLINICAL_TRIAL",\n' +
+      '            "bioExperimentId": -11,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "trial visit"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -30,\n' +
+      '            "studyId": "CLINICAL_TRIAL_HIGHDIM",\n' +
+      '            "bioExperimentId": -20,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "trial visit",\n' +
+      '                "biomarker",\n' +
+      '                "projection",\n' +
+      '                "assay"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -22,\n' +
+      '            "studyId": "EHR",\n' +
+      '            "bioExperimentId": -12,\n' +
+      '            "dimensions": [\n' +
+      '                "visit",\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "start time",\n' +
+      '                "end time"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -31,\n' +
+      '            "studyId": "EHR_HIGHDIM",\n' +
+      '            "bioExperimentId": -21,\n' +
+      '            "dimensions": [\n' +
+      '                "visit",\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "biomarker",\n' +
+      '                "projection",\n' +
+      '                "start time",\n' +
+      '                "end time",\n' +
+      '                "assay"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -44,\n' +
+      '            "studyId": "MIX_HD",\n' +
+      '            "bioExperimentId": -24,\n' +
+      '            "dimensions": []\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -45,\n' +
+      '            "studyId": "ORACLE_1000_PATIENT",\n' +
+      '            "bioExperimentId": -28,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -32,\n' +
+      '            "studyId": "RNASEQ_TRANSCRIPT",\n' +
+      '            "bioExperimentId": -22,\n' +
+      '            "dimensions": []\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -27,\n' +
+      '            "studyId": "SHARED_CONCEPTS_STUDY_A",\n' +
+      '            "bioExperimentId": -17,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -28,\n' +
+      '            "studyId": "SHARED_CONCEPTS_STUDY_B",\n' +
+      '            "bioExperimentId": -18,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -29,\n' +
+      '            "studyId": "SHARED_CONCEPTS_STUDY_C_PRIV",\n' +
+      '            "bioExperimentId": -19,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -14,\n' +
+      '            "studyId": "SHARED_HD_CONCEPTS_STUDY_A",\n' +
+      '            "bioExperimentId": -25,\n' +
+      '            "dimensions": []\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -15,\n' +
+      '            "studyId": "SHARED_HD_CONCEPTS_STUDY_B",\n' +
+      '            "bioExperimentId": -26,\n' +
+      '            "dimensions": []\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -16,\n' +
+      '            "studyId": "SHARED_HD_CONCEPTS_STUDY_C_PR",\n' +
+      '            "bioExperimentId": -27,\n' +
+      '            "dimensions": []\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -50,\n' +
+      '            "studyId": "SURVEY1",\n' +
+      '            "bioExperimentId": null,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "start time",\n' +
+      '                "missing_value"\n' +
+      '            ],\n' +
+      '            "metadata": {\n' +
+      '                "conceptCodeToVariableMetadata": {\n' +
+      '                    "birthdate": {\n' +
+      '                        "columns": 22,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Birth Date",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": null,\n' +
+      '                        "name": "birthdate1",\n' +
+      '                        "type": "DATE",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 22\n' +
+      '                    },\n' +
+      '                    "favouritebook": {\n' +
+      '                        "columns": 400,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Favourite Book",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": null,\n' +
+      '                        "name": "favouritebook",\n' +
+      '                        "type": "STRING",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 400\n' +
+      '                    },\n' +
+      '                    "gender": {\n' +
+      '                        "columns": 14,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Gender",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": [\n' +
+      '                                -2\n' +
+      '                            ]\n' +
+      '                        },\n' +
+      '                        "name": "gender1",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1": "Female",\n' +
+      '                            "2": "Male",\n' +
+      '                            "-2": "Not Specified"\n' +
+      '                        },\n' +
+      '                        "width": 12\n' +
+      '                    }\n' +
+      '                }\n' +
+      '            }\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -51,\n' +
+      '            "studyId": "SURVEY2",\n' +
+      '            "bioExperimentId": null,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "start time",\n' +
+      '                "missing_value"\n' +
+      '            ],\n' +
+      '            "metadata": {\n' +
+      '                "conceptCodeToVariableMetadata": {\n' +
+      '                    "description": {\n' +
+      '                        "columns": 210,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Description",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": null,\n' +
+      '                        "name": "description",\n' +
+      '                        "type": "STRING",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 200\n' +
+      '                    },\n' +
+      '                    "height": {\n' +
+      '                        "columns": 15,\n' +
+      '                        "decimals": 2,\n' +
+      '                        "description": "Height",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": [\n' +
+      '                                -1\n' +
+      '                            ]\n' +
+      '                        },\n' +
+      '                        "name": "height1",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "-1": "Asked, but not answered"\n' +
+      '                        },\n' +
+      '                        "width": 14\n' +
+      '                    }\n' +
+      '                }\n' +
+      '            }\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": -23,\n' +
+      '            "studyId": "TUMOR_NORMAL_SAMPLES",\n' +
+      '            "bioExperimentId": -13,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "biomarker",\n' +
+      '                "projection",\n' +
+      '                "sample_type",\n' +
+      '                "assay"\n' +
+      '            ]\n' +
+      '        },\n' +
+      '        {\n' +
+      '            "id": 1,\n' +
+      '            "studyId": "ANTR_9",\n' +
+      '            "bioExperimentId": null,\n' +
+      '            "dimensions": [\n' +
+      '                "concept",\n' +
+      '                "patient",\n' +
+      '                "study",\n' +
+      '                "missing_value"\n' +
+      '            ],\n' +
+      '            "metadata": {\n' +
+      '                "conceptCodeToVariableMetadata": {\n' +
+      '                    "age": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "age",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "age9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "gebpl9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "place of birth",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "gebpl9",\n' +
+      '                        "type": "STRING",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 120\n' +
+      '                    },\n' +
+      '                    "gwcht9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "weight (kg)",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "gwcht9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 3\n' +
+      '                    },\n' +
+      '                    "gznd9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "health",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "gznd9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1.0": "poor",\n' +
+      '                            "2.0": "fair",\n' +
+      '                            "3.0": "reasonable",\n' +
+      '                            "4.0": "good",\n' +
+      '                            "5.0": "excellent"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "ingvld9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Completed via Internet or paper (and which version)",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "ingvld9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1.0": "completed online",\n' +
+      '                            "2.0": "completed on paper"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "invd9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "date of completion",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "invd9",\n' +
+      '                        "type": "DATE",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 11\n' +
+      '                    },\n' +
+      '                    "lengt9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "height (cm)",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "lengt9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 3\n' +
+      '                    },\n' +
+      '                    "lijst9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Survey 9 completed",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "lijst9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "0.0": "no",\n' +
+      '                            "1.0": "yes"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "roken9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "smoking",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "roken9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1.0": "Yes, more than 10 cigarettes a day",\n' +
+      '                            "2.0": "Yes, less than 10 cigarettes a day",\n' +
+      '                            "3.0": "Yes, but not cigarettes",\n' +
+      '                            "4.0": "No, I used to but I do not anymore",\n' +
+      '                            "5.0": "No I have never smoked"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "sex": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "sex",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "sekse9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1.0": "male",\n' +
+      '                            "2.0": "female"\n' +
+      '                        },\n' +
+      '                        "width": 2\n' +
+      '                    },\n' +
+      '                    "shoe9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "shoe size",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": [\n' +
+      '                                -1,\n' +
+      '                                -3\n' +
+      '                            ]\n' +
+      '                        },\n' +
+      '                        "name": "shoe9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "spajr9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "number of years sport 1, recoded from string to numeric",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -9,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "spajr9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "-1.0": "missing",\n' +
+      '                            "-2.0": "double answer (paper)",\n' +
+      '                            "-3.0": "unclear answer (paper)",\n' +
+      '                            "-4.0": "could not be converted to number, see corresponding string variable",\n' +
+      '                            "-8.0": "question not asked (online)",\n' +
+      '                            "-9.0": "question asked, but not answered (online)"\n' +
+      '                        },\n' +
+      '                        "width": 4\n' +
+      '                    },\n' +
+      '                    "spake9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "number of times per week sport 1, recoded from string to numeric",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -9,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "spake9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "-1.0": "missing",\n' +
+      '                            "-2.0": "double answer (paper)",\n' +
+      '                            "-3.0": "unclear answer (paper)",\n' +
+      '                            "-4.0": "could not be converted to number, see corresponding string variable",\n' +
+      '                            "-8.0": "question not asked (online)",\n' +
+      '                            "-9.0": "question asked, but not answered (online)"\n' +
+      '                        },\n' +
+      '                        "width": 4\n' +
+      '                    },\n' +
+      '                    "sprta9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "name sport 1",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "sprta9",\n' +
+      '                        "type": "STRING",\n' +
+      '                        "valueLabels": {},\n' +
+      '                        "width": 765\n' +
+      '                    },\n' +
+      '                    "tnd1_9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Teeth and dental care item 1, Do you still have one or more of your own teeth or molars?",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "tnd1_9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "0.0": "yes",\n' +
+      '                            "1.0": "no"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "tnd2_9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Teeth and dental care item 2, How would you rate the state of your teeth?",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "tnd2_9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "0.0": "Many untreated cavities",\n' +
+      '                            "1.0": "A few untreated cavities",\n' +
+      '                            "2.0": "No untreated cavities/no cavities"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "tnd3_9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Teeth and dental care item 3, state of gyms",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "tnd3_9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "0.0": "My gums never bleed",\n' +
+      '                            "1.0": "My gums bleed occasionally or often",\n' +
+      '                            "2.0": "My gums used to bleed, but they do not anymore"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "tnd4_9": {\n' +
+      '                        "columns": null,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "Teeth and dental care item 4, Are you currently being treated for gum problems by a parodontologist or dental hygienist?",\n' +
+      '                        "measure": "NOMINAL",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": -3,\n' +
+      '                            "upper": -1,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "tnd4_9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "0.0": "yes",\n' +
+      '                            "1.0": "no"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    },\n' +
+      '                    "version9": {\n' +
+      '                        "columns": 2,\n' +
+      '                        "decimals": null,\n' +
+      '                        "description": "version",\n' +
+      '                        "measure": "SCALE",\n' +
+      '                        "missingValues": {\n' +
+      '                            "lower": null,\n' +
+      '                            "upper": null,\n' +
+      '                            "values": []\n' +
+      '                        },\n' +
+      '                        "name": "version9",\n' +
+      '                        "type": "NUMERIC",\n' +
+      '                        "valueLabels": {\n' +
+      '                            "1.0": "paper v2.0 (pilot)",\n' +
+      '                            "2.0": "paper v2.1/2.2",\n' +
+      '                            "3.0": "paper v3.0/3.1 (main version)",\n' +
+      '                            "4.0": "online v2.0 (pilot)",\n' +
+      '                            "5.0": "online v2.1",\n' +
+      '                            "6.0": "online v3.0 (main version)"\n' +
+      '                        },\n' +
+      '                        "width": 8\n' +
+      '                    }\n' +
+      '                }\n' +
+      '            }\n' +
+      '        }\n' +
+      '    ]';
+    let studies = JSON.parse(studiesString);
+    return Observable.of(studies);
+    // return this.getCall(urlPart, responseField);
   }
 
   /**

@@ -50,31 +50,33 @@
       <md2-accordion-tab *ngFor="let query of queries">
         <md2-accordion-header>
           <div *ngIf="query.visible">
-            <span>{{query.name}}</span>
-            <div class="float-right">
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="toggleQuerySubscription($event, query)"
-                      icon="{{getQuerySubscriptionButtonIcon(query)}}">
-              </button>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="toggleQueryBookmark($event, query)"
-                      icon="{{getQueryBookmarkButtonIcon(query)}}">
-              </button>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="downloadQuery($event, query)"
-                      icon="fa-download">
-              </button>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="restoreQuery($event, query)" icon="fa-arrow-right">
-              </button>
-              <span>&nbsp;</span>
-              <button pButton class="ui-button-secondary" type="button"
-                      (click)="confirmRemoval($event, query)" icon="fa-times">
-              </button>
+            <div>
+              <div class="gb-query-header-name">{{query.name}}</div>
+              <div class="float-right">
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="toggleQuerySubscription($event, query)"
+                        icon="{{getQuerySubscriptionButtonIcon(query)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="toggleQueryBookmark($event, query)"
+                        icon="{{getQueryBookmarkButtonIcon(query)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="downloadQuery($event, query)"
+                        icon="fa-download">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="restoreQuery($event, query)" icon="fa-arrow-right">
+                </button>
+                <span>&nbsp;</span>
+                <button pButton class="ui-button-secondary" type="button"
+                        (click)="confirmRemoval($event, query)" icon="fa-times">
+                </button>
+              </div>
             </div>
           </div>
         </md2-accordion-header>
-        <div *ngIf="query.visible">
+        <div *ngIf="query.visible" class="gb-query-body">
           <div>Name: {{query.name}}</div>
           <div>Created: {{query.createDateInfo}}</div>
           <div>Updated: {{query.updateDateInfo}}</div>

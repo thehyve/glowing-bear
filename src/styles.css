@@ -256,6 +256,13 @@ gb-projection p-treenode {
 }
 
 /*
+ * ------------------------------ Styles for gb-side-panel component -------------------------------
+ */
+gb-side-panel .ui-accordion .ui-accordion-content {
+  padding: 1em;
+}
+
+/*
  * ------------------------------ Styles for gb-tree-nodes component -------------------------------
  */
 /*Make the font size in the tree smaller*/

@@ -115,3 +115,18 @@ md2-accordion-header .ui-button-secondary {
 .gb-query-panel-body {
   color: #606060;
 }
+
+.gb-query-header-name {
+  border: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+  overflow: hidden;
+  height: 2.5em;
+  max-width: 150px;
+}
+
+.gb-query-body {
+  padding: 3px;
+  word-wrap: break-word;
+}
