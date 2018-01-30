@@ -700,8 +700,8 @@ export class QueryService {
         item.objectId = entry['objectId'];
         if (entry['changeFlag'] === 'ADDED') {
           item.diffType = QueryDiffType.ADDED;
-        } else if (entry['changeFlag'] === 'DELETED') {
-          item.diffType = QueryDiffType.DELETED;
+        } else if (entry['changeFlag'] === 'REMOVED') {
+          item.diffType = QueryDiffType.REMOVED;
         }
         items.push(item);
       }
