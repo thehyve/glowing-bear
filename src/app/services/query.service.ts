@@ -190,16 +190,16 @@ export class QueryService {
               if (!query.subscriptionFreq) {
                 query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
               }
+              /*
+               * load query diff records for this query
+               */
+                this.resourceService.diffQuery(query.id)
+                  .subscribe(
+                    (records) => {
+                      query.diffRecords = this.parseQueryDiffRecords(records);
+                    }
+                  );
             }
-            /*
-             * load query diff records for this query
-             */
-            this.resourceService.diffQuery(query.id)
-              .subscribe(
-                (records) => {
-                  query.diffRecords = this.parseQueryDiffRecords(records);
-                }
-              );
 
             if (query.bookmarked) {
               bookmarkedQueries.push(query);
