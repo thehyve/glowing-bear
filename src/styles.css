@@ -1,5 +1,5 @@
 /*
-  custom colors
+  custom variables
 */
 :root  {
   --gb-loading-bg-color: #28AA9D;
@@ -8,6 +8,8 @@
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
+  --gb-clinical-green-dark: #2d8c81;
+  --gb-top-panel-height: 26px;
 }
 
 /*

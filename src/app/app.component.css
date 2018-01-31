@@ -42,17 +42,21 @@
 /*}*/
 
 .gb-left-panel {
+  top: var(--gb-top-panel-height);
   position: relative;
   display: inline;
   width: 30%;
   background-color: #ededed;
   margin-left: 0px;
+  margin-top: -5px;
 }
 
 .gb-right-panel {
-  padding-top: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  top: var(--gb-top-panel-height);
+  padding-top: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-top: 0px;
   position: relative;
   width: calc(74% - 10px - 6px);
   background-color: white;
@@ -66,4 +70,30 @@
   cursor: col-resize;
   margin-left: 3px;
   margin-right: 3px;
+}
+
+.gb-top-panel {
+  background-color: var(--gb-clinical-green-dark);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  border: none;
+  padding: 2px 1em 2px 1em;
+  margin: 0px;
+  height: var(--gb-top-panel-height);
+}
+
+.gb-top-panel button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 3px 5px 1px 7px;
+  margin-top: -5px;
+}
+.gb-top-panel button:hover {
+  color: var(--gb-light-orange)
+}
+.gb-top-panel button:active {
+  border: none;
 }

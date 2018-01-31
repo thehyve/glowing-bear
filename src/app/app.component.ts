@@ -89,4 +89,8 @@ export class AppComponent implements OnInit {
     window.addEventListener('resize', onResize.bind(this));
   }
 
+  logout() {
+    this.endpointService.invalidateToken();
+  }
+
 }
