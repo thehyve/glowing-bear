@@ -2,7 +2,7 @@ os:
   - linux
 language: node_js
 node_js:
-  - '7'
+  - '8'
 
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -17,7 +17,7 @@ cache:
 env:
   global:
     - GB_BASE=$TRAVIS_BUILD_DIR
-  
+
 before_install:
   - export TZ=Europe/Amsterdam
   - date
@@ -31,7 +31,7 @@ install:
   - ${GRADLE_SCRIPT} assemble
   - ${GRADLE_SCRIPT} publishToMavenLocal
 script:
-  - travis_retry ${GRADLE_SCRIPT} check 
+  - travis_retry ${GRADLE_SCRIPT} check
 
 notifications:
   webhooks:
