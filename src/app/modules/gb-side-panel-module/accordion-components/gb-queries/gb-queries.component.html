@@ -83,7 +83,7 @@
           <div>Created: {{query.createDateInfo}}</div>
           <div>Updated: {{query.updateDateInfo}}</div>
           <!-- start: if the query is subscribed, show the subscription panel -->
-          <div *ngIf="query.subscribed && query.diffRecords && query.diffRecords.length > 0">
+          <div *ngIf="query.subscribed">
             <div class="gb-subscription-panel-header"
                  (click)="toggleSubscriptionPanel(query)">Subscription
             </div>
@@ -99,29 +99,31 @@
                                (click)="radioCheckSubscriptionFrequency(query)"
                                [(ngModel)]="query.subscriptionFreq"></p-radioButton>
               </div>
-              <div *ngFor="let record of query.diffRecords">
-                <hr>
-                <span>
+              <div *ngIf="query.diffRecords && query.diffRecords.length > 0">
+                <div *ngFor="let record of query.diffRecords">
+                  <hr>
+                  <span>
                     <b>{{record.createDate}}</b>
                     <button class="gb-query-log-download-btn"
                             (click)="downloadSubscriptionRecord(query, record)">
                       <i class="fa fa-arrow-down"></i>
                     </button>
                   </span>
-                <div class="gb-subscription-panel-body-record"
-                     (click)="toggleSubscriptionRecordPanel(record)">
-                  <div *ngIf="record.showCompleteRepresentation">
-                    <div *ngFor="let diffType of record.diffTypes">
-                      {{record.countRepresentation[diffType]}}
-                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                      {{record.completeRepresentation[diffType]}}
+                  <div class="gb-subscription-panel-body-record"
+                       (click)="toggleSubscriptionRecordPanel(record)">
+                    <div *ngIf="record.showCompleteRepresentation">
+                      <div *ngFor="let diffType of record.diffTypes">
+                        {{record.countRepresentation[diffType]}}
+                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                        {{record.completeRepresentation[diffType]}}
+                      </div>
                     </div>
-                  </div>
-                  <div *ngIf="!record.showCompleteRepresentation">
-                    <div *ngFor="let diffType of record.diffTypes">
-                      {{record.countRepresentation[diffType]}}
-                      {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                      {{record.partialRepresentation[diffType]}}
+                    <div *ngIf="!record.showCompleteRepresentation">
+                      <div *ngFor="let diffType of record.diffTypes">
+                        {{record.countRepresentation[diffType]}}
+                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                        {{record.partialRepresentation[diffType]}}
+                      </div>
                     </div>
                   </div>
                 </div>
