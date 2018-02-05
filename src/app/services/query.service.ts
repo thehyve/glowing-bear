@@ -141,7 +141,7 @@ export class QueryService {
               private constraintService: ConstraintService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
-    this.treeNodeCountsUpdate = false;
+    this.treeNodeCountsUpdate = true;
     this.countsRelay = false;
     this.loadQueries();
   }
