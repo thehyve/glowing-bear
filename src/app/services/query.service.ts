@@ -140,10 +140,10 @@ export class QueryService {
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
-    this.instantCountsUpdate_1 = appConfig.getConfig('step-1-instant-counts-update');
-    this.instantCountsUpdate_2 = appConfig.getConfig('step-2-instant-counts-update');
-    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update');
-    this.countsRelay = appConfig.getConfig('counts-relay');
+    this.instantCountsUpdate_1 = false;
+    this.instantCountsUpdate_2 = false;
+    this.treeNodeCountsUpdate = false;
+    this.countsRelay = false;
     this.loadQueries();
   }
 

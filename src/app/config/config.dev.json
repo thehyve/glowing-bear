@@ -1,9 +1,5 @@
 {
   "api-url": "http://localhost:8080",
   "api-version": "v2",
-  "app-url": "http://localhost:4200",
-  "step-1-instant-counts-update": false,
-  "step-2-instant-counts-update": false,
-  "tree-node-counts-update": true,
-  "counts-relay": false
+  "app-url": "http://localhost:4200"
 }

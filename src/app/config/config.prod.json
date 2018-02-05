@@ -1,9 +1,5 @@
 {
   "api-url": "https://transmart-test.thehyve.net",
   "api-version": "v2",
-  "app-url": "https://glowingbear2-head.thehyve.net",
-  "step-1-instant-counts-update": false,
-  "step-2-instant-counts-update": false,
-  "tree-node-counts-update": true,
-  "counts-relay": false
+  "app-url": "https://glowingbear2-head.thehyve.net"
 }
