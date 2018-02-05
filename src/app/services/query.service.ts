@@ -136,8 +136,7 @@ export class QueryService {
   private _countsRelay: boolean;
 
 
-  constructor(private appConfig: AppConfig,
-              private resourceService: ResourceService,
+  constructor(private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
     this.instantCountsUpdate_1 = false;
