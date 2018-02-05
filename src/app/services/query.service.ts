@@ -123,7 +123,8 @@ export class QueryService {
   // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
   private _treeNodeCountsUpdate: boolean;
   private _exportFormats: object[] = [];
-  private _isLoadingExportFormats = true;
+  private _isLoadingExportFormats = false;
+  private _exportDataView = 'default';
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
    * whether there is an error saving subject/observation set,
@@ -475,26 +476,31 @@ export class QueryService {
     combo.addChild(projectionConstraint);
     // update the export info
     this.isLoadingExportFormats = true;
-    this.resourceService.getExportDataFormats(combo)
+    this.resourceService.getExportFileFormats(this.exportDataView)
       .subscribe(
-        (dataFormatNames) => {
-          let fileFormatNames = ['TSV', 'SPSS'];
-          this.exportFormats = [];
-          for (let dataFormatName of dataFormatNames) {
-            let format = {
-              name: dataFormatName,
-              checked: true,
-              fileFormats: []
-            };
-            for (let fileFormatName of fileFormatNames) {
-              format.fileFormats.push({
-                name: fileFormatName,
-                checked: true
-              });
-            }
-            this.exportFormats.push(format);
-          }
-          this.isLoadingExportFormats = false;
+        (fileFormatNames: string[]) => {
+          this.resourceService.getExportDataFormats(combo)
+            .subscribe(
+              (dataFormatNames: string[]) => {
+                this.exportFormats = [];
+                for (let dataFormatName of dataFormatNames) {
+                  let format = {
+                    name: dataFormatName,
+                    checked: true,
+                    fileFormats: []
+                  };
+                  for (let fileFormatName of fileFormatNames) {
+                    format.fileFormats.push({
+                      name: fileFormatName,
+                      checked: true
+                    });
+                  }
+                  this.exportFormats.push(format);
+                }
+                this.isLoadingExportFormats = false;
+              },
+              err => this.handle_error(err)
+            );
         },
         err => this.handle_error(err)
       );
@@ -749,6 +755,14 @@ export class QueryService {
 
   set isLoadingExportFormats(value: boolean) {
     this._isLoadingExportFormats = value;
+  }
+
+  get exportDataView(): string {
+    return this._exportDataView;
+  }
+
+  set exportDataView(value: string) {
+    this._exportDataView = value;
   }
 
   get queries(): Query[] {

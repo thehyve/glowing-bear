@@ -265,6 +265,12 @@ export class ResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
+  getExportFileFormats(dataView: string): Observable<string[]> {
+    const urlPart = `export/file_formats?dataView=${dataView}`;
+    const responseField = 'fileFormats';
+    return this.getCall(urlPart, responseField);
+  }
+
   /**
    * Get the current user's existing export jobs
    * @returns {Observable<ExportJob[]>}
@@ -292,7 +298,7 @@ export class ResourceService {
    * [{
    *    dataType: 'clinical',
    *    format: 'TSV',
-   *    dataView: 'surveyTable' // NTR specific
+   *    dataView: 'default' | 'surveyTable' // NTR specific
    * }]
    *
    * @param jobId
