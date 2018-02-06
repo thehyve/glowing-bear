@@ -125,6 +125,7 @@ md2-accordion-header .ui-button-secondary {
   overflow: hidden;
   height: 2.5em;
   max-width: 150px;
+  float: left;
 }
 
 .gb-query-header {
