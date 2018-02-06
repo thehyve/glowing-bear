@@ -22,6 +22,7 @@
 .gb-query-panel-sort-btn-container {
   margin-top: 6px;
   margin-bottom: -10px;
+  display: flow-root;
 }
 
 /*
@@ -126,6 +127,9 @@ md2-accordion-header .ui-button-secondary {
   max-width: 150px;
 }
 
+.gb-query-header {
+  display: flow-root;
+}
 .gb-query-body {
   padding: 3px;
   word-wrap: break-word;

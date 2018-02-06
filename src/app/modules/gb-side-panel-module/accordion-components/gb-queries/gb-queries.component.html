@@ -19,7 +19,7 @@
   </div>
 
 
-  <div *ngIf="queries.length > 1" class="container gb-query-panel-sort-btn-container">
+  <div *ngIf="queries.length > 1" class="container gb-query-panel-sort-btn-container clearfix">
     <div class="float-right">
       <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
               (click)="sortByName()"
@@ -50,7 +50,7 @@
       <md2-accordion-tab *ngFor="let query of queries">
         <md2-accordion-header>
           <div *ngIf="query.visible">
-            <div>
+            <div class="gb-query-header clearfix">
               <div class="gb-query-header-name">{{query.name}}</div>
               <div class="float-right">
                 <button pButton class="ui-button-secondary" type="button"
