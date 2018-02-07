@@ -44,15 +44,15 @@ export class GbSelectionComponent implements OnInit {
   }
 
   get subjectCount_1(): string {
-    return FormatHelper.formatNumber(this.queryService.subjectCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.subjectCount_1);
   }
 
   get inclusionSubjectCount(): string {
-    return FormatHelper.formatNumber(this.queryService.inclusionSubjectCount);
+    return FormatHelper.formatCountNumber(this.queryService.inclusionSubjectCount);
   }
 
   get exclusionSubjectCount(): string {
-    return FormatHelper.formatNumber(this.queryService.exclusionSubjectCount);
+    return FormatHelper.formatCountNumber(this.queryService.exclusionSubjectCount);
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

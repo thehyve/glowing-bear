@@ -1,13 +1,17 @@
 export class FormatHelper {
 
-  public static formatNumber(x: number): string {
-    if (x) {
-      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  public static formatCountNumber(x: number): string {
+    if (typeof(x) === 'number') {
+      if (x > -1) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      } else {
+        return '...';
+      }
     } else {
-      return '0';
+      return '...';
     }
   }
-  
+
   public static formatDateSemantics(s: string): string {
     const then = new Date(s);
     const now = new Date();

@@ -4,10 +4,9 @@ import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
 import {Query} from '../models/query';
 import {ConstraintService} from './constraint.service';
-import {AppConfig} from '../config/app.config';
 import {Step} from '../models/step';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
-import {FormatHelper} from "../utilities/FormatHelper";
+import {FormatHelper} from '../utilities/FormatHelper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -184,6 +183,23 @@ export class QueryService {
   /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
+  // Relay counts from step 1 to step 2
+  private relayCounts_1_2() {
+    if (this.countsRelay) {
+      this.subjectCount_2 = this.subjectCount_1;
+      this.observationCount_2 = this.observationCount_1;
+      this.isLoadingSubjectCount_2 = false;
+      this.isLoadingObservationCount_2 = false;
+    } else {
+      this.subjectCount_2 = -1;
+      this.observationCount_2 = -1;
+    }
+    // step 1 is no longer dirty
+    this.isDirty_1 = false;
+    // step 2 becomes dirty and needs to be updated
+    this.isDirty_2 = true;
+  }
+
   private updateInclusionCounts(timeStamp: Date, initialUpdate: boolean) {
     let inclusionConstraint = this.constraintService.generateInclusionConstraint();
     this.resourceService.getCounts(inclusionConstraint)
@@ -203,14 +219,7 @@ export class QueryService {
                 this.observationCount_0 = this.observationCount_1;
               }
               // relay the current counts to the next step: subjects and observations
-              if (this.countsRelay) {
-                this.subjectCount_2 = this.subjectCount_1;
-                this.observationCount_2 = this.observationCount_1;
-                this.isLoadingSubjectCount_2 = false;
-                this.isLoadingObservationCount_2 = false;
-              }
-              // no longer dirty
-              this.isDirty_1 = false;
+              this.relayCounts_1_2();
             }
           }
         },
@@ -241,14 +250,7 @@ export class QueryService {
                   this.observationCount_0 = this.observationCount_1;
                 }
                 // relay the current counts to the next step: subjects and observations
-                if (this.countsRelay) {
-                  this.subjectCount_2 = this.subjectCount_1;
-                  this.observationCount_2 = this.observationCount_1;
-                  this.isLoadingSubjectCount_2 = false;
-                  this.isLoadingObservationCount_2 = false;
-                }
-                // no longer dirty
-                this.isDirty_1 = false;
+                this.relayCounts_1_2();
               }
             }
           },
