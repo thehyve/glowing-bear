@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef, AfterViewInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
@@ -24,7 +24,7 @@ import {QueryService} from '../../../../services/query.service';
     ])
   ]
 })
-export class GbTreeNodesComponent implements OnInit, AfterViewInit {
+export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
 
@@ -40,6 +40,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
   // as the PrimeNg tree nodes reconstruct DOM nodes and css styles when data changes,
   // and this will take a while
   delay: number;
+  // indicate if the initUpdate is finished
+  initUpdated: boolean;
 
   constructor(public treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
@@ -66,6 +68,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
     };
 
     this.observer.observe(this.element.nativeElement, config);
+  }
+
+  ngAfterViewChecked() {
+    this.initUpdate();
   }
 
   /**
@@ -128,6 +134,16 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
         this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
       }
       index++;
+    }
+  }
+
+  initUpdate() {
+    if (!this.initUpdated) {
+      let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+      if (treeNodeElements && treeNodeElements.length > 0) {
+        this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+        this.initUpdated = true;
+      }
     }
   }
 
@@ -300,7 +316,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit {
    */
   clearFilter() {
     if (this.searchTerm !== '') {
-      const filterWord: string = this.searchTerm.trim().toLowerCase();
       this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
       this.removeFalsePrimeNgClasses(this.delay);
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
