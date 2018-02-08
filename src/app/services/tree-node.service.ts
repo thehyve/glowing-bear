@@ -46,7 +46,7 @@ export class TreeNodeService {
     this.loadingTreeNodes = 'loading';
     constraintService.conceptLabels = [];
     // Retrieve all tree nodes and extract the concepts iteratively
-    this.resourceService.getTreeNodes('\\', 2, false, false)
+    this.resourceService.getTreeNodes('\\', 2, false, true)
       .subscribe(
         (treeNodes: object[]) => {
           this.loadingTreeNodes = 'complete';
