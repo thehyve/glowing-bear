@@ -32,15 +32,15 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   get subjectCount_0(): string {
-    return FormatHelper.formatNumber(this.queryService.subjectCount_0);
+    return FormatHelper.formatCountNumber(this.queryService.subjectCount_0);
   }
 
   get subjectCount_1(): string {
-    return FormatHelper.formatNumber(this.queryService.subjectCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.subjectCount_1);
   }
 
   get subjectCount_2(): string {
-    return FormatHelper.formatNumber(this.queryService.subjectCount_2);
+    return FormatHelper.formatCountNumber(this.queryService.subjectCount_2);
   }
 
   get subjectCountPercentage_1(): string {
@@ -52,15 +52,15 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   get observationCount_0(): string {
-    return FormatHelper.formatNumber(this.queryService.observationCount_0);
+    return FormatHelper.formatCountNumber(this.queryService.observationCount_0);
   }
 
   get observationCount_1(): string {
-    return FormatHelper.formatNumber(this.queryService.observationCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.observationCount_1);
   }
 
   get observationCount_2(): string {
-    return FormatHelper.formatNumber(this.queryService.observationCount_2);
+    return FormatHelper.formatCountNumber(this.queryService.observationCount_2);
   }
 
   get observationCountPercentage_1(): string {
