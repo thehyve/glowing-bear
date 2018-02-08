@@ -55,7 +55,7 @@ export class FormatHelper {
   }
 
   public static percentage(part: number, total: number): string {
-    if (total === null || total === 0) {
+    if (total === null || total === 0 || part < 0) {
       return '';
     } else {
       let perc = part ? (part / total) * 100 : 0;
