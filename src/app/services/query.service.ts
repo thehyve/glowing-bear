@@ -7,6 +7,9 @@ import {ConstraintService} from './constraint.service';
 import {Step} from '../models/step';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {FormatHelper} from '../utilities/FormatHelper';
+import {PatientSetResponse} from '../models/patient-set-response';
+import {Constraint} from '../models/constraints/constraint';
+import {AppConfig} from '../config/app.config';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -45,6 +48,8 @@ export class QueryService {
    */
   private _inclusionSubjectCount = 0;
   private _exclusionSubjectCount = 0;
+  private _inclusionObservationCount = 0;
+  private _exclusionObservationCount = 0;
   /*
    * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
    * used in gb-constraint-component
@@ -134,15 +139,22 @@ export class QueryService {
    * Flag indicating if to relay the counts in the current step to the next
    */
   private _countsRelay: boolean;
+  /**
+   * Flag indicating if the subject selection of step 1 should be automatically
+   * saved as subject set in the backend. If true, that subject set is used as the subject constraint
+   * for step 2.
+   */
+  private _autosaveSubjectSets: boolean;
 
-
-  constructor(private resourceService: ResourceService,
+  constructor(private appConfig: AppConfig,
+              private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
-    this.treeNodeCountsUpdate = false;
+    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
+    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.loadQueries();
   }
 
@@ -180,7 +192,23 @@ export class QueryService {
       );
   }
 
-  /**
+  private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
+    if (this.autosaveSubjectSets) {
+      // Not computing the counts based on inclusion and exclusion counts,
+      // but using the subject set and counts per study concept response instead.
+      return;
+    }
+    this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
+    this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
+    if (initialUpdate) {
+      this.subjectCount_0 = this.subjectCount_1;
+      this.observationCount_0 = this.observationCount_1;
+    }
+    this.isUpdating_1 = false;
+    this.loadingStateTotal = 'complete';
+  }
+
+    /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
   // Relay counts from step 1 to step 2
@@ -208,16 +236,10 @@ export class QueryService {
           const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
             this.inclusionSubjectCount = countResponse['patientCount'];
+            this.inclusionObservationCount = countResponse['observationCount'];
             this.loadingStateInclusion = 'complete';
             if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
-              this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
-              this.loadingStateTotal = 'complete';
-              this.isUpdating_1 = false;
-              this.observationCount_1 = countResponse['observationCount'];
-              if (initialUpdate) {
-                this.subjectCount_0 = this.subjectCount_1;
-                this.observationCount_0 = this.observationCount_1;
-              }
+              this.mergeInclusionAndExclusionCounts(initialUpdate);
               // relay the current counts to the next step: subjects and observations
               this.relayCounts_1_2();
             }
@@ -239,16 +261,10 @@ export class QueryService {
             const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
             if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
               this.exclusionSubjectCount = countResponse['patientCount'];
+              this.exclusionObservationCount = countResponse['observationCount'];
               this.loadingStateExclusion = 'complete';
               if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
-                this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
-                this.loadingStateTotal = 'complete';
-                this.isUpdating_1 = false;
-                this.observationCount_1 = countResponse['observationCount'];
-                if (initialUpdate) {
-                  this.subjectCount_0 = this.subjectCount_1;
-                  this.observationCount_0 = this.observationCount_1;
-                }
+                this.mergeInclusionAndExclusionCounts(initialUpdate);
                 // relay the current counts to the next step: subjects and observations
                 this.relayCounts_1_2();
               }
@@ -265,23 +281,51 @@ export class QueryService {
     }
   }
 
-  private updateConceptsAndStudies(timeStamp: Date) {
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
-    this.resourceService.getCountsPerStudyAndConcept(selectionConstraint)
+  private updateSubjectCount(subjectCount: number, initialUpdate?: boolean) {
+    this.subjectCount_1 = subjectCount;
+    if (initialUpdate) {
+      this.subjectCount_0 = this.subjectCount_1;
+    }
+  }
+
+  private updateObservationCount(observationCount: number, initialUpdate?: boolean) {
+    this.observationCount_1 = observationCount;
+    if (initialUpdate) {
+      this.observationCount_0 = this.observationCount_1;
+    }
+    this.isUpdating_1 = false;
+    this.loadingStateTotal = 'complete';
+  }
+
+  private updateConceptsAndStudiesForSubjectSet(
+      response: PatientSetResponse, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
+    let constraint: Constraint;
+    if (response) {
+      this.patientSet_1 = new PatientSetConstraint();
+      this.patientSet_1.id = response.id;
+      this.updateSubjectCount(response.setSize, initialUpdate);
+      constraint = this.patientSet_1;
+    } else {
+      constraint = selectionConstraint;
+    }
+    this.resourceService.getCountsPerStudyAndConcept(constraint)
       .subscribe(
         (conceptCountObj) => {
           const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
             // construct concept count map in the 1st step
+            let observationCount = 0;
             this.conceptCountMap_1 = {};
             for (let studyKey in conceptCountObj) {
               for (let _concept_ in conceptCountObj[studyKey]) {
                 this.conceptCountMap_1[_concept_] = conceptCountObj[studyKey][_concept_];
+                observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
+            this.updateObservationCount(observationCount, initialUpdate);
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
-              this.resourceService.getCountsPerStudy(selectionConstraint)
+              this.resourceService.getCountsPerStudy(constraint)
                 .subscribe(
                   (studyCountObj) => {
                     this.studyCountMap_1 = studyCountObj;
@@ -298,6 +342,21 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
+  }
+
+  private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean) {
+    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    if (this.autosaveSubjectSets) {
+      // save a subject set for the subject selection, compute tree counts using that subject set
+      this.resourceService.savePatientSet('temp', selectionConstraint).subscribe((response) => {
+          this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
+        },
+        err => this.handle_error(err)
+      );
+    } else {
+      // compute tree counts without saving a subject set
+      this.updateConceptsAndStudiesForSubjectSet(null, selectionConstraint, timeStamp, initialUpdate);
+    }
   }
 
   /**
@@ -375,7 +434,7 @@ export class QueryService {
     /*
      * update concept and study counts in the first step
      */
-    this.updateConceptsAndStudies(timeStamp);
+    this.updateConceptsAndStudies(timeStamp, initialUpdate);
     /*
      * create patient set for the current query in step 1
      */
@@ -471,7 +530,8 @@ export class QueryService {
   }
 
   public updateExports() {
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const selectionConstraint = this.patientSet_1 ?
+        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
     const projectionConstraint = this.constraintService.generateProjectionConstraint();
     let combo = new CombinationConstraint();
     combo.addChild(selectionConstraint);
@@ -629,6 +689,22 @@ export class QueryService {
 
   set exclusionSubjectCount(value: number) {
     this._exclusionSubjectCount = value;
+  }
+
+  get inclusionObservationCount(): number {
+    return this._inclusionObservationCount;
+  }
+
+  set inclusionObservationCount(value: number) {
+    this._inclusionObservationCount = value;
+  }
+
+  get exclusionObservationCount(): number {
+    return this._exclusionObservationCount;
+  }
+
+  set exclusionObservationCount(value: number) {
+    this._exclusionObservationCount = value;
   }
 
   get subjectCount_0(): number {
@@ -797,6 +873,14 @@ export class QueryService {
 
   set countsRelay(value: boolean) {
     this._countsRelay = value;
+  }
+
+  get autosaveSubjectSets(): boolean {
+    return this._autosaveSubjectSets;
+  }
+
+  set autosaveSubjectSets(value: boolean) {
+    this._autosaveSubjectSets = value;
   }
 
   get step(): Step {

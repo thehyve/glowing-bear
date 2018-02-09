@@ -14,9 +14,11 @@ export class AppConfig {
 
   /**
    * Use to get the data found in the second file (config file)
+   * if present; returns default value otherwise.
    */
-  public getConfig(key: any) {
-    return this.config[key];
+  public getConfig(key: any, defaultValue: any = null) {
+      let value = this.config[key];
+      return value != null ? value : defaultValue;
   }
 
   /**
