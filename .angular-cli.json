@@ -10,6 +10,7 @@
       "assets": [
         "assets",
         "app/config/env.json",
+        "app/config/env.prod.json",
         "app/config/config.dev.json",
         "app/config/config.prod.json",
         "favicon.ico"

@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from '@angular/http';
 import {Observable} from 'rxjs/Rx';
+import {environment} from '../../environments/environment';
 
 @Injectable()
 export class AppConfig {
@@ -38,36 +39,31 @@ export class AppConfig {
       headers.append('Content-Type', 'application/json');
 
       let path = 'app/config/';
+      let envFilename = environment.production ? 'env.prod.json' : 'env.json';
 
       this.http
-        .get(path + 'env.json', {
+        .get(`${path}${envFilename}`, {
           headers: headers
         })
         .map(res => res.json())
         .catch((error: any): any => {
-          console.error('Configuration file "env.json" could not be read');
+          console.error(`Configuration file "${envFilename}" could not be read`);
           resolve(true);
           return Observable.throw(error.json().error || 'Server error');
         })
         .subscribe((envResponse) => {
           this.env = envResponse;
           let request: any = null;
+          let environment: string = this.getEnv('env');
 
-          switch (this.getEnv('env')) {
-            case 'prod': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
-            }
+          switch (environment) {
+            case 'prod':
+            case 'dev':
+              request = this.http.get(`${path}config.${environment}.json`);
               break;
-
-            case 'dev': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
-            }
-              break;
-
-            case 'default': {
+            case 'default':
               console.error('Environment file is not set or invalid');
               resolve(true);
-            }
               break;
           }
 
@@ -75,7 +71,7 @@ export class AppConfig {
             request
               .map(res => res.json())
               .catch((error: any) => {
-                console.error('Error reading ' + this.getEnv('env') + ' configuration file');
+                console.error(`Error reading ${environment} configuration file`);
                 resolve(error);
                 return Observable.throw(error.json().error || 'Server error');
               })
@@ -85,7 +81,7 @@ export class AppConfig {
                 resolve(true);
               });
           } else {
-            console.error('Env config file "env.json" is not valid');
+            console.error(`Env config file "${envFilename}" is not valid`);
             resolve(true);
           }
         });
