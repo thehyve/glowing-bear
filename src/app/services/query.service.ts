@@ -444,30 +444,6 @@ export class QueryService {
      */
   }
 
-  // private updatePatientSet(timeStamp) {
-  //   const selectionConstraint = this.constraintService.generateSelectionConstraint();
-  //   this.resourceService.createPatientSet(name, selectionConstraint)
-  //     .subscribe(
-  //       patientSetObj => {
-  //         this.patientSet_1 = new PatientSetConstraint();
-  //         this.patientSet_1.setSize = patientSetObj['setSize'];
-  //         this.patientSet_1.id = patientSetObj['id'];
-  //         this.patientSet_1.status = patientSetObj['status'];
-  //         /*
-  //         * update concept and study counts in the first step
-  //         */
-  //         this.resourceService.getCountsPerStudyAndConcept(this.patientSet_1)
-  //           .subscribe(
-  //             (countObj) => {
-  //               this.updateConceptsAndStudies(timeStamp);
-  //             },
-  //             err => this.handle_error(err)
-  //           );
-  //       },
-  //       err => this.handle_error(err)
-  //     );
-  // }
-
   /**
    * ------------------------------------------------- END: step 1 ---------------------------------------------------
    */
