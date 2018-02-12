@@ -101,7 +101,8 @@ export class GbExportComponent implements OnInit {
       }
     }
     if (elements.length > 0) {
-      const selectionConstraint = this.constraintService.generateSelectionConstraint();
+      const selectionConstraint = this.queryService.patientSet_1 ?
+          this.queryService.patientSet_1 : this.constraintService.generateSelectionConstraint();
       const projectionConstraint = this.constraintService.generateProjectionConstraint();
       let combo = new CombinationConstraint();
       combo.addChild(selectionConstraint);
