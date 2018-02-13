@@ -9,7 +9,7 @@ export class EndpointService {
 
   constructor(private appConfig: AppConfig) {
     let apiUrl = appConfig.getConfig('api-url');
-    let apiVersion = appConfig.getConfig('api-version');
+    let apiVersion = appConfig.getConfig('api-version', 'v2');
     let appUrl = appConfig.getConfig('app-url');
     if (this.isValidUrl(apiUrl) && this.isValidUrl(appUrl)) {
       this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
