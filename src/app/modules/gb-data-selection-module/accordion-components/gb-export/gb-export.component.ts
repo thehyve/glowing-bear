@@ -34,6 +34,7 @@ export class GbExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
+          jobs.forEach(job => {job.isInDisabledState = false});
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -124,6 +125,7 @@ export class GbExportComponent implements OnInit {
    * @param job
    */
   downloadExportJob(job) {
+    job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (response: Response) => {
@@ -133,6 +135,28 @@ export class GbExportComponent implements OnInit {
         err => console.error(err),
         () => {
         }
+      );
+  }
+
+  cancelExportJob(job) {
+    job.isInDisabledState = true;
+    this.resourceService.cancelExportJob(job.id)
+      .subscribe(
+        response => {
+          this.updateExportJobs();
+        },
+        err => console.error(err)
+      );
+  }
+
+  archiveExportJob(job) {
+    job.isInDisabledState = true;
+    this.resourceService.archiveExportJob(job.id)
+      .subscribe(
+        response => {
+          this.updateExportJobs();
+        },
+        err => console.error(err)
       );
   }
 
