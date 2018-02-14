@@ -128,7 +128,7 @@ export class QueryService {
   private _treeNodeCountsUpdate: boolean;
   private _exportFormats: object[] = [];
   private _isLoadingExportFormats = false;
-  private _exportDataView = 'surveyTable';//NTR specific
+  private _exportDataView = 'surveyTable'; // NTR specific
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
    * whether there is an error saving subject/observation set,
@@ -155,6 +155,7 @@ export class QueryService {
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.exportDataView = appConfig.getConfig('export-data-view', 'default');
     this.loadQueries();
   }
 
