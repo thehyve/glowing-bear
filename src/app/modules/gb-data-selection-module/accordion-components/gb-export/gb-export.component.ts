@@ -17,6 +17,8 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
+  dateColumnsIncluded: boolean;
+  exportDataView: string;
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -25,6 +27,8 @@ export class GbExportComponent implements OnInit {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.updateExportJobs());
+    this.dateColumnsIncluded = true;
+    this.exportDataView = queryService.exportDataView;
   }
 
   ngOnInit() {
@@ -108,7 +112,7 @@ export class GbExportComponent implements OnInit {
       combo.addChild(selectionConstraint);
       combo.addChild(projectionConstraint);
 
-      this.resourceService.runExportJob(jobId, combo, elements)
+      this.resourceService.runExportJob(jobId, combo, elements, this.dateColumnsIncluded)
         .subscribe(
           returnedExportJob => {
             this.updateExportJobs();

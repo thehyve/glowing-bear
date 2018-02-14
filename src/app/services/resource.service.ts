@@ -298,22 +298,25 @@ export class ResourceService {
    * [{
    *    dataType: 'clinical',
    *    format: 'TSV',
-   *    dataView: 'default' | 'surveyTable' // NTR specific
+   *    dataView: 'default' | 'surveyTable', // NTR specific
    * }]
    *
    * @param jobId
    * @param elements
    * @param constraint
+   * @param includeMeasurementDateColumns
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                constraint: Constraint,
-               elements: object[]): Observable<ExportJob> {
+               elements: object[],
+               includeMeasurementDateColumns: boolean): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     const body = {
       constraint: constraint.toQueryObject(),
-      elements: elements
+      elements: elements,
+      includeMeasurementDateColumns: includeMeasurementDateColumns
     };
     return this.postCall(urlPart, body, responseField);
   }

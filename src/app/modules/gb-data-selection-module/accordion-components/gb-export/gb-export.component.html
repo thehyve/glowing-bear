@@ -33,6 +33,11 @@
       <span>&nbsp;</span>
       <button type="button" class="btn btn-primary btn-sm"
               (click)="createExportJob()">Create Export</button>
+      <span>&nbsp;</span>
+      <div *ngIf="exportDataView === 'surveyTable'">
+        <p-checkbox class="gb-include-date-columns-checkbox" [(ngModel)]="dateColumnsIncluded" binary="true"></p-checkbox>
+        Include measurement date columns
+      </div>
     </div>
   </div>
 
