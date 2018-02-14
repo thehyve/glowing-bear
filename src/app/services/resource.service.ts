@@ -338,6 +338,27 @@ export class ResourceService {
       .catch(this.handleError.bind(this));
   }
 
+  /**
+   * Cancels an export job with the given export job id
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  cancelExportJob(jobId: string): Observable<{}> {
+    const urlPart = `export/${jobId}/cancel`;
+    const responseField = 'exportJob';
+    return this.postCall(urlPart, {}, responseField);
+  }
+
+  /**
+   * Removes an export job from the jobs table
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  archiveExportJob(jobId: string): Observable<{}> {
+    const urlPart = `export/${jobId}`;
+    return this.deleteCall(urlPart);
+  }
+
   // -------------------------------------- query calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
