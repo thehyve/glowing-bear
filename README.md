@@ -87,6 +87,7 @@ Supported properties in the `config.*.json` files:
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user. |
 | `tree-node-counts-update` | `true`    | Fetch counts for study nodes in step 2 of Data Selection. |
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
+| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
 
 
 ## License
