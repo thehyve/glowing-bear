@@ -83,6 +83,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   // modifier
   private _applyModifierConstraint = false;
 
+  // null value representation
+  readonly nullValueAutocompleteToken: string = 'MISSING';
 
   ngOnInit() {
     this.initializeConstraints();
@@ -135,6 +137,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               for (let key in aggregate['valueCounts']) {
                 values.push(key);
               }
+              let nullValueCounts = aggregate['nullValueCounts'];
+              if (nullValueCounts != null && nullValueCounts > 0) {
+                values.push(this.nullValueAutocompleteToken);
+              }
+
               aggregate.values = values;
               constraint.concept.aggregate = aggregate;
               // if there is existing value constraints
@@ -406,7 +413,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        newVal.value = category;
+        if(category == this.nullValueAutocompleteToken){
+          newVal.value = null;
+        } else {
+          newVal.value = category;
+        }
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {
