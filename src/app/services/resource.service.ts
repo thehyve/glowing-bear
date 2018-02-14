@@ -143,6 +143,16 @@ export class ResourceService {
     }
   }
 
+  /**
+   * Logout from the authserver with a cookie attached
+   * @returns {Observable<{}>}
+   */
+  logout(): Observable<{}> {
+    const endpoint = this.endpointService.getEndpoint();
+    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true})
+      .catch(this.handleError.bind(this));
+  }
+
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
