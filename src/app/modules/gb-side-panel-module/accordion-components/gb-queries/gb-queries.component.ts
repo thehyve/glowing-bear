@@ -36,12 +36,27 @@ export class GbQueriesComponent implements OnInit {
     uploadElm.click();
   }
 
+  processSubjectIdsUpload(fileContents: string, fileName: string): Query {
+    // we assume the text contains a list of subject Ids
+    let subjectIds: string[] = fileContents.split(/(\r\n)+/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+    let query = new Query(null, fileName);
+    query.patientsQuery = {
+      'type': 'patient_set',
+      'subjectIds': subjectIds
+    };
+    query.observationsQuery = {data: null};
+    return query;
+  }
+
   queryFileUpload(event) {
     let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
+    let file: File = event.target.files[0];
+    reader.onload = (function (e: Event) {
+      let contents: string = e.target['result'] as string;
       if (file.type === 'application/json') {
-        let _json = JSON.parse(e.target['result']);
+        let _json = JSON.parse(contents);
         let pathArray = null;
         // If the json is of standard format
         if (_json['patientsQuery'] || _json['observationsQuery']) {
@@ -55,11 +70,9 @@ export class GbQueriesComponent implements OnInit {
           pathArray = _json;
         }
         if (pathArray) {
-          let query = {
-            'name': file.name,
-            'observationsQuery': {
+          let query = new Query(null, file.name);
+          query.observationsQuery = {
               data: pathArray
-            }
           };
           this.queryService.restoreQuery(query);
         }
@@ -67,15 +80,7 @@ export class GbQueriesComponent implements OnInit {
         file.type === 'text/tab-separated-values' ||
         file.type === 'text/csv' ||
         file.type === '') {
-        // we assume the text contains a list of subject Ids
-        let query = {
-          'name': file.name,
-          'patientsQuery': {
-            'type': 'patient_set',
-            'subjectIds': e.target['result'].split('\n')
-          },
-          'observationsQuery': {}
-        };
+        let query = this.processSubjectIdsUpload(contents, file.name);
         this.queryService.restoreQuery(query);
       }
 
