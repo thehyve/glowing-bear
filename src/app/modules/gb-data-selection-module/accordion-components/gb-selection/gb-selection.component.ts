@@ -38,6 +38,26 @@ export class GbSelectionComponent implements OnInit {
 
   private isUploadListenerNotAdded: boolean;
 
+  /**
+   * Split a newline separated string into its parts
+   * and returns a patient set query where these parts are used as subject ids.
+   * @param {string} fileContents the newline separated string.
+   * @param {string} name the query name.
+   * @return {Query} the resulting patient set query.
+   */
+  static processSubjectIdsUpload(fileContents: string, name: string): Query {
+    let subjectIds: string[] = fileContents.split(/[\r\n]+/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+    let query = new Query(null, name);
+    query.patientsQuery = {
+      'type': 'patient_set',
+      'subjectIds': subjectIds
+    };
+    query.observationsQuery = {data: null};
+    return query;
+  }
+
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
@@ -86,8 +106,8 @@ export class GbSelectionComponent implements OnInit {
 
   criteriaFileUpload(event) {
     let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
+    let file: File = event.target.files[0];
+    reader.onload = (function (e: Event) {
       let data = e.target['result'];
       let query = this.parseFile(file, data);
       this.queryService.restoreQuery(query);
@@ -96,24 +116,20 @@ export class GbSelectionComponent implements OnInit {
   }
 
   private parseFile(file: File, data: any): Query {
-    let patientsQuery = {};
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
       (file.type === '' && file.name.split('.').pop() !== 'json')) {
       // we assume the text contains a list of subject Ids
-      let subjectIds: string[] = data.split(/(\r\n)+/)
-        .map(id => id.trim())
-        .filter(id => id.length > 0);
-      patientsQuery = {
-        'type': 'patient_set',
-        'subjectIds': subjectIds
-      };
+      return GbSelectionComponent.processSubjectIdsUpload(data as string, file.name);
     } else if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
       if (_json['patientsQuery']) {
-        patientsQuery = _json['patientsQuery'];
+        let name = file.name.substr(0, file.name.indexOf('.'));
+        let query = new Query('', name);
+        query.patientsQuery = _json['patientsQuery'];
+        return query;
       } else {
         const msg = 'Invalid file content for query import.';
         this.queryService.alert(msg, '', 'error');
@@ -124,10 +140,6 @@ export class GbSelectionComponent implements OnInit {
       this.queryService.alert(msg, '', 'error');
       return;
     }
-    let name = file.name.substr(0, file.name.indexOf('.'));
-    let query = new Query('', name);
-    query.patientsQuery = patientsQuery;
-    return query;
   }
 
   get loadingStateInclusion(): LoadingState {
