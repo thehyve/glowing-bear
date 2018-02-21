@@ -15,6 +15,26 @@ export class GbQueriesComponent implements OnInit {
   searchTerm = '';
   private isUploadListenerNotAdded: boolean;
 
+  /**
+   * Split a newline separated string into its parts
+   * and returns a patient set query where these parts are used as subject ids.
+   * @param {string} fileContents the newline separated string.
+   * @param {string} name the query name.
+   * @return {Query} the resulting patient set query.
+   */
+  static processSubjectIdsUpload(fileContents: string, name: string): Query {
+    let subjectIds: string[] = fileContents.split(/[\r\n]+/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+    let query = new Query(null, name);
+    query.patientsQuery = {
+      'type': 'patient_set',
+      'subjectIds': subjectIds
+    };
+    query.observationsQuery = {data: null};
+    return query;
+  }
+
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
               private element: ElementRef,
@@ -33,20 +53,6 @@ export class GbQueriesComponent implements OnInit {
       this.isUploadListenerNotAdded = false;
     }
     uploadElm.click();
-  }
-
-  processSubjectIdsUpload(fileContents: string, fileName: string): Query {
-    // we assume the text contains a list of subject Ids
-    let subjectIds: string[] = fileContents.split(/(\r?\n)+/)
-      .map(id => id.trim())
-      .filter(id => id.length > 0);
-    let query = new Query(null, fileName);
-    query.patientsQuery = {
-      'type': 'patient_set',
-      'subjectIds': subjectIds
-    };
-    query.observationsQuery = {data: null};
-    return query;
   }
 
   queryFileUpload(event) {
@@ -79,7 +85,7 @@ export class GbQueriesComponent implements OnInit {
         file.type === 'text/tab-separated-values' ||
         file.type === 'text/csv' ||
         file.type === '') {
-        let query = this.processSubjectIdsUpload(contents, file.name);
+        let query = GbQueriesComponent.processSubjectIdsUpload(contents, file.name);
         this.queryService.restoreQuery(query);
       }
 
