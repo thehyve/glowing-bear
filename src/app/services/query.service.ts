@@ -257,7 +257,7 @@ export class QueryService {
   }
 
   private updateExclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    if (this.constraintService.rootExclusionConstraint.hasNonEmptyChildren()) {
+    if (this.constraintService.hasExclusionConstraint()) {
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
       this.resourceService.getCounts(exclusionConstraint)
         .subscribe(
@@ -281,6 +281,7 @@ export class QueryService {
         );
     } else {
       this.exclusionSubjectCount = 0;
+      this.exclusionObservationCount = 0;
       this.loadingStateExclusion = 'complete';
     }
   }
@@ -328,7 +329,14 @@ export class QueryService {
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
+            // Update observation count based on the sum of the tree observation counts
             this.updateObservationCount(observationCount, initialUpdate);
+            // Update inclusion constraint counts
+            this.updateInclusionCounts(timeStamp, initialUpdate);
+            // Update exclusion constraint counts
+            // (Only execute the exclusion constraint if it has non-empty children)
+            this.updateExclusionCounts(timeStamp, initialUpdate);
+
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
               this.resourceService.getCountsPerStudy(constraint)
@@ -426,15 +434,6 @@ export class QueryService {
     // also update the flags for the counts in the 2nd step
     this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
-    /*
-     * Inclusion constraint subject count
-     */
-    this.updateInclusionCounts(timeStamp, initialUpdate);
-    /*
-     * Exclusion constraint subject count
-     * (Only execute the exclusion constraint if it has non-empty children)
-     */
-    this.updateExclusionCounts(timeStamp, initialUpdate);
     /*
      * update concept and study counts in the first step
      */

@@ -145,6 +145,10 @@ export class ConstraintService {
       inclusionConstraint : new TrueConstraint();
   }
 
+  public hasExclusionConstraint(): Boolean {
+    return this.rootExclusionConstraint.hasNonEmptyChildren();
+  }
+
   /**
    * In the 1st step,
    * Generate the constraint for retrieving the patients with the exclusion criteria,
