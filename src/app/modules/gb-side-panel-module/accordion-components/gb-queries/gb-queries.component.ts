@@ -38,7 +38,7 @@ export class GbQueriesComponent implements OnInit {
 
   processSubjectIdsUpload(fileContents: string, fileName: string): Query {
     // we assume the text contains a list of subject Ids
-    let subjectIds: string[] = fileContents.split(/(\r\n)+/)
+    let subjectIds: string[] = fileContents.split(/(\r?\n)+/)
       .map(id => id.trim())
       .filter(id => id.length > 0);
     let query = new Query(null, fileName);
