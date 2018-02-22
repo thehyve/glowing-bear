@@ -30,6 +30,7 @@ before_install:
   - gradle wrapper
   - GRADLE_SCRIPT="$(pwd)/gradlew"
   - ${GRADLE_SCRIPT} --version
+  - npm rebuild node-sass --force
 install:
   - ${GRADLE_SCRIPT} assemble
   - ${GRADLE_SCRIPT} publishToMavenLocal
