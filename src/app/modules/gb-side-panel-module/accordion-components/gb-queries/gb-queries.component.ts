@@ -3,7 +3,8 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
 import {DownloadHelper} from '../../../../utilities/DownloadHelper';
-import {ConfirmationService} from "primeng/primeng";
+import {ConfirmationService} from 'primeng/primeng';
+import {UIHelper} from '../../../../utilities/UIHelper';
 
 @Component({
   selector: 'gb-queries',
@@ -154,7 +155,7 @@ export class GbQueriesComponent implements OnInit {
         query.visible = true;
       }
     }
-    this.removeFalsePrimeNgClasses(500);
+    UIHelper.removePrimeNgLoaderIcon(this.element, 500);
   }
 
   clearFilter() {
@@ -162,16 +163,7 @@ export class GbQueriesComponent implements OnInit {
     for (let query of this.queryService.queries) {
       query.visible = true;
     }
-    this.removeFalsePrimeNgClasses(500);
-  }
-
-  removeFalsePrimeNgClasses(delay: number) {
-    window.setTimeout((function () {
-      let loaderIcon = this.element.nativeElement.querySelector('.ui-autocomplete-loader');
-      if (loaderIcon) {
-        loaderIcon.remove();
-      }
-    }).bind(this), delay);
+    UIHelper.removePrimeNgLoaderIcon(this.element, 500);
   }
 
   get queries(): Query[] {

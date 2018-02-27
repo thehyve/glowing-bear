@@ -3,6 +3,7 @@ import {Study} from '../../../../models/study';
 import {StudyConstraint} from '../../../../models/constraints/study-constraint';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {UIHelper} from '../../../../utilities/UIHelper';
 
 @Component({
   selector: 'gb-study-constraint',
@@ -50,6 +51,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     } else {
       this.autoComplete.show();
     }
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   onUnselect(studyObject) {

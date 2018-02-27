@@ -8,6 +8,7 @@ import {ValueConstraint} from '../../../../models/constraints/value-constraint';
 import {GbDateOperatorState} from './gb-date-operator-state';
 import {TrialVisit} from '../../../../models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
+import {UIHelper} from '../../../../utilities/UIHelper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -359,6 +360,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     } else {
       this.autoComplete.show();
     }
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   updateConceptValues() {
