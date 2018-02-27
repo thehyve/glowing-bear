@@ -4,7 +4,7 @@ export class UIHelper {
 
   /**
    * The PrimeNg library often produces unwanted loader spinning icon,
-   * which needs to manually removed
+   * which needs to be manually removed
    * @param {number} delay
    */
   public static removePrimeNgLoaderIcon(element: ElementRef, delay: number) {
