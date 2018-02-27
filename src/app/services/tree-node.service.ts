@@ -624,7 +624,7 @@ export class TreeNodeService {
   public convertItemsToPaths(nodes: TreeNode[], items: string[], paths: string[]) {
     nodes.forEach((node: TreeNode) => {
       if (node) {
-        const itemName = ((node || {})['metadata'] || {})['project_name'];
+        const itemName = ((node || {})['metadata'] || {})['item_name'];
         if (items.indexOf(itemName) > -1) {
           paths.push(node['fullName']);
         }
