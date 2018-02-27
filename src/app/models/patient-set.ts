@@ -1,6 +1,6 @@
 import { Constraint } from './constraints/constraint';
 
-export class PatientSetResponse {
+export class PatientSet {
 
     private _description: string;
     private _errorMessage: string;

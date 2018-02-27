@@ -7,7 +7,7 @@ import {ConstraintService} from './constraint.service';
 import {Step} from '../models/step';
 import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
 import {FormatHelper} from '../utilities/FormatHelper';
-import {PatientSetResponse} from '../models/patient-set-response';
+import {PatientSet} from '../models/patient-set';
 import {Constraint} from '../models/constraints/constraint';
 import {AppConfig} from '../config/app.config';
 
@@ -298,7 +298,7 @@ export class QueryService {
   }
 
   private updateConceptsAndStudiesForSubjectSet(
-      response: PatientSetResponse, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
+      response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
