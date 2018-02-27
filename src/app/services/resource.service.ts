@@ -13,10 +13,6 @@ import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
 import {PatientSet} from '../models/patient-set';
-<<<<<<< HEAD
-import {PedigreeRelationTypeResponse} from '../models/pedigree-relation-type-response';
-=======
->>>>>>> add query diff records and upgrade angular and typescript versions
 
 @Injectable()
 export class ResourceService {
@@ -373,17 +369,8 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-<<<<<<< HEAD
   savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
-=======
-<<<<<<< HEAD
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSetResponse> {
->>>>>>> add query diff records and upgrade angular and typescript versions
     const urlPart = `patient_sets?name=${name}&reuse=true`;
-=======
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
-    const urlPart = `patient_sets?name=${name}`;
->>>>>>> add query diff records and upgrade angular and typescript versions
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
   }
