@@ -603,15 +603,14 @@ export class QueryService {
    */
   public restoreQuery(query: Query) {
     this.query = query;
+    this.step = Step.I;
     if (query['patientsQuery']) {
       this.constraintService.clearSelectionConstraint();
       let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
-      this.step = Step.I;
       this.updateCounts_1();
     } else {
       this.prepareStep2();
-      this.step = Step.II;
     }
     this.updateCounts_2();
 
