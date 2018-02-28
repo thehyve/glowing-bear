@@ -377,7 +377,7 @@ export class ResourceService {
 
   // -------------------------------------- query differences --------------------------------------
   diffQuery(queryId: string): Observable<object[]> {
-    const urlPart = `queries/${queryId}/sets/diffs`;
+    const urlPart = `queries/${queryId}/sets`;
     const responseField = 'querySets';
     return this.getCall(urlPart, responseField);
   }

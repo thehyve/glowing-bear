@@ -193,12 +193,12 @@ export class QueryService {
               /*
                * load query diff records for this query
                */
-                this.resourceService.diffQuery(query.id)
-                  .subscribe(
-                    (records) => {
-                      query.diffRecords = this.parseQueryDiffRecords(records);
-                    }
-                  );
+              this.resourceService.diffQuery(query.id)
+                .subscribe(
+                  (records) => {
+                    query.diffRecords = this.parseQueryDiffRecords(records);
+                  }
+                );
             }
 
             if (query.bookmarked) {
@@ -684,28 +684,37 @@ export class QueryService {
   public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
     let diffRecords: QueryDiffRecord[] = [];
     for (let record of records) {
-      let diffRecord: QueryDiffRecord = new QueryDiffRecord();
-      diffRecord.id = record['id'];
-      diffRecord.queryName = record['queryName'];
-      diffRecord.queryUsername = record['queryUsername'];
-      diffRecord.setId = record['setId'];
-      diffRecord.setType = record['setType'] === 'PATIENT' ?
-        QuerySetType.PATIENT : QuerySetType.SAMPLE;
-      diffRecord.createDate = record['createDate'];
       let items = [];
-      for (let entry of record['diffs']) {
-        let item = new QueryDiffItem();
-        item.id = entry['id'];
-        item.objectId = entry['objectId'];
-        if (entry['changeFlag'] === 'ADDED') {
+      // parse the added objects
+      if (record['objectsAdded']) {
+        for (let objectId of record['objectsAdded']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
           item.diffType = QueryDiffType.ADDED;
-        } else if (entry['changeFlag'] === 'REMOVED') {
-          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
         }
-        items.push(item);
       }
-      diffRecord.diffItems = items;
-      diffRecords.push(diffRecord);
+      // parse the removed objects
+      if (record['objectsRemoved']) {
+        for (let objectId of record['objectsRemoved']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
+        }
+      }
+      if (items.length > 0) {
+        let diffRecord: QueryDiffRecord = new QueryDiffRecord();
+        diffRecord.id = record['id'];
+        diffRecord.queryName = record['queryName'];
+        diffRecord.queryUsername = record['queryUsername'];
+        diffRecord.setId = record['setId'];
+        diffRecord.setType = record['setType'] === 'PATIENT' ?
+          QuerySetType.PATIENT : QuerySetType.SAMPLE;
+        diffRecord.createDate = record['createDate'];
+        diffRecord.diffItems = items;
+        diffRecords.push(diffRecord);
+      }
     }
     return diffRecords;
   }
