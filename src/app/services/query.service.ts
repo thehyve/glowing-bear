@@ -193,12 +193,12 @@ export class QueryService {
               /*
                * load query diff records for this query
                */
-                this.resourceService.diffQuery(query.id)
-                  .subscribe(
-                    (records) => {
-                      query.diffRecords = this.parseQueryDiffRecords(records);
-                    }
-                  );
+              this.resourceService.diffQuery(query.id)
+                .subscribe(
+                  (records) => {
+                    query.diffRecords = this.parseQueryDiffRecords(records);
+                  }
+                );
             }
 
             if (query.bookmarked) {
@@ -229,7 +229,7 @@ export class QueryService {
     this.loadingStateTotal = 'complete';
   }
 
-    /**
+  /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
   // Relay counts from step 1 to step 2
@@ -318,8 +318,7 @@ export class QueryService {
     this.loadingStateTotal = 'complete';
   }
 
-  private updateConceptsAndStudiesForSubjectSet(
-      response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
+  private updateConceptsAndStudiesForSubjectSet(response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
@@ -528,7 +527,7 @@ export class QueryService {
 
   public updateExports() {
     const selectionConstraint = this.patientSet_1 ?
-        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
+      this.patientSet_1 : this.constraintService.generateSelectionConstraint();
     const projectionConstraint = this.constraintService.generateProjectionConstraint();
     let combo = new CombinationConstraint();
     combo.addChild(selectionConstraint);
@@ -685,28 +684,37 @@ export class QueryService {
   public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
     let diffRecords: QueryDiffRecord[] = [];
     for (let record of records) {
-      let diffRecord: QueryDiffRecord = new QueryDiffRecord();
-      diffRecord.id = record['id'];
-      diffRecord.queryName = record['queryName'];
-      diffRecord.queryUsername = record['queryUsername'];
-      diffRecord.setId = record['setId'];
-      diffRecord.setType = record['setType'] === 'PATIENT' ?
-        QuerySetType.PATIENT : QuerySetType.SAMPLE;
-      diffRecord.createDate = record['createDate'];
       let items = [];
-      for (let entry of record['diffs']) {
-        let item = new QueryDiffItem();
-        item.id = entry['id'];
-        item.objectId = entry['objectId'];
-        if (entry['changeFlag'] === 'ADDED') {
+      // parse the added objects
+      if (record['objectsAdded']) {
+        for (let objectId of record['objectsAdded']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
           item.diffType = QueryDiffType.ADDED;
-        } else if (entry['changeFlag'] === 'REMOVED') {
-          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
         }
-        items.push(item);
       }
-      diffRecord.diffItems = items;
-      diffRecords.push(diffRecord);
+      // parse the removed objects
+      if (record['objectsRemoved']) {
+        for (let objectId of record['objectsRemoved']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
+        }
+      }
+      if (items.length > 0) {
+        let diffRecord: QueryDiffRecord = new QueryDiffRecord();
+        diffRecord.id = record['id'];
+        diffRecord.queryName = record['queryName'];
+        diffRecord.queryUsername = record['queryUsername'];
+        diffRecord.setId = record['setId'];
+        diffRecord.setType = record['setType'] === 'PATIENT' ?
+          QuerySetType.PATIENT : QuerySetType.SAMPLE;
+        diffRecord.createDate = record['createDate'];
+        diffRecord.diffItems = items;
+        diffRecords.push(diffRecord);
+      }
     }
     return diffRecords;
   }
