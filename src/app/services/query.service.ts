@@ -548,10 +548,13 @@ export class QueryService {
                     fileFormats: []
                   };
                   for (let fileFormatName of fileFormatNames) {
-                    format.fileFormats.push({
-                      name: fileFormatName,
-                      checked: true
-                    });
+                    // TODO temporal change, to be uncommented!!!
+                    if (fileFormatName == 'TSV') {
+                      format.fileFormats.push({
+                        name: fileFormatName,
+                        checked: true
+                      });
+                    }
                   }
                   this.exportFormats.push(format);
                 }

@@ -13,8 +13,8 @@ export class GbNavBarComponent implements OnInit {
   private _items: MenuItem[];
   private _activeItem: MenuItem;
 
-  public isDashboard = true;
-  public isDataSelection = false;
+  public isDashboard = false; // TODO temporal change, to be changed to true!!!
+  public isDataSelection = true; // TODO temporal change, to be changed to false!!!
   public isAnalysis = false;
 
   public queryName: string;
@@ -26,9 +26,9 @@ export class GbNavBarComponent implements OnInit {
 
   ngOnInit() {
     this._items = [
-      {label: 'Dashboard', routerLink: '/dashboard'},
-      {label: 'Data Selection', routerLink: '/data-selection'},
-      {label: 'Analysis', routerLink: '/analysis'}
+      //{label: 'Dashboard', routerLink: '/dashboard'}, // TODO temporal change, to be uncommented!!!
+      {label: 'Data Selection', routerLink: '/data-selection'}
+      //{label: 'Analysis', routerLink: '/analysis'} // TODO temporal change, to be uncommented!!!
     ];
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
