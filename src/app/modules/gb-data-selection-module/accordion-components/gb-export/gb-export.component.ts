@@ -65,7 +65,7 @@ export class GbExportComponent implements OnInit {
     }
 
     // 3. Validate if at least one data type is selected
-    if (!this.exportFormats.some(ef => ef['dataFormat'].checked == true)) {
+    if (!this.exportFormats.some(ef => ef['checked'] == true)) {
       const summary = 'Please select at least one data type.';
       this.queryService.alert(summary, '', 'warn');
       return false;
