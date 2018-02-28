@@ -41,42 +41,76 @@ export class GbExportComponent implements OnInit {
   }
 
   /**
+   * Validate a new exportJob
+   * @param {string} name
+   * @returns {boolean}
+   */
+  private validateExportJob(name: string): boolean {
+    let validName = name !== '';
+
+    // 1. Validate if job name is specified
+    if (!validName) {
+      const summary = 'Please specify the job name.';
+      this.queryService.alert(summary, '', 'warn');
+      return false;
+    }
+
+    // 2. Validate if job name is not duplicated
+    for (let job of this.exportJobs) {
+      if (job['jobName'] === name) {
+        const summary = 'Duplicate job name, choose a new name.';
+        this.queryService.alert(summary, '', 'warn');
+        return false;
+      }
+    }
+
+    // 3. Validate if at least one data type is selected
+    if (!this.exportFormats.some(ef => ef['dataFormat'].checked == true)) {
+      const summary = 'Please select at least one data type.';
+      this.queryService.alert(summary, '', 'warn');
+      return false;
+    }
+
+    // 4. Validate if at least one file format is selected for checked data formats
+    for (let dataFormat of this.exportFormats) {
+      if (dataFormat['checked'] == true) {
+        if (!dataFormat['fileFormats'].some(ff => ff['checked'] == true)) {
+          const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
+          this.queryService.alert(summary, '', 'warn');
+          return false;
+        }
+      }
+    }
+
+    // 5. Validate if at least one observation is included
+    if (this.queryService.observationCount_2 < 1) {
+      const summary = 'No observation included to be exported.';
+      this.queryService.alert(summary, '', 'warn');
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
    * Create the export job when the user clicks the 'Export selected sets' button
    */
   createExportJob() {
     let name = this.exportJobName ? this.exportJobName.trim() : '';
-    let validName = name !== '';
-    let duplicateName = false;
 
-    if(!validName) {
-      const summary = 'Please specify the job name.';
-      this.queryService.alert(summary, '', 'warn');
-    } else {
-
-      for (let job of this.exportJobs) {
-        if (job['jobName'] === name) {
-          duplicateName = true;
-          break;
-        }
-      }
-
-      if (duplicateName) {
-        const summary = 'Duplicate job name, choose a new name.';
-        this.queryService.alert(summary, '', 'warn');
-      } else {
-        let summary = 'Running export job "' + name + '".';
-        this.queryService.alert(summary, '', 'info');
-        this.resourceService.createExportJob(name)
-          .subscribe(
-            newJob => {
-              summary = 'Export job "' + name + '" is created.';
-              this.queryService.alert(summary, '', 'success');
-              this.exportJobName = '';
-              this.runExportJob(newJob);
-            },
-            err => console.error(err)
-          );
-      }
+    if (this.validateExportJob(name)) {
+      let summary = 'Running export job "' + name + '".';
+      this.queryService.alert(summary, '', 'info');
+      this.resourceService.createExportJob(name)
+        .subscribe(
+          newJob => {
+            summary = 'Export job "' + name + '" is created.';
+            this.queryService.alert(summary, '', 'success');
+            this.exportJobName = '';
+            this.runExportJob(newJob);
+          },
+          err => console.error(err)
+        );
     }
   }
 
