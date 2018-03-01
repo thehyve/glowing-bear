@@ -546,7 +546,7 @@ export class QueryService {
                   };
                   for (let fileFormatName of fileFormatNames) {
                     // TODO temporal change, to be uncommented!!!
-                    if (fileFormatName == 'TSV') {
+                    if (fileFormatName === 'TSV') {
                       format.fileFormats.push({
                         name: fileFormatName,
                         checked: true
