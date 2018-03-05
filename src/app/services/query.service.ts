@@ -208,7 +208,7 @@ export class QueryService {
     this.loadingStateTotal = 'complete';
   }
 
-    /**
+  /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
   // Relay counts from step 1 to step 2
@@ -281,29 +281,12 @@ export class QueryService {
     }
   }
 
-  private updateSubjectCount(subjectCount: number, initialUpdate?: boolean) {
-    this.subjectCount_1 = subjectCount;
-    if (initialUpdate) {
-      this.subjectCount_0 = this.subjectCount_1;
-    }
-  }
-
-  private updateObservationCount(observationCount: number, initialUpdate?: boolean) {
-    this.observationCount_1 = observationCount;
-    if (initialUpdate) {
-      this.observationCount_0 = this.observationCount_1;
-    }
-    this.isUpdating_1 = false;
-    this.loadingStateTotal = 'complete';
-  }
-
   private updateConceptsAndStudiesForSubjectSet(
       response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
       this.patientSet_1.id = response.id;
-      this.updateSubjectCount(response.setSize, initialUpdate);
       constraint = this.patientSet_1;
     } else {
       constraint = selectionConstraint;
@@ -322,7 +305,6 @@ export class QueryService {
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
-            this.updateObservationCount(observationCount, initialUpdate);
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
               this.resourceService.getCountsPerStudy(constraint)
