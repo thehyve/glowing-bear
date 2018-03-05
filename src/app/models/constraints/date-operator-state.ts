@@ -1,4 +1,4 @@
-export enum GbDateOperatorState {
+export enum DateOperatorState {
   BEFORE,
   AFTER,
   BETWEEN,

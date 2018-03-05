@@ -1,15 +1,12 @@
 import {Constraint} from './constraint';
-import {GbDateOperatorState} from '../../modules/gb-data-selection-module/constraint-components/gb-concept-constraint/gb-date-operator-state';
+import {DateOperatorState} from './date-operator-state';
 
 export class TimeConstraint implements Constraint {
 
   private _parent: Constraint;
-  dateOperator: GbDateOperatorState = GbDateOperatorState.BETWEEN;
+  dateOperator: DateOperatorState = DateOperatorState.BETWEEN;
   date1: Date = new Date();
   date2: Date = new Date();
-  // the 'start time' dimension applies to the observations with observed date values
-  // the 'value' dimension applies to the observations with actual date values
-  private _dimension = 'start time';
   private _isSubselection: boolean;
 
   // the flag indicating if the constraint is negated
@@ -22,15 +19,15 @@ export class TimeConstraint implements Constraint {
     if (operator) {
       switch (operator) {
         case '<-->': {
-          this.dateOperator = GbDateOperatorState.BETWEEN;
+          this.dateOperator = DateOperatorState.BETWEEN;
           break;
         }
         case '<-': {
-          this.dateOperator = GbDateOperatorState.BEFORE;
+          this.dateOperator = DateOperatorState.BEFORE;
           break;
         }
         case '->': {
-          this.dateOperator = GbDateOperatorState.AFTER;
+          this.dateOperator = DateOperatorState.AFTER;
           break;
         }
       }
@@ -49,26 +46,29 @@ export class TimeConstraint implements Constraint {
   toQueryObjectWithoutSubselection(): object {
     // Operator
     let operator = {
-      [GbDateOperatorState.BETWEEN]: '<-->',
-      [GbDateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-      [GbDateOperatorState.BEFORE]: '<-',
-      [GbDateOperatorState.AFTER]: '->'
+      [DateOperatorState.BETWEEN]: '<-->',
+      [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
+      [DateOperatorState.BEFORE]: '<-',
+      [DateOperatorState.AFTER]: '->'
     }[this.dateOperator];
 
     // Values (dates)
     let values = [this.date1.toISOString()];
-    if (this.dateOperator === GbDateOperatorState.BETWEEN ||
-      this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
+    if (this.dateOperator === DateOperatorState.BETWEEN ||
+      this.dateOperator === DateOperatorState.NOT_BETWEEN) {
       values.push(this.date2.toISOString());
     }
 
     // Construct the date constraint
-    // we assume if the dimension is not 'start time', it would be 'value'
-    let fieldName = this.dimension === 'start time' ? 'startDate' : 'numberValue';
+    // if it is observation date, then the dimension is 'start time', otherwise 'value'
+    // the 'start time' dimension applies to the observations with observed date values
+    // the 'value' dimension applies to the observations with actual date values
+    let dimension = this.isObservationDate ? 'start time' : 'value';
+    let fieldName = this.isObservationDate ? 'startDate' : 'numberValue';
     let query: Object = {
       type: 'time',
       field: {
-        dimension: this.dimension,
+        dimension: dimension,
         fieldName: fieldName,
         type: 'DATE'
       },
@@ -79,7 +79,7 @@ export class TimeConstraint implements Constraint {
     };
 
     // Wrap date constraint in a negation if required
-    if (this.dateOperator === GbDateOperatorState.NOT_BETWEEN) {
+    if (this.dateOperator === DateOperatorState.NOT_BETWEEN) {
       query = {
         type: 'negation',
         arg: query
@@ -102,14 +102,6 @@ export class TimeConstraint implements Constraint {
 
   get textRepresentation(): string {
     return 'Time constraint';
-  }
-
-  get dimension(): string {
-    return this._dimension;
-  }
-
-  set dimension(value: string) {
-    this._dimension = value;
   }
 
   get isSubselection(): boolean {
@@ -135,7 +127,7 @@ export class TimeConstraint implements Constraint {
   set isNegated(value: boolean) {
     this._isNegated = value;
     if (value) {
-      this.dateOperator = GbDateOperatorState.NOT_BETWEEN;
+      this.dateOperator = DateOperatorState.NOT_BETWEEN;
     }
   }
 

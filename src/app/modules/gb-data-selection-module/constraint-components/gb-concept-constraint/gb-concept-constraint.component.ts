@@ -5,10 +5,10 @@ import {Concept} from '../../../../models/concept';
 import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
 import {ValueConstraint} from '../../../../models/constraints/value-constraint';
-import {GbDateOperatorState} from './gb-date-operator-state';
 import {TrialVisit} from '../../../../models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/UIHelper';
+import {DateOperatorState} from '../../../../models/constraints/date-operator-state';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -17,16 +17,16 @@ import {UIHelper} from '../../../../utilities/UIHelper';
 })
 export class GbConceptConstraintComponent extends GbConstraintComponent implements OnInit {
   static readonly valDateOperatorSequence = {
-    [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
-    [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
-    [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
-    [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
+    [DateOperatorState.BETWEEN]: DateOperatorState.AFTER,
+    [DateOperatorState.AFTER]: DateOperatorState.BEFORE,
+    [DateOperatorState.BEFORE]: DateOperatorState.NOT_BETWEEN,
+    [DateOperatorState.NOT_BETWEEN]: DateOperatorState.BETWEEN
   };
   static readonly obsDateOperatorSequence = {
-    [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
-    [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
-    [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
-    [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
+    [DateOperatorState.BETWEEN]: DateOperatorState.AFTER,
+    [DateOperatorState.AFTER]: DateOperatorState.BEFORE,
+    [DateOperatorState.BEFORE]: DateOperatorState.NOT_BETWEEN,
+    [DateOperatorState.NOT_BETWEEN]: DateOperatorState.BETWEEN
   };
   @ViewChild('autoComplete') autoComplete: AutoComplete;
   @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
@@ -49,8 +49,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * date value range
    */
-  private _valDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
-  public ValDateOperatorStateEnum = GbDateOperatorState; // make enum visible in template
+  private _valDateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
+  public ValDateOperatorStateEnum = DateOperatorState; // make enum visible in template
   private _valDate1: Date;
   private _valDate2: Date;
 
@@ -70,8 +70,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * observation date range (i.e. the reported date range)
    */
   private _applyObsDateConstraint = false;
-  private _obsDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
-  public ObsDateOperatorStateEnum = GbDateOperatorState; // make enum visible in template
+  private _obsDateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
+  public ObsDateOperatorStateEnum = DateOperatorState; // make enum visible in template
   private _obsDate1: Date;
   private _obsDate2: Date;
 
@@ -98,7 +98,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.selectedCategories = [];
     this.suggestedCategories = [];
 
-    this._obsDateOperatorState = GbDateOperatorState.BETWEEN;
+    this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
@@ -248,11 +248,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._obsDate2 = value;
   }
 
-  get obsDateOperatorState(): GbDateOperatorState {
+  get obsDateOperatorState(): DateOperatorState {
     return this._obsDateOperatorState;
   }
 
-  set obsDateOperatorState(value: GbDateOperatorState) {
+  set obsDateOperatorState(value: DateOperatorState) {
     this._obsDateOperatorState = value;
   }
 
@@ -317,11 +317,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._valDate2 = value;
   }
 
-  get valDateOperatorState(): GbDateOperatorState {
+  get valDateOperatorState(): DateOperatorState {
     return this._valDateOperatorState;
   }
 
-  set valDateOperatorState(value: GbDateOperatorState) {
+  set valDateOperatorState(value: DateOperatorState) {
     this._valDateOperatorState = value;
   }
 
@@ -597,7 +597,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.obsDateConstraint.dateOperator = this.obsDateOperatorState;
     conceptConstraint.obsDateConstraint.isNegated =
-      (this.obsDateOperatorState === GbDateOperatorState.NOT_BETWEEN);
+      (this.obsDateOperatorState === DateOperatorState.NOT_BETWEEN);
     // Notify constraint service
     this.updateCounts();
   }
@@ -613,7 +613,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.valDateConstraint.dateOperator = this.valDateOperatorState;
     conceptConstraint.valDateConstraint.isNegated =
-      (this.valDateOperatorState === GbDateOperatorState.NOT_BETWEEN);
+      (this.valDateOperatorState === DateOperatorState.NOT_BETWEEN);
     this.updateConceptValues();
   }
 
