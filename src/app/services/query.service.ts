@@ -576,18 +576,22 @@ export class QueryService {
       observationsQuery: observationConstraintObj,
       bookmarked: false
     };
+    this.saveQueryObj(queryObj);
+  }
+
+  public saveQueryObj(queryObj: Object) {
     this.resourceService.saveQuery(queryObj)
       .subscribe(
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
           newlySavedQuery['visible'] = true;
           this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryName + '" is saved.';
+          const summary = 'Query "' + queryObj['name'] + '" is added.';
           this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not save the query "' + queryName + '".';
+          const summary = 'Could not add the query "' + queryObj['name'] + '".';
           this.alert(summary, '', 'error');
         }
       );

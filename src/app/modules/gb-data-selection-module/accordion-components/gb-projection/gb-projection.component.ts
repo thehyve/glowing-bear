@@ -11,8 +11,11 @@ import {Step} from '../../../../models/step';
 })
 export class GbProjectionComponent implements OnInit {
 
+  private isUploadListenerNotAdded: boolean;
+
   constructor(private treeNodeService: TreeNodeService,
               private queryService: QueryService) {
+    this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
@@ -36,6 +39,61 @@ export class GbProjectionComponent implements OnInit {
       this.queryService.updateCounts_2();
     } else {
       this.queryService.isDirty_2 = true;
+    }
+  }
+
+  importCriteria() {
+    let uploadElm = document.getElementById('step2CriteriaFileUpload');
+    if (this.isUploadListenerNotAdded) {
+      uploadElm
+        .addEventListener('change', this.criteriaFileUpload.bind(this), false);
+      this.isUploadListenerNotAdded = false;
+      // reset the input path so that it will take the same file again
+      document.getElementById('step2CriteriaFileUpload')['value'] = '';
+    }
+    uploadElm.click();
+  }
+
+  criteriaFileUpload(event){
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onload = (function (e) {
+      let data = e.target['result'];
+      let query = this.parseFile(file, data);
+      this.queryService.restoreQuery(query);
+    }).bind(this);
+    reader.readAsText(file);
+  }
+
+  private parseFile(file: File, data: any) {
+    let observationQuery = {};
+    if (file.type === 'application/json') {
+      let _json = JSON.parse(data);
+      if (_json['names']) {
+        let pathArray = [];
+        this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
+        observationQuery = {
+          data: pathArray
+        };
+      } else if (_json['paths']) {
+        observationQuery = {
+          data: _json['paths']
+        };
+      } else if (_json['observationsQuery']) {
+        observationQuery = _json['observationsQuery'];
+      } else {
+        const msg = 'Invalid file content for STEP 2.';
+        this.queryService.alert(msg, '', 'error');
+        return;
+      }
+      return {
+        'name': file.name.substr(0, file.name.indexOf('.')),
+        'observationsQuery': observationQuery
+      };
+    } else {
+      const msg = 'Invalid file format for STEP 2.';
+      this.queryService.alert(msg, '', 'error');
+      return;
     }
   }
 
