@@ -66,31 +66,30 @@ export class GbProjectionComponent implements OnInit {
   }
 
   private parseFile(file: File, data: any) {
-    let query = null;
+    let observationQuery = {};
     if (file.type === 'application/json') {
       let _json = JSON.parse(data);
-      let pathArray = null;
       if (_json['names']) {
-        pathArray = [];
+        let pathArray = [];
         this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
+        observationQuery = {
+          data: pathArray
+        };
       } else if (_json['paths']) {
-        pathArray = _json['paths'];
-      } else if (_json.constructor === Array) {
-        pathArray = _json;
+        observationQuery = {
+          data: _json['paths']
+        };
+      } else if (_json['observationsQuery']) {
+        observationQuery = _json['observationsQuery'];
       } else {
         const msg = 'Invalid file content for STEP 2.';
         this.queryService.alert(msg, '', 'error');
         return;
       }
-      if (pathArray) {
-        query = {
-          'name': file.name.substr(0, file.name.indexOf('.')),
-          'observationsQuery': {
-            data: pathArray
-          }
-        };
-        return query;
-      }
+      return {
+        'name': file.name.substr(0, file.name.indexOf('.')),
+        'observationsQuery': observationQuery
+      };
     } else {
       const msg = 'Invalid file format for STEP 2.';
       this.queryService.alert(msg, '', 'error');
