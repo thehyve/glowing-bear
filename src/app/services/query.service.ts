@@ -348,10 +348,6 @@ export class QueryService {
                   err => this.handle_error(err)
                 );
             }
-            /*
-             * update the tree nodes in the 2nd step
-             */
-            this.prepareStep2();
           }
         },
         err => this.handle_error(err)
@@ -374,6 +370,46 @@ export class QueryService {
     }
   }
 
+  /**
+   * update the subject, observation, concept and study counts in the first step
+   */
+  public updateCounts_1(initialUpdate?: boolean) {
+    this.isUpdating_1 = true;
+    this.patientSet_1 = null;
+    // add time stamp to the queue,
+    // only when the time stamp is at the end of the queue, the count is updated
+    this.clearQueueOfCalls(this.queueOfCalls_1);
+    let timeStamp = new Date();
+    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
+    // set the flags
+    this.loadingStateInclusion = 'loading';
+    this.loadingStateExclusion = 'loading';
+    this.loadingStateTotal_1 = 'loading';
+    // also update the flags for the counts in the 2nd step
+    this.isLoadingSubjectCount_2 = true;
+    this.isLoadingObservationCount_2 = true;
+    /*
+     * Inclusion constraint subject count
+     */
+    this.updateInclusionCounts(timeStamp, initialUpdate);
+    /*
+     * Exclusion constraint subject count
+     * (Only execute the exclusion constraint if it has non-empty children)
+     */
+    this.updateExclusionCounts(timeStamp, initialUpdate);
+    /*
+     * update concept and study counts in the first step
+     */
+    this.updateConceptsAndStudies(timeStamp, initialUpdate);
+  }
+
+  /**
+   * ------------------------------------------------- END: step 1 ---------------------------------------------------
+   */
+
+  /**
+   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
+   */
   /**
    * This function handles the asynchronicity
    * between updating the 2nd-step counts and the loading of tree nodes:
@@ -416,41 +452,10 @@ export class QueryService {
   }
 
   /**
-   * update the subject, observation, concept and study counts in the first step
-   */
-  public updateCounts_1(initialUpdate?: boolean) {
-    this.isUpdating_1 = true;
-    this.isPreparing_2 = true;
-    this.patientSet_1 = null;
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_1);
-    let timeStamp = new Date();
-    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
-    // set the flags
-    this.loadingStateInclusion = 'loading';
-    this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal_1 = 'loading';
-    // also update the flags for the counts in the 2nd step
-    this.isLoadingSubjectCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    /*
-     * update concept and study counts in the first step
-     */
-    this.updateConceptsAndStudies(timeStamp, initialUpdate);
-  }
-
-  /**
-   * ------------------------------------------------- END: step 1 ---------------------------------------------------
-   */
-
-  /**
-   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
-   */
-  /**
    * update the subject, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
+    this.prepareStep2();
     /*
      * ====== function updateCounts_2 starts ======
      */
