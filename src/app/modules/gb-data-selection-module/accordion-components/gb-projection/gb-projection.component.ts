@@ -11,8 +11,11 @@ import {Step} from '../../../../models/step';
 })
 export class GbProjectionComponent implements OnInit {
 
+  private isUploadListenerNotAdded: boolean;
+
   constructor(private treeNodeService: TreeNodeService,
               private queryService: QueryService) {
+    this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
@@ -37,6 +40,18 @@ export class GbProjectionComponent implements OnInit {
     } else {
       this.queryService.isDirty_2 = true;
     }
+  }
+
+  importCriteria() {
+    let uploadElm = document.getElementById('step2CriteriaFileUpload');
+    if (this.isUploadListenerNotAdded) {
+      uploadElm
+        .addEventListener('change', this.queryService.importCriteriaStep2.bind(this), false);
+      this.isUploadListenerNotAdded = false;
+      // reset the input path so that it will take the same file again
+      document.getElementById('step2CriteriaFileUpload')['value'] = '';
+    }
+    uploadElm.click();
   }
 
   checkAll(value: boolean) {

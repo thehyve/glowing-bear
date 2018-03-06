@@ -35,8 +35,11 @@ export class GbSelectionComponent implements OnInit {
   @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
 
+  private isUploadListenerNotAdded: boolean;
+
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService) {
+    this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
@@ -67,6 +70,18 @@ export class GbSelectionComponent implements OnInit {
     this.queryService.step = Step.I;
     this.constraintService.clearSelectionConstraint();
     this.queryService.updateCounts_1();
+  }
+
+  importCriteria() {
+    let uploadElm = document.getElementById('step1CriteriaFileUpload');
+    if (this.isUploadListenerNotAdded) {
+      uploadElm
+        .addEventListener('change', this.queryService.importCriteriaStep1.bind(this), false);
+      this.isUploadListenerNotAdded = false;
+      // reset the input path so that it will take the same file again
+      document.getElementById('step1CriteriaFileUpload')['value'] = '';
+    }
+    uploadElm.click();
   }
 
   get loadingStateInclusion(): LoadingState {

@@ -30,59 +30,12 @@ export class GbQueriesComponent implements OnInit {
     let uploadElm = document.getElementById('queryFileUpload');
     if (this.isUploadListenerNotAdded) {
       uploadElm
-        .addEventListener('change', this.queryFileUpload.bind(this), false);
+        .addEventListener('change', this.queryService.importQuery.bind(this), false);
       this.isUploadListenerNotAdded = false;
-    }
-    uploadElm.click();
-  }
-
-  queryFileUpload(event) {
-    let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      if (file.type === 'application/json') {
-        let _json = JSON.parse(e.target['result']);
-        let pathArray = null;
-        // If the json is of standard format
-        if (_json['patientsQuery'] || _json['observationsQuery']) {
-          this.queryService.restoreQuery(_json);
-        } else if (_json['names']) {
-          pathArray = [];
-          this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
-        } else if (_json['paths']) {
-          pathArray = _json['paths'];
-        } else if (_json.constructor === Array) {
-          pathArray = _json;
-        }
-        if (pathArray) {
-          let query = {
-            'name': file.name,
-            'observationsQuery': {
-              data: pathArray
-            }
-          };
-          this.queryService.restoreQuery(query);
-        }
-      } else if (file.type === 'text/plain' ||
-        file.type === 'text/tab-separated-values' ||
-        file.type === 'text/csv' ||
-        file.type === '') {
-        // we assume the text contains a list of subject Ids
-        let query = {
-          'name': file.name,
-          'patientsQuery': {
-            'type': 'patient_set',
-            'subjectIds': e.target['result'].split('\n')
-          },
-          'observationsQuery': {}
-        };
-        this.queryService.restoreQuery(query);
-      }
-
       // reset the input path so that it will take the same file again
       document.getElementById('queryFileUpload')['value'] = '';
-    }).bind(this);
-    reader.readAsText(file);
+    }
+    uploadElm.click();
   }
 
   // query subscription

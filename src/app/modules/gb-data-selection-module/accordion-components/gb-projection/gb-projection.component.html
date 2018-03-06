@@ -1,4 +1,12 @@
 <div>
+  <div class="float-right" style="margin-right: 2em">
+    <input id="step2CriteriaFileUpload"
+           type="file"
+           style="display: none"/>
+    <button type="button" (click)="importCriteria()"
+            class="btn btn-primary btn-sm gb-data-selection-control-btn float-right">Import Criteria
+    </button>
+  </div>
   <div class="container form-inline">
     <button type="button" (click)="expandAll(true)"
             class="btn btn-primary btn-sm gb-data-selection-control-btn">Expand All</button>
@@ -11,8 +19,7 @@
     <span>&nbsp;</span>
     <button type="button" (click)="checkAll(false)"
             class="btn btn-primary btn-sm gb-data-selection-control-btn">Check None</button>
-  </div>
-
+</div>
   <p-tree [value]="projectionTreeData"
           selectionMode="checkbox"
           (onNodeSelect)="updateCounts()"

@@ -1,9 +1,15 @@
 
 <div>
   <div class="float-right" style="margin-right: 2em">
-    <button type="button"
-            (click)="clearCriteria()"
-            class="btn btn-primary btn-sm gb-data-selection-control-btn">Clear Criteria</button>
+    <button type="button" (click)="importCriteria()"
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Import Criteria
+    </button>
+    <input id="step1CriteriaFileUpload"
+           type="file"
+           style="display: none"/>
+    <button type="button" (click)="clearCriteria()"
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Clear Criteria
+    </button>
   </div>
   <!-- Inclusion criteria -->
   <div #inclusionCriteriaBox
