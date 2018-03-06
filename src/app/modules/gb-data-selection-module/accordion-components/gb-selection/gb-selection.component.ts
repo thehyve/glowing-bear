@@ -77,8 +77,8 @@ export class GbSelectionComponent implements OnInit {
     return this.queryService.loadingStateExclusion;
   }
 
-  get loadingStateTotal(): LoadingState {
-    return this.queryService.loadingStateTotal;
+  get loadingStateTotal_1(): LoadingState {
+    return this.queryService.loadingStateTotal_1;
   }
 
 }
