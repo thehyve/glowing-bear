@@ -580,177 +580,25 @@ export class QueryService {
       observationsQuery: observationConstraintObj,
       bookmarked: false
     };
+    this.saveQueryObj(queryObj);
+  }
+
+  public saveQueryObj(queryObj: Object) {
     this.resourceService.saveQuery(queryObj)
       .subscribe(
         (newlySavedQuery) => {
           newlySavedQuery['collapsed'] = true;
           newlySavedQuery['visible'] = true;
           this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryName + '" is saved.';
+          const summary = 'Query "' + queryObj['name'] + '" is added.';
           this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not save the query "' + queryName + '".';
+          const summary = 'Could not add the query "' + queryObj['name'] + '".';
           this.alert(summary, '', 'error');
         }
       );
-  }
-
-  /**
-   * Import query from a file
-   * @param event
-   */
-  public importQuery(event) {
-    let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      let data = e.target['result'];
-      let query = this.queryService.parseFileQueryImport(file, data);
-      const queryObj = {
-        name: query.name,
-        patientsQuery: query.patientsQuery,
-        observationsQuery: query.observationsQuery,
-        bookmarked: false
-      };
-      this.queryService.resourceService.saveQuery(queryObj)
-        .subscribe(
-          (newlySavedQuery) => {
-            newlySavedQuery['collapsed'] = true;
-            newlySavedQuery['visible'] = true;
-            this.queryService.queries.push(newlySavedQuery);
-            const summary = 'Query "' + queryObj.name + '" is imported.';
-            this.queryService.alert(summary, '', 'success');
-          },
-          (err) => {
-            console.error(err);
-            const summary = 'Could not import the query "' + queryObj.name + '".';
-            this.queryService.alert(summary, '', 'error');
-          }
-        );
-    }).bind(this);
-    reader.readAsText(file);
-  }
-
-  /**
-   * Import criteria from a file for STEP 1
-   * @param event
-   */
-  public importCriteriaStep1(event) {
-    let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      let data = e.target['result'];
-      let query = this.queryService.parseFileStep1(file, data);
-      this.queryService.restoreQuery(query);
-    }).bind(this);
-    reader.readAsText(file);
-  }
-
-  /**
-   * Import criteria from a file for STEP 2
-   * @param event
-   */
-  public importCriteriaStep2(event) {
-    let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      let data = e.target['result'];
-      let query = this.queryService.parseFileStep2(file, data);
-      this.queryService.restoreQuery(query);
-    }).bind(this);
-    reader.readAsText(file);
-  }
-
-  /**
-   * Get query from JSON file
-   * @param {File} file
-   * @param data
-   * @returns {any}
-   */
-  private parseFileQueryImport(file: File, data: any) {
-    if (file.type === 'application/json') {
-      let _json = JSON.parse(data);
-      // If the json is of standard format
-      if (_json['patientsQuery'] || _json['observationsQuery']) {
-        return _json;
-      } else {
-        const msg = 'Invalid file content for query import.';
-        this.alert(msg, '', 'error');
-        return;
-      }
-    } else {
-      const msg = 'Invalid file format for query import.';
-      this.alert(msg, '', 'error');
-      return;
-    }
-  }
-
-  /**
-   * Get subject ids from file for STEP 1
-   * @param {File} file
-   * @param data
-   */
-  private parseFileStep1(file: File, data: any) {
-    if (file.type === 'text/plain' ||
-      file.type === 'text/tab-separated-values' ||
-      file.type === 'text/csv' ||
-      file.type === '') {
-      // we assume the text contains a list of subject Ids
-      let query = {
-        'name': file.name.substr(0, file.name.indexOf('.')),
-        'patientsQuery': {
-          'type': 'patient_set',
-          'subjectIds': data.split('\n')
-        },
-        'observationsQuery': {}
-      };
-      return query;
-    } else if (file.type === 'application/json') {
-      return this.parseFileQueryImport(file, data);
-    } else {
-      const msg = 'Invalid file format for STEP 1.';
-      this.alert(msg, '', 'error');
-      return;
-    }
-  }
-
-  /**
-   * Get data from JSON file for STEP 2
-   * @param {File} file
-   * @param data
-   */
-  private parseFileStep2(file: File, data: any) {
-    let query = null;
-    if (file.type === 'application/json') {
-      let _json = JSON.parse(data);
-      let pathArray = null;
-      if (_json['names']) {
-        pathArray = [];
-        this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
-      } else if (_json['paths']) {
-        pathArray = _json['paths'];
-      } else if (_json.constructor === Array) {
-        pathArray = _json;
-      } else {
-        const msg = 'Invalid file content for STEP 2.';
-        this.alert(msg, '', 'error');
-        return;
-      }
-      if (pathArray) {
-        query = {
-          'name': file.name.substr(0, file.name.indexOf('.')),
-          'observationsQuery': {
-            data: pathArray
-          }
-        };
-        return query;
-      }
-    } else {
-      const msg = 'Invalid file format for STEP 2.';
-      this.alert(msg, '', 'error');
-      return;
-    }
   }
 
   /**

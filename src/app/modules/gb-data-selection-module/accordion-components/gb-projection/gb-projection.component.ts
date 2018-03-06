@@ -46,12 +46,56 @@ export class GbProjectionComponent implements OnInit {
     let uploadElm = document.getElementById('step2CriteriaFileUpload');
     if (this.isUploadListenerNotAdded) {
       uploadElm
-        .addEventListener('change', this.queryService.importCriteriaStep2.bind(this), false);
+        .addEventListener('change', this.criteriaFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
       // reset the input path so that it will take the same file again
       document.getElementById('step2CriteriaFileUpload')['value'] = '';
     }
     uploadElm.click();
+  }
+
+  criteriaFileUpload(event){
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onload = (function (e) {
+      let data = e.target['result'];
+      let query = this.parseFile(file, data);
+      this.queryService.restoreQuery(query);
+    }).bind(this);
+    reader.readAsText(file);
+  }
+
+  private parseFile(file: File, data: any) {
+    let query = null;
+    if (file.type === 'application/json') {
+      let _json = JSON.parse(data);
+      let pathArray = null;
+      if (_json['names']) {
+        pathArray = [];
+        this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
+      } else if (_json['paths']) {
+        pathArray = _json['paths'];
+      } else if (_json.constructor === Array) {
+        pathArray = _json;
+      } else {
+        const msg = 'Invalid file content for STEP 2.';
+        this.queryService.alert(msg, '', 'error');
+        return;
+      }
+      if (pathArray) {
+        query = {
+          'name': file.name.substr(0, file.name.indexOf('.')),
+          'observationsQuery': {
+            data: pathArray
+          }
+        };
+        return query;
+      }
+    } else {
+      const msg = 'Invalid file format for STEP 2.';
+      this.queryService.alert(msg, '', 'error');
+      return;
+    }
   }
 
   checkAll(value: boolean) {
