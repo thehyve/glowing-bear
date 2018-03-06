@@ -91,7 +91,7 @@ export class QueryService {
   private _studyCountMap_1 = {};
   loadingStateInclusion: LoadingState = 'complete';
   loadingStateExclusion: LoadingState = 'complete';
-  loadingStateTotal: LoadingState = 'complete';
+  loadingStateTotal_1: LoadingState = 'complete';
   // the queue that holds the time stamps of the calls made in the 1st step
   private _queueOfCalls_1 = [];
   private _patientSet_1: PatientSetConstraint = null;
@@ -203,7 +203,7 @@ export class QueryService {
         this.observationCount_0 = this.observationCount_1;
       }
       this.isUpdating_1 = false;
-      this.loadingStateTotal = 'complete';
+      this.loadingStateTotal_1 = 'complete';
     }
   }
 
@@ -240,7 +240,7 @@ export class QueryService {
               this.inclusionSubjectCount = countResponse['patientCount'];
               this.inclusionObservationCount = countResponse['observationCount'];
               this.loadingStateInclusion = 'complete';
-              if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
+              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateExclusion === 'complete') {
                 this.mergeInclusionAndExclusionCounts(initialUpdate);
                 // relay the current counts to the next step: subjects and observations
                 this.relayCounts_1_2();
@@ -266,7 +266,7 @@ export class QueryService {
               this.exclusionSubjectCount = countResponse['patientCount'];
               this.exclusionObservationCount = countResponse['observationCount'];
               this.loadingStateExclusion = 'complete';
-              if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
+              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateInclusion === 'complete') {
                 this.mergeInclusionAndExclusionCounts(initialUpdate);
                 // relay the current counts to the next step: subjects and observations
                 this.relayCounts_1_2();
@@ -297,10 +297,13 @@ export class QueryService {
       this.observationCount_0 = this.observationCount_1;
     }
     this.isUpdating_1 = false;
-    this.loadingStateTotal = 'complete';
+    this.loadingStateTotal_1 = 'complete';
   }
 
-  private updateConceptsAndStudiesForSubjectSet(response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
+  private updateConceptsAndStudiesForSubjectSet(response: PatientSet,
+                                                selectionConstraint: Constraint,
+                                                timeStamp: Date,
+                                                initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
@@ -418,7 +421,7 @@ export class QueryService {
     // set the flags
     this.loadingStateInclusion = 'loading';
     this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal = 'loading';
+    this.loadingStateTotal_1 = 'loading';
     // also update the flags for the counts in the 2nd step
     this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
