@@ -17,6 +17,8 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
+  dateColumnsIncluded: boolean;
+  exportDataView: string;
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -25,6 +27,8 @@ export class GbExportComponent implements OnInit {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.updateExportJobs());
+    this.dateColumnsIncluded = true;
+    this.exportDataView = queryService.exportDataView;
   }
 
   ngOnInit() {
@@ -34,6 +38,7 @@ export class GbExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
+          jobs.forEach(job => {job.isInDisabledState = false});
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -65,7 +70,7 @@ export class GbExportComponent implements OnInit {
     }
 
     // 3. Validate if at least one data type is selected
-    if (!this.exportFormats.some(ef => ef['checked'] == true)) {
+    if (!this.exportFormats.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       this.queryService.alert(summary, '', 'warn');
       return false;
@@ -73,8 +78,8 @@ export class GbExportComponent implements OnInit {
 
     // 4. Validate if at least one file format is selected for checked data formats
     for (let dataFormat of this.exportFormats) {
-      if (dataFormat['checked'] == true) {
-        if (!dataFormat['fileFormats'].some(ff => ff['checked'] == true)) {
+      if (dataFormat['checked'] === true) {
+        if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
           this.queryService.alert(summary, '', 'warn');
           return false;
@@ -142,7 +147,7 @@ export class GbExportComponent implements OnInit {
       combo.addChild(selectionConstraint);
       combo.addChild(projectionConstraint);
 
-      this.resourceService.runExportJob(jobId, combo, elements)
+      this.resourceService.runExportJob(jobId, combo, elements, this.dateColumnsIncluded)
         .subscribe(
           returnedExportJob => {
             this.updateExportJobs();
@@ -158,6 +163,7 @@ export class GbExportComponent implements OnInit {
    * @param job
    */
   downloadExportJob(job) {
+    job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (response: Response) => {
@@ -167,6 +173,28 @@ export class GbExportComponent implements OnInit {
         err => console.error(err),
         () => {
         }
+      );
+  }
+
+  cancelExportJob(job) {
+    job.isInDisabledState = true;
+    this.resourceService.cancelExportJob(job.id)
+      .subscribe(
+        response => {
+          this.updateExportJobs();
+        },
+        err => console.error(err)
+      );
+  }
+
+  archiveExportJob(job) {
+    job.isInDisabledState = true;
+    this.resourceService.archiveExportJob(job.id)
+      .subscribe(
+        response => {
+          this.updateExportJobs();
+        },
+        err => console.error(err)
       );
   }
 

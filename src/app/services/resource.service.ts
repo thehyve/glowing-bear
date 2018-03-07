@@ -142,6 +142,16 @@ export class ResourceService {
     }
   }
 
+  /**
+   * Logout from the authserver with a cookie attached
+   * @returns {Observable<{}>}
+   */
+  logout(): Observable<{}> {
+    const endpoint = this.endpointService.getEndpoint();
+    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true})
+      .catch(this.handleError.bind(this));
+  }
+
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
@@ -286,22 +296,25 @@ export class ResourceService {
    * [{
    *    dataType: 'clinical',
    *    format: 'TSV',
-   *    dataView: 'default' | 'surveyTable' // NTR specific
+   *    dataView: 'default' | 'surveyTable', // NTR specific
    * }]
    *
    * @param jobId
    * @param elements
    * @param constraint
+   * @param includeMeasurementDateColumns
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                constraint: Constraint,
-               elements: object[]): Observable<ExportJob> {
+               elements: object[],
+               includeMeasurementDateColumns: boolean): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     const body = {
       constraint: constraint.toQueryObject(),
-      elements: elements
+      elements: elements,
+      includeMeasurementDateColumns: includeMeasurementDateColumns
     };
     return this.postCall(urlPart, body, responseField);
   }
@@ -324,6 +337,27 @@ export class ResourceService {
     return this.http.get(url, options)
       .map((res: Response) => res)
       .catch(this.handleError.bind(this));
+  }
+
+  /**
+   * Cancels an export job with the given export job id
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  cancelExportJob(jobId: string): Observable<{}> {
+    const urlPart = `export/${jobId}/cancel`;
+    const responseField = 'exportJob';
+    return this.postCall(urlPart, {}, responseField);
+  }
+
+  /**
+   * Removes an export job from the jobs table
+   * @param jobId
+   * @returns {Observable<blob>}
+   */
+  archiveExportJob(jobId: string): Observable<{}> {
+    const urlPart = `export/${jobId}`;
+    return this.deleteCall(urlPart);
   }
 
   // -------------------------------------- query calls --------------------------------------

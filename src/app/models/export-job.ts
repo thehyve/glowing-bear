@@ -5,6 +5,7 @@ export class ExportJob {
   private _jobStatusTime: string;
   private _userId: string;
   private _viewerURL: string;
+  private _isInDisabledState: boolean;
 
   get id(): string {
     return this._id;
@@ -52,5 +53,13 @@ export class ExportJob {
 
   set viewerURL(value: string) {
     this._viewerURL = value;
+  }
+
+  get isInDisabledState(): boolean {
+    return this._isInDisabledState;
+  }
+
+  set isInDisabledState(value: boolean) {
+    this._isInDisabledState = value;
   }
 }

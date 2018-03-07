@@ -160,6 +160,7 @@ export class QueryService {
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.exportDataView = appConfig.getConfig('export-data-view', 'default');
     this.loadQueries();
   }
 
@@ -214,18 +215,14 @@ export class QueryService {
   }
 
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
-    // If there is subject sets saved, no need to compute the total counts based on inclusion and exclusion counts,
-    // but use the subject set and counts per study concept response instead.
-    if (!this.autosaveSubjectSets) {
-      this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
-      this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
-      if (initialUpdate) {
-        this.subjectCount_0 = this.subjectCount_1;
-        this.observationCount_0 = this.observationCount_1;
-      }
-      this.isUpdating_1 = false;
-      this.loadingStateTotal_1 = 'complete';
+    this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
+    this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
+    if (initialUpdate) {
+      this.subjectCount_0 = this.subjectCount_1;
+      this.observationCount_0 = this.observationCount_1;
     }
+    this.isUpdating_1 = false;
+    this.loadingStateTotal_1 = 'complete';
   }
 
   /**
@@ -273,11 +270,18 @@ export class QueryService {
             this.loadingStateInclusion = 'complete';
           }
         );
+    } else {
+      if (this.loadingStateTotal_1 === 'complete' && this.loadingStateExclusion === 'complete') {
+        this.inclusionSubjectCount = this.subjectCount_1 + this.exclusionSubjectCount;
+        this.inclusionObservationCount = this.observationCount_1 + this.exclusionObservationCount;
+        this.loadingStateInclusion = 'complete';
+        this.relayCounts_1_2();
+      }
     }
   }
 
   private updateExclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    if (this.constraintService.rootExclusionConstraint.hasNonEmptyChildren()) {
+    if (this.constraintService.hasExclusionConstraint()) {
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
       this.resourceService.getCounts(exclusionConstraint)
         .subscribe(
@@ -301,18 +305,19 @@ export class QueryService {
         );
     } else {
       this.exclusionSubjectCount = 0;
+      this.exclusionObservationCount = 0;
       this.loadingStateExclusion = 'complete';
     }
   }
 
-  private updateSubjectCount(subjectCount: number, initialUpdate?: boolean) {
+  private updateSubjectCount_1(subjectCount: number, initialUpdate?: boolean) {
     this.subjectCount_1 = subjectCount;
     if (initialUpdate) {
       this.subjectCount_0 = this.subjectCount_1;
     }
   }
 
-  private updateObservationCount(observationCount: number, initialUpdate?: boolean) {
+  private updateObservationCount_1(observationCount: number, initialUpdate?: boolean) {
     this.observationCount_1 = observationCount;
     if (initialUpdate) {
       this.observationCount_0 = this.observationCount_1;
@@ -329,7 +334,7 @@ export class QueryService {
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
       this.patientSet_1.id = response.id;
-      this.updateSubjectCount(response.setSize, initialUpdate);
+      this.updateSubjectCount_1(response.setSize, initialUpdate);
       constraint = this.patientSet_1;
     } else {
       constraint = selectionConstraint;
@@ -348,7 +353,13 @@ export class QueryService {
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
-            this.updateObservationCount(observationCount, initialUpdate);
+            if (this.autosaveSubjectSets) {
+              // Update observation count based on the sum of the tree observation counts
+              this.updateObservationCount_1(observationCount, initialUpdate);
+              // Update inclusion counts
+              this.updateInclusionCounts(timeStamp, initialUpdate);
+            }
+
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
               this.resourceService.getCountsPerStudy(constraint)
@@ -360,10 +371,6 @@ export class QueryService {
                   err => this.handle_error(err)
                 );
             }
-            /*
-             * update the tree nodes in the 2nd step
-             */
-            this.prepareStep2();
           }
         },
         err => this.handle_error(err)
@@ -386,6 +393,46 @@ export class QueryService {
     }
   }
 
+  /**
+   * update the subject, observation, concept and study counts in the first step
+   */
+  public updateCounts_1(initialUpdate?: boolean) {
+    this.isUpdating_1 = true;
+    this.patientSet_1 = null;
+    // add time stamp to the queue,
+    // only when the time stamp is at the end of the queue, the count is updated
+    this.clearQueueOfCalls(this.queueOfCalls_1);
+    let timeStamp = new Date();
+    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
+    // set the flags
+    this.loadingStateInclusion = 'loading';
+    this.loadingStateExclusion = 'loading';
+    this.loadingStateTotal_1 = 'loading';
+    // also update the flags for the counts in the 2nd step
+    this.isLoadingSubjectCount_2 = true;
+    this.isLoadingObservationCount_2 = true;
+    /*
+     * Update the inclusion counts
+     */
+    this.updateInclusionCounts(timeStamp, initialUpdate);
+    /*
+     * Update exclusion constraint counts
+     * (Only execute the exclusion constraint if it has non-empty children)
+     */
+    this.updateExclusionCounts(timeStamp, initialUpdate);
+    /*
+     * update concept and study counts in the first step
+     */
+    this.updateConceptsAndStudies(timeStamp, initialUpdate);
+  }
+
+  /**
+   * ------------------------------------------------- END: step 1 ---------------------------------------------------
+   */
+
+  /**
+   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
+   */
   /**
    * This function handles the asynchronicity
    * between updating the 2nd-step counts and the loading of tree nodes:
@@ -428,50 +475,10 @@ export class QueryService {
   }
 
   /**
-   * update the subject, observation, concept and study counts in the first step
-   */
-  public updateCounts_1(initialUpdate?: boolean) {
-    this.isUpdating_1 = true;
-    this.isPreparing_2 = true;
-    this.patientSet_1 = null;
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_1);
-    let timeStamp = new Date();
-    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
-    // set the flags
-    this.loadingStateInclusion = 'loading';
-    this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal_1 = 'loading';
-    // also update the flags for the counts in the 2nd step
-    this.isLoadingSubjectCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    /*
-     * Inclusion constraint subject count
-     */
-    this.updateInclusionCounts(timeStamp, initialUpdate);
-    /*
-     * Exclusion constraint subject count
-     * (Only execute the exclusion constraint if it has non-empty children)
-     */
-    this.updateExclusionCounts(timeStamp, initialUpdate);
-    /*
-     * update concept and study counts in the first step
-     */
-    this.updateConceptsAndStudies(timeStamp, initialUpdate);
-  }
-
-  /**
-   * ------------------------------------------------- END: step 1 ---------------------------------------------------
-   */
-
-  /**
-   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
-   */
-  /**
    * update the subject, observation, concept and study counts in the second step
    */
   public updateCounts_2() {
+    this.prepareStep2();
     /*
      * ====== function updateCounts_2 starts ======
      */
@@ -625,15 +632,12 @@ export class QueryService {
    */
   public restoreQuery(query: Query) {
     this.query = query;
+    this.step = Step.I;
     if (query['patientsQuery']) {
       this.constraintService.clearSelectionConstraint();
       let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
-      this.step = Step.I;
       this.updateCounts_1();
-    } else {
-      this.prepareStep2();
-      this.step = Step.II;
     }
     this.updateCounts_2();
 
