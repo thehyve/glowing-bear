@@ -67,7 +67,8 @@ export class GbProjectionComponent implements OnInit {
 
   private parseFile(file: File, data: any) {
     let observationQuery = {};
-    if (file.type === 'application/json') {
+    // file.type is empty for some browsers and Windows OS
+    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       if (_json['names']) {
         let pathArray = [];

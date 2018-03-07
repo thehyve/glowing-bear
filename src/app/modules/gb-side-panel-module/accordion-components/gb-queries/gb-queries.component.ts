@@ -56,7 +56,8 @@ export class GbQueriesComponent implements OnInit {
   }
 
   private parseFile(file: File, data: any) {
-    if (file.type === 'application/json') {
+    // file.type is empty for some browsers and Windows OS
+    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
       if (_json['patientsQuery'] || _json['observationsQuery']) {

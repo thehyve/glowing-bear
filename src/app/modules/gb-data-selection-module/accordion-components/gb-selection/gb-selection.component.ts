@@ -100,13 +100,13 @@ export class GbSelectionComponent implements OnInit {
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
-      file.type === '') {
+      (file.type === '' && file.name.split('.').pop() != 'json')) {
       // we assume the text contains a list of subject Ids
       patientsQuery = {
         'type': 'patient_set',
         'subjectIds': data.split('\n')
       };
-    } else if (file.type === 'application/json') {
+    } else if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
       if (_json['patientsQuery']) {
