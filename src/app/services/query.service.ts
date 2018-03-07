@@ -10,6 +10,11 @@ import {FormatHelper} from '../utilities/FormatHelper';
 import {PatientSet} from '../models/patient-set';
 import {Constraint} from '../models/constraints/constraint';
 import {AppConfig} from '../config/app.config';
+import {QueryDiffRecord} from '../models/query-diff-record';
+import {QuerySetType} from '../models/query-set-type';
+import {QueryDiffItem} from '../models/query-diff-item';
+import {QueryDiffType} from '../models/query-diff-type';
+import {QuerySubscriptionFrequency} from '../models/query-subscription-frequency';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -174,12 +179,28 @@ export class QueryService {
           queries.forEach(query => {
             query.collapsed = true;
             query.visible = true;
+            query.subscriptionCollapsed = true;
             if (query.createDate) {
               query.createDateInfo = FormatHelper.formatDateSemantics(query.createDate);
             }
             if (query.updateDate) {
               query.updateDateInfo = FormatHelper.formatDateSemantics(query.updateDate);
             }
+            if (query.subscribed) {
+              if (!query.subscriptionFreq) {
+                query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+              }
+              /*
+               * load query diff records for this query
+               */
+              this.resourceService.diffQuery(query.id)
+                .subscribe(
+                  (records) => {
+                    query.diffRecords = this.parseQueryDiffRecords(records);
+                  }
+                );
+            }
+
             if (query.bookmarked) {
               bookmarkedQueries.push(query);
             } else {
@@ -524,10 +545,13 @@ export class QueryService {
                     fileFormats: []
                   };
                   for (let fileFormatName of fileFormatNames) {
-                    format.fileFormats.push({
-                      name: fileFormatName,
-                      checked: true
-                    });
+                    // TODO temporal change, to be uncommented!!!
+                    if (fileFormatName === 'TSV') {
+                      format.fileFormats.push({
+                        name: fileFormatName,
+                        checked: true
+                      });
+                    }
                   }
                   this.exportFormats.push(format);
                 }
@@ -562,7 +586,8 @@ export class QueryService {
   }
 
   public saveQuery(queryName: string) {
-    const patientConstraintObj = this.constraintService.generateSelectionConstraint().toQueryObject(true);
+    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const patientConstraintObj = selectionConstraint.toQueryObject(true);
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
@@ -625,10 +650,18 @@ export class QueryService {
     this.alert(alertSummary, alertDetails, 'info');
   }
 
-  public updateQuery(queryId: string, queryObject: object) {
-    this.resourceService.updateQuery(queryId, queryObject)
+  public updateQuery(query: Query, queryObject: object) {
+    this.resourceService.updateQuery(query.id, queryObject)
       .subscribe(
         () => {
+          if (queryObject['subscribed']) {
+            this.resourceService.diffQuery(query.id)
+              .subscribe(
+                records => {
+                  query.diffRecords = this.parseQueryDiffRecords(records);
+                }
+              );
+          }
         },
         err => this.handle_error(err)
       );
@@ -649,6 +682,44 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
+  }
+
+  public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
+    let diffRecords: QueryDiffRecord[] = [];
+    for (let record of records) {
+      let items = [];
+      // parse the added objects
+      if (record['objectsAdded']) {
+        for (let objectId of record['objectsAdded']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.ADDED;
+          items.push(item);
+        }
+      }
+      // parse the removed objects
+      if (record['objectsRemoved']) {
+        for (let objectId of record['objectsRemoved']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
+        }
+      }
+      if (items.length > 0) {
+        let diffRecord: QueryDiffRecord = new QueryDiffRecord();
+        diffRecord.id = record['id'];
+        diffRecord.queryName = record['queryName'];
+        diffRecord.queryUsername = record['queryUsername'];
+        diffRecord.setId = record['setId'];
+        diffRecord.setType = record['setType'] === 'PATIENT' ?
+          QuerySetType.PATIENT : QuerySetType.SAMPLE;
+        diffRecord.createDate = record['createDate'];
+        diffRecord.diffItems = items;
+        diffRecords.push(diffRecord);
+      }
+    }
+    return diffRecords;
   }
 
   get inclusionSubjectCount(): number {

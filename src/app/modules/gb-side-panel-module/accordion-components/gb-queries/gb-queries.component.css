@@ -25,6 +25,56 @@
   display: flow-root;
 }
 
+.gb-subscription-panel-header {
+  background-color: #fafafa;
+  border-radius: 6px;
+  margin-top: 3px;
+  cursor: pointer;
+}
+.gb-subscription-panel-header:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+.gb-subscription-panel-header:active {
+  background-color: var(--gb-clinical-green-light);
+}
+
+.gb-subscription-panel-body {
+  background-color: #fafafa;
+  border-radius: 6px;
+  padding-left: 6px;
+  margin-top: 3px;
+}
+
+.gb-subscription-panel-body-record {
+  margin-bottom: 1px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+.gb-subscription-panel-body-record:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+.gb-subscription-panel-body-record:active {
+  background-color: var(--gb-clinical-green-light);
+}
+
+.gb-query-log-download-btn {
+  background-color: transparent;
+  border: none;
+  color: grey;
+}
+.gb-query-log-download-btn:hover {
+  background-color: #e6e6e6;
+  opacity: 0.9;
+}
+.gb-query-log-download-btn:active {
+  opacity: 1;
+}
+
+hr {
+  margin-top: 1px;
+  margin-bottom: 2px;
+}
+
 /*
  * Style the set name edit input
  */

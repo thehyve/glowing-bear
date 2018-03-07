@@ -40,7 +40,8 @@ export class TreeNodeService {
   }
 
   /**
-   * Load the tree nodes for rendering the tree on the left side panel.
+   * Load the tree nodes for rendering the tree on the left side panel;
+   * construct concept constraints based on the tree nodes
    */
   public loadTreeNodes(constraintService: ConstraintService) {
     this.loadingTreeNodes = 'loading';

@@ -2,9 +2,11 @@ import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query';
 import {QueryService} from '../../../../services/query.service';
+import {QueryDiffRecord} from '../../../../models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
+import {QuerySubscriptionFrequency} from '../../../../models/query-subscription-frequency';
 
 @Component({
   selector: 'gb-queries',
@@ -78,9 +80,14 @@ export class GbQueriesComponent implements OnInit {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
     const queryObject = {
-      bookmarked: query.subscribed
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    if (query.subscribed) {
+      queryObject['subscriptionFreq'] =
+        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
+      query.subscriptionFreq = queryObject['subscriptionFreq'];
+    }
+    this.queryService.updateQuery(query, queryObject);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -94,7 +101,7 @@ export class GbQueriesComponent implements OnInit {
     const queryObject = {
       bookmarked: query.bookmarked
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.updateQuery(query, queryObject);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -108,6 +115,14 @@ export class GbQueriesComponent implements OnInit {
     }
     selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
+  }
+
+  toggleSubscriptionPanel(query: Query) {
+    query.subscriptionCollapsed = !query.subscriptionCollapsed;
+  }
+
+  toggleSubscriptionRecordPanel(record: QueryDiffRecord) {
+    record.showCompleteRepresentation = !record.showCompleteRepresentation;
   }
 
   removeQuery(event: Event, query: Query) {
@@ -132,6 +147,19 @@ export class GbQueriesComponent implements OnInit {
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
     DownloadHelper.downloadJSON(query, query.name);
+  }
+
+  radioCheckSubscriptionFrequency(query) {
+    const queryObject = {
+      subscriptionFreq: query.subscriptionFreq
+    };
+    this.queryService.updateQuery(query, queryObject);
+  }
+
+  downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
+    console.log(query, record);
+    const filename = query.name + '-record-' + record.createDate;
+    DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }
 
   onFiltering(event) {
