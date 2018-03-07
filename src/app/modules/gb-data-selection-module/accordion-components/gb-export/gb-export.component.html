@@ -33,6 +33,11 @@
       <span>&nbsp;</span>
       <button type="button" class="btn btn-primary btn-sm"
               (click)="createExportJob()">Create Export</button>
+      <span>&nbsp;</span>
+      <div *ngIf="exportDataView === 'surveyTable'">
+        <p-checkbox class="gb-include-date-columns-checkbox" [(ngModel)]="dateColumnsIncluded" binary="true"></p-checkbox>
+        Include measurement date columns
+      </div>
     </div>
   </div>
 
@@ -74,20 +79,35 @@
     </p-column>
     <p-column>
       <ng-template pTemplate="header">
-        <span>Download</span>
       </ng-template>
       <ng-template let-job="rowData" pTemplate="body">
         <button type="button"
                 *ngIf="job.jobStatus === 'Completed'"
                 class="btn btn-outline-primary btn-sm"
+                [disabled] = "job.isInDisabledState"
                 (click)="downloadExportJob(job)">
           <span class="fa fa-download"></span>
           Download
         </button>
-
+        <button type="button"
+                *ngIf="['Completed','Error','Cancelled'].indexOf(job.jobStatus) < 0;else archive"
+                class="btn btn-outline-primary btn-sm"
+                [disabled] = "job.isInDisabledState"
+                (click)="cancelExportJob(job)">
+          <span class="fa fa-times"></span>
+          Cancel
+        </button>
+        <ng-template #archive>
+          <button type="button"
+                  class="btn btn-outline-primary btn-sm"
+                  [disabled] = "job.isInDisabledState"
+                  (click)="archiveExportJob(job)">
+            <span class="fa fa-archive"></span>
+            Archive
+          </button>
+        </ng-template>
       </ng-template>
     </p-column>
-
   </p-dataTable>
 
 
