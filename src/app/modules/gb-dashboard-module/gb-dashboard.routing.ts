@@ -4,7 +4,7 @@ import {GbDashboardComponent} from './gb-dashboard.component';
 
 
 const routes: Routes = [
-  //{path: '', component: GbDashboardComponent} // TODO temporal change, to be uncommented!!!
+  {path: '', component: GbDashboardComponent}
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forChild(routes);
