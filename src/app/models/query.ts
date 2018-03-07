@@ -1,3 +1,6 @@
+import {QuerySubscriptionFrequency} from './query-subscription-frequency';
+import {QueryDiffRecord} from './query-diff-record';
+
 export class Query {
 
   private _id: string;
@@ -12,8 +15,6 @@ export class Query {
   private _apiVersion: string;
   // Indicate if the set is bookmarked
   private _bookmarked: boolean;
-  // Indicate if the set is subscribed
-  private _subscribed: boolean;
   // Indicate if the set is collapsed
   private _collapsed: boolean;
   // Indicate if the set is selected, in other words, being edited
@@ -25,12 +26,30 @@ export class Query {
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
 
+  /*
+   * Subscription feature
+   */
+  // Indicate if the set is subscribed
+  private _subscribed: boolean;
+  // Indicate if the subscription panel is collapsed
+  // note that this panel only appears if the query is subscribed
+  private _subscriptionCollapsed: boolean;
+  // The frequency of the subscription: daily or monthly
+  private _subscriptionFreq: QuerySubscriptionFrequency;
+  // The number of patients that this query covers
+  private _numSubjects: number;
+  // The historical records showing the differences between results of this query
+  private _diffRecords: QueryDiffRecord[];
+
+
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
     this.collapsed = false;
     this.bookmarked = false;
     this.selected = false;
+    this.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+    this.diffRecords = [];
   }
 
   get id(): string {
@@ -151,5 +170,37 @@ export class Query {
 
   set updateDateInfo(value: string) {
     this._updateDateInfo = value;
+  }
+
+  get subscriptionCollapsed(): boolean {
+    return this._subscriptionCollapsed;
+  }
+
+  set subscriptionCollapsed(value: boolean) {
+    this._subscriptionCollapsed = value;
+  }
+
+  get subscriptionFreq(): QuerySubscriptionFrequency {
+    return this._subscriptionFreq;
+  }
+
+  set subscriptionFreq(value: QuerySubscriptionFrequency) {
+    this._subscriptionFreq = value;
+  }
+
+  get numSubjects(): number {
+    return this._numSubjects;
+  }
+
+  set numSubjects(value: number) {
+    this._numSubjects = value;
+  }
+
+  get diffRecords(): QueryDiffRecord[] {
+    return this._diffRecords;
+  }
+
+  set diffRecords(value: QueryDiffRecord[]) {
+    this._diffRecords = value;
   }
 }
