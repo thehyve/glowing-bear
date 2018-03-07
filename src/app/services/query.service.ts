@@ -155,6 +155,7 @@ export class QueryService {
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.autosaveSubjectSets = true;
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
     this.loadQueries();
   }
@@ -194,18 +195,14 @@ export class QueryService {
   }
 
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
-    // If there is subject sets saved, no need to compute the total counts based on inclusion and exclusion counts,
-    // but use the subject set and counts per study concept response instead.
-    if (!this.autosaveSubjectSets) {
-      this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
-      this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
-      if (initialUpdate) {
-        this.subjectCount_0 = this.subjectCount_1;
-        this.observationCount_0 = this.observationCount_1;
-      }
-      this.isUpdating_1 = false;
-      this.loadingStateTotal_1 = 'complete';
+    this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
+    this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
+    if (initialUpdate) {
+      this.subjectCount_0 = this.subjectCount_1;
+      this.observationCount_0 = this.observationCount_1;
     }
+    this.isUpdating_1 = false;
+    this.loadingStateTotal_1 = 'complete';
   }
 
   /**
@@ -253,6 +250,13 @@ export class QueryService {
             this.loadingStateInclusion = 'complete';
           }
         );
+    } else {
+      if (this.loadingStateTotal_1 === 'complete' && this.loadingStateExclusion === 'complete') {
+        this.inclusionSubjectCount = this.subjectCount_1 + this.exclusionSubjectCount;
+        this.inclusionObservationCount = this.observationCount_1 + this.exclusionObservationCount;
+        this.loadingStateInclusion = 'complete';
+        this.relayCounts_1_2();
+      }
     }
   }
 
@@ -286,14 +290,14 @@ export class QueryService {
     }
   }
 
-  private updateSubjectCount(subjectCount: number, initialUpdate?: boolean) {
+  private updateSubjectCount_1(subjectCount: number, initialUpdate?: boolean) {
     this.subjectCount_1 = subjectCount;
     if (initialUpdate) {
       this.subjectCount_0 = this.subjectCount_1;
     }
   }
 
-  private updateObservationCount(observationCount: number, initialUpdate?: boolean) {
+  private updateObservationCount_1(observationCount: number, initialUpdate?: boolean) {
     this.observationCount_1 = observationCount;
     if (initialUpdate) {
       this.observationCount_0 = this.observationCount_1;
@@ -310,7 +314,7 @@ export class QueryService {
     if (response) {
       this.patientSet_1 = new PatientSetConstraint();
       this.patientSet_1.id = response.id;
-      this.updateSubjectCount(response.setSize, initialUpdate);
+      this.updateSubjectCount_1(response.setSize, initialUpdate);
       constraint = this.patientSet_1;
     } else {
       constraint = selectionConstraint;
@@ -329,13 +333,12 @@ export class QueryService {
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
-            // Update observation count based on the sum of the tree observation counts
-            this.updateObservationCount(observationCount, initialUpdate);
-            // Update inclusion constraint counts
-            this.updateInclusionCounts(timeStamp, initialUpdate);
-            // Update exclusion constraint counts
-            // (Only execute the exclusion constraint if it has non-empty children)
-            this.updateExclusionCounts(timeStamp, initialUpdate);
+            if (this.autosaveSubjectSets) {
+              // Update observation count based on the sum of the tree observation counts
+              this.updateObservationCount_1(observationCount, initialUpdate);
+              // Update inclusion counts
+              this.updateInclusionCounts(timeStamp, initialUpdate);
+            }
 
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
@@ -389,11 +392,11 @@ export class QueryService {
     this.isLoadingSubjectCount_2 = true;
     this.isLoadingObservationCount_2 = true;
     /*
-     * Inclusion constraint subject count
+     * Update the inclusion counts
      */
     this.updateInclusionCounts(timeStamp, initialUpdate);
     /*
-     * Exclusion constraint subject count
+     * Update exclusion constraint counts
      * (Only execute the exclusion constraint if it has non-empty children)
      */
     this.updateExclusionCounts(timeStamp, initialUpdate);
