@@ -415,7 +415,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        if(category == this.nullValueAutocompleteToken){
+        if (category === this.nullValueAutocompleteToken) {
           newVal.value = null;
         } else {
           newVal.value = category;

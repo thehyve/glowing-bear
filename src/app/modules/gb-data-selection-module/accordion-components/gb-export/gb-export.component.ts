@@ -70,7 +70,7 @@ export class GbExportComponent implements OnInit {
     }
 
     // 3. Validate if at least one data type is selected
-    if (!this.exportFormats.some(ef => ef['checked'] == true)) {
+    if (!this.exportFormats.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       this.queryService.alert(summary, '', 'warn');
       return false;
@@ -78,8 +78,8 @@ export class GbExportComponent implements OnInit {
 
     // 4. Validate if at least one file format is selected for checked data formats
     for (let dataFormat of this.exportFormats) {
-      if (dataFormat['checked'] == true) {
-        if (!dataFormat['fileFormats'].some(ff => ff['checked'] == true)) {
+      if (dataFormat['checked'] === true) {
+        if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
           this.queryService.alert(summary, '', 'warn');
           return false;
