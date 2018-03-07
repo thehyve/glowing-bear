@@ -13,7 +13,6 @@ import {TrialVisit} from '../models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query';
 import {PatientSet} from '../models/patient-set';
-import {PedigreeRelationTypeResponse} from '../models/pedigree-relation-type-response';
 
 @Injectable()
 export class ResourceService {
@@ -241,17 +240,6 @@ export class ResourceService {
     return this.getCall(urlPart, responseField);
   }
 
-  // -------------------------------------- pedigree calls --------------------------------------
-  /**
-   * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
-   * @returns {Observable<Object[]>}
-   */
-  getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
-    const urlPart = 'pedigree/relation_types';
-    const responseField = 'relationTypes';
-    return this.getCall(urlPart, responseField);
-  }
-
   // -------------------------------------- export calls --------------------------------------
   /**
    * Given a list of patient set ids as strings, get the corresponding data formats available for download
@@ -385,6 +373,13 @@ export class ResourceService {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
+  }
+
+  // -------------------------------------- query differences --------------------------------------
+  diffQuery(queryId: string): Observable<object[]> {
+    const urlPart = `queries/${queryId}/sets`;
+    const responseField = 'querySets';
+    return this.getCall(urlPart, responseField);
   }
 
 }

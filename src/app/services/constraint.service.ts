@@ -51,11 +51,15 @@ export class ConstraintService {
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {
+    // Initialize the root inclusion and exclusion constraints in the 1st step
+    this.rootInclusionConstraint = new CombinationConstraint();
+    this.rootInclusionConstraint.isRoot = true;
+    this.rootExclusionConstraint = new CombinationConstraint();
+    this.rootExclusionConstraint.isRoot = true;
 
+    // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
-    // create the pedigree-related constraints
-    this.loadPedigrees();
     // also construct concepts while loading the tree nodes
     this.treeNodeService.loadTreeNodes(this);
 
@@ -87,26 +91,6 @@ export class ConstraintService {
             this.studyConstraints.push(constraint);
             this.allConstraints.push(constraint);
           });
-        },
-        err => console.error(err)
-      );
-  }
-
-  private loadPedigrees() {
-    this.resourceService.getPedigreeRelationTypes()
-      .subscribe(
-        relationTypeObjects => {
-          for (let obj of relationTypeObjects) {
-            let pedigreeConstraint = new PedigreeConstraint(obj.label);
-            pedigreeConstraint.description = obj.description;
-            pedigreeConstraint.biological = obj.biological;
-            pedigreeConstraint.symmetrical = obj.symmetrical;
-            this.allConstraints.push(pedigreeConstraint);
-            this.validPedigreeTypes.push({
-              type: pedigreeConstraint.relationType,
-              text: pedigreeConstraint.textRepresentation
-            });
-          }
         },
         err => console.error(err)
       );
@@ -149,8 +133,6 @@ export class ConstraintService {
    * In the 1st step,
    * Generate the constraint for retrieving the patients with the exclusion criteria,
    * but also in the inclusion set
-   * @param inclusionConstraint
-   * @param exclusionConstraint
    * @returns {CombinationConstraint}
    */
   public generateExclusionConstraint(): Constraint {
@@ -568,7 +550,6 @@ export class ConstraintService {
     }
     return depth;
   }
-
 
   get selectedNode(): any {
     return this._selectedNode;
