@@ -61,7 +61,7 @@ export class ConstraintService {
     this.loadEmptyConstraints();
     this.loadStudies();
     // create the pedigree-related constraints
-    this.loadPedigrees();
+    // this.loadPedigrees();
     // also construct concepts while loading the tree nodes
     this.treeNodeService.loadTreeNodes(this);
 
