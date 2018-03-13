@@ -96,6 +96,26 @@ export class ConstraintService {
       );
   }
 
+  private loadPedigrees() {
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => { console.log('pedigrees: ', relationTypeObjects)
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj.label);
+            pedigreeConstraint.description = obj.description;
+            pedigreeConstraint.biological = obj.biological;
+            pedigreeConstraint.symmetrical = obj.symmetrical;
+            this.allConstraints.push(pedigreeConstraint);
+            this.validPedigreeTypes.push({
+              type: pedigreeConstraint.relationType,
+              text: pedigreeConstraint.textRepresentation
+            });
+          }
+        },
+        err => console.error(err)
+      );
+  }
+
   /**
    * Returns a list of all constraints that match the query string.
    * The constraints should be copied when editing them.
