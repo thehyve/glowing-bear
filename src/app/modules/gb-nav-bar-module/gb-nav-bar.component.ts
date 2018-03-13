@@ -13,9 +13,9 @@ export class GbNavBarComponent implements OnInit {
   private _items: MenuItem[];
   private _activeItem: MenuItem;
 
-  public isDashboard = true;
-  public isDataSelection = false;
-  public isAnalysis = false;
+  // public isDashboard = true;
+  public isDataSelection = true;
+  // public isAnalysis = false;
 
   public queryName: string;
 
@@ -39,17 +39,19 @@ export class GbNavBarComponent implements OnInit {
   }
 
   updateNavbar(whichStep: string) {
-    this.isDashboard = (whichStep === 'dashboard' || whichStep === '');
-    this.isDataSelection = (whichStep === 'data-selection');
-    this.isAnalysis = (whichStep === 'analysis');
+    // this.isDashboard = (whichStep === 'dashboard' || whichStep === '');
+    // this.isDataSelection = (whichStep === 'data-selection');
+    // this.isAnalysis = (whichStep === 'analysis');
 
-    if (this.isDashboard) {
-      this._activeItem = this._items[0];
-    } else if (this.isDataSelection) {
-      this._activeItem = this._items[1];
-    } else if (this.isAnalysis) {
-      this._activeItem = this._items[2];
-    }
+    // if (this.isDashboard) {
+    //   this._activeItem = this._items[0];
+    // } else if (this.isDataSelection) {
+    //   this._activeItem = this._items[1];
+    // } else if (this.isAnalysis) {
+    //   this._activeItem = this._items[2];
+    // }
+
+    this._activeItem = this._items[1];
   }
 
   get items(): MenuItem[] {
