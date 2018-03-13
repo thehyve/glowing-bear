@@ -14,7 +14,7 @@ buildscript {
 }
 
 ext {
-    glowingBearVersion = '0.0.1-SNAPSHOT'
+    glowingBearVersion = '0.3.0-pmc-RC1'
     nodeVersion = '7.10.1'
     gradleWrapperVersion = '4.0'
 }
@@ -78,7 +78,7 @@ publishing {
     repositories {
         maven {
             name 'nl.thehyve.nexus'
-            url 'https://repo.thehyve.nl/content/repositories/snapshots/'
+            url 'https://repo.thehyve.nl/content/repositories/releases/'
         }
     }
     publications {
