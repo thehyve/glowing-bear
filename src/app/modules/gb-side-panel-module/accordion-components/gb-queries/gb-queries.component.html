@@ -35,10 +35,10 @@
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
-      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
-              (click)="sortBySubscription()"
-              icon="icon-sort-subscription">
-      </button>
+      <!--<button pButton class="ui-button-secondary gb-query-sort-btn" type="button"-->
+              <!--(click)="sortBySubscription()"-->
+              <!--icon="icon-sort-subscription">-->
+      <!--</button>-->
     </div>
     <br><br>
   </div>
@@ -55,10 +55,10 @@
             <div class="gb-query-header clearfix">
               <div class="gb-query-header-name">{{query.name}}</div>
               <div class="float-right">
-                <button pButton class="ui-button-secondary" type="button"
-                        (click)="toggleQuerySubscription($event, query)"
-                        icon="{{getQuerySubscriptionButtonIcon(query)}}">
-                </button>
+                <!--<button pButton class="ui-button-secondary" type="button"-->
+                        <!--(click)="toggleQuerySubscription($event, query)"-->
+                        <!--icon="{{getQuerySubscriptionButtonIcon(query)}}">-->
+                <!--</button>-->
                 <button pButton class="ui-button-secondary" type="button"
                         (click)="toggleQueryBookmark($event, query)"
                         icon="{{getQueryBookmarkButtonIcon(query)}}">
@@ -83,57 +83,57 @@
           <div>Created: {{query.createDateInfo}}</div>
           <div>Updated: {{query.updateDateInfo}}</div>
           <!-- start: if the query is subscribed, show the subscription panel -->
-          <div *ngIf="query.subscribed">
-            <div class="gb-subscription-panel-header"
-                 (click)="toggleSubscriptionPanel(query)">Subscription
-            </div>
-            <div *ngIf="!query.subscriptionCollapsed"
-                 class="gb-subscription-panel-body">
-              <div>
-                <span>frequency:</span>
-                <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
-                               (click)="radioCheckSubscriptionFrequency(query)"
-                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
-                ,&nbsp;&nbsp;
-                <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
-                               (click)="radioCheckSubscriptionFrequency(query)"
-                               [(ngModel)]="query.subscriptionFreq"></p-radioButton>
-              </div>
-              <div *ngIf="query.diffRecords && query.diffRecords.length > 0">
-                <div *ngFor="let record of query.diffRecords">
-                  <hr>
-                  <span>
-                    <b>{{record.createDate}}</b>
-                    <button class="gb-query-log-download-btn"
-                            (click)="downloadSubscriptionRecord(query, record)">
-                      <i class="fa fa-arrow-down"></i>
-                    </button>
-                  </span>
-                  <div class="gb-subscription-panel-body-record"
-                       (click)="toggleSubscriptionRecordPanel(record)">
-                    <div *ngIf="record.showCompleteRepresentation">
-                      <div *ngFor="let diffType of record.diffTypes">
-                        {{record.countRepresentation[diffType]}}
-                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                        {{record.completeRepresentation[diffType]}}
-                      </div>
-                    </div>
-                    <div *ngIf="!record.showCompleteRepresentation">
-                      <div *ngFor="let diffType of record.diffTypes">
-                        {{record.countRepresentation[diffType]}}
-                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
-                        {{record.partialRepresentation[diffType]}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <!--<div *ngIf="query.subscribed">-->
+            <!--<div class="gb-subscription-panel-header"-->
+                 <!--(click)="toggleSubscriptionPanel(query)">Subscription-->
+            <!--</div>-->
+            <!--<div *ngIf="!query.subscriptionCollapsed"-->
+                 <!--class="gb-subscription-panel-body">-->
+              <!--<div>-->
+                <!--<span>frequency:</span>-->
+                <!--<p-radioButton [(name)]="query.id" value="DAILY" label="Daily"-->
+                               <!--(click)="radioCheckSubscriptionFrequency(query)"-->
+                               <!--[(ngModel)]="query.subscriptionFreq"></p-radioButton>-->
+                <!--,&nbsp;&nbsp;-->
+                <!--<p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"-->
+                               <!--(click)="radioCheckSubscriptionFrequency(query)"-->
+                               <!--[(ngModel)]="query.subscriptionFreq"></p-radioButton>-->
+              <!--</div>-->
+              <!--<div *ngIf="query.diffRecords && query.diffRecords.length > 0">-->
+                <!--<div *ngFor="let record of query.diffRecords">-->
+                  <!--<hr>-->
+                  <!--<span>-->
+                    <!--<b>{{record.createDate}}</b>-->
+                    <!--<button class="gb-query-log-download-btn"-->
+                            <!--(click)="downloadSubscriptionRecord(query, record)">-->
+                      <!--<i class="fa fa-arrow-down"></i>-->
+                    <!--</button>-->
+                  <!--</span>-->
+                  <!--<div class="gb-subscription-panel-body-record"-->
+                       <!--(click)="toggleSubscriptionRecordPanel(record)">-->
+                    <!--<div *ngIf="record.showCompleteRepresentation">-->
+                      <!--<div *ngFor="let diffType of record.diffTypes">-->
+                        <!--{{record.countRepresentation[diffType]}}-->
+                        <!--{{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:-->
+                        <!--{{record.completeRepresentation[diffType]}}-->
+                      <!--</div>-->
+                    <!--</div>-->
+                    <!--<div *ngIf="!record.showCompleteRepresentation">-->
+                      <!--<div *ngFor="let diffType of record.diffTypes">-->
+                        <!--{{record.countRepresentation[diffType]}}-->
+                        <!--{{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:-->
+                        <!--{{record.partialRepresentation[diffType]}}-->
+                      <!--</div>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
 
-              <div *ngIf="query.diffRecords.length === 0">
-                no record
-              </div>
-            </div>
-          </div>
+              <!--<div *ngIf="query.diffRecords.length === 0">-->
+                <!--no record-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
         </div>
       </md2-accordion-tab>
     </md2-accordion>

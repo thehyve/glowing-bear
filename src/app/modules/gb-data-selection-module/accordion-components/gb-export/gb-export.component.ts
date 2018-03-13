@@ -88,11 +88,11 @@ export class GbExportComponent implements OnInit {
     }
 
     // 5. Validate if at least one observation is included
-    if (this.queryService.observationCount_2 < 1) {
-      const summary = 'No observation included to be exported.';
-      this.queryService.alert(summary, '', 'warn');
-      return false;
-    }
+    // if (this.queryService.observationCount_2 < 1) {
+    //   const summary = 'No observation included to be exported.';
+    //   this.queryService.alert(summary, '', 'warn');
+    //   return false;
+    // }
 
     return true;
   }
