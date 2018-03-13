@@ -101,7 +101,7 @@ export class ConstraintService {
   private loadPedigrees() {
     this.resourceService.getPedigreeRelationTypes()
       .subscribe(
-        relationTypeObjects => { console.log('pedigrees: ', relationTypeObjects)
+        relationTypeObjects => {
           for (let obj of relationTypeObjects) {
             let pedigreeConstraint = new PedigreeConstraint(obj.label);
             pedigreeConstraint.description = obj.description;
