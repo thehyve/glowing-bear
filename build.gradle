@@ -83,6 +83,7 @@ publishing {
     }
     publications {
         maven(MavenPublication) {
+            artifactId 'glowing-bear'
             artifact distTar // Publish the output of the distTar task
         }
     }
