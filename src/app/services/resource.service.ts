@@ -312,21 +312,18 @@ export class ResourceService {
    * }]
    *
    * @param jobId
-   * @param elements
    * @param constraint
-   * @param includeMeasurementDateColumns
+   * @param elements
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                constraint: Constraint,
-               elements: object[],
-               includeMeasurementDateColumns: boolean): Observable<ExportJob> {
+               elements: object[]): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     const body = {
       constraint: constraint.toQueryObject(),
-      elements: elements,
-      includeMeasurementDateColumns: includeMeasurementDateColumns
+      elements: elements
     };
     return this.postCall(urlPart, body, responseField);
   }
