@@ -26,9 +26,9 @@ export class GbNavBarComponent implements OnInit {
 
   ngOnInit() {
     this._items = [
-      {label: 'Dashboard', routerLink: '/dashboard'},
-      {label: 'Data Selection', routerLink: '/data-selection'},
-      {label: 'Analysis', routerLink: '/analysis'}
+      // {label: 'Dashboard', routerLink: '/dashboard'},
+      {label: 'Data Selection', routerLink: '/data-selection'}
+      // {label: 'Analysis', routerLink: '/analysis'}
     ];
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
