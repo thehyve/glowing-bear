@@ -28,6 +28,7 @@ import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbPatientSetConstraintComponent} from './constraint-components/gb-patient-set-constraint/gb-patient-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
+import { GbTableComponent } from './accordion-components/gb-table/gb-table.component';
 
 @NgModule({
   imports: [
@@ -63,7 +64,8 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
     GbConceptConstraintComponent,
     GbProjectionComponent,
     GbPatientSetConstraintComponent,
-    GbPedigreeConstraintComponent
+    GbPedigreeConstraintComponent,
+    GbTableComponent
   ],
   entryComponents: [
     GbConstraintComponent,
