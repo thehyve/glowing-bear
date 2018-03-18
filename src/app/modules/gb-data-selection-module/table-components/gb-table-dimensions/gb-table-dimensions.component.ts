@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Dimension} from '../../../../models/dimension';
+import {TableService} from '../../../../services/table.service';
 
 @Component({
   selector: 'gb-table-dimensions',
@@ -12,14 +13,17 @@ export class GbTableDimensionsComponent implements OnInit {
   public rows: Dimension[];
   public cols: Dimension[];
 
-  constructor() {
+  constructor(private tableService: TableService) {
   }
 
   ngOnInit() {
     this.rows = [];
     this.candidates = [];
-    this.candidates.push(new Dimension('d1'));
-    this.candidates.push(new Dimension('d2'));
+    this.cols = [];
+
+    for (let dim of this.tableService.generateTableDimensions()) {
+      this.candidates.push(dim);
+    }
   }
 
 }

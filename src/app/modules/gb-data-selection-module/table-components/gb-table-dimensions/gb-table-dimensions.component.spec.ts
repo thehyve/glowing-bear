@@ -1,14 +1,16 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTableDimensionsComponent} from './gb-table-dimensions.component';
+import {TableService} from '../../../../services/table.service';
 
-describe('GbTableDimensionComponent', () => {
+describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
   let fixture: ComponentFixture<GbTableDimensionsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTableDimensionsComponent]
+      declarations: [GbTableDimensionsComponent],
+      providers: [TableService]
     })
       .compileComponents();
   }));
@@ -19,7 +21,7 @@ describe('GbTableDimensionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create GbTableDimensionsComponent', () => {
     expect(component).toBeTruthy();
   });
 });
