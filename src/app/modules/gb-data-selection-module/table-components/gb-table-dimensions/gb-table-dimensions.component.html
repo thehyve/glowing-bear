@@ -54,8 +54,8 @@
     <!-- candidates -->
     <div class="col-md-2 gb-table-dimension-container">
       <div class="gb-table-dimension-header">Candidates</div>
-      <div>
-        content
+      <div *ngFor="let dim of candidates">
+        {{dim.name}}
       </div>
     </div>
     <!-- col-candidate controls -->
