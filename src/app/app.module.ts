@@ -18,6 +18,7 @@ import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
+import {TableService} from './services/table.service';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -45,6 +46,7 @@ export function initConfig(config: AppConfig) {
     TreeNodeService,
     ConstraintService,
     QueryService,
+    TableService,
     AppConfig,
     {
       provide: APP_INITIALIZER,

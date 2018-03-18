@@ -4,7 +4,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {Response} from '@angular/http';
 import {ExportJob} from '../../../../models/export-job';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
 

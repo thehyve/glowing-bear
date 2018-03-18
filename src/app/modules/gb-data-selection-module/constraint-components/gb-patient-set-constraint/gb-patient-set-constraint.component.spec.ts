@@ -6,7 +6,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {PatientSetConstraint} from '../../../../models/constraints/patient-set-constraint';
+import {PatientSetConstraint} from '../../../../models/constraint-models/patient-set-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 

@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SelectItem} from 'primeng/primeng';
-import {Constraint} from '../../../../models/constraints/constraint';
-import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {Constraint} from '../../../../models/constraint-models/constraint';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 
 type TriState = true | false | undefined;
 

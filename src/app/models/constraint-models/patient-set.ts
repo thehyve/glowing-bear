@@ -1,4 +1,4 @@
-import { Constraint } from './constraints/constraint';
+import { Constraint } from './constraint';
 
 export class PatientSet {
 

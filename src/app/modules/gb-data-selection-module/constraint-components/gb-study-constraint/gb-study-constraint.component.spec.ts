@@ -9,7 +9,7 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 

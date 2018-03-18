@@ -1,4 +1,4 @@
-import {Query} from '../../models/query';
+import {Query} from '../../models/query-models/query';
 
 export class QueryServiceMock {
   private _queries: Query[] = [];

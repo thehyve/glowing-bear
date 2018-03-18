@@ -5,11 +5,12 @@ import {
   trigger, style, animate, transition
 } from '@angular/animations';
 import {GbConstraintComponent} from '../../constraint-components/gb-constraint/gb-constraint.component';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
-import {Step} from '../../../../models/step';
-import {FormatHelper} from "../../../../utilities/FormatHelper";
+import {Step} from '../../../../models/query-models/step';
+import {FormatHelper} from '../../../../utilities/FormatHelper';
+import {Query} from '../../../../models/query-models/query';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -19,7 +20,7 @@ type LoadingState = 'loading' | 'complete';
   styleUrls: ['./gb-selection.component.css'],
   animations: [
     trigger('notifyState', [
-      transition( 'loading => complete', [
+      transition('loading => complete', [
         style({
           background: 'rgba(51, 156, 144, 0.5)'
         }),
@@ -96,12 +97,12 @@ export class GbSelectionComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  private parseFile(file: File, data: any) {
+  private parseFile(file: File, data: any): Query {
     let patientsQuery = {};
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
-      (file.type === '' && file.name.split('.').pop() != 'json')) {
+      (file.type === '' && file.name.split('.').pop() !== 'json')) {
       // we assume the text contains a list of subject Ids
       let subjectIds: string[] = data.split(/(\r\n)+/)
         .map(id => id.trim())
@@ -125,11 +126,10 @@ export class GbSelectionComponent implements OnInit {
       this.queryService.alert(msg, '', 'error');
       return;
     }
-    return {
-      'name': file.name.substr(0, file.name.indexOf('.')),
-      'patientsQuery': patientsQuery,
-      'observationsQuery': {}
-    };
+    let name = file.name.substr(0, file.name.indexOf('.'));
+    let query = new Query('', name);
+    query.patientsQuery = patientsQuery;
+    return query;
   }
 
   get loadingStateInclusion(): LoadingState {

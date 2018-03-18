@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {Study} from '../study';
+import {Study} from './study';
 
 export class StudyConstraint implements Constraint {
 
