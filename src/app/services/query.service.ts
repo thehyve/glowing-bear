@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraints/combination-constraint';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
-import {Query} from '../models/query';
+import {Query} from '../models/query-models/query';
 import {ConstraintService} from './constraint.service';
-import {Step} from '../models/step';
-import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
+import {Step} from '../models/query-models/step';
+import {PatientSetConstraint} from '../models/constraint-models/patient-set-constraint';
 import {FormatHelper} from '../utilities/FormatHelper';
-import {PatientSet} from '../models/patient-set';
-import {Constraint} from '../models/constraints/constraint';
+import {PatientSet} from '../models/constraint-models/patient-set';
+import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
-import {QueryDiffRecord} from '../models/query-diff-record';
-import {QuerySetType} from '../models/query-set-type';
-import {QueryDiffItem} from '../models/query-diff-item';
-import {QueryDiffType} from '../models/query-diff-type';
-import {QuerySubscriptionFrequency} from '../models/query-subscription-frequency';
+import {QueryDiffRecord} from '../models/query-models/query-diff-record';
+import {QuerySetType} from '../models/query-models/query-set-type';
+import {QueryDiffItem} from '../models/query-models/query-diff-item';
+import {QueryDiffType} from '../models/query-models/query-diff-type';
+import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 
 type LoadingState = 'loading' | 'complete';
 

@@ -1,14 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {Concept} from '../../../../models/concept';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
-import {ValueConstraint} from '../../../../models/constraints/value-constraint';
-import {TrialVisit} from '../../../../models/trial-visit';
-import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
+import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
+import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
+import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/UIHelper';
-import {DateOperatorState} from '../../../../models/constraints/date-operator-state';
+import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 
 @Component({
   selector: 'gb-concept-constraint',

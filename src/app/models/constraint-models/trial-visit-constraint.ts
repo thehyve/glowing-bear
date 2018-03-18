@@ -1,5 +1,5 @@
 import {Constraint} from './constraint';
-import {TrialVisit} from '../trial-visit';
+import {TrialVisit} from './trial-visit';
 
 export class TrialVisitConstraint implements Constraint {
 

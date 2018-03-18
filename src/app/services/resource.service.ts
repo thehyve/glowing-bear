@@ -6,14 +6,14 @@ import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 
-import {Study} from '../models/study';
+import {Study} from '../models/constraint-models/study';
 import {EndpointService} from './endpoint.service';
-import {Constraint} from '../models/constraints/constraint';
-import {TrialVisit} from '../models/trial-visit';
+import {Constraint} from '../models/constraint-models/constraint';
+import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-job';
-import {Query} from '../models/query';
-import {PatientSet} from '../models/patient-set';
-import {PedigreeRelationTypeResponse} from '../models/pedigree-relation-type-response';
+import {Query} from '../models/query-models/query';
+import {PatientSet} from '../models/constraint-models/patient-set';
+import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 
 @Injectable()
 export class ResourceService {

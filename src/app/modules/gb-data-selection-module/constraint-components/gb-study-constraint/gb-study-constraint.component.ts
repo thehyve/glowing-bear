@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Study} from '../../../../models/study';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {Study} from '../../../../models/constraint-models/study';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {UIHelper} from '../../../../utilities/UIHelper';

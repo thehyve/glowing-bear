@@ -1,13 +1,13 @@
 import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
-import {Constraint} from '../../../../models/constraints/constraint';
+import {Constraint} from '../../../../models/constraint-models/constraint';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {QueryService} from '../../../../services/query.service';
-import {Step} from '../../../../models/step';
+import {Step} from '../../../../models/query-models/step';
 
 @Component({
   selector: 'gb-constraint',
