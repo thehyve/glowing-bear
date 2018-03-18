@@ -8,7 +8,7 @@
                  (open)="openAccordion($event)"
                  (close)="closeAccordion($event)">
     <!-- The 1st step -->
-    <md2-accordion-tab [active]="true">
+    <md2-accordion-tab>
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
           <div class="gb-data-selection-accordion-sub-header-1">
@@ -65,7 +65,8 @@
       <gb-projection></gb-projection>
     </md2-accordion-tab>
 
-    <md2-accordion-tab>
+    <!-- The 3rd step -->
+    <md2-accordion-tab [active]="true">
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
           <div class="gb-data-selection-accordion-sub-header-1">
@@ -79,8 +80,10 @@
           </div>
         </div>
       </md2-accordion-header>
+      <gb-table></gb-table>
     </md2-accordion-tab>
 
+    <!-- The 4th step -->
     <md2-accordion-tab>
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">

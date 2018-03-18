@@ -1,0 +1,30 @@
+.gb-table-dimensions-container {
+  /* top right bottom left */
+  margin: 1px 1em 1px 1px;
+  padding: 2px;
+  text-align: center;
+  /*border: red 1px solid;*/
+}
+
+.gb-table-dimension-container {
+  border: lightgray 1px solid;
+  border-radius: .3em;
+  margin: 0px;
+}
+
+.gb-table-dimension-header {
+  text-align: center;
+  color: var(--gb-clinical-green-dark);
+  font-weight: bold;
+  width: 100%;
+  border-bottom: lightgray 1px solid;
+}
+
+.gb-table-dimension-controls-container {
+  margin-top: 1.5em;
+}
+
+.gb-table-dimension-controls-container button {
+  margin: 1px;
+  padding: 0px;
+}
