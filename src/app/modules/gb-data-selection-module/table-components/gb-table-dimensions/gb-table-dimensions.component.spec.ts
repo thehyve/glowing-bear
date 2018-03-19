@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTableDimensionsComponent} from './gb-table-dimensions.component';
 import {TableService} from '../../../../services/table.service';
-import {PickListModule} from 'primeng/primeng';
+import {CheckboxModule, PickListModule} from 'primeng/primeng';
 
 describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
@@ -12,7 +12,8 @@ describe('GbTableDimensionsComponent', () => {
     TestBed.configureTestingModule({
       declarations: [GbTableDimensionsComponent],
       imports: [
-        PickListModule
+        PickListModule,
+        CheckboxModule
       ],
       providers: [TableService]
     })
