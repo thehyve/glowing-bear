@@ -25,6 +25,8 @@ export class Query {
   private _observationsQuery: {data: string[]};
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
+  // Additional information about the query, e.g. a data table state
+  private _queryBlob: string;
 
   /*
    * Subscription feature
@@ -154,6 +156,14 @@ export class Query {
 
   set visible(value: boolean) {
     this._visible = value;
+  }
+
+  get queryBlob(): string {
+    return this._queryBlob;
+  }
+
+  set queryBlob(value: string) {
+    this._queryBlob = value;
   }
 
   get createDateInfo(): string {
