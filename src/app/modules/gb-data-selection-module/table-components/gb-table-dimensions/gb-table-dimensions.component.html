@@ -11,6 +11,7 @@
               [targetStyle]="{'height':'300px'}">
     <ng-template let-dim pTemplate="item">
       <div>
+        <p-checkbox [(ngModel)]="dim.selected" binary="true"></p-checkbox>
         {{dim.name}}
       </div>
     </ng-template>
