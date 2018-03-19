@@ -2,25 +2,21 @@ import {Dimension} from '../../models/table-models/dimension';
 
 export class TableServiceMock {
 
-  private _candidates: Dimension[];
   private _rows: Dimension[];
   private _columns: Dimension[];
 
   constructor() {
     this.rows = [];
     this.columns = [];
-    this.candidates = [];
-    this.candidates.push(new Dimension('d1'));
-    this.candidates.push(new Dimension('d2'));
-    this.candidates.push(new Dimension('d3'));
-  }
 
-  get candidates(): Dimension[] {
-    return this._candidates;
-  }
+    this.rows.push(new Dimension('dimension-1'));
+    this.rows.push(new Dimension('dimension-2'));
+    this.rows.push(new Dimension('dimension-3'));
+    this.rows.push(new Dimension('dimension-4'));
+    this.rows.push(new Dimension('dimension-5'));
 
-  set candidates(value: Dimension[]) {
-    this._candidates = value;
+    this.columns.push(new Dimension('dimension-6'));
+    this.columns.push(new Dimension('dimension-7'));
   }
 
   get rows(): Dimension[] {
