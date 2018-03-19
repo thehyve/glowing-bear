@@ -1,7 +1,7 @@
 import {Observable} from 'rxjs/Observable';
-import {Study} from '../../models/study';
+import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-job';
-import {Query} from '../../models/query';
+import {Query} from '../../models/query-models/query';
 
 export class ResourceServiceMock {
   private studies: Study[];

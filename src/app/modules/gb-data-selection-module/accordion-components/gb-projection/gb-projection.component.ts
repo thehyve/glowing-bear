@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
-import {Step} from '../../../../models/step';
+import {Step} from '../../../../models/query-models/step';
 
 @Component({
   selector: 'gb-projection',

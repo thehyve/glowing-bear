@@ -1,5 +1,5 @@
-import {CombinationConstraint} from '../../models/constraints/combination-constraint';
-import {Constraint} from '../../models/constraints/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {Constraint} from '../../models/constraint-models/constraint';
 
 export class ConstraintServiceMock {
 

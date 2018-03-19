@@ -4,6 +4,7 @@ import {ResourceService} from './services/resource.service';
 import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
+import {TableService} from './services/table.service';
 
 @Component({
   selector: 'app-root',
@@ -25,7 +26,8 @@ export class AppComponent implements OnInit {
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private queryService: QueryService) {
+              private queryService: QueryService,
+              private tableService: TableService) {
   }
 
   ngOnInit() {
