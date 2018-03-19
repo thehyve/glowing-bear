@@ -139,6 +139,24 @@ export class TableService {
     return dimensionsAbove;
   }
 
+  updateTable(state: Object){
+    let rows = state['rowDimensions'];
+    let cols = state['columnDimensions'];
+    let sorting = state['sorting'];
+
+    let allDimensions = rows.concat(cols.filter(function (item) {
+      return rows.indexOf(item) < 0;
+    }));
+
+    if (cols.length > 0){
+      this.columnDimensions = allDimensions.filter(dim =>  cols.includes(dim.name));
+    } else {
+      this.rowDimensions.length = 0;
+    }
+    let candidates = this.rowDimensions;
+    this.rowDimensions = candidates.filter(dim => (!this.rowDimensions.includes(dim)) && (!this.rowDimensions.includes(dim)));
+  }
+
   get rowDimensions(): Dimension[] {
     return this.dataTable.rowDimensions;
   }
@@ -169,5 +187,5 @@ export class TableService {
 
   set dataTable(value: DataTable) {
     this._dataTable = value;
-  }
+
 }

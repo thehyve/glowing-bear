@@ -15,6 +15,7 @@ import {QuerySetType} from '../models/query-models/query-set-type';
 import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {TableService} from "./table.service";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -154,7 +155,8 @@ export class QueryService {
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private tableService: TableService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
@@ -592,6 +594,7 @@ export class QueryService {
   public saveQuery(queryName: string) {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const patientConstraintObj = selectionConstraint.toQueryObject(true);
+    const dataTableState = this.tableService.dataTable;
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
@@ -599,11 +602,15 @@ export class QueryService {
     const observationConstraintObj = {
       data: data
     };
+    const dataTableStateObj = {
+      dataTableState: dataTableState
+    };
     const queryObj = {
       name: queryName,
       patientsQuery: patientConstraintObj,
       observationsQuery: observationConstraintObj,
-      bookmarked: false
+      bookmarked: false,
+      queryBlob: dataTableStateObj
     };
     this.saveQueryObj(queryObj);
   }
@@ -640,6 +647,10 @@ export class QueryService {
       this.updateCounts_1();
     }
     this.updateCounts_2();
+    if(query.queryBlob && query.queryBlob['dataTableState']){
+      this.tableService.updateTable(query.queryBlob['dataTableState']);
+    }
+
 
     // TODO: To display more information in the alertDetails:
     // - total number of imported nodes/items
