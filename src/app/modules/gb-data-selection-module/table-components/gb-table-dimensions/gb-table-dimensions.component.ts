@@ -20,20 +20,20 @@ export class GbTableDimensionsComponent implements OnInit {
     this.selectedDimensions = [];
   }
 
-  get rows(): Dimension[] {
-    return this.tableService.rows;
+  get rowDimensions(): Dimension[] {
+    return this.tableService.rowDimensions;
   }
 
-  set rows(value: Dimension[]) {
-    this.tableService.rows = value;
+  set rowDimensions(value: Dimension[]) {
+    this.tableService.rowDimensions = value;
   }
 
-  get cols(): Dimension[] {
-    return this.tableService.columns;
+  get columnDimensions(): Dimension[] {
+    return this.tableService.columnDimensions;
   }
 
-  set cols(value: Dimension[]) {
-    this.tableService.columns = value;
+  set columnDimensions(value: Dimension[]) {
+    this.tableService.columnDimensions = value;
   }
 
 }
