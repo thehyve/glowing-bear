@@ -1,10 +1,10 @@
 export class Dimension {
   private _name: string;
-  private _selected: boolean;
+  private _selected: boolean; // indicating if this dimension is selected in UI
 
   constructor(name: string) {
     this.name = name;
-    this.selected = false;
+    this.selected = true;
   }
 
   get name(): string {

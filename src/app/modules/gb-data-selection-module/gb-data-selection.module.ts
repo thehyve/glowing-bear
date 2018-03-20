@@ -21,7 +21,7 @@ import {
   TreeTableModule,
   DropdownModule,
   TooltipModule,
-  MessagesModule
+  MessagesModule, PickListModule
 } from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
@@ -47,7 +47,8 @@ import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions
     TreeTableModule,
     DropdownModule,
     TooltipModule,
-    MessagesModule
+    MessagesModule,
+    PickListModule
   ],
   exports: [
     RouterModule

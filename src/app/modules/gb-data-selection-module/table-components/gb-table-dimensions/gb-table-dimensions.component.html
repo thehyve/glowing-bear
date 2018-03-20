@@ -1,133 +1,19 @@
 <div class="gb-table-dimension-container">
-
-  <div class="row">
-    <!-- start row -->
-    <!-- row controls -->
-    <div class="col-md-1">
-      <div class="gb-table-dimension-controls-container">
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-up"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-double-up"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-down"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-double-down"></button>
-      </div>
-    </div>
-    <!-- rows -->
-    <div class="col-md-3 gb-table-dimension-col">
-      <div class="gb-table-dimension-header">Rows</div>
-      <div *ngFor="let dim of rows"
-           class="gb-table-dimension-item"
-           [ngClass]="{'gb-table-dimension-item-selected': dim.selected}"
-           (click)="selectDimension($event, dim, DimensionZoneEnum.Rows)"
-           draggable="true">
+  <p-pickList [source]="rows" [target]="cols"
+              sourceHeader="Rows" targetHeader="Columns" [responsive]="true"
+              filterBy="name" [dragdrop]="true"
+              [metaKeySelection]="false"
+              sourceFilterPlaceholder="Search by name"
+              targetFilterPlaceholder="Search by name"
+              [showSourceControls]="false"
+              [showTargetControls]="false"
+              [sourceStyle]="{'height':'300px'}"
+              [targetStyle]="{'height':'300px'}">
+    <ng-template let-dim pTemplate="item">
+      <div>
+        <p-checkbox [(ngModel)]="dim.selected" binary="true"></p-checkbox>
         {{dim.name}}
       </div>
-    </div>
-    <!-- row-candidate controls -->
-    <div class="col-md-1">
-      <div class="gb-table-dimension-controls-container">
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(candidates, rows)"
-                icon="fa-angle-left"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(rows, candidates)"
-                icon="fa-angle-right"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(candidates, rows, true)"
-                icon="fa-angle-double-left"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(rows, candidates, true)"
-                icon="fa-angle-double-right"></button>
-      </div>
-    </div>
-    <!-- candidates -->
-    <div class="col-md-2 gb-table-dimension-col">
-      <div class="gb-table-dimension-header">Candidates</div>
-      <div *ngFor="let dim of candidates"
-           class="gb-table-dimension-item"
-           [ngClass]="{'gb-table-dimension-item-selected': dim.selected}"
-           (click)="selectDimension($event, dim, DimensionZoneEnum.Candidates)"
-           draggable="true">
-        {{dim.name}}
-      </div>
-    </div>
-    <!-- col-candidate controls -->
-    <div class="col-md-1">
-      <div class="gb-table-dimension-controls-container">
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(candidates, cols)"
-                icon="fa-angle-right"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(cols, candidates)"
-                icon="fa-angle-left"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(candidates, cols, true)"
-                icon="fa-angle-double-right"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                (click)="moveDimensions(cols, candidates, true)"
-                icon="fa-angle-double-left"></button>
-      </div>
-    </div>
-    <!-- columns -->
-    <div class="col-md-3 gb-table-dimension-col">
-      <div class="gb-table-dimension-header">Columns</div>
-      <div *ngFor="let dim of cols"
-           class="gb-table-dimension-item"
-           [ngClass]="{'gb-table-dimension-item-selected': dim.selected}"
-           (click)="selectDimension($event, dim, DimensionZoneEnum.Columns)"
-           draggable="true">
-        {{dim.name}}
-      </div>
-    </div>
-    <!-- col controls -->
-    <div class="col-md-1">
-      <div class="gb-table-dimension-controls-container">
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-up"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-double-up"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-down"></button>
-        <button pButton
-                class="ui-button-icon-only btn-sm"
-                type="button"
-                icon="fa-angle-double-down"></button>
-      </div>
-    </div>
-    <!-- end row-->
-  </div>
-
+    </ng-template>
+  </p-pickList>
 </div>
