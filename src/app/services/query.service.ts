@@ -16,6 +16,7 @@ import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from "./table.service";
+import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -176,10 +177,11 @@ export class QueryService {
   public loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
-        (queries: Query[]) => {
+        (transmartQueries: TransmartQuery[]) => {
           this.queries.length = 0;
           let bookmarkedQueries = [];
-          queries.forEach(query => {
+          transmartQueries.forEach(tmQuery => {
+            let query: Query = this.parseTransmartQuery(tmQuery);
             query.collapsed = true;
             query.visible = true;
             query.subscriptionCollapsed = true;
@@ -596,38 +598,35 @@ export class QueryService {
     const patientConstraintObj = selectionConstraint.toQueryObject(true);
     const dataTableState = this.tableService.dataTable;
     let data = [];
+    const transmartQuery: TransmartQuery = new TransmartQuery(queryName);
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    const observationConstraintObj = {
+    transmartQuery.patientsQuery = patientConstraintObj;
+    transmartQuery.observationsQuery = {
       data: data
     };
-    const dataTableStateObj = {
+    transmartQuery.queryBlob = {
       dataTableState: dataTableState
     };
-    const queryObj = {
-      name: queryName,
-      patientsQuery: patientConstraintObj,
-      observationsQuery: observationConstraintObj,
-      bookmarked: false,
-      queryBlob: dataTableStateObj
-    };
-    this.saveQueryObj(queryObj);
+    this.saveQueryObj(transmartQuery);
   }
 
-  public saveQueryObj(queryObj: Object) {
-    this.resourceService.saveQuery(queryObj)
+  public saveQueryObj(transmartQuery: TransmartQuery) {
+    this.resourceService.saveQuery(transmartQuery)
       .subscribe(
-        (newlySavedQuery) => {
-          newlySavedQuery['collapsed'] = true;
-          newlySavedQuery['visible'] = true;
-          this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryObj['name'] + '" is added.';
+        (newlySavedQuery: TransmartQuery) => {
+          const newQuery = this.parseTransmartQuery(newlySavedQuery);
+          newQuery.collapsed = true;
+          newQuery.visible = true;
+
+          this.queries.push(newQuery);
+          const summary = 'Query "' + newQuery.name + '" is added.';
           this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not add the query "' + queryObj['name'] + '".';
+          const summary = 'Could not add the query "' + transmartQuery.name + '".';
           this.alert(summary, '', 'error');
         }
       );
@@ -647,8 +646,9 @@ export class QueryService {
       this.updateCounts_1();
     }
     this.updateCounts_2();
-    if(query.queryBlob && query.queryBlob['dataTableState']){
-      this.tableService.updateTable(query.queryBlob['dataTableState']);
+    // todo updateCounts_3
+    if(query.dataTableState){
+      this.tableService.updateTable(query.dataTableState);
     }
 
 
@@ -662,11 +662,11 @@ export class QueryService {
     this.alert(alertSummary, alertDetails, 'info');
   }
 
-  public updateQuery(query: Query, queryObject: object) {
-    this.resourceService.updateQuery(query.id, queryObject)
+  public updateQuery(query: Query, transmartQuery: TransmartQuery) {
+    this.resourceService.updateQuery(query.id, transmartQuery)
       .subscribe(
         () => {
-          if (queryObject['subscribed']) {
+          if (transmartQuery.subscribed) {
             this.resourceService.diffQuery(query.id)
               .subscribe(
                 records => {
@@ -679,7 +679,7 @@ export class QueryService {
       );
   }
 
-  public deleteQuery(query) {
+  public deleteQuery(query: Query) {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
@@ -694,6 +694,20 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
+  }
+
+  public parseTransmartQuery(transmartQuery: TransmartQuery):Query {
+    const query = new Query(transmartQuery.id, transmartQuery.name);
+    query.createDate = transmartQuery.createDate;
+    query.updateDate = transmartQuery.updateDate;
+    query.bookmarked = transmartQuery.bookmarked;
+    query.patientsQuery = transmartQuery.patientsQuery;
+    query.observationsQuery = transmartQuery.observationsQuery;
+    query.dataTableState = transmartQuery.queryBlob ? transmartQuery.queryBlob['dataTableState'] : null;
+    query.apiVersion = transmartQuery.apiVersion;
+    query.subscribed = transmartQuery.subscribed;
+    query.subscriptionFreq = transmartQuery.subscriptionFreq;
+    return query;
   }
 
   public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {

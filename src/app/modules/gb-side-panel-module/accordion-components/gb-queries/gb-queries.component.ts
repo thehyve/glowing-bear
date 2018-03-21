@@ -7,6 +7,7 @@ import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
 import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
+import {TransmartQuery} from "../../../../models/transmart-resource-models/transmart-query";
 
 @Component({
   selector: 'gb-queries',
@@ -80,15 +81,15 @@ export class GbQueriesComponent implements OnInit {
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
-    const queryObject = {
+    let transmartQuery: TransmartQuery = {
       subscribed: query.subscribed
     };
     if (query.subscribed) {
-      queryObject['subscriptionFreq'] =
+      transmartQuery.subscriptionFreq =
         query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObject['subscriptionFreq'];
+      query.subscriptionFreq = transmartQuery.subscriptionFreq;
     }
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, transmartQuery);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -99,10 +100,10 @@ export class GbQueriesComponent implements OnInit {
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
     query.bookmarked = !query.bookmarked;
-    const queryObject = {
-      bookmarked: query.bookmarked
+    let transmartQuery: TransmartQuery = {
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, transmartQuery);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -150,11 +151,11 @@ export class GbQueriesComponent implements OnInit {
     DownloadHelper.downloadJSON(query, query.name);
   }
 
-  radioCheckSubscriptionFrequency(query) {
-    const queryObject = {
+  radioCheckSubscriptionFrequency(query: Query) {
+    let transmartQuery: TransmartQuery = {
       subscriptionFreq: query.subscriptionFreq
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, transmartQuery);
   }
 
   downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {

@@ -14,6 +14,7 @@ import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
+import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 
 @Injectable()
 export class ResourceService {
@@ -375,9 +376,9 @@ export class ResourceService {
   // -------------------------------------- query calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<Query[]>}
+   * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Query[]> {
+  getQueries(): Observable<TransmartQuery[]> {
     const urlPart = `queries`;
     const responseField = 'queries';
     return this.getCall(urlPart, responseField);
@@ -386,9 +387,9 @@ export class ResourceService {
   /**
    * Save a new query.
    * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @returns {Observable<TransmartQuery>}
    */
-  saveQuery(queryBody: object): Observable<Query> {
+  saveQuery(queryBody: TransmartQuery): Observable<TransmartQuery> {
     const urlPart = `queries`;
     return this.postCall(urlPart, queryBody, null);
   }
@@ -396,10 +397,10 @@ export class ResourceService {
   /**
    * Modify an existing query.
    * @param {string} queryId
-   * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @param {TransmartQuery} queryBody
+   * @returns {Observable<any>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+  updateQuery(queryId: string, queryBody: TransmartQuery): Observable<{}> {
     const urlPart = `queries/${queryId}`;
     return this.putCall(urlPart, queryBody);
   }
