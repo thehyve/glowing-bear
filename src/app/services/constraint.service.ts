@@ -75,7 +75,9 @@ export class ConstraintService {
   }
 
   private loadEmptyConstraints() {
-    this.allConstraints.push(new CombinationConstraint());
+    let combinationConstraint = new CombinationConstraint();
+    combinationConstraint.isSubselection = true;
+    this.allConstraints.push(combinationConstraint);
     this.allConstraints.push(new StudyConstraint());
     this.allConstraints.push(new ConceptConstraint());
   }
