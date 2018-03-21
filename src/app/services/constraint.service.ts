@@ -299,7 +299,7 @@ export class ConstraintService {
         treeNodeType === 'CATEGORICAL' ||
         treeNodeType === 'DATE' ||
         treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT' ) {
+        treeNodeType === 'TEXT') {
         if (treeNode['constraint']) {
           constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {
