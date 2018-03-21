@@ -2,13 +2,14 @@ import {Injectable} from '@angular/core';
 import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
+import {ResourceService} from "./resource.service";
 
 @Injectable()
 export class TableService {
 
   private _dataTable: DataTable;
 
-  constructor() {
+  constructor(private resourceService: ResourceService) {
     this.dataTable = new DataTable();
     this.mockData();
   }
@@ -119,6 +120,12 @@ export class TableService {
     console.log('rows: ', this.rows);
   }
 
+  getTable(){
+    let offset: number = 0;
+    let limit: number = 10;
+    let tableState = null;
+    this.resourceService.getDataTable(tableState, offset, limit)
+  }
 
   getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
     let dimensionsBelow = [];
