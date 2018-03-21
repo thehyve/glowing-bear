@@ -17,6 +17,8 @@ import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from "./table.service";
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
+import {DataTable} from "../models/table-models/data-table";
+import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -596,7 +598,7 @@ export class QueryService {
   public saveQuery(queryName: string) {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const patientConstraintObj = selectionConstraint.toQueryObject(true);
-    const dataTableState = this.tableService.dataTable;
+    const dataTableState: TransmartTableState = this.parseDataTableState(this.tableService.dataTable);
     let data = [];
     const transmartQuery: TransmartQuery = new TransmartQuery(queryName);
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
@@ -708,6 +710,16 @@ export class QueryService {
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
     return query;
+  }
+
+  public parseDataTableState(dataTable: DataTable): TransmartTableState {
+    let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
+      dataTable.rowDimensions.filter(dim => dim.selected).map(dim => dim.name) : [];
+    let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
+      dataTable.columnDimensions.filter(dim => dim.selected).map(dim => dim.name) : [];
+    let sorting = null;
+
+    return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
   }
 
   public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {

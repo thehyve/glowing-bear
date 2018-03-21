@@ -1,6 +1,6 @@
-import {Order} from "./order";
+import {Order} from "../table-models/order";
 
-export class DataTableState {
+export class TransmartTableState {
   public rowDimensions: Array<string>;
   public columnDimensions: Array<string>;
   public sorting: Map<string, Order>;

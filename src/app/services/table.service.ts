@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
-import index from '@angular/cli/lib/cli';
+import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
 
 @Injectable()
 export class TableService {
@@ -139,22 +139,33 @@ export class TableService {
     return dimensionsAbove;
   }
 
-  updateTable(state: Object){
-    let rows = state['rowDimensions'];
-    let cols = state['columnDimensions'];
-    let sorting = state['sorting'];
+  updateTable(state: TransmartTableState){
+    let availableDimensions: Dimension[] = this.getAvailableDimensions();
+    this.updateTableToDefaultState(availableDimensions);
 
-    let allDimensions = rows.concat(cols.filter(function (item) {
-      return rows.indexOf(item) < 0;
-    }));
-
-    if (cols.length > 0){
-      this.columnDimensions = allDimensions.filter(dim =>  cols.includes(dim.name));
-    } else {
-      this.rowDimensions.length = 0;
+    if(state.columnDimensions.length > 0) {
+      this.columnDimensions = availableDimensions.filter(dim => state.columnDimensions.includes(dim.name));
+      this.columnDimensions.forEach(dim => dim.selected = true);
+      this.rowDimensions = availableDimensions.filter(dim => !this.columnDimensions.includes(dim));
     }
-    let candidates = this.rowDimensions;
-    this.rowDimensions = candidates.filter(dim => (!this.rowDimensions.includes(dim)) && (!this.rowDimensions.includes(dim)));
+
+    if (state.rowDimensions.length > 0) {
+      this.rowDimensions.forEach(dim => {
+          if (state.rowDimensions.includes(dim.name)) {
+            dim.selected = true
+      }});
+    }
+
+  }
+
+  private updateTableToDefaultState(availableDimensions: Dimension[]){
+    availableDimensions.forEach(dim => dim.selected = false);
+    this.columnDimensions.length = 0;
+    this.rowDimensions = availableDimensions;
+  }
+
+  private getAvailableDimensions(): Dimension[] {
+    return this.rowDimensions.concat(this.columnDimensions);
   }
 
   get rowDimensions(): Dimension[] {
@@ -187,5 +198,5 @@ export class TableService {
 
   set dataTable(value: DataTable) {
     this._dataTable = value;
-
+  }
 }
