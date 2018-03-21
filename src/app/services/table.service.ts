@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
-import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
 
 @Injectable()
 export class TableService {
@@ -139,19 +138,20 @@ export class TableService {
     return dimensionsAbove;
   }
 
-  updateTable(state: TransmartTableState){
+  updateTable(savedTable: DataTable){
     let availableDimensions: Dimension[] = this.getAvailableDimensions();
     this.updateTableToDefaultState(availableDimensions);
 
-    if(state.columnDimensions.length > 0) {
-      this.columnDimensions = availableDimensions.filter(dim => state.columnDimensions.includes(dim.name));
+    if(savedTable.columnDimensions.length > 0) {
+      this.columnDimensions = availableDimensions.filter(dim =>
+        savedTable.columnDimensions.map(it => it.name).includes(dim.name));
       this.columnDimensions.forEach(dim => dim.selected = true);
-      this.rowDimensions = availableDimensions.filter(dim => !this.columnDimensions.includes(dim));
+      this.rowDimensions = availableDimensions.filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
     }
 
-    if (state.rowDimensions.length > 0) {
+    if (savedTable.rowDimensions.length > 0) {
       this.rowDimensions.forEach(dim => {
-          if (state.rowDimensions.includes(dim.name)) {
+          if (savedTable.rowDimensions.map(it => it.name).includes(dim.name)) {
             dim.selected = true
       }});
     }

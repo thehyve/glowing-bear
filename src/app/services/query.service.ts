@@ -19,6 +19,7 @@ import {TableService} from "./table.service";
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 import {DataTable} from "../models/table-models/data-table";
 import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
+import {Dimension} from "../models/table-models/dimension";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -649,8 +650,8 @@ export class QueryService {
     }
     this.updateCounts_2();
     // todo updateCounts_3
-    if(query.dataTableState){
-      this.tableService.updateTable(query.dataTableState);
+    if(query.dataTable){
+      this.tableService.updateTable(query.dataTable);
     }
 
 
@@ -705,11 +706,35 @@ export class QueryService {
     query.bookmarked = transmartQuery.bookmarked;
     query.patientsQuery = transmartQuery.patientsQuery;
     query.observationsQuery = transmartQuery.observationsQuery;
-    query.dataTableState = transmartQuery.queryBlob ? transmartQuery.queryBlob['dataTableState'] : null;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
+    query.dataTable = this.parseTransmartQueryBlob(transmartQuery.queryBlob);
+
     return query;
+  }
+
+  private parseTransmartQueryBlob(queryBlob: object) {
+    let dataTable: DataTable = null;
+
+    if (queryBlob && queryBlob['dataTableState']) {
+      const transmartTableState: TransmartTableState = queryBlob['dataTableState'];
+      dataTable = new DataTable();
+      if(transmartTableState.columnDimensions) {
+        transmartTableState.columnDimensions.forEach(colName => {
+          let dimension: Dimension = new Dimension(colName);
+          dataTable.columnDimensions.push(dimension);
+        });
+      }
+      if(transmartTableState.rowDimensions) {
+        transmartTableState.rowDimensions.forEach(rowName => {
+          let dimension: Dimension = new Dimension(rowName);
+          dataTable.rowDimensions.push(dimension);
+        });
+      }
+
+    }
+    return dataTable;
   }
 
   public parseDataTableState(dataTable: DataTable): TransmartTableState {
