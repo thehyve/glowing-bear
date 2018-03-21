@@ -1,5 +1,6 @@
 import {QuerySubscriptionFrequency} from './query-subscription-frequency';
 import {QueryDiffRecord} from './query-diff-record';
+import {DataTableState} from "../table-models/data-table-state";
 
 export class Query {
 
@@ -26,7 +27,7 @@ export class Query {
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
   // Additional information about the query, e.g. a data table state
-  private _queryBlob: string;
+  private _dataTableState: DataTableState;
 
   /*
    * Subscription feature
@@ -158,12 +159,12 @@ export class Query {
     this._visible = value;
   }
 
-  get queryBlob(): string {
-    return this._queryBlob;
+  get dataTableState(): DataTableState {
+    return this._dataTableState;
   }
 
-  set queryBlob(value: string) {
-    this._queryBlob = value;
+  set dataTableState(value: DataTableState) {
+    this._dataTableState = value;
   }
 
   get createDateInfo(): string {
