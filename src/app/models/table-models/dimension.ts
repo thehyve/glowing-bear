@@ -1,10 +1,14 @@
 export class Dimension {
   private _name: string;
-  private _selected: boolean; // indicating if this dimension is selected in UI
+  // indicating if this dimension is selected in UI
+  private _selected: boolean;
+  // the names of the categorical values that this dimension contains
+  private _valueNames: string[];
 
   constructor(name: string) {
     this.name = name;
     this.selected = true;
+    this.valueNames = [];
   }
 
   get name(): string {
@@ -21,5 +25,13 @@ export class Dimension {
 
   set selected(value: boolean) {
     this._selected = value;
+  }
+
+  get valueNames(): string[] {
+    return this._valueNames;
+  }
+
+  set valueNames(value: string[]) {
+    this._valueNames = value;
   }
 }
