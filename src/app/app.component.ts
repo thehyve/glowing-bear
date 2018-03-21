@@ -5,7 +5,11 @@ import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
+<<<<<<< HEAD
 import {ResourceHelperService} from "./services/resource-helper.service";
+=======
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+>>>>>>> resource service refactor
 
 @Component({
   selector: 'app-root',
@@ -25,7 +29,11 @@ export class AppComponent implements OnInit {
 
   constructor(private endpointService: EndpointService,
               private resourceService: ResourceService,
+<<<<<<< HEAD
               private resourceHelperService: ResourceHelperService,
+=======
+              private transmartResourceService: TransmartResourceService,
+>>>>>>> resource service refactor
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -42,7 +50,7 @@ export class AppComponent implements OnInit {
     this.x_pos = 0;
     this.x_gap = 0;
 
-    const adjustNavbarWidth = function() {
+    const adjustNavbarWidth = function () {
       const navbar = parentContainerElm.querySelector('.gb-navbar');
       if (navbar) {
         const leftWidth = leftPanelElm.clientWidth;
@@ -95,7 +103,7 @@ export class AppComponent implements OnInit {
 
   logout() {
     this.resourceService.logout().subscribe(
-      res=> {
+      res => {
         this.endpointService.invalidateToken();
       }
     );

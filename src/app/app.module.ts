@@ -19,7 +19,12 @@ import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module'
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
+<<<<<<< HEAD
 import {ResourceHelperService} from "./services/resource-helper.service";
+=======
+import {HttpClientModule} from '@angular/common/http';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+>>>>>>> resource service refactor
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -32,7 +37,7 @@ export function initConfig(config: AppConfig) {
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     routing,
     GbNavBarModule,
@@ -44,7 +49,11 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
+<<<<<<< HEAD
     ResourceHelperService,
+=======
+    TransmartResourceService,
+>>>>>>> resource service refactor
     TreeNodeService,
     ConstraintService,
     QueryService,
