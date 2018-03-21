@@ -1,6 +1,6 @@
 import {QuerySubscriptionFrequency} from './query-subscription-frequency';
 import {QueryDiffRecord} from './query-diff-record';
-import {DataTableState} from "../table-models/data-table-state";
+import {TransmartTableState} from "../transmart-resource-models/transmart-table-state";
 
 export class Query {
 
@@ -26,8 +26,8 @@ export class Query {
   private _observationsQuery: {data: string[]};
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
-  // Additional information about the query, e.g. a data table state
-  private _dataTableState: DataTableState;
+  // The information about the saved data table state
+  private _dataTableState: TransmartTableState;
 
   /*
    * Subscription feature
@@ -159,11 +159,11 @@ export class Query {
     this._visible = value;
   }
 
-  get dataTableState(): DataTableState {
+  get dataTableState(): TransmartTableState {
     return this._dataTableState;
   }
 
-  set dataTableState(value: DataTableState) {
+  set dataTableState(value: TransmartTableState) {
     this._dataTableState = value;
   }
 
