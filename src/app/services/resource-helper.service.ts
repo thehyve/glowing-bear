@@ -7,6 +7,10 @@ import {Observable} from "rxjs/Observable";
 import {Query} from "../models/query-models/query";
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 import {Dimension} from "../models/table-models/dimension";
+import {TransmartRow} from "../models/transmart-resource-models/transmart-row";
+import {Row} from "../models/table-models/row";
+import {TransmartInRowDimension} from "../models/transmart-resource-models/transmart-in-row-dimension";
+import {TransmartDimension} from "../models/transmart-resource-models/transmart-dimension";
 
 @Injectable()
 export class ResourceHelperService {
@@ -32,6 +36,20 @@ export class ResourceHelperService {
     });
 
     return dataTable$;
+  }
+
+  getQueries(): Observable<Query[]>{
+    const query$ = new Observable<Query[]>((querySource) => {
+      this.resourceService.getQueries()
+        .subscribe((transmartQueries: TransmartQuery[]) => {
+        let queries: Query[] = [];
+          transmartQueries.forEach(tmQuery => {
+            queries.push(this.parseTransmartQueryToQuery(tmQuery));
+          });
+          querySource.next(queries);
+        });
+    });
+    return query$;
   }
 
   saveQuery(queryName: string,
@@ -72,9 +90,59 @@ export class ResourceHelperService {
   }
 
   private parseTransmartDataTableToDataTable(transmartTable: TransmartDataTable): DataTable {
-    //TODO parsing
+    let dataTable = new DataTable();
+    transmartTable.rows.forEach((transmartRow: TransmartRow) => {
+      // get data table rows
+      let newRow: Row = new Row();
+      newRow.length = transmartRow.dimensions.length + transmartRow.row.length;
+      transmartRow.row.forEach( value => newRow.addDatum(value));
+      dataTable.rows.push(newRow);
 
-    return new DataTable();
+      // get data table row dimensions
+      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
+        let rowDim: Dimension = new Dimension(inRowDim.dimension);
+        if(inRowDim.index == null) {
+          // if dimension is inline
+          if(inRowDim.element != null) {
+            rowDim.valueNames.push(inRowDim.element.label)
+          } else {
+            // error
+          }
+        } else {
+          // if dimension is indexed
+          let indexedDimension: TransmartDimension = transmartTable.rowDimensions.filter(
+            dim => dim.name === inRowDim.dimension)[0];
+          rowDim.valueNames.push(indexedDimension.elements[inRowDim.index].label);
+        }
+      });
+    });
+
+    // get data table column dimensions
+    transmartTable.columnDimensions.forEach((transmartColDim:TransmartDimension) => {
+      let colDim: Dimension = new Dimension(transmartColDim.name);
+      if(transmartColDim.indexes != null && transmartColDim.indexes.length > 0){
+        // indexed dimensions
+        transmartColDim.indexes.forEach((index: number) => {
+          if (index == null){
+            colDim.valueNames.push(null);
+          } else {
+            colDim.valueNames.push(transmartColDim.elements[index].label);
+          }
+        });
+      } else {
+        // inline dimensions
+        transmartColDim.elements.forEach(elem => {
+          if(elem == null) {
+            colDim.valueNames.push(null);
+          } else {
+            colDim.valueNames.push(elem.label);
+          }
+        });
+      }
+      dataTable.columnDimensions.push(colDim);
+    });
+
+    return dataTable;
   }
 
   private parseTransmartQueryToQuery(transmartQuery: TransmartQuery): Query {
