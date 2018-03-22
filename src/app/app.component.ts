@@ -5,6 +5,7 @@ import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
+import {ResourceHelperService} from "./services/resource-helper.service";
 
 @Component({
   selector: 'app-root',
@@ -24,6 +25,7 @@ export class AppComponent implements OnInit {
 
   constructor(private endpointService: EndpointService,
               private resourceService: ResourceService,
+              private resourceHelperService: ResourceHelperService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,

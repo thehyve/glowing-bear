@@ -15,6 +15,8 @@ import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
+import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
+import {TransmartDataTable} from "../models/transmart-resource-models/transmart-data-table";
 
 @Injectable()
 export class ResourceService {
@@ -427,6 +429,19 @@ export class ResourceService {
     const urlPart = `queries/${queryId}/sets`;
     const responseField = 'querySets';
     return this.getCall(urlPart, responseField);
+  }
+
+  // -------------------------------------- data table ---------------------------------------------
+  getDataTable(tableState: TransmartTableState, offset: number, limit: number): Observable<TransmartDataTable> {
+    const urlPart = `observations/tabular`;
+    const body = {
+      rows: tableState.rowDimensions,
+      columns: tableState.columnDimensions,
+      sort: tableState.sorting,
+      offset: offset,
+      limit: limit
+    };
+    return this.postCall(urlPart, body, null);
   }
 
 }

@@ -18,8 +18,7 @@ import {QuerySubscriptionFrequency} from '../models/query-models/query-subscript
 import {TableService} from "./table.service";
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 import {DataTable} from "../models/table-models/data-table";
-import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
-import {Dimension} from "../models/table-models/dimension";
+import {ResourceHelperService} from "./resource-helper.service";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -158,6 +157,7 @@ export class QueryService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
+              private resourceHelperService: ResourceHelperService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private tableService: TableService) {
@@ -178,13 +178,12 @@ export class QueryService {
    * Update the queries on the left-side panel
    */
   public loadQueries() {
-    this.resourceService.getQueries()
+    this.resourceHelperService.getQueries()
       .subscribe(
-        (transmartQueries: TransmartQuery[]) => {
+        (queries: Query[]) => {
           this.queries.length = 0;
           let bookmarkedQueries = [];
-          transmartQueries.forEach(tmQuery => {
-            let query: Query = this.parseTransmartQuery(tmQuery);
+          queries.forEach(query => {
             query.collapsed = true;
             query.visible = true;
             query.subscriptionCollapsed = true;
@@ -599,37 +598,27 @@ export class QueryService {
   public saveQuery(queryName: string) {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const patientConstraintObj = selectionConstraint.toQueryObject(true);
-    const dataTableState: TransmartTableState = this.parseDataTableState(this.tableService.dataTable);
     let data = [];
-    const transmartQuery: TransmartQuery = new TransmartQuery(queryName);
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    transmartQuery.patientsQuery = patientConstraintObj;
-    transmartQuery.observationsQuery = {
+    const observationConstraintObj = {
       data: data
     };
-    transmartQuery.queryBlob = {
-      dataTableState: dataTableState
-    };
-    this.saveQueryObj(transmartQuery);
-  }
 
-  public saveQueryObj(transmartQuery: TransmartQuery) {
-    this.resourceService.saveQuery(transmartQuery)
-      .subscribe(
-        (newlySavedQuery: TransmartQuery) => {
-          const newQuery = this.parseTransmartQuery(newlySavedQuery);
-          newQuery.collapsed = true;
-          newQuery.visible = true;
+    this.resourceHelperService.saveQuery(queryName, patientConstraintObj, observationConstraintObj,
+      this.tableService.dataTable).subscribe(
+        (newlySavedQuery: Query) => {
+          newlySavedQuery.collapsed = true;
+          newlySavedQuery.visible = true;
 
-          this.queries.push(newQuery);
-          const summary = 'Query "' + newQuery.name + '" is added.';
+          this.queries.push(newlySavedQuery);
+          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
           this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not add the query "' + transmartQuery.name + '".';
+          const summary = 'Could not add the query "' + queryName + '".';
           this.alert(summary, '', 'error');
         }
       );
@@ -697,54 +686,6 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
-  }
-
-  public parseTransmartQuery(transmartQuery: TransmartQuery):Query {
-    const query = new Query(transmartQuery.id, transmartQuery.name);
-    query.createDate = transmartQuery.createDate;
-    query.updateDate = transmartQuery.updateDate;
-    query.bookmarked = transmartQuery.bookmarked;
-    query.patientsQuery = transmartQuery.patientsQuery;
-    query.observationsQuery = transmartQuery.observationsQuery;
-    query.apiVersion = transmartQuery.apiVersion;
-    query.subscribed = transmartQuery.subscribed;
-    query.subscriptionFreq = transmartQuery.subscriptionFreq;
-    query.dataTable = this.parseTransmartQueryBlob(transmartQuery.queryBlob);
-
-    return query;
-  }
-
-  private parseTransmartQueryBlob(queryBlob: object) {
-    let dataTable: DataTable = null;
-
-    if (queryBlob && queryBlob['dataTableState']) {
-      const transmartTableState: TransmartTableState = queryBlob['dataTableState'];
-      dataTable = new DataTable();
-      if(transmartTableState.columnDimensions) {
-        transmartTableState.columnDimensions.forEach(colName => {
-          let dimension: Dimension = new Dimension(colName);
-          dataTable.columnDimensions.push(dimension);
-        });
-      }
-      if(transmartTableState.rowDimensions) {
-        transmartTableState.rowDimensions.forEach(rowName => {
-          let dimension: Dimension = new Dimension(rowName);
-          dataTable.rowDimensions.push(dimension);
-        });
-      }
-
-    }
-    return dataTable;
-  }
-
-  public parseDataTableState(dataTable: DataTable): TransmartTableState {
-    let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
-      dataTable.rowDimensions.filter(dim => dim.selected).map(dim => dim.name) : [];
-    let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
-      dataTable.columnDimensions.filter(dim => dim.selected).map(dim => dim.name) : [];
-    let sorting = null;
-
-    return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
   }
 
   public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
