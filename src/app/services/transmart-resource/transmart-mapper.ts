@@ -1,4 +1,3 @@
-import {Injectable} from '@angular/core';
 import {Query} from '../../models/query-models/query';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {DataTable} from '../../models/table-models/data-table';
@@ -10,13 +9,9 @@ import {Row} from '../../models/table-models/row';
 import {TransmartInRowDimension} from '../../models/transmart-models/transmart-in-row-dimension';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
-@Injectable()
-export class TransmartMapperService {
+export class TransmartMapper {
 
-  constructor() {
-  }
-
-  public mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
+  public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
     let queries: Query[] = [];
     transmartQueries.forEach(tmQuery => {
       queries.push(this.mapTransmartQuery(tmQuery));
@@ -24,7 +19,7 @@ export class TransmartMapperService {
     return queries;
   }
 
-  public mapTransmartQuery(transmartQuery: TransmartQuery): Query {
+  public static mapTransmartQuery(transmartQuery: TransmartQuery): Query {
     let query = new Query(transmartQuery.id, transmartQuery.name);
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
@@ -39,7 +34,7 @@ export class TransmartMapperService {
     return query;
   }
 
-  private parseTransmartQueryBlob(queryBlob: object) {
+  private static parseTransmartQueryBlob(queryBlob: object) {
     let dataTable: DataTable = null;
 
     if (queryBlob && queryBlob['dataTableState']) {
@@ -62,7 +57,7 @@ export class TransmartMapperService {
     return dataTable;
   }
 
-  public mapQuery(query: Query): TransmartQuery {
+  public static mapQuery(query: Query): TransmartQuery {
     let transmartTableState: TransmartTableState = this.mapDataTable(query.dataTable);
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
     transmartQuery.patientsQuery = query.patientsQuery;
@@ -72,7 +67,7 @@ export class TransmartMapperService {
     return transmartQuery;
   }
 
-  public mapDataTable(dataTable: DataTable): TransmartTableState {
+  public static mapDataTable(dataTable: DataTable): TransmartTableState {
     let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
       dataTable.rowDimensions
         .filter(dim => dim.selected).map(dim => dim.name) : [];
@@ -84,7 +79,7 @@ export class TransmartMapperService {
     return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
   }
 
-  public mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
+  public static mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
     let dataTable = new DataTable();
     transmartTable.rows.forEach((transmartRow: TransmartRow) => {
       // get data table rows

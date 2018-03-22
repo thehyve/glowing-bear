@@ -19,7 +19,7 @@ import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.modu
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
 import {HttpClientModule} from '@angular/common/http';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 
 
 export function initConfig(config: AppConfig) {
