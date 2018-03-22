@@ -167,14 +167,6 @@ export class Query {
     this._visible = value;
   }
 
-  get dataTable(): DataTable {
-    return this._dataTable;
-  }
-
-  set dataTable(value: DataTable) {
-    this._dataTable = value;
-  }
-
   get createDateInfo(): string {
     return this._createDateInfo;
   }

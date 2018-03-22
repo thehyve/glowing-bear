@@ -2,20 +2,15 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
-import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
-<<<<<<< HEAD
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
-import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
-import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
-import {TransmartDataTable} from "../models/transmart-resource-models/transmart-data-table";
-=======
+import {TransmartTableState} from '../models/transmart-resource-models/transmart-table-state';
+import {TransmartDataTable} from '../models/transmart-resource-models/transmart-data-table';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
-import {TransmartQuery} from '../models/transmart-models/transmart-query';
->>>>>>> resource service refactor
+import {TransmartQuery} from '../models/transmart-resource-models/transmart-query';
 
 @Injectable()
 export class ResourceService {
@@ -199,12 +194,6 @@ export class ResourceService {
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-<<<<<<< HEAD
-  getQueries(): Observable<TransmartQuery[]> {
-    const urlPart = `queries`;
-    const responseField = 'queries';
-    return this.getCall(urlPart, responseField);
-=======
   getQueries(): Observable<Query[]> {
     return this.transmartResourceService.getQueries()
       .map((res: TransmartQuery[]) => {
@@ -216,7 +205,6 @@ export class ResourceService {
         }
         return queries;
       });
->>>>>>> resource service refactor
   }
 
   /**
@@ -224,30 +212,18 @@ export class ResourceService {
    * @param {Object} queryBody
    * @returns {Observable<TransmartQuery>}
    */
-<<<<<<< HEAD
-  saveQuery(queryBody: TransmartQuery): Observable<TransmartQuery> {
-    const urlPart = `queries`;
-    return this.postCall(urlPart, queryBody, null);
-=======
   saveQuery(queryBody: object): Observable<Query> {
     return this.transmartResourceService.saveQuery(queryBody);
->>>>>>> resource service refactor
   }
 
   /**
    * Modify an existing query.
    * @param {string} queryId
-   * @param {TransmartQuery} queryBody
-   * @returns {Observable<any>}
+   * @param {Object} queryBody
+   * @returns {Observable<{}>}
    */
-<<<<<<< HEAD
-  updateQuery(queryId: string, queryBody: TransmartQuery): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.putCall(urlPart, queryBody);
-=======
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
     return this.transmartResourceService.updateQuery(queryId, queryBody);
->>>>>>> resource service refactor
   }
 
   /**
@@ -270,16 +246,9 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(tableState: TransmartTableState, offset: number, limit: number): Observable<TransmartDataTable> {
-    const urlPart = `observations/tabular`;
-    const body = {
-      rows: tableState.rowDimensions,
-      columns: tableState.columnDimensions,
-      sort: tableState.sorting,
-      offset: offset,
-      limit: limit
-    };
-    return this.postCall(urlPart, body, null);
+  getDataTable(tableState: TransmartTableState,
+               offset: number, limit: number): Observable<TransmartDataTable> {
+    return this.transmartResourceService.getDataTable(tableState, offset, limit);
   }
 
 }
