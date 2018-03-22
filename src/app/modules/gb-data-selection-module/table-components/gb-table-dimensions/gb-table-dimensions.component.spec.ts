@@ -5,6 +5,8 @@ import {TableService} from '../../../../services/table.service';
 import {CheckboxModule, PickListModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
+import {ResourceHelperService} from "../../../../services/resource-helper.service";
+import {ResourceHelperServiceMock} from "../../../../services/mocks/resource-helper.service.mock";
 
 describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
@@ -19,7 +21,13 @@ describe('GbTableDimensionsComponent', () => {
         FormsModule,
         BrowserModule
       ],
-      providers: [TableService]
+      providers: [
+        TableService,
+        {
+          provide: ResourceHelperService,
+          useClass: ResourceHelperServiceMock
+        }
+      ]
     })
       .compileComponents();
   }));
