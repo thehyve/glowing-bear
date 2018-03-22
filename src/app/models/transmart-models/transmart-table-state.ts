@@ -3,14 +3,15 @@ import {SortOrder} from '../table-models/sort-order';
 export class TransmartTableState {
   public rowDimensions: Array<string>;
   public columnDimensions: Array<string>;
-  public sorting: Map<string, SortOrder>;
+  // The pivot/starting row/column dimension to sort
+  public pivot: { dimension: string, order: SortOrder };
 
   constructor(rowDimensions: Array<string>,
               columsDimensions: Array<string>,
-              sorting: Map<string, SortOrder>) {
+              pivot: { dimension: string, order: SortOrder }) {
     this.rowDimensions = rowDimensions;
     this.columnDimensions = columsDimensions;
-    this.sorting = sorting;
+    this.pivot = pivot;
   }
 
 }
