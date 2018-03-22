@@ -1,4 +1,4 @@
-import {Order} from "../table-models/order";
+import {Order} from '../table-models/order';
 
 export class TransmartSorting {
   dimension: string;
