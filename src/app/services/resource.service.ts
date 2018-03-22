@@ -15,7 +15,6 @@ import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
-import {DataTable} from "../models/table-models/data-table";
 import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
 import {TransmartDataTable} from "../models/transmart-resource-models/transmart-data-table";
 
