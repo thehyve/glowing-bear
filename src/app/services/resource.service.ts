@@ -14,6 +14,9 @@ import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
+import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
+import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
+import {TransmartDataTable} from "../models/transmart-resource-models/transmart-data-table";
 
 @Injectable()
 export class ResourceService {
@@ -375,9 +378,9 @@ export class ResourceService {
   // -------------------------------------- query calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<Query[]>}
+   * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Query[]> {
+  getQueries(): Observable<TransmartQuery[]> {
     const urlPart = `queries`;
     const responseField = 'queries';
     return this.getCall(urlPart, responseField);
@@ -386,9 +389,9 @@ export class ResourceService {
   /**
    * Save a new query.
    * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @returns {Observable<TransmartQuery>}
    */
-  saveQuery(queryBody: object): Observable<Query> {
+  saveQuery(queryBody: TransmartQuery): Observable<TransmartQuery> {
     const urlPart = `queries`;
     return this.postCall(urlPart, queryBody, null);
   }
@@ -396,10 +399,10 @@ export class ResourceService {
   /**
    * Modify an existing query.
    * @param {string} queryId
-   * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @param {TransmartQuery} queryBody
+   * @returns {Observable<any>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+  updateQuery(queryId: string, queryBody: TransmartQuery): Observable<{}> {
     const urlPart = `queries/${queryId}`;
     return this.putCall(urlPart, queryBody);
   }
@@ -426,6 +429,19 @@ export class ResourceService {
     const urlPart = `queries/${queryId}/sets`;
     const responseField = 'querySets';
     return this.getCall(urlPart, responseField);
+  }
+
+  // -------------------------------------- data table ---------------------------------------------
+  getDataTable(tableState: TransmartTableState, offset: number, limit: number): Observable<TransmartDataTable> {
+    const urlPart = `observations/tabular`;
+    const body = {
+      rows: tableState.rowDimensions,
+      columns: tableState.columnDimensions,
+      sort: tableState.sorting,
+      offset: offset,
+      limit: limit
+    };
+    return this.postCall(urlPart, body, null);
   }
 
 }

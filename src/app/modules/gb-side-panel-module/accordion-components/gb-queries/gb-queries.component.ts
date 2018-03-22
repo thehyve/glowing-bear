@@ -94,15 +94,15 @@ export class GbQueriesComponent implements OnInit {
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
-    const queryObject = {
+    let queryObj = {
       subscribed: query.subscribed
     };
     if (query.subscribed) {
-      queryObject['subscriptionFreq'] =
+      queryObj["subscriptionFreq"] =
         query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObject['subscriptionFreq'];
+      query.subscriptionFreq = queryObj["subscriptionFreq"];
     }
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -113,10 +113,10 @@ export class GbQueriesComponent implements OnInit {
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
     query.bookmarked = !query.bookmarked;
-    const queryObject = {
-      bookmarked: query.bookmarked
+    let queryObj = {
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -164,11 +164,11 @@ export class GbQueriesComponent implements OnInit {
     DownloadHelper.downloadJSON(query, query.name);
   }
 
-  radioCheckSubscriptionFrequency(query) {
-    const queryObject = {
+  radioCheckSubscriptionFrequency(query: Query) {
+    let queryObj = {
       subscriptionFreq: query.subscriptionFreq
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {

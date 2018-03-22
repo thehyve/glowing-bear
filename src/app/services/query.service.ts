@@ -15,6 +15,9 @@ import {QuerySetType} from '../models/query-models/query-set-type';
 import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {TableService} from "./table.service";
+import {DataTable} from "../models/table-models/data-table";
+import {ResourceHelperService} from "./resource-helper.service";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -153,8 +156,10 @@ export class QueryService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
+              private resourceHelperService: ResourceHelperService,
               private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private tableService: TableService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
@@ -172,7 +177,7 @@ export class QueryService {
    * Update the queries on the left-side panel
    */
   public loadQueries() {
-    this.resourceService.getQueries()
+    this.resourceHelperService.getQueries()
       .subscribe(
         (queries: Query[]) => {
           this.queries.length = 0;
@@ -599,28 +604,20 @@ export class QueryService {
     const observationConstraintObj = {
       data: data
     };
-    const queryObj = {
-      name: queryName,
-      patientsQuery: patientConstraintObj,
-      observationsQuery: observationConstraintObj,
-      bookmarked: false
-    };
-    this.saveQueryObj(queryObj);
-  }
 
-  public saveQueryObj(queryObj: Object) {
-    this.resourceService.saveQuery(queryObj)
-      .subscribe(
-        (newlySavedQuery) => {
-          newlySavedQuery['collapsed'] = true;
-          newlySavedQuery['visible'] = true;
+    this.resourceHelperService.saveQuery(queryName, patientConstraintObj, observationConstraintObj,
+      this.tableService.dataTable).subscribe(
+        (newlySavedQuery: Query) => {
+          newlySavedQuery.collapsed = true;
+          newlySavedQuery.visible = true;
+
           this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryObj['name'] + '" is added.';
+          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
           this.alert(summary, '', 'success');
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not add the query "' + queryObj['name'] + '".';
+          const summary = 'Could not add the query "' + queryName + '".';
           this.alert(summary, '', 'error');
         }
       );
@@ -640,6 +637,11 @@ export class QueryService {
       this.updateCounts_1();
     }
     this.updateCounts_2();
+    // todo updateCounts_3
+    if(query.dataTable){
+      this.tableService.updateTable(query.dataTable);
+    }
+
 
     // TODO: To display more information in the alertDetails:
     // - total number of imported nodes/items
@@ -651,11 +653,11 @@ export class QueryService {
     this.alert(alertSummary, alertDetails, 'info');
   }
 
-  public updateQuery(query: Query, queryObject: object) {
-    this.resourceService.updateQuery(query.id, queryObject)
+  public updateQuery(query: Query, queryObj: object) {
+    this.resourceHelperService.updateQuery(query.id, queryObj)
       .subscribe(
         () => {
-          if (queryObject['subscribed']) {
+          if (query.subscribed) {
             this.resourceService.diffQuery(query.id)
               .subscribe(
                 records => {
@@ -668,8 +670,8 @@ export class QueryService {
       );
   }
 
-  public deleteQuery(query) {
-    this.resourceService.deleteQuery(query['id'])
+  public deleteQuery(query: Query) {
+    this.resourceHelperService.deleteQuery(query['id'])
       .subscribe(
         () => {
           const index = this.queries.indexOf(query);

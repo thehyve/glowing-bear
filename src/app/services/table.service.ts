@@ -2,14 +2,14 @@ import {Injectable} from '@angular/core';
 import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
-import index from '@angular/cli/lib/cli';
+import {ResourceHelperService} from "./resource-helper.service";
 
 @Injectable()
 export class TableService {
 
   private _dataTable: DataTable;
 
-  constructor() {
+  constructor(private resourceHelperService: ResourceHelperService) {
     this.dataTable = new DataTable();
     this.mockData();
   }
@@ -120,6 +120,15 @@ export class TableService {
     console.log('rows: ', this.rows);
   }
 
+  getTable(){
+    let offset: number = 0;
+    let limit: number = 10;
+    this.resourceHelperService.getDataTable(this.dataTable, offset, limit).subscribe(
+      (newDataTable: DataTable) => {
+        this.dataTable = newDataTable;
+      }
+    );
+  }
 
   getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
     let dimensionsBelow = [];
@@ -137,6 +146,36 @@ export class TableService {
       dimensionsAbove.push(dimensions[i]);
     }
     return dimensionsAbove;
+  }
+
+  updateTable(savedTable: DataTable){
+    let availableDimensions: Dimension[] = this.getAvailableDimensions();
+    this.updateTableToDefaultState(availableDimensions);
+
+    if(savedTable.columnDimensions.length > 0) {
+      this.columnDimensions = availableDimensions.filter(dim =>
+        savedTable.columnDimensions.map(it => it.name).includes(dim.name));
+      this.columnDimensions.forEach(dim => dim.selected = true);
+      this.rowDimensions = availableDimensions.filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
+    }
+
+    if (savedTable.rowDimensions.length > 0) {
+      this.rowDimensions.forEach(dim => {
+          if (savedTable.rowDimensions.map(it => it.name).includes(dim.name)) {
+            dim.selected = true
+      }});
+    }
+
+  }
+
+  private updateTableToDefaultState(availableDimensions: Dimension[]){
+    availableDimensions.forEach(dim => dim.selected = false);
+    this.columnDimensions.length = 0;
+    this.rowDimensions = availableDimensions;
+  }
+
+  private getAvailableDimensions(): Dimension[] {
+    return this.rowDimensions.concat(this.columnDimensions);
   }
 
   get rowDimensions(): Dimension[] {
