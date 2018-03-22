@@ -19,6 +19,7 @@ import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module'
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
+import {ResourceHelperService} from "./services/resource-helper.service";
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -43,6 +44,7 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
+    ResourceHelperService,
     TreeNodeService,
     ConstraintService,
     QueryService,
