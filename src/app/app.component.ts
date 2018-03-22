@@ -5,7 +5,7 @@ import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 
 @Component({
   selector: 'app-root',

@@ -156,7 +156,8 @@ export class TableService {
       this.columnDimensions = availableDimensions.filter(dim =>
         savedTable.columnDimensions.map(it => it.name).includes(dim.name));
       this.columnDimensions.forEach(dim => dim.selected = true);
-      this.rowDimensions = availableDimensions.filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
+      this.rowDimensions = availableDimensions
+        .filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
     }
 
     if (savedTable.rowDimensions.length > 0) {

@@ -27,7 +27,7 @@ import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
 import {TableService} from './services/table.service';
 import {TableServiceMock} from './services/mocks/table.service.mock';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 
 
