@@ -18,7 +18,6 @@ import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module'
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
-import {ResourceHelperService} from './services/resource-helper.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 
@@ -46,7 +45,6 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
-    ResourceHelperService,
     TransmartResourceService,
     TreeNodeService,
     ConstraintService,

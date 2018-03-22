@@ -1,5 +1,5 @@
 import {TransmartDimension} from './transmart-dimension';
-import {TransmartRow} from 'app/models/transmart-resource-models/transmart-row';
+import {TransmartRow} from 'app/models/transmart-models/transmart-row';
 import {TransmartSorting} from './transmart-sorting';
 
 export class TransmartDataTable {
