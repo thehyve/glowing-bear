@@ -27,8 +27,6 @@ import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
 import {TableService} from './services/table.service';
 import {TableServiceMock} from './services/mocks/table.service.mock';
-import {ResourceHelperService} from './services/resource-helper.service';
-import {ResourceHelperServiceMock} from './services/mocks/resource-helper.service.mock';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 
@@ -81,10 +79,6 @@ describe('AppComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        {
-          provide: ResourceHelperService,
-          useClass: ResourceHelperServiceMock
         },
         {
           provide: TreeNodeService,

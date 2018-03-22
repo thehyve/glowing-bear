@@ -31,5 +31,4 @@ export class TransmartQuery {
     this.bookmarked = false;
     this.subscribed = false;
   }
-
 }

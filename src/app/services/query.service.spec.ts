@@ -7,8 +7,6 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
 import {QueryService} from './query.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
-import {ResourceHelperService} from "./resource-helper.service";
-import {ResourceHelperServiceMock} from "./mocks/resource-helper.service.mock";
 
 describe('QueryService', () => {
   beforeEach(() => {
@@ -21,10 +19,6 @@ describe('QueryService', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        {
-          provide: ResourceHelperService,
-          useClass: ResourceHelperServiceMock
         },
         {
           provide: ConstraintService,

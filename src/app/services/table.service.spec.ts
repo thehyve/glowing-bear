@@ -1,10 +1,8 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {TableService} from './table.service';
-import {ResourceHelperService} from "./resource-helper.service";
-import {ResourceHelperServiceMock} from "./mocks/resource-helper.service.mock";
-import {ResourceService} from "./resource.service";
-import {ResourceServiceMock} from "./mocks/resource.service.mock";
+import {ResourceService} from './resource.service';
+import {ResourceServiceMock} from './mocks/resource.service.mock';
 
 describe('TableService', () => {
   beforeEach(() => {
@@ -12,8 +10,8 @@ describe('TableService', () => {
       providers: [
         TableService,
         {
-          provide: ResourceHelperService,
-          useClass: ResourceHelperServiceMock
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         }
       ]
     });

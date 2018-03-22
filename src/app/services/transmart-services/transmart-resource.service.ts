@@ -9,9 +9,9 @@ import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-job';
 import {Query} from '../../models/query-models/query';
 import {PatientSet} from '../../models/constraint-models/patient-set';
-import {TransmartTableState} from '../../models/transmart-resource-models/transmart-table-state';
-import {TransmartDataTable} from '../../models/transmart-resource-models/transmart-data-table';
-import {TransmartQuery} from '../../models/transmart-resource-models/transmart-query';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
+import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 
 @Injectable()
 export class TransmartResourceService {
@@ -33,6 +33,7 @@ export class TransmartResourceService {
       console.error(error.toString() || 'Server error');
     }
   }
+
   /**
    * Make a post http request
    * @param urlPart - the part used in baseUrl/urlPart
@@ -62,6 +63,7 @@ export class TransmartResourceService {
       this.handleError({message: 'Could not establish endpoint.'});
     }
   }
+
   /**
    * Make a get http request
    * @param urlPart - the part used in baseUrl/urlPart
@@ -383,8 +385,30 @@ export class TransmartResourceService {
    * @param {Object} queryBody
    * @returns {Observable<Query>}
    */
-  saveQuery(queryBody: object): Observable<Query> {
+  saveQuery(transmartQuery: TransmartQuery): Observable<TransmartQuery> {
     const urlPart = `queries`;
+    const queryBody = {};
+    if (transmartQuery.name) {
+      queryBody['name'] = transmartQuery.name;
+    }
+    if (transmartQuery.patientsQuery) {
+      queryBody['patientsQuery'] = transmartQuery.patientsQuery;
+    }
+    if (transmartQuery.observationsQuery) {
+      queryBody['observationsQuery'] = transmartQuery.observationsQuery;
+    }
+    if (transmartQuery.bookmarked) {
+      queryBody['bookmarked'] = transmartQuery.bookmarked;
+    }
+    if (transmartQuery.subscribed) {
+      queryBody['subscribed'] = transmartQuery.subscribed;
+    }
+    if (transmartQuery.subscriptionFreq) {
+      queryBody['subscriptionFreq'] = transmartQuery.subscriptionFreq;
+    }
+    if (transmartQuery.queryBlob) {
+      queryBody['queryBlob'] = transmartQuery.queryBlob;
+    }
     return this.postCall(urlPart, queryBody, null);
   }
 

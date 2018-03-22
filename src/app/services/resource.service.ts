@@ -7,16 +7,19 @@ import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
-import {TransmartTableState} from '../models/transmart-resource-models/transmart-table-state';
-import {TransmartDataTable} from '../models/transmart-resource-models/transmart-data-table';
+import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
-import {TransmartQuery} from '../models/transmart-resource-models/transmart-query';
+import {TransmartQuery} from '../models/transmart-models/transmart-query';
+import {TransmartMapperService} from './transmart-services/transmart-mapper.service';
+import {DataTable} from '../models/table-models/data-table';
 
 @Injectable()
 export class ResourceService {
 
 
-  constructor(private transmartResourceService: TransmartResourceService) {
+  constructor(private transmartResourceService: TransmartResourceService,
+              private transmartMapperService: TransmartMapperService) {
   }
 
   /**
@@ -159,7 +162,8 @@ export class ResourceService {
                constraint: Constraint,
                elements: object[],
                includeMeasurementDateColumns: boolean): Observable<ExportJob> {
-    return this.transmartResourceService.runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
+    return this.transmartResourceService
+      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
   }
 
   /**
@@ -196,24 +200,22 @@ export class ResourceService {
    */
   getQueries(): Observable<Query[]> {
     return this.transmartResourceService.getQueries()
-      .map((res: TransmartQuery[]) => {
-        let queries = new Array<Query>();
-        for (let q of res) {
-          // TODO: map transmartquery to query
-          let query = new Query(q.id, q.name);
-          queries.push(query);
-        }
-        return queries;
+      .map((transmartQueries: TransmartQuery[]) => {
+        return this.transmartMapperService.mapTransmartQueries(transmartQueries);
       });
   }
 
   /**
    * Save a new query.
-   * @param {Object} queryBody
-   * @returns {Observable<TransmartQuery>}
+   * @param {Query} query
+   * @returns {Observable<Query>}
    */
-  saveQuery(queryBody: object): Observable<Query> {
-    return this.transmartResourceService.saveQuery(queryBody);
+  saveQuery(query: Query): Observable<Query> {
+    let transmartQuery: TransmartQuery = this.transmartMapperService.mapQuery(query);
+    return this.transmartResourceService.saveQuery(transmartQuery)
+      .map((newlySavedQuery: TransmartQuery) => {
+        return this.transmartMapperService.mapTransmartQuery(newlySavedQuery);
+      });
   }
 
   /**
@@ -246,9 +248,13 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(tableState: TransmartTableState,
-               offset: number, limit: number): Observable<TransmartDataTable> {
-    return this.transmartResourceService.getDataTable(tableState, offset, limit);
+  getDataTable(dataTable: DataTable, offset: number, limit: number): Observable<DataTable> {
+    const transmartTableState: TransmartTableState
+      = this.transmartMapperService.mapDataTable(dataTable);
+    return this.transmartResourceService.getDataTable(transmartTableState, offset, limit)
+      .map((transmartTable: TransmartDataTable) => {
+        return this.transmartMapperService.mapTransmartDataTable(transmartTable);
+      });
   }
 
 }
