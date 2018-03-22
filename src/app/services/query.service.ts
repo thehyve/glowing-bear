@@ -16,7 +16,6 @@ import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from "./table.service";
-import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
 import {DataTable} from "../models/table-models/data-table";
 import {ResourceHelperService} from "./resource-helper.service";
 
@@ -654,11 +653,11 @@ export class QueryService {
     this.alert(alertSummary, alertDetails, 'info');
   }
 
-  public updateQuery(query: Query, transmartQuery: TransmartQuery) {
-    this.resourceService.updateQuery(query.id, transmartQuery)
+  public updateQuery(query: Query, queryObj: object) {
+    this.resourceHelperService.updateQuery(query.id, queryObj)
       .subscribe(
         () => {
-          if (transmartQuery.subscribed) {
+          if (query.subscribed) {
             this.resourceService.diffQuery(query.id)
               .subscribe(
                 records => {
@@ -672,7 +671,7 @@ export class QueryService {
   }
 
   public deleteQuery(query: Query) {
-    this.resourceService.deleteQuery(query['id'])
+    this.resourceHelperService.deleteQuery(query['id'])
       .subscribe(
         () => {
           const index = this.queries.indexOf(query);

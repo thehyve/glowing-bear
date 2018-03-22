@@ -21,22 +21,7 @@ export class ResourceHelperService {
     console.error(err);
   }
 
-  getDataTable(tableState: DataTable, offset: number, limit: number): Observable<DataTable> {
-    const transmartTableState:TransmartTableState = this.parseDataTableToTransmartTableState(tableState);
-
-    const dataTable$ = new Observable<DataTable>((dataTableSource) => {
-      this.resourceService.getDataTable(transmartTableState, offset, limit)
-        .subscribe((transmartTable: TransmartDataTable) => {
-            dataTableSource.next(this.parseTransmartDataTableToDataTable(transmartTable));
-            dataTableSource.complete();
-          },
-          err => this.handle_error(err)
-        );
-
-    });
-
-    return dataTable$;
-  }
+  // -------------------------------------- query calls --------------------------------------
 
   getQueries(): Observable<Query[]>{
     const query$ = new Observable<Query[]>((querySource) => {
@@ -74,6 +59,39 @@ export class ResourceHelperService {
       );
     });
     return query$;
+  }
+
+  updateQuery(queryId: string, queryObj: object): Observable<{}> {
+    let queryBody: TransmartQuery = queryObj;
+    const result$ = new Observable<{}>((resultSource) => {
+      this.resourceService.updateQuery(queryId, queryBody)
+        .subscribe( res => resultSource.complete())
+    });
+    return result$;
+  }
+
+  deleteQuery(queryId: string): Observable<{}> {
+    return this.resourceService.deleteQuery(queryId);
+  }
+
+
+  // -------------------------------------- data table ---------------------------------------------
+
+  getDataTable(tableState: DataTable, offset: number, limit: number): Observable<DataTable> {
+    const transmartTableState:TransmartTableState = this.parseDataTableToTransmartTableState(tableState);
+
+    const dataTable$ = new Observable<DataTable>((dataTableSource) => {
+      this.resourceService.getDataTable(transmartTableState, offset, limit)
+        .subscribe((transmartTable: TransmartDataTable) => {
+            dataTableSource.next(this.parseTransmartDataTableToDataTable(transmartTable));
+            dataTableSource.complete();
+          },
+          err => this.handle_error(err)
+        );
+
+    });
+
+    return dataTable$;
   }
 
   /**
