@@ -1,11 +1,11 @@
 import {Dimension} from './dimension';
-import {SortOrder} from './sort-order';
+import {Order} from './order';
 
 export class PivotDimension {
   private _dimension: Dimension;
-  private _order: SortOrder;
+  private _order: Order;
 
-  constructor(dimension: Dimension, order: SortOrder) {
+  constructor(dimension: Dimension, order: Order) {
     this.dimension = dimension;
     this.order = order;
   }
@@ -18,11 +18,11 @@ export class PivotDimension {
     this._dimension = value;
   }
 
-  get order(): SortOrder {
+  get order(): Order {
     return this._order;
   }
 
-  set order(value: SortOrder) {
+  set order(value: Order) {
     this._order = value;
   }
 }
