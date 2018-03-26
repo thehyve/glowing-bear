@@ -1,0 +1,19 @@
+<div>
+  <p-table [columns]="cols" [value]="rows" [scrollable]="true"
+           [resizableColumns]="true" [customSort]="true">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns" pResizableColumn>
+          {{col.header}}
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns" class="ui-resizable-column">
+          {{row.data[col.field]}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -7,8 +7,15 @@
               targetFilterPlaceholder="Search by name"
               [showSourceControls]="false"
               [showTargetControls]="false"
-              [sourceStyle]="{'height':'300px'}"
-              [targetStyle]="{'height':'300px'}">
+              (onMoveToTarget)="updateTable()"
+              (onMoveToSource)="updateTable()"
+              (onMoveAllToTarget)="updateTable()"
+              (onMoveAllToSource)="updateTable()"
+              (onSourceReorder)="updateTable()"
+              (onTargetReorder)="updateTable()"
+              (drop)="onDrop()"
+              [sourceStyle]="{'min-height':'130px','height': '100%'}"
+              [targetStyle]="{'min-height':'130px','height': '100%'}">
     <ng-template let-dimension pTemplate="item">
       <div>
         <p-checkbox [(ngModel)]="dimension.selected" binary="true"></p-checkbox>

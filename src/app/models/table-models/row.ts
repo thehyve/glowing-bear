@@ -1,6 +1,7 @@
+import {Col} from './col';
+
 export class Row {
   // the prefix used to refer to column fields
-  public static COLUMN_FIELD_PREFIX = 'col';
   private _data: object;
   private _length: number;
 
@@ -11,7 +12,7 @@ export class Row {
 
   addDatum(value: any) {
     this.length++;
-    const field = Row.COLUMN_FIELD_PREFIX + this.length.toString();
+    const field = Col.COLUMN_FIELD_PREFIX + this.length.toString();
     this.data[field] = value;
   }
 

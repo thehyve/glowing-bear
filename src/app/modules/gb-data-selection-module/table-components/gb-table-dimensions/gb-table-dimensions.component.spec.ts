@@ -7,6 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
+import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 
 describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
@@ -22,7 +23,10 @@ describe('GbTableDimensionsComponent', () => {
         BrowserModule
       ],
       providers: [
-        TableService,
+        {
+          provide: TableService,
+          useClass: TableServiceMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
@@ -38,7 +42,7 @@ describe('GbTableDimensionsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbTableDimensionsComponent', () => {
+  it('GbTableDimensionsComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });
