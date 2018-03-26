@@ -17,6 +17,7 @@ import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-cons
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
+import {TransmartResourceService} from './transmart-resource/transmart-resource.service';
 
 
 /**
@@ -83,7 +84,7 @@ export class ConstraintService {
   private loadStudies() {
     this.resourceService.getStudies()
       .subscribe(
-        studies => {
+        (studies: Study[]) => {
           // reset studies and study constraints
           this.studies = studies;
           this.studyConstraints = [];
