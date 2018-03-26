@@ -1,149 +1,24 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers, RequestOptions, ResponseContentType} from '@angular/http';
-import 'rxjs/add/operator/toPromise';
-
-import {Observable} from 'rxjs/Rx';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
-
+import {Observable} from 'rxjs/Observable';
 import {Study} from '../models/constraint-models/study';
-import {EndpointService} from './endpoint.service';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
-import {TransmartQuery} from "../models/transmart-resource-models/transmart-query";
-import {TransmartTableState} from "../models/transmart-resource-models/transmart-table-state";
-import {TransmartDataTable} from "../models/transmart-resource-models/transmart-data-table";
+import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
+import {TransmartResourceService} from './transmart-resource/transmart-resource.service';
+import {TransmartQuery} from '../models/transmart-models/transmart-query';
+import {DataTable} from '../models/table-models/data-table';
+import {TransmartMapper} from './transmart-resource/transmart-mapper';
 
 @Injectable()
 export class ResourceService {
 
-  constructor(private http: Http, private endpointService: EndpointService) {
-  }
 
-  /**
-   * Currently only handles the 'invalid_token' error, other errors are passed on.
-   * @param error
-   * @returns {any}
-   */
-  private handleError(error: Response | any) {
-    let errMsg: string;
-    if (error instanceof Response) {
-      const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
-
-      if (err === 'invalid_token') {
-        this.endpointService.invalidateToken();
-      }
-
-    } else {
-      errMsg = error.message ? error.message : error.toString();
-    }
-    console.error(errMsg);
-    return Observable.throw(errMsg || 'Server error');
-  }
-
-  /**
-   * Make a post http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param body
-   * @param responseField
-   * @returns {any}
-   */
-  private postCall(urlPart, body, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      let headers = new Headers();
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      const options = new RequestOptions({headers: headers});
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.post(url, body, options)
-          .map((res: Response) => res.json()[responseField])
-          .catch(this.handleError.bind(this));
-      } else {
-        return this.http.post(url, body, options)
-          .map((res: Response) => res.json())
-          .catch(this.handleError.bind(this));
-      }
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
-  }
-
-  /**
-   * Make a get http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param responseField
-   * @returns {Observable<any | any>}
-   */
-  private getCall(urlPart, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      let headers = new Headers();
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      const options = new RequestOptions({headers: headers});
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.get(url, options)
-          .map((response: Response) => response.json()[responseField])
-          .catch(this.handleError.bind(this));
-      } else {
-        return this.http.get(url, options)
-          .map((response: Response) => response.json())
-          .catch(this.handleError.bind(this));
-      }
-
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
-  }
-
-  /**
-   * Make a put http request
-   * @param urlPart
-   * @param body
-   * @returns {Observable<any | any>}
-   */
-  private putCall(urlPart, body) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      let headers = new Headers();
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      let options = new RequestOptions({headers: headers});
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.put(url, body, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
-  }
-
-  /**
-   * Make a delete http request
-   * @param urlPart
-   * @returns {Observable<any | any>}
-   */
-  private deleteCall(urlPart) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      let headers = new Headers();
-      headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-      headers.append('Content-Type', 'application/json');
-      let options = new RequestOptions({headers: headers});
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.delete(url, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
+  constructor(private transmartResourceService: TransmartResourceService) {
   }
 
   /**
@@ -151,9 +26,7 @@ export class ResourceService {
    * @returns {Observable<{}>}
    */
   logout(): Observable<{}> {
-    const endpoint = this.endpointService.getEndpoint();
-    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true})
-      .catch(this.handleError.bind(this));
+    return this.transmartResourceService.logout();
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -162,9 +35,7 @@ export class ResourceService {
    * @returns {Observable<Study[]>}
    */
   getStudies(): Observable<Study[]> {
-    const urlPart = 'studies';
-    const responseField = 'studies';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getStudies();
   }
 
   /**
@@ -176,15 +47,7 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    let urlPart = `tree_nodes?root=${root}&depth=${depth}`;
-    if (hasCounts) {
-      urlPart += '&counts=true';
-    }
-    if (hasTags) {
-      urlPart += '&tags=true';
-    }
-    const responseField = 'tree_nodes';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
   }
 
   // -------------------------------------- observations calls --------------------------------------
@@ -195,10 +58,7 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_study_and_concept';
-    const body = {constraint: constraint.toQueryObject()};
-    const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService.getCountsPerStudyAndConcept(constraint);
   }
 
   /**
@@ -208,10 +68,7 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudy(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_study';
-    const body = {constraint: constraint.toQueryObject()};
-    const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService.getCountsPerStudy(constraint);
   }
 
   // -------------------------------------- observation calls --------------------------------------
@@ -221,10 +78,7 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCounts(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts';
-    const body = {constraint: constraint.toQueryObject()};
-    const responseField = false;
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService.getCounts(constraint);
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -235,10 +89,7 @@ export class ResourceService {
    * @returns {Observable<object>}
    */
   getAggregate(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/aggregates_per_concept';
-    const body = {constraint: constraint.toQueryObject()};
-    const responseField = 'aggregatesPerConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService.getAggregate(constraint);
   }
 
   // -------------------------------------- trial visit calls --------------------------------------
@@ -248,10 +99,7 @@ export class ResourceService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
-    const constraintString = JSON.stringify(constraint.toQueryObject());
-    const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
-    const responseField = 'elements';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getTrialVisits(constraint);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
@@ -260,9 +108,7 @@ export class ResourceService {
    * @returns {Observable<Object[]>}
    */
   getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
-    const urlPart = 'pedigree/relation_types';
-    const responseField = 'relationTypes';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getPedigreeRelationTypes();
   }
 
   // -------------------------------------- export calls --------------------------------------
@@ -272,16 +118,11 @@ export class ResourceService {
    * @returns {Observable<string[]>}
    */
   getExportDataFormats(constraint: Constraint): Observable<string[]> {
-    const urlPart = 'export/data_formats';
-    const body = {constraint: constraint.toQueryObject()};
-    const responseField = 'dataFormats';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService.getExportDataFormats(constraint);
   }
 
   getExportFileFormats(dataView: string): Observable<string[]> {
-    const urlPart = `export/file_formats?dataView=${dataView}`;
-    const responseField = 'fileFormats';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getExportFileFormats(dataView);
   }
 
   /**
@@ -289,9 +130,7 @@ export class ResourceService {
    * @returns {Observable<ExportJob[]>}
    */
   getExportJobs(): Observable<any[]> {
-    const urlPart = 'export/jobs';
-    const responseField = 'exportJobs';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.getExportJobs();
   }
 
   /**
@@ -300,9 +139,7 @@ export class ResourceService {
    * @returns {Observable<ExportJob>}
    */
   createExportJob(name: string): Observable<ExportJob> {
-    const urlPart = `export/job?name=${name}`;
-    const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    return this.transmartResourceService.createExportJob(name);
   }
 
   /**
@@ -324,14 +161,8 @@ export class ResourceService {
                constraint: Constraint,
                elements: object[],
                includeMeasurementDateColumns: boolean): Observable<ExportJob> {
-    const urlPart = `export/${jobId}/run`;
-    const responseField = 'exportJob';
-    const body = {
-      constraint: constraint.toQueryObject(),
-      elements: elements,
-      includeMeasurementDateColumns: includeMeasurementDateColumns
-    };
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartResourceService
+      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
   }
 
   /**
@@ -340,18 +171,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let endpoint = this.endpointService.getEndpoint();
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/zip');
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let url = `${endpoint.getUrl()}/export/${jobId}/download`;
-    const options = new RequestOptions({
-      headers: headers,
-      responseType: ResponseContentType.Blob
-    });
-    return this.http.get(url, options)
-      .map((res: Response) => res)
-      .catch(this.handleError.bind(this));
+    return this.transmartResourceService.downloadExportJob(jobId);
   }
 
   /**
@@ -360,9 +180,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   cancelExportJob(jobId: string): Observable<{}> {
-    const urlPart = `export/${jobId}/cancel`;
-    const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    return this.transmartResourceService.cancelExportJob(jobId);
   }
 
   /**
@@ -371,8 +189,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   archiveExportJob(jobId: string): Observable<{}> {
-    const urlPart = `export/${jobId}`;
-    return this.deleteCall(urlPart);
+    return this.transmartResourceService.archiveExportJob(jobId);
   }
 
   // -------------------------------------- query calls --------------------------------------
@@ -380,31 +197,34 @@ export class ResourceService {
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<TransmartQuery[]> {
-    const urlPart = `queries`;
-    const responseField = 'queries';
-    return this.getCall(urlPart, responseField);
+  getQueries(): Observable<Query[]> {
+    return this.transmartResourceService.getQueries()
+      .map((transmartQueries: TransmartQuery[]) => {
+        return TransmartMapper.mapTransmartQueries(transmartQueries);
+      });
   }
 
   /**
    * Save a new query.
-   * @param {Object} queryBody
-   * @returns {Observable<TransmartQuery>}
+   * @param {Query} query
+   * @returns {Observable<Query>}
    */
-  saveQuery(queryBody: TransmartQuery): Observable<TransmartQuery> {
-    const urlPart = `queries`;
-    return this.postCall(urlPart, queryBody, null);
+  saveQuery(query: Query): Observable<Query> {
+    let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
+    return this.transmartResourceService.saveQuery(transmartQuery)
+      .map((newlySavedQuery: TransmartQuery) => {
+        return TransmartMapper.mapTransmartQuery(newlySavedQuery);
+      });
   }
 
   /**
    * Modify an existing query.
    * @param {string} queryId
-   * @param {TransmartQuery} queryBody
-   * @returns {Observable<any>}
+   * @param {Object} queryBody
+   * @returns {Observable<{}>}
    */
-  updateQuery(queryId: string, queryBody: TransmartQuery): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.putCall(urlPart, queryBody);
+  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+    return this.transmartResourceService.updateQuery(queryId, queryBody);
   }
 
   /**
@@ -413,35 +233,27 @@ export class ResourceService {
    * @returns {Observable<any>}
    */
   deleteQuery(queryId: string): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.deleteCall(urlPart);
+    return this.transmartResourceService.deleteQuery(queryId);
   }
 
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
-    const urlPart = `patient_sets?name=${name}&reuse=true`;
-    const body = constraint.toQueryObject();
-    return this.postCall(urlPart, body, null);
+    return this.transmartResourceService.savePatientSet(name, constraint);
   }
 
   // -------------------------------------- query differences --------------------------------------
   diffQuery(queryId: string): Observable<object[]> {
-    const urlPart = `queries/${queryId}/sets`;
-    const responseField = 'querySets';
-    return this.getCall(urlPart, responseField);
+    return this.transmartResourceService.diffQuery(queryId);
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(tableState: TransmartTableState, offset: number, limit: number): Observable<TransmartDataTable> {
-    const urlPart = `observations/tabular`;
-    const body = {
-      rows: tableState.rowDimensions,
-      columns: tableState.columnDimensions,
-      sort: tableState.sorting,
-      offset: offset,
-      limit: limit
-    };
-    return this.postCall(urlPart, body, null);
+  getDataTable(dataTable: DataTable, offset: number, limit: number): Observable<DataTable> {
+    const transmartTableState: TransmartTableState
+      = TransmartMapper.mapDataTable(dataTable);
+    return this.transmartResourceService.getDataTable(transmartTableState, offset, limit)
+      .map((transmartTable: TransmartDataTable) => {
+        return TransmartMapper.mapTransmartDataTable(transmartTable);
+      });
   }
 
 }

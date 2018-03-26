@@ -1,5 +1,4 @@
-
-import {QuerySubscriptionFrequency} from "../query-models/query-subscription-frequency";
+import {QuerySubscriptionFrequency} from '../query-models/query-subscription-frequency';
 
 /**
  * Representation of a query model returned from tranSMART
@@ -27,10 +26,9 @@ export class TransmartQuery {
   // The frequency of the subscription: daily or monthly
   public subscriptionFreq?: QuerySubscriptionFrequency;
 
-  constructor(queryName: string){
+  constructor(queryName: string) {
     this.name = queryName;
     this.bookmarked = false;
     this.subscribed = false;
   }
-
 }

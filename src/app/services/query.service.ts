@@ -15,9 +15,7 @@ import {QuerySetType} from '../models/query-models/query-set-type';
 import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
-import {TableService} from "./table.service";
-import {DataTable} from "../models/table-models/data-table";
-import {ResourceHelperService} from "./resource-helper.service";
+import {TableService} from './table.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -156,7 +154,6 @@ export class QueryService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
-              private resourceHelperService: ResourceHelperService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private tableService: TableService) {
@@ -177,7 +174,7 @@ export class QueryService {
    * Update the queries on the left-side panel
    */
   public loadQueries() {
-    this.resourceHelperService.getQueries()
+    this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
           this.queries.length = 0;
@@ -595,32 +592,32 @@ export class QueryService {
   }
 
   public saveQuery(queryName: string) {
+    let newQuery = new Query('', queryName);
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
-    const patientConstraintObj = selectionConstraint.toQueryObject(true);
+    newQuery.patientsQuery = selectionConstraint.toQueryObject(true);
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    const observationConstraintObj = {
-      data: data
-    };
+    newQuery.observationsQuery = { data: data };
+    newQuery.dataTable = this.tableService.dataTable;
 
-    this.resourceHelperService.saveQuery(queryName, patientConstraintObj, observationConstraintObj,
-      this.tableService.dataTable).subscribe(
-        (newlySavedQuery: Query) => {
-          newlySavedQuery.collapsed = true;
-          newlySavedQuery.visible = true;
+    this.resourceService.saveQuery(newQuery)
+      .subscribe(
+      (newlySavedQuery: Query) => {
+        newlySavedQuery.collapsed = true;
+        newlySavedQuery.visible = true;
 
-          this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-          this.alert(summary, '', 'success');
-        },
-        (err) => {
-          console.error(err);
-          const summary = 'Could not add the query "' + queryName + '".';
-          this.alert(summary, '', 'error');
-        }
-      );
+        this.queries.push(newlySavedQuery);
+        const summary = 'Query "' + newlySavedQuery.name + '" is added.';
+        this.alert(summary, '', 'success');
+      },
+      (err) => {
+        console.error(err);
+        const summary = 'Could not add the query "' + queryName + '".';
+        this.alert(summary, '', 'error');
+      }
+    );
   }
 
   /**
@@ -638,7 +635,7 @@ export class QueryService {
     }
     this.updateCounts_2();
     // todo updateCounts_3
-    if(query.dataTable){
+    if (query.dataTable) {
       this.tableService.updateTable(query.dataTable);
     }
 
@@ -654,7 +651,7 @@ export class QueryService {
   }
 
   public updateQuery(query: Query, queryObj: object) {
-    this.resourceHelperService.updateQuery(query.id, queryObj)
+    this.resourceService.updateQuery(query.id, queryObj)
       .subscribe(
         () => {
           if (query.subscribed) {
@@ -671,7 +668,7 @@ export class QueryService {
   }
 
   public deleteQuery(query: Query) {
-    this.resourceHelperService.deleteQuery(query['id'])
+    this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
           const index = this.queries.indexOf(query);

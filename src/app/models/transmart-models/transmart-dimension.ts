@@ -1,4 +1,4 @@
-import {TransmartDimensionElement} from "./transmart-dimension-element";
+import {TransmartDimensionElement} from './transmart-dimension-element';
 
 export class TransmartDimension {
   name: string;

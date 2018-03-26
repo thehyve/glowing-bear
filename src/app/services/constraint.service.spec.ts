@@ -23,7 +23,8 @@ describe('ConstraintService', () => {
     });
   });
 
-  it('should inject ConstraintService', inject([ConstraintService], (service: ConstraintService) => {
+  it('should inject ConstraintService',
+    inject([ConstraintService], (service: ConstraintService) => {
     expect(service).toBeTruthy();
   }));
 });

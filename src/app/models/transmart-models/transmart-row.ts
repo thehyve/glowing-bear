@@ -1,4 +1,4 @@
-import {TransmartInRowDimension} from "./transmart-in-row-dimension";
+import {TransmartInRowDimension} from './transmart-in-row-dimension';
 
 export class TransmartRow {
   dimensions: Array<TransmartInRowDimension>;

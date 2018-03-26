@@ -1,6 +1,6 @@
 import {QuerySubscriptionFrequency} from './query-subscription-frequency';
 import {QueryDiffRecord} from './query-diff-record';
-import {DataTable} from "../table-models/data-table";
+import {DataTable} from '../table-models/data-table';
 
 export class Query {
 
@@ -20,13 +20,13 @@ export class Query {
   private _collapsed: boolean;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
-  // The patient constraint part of the query
-  private _patientsQuery: object;
-  // The observation constraint part of the query
-  private _observationsQuery: {data: string[]};
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
-  // The information about the saved data table state
+  // 1st step: The patient constraint part of the query
+  private _patientsQuery: object;
+  // 2nd step: The observation constraint part of the query
+  private _observationsQuery: { data: string[] };
+  // 3rd step: The definition of data table
   private _dataTable: DataTable;
 
   /*
@@ -119,12 +119,20 @@ export class Query {
     this._patientsQuery = value;
   }
 
-  get observationsQuery(): {data: string[]} {
+  get observationsQuery(): { data: string[] } {
     return this._observationsQuery;
   }
 
-  set observationsQuery(value: {data: string[]}) {
+  set observationsQuery(value: { data: string[] }) {
     this._observationsQuery = value;
+  }
+
+  get dataTable(): DataTable {
+    return this._dataTable;
+  }
+
+  set dataTable(value: DataTable) {
+    this._dataTable = value;
   }
 
   get createDate(): string {
@@ -157,14 +165,6 @@ export class Query {
 
   set visible(value: boolean) {
     this._visible = value;
-  }
-
-  get dataTable(): DataTable {
-    return this._dataTable;
-  }
-
-  set dataTable(value: DataTable) {
-    this._dataTable = value;
   }
 
   get createDateInfo(): string {
