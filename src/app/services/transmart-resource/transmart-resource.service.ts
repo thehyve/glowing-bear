@@ -25,13 +25,13 @@ export class TransmartResourceService {
    * only handles the 'invalid_token' error, other errors are passed on.
    * @param {HttpErrorResponse | any} error
    */
-  private handleError(error: HttpErrorResponse | any) {
-    if (error === 'invalid_token') {
-      this.endpointService.invalidateToken();
-      console.error('Invalid token. ', error);
-    } else {
-      console.error(error.toString() || 'Server error');
-    }
+  private handleError(res: HttpErrorResponse | any) {
+    const status = res['status'];
+    const url = res['url'];
+    const message = res['message'];
+    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
+    console.error(summary);
+    console.error(res['error']);
   }
 
   /**
@@ -145,7 +145,12 @@ export class TransmartResourceService {
    */
   logout(): Observable<{}> {
     const endpoint = this.endpointService.getEndpoint();
-    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true})
+    const url = `${endpoint.apiUrl}/logout`;
+    const body = {};
+    const options = {
+      withCredentials: true
+    };
+    return this.http.post(url, body, options)
       .catch(this.handleError.bind(this));
   }
 
