@@ -399,7 +399,9 @@ gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
   color: transparent;
 }
 
-/* style for the dimension director */
+/*
+ * ------------------------------ Styles for gb-table-dimensions component -------------------------------
+ */
 gb-table-dimensions .ui-picklist-droppoint {
   height: 3px !important;
 }
@@ -423,4 +425,14 @@ gb-table-dimensions .ui-picklist .ui-picklist-filter-container {
 gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
   padding: 1px;
   font-size: small;
+}
+
+/*
+ * ------------------------------ Styles for gb-table-table component -------------------------------
+ */
+gb-table-table .ui-resizable-column {
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
 }
