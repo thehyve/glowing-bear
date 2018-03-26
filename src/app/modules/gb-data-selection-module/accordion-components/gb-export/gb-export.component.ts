@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
-import {Response} from '@angular/http';
 import {ExportJob} from '../../../../models/export-job';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {saveAs} from 'file-saver';
@@ -166,8 +165,8 @@ export class GbExportComponent implements OnInit {
     job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
-        (response: Response) => {
-          let blob = new Blob([response.blob()], {type: 'application/zip'});
+        (data) => {
+          let blob = new Blob([data], {type: 'application/zip'});
           saveAs(blob, `${job.jobName}.zip`, true);
         },
         err => console.error(err),
