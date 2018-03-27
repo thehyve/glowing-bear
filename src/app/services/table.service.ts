@@ -3,27 +3,34 @@ import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
+import {Col} from '../models/table-models/col';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class TableService {
 
+  private _prevRowDimensions: Array<Dimension>;
+  private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
 
   constructor(private resourceService: ResourceService) {
     this.dataTable = new DataTable();
-    this.mockData();
+    this.prevRowDimensions = [];
+    this.prevColDimensions = [];
+    this.mockDataInit();
+    this.mockDataUpdate();
   }
 
-  mockData() {
+  mockDataInit() {
     // dimensions
     let subjectDim = new Dimension('Subject');
     subjectDim.valueNames.push('s1');
-    subjectDim.valueNames.push('s5');
     subjectDim.valueNames.push('s2');
-    subjectDim.valueNames.push('s6');
     subjectDim.valueNames.push('s3');
-    subjectDim.valueNames.push('s7');
     subjectDim.valueNames.push('s4');
+    subjectDim.valueNames.push('s5');
+    subjectDim.valueNames.push('s6');
+    subjectDim.valueNames.push('s7');
     subjectDim.valueNames.push('s8');
     let conceptDim = new Dimension('Concept');
     conceptDim.valueNames.push('Age');
@@ -40,7 +47,14 @@ export class TableService {
     this.rowDimensions.push(studyDim);
     this.columnDimensions.push(conceptDim);
     this.columnDimensions.push(visitDim);
+  }
 
+  mockDataUpdate() {
+    // update the old copy of row and col dimensions
+    this.prevRowDimensions = this.rowDimensions.slice(0);
+    this.prevColDimensions = this.columnDimensions.slice(0);
+    this.dataTable.rows = [];
+    this.dataTable.cols = [];
     // generate the column-header rows
     let numColDimColumns = this.columnDimensions.length > 0 ? 1 : 0;
     for (let colIndex = 0; colIndex < this.columnDimensions.length; colIndex++) {
@@ -77,47 +91,61 @@ export class TableService {
     // generate the data rows
     let dataRows = [];
     let rowDim0 = this.rowDimensions[0];
-    let dimensionsRight0 = this.getDimensionsBelow(rowDim0, this.rowDimensions);
-    let valueRepetition0 = 1;
-    for (let dimRight of dimensionsRight0) {
-      valueRepetition0 = valueRepetition0 * dimRight.valueNames.length;
-    }
-    for (let valName of rowDim0.valueNames) {
-      for (let j = 0; j < valueRepetition0; j++) {
-        let row = new Row();
-        row.addDatum(valName);
-        dataRows.push(row);
+    // if there at least one row dimension
+    if (rowDim0) {
+      let dimensionsRight0 = this.getDimensionsBelow(rowDim0, this.rowDimensions);
+      let valueRepetition0 = 1;
+      for (let dimRight of dimensionsRight0) {
+        valueRepetition0 = valueRepetition0 * dimRight.valueNames.length;
       }
-    }
-    let index = 0;
-    for (let rowIndex = 1; rowIndex < this.rowDimensions.length; rowIndex++) {
-      let rowDim = this.rowDimensions[rowIndex];
-      let dimensionsLeft = this.getDimensionsAbove(rowDim, this.rowDimensions);
-      let selfRepetition = 1;
-      for (let dimLeft of dimensionsLeft) {
-        selfRepetition = selfRepetition * dimLeft.valueNames.length;
+      for (let valName of rowDim0.valueNames) {
+        for (let j = 0; j < valueRepetition0; j++) {
+          let row = new Row();
+          row.addDatum(valName);
+          dataRows.push(row);
+        }
       }
-      let dimensionsRight = this.getDimensionsBelow(rowDim, this.rowDimensions);
-      let valueRepetition = 1;
-      for (let dimRight of dimensionsRight) {
-        valueRepetition = valueRepetition * dimRight.valueNames.length;
-      }
-      for (let i = 0; i < selfRepetition; i++) {
-        for (let valName of rowDim.valueNames) {
-          for (let j = 0; j < valueRepetition; j++) {
-            dataRows[index].addDatum(valName);
-            index++;
+      let index = 0;
+      for (let rowIndex = 1; rowIndex < this.rowDimensions.length; rowIndex++) {
+        let rowDim = this.rowDimensions[rowIndex];
+        let dimensionsLeft = this.getDimensionsAbove(rowDim, this.rowDimensions);
+        let selfRepetition = 1;
+        for (let dimLeft of dimensionsLeft) {
+          selfRepetition = selfRepetition * dimLeft.valueNames.length;
+        }
+        let dimensionsRight = this.getDimensionsBelow(rowDim, this.rowDimensions);
+        let valueRepetition = 1;
+        for (let dimRight of dimensionsRight) {
+          valueRepetition = valueRepetition * dimRight.valueNames.length;
+        }
+        for (let i = 0; i < selfRepetition; i++) {
+          for (let valName of rowDim.valueNames) {
+            for (let j = 0; j < valueRepetition; j++) {
+              dataRows[index].addDatum(valName);
+              let nIndex = index + 1;
+              index = (nIndex === dataRows.length) ? 0 : nIndex;
+            }
           }
         }
       }
+    } else {// if there is no row dimension
+      dataRows.push(new Row());
     }
-    for (let dataRow of dataRows) {
+    for (let dataRowIndex = 0; dataRowIndex < dataRows.length; dataRowIndex++) {
+      let dataRow = dataRows[dataRowIndex];
       for (let i = 0; i < numColDimColumns; i++) {
+        dataRow.addDatum('val');
+      }
+      if (numColDimColumns === 0) {
         dataRow.addDatum('val');
       }
       this.rows.push(dataRow);
     }
-    console.log('rows: ', this.rows);
+    // generate column headers
+    for (let field in this.rows[0].data) {
+      let col = new Col(field, ' — ');
+      this.dataTable.cols.push(col);
+    }
   }
 
   getTable() {
@@ -130,7 +158,7 @@ export class TableService {
     );
   }
 
-  getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
+  private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
     let dimensionsBelow = [];
     let index = dimensions.indexOf(dimension);
     for (let i = index + 1; i < dimensions.length; i++) {
@@ -139,7 +167,7 @@ export class TableService {
     return dimensionsBelow;
   }
 
-  getDimensionsAbove(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
+  private getDimensionsAbove(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
     let dimensionsAbove = [];
     let index = dimensions.indexOf(dimension);
     for (let i = index - 1; i >= 0; i--) {
@@ -148,7 +176,7 @@ export class TableService {
     return dimensionsAbove;
   }
 
-  updateTable(savedTable: DataTable) {
+  public updateTable(savedTable: DataTable) {
     let availableDimensions: Dimension[] = this.getAvailableDimensions();
     this.updateTableToDefaultState(availableDimensions);
 
@@ -200,8 +228,8 @@ export class TableService {
     return this.dataTable.rows;
   }
 
-  set row(value: Row[]) {
-    this.dataTable.rows = value;
+  get cols(): Col[] {
+    return this.dataTable.cols;
   }
 
   get dataTable(): DataTable {
@@ -210,5 +238,21 @@ export class TableService {
 
   set dataTable(value: DataTable) {
     this._dataTable = value;
+  }
+
+  get prevRowDimensions(): Array<Dimension> {
+    return this._prevRowDimensions;
+  }
+
+  set prevRowDimensions(value: Array<Dimension>) {
+    this._prevRowDimensions = value;
+  }
+
+  get prevColDimensions(): Array<Dimension> {
+    return this._prevColDimensions;
+  }
+
+  set prevColDimensions(value: Array<Dimension>) {
+    this._prevColDimensions = value;
   }
 }

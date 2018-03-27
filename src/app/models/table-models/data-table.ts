@@ -1,15 +1,22 @@
 import {Dimension} from './dimension';
 import {Row} from './row';
+import {Col} from './col';
 
 export class DataTable {
   private _rowDimensions: Array<Dimension>;
   private _columnDimensions: Array<Dimension>;
   private _rows: Array<Row>;
+  private _cols: Array<Col>;
 
   constructor() {
+    this.clear();
+  }
+
+  clear() {
     this.rowDimensions = [];
     this.columnDimensions = [];
     this.rows = [];
+    this.cols = [];
   }
 
   get rowDimensions(): Array<Dimension> {
@@ -34,5 +41,13 @@ export class DataTable {
 
   set rows(value: Array<Row>) {
     this._rows = value;
+  }
+
+  get cols(): Array<Col> {
+    return this._cols;
+  }
+
+  set cols(value: Array<Col>) {
+    this._cols = value;
   }
 }

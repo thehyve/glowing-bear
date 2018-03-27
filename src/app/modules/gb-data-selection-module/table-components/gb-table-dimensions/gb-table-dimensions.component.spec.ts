@@ -5,8 +5,9 @@ import {TableService} from '../../../../services/table.service';
 import {CheckboxModule, PickListModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {ResourceService} from '../../../../services/resource.service';
-import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
+import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
+import {QueryService} from '../../../../services/query.service';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 
 describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
@@ -22,10 +23,13 @@ describe('GbTableDimensionsComponent', () => {
         BrowserModule
       ],
       providers: [
-        TableService,
         {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
+          provide: TableService,
+          useClass: TableServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })
@@ -38,7 +42,7 @@ describe('GbTableDimensionsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbTableDimensionsComponent', () => {
+  it('GbTableDimensionsComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -94,11 +94,12 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.resourceService.logout().subscribe(
-      res => {
-        this.endpointService.invalidateToken();
-      }
-    );
+    this.resourceService.logout()
+      .subscribe(
+        res => {
+          this.endpointService.invalidateToken();
+        }
+      );
   }
 
 }
