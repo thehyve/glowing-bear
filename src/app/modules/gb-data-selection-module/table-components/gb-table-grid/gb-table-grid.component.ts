@@ -5,8 +5,8 @@ import {Row} from '../../../../models/table-models/row';
 
 @Component({
   selector: 'gb-table-table',
-  templateUrl: './gb-table-table.component.html',
-  styleUrls: ['./gb-table-table.component.css']
+  templateUrl: './gb-table-grid.component.html',
+  styleUrls: ['./gb-table-grid.component.css']
 })
 export class GbTableTableComponent implements OnInit {
 

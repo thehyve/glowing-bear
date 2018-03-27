@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableTableComponent} from './gb-table-table.component';
+import {GbTableTableComponent} from './gb-table-grid.component';
 import {TableService} from '../../../../services/table.service';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 import {TableModule} from 'primeng/table';
