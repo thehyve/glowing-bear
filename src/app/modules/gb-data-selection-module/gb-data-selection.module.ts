@@ -30,7 +30,7 @@ import {GbPatientSetConstraintComponent} from './constraint-components/gb-patien
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
 import {GbTableComponent} from './accordion-components/gb-table/gb-table.component';
 import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions/gb-table-dimensions.component';
-import {GbTableTableComponent} from './table-components/gb-table-table/gb-table-table.component';
+import {GbTableTableComponent} from './table-components/gb-table-grid/gb-table-grid.component';
 import {TableModule} from 'primeng/table';
 
 @NgModule({
