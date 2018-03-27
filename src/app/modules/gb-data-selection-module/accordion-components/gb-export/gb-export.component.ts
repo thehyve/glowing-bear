@@ -6,6 +6,7 @@ import {ExportJob} from '../../../../models/export-job';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
+import {TableService} from "../../../../services/table.service";
 
 @Component({
   selector: 'gb-export',
@@ -21,6 +22,7 @@ export class GbExportComponent implements OnInit {
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService,
+              private tableService: TableService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
     this.updateExportJobs();
@@ -125,6 +127,7 @@ export class GbExportComponent implements OnInit {
   runExportJob(job) {
     let jobId = job['id'];
     let elements: object[] = [];
+    let includeDataTable: boolean = false;
     for (let dataFormat of this.exportFormats) {
       if (dataFormat['checked']) {
         for (let fileFormat of dataFormat['fileFormats']) {
@@ -134,7 +137,11 @@ export class GbExportComponent implements OnInit {
               format: fileFormat['name'],
               dataView: this.queryService.exportDataView
             });
+            if (fileFormat['name'] == 'TSV') {
+              includeDataTable = true;
+            }
           }
+
         }
       }
     }
@@ -146,7 +153,9 @@ export class GbExportComponent implements OnInit {
       combo.addChild(selectionConstraint);
       combo.addChild(projectionConstraint);
 
-      this.resourceService.runExportJob(jobId, combo, elements, this.dateColumnsIncluded)
+      let dataTable = includeDataTable ? this.tableService.dataTable : null;
+
+      this.resourceService.runExportJob(jobId, combo, elements, this.dateColumnsIncluded, dataTable)
         .subscribe(
           returnedExportJob => {
             this.updateExportJobs();

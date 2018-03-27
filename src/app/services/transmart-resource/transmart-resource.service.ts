@@ -143,10 +143,9 @@ export class TransmartResourceService {
    * Logout from the authserver with a cookie attached
    * @returns {Observable<{}>}
    */
-  logout(): Observable<{}> {
+  logout(): Observable<object> {
     const endpoint = this.endpointService.getEndpoint();
-    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true})
-      .catch(this.handleError.bind(this));
+    return this.http.post(`${endpoint.apiUrl}/logout`, {}, {withCredentials: true}).map(response => {return Observable.of({})});
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -311,19 +310,24 @@ export class TransmartResourceService {
    * @param elements
    * @param constraint
    * @param includeMeasurementDateColumns
+   * @param tableState - included only, if at least one of the formats of elements is 'TSV'
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                constraint: Constraint,
                elements: object[],
-               includeMeasurementDateColumns: boolean): Observable<ExportJob> {
+               includeMeasurementDateColumns: boolean,
+               tableState?: TransmartTableState): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
-    const body = {
+    let body = {
       constraint: constraint.toQueryObject(),
       elements: elements,
       includeMeasurementDateColumns: includeMeasurementDateColumns
     };
+    if(tableState) {
+      body['tableState'] = tableState;
+    }
     return this.postCall(urlPart, body, responseField);
   }
 

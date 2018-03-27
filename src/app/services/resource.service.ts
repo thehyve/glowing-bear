@@ -155,14 +155,22 @@ export class ResourceService {
    * @param elements
    * @param constraint
    * @param includeMeasurementDateColumns
+   * @param dataTable - included only, if at least one of the formats of elements is 'TSV'
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                constraint: Constraint,
                elements: object[],
-               includeMeasurementDateColumns: boolean): Observable<ExportJob> {
-    return this.transmartResourceService
-      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
+               includeMeasurementDateColumns: boolean,
+               dataTable?: DataTable): Observable<ExportJob> {
+    if (dataTable){
+      const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
+      return this.transmartResourceService
+        .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns, transmartTableState);
+    } else {
+      return this.transmartResourceService
+        .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
+    }
   }
 
   /**
