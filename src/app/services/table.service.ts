@@ -4,12 +4,13 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class TableService {
 
   private _prevRowDimensions: Array<Dimension>;
-  private _prevColDimensions: Array<Dimension>
+  private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
 
   constructor(private resourceService: ResourceService) {

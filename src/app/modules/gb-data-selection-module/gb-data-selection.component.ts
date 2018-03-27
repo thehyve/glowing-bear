@@ -81,4 +81,8 @@ export class GbDataSelectionComponent implements OnInit {
     this.queryService.updateCounts_2();
   }
 
+  update_3(event) {
+    event.stopPropagation();
+    this.queryService.update_3();
+  }
 }
