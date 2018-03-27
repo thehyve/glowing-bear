@@ -163,14 +163,9 @@ export class ResourceService {
                elements: object[],
                includeMeasurementDateColumns: boolean,
                dataTable?: DataTable): Observable<ExportJob> {
-    if (dataTable){
-      const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
-      return this.transmartResourceService
-        .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns, transmartTableState);
-    } else {
-      return this.transmartResourceService
-        .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns);
-    }
+    const transmartTableState: TransmartTableState = dataTable ? TransmartMapper.mapDataTable(dataTable) : null;
+    return this.transmartResourceService
+      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns, transmartTableState);
   }
 
   /**
