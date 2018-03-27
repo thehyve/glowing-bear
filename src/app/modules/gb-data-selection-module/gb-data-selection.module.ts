@@ -21,7 +21,7 @@ import {
   TreeTableModule,
   DropdownModule,
   TooltipModule,
-  MessagesModule, PickListModule
+  MessagesModule, PickListModule, PaginatorModule
 } from 'primeng/primeng';
 import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
@@ -30,6 +30,8 @@ import {GbPatientSetConstraintComponent} from './constraint-components/gb-patien
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
 import {GbTableComponent} from './accordion-components/gb-table/gb-table.component';
 import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions/gb-table-dimensions.component';
+import {GbTableTableComponent} from './table-components/gb-table-grid/gb-table-grid.component';
+import {TableModule} from 'primeng/table';
 
 @NgModule({
   imports: [
@@ -45,10 +47,12 @@ import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions
     DataListModule,
     DataTableModule,
     TreeTableModule,
+    TableModule,
+    PaginatorModule,
     DropdownModule,
     TooltipModule,
     MessagesModule,
-    PickListModule
+    PickListModule,
   ],
   exports: [
     RouterModule
@@ -68,7 +72,8 @@ import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions
     GbPatientSetConstraintComponent,
     GbPedigreeConstraintComponent,
     GbTableComponent,
-    GbTableDimensionsComponent
+    GbTableDimensionsComponent,
+    GbTableTableComponent
   ],
   entryComponents: [
     GbConstraintComponent,
