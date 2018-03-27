@@ -5,9 +5,9 @@ import {TableService} from '../../../../services/table.service';
 import {CheckboxModule, PickListModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {ResourceService} from '../../../../services/resource.service';
-import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
+import {QueryService} from '../../../../services/query.service';
+import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 
 describe('GbTableDimensionsComponent', () => {
   let component: GbTableDimensionsComponent;
@@ -28,8 +28,8 @@ describe('GbTableDimensionsComponent', () => {
           useClass: TableServiceMock
         },
         {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
+          provide: QueryService,
+          useClass: QueryServiceMock
         }
       ]
     })
