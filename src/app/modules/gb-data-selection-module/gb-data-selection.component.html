@@ -72,11 +72,20 @@
           <div class="gb-data-selection-accordion-sub-header-1">
             Step 3: View and arrange the selected data
           </div>
-          <div class="form-inline gb-data-selection-accordion-sub-header-2">
-            <div class="gb-data-selection-accordion-sub-header-3">
+          <div class="gb-data-selection-accordion-sub-header-2">
+            <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
               <span class="gb-data-selection-emphasis-text">{{observationCount_2}} observations</span>
-            </div>
+            </span>
+            <span *ngIf="!queryService.instantCountsUpdate_3" class="float-right">
+              <i *ngIf="queryService.isUpdating_3" class="fa fa-circle-o-notch fa-spin"></i>
+              <button type="button"
+                      (click)="update_3($event)"
+                      class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                      {{queryService.isDirty_3? 'gb-data-selection-update-btn-dirty' : ''}}">
+                Update
+              </button>
+            </span>
           </div>
         </div>
       </md2-accordion-header>

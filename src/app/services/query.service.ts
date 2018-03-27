@@ -128,6 +128,13 @@ export class QueryService {
   private _queueOfCalls_2 = [];
 
   /*
+   *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
+   */
+  private _instantCountsUpdate_3: boolean;
+  private _isUpdating_3 = false;
+  private _isDirty_3 = false;
+
+  /*
    * ------ other variables ------
    */
   // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
@@ -159,6 +166,7 @@ export class QueryService {
               private tableService: TableService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
+    this.instantCountsUpdate_3 = false;
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
@@ -529,6 +537,14 @@ export class QueryService {
     /*
      * ====== function updateCounts_2 ends ======
      */
+  }
+
+  /**
+   * update the table
+   */
+  public update_3() {
+    // TODO: rename updateCounts_1/2 to update_1/2
+    this.tableService.mockDataUpdate();
   }
 
   public updateExports() {
@@ -914,6 +930,14 @@ export class QueryService {
     this._instantCountsUpdate_2 = value;
   }
 
+  get instantCountsUpdate_3(): boolean {
+    return this._instantCountsUpdate_3;
+  }
+
+  set instantCountsUpdate_3(value: boolean) {
+    this._instantCountsUpdate_3 = value;
+  }
+
   get countsRelay(): boolean {
     return this._countsRelay;
   }
@@ -954,6 +978,14 @@ export class QueryService {
     this._isUpdating_2 = value;
   }
 
+  get isUpdating_3(): boolean {
+    return this._isUpdating_3;
+  }
+
+  set isUpdating_3(value: boolean) {
+    this._isUpdating_3 = value;
+  }
+
   get isPreparing_2(): boolean {
     return this._isPreparing_2;
   }
@@ -976,6 +1008,14 @@ export class QueryService {
 
   set isDirty_2(value: boolean) {
     this._isDirty_2 = value;
+  }
+
+  get isDirty_3(): boolean {
+    return this._isDirty_3;
+  }
+
+  set isDirty_3(value: boolean) {
+    this._isDirty_3 = value;
   }
 
   get patientSet_1(): PatientSetConstraint {

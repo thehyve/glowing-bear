@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Dimension} from '../../../../models/table-models/dimension';
 import {TableService} from '../../../../services/table.service';
+import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-table-dimensions',
@@ -9,14 +10,18 @@ import {TableService} from '../../../../services/table.service';
 })
 export class GbTableDimensionsComponent implements OnInit {
 
-  constructor(private tableService: TableService) {
+  constructor(private tableService: TableService,
+              private queryService: QueryService) {
   }
 
   ngOnInit() {
   }
 
-  updateTable() {
-    this.tableService.mockDataUpdate();
+  onChange() {
+    this.queryService.isDirty_3 = true;
+    if (this.queryService.instantCountsUpdate_3) {
+      this.queryService.update_3();
+    }
   }
 
   /**
@@ -48,7 +53,7 @@ export class GbTableDimensionsComponent implements OnInit {
       }
     }
     if (changed) {
-      this.updateTable();
+      this.onChange();
     }
   }
 
