@@ -57,7 +57,7 @@ export class QueryService {
   private _inclusionObservationCount = 0;
   private _exclusionObservationCount = 0;
   /*
-   * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
+   * when step 1 constraints are changed, whether to call update_1 immediately,
    * used in gb-constraint-component
    */
   private _instantCountsUpdate_1: boolean;
@@ -106,7 +106,7 @@ export class QueryService {
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
    */
   /*
-   * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
+   * when step 2 constraints are changed, whether to call update_2 immediately,
    * used in gb-projection-component
    */
   private _instantCountsUpdate_2: boolean;
@@ -406,7 +406,7 @@ export class QueryService {
   /**
    * update the subject, observation, concept and study counts in the first step
    */
-  public updateCounts_1(initialUpdate?: boolean) {
+  public update_1(initialUpdate?: boolean) {
     this.isUpdating_1 = true;
     this.patientSet_1 = null;
     // add time stamp to the queue,
@@ -487,10 +487,10 @@ export class QueryService {
   /**
    * update the subject, observation, concept and study counts in the second step
    */
-  public updateCounts_2() {
+  public update_2() {
     this.prepareStep2();
     /*
-     * ====== function updateCounts_2 starts ======
+     * ====== function starts ======
      */
     if (!this.isUpdating_1 && !this.isPreparing_2) {
       this.isUpdating_2 = true;
@@ -531,11 +531,11 @@ export class QueryService {
       this.updateExports();
     } else {
       window.setTimeout((function () {
-        this.updateCounts_2();
+        this.update_2();
       }).bind(this), 500);
     }
     /*
-     * ====== function updateCounts_2 ends ======
+     * ====== function update_2 ends ======
      */
   }
 
@@ -543,7 +543,6 @@ export class QueryService {
    * update the table
    */
   public update_3() {
-    // TODO: rename updateCounts_1/2 to update_1/2
     this.tableService.mockDataUpdate();
   }
 
@@ -647,10 +646,10 @@ export class QueryService {
       this.constraintService.clearSelectionConstraint();
       let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
-      this.updateCounts_1();
+      this.update_1();
     }
-    this.updateCounts_2();
-    // TODO: updateCounts_3
+    this.update_2();
+    // TODO: update_3
     if (query.dataTable) {
       this.tableService.updateTable(query.dataTable);
     }

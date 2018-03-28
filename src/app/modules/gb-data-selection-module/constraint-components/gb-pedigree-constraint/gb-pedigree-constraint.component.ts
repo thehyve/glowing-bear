@@ -40,7 +40,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   updateRelationType(event) {
     (<PedigreeConstraint>this.constraint).relationType = event.value;
-    this.updateCounts();
+    this.update();
   }
 
   get selectedPedigreeType(): SelectItem {
@@ -73,7 +73,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set biological(value: TriState) {
     (<PedigreeConstraint>this.constraint).biological = value;
-    this.updateCounts();
+    this.update();
   }
 
   get shareHousehold(): TriState {
@@ -82,6 +82,6 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set shareHousehold(value: TriState) {
     (<PedigreeConstraint>this.constraint).shareHousehold = value;
-    this.updateCounts();
+    this.update();
   }
 }

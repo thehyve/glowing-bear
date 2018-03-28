@@ -74,7 +74,7 @@ export class GbConstraintComponent implements OnInit {
       if (this.constraint instanceof CombinationConstraint) {
         let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
         combinationConstraint.addChild(droppedConstraint);
-        this.updateCounts();
+        this.update();
       } else if (this.constraint.getClassName() === droppedConstraint.getClassName()) {
         if (this.constraint instanceof StudyConstraint) {
           let study = (<StudyConstraint>droppedConstraint).studies[0];
@@ -82,22 +82,22 @@ export class GbConstraintComponent implements OnInit {
           studies = studies.filter(item => item.studyId === study.studyId);
           if (studies.length === 0) {
             (<StudyConstraint>this.constraint).studies.push(study);
-            this.updateCounts();
+            this.update();
           }
         } else if (this.constraint instanceof ConceptConstraint) {
           this.constraint = droppedConstraint;
           // TODO: still needs to find a way to update the aggregates fo the ConceptConstraintComponent
-          this.updateCounts();
+          this.update();
         }
       }
 
     }// if dropped constraint exists
   }
 
-  protected updateCounts() {
+  protected update() {
     this.queryService.step = Step.I;
     if (this.queryService.instantCountsUpdate_1) {
-      this.queryService.updateCounts_1();
+      this.queryService.update_1();
     } else {
       this.queryService.isDirty_1 = true;
     }
