@@ -434,5 +434,5 @@ gb-table-table .ui-resizable-column {
   border: solid lightgray 1px;
   text-align: center;
   min-width: 30px;
-  width: 100%;
+  width: 100px;
 }
