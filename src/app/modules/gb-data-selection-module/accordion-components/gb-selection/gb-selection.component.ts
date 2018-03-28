@@ -9,7 +9,7 @@ import {CombinationConstraint} from '../../../../models/constraints/combination-
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/step';
-import {FormatHelper} from "../../../../utilities/FormatHelper";
+import {FormatHelper} from '../../../../utilities/FormatHelper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -19,7 +19,7 @@ type LoadingState = 'loading' | 'complete';
   styleUrls: ['./gb-selection.component.css'],
   animations: [
     trigger('notifyState', [
-      transition( 'loading => complete', [
+      transition('loading => complete', [
         style({
           background: 'rgba(51, 156, 144, 0.5)'
         }),
@@ -101,11 +101,14 @@ export class GbSelectionComponent implements OnInit {
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
-      (file.type === '' && file.name.split('.').pop() != 'json')) {
+      (file.type === '' && file.name.split('.').pop() !== 'json')) {
       // we assume the text contains a list of subject Ids
+      let subjectIds: string[] = data.split(/(\r\n)+/)
+        .map(id => id.trim())
+        .filter(id => id.length > 0);
       patientsQuery = {
         'type': 'patient_set',
-        'subjectIds': data.split('\n')
+        'subjectIds': subjectIds
       };
     } else if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);

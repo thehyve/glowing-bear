@@ -14,7 +14,7 @@ buildscript {
 }
 
 ext {
-    glowingBearVersion = '0.3.0-luke-RC1'
+    glowingBearVersion = '0.3.1-luke-RC1'
     nodeVersion = '7.10.1'
     gradleWrapperVersion = '4.0'
 }
