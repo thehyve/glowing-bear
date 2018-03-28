@@ -3,7 +3,7 @@
            [resizableColumns]="true" [customSort]="true">
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngFor="let col of columns" pResizableColumn>
+        <th *ngFor="let col of columns" class="gb-table-header" pResizableColumn>
           {{col.header}}
         </th>
       </tr>
