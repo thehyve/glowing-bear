@@ -40,20 +40,6 @@ export class GbQueriesComponent implements OnInit {
     uploadElm.click();
   }
 
-  processSubjectIdsUpload(fileContents: string, fileName: string): Query {
-    // we assume the text contains a list of subject Ids
-    let subjectIds: string[] = fileContents.split(/(\r?\n)+/)
-      .map(id => id.trim())
-      .filter(id => id.length > 0);
-    let query = new Query(null, fileName);
-    query.patientsQuery = {
-      'type': 'patient_set',
-      'subjectIds': subjectIds
-    };
-    query.observationsQuery = {data: null};
-    return query;
-  }
-
   queryFileUpload(event) {
     let reader = new FileReader();
     let file = event.target.files[0];
