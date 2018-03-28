@@ -428,9 +428,9 @@ gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
 }
 
 /*
- * ------------------------------ Styles for gb-table-table component -------------------------------
+ * ------------------------------ Styles for gb-table-grid component -------------------------------
  */
-gb-table-table .ui-resizable-column {
+gb-table-grid .ui-resizable-column {
   border: solid lightgray 1px;
   text-align: center;
   min-width: 30px;

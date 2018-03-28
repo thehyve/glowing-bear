@@ -13,7 +13,7 @@ describe('GbTableComponent', () => {
       declarations: [
         GbTableComponent,
         MockComponent({selector: 'gb-table-dimensions'}),
-        MockComponent({selector: 'gb-table-table'})
+        MockComponent({selector: 'gb-table-grid'})
       ]
     })
       .compileComponents();
