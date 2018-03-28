@@ -137,7 +137,7 @@ export class GbExportComponent implements OnInit {
               format: fileFormat['name'],
               dataView: this.queryService.exportDataView
             });
-            if (fileFormat['name'] == 'TSV') {
+            if (fileFormat['name'] === 'TSV') {
               includeDataTable = true;
             }
           }

@@ -54,7 +54,7 @@ export class GbProjectionComponent implements OnInit {
     uploadElm.click();
   }
 
-  criteriaFileUpload(event){
+  criteriaFileUpload(event) {
     let reader = new FileReader();
     let file = event.target.files[0];
     reader.onload = (function (e) {

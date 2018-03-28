@@ -650,7 +650,7 @@ export class QueryService {
       this.updateCounts_1();
     }
     this.updateCounts_2();
-    // todo updateCounts_3
+    // TODO: updateCounts_3
     if (query.dataTable) {
       this.tableService.updateTable(query.dataTable);
     }
