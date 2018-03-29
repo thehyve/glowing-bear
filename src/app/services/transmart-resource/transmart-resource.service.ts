@@ -331,9 +331,10 @@ export class TransmartResourceService {
       elements: elements,
       includeMeasurementDateColumns: includeMeasurementDateColumns
     };
-    if (tableState) {
-      body['tableState'] = tableState;
-    }
+    // TODO: include table state when API call is ready
+    // if (tableState) {
+    //   body['tableState'] = tableState;
+    // }
     return this.postCall(urlPart, body, responseField);
   }
 
