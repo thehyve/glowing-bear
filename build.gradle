@@ -50,14 +50,22 @@ task npmPackage(type: NpmTask, dependsOn: 'npmInstall') {
     description = 'Builds the application'
     args = ['run', 'package']
 }
-distTar.dependsOn(npmPackage)
+task yarnPackage(type: YarnTask) {
+  group = 'application'
+  description = 'Builds the application'
+  args = ['run', 'package']
+}
+//distTar.dependsOn(npmPackage)
+distTar.dependsOn(yarnPackage)
 
 task npmTest(type: NpmTask, dependsOn: 'npmInstall') {
     group = 'verification'
     description = 'Executes user interface unit tests'
     args = ['run', 'testOnce']
 }
+
 check.dependsOn(npmTest)
+//check.dependsOn(yarnTest)
 
 clean {
     delete fileTree(dir: 'dist')
