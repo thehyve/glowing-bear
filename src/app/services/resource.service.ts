@@ -14,6 +14,7 @@ import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
 import {TransmartStudyDimensionElements} from "../models/transmart-models/transmart-study-dimension-elements";
+import {TransmartStudy} from "../models/transmart-models/transmart-study";
 
 @Injectable()
 export class ResourceService {
@@ -278,6 +279,18 @@ export class ResourceService {
    * @returns {Observable<string[]>}
    */
   getAvailableDimensions(studyNames): Observable<string[]> {
-    return this.transmartResourceService.getAvailableDimensions(studyNames);
+    return this.transmartResourceService.getAvailableDimensions(studyNames)
+      .map((transmartStudies: TransmartStudy[]) => {
+        let dimensions = [];
+        transmartStudies.forEach((study: TransmartStudy) => {
+          study.dimensions.forEach((dimension: string) => {
+              if (dimensions.indexOf(dimension) === -1) {
+                dimensions.push(dimension);
+              }
+            }
+          );
+        });
+        return dimensions;
+      });
   }
 }
