@@ -8,6 +8,7 @@ import {TransmartRow} from '../../models/transmart-models/transmart-row';
 import {Row} from '../../models/table-models/row';
 import {TransmartInRowDimension} from '../../models/transmart-models/transmart-in-row-dimension';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
+import {TransmartStudyDimensionElements} from "../../models/transmart-models/transmart-study-dimension-elements";
 
 export class TransmartMapper {
 
@@ -135,5 +136,7 @@ export class TransmartMapper {
     return dataTable;
   }
 
-
+  public static mapTransmartStudyDimensionElements(elements: TransmartStudyDimensionElements[]): string[] {
+    return elements.map(elem => elem.name);
+  }
 }

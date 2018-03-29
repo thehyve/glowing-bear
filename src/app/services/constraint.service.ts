@@ -17,7 +17,6 @@ import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-cons
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
-import {TransmartResourceService} from './transmart-resource/transmart-resource.service';
 
 
 /**

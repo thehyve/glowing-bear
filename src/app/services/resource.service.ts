@@ -13,6 +13,7 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
+import {TransmartStudyDimensionElements} from "../models/transmart-models/transmart-study-dimension-elements";
 
 @Injectable()
 export class ResourceService {
@@ -259,4 +260,24 @@ export class ResourceService {
       });
   }
 
+  /**
+   * Gets all elements from the study dimension that satisfy the constaint if given
+   * @param {Constraint} constraint
+   * @returns {Observable<string[]>}
+   */
+  getStudyNames(constraint: Constraint): Observable<string[]> {
+    return this.transmartResourceService.getStudyNames(constraint)
+      .map((elements: TransmartStudyDimensionElements[]) => {
+        return TransmartMapper.mapTransmartStudyDimensionElements(elements);
+      });
+  }
+
+  /**
+   * Gets available dimensions for step 3
+   * @param studyNames
+   * @returns {Observable<string[]>}
+   */
+  getAvailableDimensions(studyNames): Observable<string[]> {
+    return this.transmartResourceService.getAvailableDimensions(studyNames);
+  }
 }
