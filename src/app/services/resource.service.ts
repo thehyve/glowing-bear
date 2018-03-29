@@ -278,7 +278,7 @@ export class ResourceService {
    * @param studyNames
    * @returns {Observable<string[]>}
    */
-  getAvailableDimensions(studyNames): Observable<string[]> {
+  getAvailableDimensions(studyNames: string[]): Observable<string[]> {
     return this.transmartResourceService.getAvailableDimensions(studyNames)
       .map((transmartStudies: TransmartStudy[]) => {
         let dimensions = [];
