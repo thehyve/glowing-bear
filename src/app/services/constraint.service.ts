@@ -253,23 +253,20 @@ export class ConstraintService {
    * @returns {any}
    */
   public generateProjectionConstraint(): Constraint {
-    let nodes = this.treeNodeService.getTopTreeNodes(this.treeNodeService.selectedProjectionTreeData);
     let constraint = null;
-    if (nodes.length > 0) {
-      let allLeaves = [];
-      for (let node of nodes) {
-        if (node['children']) {
-          let leaves = [];
-          this.treeNodeService
-            .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
-          allLeaves = allLeaves.concat(leaves);
-        } else {
-          allLeaves.push(node);
-        }
-      }
+    let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
+    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
+      let leaves = [];
       constraint = new CombinationConstraint();
       constraint.combinationState = CombinationState.Or;
-      for (let leaf of allLeaves) {
+
+      for (let selectedTreeNode of selectedTreeNodes) {
+        let visualAttributes = selectedTreeNode['visualAttributes'];
+        if (visualAttributes && visualAttributes.includes('LEAF')) {
+          leaves.push(selectedTreeNode);
+        }
+      }
+      for (let leaf of leaves) {
         const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
         if (leafConstraint) {
           constraint.addChild(leafConstraint);

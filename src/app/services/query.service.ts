@@ -451,9 +451,9 @@ export class QueryService {
    */
   private prepareStep2() {
     if (this.treeNodeService.isTreeNodeLoadingComplete()) {
-
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
+        // Update the checklist
         let checklist = this.query ? this.query.observationsQuery['data'] : null;
         if (checklist) {
           let parentPaths = [];
