@@ -147,7 +147,7 @@ export class GbQueriesComponent implements OnInit {
 
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(query, query.name);
+    DownloadHelper.downloadJSON(query.toPlainObject(), query.name);
   }
 
   radioCheckSubscriptionFrequency(query: Query) {
@@ -158,7 +158,6 @@ export class GbQueriesComponent implements OnInit {
   }
 
   downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
-    console.log(query, record);
     const filename = query.name + '-record-' + record.createDate;
     DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }

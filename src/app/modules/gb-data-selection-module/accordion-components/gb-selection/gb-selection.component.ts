@@ -44,8 +44,8 @@ export class GbSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.queryService.updateCounts_1(true);
-    this.queryService.updateCounts_2();
+    this.queryService.update_1(true);
+    this.queryService.update_2();
   }
 
   get subjectCount_1(): string {
@@ -71,7 +71,7 @@ export class GbSelectionComponent implements OnInit {
   clearCriteria() {
     this.queryService.step = Step.I;
     this.constraintService.clearSelectionConstraint();
-    this.queryService.updateCounts_1();
+    this.queryService.update_1();
   }
 
   importCriteria() {

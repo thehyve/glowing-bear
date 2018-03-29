@@ -1,1 +1,6 @@
-
+.gb-table-header {
+  color: transparent;
+  border-left: 3px var(--gb-clinical-green-dark) solid;
+  border-right: 3px var(--gb-clinical-green-dark) solid;
+  background-color: var(--gb-clinical-green-light-light);
+}

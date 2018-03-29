@@ -4,7 +4,7 @@ import {Col} from '../../../../models/table-models/col';
 import {Row} from '../../../../models/table-models/row';
 
 @Component({
-  selector: 'gb-table-table',
+  selector: 'gb-table-grid',
   templateUrl: './gb-table-grid.component.html',
   styleUrls: ['./gb-table-grid.component.css']
 })

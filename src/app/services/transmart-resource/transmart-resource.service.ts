@@ -331,7 +331,7 @@ export class TransmartResourceService {
       elements: elements,
       includeMeasurementDateColumns: includeMeasurementDateColumns
     };
-    if(tableState) {
+    if (tableState) {
       body['tableState'] = tableState;
     }
     return this.postCall(urlPart, body, responseField);

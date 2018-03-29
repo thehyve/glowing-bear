@@ -4,7 +4,7 @@
   <p-messages [(value)]="queryService.alertMessages"></p-messages>
 
   <!-- The accordions -->
-  <md2-accordion [multiple]="false"
+  <md2-accordion [multiple]="true"
                  (open)="openAccordion($event)"
                  (close)="closeAccordion($event)">
     <!-- The 1st step -->
@@ -24,10 +24,10 @@
             <span *ngIf="!queryService.instantCountsUpdate_1" class="float-right">
               <i *ngIf="queryService.isUpdating_1" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
-                      (click)="updateCounts_1($event)"
+                      (click)="update_1($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
                       {{queryService.isDirty_1? 'gb-data-selection-update-btn-dirty' : ''}}">
-                Update counts
+                Update
               </button>
             </span>
           </div>
@@ -53,10 +53,10 @@
             <span *ngIf="!queryService.instantCountsUpdate_2" class="float-right">
               <i *ngIf="queryService.isPreparing_2 || queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
-                      (click)="updateCounts_2($event)"
+                      (click)="update_2($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
                       {{queryService.isDirty_2? 'gb-data-selection-update-btn-dirty' : ''}}">
-                Update counts
+                Update
               </button>
             </span>
           </div>

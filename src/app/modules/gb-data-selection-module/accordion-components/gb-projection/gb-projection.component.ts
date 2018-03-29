@@ -36,7 +36,7 @@ export class GbProjectionComponent implements OnInit {
   updateCounts() {
     this.queryService.step = Step.II;
     if (this.queryService.instantCountsUpdate_2) {
-      this.queryService.updateCounts_2();
+      this.queryService.update_2();
     } else {
       this.queryService.isDirty_2 = true;
     }
@@ -54,7 +54,7 @@ export class GbProjectionComponent implements OnInit {
     uploadElm.click();
   }
 
-  criteriaFileUpload(event){
+  criteriaFileUpload(event) {
     let reader = new FileReader();
     let file = event.target.files[0];
     reader.onload = (function (e) {

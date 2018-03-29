@@ -1,6 +1,5 @@
-
 import {ConstraintService} from '../constraint.service';
-import {TreeNode} from 'primeng/api';
+import {TreeNode} from 'primeng/primeng';
 
 export class TreeNodeServiceMock {
   // the variable that holds the entire tree structure, used by the tree on the left
