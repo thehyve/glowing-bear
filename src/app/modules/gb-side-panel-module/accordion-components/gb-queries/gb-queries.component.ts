@@ -34,9 +34,9 @@ export class GbQueriesComponent implements OnInit {
       uploadElm
         .addEventListener('change', this.queryFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
-      // reset the input path so that it will take the same file again
-      document.getElementById('queryFileUpload')['value'] = '';
     }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
     uploadElm.click();
   }
 
