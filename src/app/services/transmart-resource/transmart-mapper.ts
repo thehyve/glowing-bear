@@ -12,6 +12,7 @@ import {TransmartStudyDimensionElement} from '../../models/transmart-models/tran
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {Col} from "../../models/table-models/col";
 
 export class TransmartMapper {
 
@@ -111,7 +112,7 @@ export class TransmartMapper {
       });
     });
 
-    // get data table column dimensions
+    // get data table column dimensions and data table cols array
     transmartTable.columnDimensions.forEach((transmartColDim: TransmartDimension) => {
       let colDim: Dimension = new Dimension(transmartColDim.name);
       if (transmartColDim.indexes != null && transmartColDim.indexes.length > 0) {
@@ -119,8 +120,10 @@ export class TransmartMapper {
         transmartColDim.indexes.forEach((index: number) => {
           if (index == null) {
             colDim.valueNames.push(null);
+            dataTable.cols.push(new Col(null, '-'));
           } else {
             colDim.valueNames.push(transmartColDim.elements[index].label);
+            dataTable.cols.push(new Col(transmartColDim.elements[index].label, '-'));
           }
         });
       } else {
@@ -128,8 +131,10 @@ export class TransmartMapper {
         transmartColDim.elements.forEach(elem => {
           if (elem == null) {
             colDim.valueNames.push(null);
+            dataTable.cols.push(new Col(null, '-'));
           } else {
             colDim.valueNames.push(elem.label);
+            dataTable.cols.push(new Col(elem.label, '-'));
           }
         });
       }
