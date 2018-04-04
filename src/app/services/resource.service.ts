@@ -13,7 +13,7 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
-import {TransmartStudyDimensionElements} from "../models/transmart-models/transmart-study-dimension-elements";
+import {TransmartStudyDimensionElement} from "../models/transmart-models/transmart-study-dimension-element";
 import {TransmartStudy} from "../models/transmart-models/transmart-study";
 
 @Injectable()
@@ -268,7 +268,7 @@ export class ResourceService {
    */
   getStudyNames(constraint: Constraint): Observable<string[]> {
     return this.transmartResourceService.getStudyNames(constraint)
-      .map((elements: TransmartStudyDimensionElements[]) => {
+      .map((elements: TransmartStudyDimensionElement[]) => {
         return TransmartMapper.mapTransmartStudyDimensionElements(elements);
       });
   }

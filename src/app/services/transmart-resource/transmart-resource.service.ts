@@ -12,7 +12,7 @@ import {PatientSet} from '../../models/constraint-models/patient-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartStudyDimensionElements} from "app/models/transmart-models/transmart-study-dimension-elements";
+import {TransmartStudyDimensionElement} from "app/models/transmart-models/transmart-study-dimension-element";
 import {TransmartStudy} from "../../models/transmart-models/transmart-study";
 
 @Injectable()
@@ -473,7 +473,7 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, null);
   }
 
-  getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElements[]> {
+  getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
     const urlPart = 'dimensions/study/elements';
     const body = {constraint: constraint.toQueryObject()};
     const responseField = 'elements';
