@@ -9,7 +9,7 @@ import {Col} from "../../../../models/table-models/col";
   templateUrl: './gb-table-grid.component.html',
   styleUrls: ['./gb-table-grid.component.css']
 })
-export class GbTableTableComponent implements OnInit {
+export class GbTableGridComponent implements OnInit {
 
   constructor(private tableService: TableService) {
   }
@@ -23,10 +23,12 @@ export class GbTableTableComponent implements OnInit {
 
   get cols(): Array<Col> {
     let cols =[];
-    this.tableService.headerRows[this.tableService.headerRows.length - 1].cols.forEach(
-      col => {
-        cols.push(col);
-      });
+    if(this.tableService.headerRows && this.tableService.headerRows.length > 0) {
+      this.tableService.headerRows[this.tableService.headerRows.length - 1].cols.forEach(
+        col => {
+          cols.push(col);
+        });
+    }
     return cols;
   }
 
