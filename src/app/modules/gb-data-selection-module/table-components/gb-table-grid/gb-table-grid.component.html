@@ -1,9 +1,8 @@
 <div>
-  <p-table [columns]="cols" [value]="rows"
-           [resizableColumns]="true" [customSort]="true">
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th *ngFor="let col of columns" class="gb-table-header" pResizableColumn>
+  <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
+    <ng-template pTemplate="header">
+      <tr *ngFor="let headerRow of headerRows">
+        <th *ngFor="let col of headerRow.cols" class="gb-table-header" pResizableColumn [attr.colspan]="col.colspan">
           {{col.header}}
         </th>
       </tr>

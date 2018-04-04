@@ -13,6 +13,8 @@ import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {Col} from "../../models/table-models/col";
+import {TransmartColumnHeaders} from "../../models/transmart-models/transmart-column-headers";
+import {HeaderRow} from "../../models/table-models/header-row";
 
 export class TransmartMapper {
 
@@ -89,56 +91,45 @@ export class TransmartMapper {
     transmartTable.rows.forEach((transmartRow: TransmartRow) => {
       // get data table rows
       let newRow: Row = new Row();
-      newRow.length = transmartRow.dimensions.length + transmartRow.row.length;
       transmartRow.row.forEach(value => newRow.addDatum(value));
       dataTable.rows.push(newRow);
 
-      // get data table row dimensions
+      // get data table rows
       transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         let rowDim: Dimension = new Dimension(inRowDim.dimension);
-        if (inRowDim.index == null) {
+        if (inRowDim.key === null) {
           // if dimension is inline
-          if (inRowDim.element != null) {
-            rowDim.valueNames.push(inRowDim.element.label)
-          } else {
-            // error
-          }
+          rowDim.valueNames.push(inRowDim.element)
         } else {
           // if dimension is indexed
           let indexedDimension: TransmartDimension = transmartTable.rowDimensions.filter(
             dim => dim.name === inRowDim.dimension)[0];
-          rowDim.valueNames.push(indexedDimension.elements[inRowDim.index].label);
+          rowDim.valueNames.push(indexedDimension.elements[inRowDim.key].label);
         }
       });
     });
 
-    // get data table column dimensions and data table cols array
-    transmartTable.columnDimensions.forEach((transmartColDim: TransmartDimension) => {
-      let colDim: Dimension = new Dimension(transmartColDim.name);
-      if (transmartColDim.indexes != null && transmartColDim.indexes.length > 0) {
-        // indexed dimensions
-        transmartColDim.indexes.forEach((index: number) => {
-          if (index == null) {
-            colDim.valueNames.push(null);
-            dataTable.cols.push(new Col(null, '-'));
-          } else {
-            colDim.valueNames.push(transmartColDim.elements[index].label);
-            dataTable.cols.push(new Col(transmartColDim.elements[index].label, '-'));
-          }
+    // get data table cols
+    transmartTable.columnHeaders.forEach((transmartColumnHeader: TransmartColumnHeaders) => {
+      let headerRow = new HeaderRow();
+      if (transmartColumnHeader.keys === null) {
+        // if dimension is inline
+        transmartColumnHeader.elements.forEach(elem => {
+          this.updateCols(headerRow.cols, elem);
         });
       } else {
-        // inline dimensions
-        transmartColDim.elements.forEach(elem => {
-          if (elem == null) {
-            colDim.valueNames.push(null);
-            dataTable.cols.push(new Col(null, '-'));
-          } else {
-            colDim.valueNames.push(elem.label);
-            dataTable.cols.push(new Col(elem.label, '-'));
-          }
-        });
-      }
-      dataTable.columnDimensions.push(colDim);
+        transmartColumnHeader.keys.forEach((key: string) => {
+        if (key === null) {
+          this.updateCols(headerRow.cols, null);
+        } else {
+          // if dimension is indexed
+          let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
+            dim => dim.name === transmartColumnHeader.dimension)[0];
+          this.updateCols(headerRow.cols, indexedDimension.elements[key].label);
+        }
+      });
+    }
+      dataTable.headerRows.push(headerRow);
     });
 
     return dataTable;
@@ -177,4 +168,17 @@ export class TransmartMapper {
     }
     return elements;
   }
+
+  private static updateCols(cols: Array<Col>, newColValue) {
+    if (cols != null && cols.length > 0) {
+      if(cols[cols.length - 1].header === newColValue) {
+        cols[cols.length - 1].colspan += 1;
+      } else {
+        cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString()));
+      }
+    } else {
+      cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString()));
+    }
+  }
+
 }

@@ -4,8 +4,9 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from './constraint.service';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {ConstraintService} from "./constraint.service";
+import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
+import {HeaderRow} from "../models/table-models/header-row";
 
 @Injectable()
 export class TableService {
@@ -56,17 +57,19 @@ export class TableService {
     this.prevRowDimensions = this.rowDimensions.slice(0);
     this.prevColDimensions = this.columnDimensions.slice(0);
     this.dataTable.rows = [];
-    this.dataTable.cols = [];
+    this.dataTable.headerRows = [];
+
+    let headerRows: Array<HeaderRow> = [];
     // generate the column-header rows
     let numColDimColumns = this.columnDimensions.length > 0 ? 1 : 0;
     for (let colIndex = 0; colIndex < this.columnDimensions.length; colIndex++) {
       let colDim = this.columnDimensions[colIndex];
       numColDimColumns = numColDimColumns * colDim.valueNames.length;
-      let row = new Row();
+      let headerRow = new HeaderRow();
 
-      // add empty space fillers on the top-left corner of the table
+      //add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
-        row.addDatum('');
+        headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
       }
 
       // add the column header names
@@ -84,11 +87,11 @@ export class TableService {
       for (let i = 0; i < selfRepetition; i++) {
         for (let valName of colDim.valueNames) {
           for (let j = 0; j < valueRepetition; j++) {
-            row.addDatum(valName);
+            headerRow.cols.push(new Col(valName, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString()));
           }
         }
       }
-      this.rows.push(row);
+      headerRows.push(headerRow);
     }
     // generate the data rows
     let dataRows = [];
@@ -144,10 +147,22 @@ export class TableService {
       this.rows.push(dataRow);
     }
     // generate column headers
-    for (let field in this.rows[0].data) {
-      let col = new Col(field, ' — ');
-      this.dataTable.cols.push(col);
-    }
+    headerRows.forEach((headerRow: HeaderRow) => {
+      let newColRow = new HeaderRow();
+      headerRow.cols.forEach((col: Col) => {
+        if (newColRow.cols.length > 0) {
+          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header != '') {
+            newColRow.cols[newColRow.cols.length - 1].colspan += 1;
+          }
+          else {
+            newColRow.cols.push(col)
+          }
+        } else {
+          newColRow.cols.push(col)
+        }
+      });
+      this.dataTable.headerRows.push(newColRow);
+    });
   }
 
   getTable() {
@@ -242,8 +257,8 @@ export class TableService {
     return this.dataTable.rows;
   }
 
-  get cols(): Col[] {
-    return this.dataTable.cols;
+  get headerRows(): Array<HeaderRow> {
+    return this.dataTable.headerRows;
   }
 
   get dataTable(): DataTable {

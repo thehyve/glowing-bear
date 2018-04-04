@@ -1,12 +1,12 @@
 import {Dimension} from './dimension';
 import {Row} from './row';
-import {Col} from './col';
+import {HeaderRow} from "./header-row";
 
 export class DataTable {
   private _rowDimensions: Array<Dimension>;
   private _columnDimensions: Array<Dimension>;
   private _rows: Array<Row>;
-  private _cols: Array<Col>;
+  private _headerRows: Array<HeaderRow>;
 
   constructor() {
     this.clear();
@@ -16,7 +16,7 @@ export class DataTable {
     this.rowDimensions = [];
     this.columnDimensions = [];
     this.rows = [];
-    this.cols = [];
+    this.headerRows = [];
   }
 
   get rowDimensions(): Array<Dimension> {
@@ -43,11 +43,11 @@ export class DataTable {
     this._rows = value;
   }
 
-  get cols(): Array<Col> {
-    return this._cols;
+  get headerRows(): Array<HeaderRow> {
+    return this._headerRows;
   }
 
-  set cols(value: Array<Col>) {
-    this._cols = value;
+  set headerRows(value: Array<HeaderRow>) {
+    this._headerRows = value;
   }
 }
