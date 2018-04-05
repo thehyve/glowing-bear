@@ -24,9 +24,9 @@ export class GbExportComponent implements OnInit {
               private tableService: TableService,
               private resourceService: ResourceService,
               private timer: SimpleTimer) {
-    // this.updateExportJobs();
-    // this.timer.newTimer('30sec', 30);
-    // this.timer.subscribe('30sec', () => this.updateExportJobs());
+    this.updateExportJobs();
+    this.timer.newTimer('30sec', 30);
+    this.timer.subscribe('30sec', () => this.updateExportJobs());
   }
 
   ngOnInit() {
