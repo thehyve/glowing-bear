@@ -13,6 +13,8 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
+import {TransmartStudyDimensionElement} from "../models/transmart-models/transmart-study-dimension-element";
+import {TransmartStudy} from "../models/transmart-models/transmart-study";
 
 @Injectable()
 export class ResourceService {
@@ -259,4 +261,36 @@ export class ResourceService {
       });
   }
 
+  /**
+   * Gets all elements from the study dimension that satisfy the constaint if given
+   * @param {Constraint} constraint
+   * @returns {Observable<string[]>}
+   */
+  getStudyNames(constraint: Constraint): Observable<string[]> {
+    return this.transmartResourceService.getStudyNames(constraint)
+      .map((elements: TransmartStudyDimensionElement[]) => {
+        return TransmartMapper.mapTransmartStudyDimensionElements(elements);
+      });
+  }
+
+  /**
+   * Gets available dimensions for step 3
+   * @param studyNames
+   * @returns {Observable<string[]>}
+   */
+  getAvailableDimensions(studyNames: string[]): Observable<string[]> {
+    return this.transmartResourceService.getAvailableDimensions(studyNames)
+      .map((transmartStudies: TransmartStudy[]) => {
+        let dimensions = [];
+        transmartStudies.forEach((study: TransmartStudy) => {
+          study.dimensions.forEach((dimension: string) => {
+              if (dimensions.indexOf(dimension) === -1) {
+                dimensions.push(dimension);
+              }
+            }
+          );
+        });
+        return dimensions;
+      });
+  }
 }

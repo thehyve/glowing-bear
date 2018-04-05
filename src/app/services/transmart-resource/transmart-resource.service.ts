@@ -12,6 +12,8 @@ import {PatientSet} from '../../models/constraint-models/patient-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {TransmartStudyDimensionElement} from "app/models/transmart-models/transmart-study-dimension-element";
+import {TransmartStudy} from "../../models/transmart-models/transmart-study";
 
 @Injectable()
 export class TransmartResourceService {
@@ -469,5 +471,18 @@ export class TransmartResourceService {
       limit: limit
     };
     return this.postCall(urlPart, body, null);
+  }
+
+  getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
+    const urlPart = 'dimensions/study/elements';
+    const body = {constraint: constraint.toQueryObject()};
+    const responseField = 'elements';
+    return this.postCall(urlPart, body, responseField);
+  }
+
+  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]>{
+    const urlPart = `studies/studyId/${studyNames}`;
+    const responseField = 'studies';
+    return this.getCall(urlPart, responseField);
   }
 }

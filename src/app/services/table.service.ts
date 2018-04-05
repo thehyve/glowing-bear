@@ -4,7 +4,8 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {AppConfig} from '../config/app.config';
+import {ConstraintService} from "./constraint.service";
+import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
 
 @Injectable()
 export class TableService {
@@ -13,12 +14,13 @@ export class TableService {
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService,
+              private constraintService: ConstraintService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-    this.mockDataInit();
     this.mockDataUpdate();
+    this.getDimensions();
   }
 
   mockDataInit() {
@@ -156,6 +158,25 @@ export class TableService {
         this.dataTable = newDataTable;
       }
     );
+  }
+
+  getDimensions() {
+    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const projectionConstraint = this.constraintService.generateProjectionConstraint();
+    let combo = new CombinationConstraint();
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
+    this.resourceService.getStudyNames(combo).subscribe(
+      (names: string[]) => {
+        this.resourceService.getAvailableDimensions(names).subscribe(
+          (dimensions: string[]) => {
+            dimensions.forEach(name => {
+              this.rowDimensions.push(new Dimension(name));
+            });
+          }
+        )
+      }
+    )
   }
 
   private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
