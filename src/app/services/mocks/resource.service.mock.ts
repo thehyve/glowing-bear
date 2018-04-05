@@ -3,6 +3,7 @@ import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {Constraint} from "../../models/constraint-models/constraint";
+import {Dimension} from '../../models/table-models/dimension';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -10,8 +11,7 @@ export class ResourceServiceMock {
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
-  private studyNames: string[];
-  private dimensions: string[];
+  private dimensions: Dimension[];
 
   constructor() {
     this.studies = [];
@@ -19,7 +19,6 @@ export class ResourceServiceMock {
     this.queries = [];
     this.treeNodes = [];
     this.exportJobs = [];
-    this.studyNames = [];
     this.dimensions = [];
   }
 
@@ -43,11 +42,7 @@ export class ResourceServiceMock {
     return Observable.of(this.exportJobs);
   }
 
-  getStudyNames(constraint: Constraint): Observable<string[]> {
-    return Observable.of(this.studyNames);
-  }
-
-  getAvailableDimensions(studyNames: string[]): Observable<string[]> {
+  getDimensions(studyNames: string[]): Observable<Dimension[]> {
     return Observable.of(this.dimensions);
   }
 }

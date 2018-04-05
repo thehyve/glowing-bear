@@ -39,7 +39,7 @@ describe('GbProjectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbProjectionComponent', () => {
+  it('GbProjectionComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

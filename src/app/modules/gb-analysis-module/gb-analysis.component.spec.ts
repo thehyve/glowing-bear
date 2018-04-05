@@ -19,7 +19,7 @@ describe('GbAnalysisComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbAnalysisComponent', () => {
+  it('GbAnalysisComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

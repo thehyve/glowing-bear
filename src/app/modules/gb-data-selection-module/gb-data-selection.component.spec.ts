@@ -86,7 +86,7 @@ describe('GbDataSelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbDataSelectionComponent', () => {
+  it('GbDataSelectionComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });
