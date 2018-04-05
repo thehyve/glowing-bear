@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
-import {ExportJob} from '../models/export-job';
+import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
@@ -13,8 +13,10 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
-import {TransmartStudyDimensionElement} from "../models/transmart-models/transmart-study-dimension-element";
-import {TransmartStudy} from "../models/transmart-models/transmart-study";
+import {TransmartStudyDimensionElement} from '../models/transmart-models/transmart-study-dimension-element';
+import {TransmartStudy} from '../models/transmart-models/transmart-study';
+import {ExportDataType} from '../models/export-models/export-data-type';
+import {ExportFileFormat} from '../models/export-models/export-file-format';
 
 @Injectable()
 export class ResourceService {
@@ -114,17 +116,15 @@ export class ResourceService {
   }
 
   // -------------------------------------- export calls --------------------------------------
-  /**
-   * Given a list of patient set ids as strings, get the corresponding data formats available for download
-   * @param constraint
-   * @returns {Observable<string[]>}
-   */
-  getExportDataFormats(constraint: Constraint): Observable<string[]> {
-    return this.transmartResourceService.getExportDataFormats(constraint);
-  }
-
-  getExportFileFormats(dataView: string): Observable<string[]> {
-    return this.transmartResourceService.getExportFileFormats(dataView);
+  getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
+    return this.transmartResourceService.getExportFileFormats()
+      .switchMap(fileFormatNames => {
+        console.log('fileFormatNames: ', fileFormatNames);
+        return this.transmartResourceService.getExportDataFormats(constraint)
+      }, (fileFormatNames, dataFormatNames) => {
+        console.log('dataFormatNames: ', dataFormatNames)
+        return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
+      });
   }
 
   /**
@@ -163,11 +163,17 @@ export class ResourceService {
   runExportJob(jobId: string,
                constraint: Constraint,
                elements: object[],
-               includeMeasurementDateColumns: boolean,
                dataTable?: DataTable): Observable<ExportJob> {
     const transmartTableState: TransmartTableState = dataTable ? TransmartMapper.mapDataTable(dataTable) : null;
     return this.transmartResourceService
-      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns, transmartTableState);
+      .runExportJob(jobId, constraint, elements, transmartTableState);
+  }
+
+  runExportJob(job: ExportJob,
+               dataTypes: ExportDataType[],
+               constraint: Constraint,
+               dataTable?: DataTable): Observable<ExportJob> {
+    return null;
   }
 
   /**

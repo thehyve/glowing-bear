@@ -16,6 +16,7 @@ import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from './table.service';
+import {ExportDataType} from '../models/export-models/export-data-type';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -126,22 +127,19 @@ export class QueryService {
   private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
   // the queue that holds the time stamps of the calls made in the 2nd step
   private _queueOfCalls_2 = [];
-
   /*
    *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
    */
   private _instantCountsUpdate_3: boolean;
   private _isUpdating_3 = false;
   private _isDirty_3 = false;
-
   /*
    * ------ other variables ------
    */
   // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
   private _treeNodeCountsUpdate: boolean;
-  private _exportFormats: object[] = [];
-  private _isLoadingExportFormats = false;
-  private _exportDataView = 'default';
+  private _exportDataTypes: ExportDataType[] = [];
+  private _isLoadingExportDataTypes = false;
   /*
    * The alert messages (for PrimeNg message UI) that informs the user
    * whether there is an error saving subject/observation set,
@@ -170,8 +168,7 @@ export class QueryService {
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
-    this.exportDataView = appConfig.getConfig('export-data-view', 'default');
-    this.loadQueries();
+    // this.loadQueries();
   }
 
   private handle_error(err) {
@@ -556,35 +553,12 @@ export class QueryService {
     combo.addChild(selectionConstraint);
     combo.addChild(projectionConstraint);
     // update the export info
-    this.isLoadingExportFormats = true;
-    this.resourceService.getExportFileFormats(this.exportDataView)
-      .subscribe(
-        (fileFormatNames: string[]) => {
-          this.resourceService.getExportDataFormats(combo)
-            .subscribe(
-              (dataFormatNames: string[]) => {
-                this.exportFormats = [];
-                for (let dataFormatName of dataFormatNames) {
-                  let format = {
-                    name: dataFormatName,
-                    checked: true,
-                    fileFormats: []
-                  };
-                  for (let fileFormatName of fileFormatNames) {
-                    format.fileFormats.push({
-                      name: fileFormatName,
-                      checked: true
-                    });
-                  }
-                  this.exportFormats.push(format);
-                }
-                this.isLoadingExportFormats = false;
-              },
-              err => this.handle_error(err)
-            );
-        },
-        err => this.handle_error(err)
-      );
+    this.isLoadingExportDataTypes = true;
+    this.resourceService.getExportDataTypes(combo)
+      .subscribe(dataTypes => {
+        this.exportDataTypes = dataTypes;
+        this.isLoadingExportDataTypes = false;
+      });
   }
 
   /**
@@ -883,28 +857,20 @@ export class QueryService {
     this._queueOfCalls_2 = value;
   }
 
-  get exportFormats(): object[] {
-    return this._exportFormats;
+  get exportDataTypes(): ExportDataType[] {
+    return this._exportDataTypes;
   }
 
-  set exportFormats(value: object[]) {
-    this._exportFormats = value;
+  set exportDataTypes(value: ExportDataType[]) {
+    this._exportDataTypes = value;
   }
 
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
+  get isLoadingExportDataTypes(): boolean {
+    return this._isLoadingExportDataTypes;
   }
 
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
-  }
-
-  get exportDataView(): string {
-    return this._exportDataView;
-  }
-
-  set exportDataView(value: string) {
-    this._exportDataView = value;
+  set isLoadingExportDataTypes(value: boolean) {
+    this._isLoadingExportDataTypes = value;
   }
 
   get queries(): Query[] {

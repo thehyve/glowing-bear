@@ -6,28 +6,50 @@ import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedigree-relation-type-response';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
-import {ExportJob} from '../../models/export-job';
+import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {PatientSet} from '../../models/constraint-models/patient-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartStudyDimensionElement} from "app/models/transmart-models/transmart-study-dimension-element";
-import {TransmartStudy} from "../../models/transmart-models/transmart-study";
+import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {AppConfig} from '../../config/app.config';
 
 @Injectable()
 export class TransmartResourceService {
 
+  private _exportDataView = 'default';
+  private _dateColumnsIncluded = true;
 
-  constructor(private http: HttpClient,
+  constructor(private appConfig: AppConfig,
+              private http: HttpClient,
               private endpointService: EndpointService) {
+    this.exportDataView = appConfig.getConfig('export-data-view', 'default');
+  }
+
+
+  get exportDataView(): string {
+    return this._exportDataView;
+  }
+
+  set exportDataView(value: string) {
+    this._exportDataView = value;
+  }
+
+  get dateColumnsIncluded(): boolean {
+    return this._dateColumnsIncluded;
+  }
+
+  set dateColumnsIncluded(value: boolean) {
+    this._dateColumnsIncluded = value;
   }
 
   /**
    * only handles the 'invalid_token' error, other errors are passed on.
    * @param {HttpErrorResponse | any} error
    */
-  private handleError(res: HttpErrorResponse | any) {
+  public handleError(res: HttpErrorResponse | any) {
     const status = res['status'];
     const url = res['url'];
     const message = res['message'];
@@ -278,7 +300,8 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
-  getExportFileFormats(dataView: string): Observable<string[]> {
+  getExportFileFormats(): Observable<string[]> {
+    const dataView = this.exportDataView;
     const urlPart = `export/file_formats?dataView=${dataView}`;
     const responseField = 'fileFormats';
     return this.getCall(urlPart, responseField);
@@ -324,14 +347,13 @@ export class TransmartResourceService {
   runExportJob(jobId: string,
                constraint: Constraint,
                elements: object[],
-               includeMeasurementDateColumns: boolean,
                tableState?: TransmartTableState): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {
       constraint: constraint.toQueryObject(),
       elements: elements,
-      includeMeasurementDateColumns: includeMeasurementDateColumns
+      includeMeasurementDateColumns: this.dateColumnsIncluded
     };
     if (tableState) {
       body['tableState'] = tableState;
@@ -480,7 +502,7 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
-  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]>{
+  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
     const urlPart = `studies/studyId/${studyNames}`;
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);

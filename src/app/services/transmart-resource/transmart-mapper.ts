@@ -8,7 +8,9 @@ import {TransmartRow} from '../../models/transmart-models/transmart-row';
 import {Row} from '../../models/table-models/row';
 import {TransmartInRowDimension} from '../../models/transmart-models/transmart-in-row-dimension';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
-import {TransmartStudyDimensionElement} from "../../models/transmart-models/transmart-study-dimension-element";
+import {TransmartStudyDimensionElement} from '../../models/transmart-models/transmart-study-dimension-element';
+import {ExportDataType} from '../../models/export-models/export-data-type';
+import {ExportFileFormat} from '../../models/export-models/export-file-format';
 
 export class TransmartMapper {
 
@@ -63,7 +65,7 @@ export class TransmartMapper {
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
     transmartQuery.patientsQuery = query.patientsQuery;
     transmartQuery.observationsQuery = query.observationsQuery;
-    transmartQuery.queryBlob = { dataTableState: transmartTableState };
+    transmartQuery.queryBlob = {dataTableState: transmartTableState};
 
     return transmartQuery;
   }
@@ -138,5 +140,17 @@ export class TransmartMapper {
 
   public static mapTransmartStudyDimensionElements(elements: TransmartStudyDimensionElement[]): string[] {
     return elements.map(elem => elem.name);
+  }
+
+  public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[]): ExportDataType[] {
+    let dataTypes = new Array<ExportDataType>();
+    for (let dataFormatName of dataFormatNames) {
+      let dataType = new ExportDataType(dataFormatName, true);
+      for (let fileFormatName of fileFormatNames) {
+        dataType.fileFormats.push(new ExportFileFormat(fileFormatName, true));
+      }
+      dataTypes.push(dataType);
+    }
+    return dataTypes;
   }
 }

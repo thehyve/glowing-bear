@@ -35,7 +35,7 @@ export class QueryServiceMock {
 
   private _validTreeNodeTypes: string[] = [];
 
-  private _isLoadingExportFormats = true;
+  private _isLoadingExportDataTypes = true;
   private _exportFormats = [];
 
   constructor() {
@@ -53,12 +53,12 @@ export class QueryServiceMock {
   public update_1() {}
   public update_2() {}
 
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
+  get isLoadingExportDataTypes(): boolean {
+    return this._isLoadingExportDataTypes;
   }
 
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
+  set isLoadingExportDataTypes(value: boolean) {
+    this._isLoadingExportDataTypes = value;
   }
 
   get exportFormats(): Array<object> {
