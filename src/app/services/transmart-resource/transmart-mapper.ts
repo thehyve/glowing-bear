@@ -11,6 +11,7 @@ import {TransmartDimension} from '../../models/transmart-models/transmart-dimens
 import {TransmartStudyDimensionElement} from '../../models/transmart-models/transmart-study-dimension-element';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 
 export class TransmartMapper {
 
@@ -152,5 +153,23 @@ export class TransmartMapper {
       dataTypes.push(dataType);
     }
     return dataTypes;
+  }
+
+  public static mapExportDataTypes(dataTypes: ExportDataType[], dataView: string): TransmartExportElement[] {
+    let elements: TransmartExportElement[] = [];
+    for (let dataType of dataTypes) {
+      if (dataType.checked) {
+        for (let fileFormat of dataType.fileFormats) {
+          if (fileFormat.checked) {
+            let el = new TransmartExportElement();
+            el.dataType = dataType.name;
+            el.format = fileFormat.name;
+            el.dataView = dataView;
+            elements.push(el);
+          }
+        }
+      }
+    }
+    return elements;
   }
 }

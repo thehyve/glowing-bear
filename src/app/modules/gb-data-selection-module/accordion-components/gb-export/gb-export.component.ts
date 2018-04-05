@@ -36,7 +36,9 @@ export class GbExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
-          jobs.forEach(job => {job.isInDisabledState = false});
+          jobs.forEach(job => {
+            job.isInDisabledState = false
+          });
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -121,45 +123,22 @@ export class GbExportComponent implements OnInit {
    * Run the just created export job
    * @param job
    */
-  runExportJob(job) {
-    let jobId = job['id'];
-    let elements: object[] = [];
-    let includeDataTable = false;
-    for (let dataType of this.exportDataTypes) {
-      if (dataType.checked) {
-        for (let fileFormat of dataType.fileFormats) {
-          if (fileFormat.checked) {
-            elements.push({
-              dataType: dataType.name,
-              format: fileFormat.name,
-              dataView: this.queryService.exportDataView
-            });
-            if (fileFormat.name === 'TSV') {
-              includeDataTable = true;
-            }
-          }
-
-        }
-      }
-    }
-    if (elements.length > 0) {
-      const selectionConstraint = this.queryService.patientSet_1 ?
-          this.queryService.patientSet_1 : this.constraintService.generateSelectionConstraint();
-      const projectionConstraint = this.constraintService.generateProjectionConstraint();
-      let combo = new CombinationConstraint();
-      combo.addChild(selectionConstraint);
-      combo.addChild(projectionConstraint);
-
-      let dataTable = includeDataTable ? this.tableService.dataTable : null;
-
-      this.resourceService.runExportJob(jobId, combo, elements, dataTable)
-        .subscribe(
-          returnedExportJob => {
+  runExportJob(job: ExportJob) {
+    const selectionConstraint = this.queryService.patientSet_1 ?
+      this.queryService.patientSet_1 : this.constraintService.generateSelectionConstraint();
+    const projectionConstraint = this.constraintService.generateProjectionConstraint();
+    let combo = new CombinationConstraint();
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
+    this.resourceService.runExportJob(job, this.exportDataTypes, combo, this.tableService.dataTable)
+      .subscribe(
+        returnedExportJob => {
+          if(returnedExportJob) {
             this.updateExportJobs();
-          },
-          err => console.error(err)
-        );
-    }
+          }
+        },
+        err => this.resourceService.handleError(err)
+      );
   }
 
   /**

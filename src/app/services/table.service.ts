@@ -4,8 +4,8 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from "./constraint.service";
-import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
+import {ConstraintService} from './constraint.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 
 @Injectable()
 export class TableService {
@@ -161,22 +161,15 @@ export class TableService {
   }
 
   getDimensions() {
-    // const selectionConstraint = this.constraintService.generateSelectionConstraint();
-    // const projectionConstraint = this.constraintService.generateProjectionConstraint();
-    // let combo = new CombinationConstraint();
-    // combo.addChild(selectionConstraint);
-    // combo.addChild(projectionConstraint);
-    // this.resourceService.getStudyNames(combo).subscribe(
-    //   (names: string[]) => {
-    //     this.resourceService.getAvailableDimensions(names).subscribe(
-    //       (dimensions: string[]) => {
-    //         dimensions.forEach(name => {
-    //           this.rowDimensions.push(new Dimension(name));
-    //         });
-    //       }
-    //     )
-    //   }
-    // )
+    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const projectionConstraint = this.constraintService.generateProjectionConstraint();
+    let combo = new CombinationConstraint();
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
+    this.resourceService.getDimensions(combo)
+      .subscribe((availableDimensions: Dimension[]) => {
+        this.rowDimensions = availableDimensions;
+      });
   }
 
   private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {

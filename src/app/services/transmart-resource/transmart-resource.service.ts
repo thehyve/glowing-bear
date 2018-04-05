@@ -15,6 +15,7 @@ import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 
 @Injectable()
 export class TransmartResourceService {
@@ -46,7 +47,7 @@ export class TransmartResourceService {
   }
 
   /**
-   * only handles the 'invalid_token' error, other errors are passed on.
+   * handles error
    * @param {HttpErrorResponse | any} error
    */
   public handleError(res: HttpErrorResponse | any) {
@@ -346,7 +347,7 @@ export class TransmartResourceService {
    */
   runExportJob(jobId: string,
                constraint: Constraint,
-               elements: object[],
+               elements: TransmartExportElement[],
                tableState?: TransmartTableState): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
