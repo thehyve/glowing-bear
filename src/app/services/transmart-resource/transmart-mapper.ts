@@ -84,6 +84,13 @@ export class TransmartMapper {
     return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
   }
 
+  public static mapDimensions(rowDimensions: Dimension[], columnDimensions: Dimension[]): TransmartTableState {
+    let rowDimensionNames = rowDimensions.length > 0 ? rowDimensions.map(dim => dim.name) : [];
+    let columnDimensionNames = columnDimensions.length > 0 ? columnDimensions.map(dim => dim.name) : [];
+    let sorting = null;
+    return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
+  }
+
   public static mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
     let dataTable = new DataTable();
     transmartTable.rows.forEach((transmartRow: TransmartRow) => {

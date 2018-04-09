@@ -14,19 +14,20 @@ export class TableService {
   private _prevRowDimensions: Array<Dimension>;
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
+  private _currentPage: number;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
+    this.currentPage = 1;
 
     this.mockDataInit();
     this.mockDataUpdate();
 
     // TODO: connect to backend calls
-    // this.getDimensions();
-    // this.getTable();
+    // this.initializeDimensions();
   }
 
   mockDataInit() {
@@ -169,7 +170,7 @@ export class TableService {
     });
   }
 
-  getDimensions() {
+  initializeDimensions() {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const projectionConstraint = this.constraintService.generateProjectionConstraint();
     let combo = new CombinationConstraint();
@@ -177,8 +178,21 @@ export class TableService {
     combo.addChild(projectionConstraint);
     this.resourceService.getDimensions(combo)
       .subscribe((availableDimensions: Dimension[]) => {
-        this.rowDimensions = availableDimensions;
+        this.dataTable.rowDimensions = availableDimensions;
+        this.updateTable(this.dataTable);
       });
+  }
+
+  updateTable(targetDataTable: DataTable) {
+    let offset = 0;
+    let limit = 10;
+    this.resourceService
+      .getDataTable(targetDataTable.rowDimensions, targetDataTable.columnDimensions, offset, limit)
+      .subscribe(
+        (newDataTable: DataTable) => {
+          this.dataTable = newDataTable;
+        }
+      );
   }
 
   private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
@@ -199,36 +213,14 @@ export class TableService {
     return dimensionsAbove;
   }
 
-  getTable() {
-    let offset = 0;
-    let limit = 10;
-    this.resourceService.getDataTable(this.dataTable, offset, limit).subscribe(
-      (newDataTable: DataTable) => {
-        this.dataTable = newDataTable;
-      }
-    );
+  public nextPage() {
+    // TODO: connect to backend, check if the last page is reached
+    this.currentPage++;
   }
 
-  public updateTable(savedTable: DataTable) {
-    let availableDimensions: Dimension[] = this.getAvailableDimensions();
-    this.updateTableToDefaultState(availableDimensions);
-
-    if (savedTable.columnDimensions.length > 0) {
-      this.columnDimensions = availableDimensions.filter(dim =>
-        savedTable.columnDimensions.map(it => it.name).includes(dim.name));
-      this.rowDimensions = availableDimensions
-        .filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
-    }
-
-  }
-
-  private updateTableToDefaultState(availableDimensions: Dimension[]) {
-    this.columnDimensions.length = 0;
-    this.rowDimensions = availableDimensions;
-  }
-
-  private getAvailableDimensions(): Dimension[] {
-    return this.rowDimensions.concat(this.columnDimensions);
+  public previousPage() {
+    // TODO: connect to backend, check if the first page is reached
+    this.currentPage--;
   }
 
   get rowDimensions(): Dimension[] {
@@ -277,5 +269,13 @@ export class TableService {
 
   set prevColDimensions(value: Array<Dimension>) {
     this._prevColDimensions = value;
+  }
+
+  get currentPage(): number {
+    return this._currentPage;
+  }
+
+  set currentPage(value: number) {
+    this._currentPage = value;
   }
 }
