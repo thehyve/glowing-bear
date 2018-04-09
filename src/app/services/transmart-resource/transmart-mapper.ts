@@ -12,9 +12,9 @@ import {TransmartStudyDimensionElement} from '../../models/transmart-models/tran
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
-import {Col} from "../../models/table-models/col";
-import {TransmartColumnHeaders} from "../../models/transmart-models/transmart-column-headers";
-import {HeaderRow} from "../../models/table-models/header-row";
+import {Col} from '../../models/table-models/col';
+import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
+import {HeaderRow} from '../../models/table-models/header-row';
 
 export class TransmartMapper {
 
@@ -76,11 +76,9 @@ export class TransmartMapper {
 
   public static mapDataTable(dataTable: DataTable): TransmartTableState {
     let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
-      dataTable.rowDimensions
-        .filter(dim => dim.selected).map(dim => dim.name) : [];
+      dataTable.rowDimensions.map(dim => dim.name) : [];
     let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
-      dataTable.columnDimensions
-        .filter(dim => dim.selected).map(dim => dim.name) : [];
+      dataTable.columnDimensions.map(dim => dim.name) : [];
     let sorting = null;
 
     return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
@@ -119,16 +117,16 @@ export class TransmartMapper {
         });
       } else {
         transmartColumnHeader.keys.forEach((key: string) => {
-        if (key === null) {
-          this.updateCols(headerRow.cols, null);
-        } else {
-          // if dimension is indexed
-          let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
-            dim => dim.name === transmartColumnHeader.dimension)[0];
-          this.updateCols(headerRow.cols, indexedDimension.elements[key].label);
-        }
-      });
-    }
+          if (key === null) {
+            this.updateCols(headerRow.cols, null);
+          } else {
+            // if dimension is indexed
+            let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
+              dim => dim.name === transmartColumnHeader.dimension)[0];
+            this.updateCols(headerRow.cols, indexedDimension.elements[key].label);
+          }
+        });
+      }
       dataTable.headerRows.push(headerRow);
     });
 
@@ -171,7 +169,7 @@ export class TransmartMapper {
 
   private static updateCols(cols: Array<Col>, newColValue) {
     if (cols != null && cols.length > 0) {
-      if(cols[cols.length - 1].header === newColValue) {
+      if (cols[cols.length - 1].header === newColValue) {
         cols[cols.length - 1].colspan += 1;
       } else {
         cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString()));

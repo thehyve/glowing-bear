@@ -169,16 +169,6 @@ export class TableService {
     });
   }
 
-  getTable() {
-    let offset = 0;
-    let limit = 10; console.log('get table with: ', this.dataTable);
-    this.resourceService.getDataTable(this.dataTable, offset, limit).subscribe(
-      (newDataTable: DataTable) => { console.log('new data table: ', newDataTable);
-        this.dataTable = newDataTable;
-      }
-    );
-  }
-
   getDimensions() {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const projectionConstraint = this.constraintService.generateProjectionConstraint();
@@ -209,6 +199,16 @@ export class TableService {
     return dimensionsAbove;
   }
 
+  getTable() {
+    let offset = 0;
+    let limit = 10;
+    this.resourceService.getDataTable(this.dataTable, offset, limit).subscribe(
+      (newDataTable: DataTable) => {
+        this.dataTable = newDataTable;
+      }
+    );
+  }
+
   public updateTable(savedTable: DataTable) {
     let availableDimensions: Dimension[] = this.getAvailableDimensions();
     this.updateTableToDefaultState(availableDimensions);
@@ -216,23 +216,13 @@ export class TableService {
     if (savedTable.columnDimensions.length > 0) {
       this.columnDimensions = availableDimensions.filter(dim =>
         savedTable.columnDimensions.map(it => it.name).includes(dim.name));
-      this.columnDimensions.forEach(dim => dim.selected = true);
       this.rowDimensions = availableDimensions
         .filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
-    }
-
-    if (savedTable.rowDimensions.length > 0) {
-      this.rowDimensions.forEach(dim => {
-        if (savedTable.rowDimensions.map(it => it.name).includes(dim.name)) {
-          dim.selected = true
-        }
-      });
     }
 
   }
 
   private updateTableToDefaultState(availableDimensions: Dimension[]) {
-    availableDimensions.forEach(dim => dim.selected = false);
     this.columnDimensions.length = 0;
     this.rowDimensions = availableDimensions;
   }
