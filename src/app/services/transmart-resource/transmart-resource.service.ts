@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {EndpointService} from '../endpoint.service';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -12,15 +11,18 @@ import {PatientSet} from '../../models/constraint-models/patient-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartStudyDimensionElement} from "app/models/transmart-models/transmart-study-dimension-element";
-import {TransmartStudy} from "../../models/transmart-models/transmart-study";
+import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {AppConfig} from 'app/config/app.config';
 
 @Injectable()
 export class TransmartResourceService {
 
+  private endpointUrl: string;
 
   constructor(private http: HttpClient,
-              private endpointService: EndpointService) {
+              private appConfig: AppConfig) {
+    // this.endpointUrl = this.appConfig.getConfig('api-url');
   }
 
   /**
@@ -44,25 +46,14 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private postCall(urlPart, body, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.post(url, body, options)
-          .map(res => res[responseField])
-          .catch(this.handleError.bind(this));
-      } else {
-        return this.http.post(url, body, options)
-          .catch(this.handleError.bind(this));
-      }
+    const url = `${this.endpointUrl}/${urlPart}`;
+    if (responseField) {
+      return this.http.post(url, body)
+        .map(res => res[responseField])
+        .catch(this.handleError.bind(this));
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      return this.http.post(url, body)
+        .catch(this.handleError.bind(this));
     }
   }
 
@@ -73,26 +64,14 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private getCall(urlPart, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.get(url, options)
-          .map(res => res[responseField])
-          .catch(this.handleError.bind(this));
-      } else {
-        return this.http.get(url, options)
-          .catch(this.handleError.bind(this));
-      }
-
+    const url = `${this.endpointUrl}/${urlPart}`;
+    if (responseField) {
+      return this.http.get(url)
+        .map(res => res[responseField])
+        .catch(this.handleError.bind(this));
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      return this.http.get(url)
+        .catch(this.handleError.bind(this));
     }
   }
 
@@ -103,20 +82,9 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private putCall(urlPart, body) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.put(url, body, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
+    let url = `${this.endpointUrl}/${urlPart}`;
+    return this.http.put(url, body)
+      .catch(this.handleError.bind(this));
   }
 
   /**
@@ -125,34 +93,8 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private deleteCall(urlPart) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.delete(url, options)
-        .catch(this.handleError.bind(this));
-    } else {
-      this.handleError({message: 'Could not establish endpoint.'});
-    }
-  }
-
-  /**
-   * Logout from the authserver with a cookie attached
-   * @returns {Observable<{}>}
-   */
-  logout(): Observable<object> {
-    const endpoint = this.endpointService.getEndpoint();
-    const url = `${endpoint.apiUrl}/logout`;
-    const body = {};
-    const options = {
-      withCredentials: true
-    };
-    return this.http.post(url, body, options)
+    let url = `${this.endpointUrl}/${urlPart}`;
+    return this.http.delete(url)
       .catch(this.handleError.bind(this));
   }
 
@@ -345,18 +287,8 @@ export class TransmartResourceService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let endpoint = this.endpointService.getEndpoint();
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/zip');
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let url = `${endpoint.getUrl()}/export/${jobId}/download`;
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${endpoint.accessToken}`
-      })
-    };
-    return this.http.get(url, {...options, responseType: 'blob'})
+    let url = `${this.endpointUrl}/export/${jobId}/download`;
+    return this.http.get(url, {responseType: 'blob'})
       .catch(this.handleError.bind(this));
   }
 
@@ -480,7 +412,7 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
-  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]>{
+  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
     const urlPart = `studies/studyId/${studyNames}`;
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);

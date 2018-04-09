@@ -1,5 +1,9 @@
 {
-  "api-url": "http://localhost:8080",
+  "api-url": "http://localhost:8080/transmart-17.1",
   "api-version": "v2",
-  "app-url": "http://localhost:4200"
+  "app-url": "http://localhost:4200",
+
+  "idp-url": "http://localhost:8081/auth/realms/master",
+  "oidc-client-id": "glowing-bear",
+  "oidc-scopes": "openid"
 }

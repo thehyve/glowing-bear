@@ -13,22 +13,14 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
-import {TransmartStudyDimensionElement} from "../models/transmart-models/transmart-study-dimension-element";
-import {TransmartStudy} from "../models/transmart-models/transmart-study";
+import {TransmartStudyDimensionElement} from '../models/transmart-models/transmart-study-dimension-element';
+import {TransmartStudy} from '../models/transmart-models/transmart-study';
 
 @Injectable()
 export class ResourceService {
 
 
   constructor(private transmartResourceService: TransmartResourceService) {
-  }
-
-  /**
-   * Logout from the authserver with a cookie attached
-   * @returns {Observable<{}>}
-   */
-  logout(): Observable<{}> {
-    return this.transmartResourceService.logout();
   }
 
   // -------------------------------------- tree node calls --------------------------------------
