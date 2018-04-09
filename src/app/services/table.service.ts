@@ -4,9 +4,9 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from "./constraint.service";
-import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
-import {HeaderRow} from "../models/table-models/header-row";
+import {ConstraintService} from './constraint.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {HeaderRow} from '../models/table-models/header-row';
 
 @Injectable()
 export class TableService {
@@ -20,8 +20,13 @@ export class TableService {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
+
+    this.mockDataInit();
     this.mockDataUpdate();
-    this.getDimensions();
+
+    // TODO: connect to backend calls
+    // this.getDimensions();
+    // this.getTable();
   }
 
   mockDataInit() {
@@ -67,7 +72,7 @@ export class TableService {
       numColDimColumns = numColDimColumns * colDim.valueNames.length;
       let headerRow = new HeaderRow();
 
-      //add empty space fillers on the top-left corner of the table
+      // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
         headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
       }
@@ -151,10 +156,9 @@ export class TableService {
       let newColRow = new HeaderRow();
       headerRow.cols.forEach((col: Col) => {
         if (newColRow.cols.length > 0) {
-          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header != '') {
+          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
             newColRow.cols[newColRow.cols.length - 1].colspan += 1;
-          }
-          else {
+          } else {
             newColRow.cols.push(col)
           }
         } else {
@@ -167,9 +171,9 @@ export class TableService {
 
   getTable() {
     let offset = 0;
-    let limit = 10;
+    let limit = 10; console.log('get table with: ', this.dataTable);
     this.resourceService.getDataTable(this.dataTable, offset, limit).subscribe(
-      (newDataTable: DataTable) => {
+      (newDataTable: DataTable) => { console.log('new data table: ', newDataTable);
         this.dataTable = newDataTable;
       }
     );

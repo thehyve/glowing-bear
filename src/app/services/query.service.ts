@@ -541,6 +541,7 @@ export class QueryService {
    */
   public update_3() {
     this.tableService.mockDataUpdate();
+    // this.tableService.getTable();
     // TODO: think about the relationship between TableService and QueryService in terms of table updating
     this.isDirty_3 = false;
   }
