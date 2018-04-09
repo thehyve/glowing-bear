@@ -1,14 +1,15 @@
 import {Component, OnInit} from '@angular/core';
 import {TableService} from '../../../../services/table.service';
-import {Col} from '../../../../models/table-models/col';
 import {Row} from '../../../../models/table-models/row';
+import {HeaderRow} from "../../../../models/table-models/header-row";
+import {Col} from "../../../../models/table-models/col";
 
 @Component({
   selector: 'gb-table-grid',
   templateUrl: './gb-table-grid.component.html',
   styleUrls: ['./gb-table-grid.component.css']
 })
-export class GbTableTableComponent implements OnInit {
+export class GbTableGridComponent implements OnInit {
 
   constructor(private tableService: TableService) {
   }
@@ -20,7 +21,18 @@ export class GbTableTableComponent implements OnInit {
     return this.tableService.rows;
   }
 
-  get cols(): Col[] {
-    return this.tableService.cols;
+  get cols(): Array<Col> {
+    let cols =[];
+    if(this.tableService.headerRows && this.tableService.headerRows.length > 0) {
+      this.tableService.headerRows[this.tableService.headerRows.length - 1].cols.forEach(
+        col => {
+          cols.push(col);
+        });
+    }
+    return cols;
+  }
+
+  get headerRows(): HeaderRow[] {
+    return this.tableService.headerRows;
   }
 }

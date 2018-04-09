@@ -1,17 +1,17 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableTableComponent} from './gb-table-grid.component';
+import {GbTableGridComponent} from './gb-table-grid.component';
 import {TableService} from '../../../../services/table.service';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 import {TableModule} from 'primeng/table';
 
-describe('GbTableTableComponent', () => {
-  let component: GbTableTableComponent;
-  let fixture: ComponentFixture<GbTableTableComponent>;
+describe('GbTableGridComponent', () => {
+  let component: GbTableGridComponent;
+  let fixture: ComponentFixture<GbTableGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTableTableComponent],
+      declarations: [GbTableGridComponent],
       imports: [
         TableModule
       ],
@@ -26,12 +26,12 @@ describe('GbTableTableComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbTableTableComponent);
+    fixture = TestBed.createComponent(GbTableGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('GbTableTableComponent should be created', () => {
+  it('GbTableGridComponent should be created.', () => {
     expect(component).toBeTruthy();
   });
 });
