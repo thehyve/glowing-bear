@@ -42,7 +42,7 @@ describe('QueryService', () => {
     });
   });
 
-  it('should inject QueryService', inject([QueryService], (service: QueryService) => {
+  it('QueryService should be injected', inject([QueryService], (service: QueryService) => {
     expect(service).toBeTruthy();
   }));
 });

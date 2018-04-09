@@ -31,7 +31,7 @@ describe('GbTableTableComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbTableTableComponent should be created.', () => {
+  it('GbTableTableComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

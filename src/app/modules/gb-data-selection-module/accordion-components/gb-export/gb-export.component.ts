@@ -2,11 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
-import {ExportJob} from '../../../../models/export-job';
+import {ExportJob} from '../../../../models/export-models/export-job';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
-import {TableService} from "../../../../services/table.service";
+import {TableService} from '../../../../services/table.service';
+import {ExportDataType} from '../../../../models/export-models/export-data-type';
 
 @Component({
   selector: 'gb-export',
@@ -17,8 +18,6 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
-  dateColumnsIncluded: boolean;
-  exportDataView: string;
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -28,8 +27,6 @@ export class GbExportComponent implements OnInit {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.updateExportJobs());
-    this.dateColumnsIncluded = true;
-    this.exportDataView = queryService.exportDataView;
   }
 
   ngOnInit() {
@@ -39,7 +36,9 @@ export class GbExportComponent implements OnInit {
     this.resourceService.getExportJobs()
       .subscribe(
         jobs => {
-          jobs.forEach(job => {job.isInDisabledState = false});
+          jobs.forEach(job => {
+            job.isInDisabledState = false
+          });
           this.exportJobs = jobs;
         },
         err => console.error(err)
@@ -71,14 +70,14 @@ export class GbExportComponent implements OnInit {
     }
 
     // 3. Validate if at least one data type is selected
-    if (!this.exportFormats.some(ef => ef['checked'] === true)) {
+    if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       this.queryService.alert(summary, '', 'warn');
       return false;
     }
 
     // 4. Validate if at least one file format is selected for checked data formats
-    for (let dataFormat of this.exportFormats) {
+    for (let dataFormat of this.exportDataTypes) {
       if (dataFormat['checked'] === true) {
         if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
@@ -124,45 +123,22 @@ export class GbExportComponent implements OnInit {
    * Run the just created export job
    * @param job
    */
-  runExportJob(job) {
-    let jobId = job['id'];
-    let elements: object[] = [];
-    let includeDataTable: boolean = false;
-    for (let dataFormat of this.exportFormats) {
-      if (dataFormat['checked']) {
-        for (let fileFormat of dataFormat['fileFormats']) {
-          if (fileFormat['checked']) {
-            elements.push({
-              dataType: dataFormat['name'],
-              format: fileFormat['name'],
-              dataView: this.queryService.exportDataView
-            });
-            if (fileFormat['name'] === 'TSV') {
-              includeDataTable = true;
-            }
-          }
-
-        }
-      }
-    }
-    if (elements.length > 0) {
-      const selectionConstraint = this.queryService.patientSet_1 ?
-          this.queryService.patientSet_1 : this.constraintService.generateSelectionConstraint();
-      const projectionConstraint = this.constraintService.generateProjectionConstraint();
-      let combo = new CombinationConstraint();
-      combo.addChild(selectionConstraint);
-      combo.addChild(projectionConstraint);
-
-      let dataTable = includeDataTable ? this.tableService.dataTable : null;
-
-      this.resourceService.runExportJob(jobId, combo, elements, this.dateColumnsIncluded, dataTable)
-        .subscribe(
-          returnedExportJob => {
+  runExportJob(job: ExportJob) {
+    const selectionConstraint = this.queryService.patientSet_1 ?
+      this.queryService.patientSet_1 : this.constraintService.generateSelectionConstraint();
+    const projectionConstraint = this.constraintService.generateProjectionConstraint();
+    let combo = new CombinationConstraint();
+    combo.addChild(selectionConstraint);
+    combo.addChild(projectionConstraint);
+    this.resourceService.runExportJob(job, this.exportDataTypes, combo, this.tableService.dataTable)
+      .subscribe(
+        returnedExportJob => {
+          if (returnedExportJob) {
             this.updateExportJobs();
-          },
-          err => console.error(err)
-        );
-    }
+          }
+        },
+        err => this.resourceService.handleError(err)
+      );
   }
 
   /**
@@ -211,12 +187,12 @@ export class GbExportComponent implements OnInit {
     event.preventDefault();
   }
 
-  get isLoadingExportFormats(): boolean {
-    return this.queryService.isLoadingExportFormats;
+  get isLoadingExportDataTypes(): boolean {
+    return this.queryService.isLoadingExportDataTypes;
   }
 
-  get exportFormats(): object[] {
-    return this.queryService.exportFormats;
+  get exportDataTypes(): ExportDataType[] {
+    return this.queryService.exportDataTypes;
   }
 
 }

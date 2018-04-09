@@ -22,7 +22,7 @@ describe('TableService', () => {
       ]
     });
   });
-  it('should inject TableService', inject([TableService], (service: TableService) => {
+  it('TableService should be injected', inject([TableService], (service: TableService) => {
     expect(service).toBeTruthy();
   }));
 });

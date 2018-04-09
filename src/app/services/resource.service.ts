@@ -3,7 +3,7 @@ import {Observable} from 'rxjs/Observable';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
-import {ExportJob} from '../models/export-job';
+import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {PatientSet} from '../models/constraint-models/patient-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
@@ -13,8 +13,11 @@ import {TransmartResourceService} from './transmart-resource/transmart-resource.
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from './transmart-resource/transmart-mapper';
-import {TransmartStudyDimensionElement} from "../models/transmart-models/transmart-study-dimension-element";
-import {TransmartStudy} from "../models/transmart-models/transmart-study";
+import {TransmartStudyDimensionElement} from '../models/transmart-models/transmart-study-dimension-element';
+import {TransmartStudy} from '../models/transmart-models/transmart-study';
+import {ExportDataType} from '../models/export-models/export-data-type';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Dimension} from '../models/table-models/dimension';
 
 @Injectable()
 export class ResourceService {
@@ -22,6 +25,20 @@ export class ResourceService {
 
   constructor(private transmartResourceService: TransmartResourceService) {
   }
+
+  /**
+   * handles error
+   * @param {HttpErrorResponse | any} error
+   */
+  public handleError(res: HttpErrorResponse | any) {
+    const status = res['status'];
+    const url = res['url'];
+    const message = res['message'];
+    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
+    console.error(summary);
+    console.error(res['error']);
+  }
+
 
   /**
    * Logout from the authserver with a cookie attached
@@ -114,17 +131,13 @@ export class ResourceService {
   }
 
   // -------------------------------------- export calls --------------------------------------
-  /**
-   * Given a list of patient set ids as strings, get the corresponding data formats available for download
-   * @param constraint
-   * @returns {Observable<string[]>}
-   */
-  getExportDataFormats(constraint: Constraint): Observable<string[]> {
-    return this.transmartResourceService.getExportDataFormats(constraint);
-  }
-
-  getExportFileFormats(dataView: string): Observable<string[]> {
-    return this.transmartResourceService.getExportFileFormats(dataView);
+  getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
+    return this.transmartResourceService.getExportFileFormats()
+      .switchMap(fileFormatNames => {
+        return this.transmartResourceService.getExportDataFormats(constraint)
+      }, (fileFormatNames, dataFormatNames) => {
+        return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
+      });
   }
 
   /**
@@ -145,29 +158,39 @@ export class ResourceService {
   }
 
   /**
-   * Run an export job:
-   * the elements should be an array of objects like this -
-   * [{
-   *    dataType: 'clinical',
-   *    format: 'TSV',
-   *    dataView: 'default' | 'surveyTable', // NTR specific
-   * }]
-   *
-   * @param jobId
-   * @param elements
-   * @param constraint
-   * @param includeMeasurementDateColumns
-   * @param dataTable - included only, if at least one of the formats of elements is 'TSV'
+   * Run an export job
+   * @param {ExportJob} job
+   * @param {ExportDataType[]} dataTypes
+   * @param {Constraint} constraint
+   * @param {DataTable} dataTable - included only if at least one of the formats of elements is 'TSV'
    * @returns {Observable<ExportJob>}
    */
-  runExportJob(jobId: string,
+  runExportJob(job: ExportJob,
+               dataTypes: ExportDataType[],
                constraint: Constraint,
-               elements: object[],
-               includeMeasurementDateColumns: boolean,
-               dataTable?: DataTable): Observable<ExportJob> {
-    const transmartTableState: TransmartTableState = dataTable ? TransmartMapper.mapDataTable(dataTable) : null;
-    return this.transmartResourceService
-      .runExportJob(jobId, constraint, elements, includeMeasurementDateColumns, transmartTableState);
+               dataTable: DataTable): Observable<ExportJob> {
+    let includeDataTable = false;
+    let hasSelectedFormat = false;
+    for (let dataType of dataTypes) {
+      if (dataType.checked) {
+        for (let fileFormat of dataType.fileFormats) {
+          if (fileFormat.checked) {
+            if (fileFormat.name === 'TSV') {
+              includeDataTable = true;
+            }
+            hasSelectedFormat = true;
+          }
+        }
+      }
+    }
+    if (hasSelectedFormat) {
+      const transmartTableState: TransmartTableState = includeDataTable ? TransmartMapper.mapDataTable(dataTable) : null;
+      const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
+      return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
+    } else {
+      return Observable.of(null);
+    }
+
   }
 
   /**
@@ -253,8 +276,7 @@ export class ResourceService {
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(dataTable: DataTable, offset: number, limit: number): Observable<DataTable> {
-    const transmartTableState: TransmartTableState
-      = TransmartMapper.mapDataTable(dataTable);
+    const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
     return this.transmartResourceService.getDataTable(transmartTableState, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
         return TransmartMapper.mapTransmartDataTable(transmartTable);
@@ -262,30 +284,23 @@ export class ResourceService {
   }
 
   /**
-   * Gets all elements from the study dimension that satisfy the constaint if given
-   * @param {Constraint} constraint
-   * @returns {Observable<string[]>}
-   */
-  getStudyNames(constraint: Constraint): Observable<string[]> {
-    return this.transmartResourceService.getStudyNames(constraint)
-      .map((elements: TransmartStudyDimensionElement[]) => {
-        return TransmartMapper.mapTransmartStudyDimensionElements(elements);
-      });
-  }
-
-  /**
    * Gets available dimensions for step 3
-   * @param studyNames
-   * @returns {Observable<string[]>}
+   * @param {Constraint} constraint
+   * @returns {Observable<Dimension[]>}
    */
-  getAvailableDimensions(studyNames: string[]): Observable<string[]> {
-    return this.transmartResourceService.getAvailableDimensions(studyNames)
-      .map((transmartStudies: TransmartStudy[]) => {
-        let dimensions = [];
+  getDimensions(constraint: Constraint): Observable<Dimension[]> {
+    return this.transmartResourceService.getStudyNames(constraint)
+      .switchMap((studyElements: TransmartStudyDimensionElement[]) => {
+        let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);
+        return this.transmartResourceService.getAvailableDimensions(studyNames);
+      }, (studyElements: TransmartStudyDimensionElement[], transmartStudies: TransmartStudy[]) => {
+        let dimensions = new Array<Dimension>();
+        let dimensionNames = new Array<string>();
         transmartStudies.forEach((study: TransmartStudy) => {
-          study.dimensions.forEach((dimension: string) => {
-              if (dimensions.indexOf(dimension) === -1) {
-                dimensions.push(dimension);
+          study.dimensions.forEach((dimensionName: string) => {
+              if (dimensionNames.indexOf(dimensionName) === -1) {
+                dimensionNames.push(dimensionName);
+                dimensions.push(new Dimension(dimensionName));
               }
             }
           );

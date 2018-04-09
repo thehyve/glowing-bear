@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
-import {ExportJob} from '../../models/export-job';
+import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 
 export class TransmartResourceServiceMock {

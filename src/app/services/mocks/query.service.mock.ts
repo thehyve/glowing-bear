@@ -1,4 +1,5 @@
 import {Query} from '../../models/query-models/query';
+import {ExportDataType} from '../../models/export-models/export-data-type';
 
 export class QueryServiceMock {
   private _queries: Query[] = [];
@@ -35,8 +36,8 @@ export class QueryServiceMock {
 
   private _validTreeNodeTypes: string[] = [];
 
-  private _isLoadingExportFormats = true;
-  private _exportFormats = [];
+  private _exportDataTypes: ExportDataType[] = [];
+  private _isLoadingExportDataTypes = false;
 
   constructor() {
     this._validTreeNodeTypes = [
@@ -53,20 +54,20 @@ export class QueryServiceMock {
   public update_1() {}
   public update_2() {}
 
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
+  get isLoadingExportDataTypes(): boolean {
+    return this._isLoadingExportDataTypes;
   }
 
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
+  set isLoadingExportDataTypes(value: boolean) {
+    this._isLoadingExportDataTypes = value;
   }
 
-  get exportFormats(): Array<object> {
-    return this._exportFormats;
+  get exportDataTypes(): ExportDataType[] {
+    return this._exportDataTypes;
   }
 
-  set exportFormats(value: Array<object>) {
-    this._exportFormats = value;
+  set exportDataTypes(value: ExportDataType[]) {
+    this._exportDataTypes = value;
   }
 
   get queries(): Query[] {

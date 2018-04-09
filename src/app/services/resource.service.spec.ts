@@ -23,7 +23,7 @@ describe('ResourceService', () => {
     });
   });
 
-  it('should inject ResourceService', inject([ResourceService], (service: ResourceService) => {
+  it('ResourceService should be injected', inject([ResourceService], (service: ResourceService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -6,7 +6,6 @@ import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
 import {EndpointService} from './services/endpoint.service';
@@ -44,7 +43,6 @@ describe('AppComponent', () => {
       imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
         BrowserAnimationsModule,
         GbNavBarModule,
         GbSidePanelModule,
@@ -100,7 +98,7 @@ describe('AppComponent', () => {
     }).compileComponents();
   }));
 
-  it('should create the app', async(() => {
+  it('AppComponent should be created', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();

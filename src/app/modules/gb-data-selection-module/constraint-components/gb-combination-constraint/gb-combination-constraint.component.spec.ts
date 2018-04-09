@@ -57,7 +57,7 @@ describe('GbCombinationConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbCombinationConstraintComponent', () => {
+  it('GbCombinationConstraintComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });
