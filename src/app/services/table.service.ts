@@ -4,8 +4,8 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from "./constraint.service";
-import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
+import {ConstraintService} from './constraint.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 
 @Injectable()
 export class TableService {
