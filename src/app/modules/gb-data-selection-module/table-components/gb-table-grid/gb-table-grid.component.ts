@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {TableService} from '../../../../services/table.service';
 import {Row} from '../../../../models/table-models/row';
-import {HeaderRow} from "../../../../models/table-models/header-row";
-import {Col} from "../../../../models/table-models/col";
+import {HeaderRow} from '../../../../models/table-models/header-row';
+import {Col} from '../../../../models/table-models/col';
 
 @Component({
   selector: 'gb-table-grid',
@@ -22,8 +22,8 @@ export class GbTableGridComponent implements OnInit {
   }
 
   get cols(): Array<Col> {
-    let cols =[];
-    if(this.tableService.headerRows && this.tableService.headerRows.length > 0) {
+    let cols = [];
+    if (this.tableService.headerRows && this.tableService.headerRows.length > 0) {
       this.tableService.headerRows[this.tableService.headerRows.length - 1].cols.forEach(
         col => {
           cols.push(col);
@@ -34,5 +34,17 @@ export class GbTableGridComponent implements OnInit {
 
   get headerRows(): HeaderRow[] {
     return this.tableService.headerRows;
+  }
+
+  nextPage() {
+    this.tableService.nextPage();
+  }
+
+  previousPage() {
+    this.tableService.previousPage();
+  }
+
+  get currentPage(): number {
+    return this.tableService.currentPage;
   }
 }

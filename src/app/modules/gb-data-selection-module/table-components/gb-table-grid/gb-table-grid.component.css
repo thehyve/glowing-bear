@@ -3,3 +3,22 @@
   border-right: 3px var(--gb-clinical-green-dark) solid;
   background-color: var(--gb-clinical-green-light-light);
 }
+
+.gb-table-pagination-container {
+  margin: 10px 0px 0px 0px;
+  text-align: center;
+}
+
+.gb-table-pagination-container .btn-outline-secondary {
+  color: GrayText;
+  border: none;
+}
+
+.gb-table-pagination-container .btn-outline-secondary:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+
+.gb-table-pagination-container .btn-outline-secondary:active {
+  font-weight: bolder;
+  background-color: var(--gb-clinical-green-light-light);
+}

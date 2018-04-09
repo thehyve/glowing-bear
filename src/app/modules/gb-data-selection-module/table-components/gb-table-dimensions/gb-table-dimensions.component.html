@@ -18,7 +18,6 @@
               [targetStyle]="{'min-height':'130px','height': '100%'}">
     <ng-template let-dimension pTemplate="item">
       <div>
-        <p-checkbox [(ngModel)]="dimension.selected" binary="true"></p-checkbox>
         <span>{{dimension.name}}</span>
       </div>
     </ng-template>

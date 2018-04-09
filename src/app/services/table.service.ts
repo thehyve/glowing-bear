@@ -4,9 +4,9 @@ import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from "./constraint.service";
-import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
-import {HeaderRow} from "../models/table-models/header-row";
+import {ConstraintService} from './constraint.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {HeaderRow} from '../models/table-models/header-row';
 
 @Injectable()
 export class TableService {
@@ -14,14 +14,20 @@ export class TableService {
   private _prevRowDimensions: Array<Dimension>;
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
+  private _currentPage: number;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
+    this.currentPage = 1;
+
+    this.mockDataInit();
     this.mockDataUpdate();
-    this.getDimensions();
+
+    // TODO: connect to backend calls
+    // this.initializeDimensions();
   }
 
   mockDataInit() {
@@ -67,7 +73,7 @@ export class TableService {
       numColDimColumns = numColDimColumns * colDim.valueNames.length;
       let headerRow = new HeaderRow();
 
-      //add empty space fillers on the top-left corner of the table
+      // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
         headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
       }
@@ -151,10 +157,9 @@ export class TableService {
       let newColRow = new HeaderRow();
       headerRow.cols.forEach((col: Col) => {
         if (newColRow.cols.length > 0) {
-          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header != '') {
+          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
             newColRow.cols[newColRow.cols.length - 1].colspan += 1;
-          }
-          else {
+          } else {
             newColRow.cols.push(col)
           }
         } else {
@@ -165,17 +170,7 @@ export class TableService {
     });
   }
 
-  getTable() {
-    let offset = 0;
-    let limit = 10;
-    this.resourceService.getDataTable(this.dataTable, offset, limit).subscribe(
-      (newDataTable: DataTable) => {
-        this.dataTable = newDataTable;
-      }
-    );
-  }
-
-  getDimensions() {
+  initializeDimensions() {
     const selectionConstraint = this.constraintService.generateSelectionConstraint();
     const projectionConstraint = this.constraintService.generateProjectionConstraint();
     let combo = new CombinationConstraint();
@@ -183,8 +178,21 @@ export class TableService {
     combo.addChild(projectionConstraint);
     this.resourceService.getDimensions(combo)
       .subscribe((availableDimensions: Dimension[]) => {
-        this.rowDimensions = availableDimensions;
+        this.dataTable.rowDimensions = availableDimensions;
+        this.updateTable(this.dataTable);
       });
+  }
+
+  updateTable(targetDataTable: DataTable) {
+    let offset = 0;
+    let limit = 10;
+    this.resourceService
+      .getDataTable(targetDataTable.rowDimensions, targetDataTable.columnDimensions, offset, limit)
+      .subscribe(
+        (newDataTable: DataTable) => {
+          this.dataTable = newDataTable;
+        }
+      );
   }
 
   private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
@@ -205,36 +213,14 @@ export class TableService {
     return dimensionsAbove;
   }
 
-  public updateTable(savedTable: DataTable) {
-    let availableDimensions: Dimension[] = this.getAvailableDimensions();
-    this.updateTableToDefaultState(availableDimensions);
-
-    if (savedTable.columnDimensions.length > 0) {
-      this.columnDimensions = availableDimensions.filter(dim =>
-        savedTable.columnDimensions.map(it => it.name).includes(dim.name));
-      this.columnDimensions.forEach(dim => dim.selected = true);
-      this.rowDimensions = availableDimensions
-        .filter(dim => !this.columnDimensions.map(it => it.name).includes(dim.name));
-    }
-
-    if (savedTable.rowDimensions.length > 0) {
-      this.rowDimensions.forEach(dim => {
-        if (savedTable.rowDimensions.map(it => it.name).includes(dim.name)) {
-          dim.selected = true
-        }
-      });
-    }
-
+  public nextPage() {
+    // TODO: connect to backend, check if the last page is reached
+    this.currentPage++;
   }
 
-  private updateTableToDefaultState(availableDimensions: Dimension[]) {
-    availableDimensions.forEach(dim => dim.selected = false);
-    this.columnDimensions.length = 0;
-    this.rowDimensions = availableDimensions;
-  }
-
-  private getAvailableDimensions(): Dimension[] {
-    return this.rowDimensions.concat(this.columnDimensions);
+  public previousPage() {
+    // TODO: connect to backend, check if the first page is reached
+    this.currentPage--;
   }
 
   get rowDimensions(): Dimension[] {
@@ -283,5 +269,13 @@ export class TableService {
 
   set prevColDimensions(value: Array<Dimension>) {
     this._prevColDimensions = value;
+  }
+
+  get currentPage(): number {
+    return this._currentPage;
+  }
+
+  set currentPage(value: number) {
+    this._currentPage = value;
   }
 }

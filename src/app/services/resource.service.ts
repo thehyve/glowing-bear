@@ -275,8 +275,10 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(dataTable: DataTable, offset: number, limit: number): Observable<DataTable> {
-    const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
+  getDataTable(rowDimensions: Dimension[],
+               columnDimensions: Dimension[],
+               offset: number, limit: number): Observable<DataTable> {
+    const transmartTableState: TransmartTableState = TransmartMapper.mapDimensions(rowDimensions, columnDimensions);
     return this.transmartResourceService.getDataTable(transmartTableState, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
         return TransmartMapper.mapTransmartDataTable(transmartTable);

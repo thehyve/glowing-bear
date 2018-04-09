@@ -485,7 +485,7 @@ export class TransmartResourceService {
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(tableState: TransmartTableState,
                offset: number, limit: number): Observable<TransmartDataTable> {
-    const urlPart = `observations/tabular`;
+    const urlPart = `observations/table`;
     const body = {
       rows: tableState.rowDimensions,
       columns: tableState.columnDimensions,
