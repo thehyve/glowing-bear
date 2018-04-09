@@ -168,7 +168,7 @@ export class QueryService {
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
-    // this.loadQueries();
+    this.loadQueries();
   }
 
   private handle_error(err) {
