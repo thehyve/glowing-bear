@@ -26,11 +26,11 @@ Run `ng test` to execute the unit tests via [Karma], run `ng test --code-coverag
 
 ### Running end-to-end tests
 
-For e2e test we use [Protractor] in combination with the [cucumber-js] framework.
-To install protractor run `npm install -g protractor`. 
-To run the tests you need to have an up to dated version of chrome installed and the TranSMART application running, by default on `localhost:8080`.
-To run all tests: `protractor`.
-To run specific feature files: `protractor --specs=e2e/features/name-of.feature`.
+For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
+[Cypress] is install as part of the your `npm install` command. 
+To run the tests `npm run e2e` to run using the headless browser or `npm run cypress` to launch the GUI.
+Currently the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
+
 
 ### Further help
 
@@ -115,3 +115,5 @@ along with this program. If not, see https://www.gnu.org/licenses/.
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [nginx]: https://nginx.org
 [Apache]: https://httpd.apache.org
+[Cypress]: https://www.cypress.io/
+[cypress-cucumber-preprocessor]: https://github.com/TheBrainFamily/cypress-cucumber-preprocessor

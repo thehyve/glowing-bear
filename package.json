@@ -10,7 +10,8 @@
     "test": "ng test",
     "testOnce": "ng test --single-run",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "npx cypress run",
+    "cypress": "npx cypress open"
   },
   "private": true,
   "dependencies": {
@@ -43,6 +44,8 @@
     "@types/node": "~6.0.60",
     "codelyzer": "~4.1.0",
     "cucumber": "^2.1.0",
+    "cypress": "^2.1.0",
+    "cypress-cucumber-preprocessor": "^0.6.0",
     "es6-promise": "^4.1.1",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~3.2.0",
