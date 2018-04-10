@@ -11,3 +11,6 @@ Feature: Login
     Given I am on the login page
     When I login with user 'nonuser'
     Then I am not logged in
+
+  Scenario: single login step
+    Given I am logged in as 'admin'
