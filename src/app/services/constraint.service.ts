@@ -127,12 +127,16 @@ export class ConstraintService {
   searchAllConstraints(query: string): Constraint[] {
     query = query.toLowerCase();
     let results = [];
-    this.allConstraints.forEach((constraint: Constraint) => {
-      let text = constraint.textRepresentation.toLowerCase();
-      if (text.indexOf(query) > -1) {
-        results.push(constraint);
-      }
-    });
+    if (query === '') {
+      results = [].concat(this.allConstraints);
+    } else if (query && query.length > 0) {
+      this.allConstraints.forEach((constraint: Constraint) => {
+        let text = constraint.textRepresentation.toLowerCase();
+        if (text.indexOf(query) > -1) {
+          results.push(constraint);
+        }
+      });
+    }
     return results;
   }
 
@@ -296,7 +300,7 @@ export class ConstraintService {
         treeNodeType === 'CATEGORICAL' ||
         treeNodeType === 'DATE' ||
         treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT' ) {
+        treeNodeType === 'TEXT') {
         if (treeNode['constraint']) {
           constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {

@@ -48,7 +48,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onDropdown(event) {
     let results = this.constraintService.searchAllConstraints('');
-
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745
     this.searchResults = [];
