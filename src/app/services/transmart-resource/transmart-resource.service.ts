@@ -484,15 +484,20 @@ export class TransmartResourceService {
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(tableState: TransmartTableState,
+               constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const body = {
-      rows: tableState.rowDimensions,
-      columns: tableState.columnDimensions,
-      sort: tableState.sorting,
+    let body = {
+      type: 'clinical',
+      constraint: constraint.toQueryObject(),
+      rowDimensions: tableState.rowDimensions,
+      columnDimensions: tableState.columnDimensions,
       offset: offset,
       limit: limit
     };
+    // if (tableState.sorting) {
+    //   body['sort'] = tableState.sorting;
+    // }
     return this.postCall(urlPart, body, null);
   }
 
@@ -504,7 +509,12 @@ export class TransmartResourceService {
   }
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
-    const urlPart = `studies/studyId/${studyNames}`;
+    let params = '';
+    for (let name of studyNames) {
+      params += `studyIds=${name}&`
+    }
+    params = params.substring(0, params.length - 1);
+    const urlPart = `studies/studyIds?${params}`;
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
   }

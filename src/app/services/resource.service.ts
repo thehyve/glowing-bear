@@ -275,11 +275,11 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(rowDimensions: Dimension[],
-               columnDimensions: Dimension[],
+  getDataTable(dataTable: DataTable,
                offset: number, limit: number): Observable<DataTable> {
-    const transmartTableState: TransmartTableState = TransmartMapper.mapDimensions(rowDimensions, columnDimensions);
-    return this.transmartResourceService.getDataTable(transmartTableState, offset, limit)
+    const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
+    const constraint: Constraint = dataTable.constraint;
+    return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
         return TransmartMapper.mapTransmartDataTable(transmartTable);
       });
