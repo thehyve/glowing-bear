@@ -487,11 +487,18 @@ export class TransmartResourceService {
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
+    const rowDims = tableState.rowDimensions.filter((dim: string) => {
+      return !highDims.includes(dim);
+    });
+    const colDims = tableState.columnDimensions.filter((dim: string) => {
+      return !highDims.includes(dim);
+    });
     let body = {
       type: 'clinical',
       constraint: constraint.toQueryObject(),
-      rowDimensions: tableState.rowDimensions,
-      columnDimensions: tableState.columnDimensions,
+      rowDimensions: rowDims,
+      columnDimensions: colDims,
       offset: offset,
       limit: limit
     };

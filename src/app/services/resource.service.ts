@@ -291,6 +291,7 @@ export class ResourceService {
    * @returns {Observable<Dimension[]>}
    */
   getDimensions(constraint: Constraint): Observable<Dimension[]> {
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
     return this.transmartResourceService.getStudyNames(constraint)
       .switchMap((studyElements: TransmartStudyDimensionElement[]) => {
         let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);
@@ -300,7 +301,7 @@ export class ResourceService {
         let dimensionNames = new Array<string>();
         transmartStudies.forEach((study: TransmartStudy) => {
           study.dimensions.forEach((dimensionName: string) => {
-              if (dimensionNames.indexOf(dimensionName) === -1) {
+              if (dimensionNames.indexOf(dimensionName) === -1 && !highDims.includes(dimensionName)) {
                 dimensionNames.push(dimensionName);
                 dimensions.push(new Dimension(dimensionName));
               }
