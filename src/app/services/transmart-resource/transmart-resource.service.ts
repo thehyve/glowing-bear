@@ -502,9 +502,20 @@ export class TransmartResourceService {
       offset: offset,
       limit: limit
     };
-    // if (tableState.sorting) {
-    //   body['sort'] = tableState.sorting;
-    // }
+    if (tableState.rowDimensionSorting) {
+      let sort = [];
+      for (let dim in tableState.rowDimensionSorting) {
+        sort.push([dim, tableState.rowDimensionSorting.get(dim)]);
+      }
+      body['rowSort'] = sort;
+    }
+    if (tableState.columnDimensionSorting) {
+      let sort = [];
+      for (let dim in tableState.columnDimensionSorting) {
+        sort.push([dim, tableState.columnDimensionSorting.get(dim)]);
+      }
+      body['columnSort'] = sort;
+    }
     return this.postCall(urlPart, body, null);
   }
 
