@@ -7,6 +7,7 @@ import {Col} from '../models/table-models/col';
 import {ConstraintService} from './constraint.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
+import {DimensionValue} from "../models/table-models/dimension-value";
 
 @Injectable()
 export class TableService {
@@ -33,24 +34,32 @@ export class TableService {
   mockDataInit() {
     // dimensions
     let subjectDim = new Dimension('Subject');
-    subjectDim.valueNames.push('s1');
-    subjectDim.valueNames.push('s2');
-    subjectDim.valueNames.push('s3');
-    subjectDim.valueNames.push('s4');
-    subjectDim.valueNames.push('s5');
-    subjectDim.valueNames.push('s6');
-    subjectDim.valueNames.push('s7');
-    subjectDim.valueNames.push('s8');
+    subjectDim.values.push(new DimensionValue('s1'));
+    subjectDim.values.push(new DimensionValue('s2'));
+    subjectDim.values.push(new DimensionValue('s3'));
+    subjectDim.values.push(new DimensionValue('s4'));
+    subjectDim.values.push(new DimensionValue('s5'));
+    subjectDim.values.push(new DimensionValue('s6'));
+    subjectDim.values.push(new DimensionValue('s7'));
+    subjectDim.values.push(new DimensionValue('s8'));
     let conceptDim = new Dimension('Concept');
-    conceptDim.valueNames.push('Age');
-    conceptDim.valueNames.push('Gender');
+    let ageConceptMetadata = new Map([
+        [ "concept_path", "/Public Studies/CLINICAL_TRIAL/Demography/Age" ],
+        [ "concept_cd", "CT:DEM:AGE"]
+      ]);
+    conceptDim.values.push(new DimensionValue('Age', ageConceptMetadata));
+    let genderConceptMetadata = new Map([
+      [ "concept_path", "/Public Studies/CATEGORIVAL_VALUES/Demography/Gender"],
+      [ "concept_cd", "CV:DEM:SEX"]
+    ]);
+    conceptDim.values.push(new DimensionValue(('Gender'), genderConceptMetadata));
     let studyDim = new Dimension('Study');
-    studyDim.valueNames.push('Study-A');
-    studyDim.valueNames.push('Study-B');
+    studyDim.values.push(new DimensionValue('Study-A'));
+    studyDim.values.push(new DimensionValue('Study-B'));
     let visitDim = new Dimension('Visit');
-    visitDim.valueNames.push('Visit-1');
-    visitDim.valueNames.push('Visit-2');
-    visitDim.valueNames.push('Visit-3');
+    visitDim.values.push(new DimensionValue('Visit-1'));
+    visitDim.values.push(new DimensionValue('Visit-2'));
+    visitDim.values.push(new DimensionValue('Visit-3')) ;
 
     this.rowDimensions.push(subjectDim);
     this.rowDimensions.push(studyDim);
@@ -70,7 +79,7 @@ export class TableService {
     let numColDimColumns = this.columnDimensions.length > 0 ? 1 : 0;
     for (let colIndex = 0; colIndex < this.columnDimensions.length; colIndex++) {
       let colDim = this.columnDimensions[colIndex];
-      numColDimColumns = numColDimColumns * colDim.valueNames.length;
+      numColDimColumns = numColDimColumns * colDim.values.length;
       let headerRow = new HeaderRow();
 
       // add empty space fillers on the top-left corner of the table
@@ -82,18 +91,19 @@ export class TableService {
       let dimensionsAbove = this.getDimensionsAbove(colDim, this.columnDimensions);
       let selfRepetition = 1;
       for (let dimAbove of dimensionsAbove) {
-        selfRepetition = selfRepetition * dimAbove.valueNames.length;
+        selfRepetition = selfRepetition * dimAbove.values.length;
       }
       let dimensionsBelow = this.getDimensionsBelow(colDim, this.columnDimensions);
       let valueRepetition = 1;
       for (let dimBelow of dimensionsBelow) {
-        valueRepetition = valueRepetition * dimBelow.valueNames.length;
+        valueRepetition = valueRepetition * dimBelow.values.length;
       }
 
       for (let i = 0; i < selfRepetition; i++) {
-        for (let valName of colDim.valueNames) {
+        for (let val of colDim.values) {
           for (let j = 0; j < valueRepetition; j++) {
-            headerRow.cols.push(new Col(valName, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString()));
+            headerRow.cols.push(new Col(val.name, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString(),
+              val.metadata));
           }
         }
       }
@@ -107,12 +117,12 @@ export class TableService {
       let dimensionsRight0 = this.getDimensionsBelow(rowDim0, this.rowDimensions);
       let valueRepetition0 = 1;
       for (let dimRight of dimensionsRight0) {
-        valueRepetition0 = valueRepetition0 * dimRight.valueNames.length;
+        valueRepetition0 = valueRepetition0 * dimRight.values.length;
       }
-      for (let valName of rowDim0.valueNames) {
+      for (let val of rowDim0.values) {
         for (let j = 0; j < valueRepetition0; j++) {
           let row = new Row();
-          row.addDatum(valName);
+          row.addDatum(val.name, val.metadata);
           dataRows.push(row);
         }
       }
@@ -122,17 +132,17 @@ export class TableService {
         let dimensionsLeft = this.getDimensionsAbove(rowDim, this.rowDimensions);
         let selfRepetition = 1;
         for (let dimLeft of dimensionsLeft) {
-          selfRepetition = selfRepetition * dimLeft.valueNames.length;
+          selfRepetition = selfRepetition * dimLeft.values.length;
         }
         let dimensionsRight = this.getDimensionsBelow(rowDim, this.rowDimensions);
         let valueRepetition = 1;
         for (let dimRight of dimensionsRight) {
-          valueRepetition = valueRepetition * dimRight.valueNames.length;
+          valueRepetition = valueRepetition * dimRight.values.length;
         }
         for (let i = 0; i < selfRepetition; i++) {
-          for (let valName of rowDim.valueNames) {
+          for (let val of rowDim.values) {
             for (let j = 0; j < valueRepetition; j++) {
-              dataRows[index].addDatum(valName);
+              dataRows[index].addDatum(val.name, val.metadata);
               let nIndex = index + 1;
               index = (nIndex === dataRows.length) ? 0 : nIndex;
             }

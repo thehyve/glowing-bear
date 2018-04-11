@@ -1,11 +1,13 @@
+import {DimensionValue} from "./dimension-value";
+
 export class Dimension {
   private _name: string;
   // the names of the categorical values that this dimension contains
-  private _valueNames: string[];
+  private _values: DimensionValue[];
 
   constructor(name: string) {
     this.name = name;
-    this.valueNames = [];
+    this.values = [];
   }
 
   get name(): string {
@@ -16,11 +18,11 @@ export class Dimension {
     this._name = value;
   }
 
-  get valueNames(): string[] {
-    return this._valueNames;
+  get values(): DimensionValue[] {
+    return this._values;
   }
 
-  set valueNames(value: string[]) {
-    this._valueNames = value;
+  set values(value: DimensionValue[]) {
+    this._values = value;
   }
 }

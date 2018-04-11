@@ -3,11 +3,13 @@ export class Col {
   private _colspan: number;
   private _header: string;
   private _field: string;
+  private _metadata: Map<string, string>;
 
-  constructor(header: string, field: string, colspan?: number) {
+  constructor(header: string, field: string, metadata?: Map<string, string>, colspan?: number) {
     this.colspan = colspan ? colspan : 1;
     this.header = header;
     this.field = field;
+    this.metadata = metadata != null && metadata.size ? metadata : new Map();
   }
 
   get colspan(): number {
@@ -32,5 +34,13 @@ export class Col {
 
   set field(value: string) {
     this._field = value;
+  }
+
+  get metadata():  Map<string, string> {
+    return this._metadata;
+  }
+
+  set metadata(map: Map<string, string>) {
+    this._metadata = map;
   }
 }

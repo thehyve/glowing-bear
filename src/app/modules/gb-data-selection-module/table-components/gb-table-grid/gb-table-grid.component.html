@@ -3,14 +3,28 @@
     <ng-template pTemplate="header">
       <tr *ngFor="let headerRow of headerRows">
         <th *ngFor="let col of headerRow.cols" class="gb-table-header" pResizableColumn [attr.colspan]="col.colspan">
-          {{col.header}}
+          <span *ngIf="!col.metadata.size; else withTooltipHeader">
+            {{col.header}}
+          </span>
+          <ng-template #withTooltipHeader>
+            <span pTooltip="{{getMetadataValues(col.metadata)}}" appendTo="body" style="position: relative">
+                {{col.header}}
+              </span>
+          </ng-template>
         </th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-row let-columns="columns">
       <tr>
         <td *ngFor="let col of columns" class="ui-resizable-column">
-          {{row.data[col.field]}}
+          <span *ngIf="row.metadata[col.field] == null; else withTooltip">
+            {{row.data[col.field]}}
+          </span>
+          <ng-template #withTooltip>
+            <span pTooltip="{{row.metadata[col.field]}}" appendTo="body" style="position: relative">
+              {{row.data[col.field]}}
+            </span>
+          </ng-template>
         </td>
       </tr>
     </ng-template>

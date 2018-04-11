@@ -15,6 +15,7 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
+import {DimensionValue} from "../../models/table-models/dimension-value";
 
 export class TransmartMapper {
 
@@ -104,12 +105,12 @@ export class TransmartMapper {
         let rowDim: Dimension = new Dimension(inRowDim.dimension);
         if (inRowDim.key === null) {
           // if dimension is inline
-          rowDim.valueNames.push(inRowDim.element)
+          rowDim.values.push(new DimensionValue(inRowDim.element))
         } else {
           // if dimension is indexed
           let indexedDimension: TransmartDimension = transmartTable.rowDimensions.filter(
             dim => dim.name === inRowDim.dimension)[0];
-          rowDim.valueNames.push(indexedDimension.elements[inRowDim.key].label);
+          rowDim.values.push(new DimensionValue(indexedDimension.elements[inRowDim.key].label));
         }
       });
     });
