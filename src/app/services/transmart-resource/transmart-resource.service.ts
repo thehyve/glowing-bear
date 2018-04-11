@@ -504,16 +504,16 @@ export class TransmartResourceService {
     };
     if (tableState.rowDimensionSorting) {
       let sort = [];
-      for (let dim in tableState.rowDimensionSorting) {
-        sort.push([dim, tableState.rowDimensionSorting.get(dim)]);
-      }
+      tableState.rowDimensionSorting.forEach((val, key) => {
+        sort.push([key, val]);
+      });
       body['rowSort'] = sort;
     }
     if (tableState.columnDimensionSorting) {
       let sort = [];
-      for (let dim in tableState.columnDimensionSorting) {
-        sort.push([dim, tableState.columnDimensionSorting.get(dim)]);
-      }
+      tableState.columnDimensionSorting.forEach((val, key) => {
+        sort.push([key, val]);
+      });
       body['columnSort'] = sort;
     }
     return this.postCall(urlPart, body, null);
