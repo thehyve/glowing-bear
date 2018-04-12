@@ -97,12 +97,14 @@ export class TransmartMapper {
         let rowDim: Dimension = new Dimension(inRowDim.dimension);
         if (inRowDim.key === null) {
           // if dimension is inline
-          rowDim.values.push(new DimensionValue(inRowDim.element))
+          rowDim.values.push(new DimensionValue(inRowDim.element['label'],
+            this.getDimensionMetadata(inRowDim.dimension, inRowDim.element)));
         } else {
           // if dimension is indexed
           let indexedDimension: TransmartDimension = transmartTable.rowDimensions.filter(
             dim => dim.name === inRowDim.dimension)[0];
-          rowDim.values.push(new DimensionValue(indexedDimension.elements[inRowDim.key].label));
+          rowDim.values.push(new DimensionValue(indexedDimension.elements[inRowDim.key].label,
+            this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key])));
         }
       });
     });
@@ -113,17 +115,18 @@ export class TransmartMapper {
       if (transmartColumnHeader.keys === null) {
         // if dimension is inline
         transmartColumnHeader.elements.forEach(elem => {
-          this.updateCols(headerRow.cols, elem);
+          this.updateCols(headerRow.cols, elem['label'], elem);
         });
       } else {
         transmartColumnHeader.keys.forEach((key: string) => {
           if (key === null) {
-            this.updateCols(headerRow.cols, null);
+            this.updateCols(headerRow.cols, null, null);
           } else {
             // if dimension is indexed
             let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
-            this.updateCols(headerRow.cols, indexedDimension.elements[key].label);
+            this.updateCols(headerRow.cols, indexedDimension.elements[key].label,
+              this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]));
           }
         });
       }
@@ -167,16 +170,32 @@ export class TransmartMapper {
     return elements;
   }
 
-  private static updateCols(cols: Array<Col>, newColValue) {
+  private static updateCols(cols: Array<Col>, newColValue, metadata) {
     if (cols != null && cols.length > 0) {
       if (cols[cols.length - 1].header === newColValue) {
         cols[cols.length - 1].colspan += 1;
       } else {
-        cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString()));
+        cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString(), metadata));
       }
     } else {
-      cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString()));
+      cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString(), metadata));
     }
+  }
+
+  private static getDimensionMetadata(name: string, data): Map<string, string> {
+    let metadata = new Map<string, string>();
+    if (name === 'concept') {
+      metadata.set('conceptPath', data.conceptPath);
+      metadata.set('conceptCode', data.conceptCode);
+      metadata.set('name', data.name);
+    } else if (name === 'trial visit') {
+      metadata.set('relTimeLabel', data.relTimeLabel);
+      metadata.set('relTimeUnit', data.relTimeUnit);
+      metadata.set('relTime', data.relTime);
+    } else if (name === 'study') {
+      metadata.set('id', data.id)
+    }
+    return metadata
   }
 
 }
