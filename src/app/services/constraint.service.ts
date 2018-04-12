@@ -48,7 +48,7 @@ export class ConstraintService {
    * The selected tree node (drag-start) in the side-panel of either
    */
   private _selectedNode: any = null;
-  private _maxNumSearchResults: number = 100;
+  private _maxNumSearchResults = 100;
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {

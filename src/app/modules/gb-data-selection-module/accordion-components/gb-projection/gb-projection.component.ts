@@ -33,6 +33,10 @@ export class GbProjectionComponent implements OnInit {
     this.treeNodeService.selectedProjectionTreeData = value;
   }
 
+  get isTreeNodeLoadingComplete(): boolean {
+    return this.treeNodeService.isTreeNodeLoadingComplete();
+  }
+
   updateCounts() {
     this.queryService.step = Step.II;
     if (this.queryService.instantCountsUpdate_2) {

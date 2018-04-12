@@ -1,7 +1,7 @@
 <div>
   <div class="container form-inline">
-    <!--<button type="button" (click)="expandAll(true)"-->
-            <!--class="btn btn-primary btn-sm gb-data-selection-control-btn">Expand All</button>-->
+    <button type="button" (click)="expandAll(true)"
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Expand All</button>
     <span>&nbsp;</span>
     <button type="button" (click)="expandAll(false)"
             class="btn btn-primary btn-sm gb-data-selection-control-btn">Collapse All</button>
@@ -18,6 +18,11 @@
            type="file"
            style="display: none"/>
   </div>
+
+  <div *ngIf="!isTreeNodeLoadingComplete" style="padding: 20px;">
+    <i class="fa fa-circle-o-notch fa-spin"></i> loading tree nodes
+  </div>
+
   <p-tree [value]="projectionTreeData"
           selectionMode="checkbox"
           (onNodeSelect)="updateCounts()"
