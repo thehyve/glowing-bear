@@ -244,7 +244,6 @@ export class TreeNodeService {
     if (this.treeNodesCopy.length === 0) {
       this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
     }
-    console.log('update tree: ', this.treeNodesCopy);
     let conceptCodes = [];
     for (let code in conceptCountMap) {
       conceptCodes.push(code);
@@ -305,8 +304,9 @@ export class TreeNodeService {
         nodeCopy['expanded'] = false;
         if (conceptCountMap[node['conceptCode']]) {
           const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
-          const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
-          nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${patientCount}, obs: ${observationCount})`;
+          // const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
+          // nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${patientCount}, obs: ${observationCount})`;
+          nodeCopy['label'] = nodeCopy['name'] + ` (${patientCount})`;
         }
         nodesWithCodes.push(nodeCopy);
       } else if (node['children']) {
@@ -460,7 +460,14 @@ export class TreeNodeService {
     for (let node of nodes) {
       node['expanded'] = value;
       if (node['children']) {
-        this.expandProjectionTreeDataIterative(node['children'], value);
+        if (value) { // if it is expansion, expand it gradually
+          window.setTimeout((function () {
+            console.log('expand: ', node['children'].length);
+            this.expandProjectionTreeDataIterative(node['children'], value);
+          }).bind(this), 100);
+        } else { // if it is collapse, collapse immediately
+          this.expandProjectionTreeDataIterative(node['children'], value);
+        }
       }
     }
   }
@@ -594,10 +601,10 @@ export class TreeNodeService {
   public isTreeNodeAconcept(node: TreeNode): boolean {
     const type = node['type'];
     return type === 'NUMERIC' ||
-           type === 'CATEGORICAL' ||
-           type === 'DATE' ||
-           type === 'TEXT' ||
-           type === 'HIGH_DIMENSIONAL';
+      type === 'CATEGORICAL' ||
+      type === 'DATE' ||
+      type === 'TEXT' ||
+      type === 'HIGH_DIMENSIONAL';
   }
 
   /**
