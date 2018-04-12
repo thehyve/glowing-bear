@@ -9,7 +9,11 @@
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <button class="btn btn-secondary btn-sm gb-treenodes-filter-btn"
             (click)="clearFilter()"
-            type="button">clear</button>
+            type="button">clear
+    </button>
+    <div *ngIf="hits > 0" style="font-size: small; color: grey; padding-top: 3px; padding-left: 5px;">
+      {{hits}} results found
+    </div>
   </div>
 
 
