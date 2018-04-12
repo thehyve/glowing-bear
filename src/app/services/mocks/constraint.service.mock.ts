@@ -7,6 +7,7 @@ export class ConstraintServiceMock {
   private _rootExclusionConstraint: CombinationConstraint;
   concepts = [];
   validPedigreeTypes = [];
+  private _maxNumSearchResults = 100;
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -15,5 +16,13 @@ export class ConstraintServiceMock {
 
   public depthOfConstraint(constraint: Constraint): number {
     return 1;
+  }
+
+  get maxNumSearchResults(): number {
+    return this._maxNumSearchResults;
+  }
+
+  set maxNumSearchResults(value: number) {
+    this._maxNumSearchResults = value;
   }
 }

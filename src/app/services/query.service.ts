@@ -461,7 +461,7 @@ export class QueryService {
           for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
             checklist.push(selectedNode['fullName']);
           }
-        }
+        } console.log('prepare 2, is not step 2');
         this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
       }
 

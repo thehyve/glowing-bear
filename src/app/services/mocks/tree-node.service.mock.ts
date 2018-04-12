@@ -9,4 +9,8 @@ export class TreeNodeServiceMock {
 
   public loadTreeNodes(constraintService: ConstraintService) {
   }
+
+  public isTreeNodeLoadingComplete(): boolean {
+    return true;
+  }
 }

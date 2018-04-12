@@ -244,6 +244,7 @@ export class TreeNodeService {
     if (this.treeNodesCopy.length === 0) {
       this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
     }
+    console.log('update tree: ', this.treeNodesCopy);
     let conceptCodes = [];
     for (let code in conceptCountMap) {
       conceptCodes.push(code);
