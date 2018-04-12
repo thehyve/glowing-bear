@@ -4,6 +4,7 @@ import {GbTableGridComponent} from './gb-table-grid.component';
 import {TableService} from '../../../../services/table.service';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 import {TableModule} from 'primeng/table';
+import {TooltipModule} from "primeng/primeng";
 
 describe('GbTableGridComponent', () => {
   let component: GbTableGridComponent;
@@ -13,7 +14,8 @@ describe('GbTableGridComponent', () => {
     TestBed.configureTestingModule({
       declarations: [GbTableGridComponent],
       imports: [
-        TableModule
+        TableModule,
+        TooltipModule
       ],
       providers: [
         {
