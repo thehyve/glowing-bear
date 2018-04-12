@@ -15,6 +15,8 @@ export class TableService {
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
   private _currentPage: number;
+  // Indicate if using merged-cell headers
+  private _isUsingHeaders: boolean;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
@@ -22,12 +24,13 @@ export class TableService {
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
     this.currentPage = 1;
+    this.isUsingHeaders = false;
 
-    this.mockDataInit();
-    this.mockDataUpdate();
+    // this.mockDataInit();
+    // this.mockDataUpdate();
 
     // TODO: connect to backend calls
-    // this.initializeDimensions();
+    this.initializeDimensions();
   }
 
   mockDataInit() {
@@ -62,20 +65,21 @@ export class TableService {
     // update the old copy of row and col dimensions
     this.prevRowDimensions = this.rowDimensions.slice(0);
     this.prevColDimensions = this.columnDimensions.slice(0);
-    this.dataTable.rows = [];
-    this.dataTable.headerRows = [];
+    this.dataTable.clearCells();
 
-    let headerRows: Array<HeaderRow> = [];
     // generate the column-header rows
+    let headerRows: Array<HeaderRow> = [];
     let numColDimColumns = this.columnDimensions.length > 0 ? 1 : 0;
     for (let colIndex = 0; colIndex < this.columnDimensions.length; colIndex++) {
       let colDim = this.columnDimensions[colIndex];
       numColDimColumns = numColDimColumns * colDim.valueNames.length;
+      let row = new Row();
       let headerRow = new HeaderRow();
 
       // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
         headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
+        row.addDatum('');
       }
 
       // add the column header names
@@ -94,10 +98,15 @@ export class TableService {
         for (let valName of colDim.valueNames) {
           for (let j = 0; j < valueRepetition; j++) {
             headerRow.cols.push(new Col(valName, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString()));
+            row.addDatum(valName);
           }
         }
       }
-      headerRows.push(headerRow);
+      if (this.isUsingHeaders) {
+        headerRows.push(headerRow);
+      } else {
+        this.rows.push(row);
+      }
     }
     // generate the data rows
     let dataRows = [];
@@ -153,21 +162,28 @@ export class TableService {
       this.rows.push(dataRow);
     }
     // generate column headers
-    headerRows.forEach((headerRow: HeaderRow) => {
-      let newColRow = new HeaderRow();
-      headerRow.cols.forEach((col: Col) => {
-        if (newColRow.cols.length > 0) {
-          if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
-            newColRow.cols[newColRow.cols.length - 1].colspan += 1;
+    if (this.isUsingHeaders) {
+      headerRows.forEach((headerRow: HeaderRow) => {
+        let newColRow = new HeaderRow();
+        headerRow.cols.forEach((col: Col) => {
+          if (newColRow.cols.length > 0) {
+            if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
+              newColRow.cols[newColRow.cols.length - 1].colspan += 1;
+            } else {
+              newColRow.cols.push(col)
+            }
           } else {
             newColRow.cols.push(col)
           }
-        } else {
-          newColRow.cols.push(col)
-        }
+        });
+        this.dataTable.headerRows.push(newColRow);
       });
-      this.dataTable.headerRows.push(newColRow);
-    });
+    } else {
+      for (let field in this.rows[0].data) {
+        let col = new Col(' - ', field);
+        this.dataTable.cols.push(col);
+      }
+    }
   }
 
   initializeDimensions() {
@@ -176,6 +192,7 @@ export class TableService {
     let combo = new CombinationConstraint();
     combo.addChild(selectionConstraint);
     combo.addChild(projectionConstraint);
+    this.dataTable.constraint = combo;
     this.resourceService.getDimensions(combo)
       .subscribe((availableDimensions: Dimension[]) => {
         this.dataTable.rowDimensions = availableDimensions;
@@ -187,7 +204,7 @@ export class TableService {
     let offset = 0;
     let limit = 10;
     this.resourceService
-      .getDataTable(targetDataTable.rowDimensions, targetDataTable.columnDimensions, offset, limit)
+      .getDataTable(targetDataTable, offset, limit)
       .subscribe(
         (newDataTable: DataTable) => {
           this.dataTable = newDataTable;
@@ -243,6 +260,10 @@ export class TableService {
     return this.dataTable.rows;
   }
 
+  get cols(): Col[] {
+    return this.dataTable.cols;
+  }
+
   get headerRows(): Array<HeaderRow> {
     return this.dataTable.headerRows;
   }
@@ -277,5 +298,13 @@ export class TableService {
 
   set currentPage(value: number) {
     this._currentPage = value;
+  }
+
+  get isUsingHeaders(): boolean {
+    return this._isUsingHeaders;
+  }
+
+  set isUsingHeaders(value: boolean) {
+    this._isUsingHeaders = value;
   }
 }
