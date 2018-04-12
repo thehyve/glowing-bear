@@ -484,15 +484,48 @@ export class TransmartResourceService {
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(tableState: TransmartTableState,
+               constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const body = {
-      rows: tableState.rowDimensions,
-      columns: tableState.columnDimensions,
-      sort: tableState.sorting,
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
+    const rowDims = tableState.rowDimensions.filter((dim: string) => {
+      return !highDims.includes(dim);
+    });
+    const colDims = tableState.columnDimensions.filter((dim: string) => {
+      return !highDims.includes(dim);
+    });
+    let body = {
+      type: 'clinical',
+      constraint: constraint.toQueryObject(),
+      rowDimensions: rowDims,
+      columnDimensions: colDims,
       offset: offset,
       limit: limit
     };
+    if (tableState.rowDimensionSorting) {
+      let sort = [];
+      tableState.rowDimensionSorting.forEach((val, key) => {
+        sort.push([key, val]);
+      });
+      if (sort.length === 1) {
+        let dim = sort[0][0];
+        let order = sort[0][1];
+        sort = [dim + ':' + order];
+      }
+      body['rowSort'] = sort;
+    }
+    if (tableState.columnDimensionSorting) {
+      let sort = [];
+      tableState.columnDimensionSorting.forEach((val, key) => {
+        sort.push([key, val]);
+      });
+      if (sort.length === 1) {
+        let dim = sort[0][0];
+        let order = sort[0][1];
+        sort = [dim + ':' + order];
+      }
+      body['columnSort'] = sort;
+    }
     return this.postCall(urlPart, body, null);
   }
 
@@ -504,7 +537,12 @@ export class TransmartResourceService {
   }
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
-    const urlPart = `studies/studyId/${studyNames}`;
+    let params = '';
+    for (let name of studyNames) {
+      params += `studyIds=${name}&`
+    }
+    params = params.substring(0, params.length - 1);
+    const urlPart = `studies/studyIds?${params}`;
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
   }

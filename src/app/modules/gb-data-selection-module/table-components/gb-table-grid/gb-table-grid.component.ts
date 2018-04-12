@@ -21,19 +21,24 @@ export class GbTableGridComponent implements OnInit {
     return this.tableService.rows;
   }
 
-  get cols(): Array<Col> {
-    let cols = [];
-    if (this.tableService.headerRows && this.tableService.headerRows.length > 0) {
-      this.tableService.headerRows[this.tableService.headerRows.length - 1].cols.forEach(
-        col => {
-          cols.push(col);
-        });
+  get cols(): Col[] {
+    if (this.tableService.isUsingHeaders) {
+      return this.tableService.headerRows[this.tableService.headerRows.length - 1].cols;
+    } else {
+      return this.tableService.cols;
     }
-    return cols;
+  }
+
+  get isUsingHeaders(): boolean {
+    return this.tableService.isUsingHeaders;
   }
 
   get headerRows(): HeaderRow[] {
     return this.tableService.headerRows;
+  }
+
+  get currentPage(): number {
+    return this.tableService.currentPage;
   }
 
   nextPage() {
@@ -42,10 +47,6 @@ export class GbTableGridComponent implements OnInit {
 
   previousPage() {
     this.tableService.previousPage();
-  }
-
-  get currentPage(): number {
-    return this.tableService.currentPage;
   }
 
   getMetadataValues(map): string {

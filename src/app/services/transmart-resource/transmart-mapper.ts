@@ -80,16 +80,8 @@ export class TransmartMapper {
       dataTable.rowDimensions.map(dim => dim.name) : [];
     let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
       dataTable.columnDimensions.map(dim => dim.name) : [];
-    let sorting = null;
 
-    return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
-  }
-
-  public static mapDimensions(rowDimensions: Dimension[], columnDimensions: Dimension[]): TransmartTableState {
-    let rowDimensionNames = rowDimensions.length > 0 ? rowDimensions.map(dim => dim.name) : [];
-    let columnDimensionNames = columnDimensions.length > 0 ? columnDimensions.map(dim => dim.name) : [];
-    let sorting = null;
-    return new TransmartTableState(rowDimensionNames, columnDimensionNames, sorting);
+    return new TransmartTableState(rowDimensionNames, columnDimensionNames);
   }
 
   public static mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
