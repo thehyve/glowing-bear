@@ -48,6 +48,7 @@ export class ConstraintService {
    * The selected tree node (drag-start) in the side-panel of either
    */
   private _selectedNode: any = null;
+  private _maxNumSearchResults: number = 100;
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {
@@ -128,14 +129,19 @@ export class ConstraintService {
     query = query.toLowerCase();
     let results = [];
     if (query === '') {
-      results = [].concat(this.allConstraints);
+      results = [].concat(this.allConstraints.slice(0, this.maxNumSearchResults));
     } else if (query && query.length > 0) {
-      this.allConstraints.forEach((constraint: Constraint) => {
+      let count = 0;
+      for (let constraint of this.allConstraints) {
         let text = constraint.textRepresentation.toLowerCase();
         if (text.indexOf(query) > -1) {
           results.push(constraint);
+          count++;
+          if (count >= this.maxNumSearchResults) {
+            break;
+          }
         }
-      });
+      }
     }
     return results;
   }
@@ -658,4 +664,11 @@ export class ConstraintService {
     this._conceptLabels = value;
   }
 
+  get maxNumSearchResults(): number {
+    return this._maxNumSearchResults;
+  }
+
+  set maxNumSearchResults(value: number) {
+    this._maxNumSearchResults = value;
+  }
 }

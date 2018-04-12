@@ -157,9 +157,9 @@ export class QueryService {
               private constraintService: ConstraintService) {
     this.instantCountsUpdate_1 = false;
     this.instantCountsUpdate_2 = false;
-    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
+    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', false);
     this.countsRelay = false;
-    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', true);
     this.exportDataView = appConfig.getConfig('export-data-view', 'surveyTable');
     this.loadQueries();
   }
