@@ -9,7 +9,6 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
-import {EndpointService} from './services/endpoint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
@@ -67,10 +66,6 @@ describe('AppComponent', () => {
           useFactory: initConfig,
           deps: [AppConfig],
           multi: true
-        },
-        {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
         },
         {
           provide: TransmartResourceService,

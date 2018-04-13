@@ -7,10 +7,10 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
 import {QueryService} from './query.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
-import {AppConfig} from "../config/app.config";
-import {AppConfigMock} from "../config/app.config.mock";
-import {TableServiceMock} from "./mocks/table.service.mock";
-import {TableService} from "./table.service";
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock} from '../config/app.config.mock';
+import {TableServiceMock} from './mocks/table.service.mock';
+import {TableService} from './table.service';
 
 
 describe('QueryService', () => {

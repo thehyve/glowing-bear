@@ -1,18 +1,13 @@
-import {Component, ViewChild, OnInit} from '@angular/core';
-import {EndpointService} from './services/endpoint.service';
-import {ResourceService} from './services/resource.service';
-import {ConstraintService} from './services/constraint.service';
-import {TreeNodeService} from './services/tree-node.service';
-import {QueryService} from './services/query.service';
-import {TableService} from './services/table.service';
-import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {Component, ViewChild, OnInit, OnDestroy} from '@angular/core';
+import {AuthorizationResult, OidcSecurityService} from 'angular-auth-oidc-client';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
 
   @ViewChild('parentContainer') parentContainer: any;
   @ViewChild('leftPanel') leftPanel: any;
@@ -23,13 +18,47 @@ export class AppComponent implements OnInit {
   private x_pos: number; // Stores x coordinate of the mouse pointer
   private x_gap: number; // Stores x gap (edge) between mouse and gutter
 
-  constructor(private endpointService: EndpointService,
-              private resourceService: ResourceService,
-              private transmartResourceService: TransmartResourceService,
-              private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private tableService: TableService) {
+  constructor(private oidcSecurityService: OidcSecurityService,
+              private router: Router) {
+
+    if (this.oidcSecurityService.moduleSetup) {
+      this.onOidcModuleSetup();
+    } else {
+      this.oidcSecurityService.onModuleSetup.subscribe(() => {
+        this.onOidcModuleSetup();
+      });
+    }
+
+    this.oidcSecurityService.onAuthorizationResult.subscribe(
+      (authorizationResult: AuthorizationResult) => {
+        this.onAuthorizationResultComplete(authorizationResult);
+      });
+  }
+
+  private onOidcModuleSetup() {
+    if (window.location.hash) {
+      this.oidcSecurityService.authorizedCallback();
+    } else {
+      if ('/autologin' !== window.location.pathname) {
+        localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
+      }
+
+      this.oidcSecurityService.getIsAuthorized().subscribe((authorized: boolean) => {
+        if (!authorized) {
+          this.router.navigate(['/autologin']);
+        }
+      });
+    }
+  }
+
+  private onAuthorizationResultComplete(authorizationResult: AuthorizationResult) {
+    const path = JSON.parse(localStorage.getItem('redirect'));
+
+    if (authorizationResult === AuthorizationResult.authorized) {
+      this.router.navigate([path]);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 
   ngOnInit() {
@@ -93,13 +122,12 @@ export class AppComponent implements OnInit {
     window.addEventListener('resize', onResize.bind(this));
   }
 
+  ngOnDestroy(): void {
+    this.oidcSecurityService.onModuleSetup.unsubscribe();
+  }
+
   logout() {
-    this.resourceService.logout()
-      .subscribe(
-        res => {
-          this.endpointService.invalidateToken();
-        }
-      );
+    this.oidcSecurityService.logoff();
   }
 
 }
