@@ -29,6 +29,8 @@ import {
 } from 'angular-auth-oidc-client';
 import {HttpHeadersInterceptor} from './utilities/HttpHeadersInterceptor';
 import {AutoLoginComponent} from './auto-login.component';
+import {IRCTEndPointService} from './services/irct/irct-endpoint.service';
+import {IRCTResourceService} from './services/irct/irct-resource.service';
 
 export function initConfig(config: AppConfig, oidcConfigService: OidcConfigService) {
   return () => config.load().then(() =>
@@ -63,6 +65,9 @@ export function initConfig(config: AppConfig, oidcConfigService: OidcConfigServi
     TableService,
     AppConfig,
     OidcConfigService,
+    OidcSecurityService,
+    IRCTEndPointService,
+    IRCTResourceService,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfig,
@@ -98,7 +103,7 @@ export class AppModule {
       openIDImplicitFlowConfiguration.post_login_route = '/';
       openIDImplicitFlowConfiguration.log_console_warning_active = true;
       openIDImplicitFlowConfiguration.log_console_debug_active = !this.config.getEnv('production');
-      openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 10;
+      openIDImplicitFlowConfiguration.max_id_token_iat_offset_allowed_in_seconds = 60;
       openIDImplicitFlowConfiguration.trigger_authorization_result_event = true;
 
       // todo: we probably want to add proper handling of HTTP 401/403
