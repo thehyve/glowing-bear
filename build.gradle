@@ -16,6 +16,7 @@ buildscript {
 ext {
     glowingBearVersion = '0.3.3-luke-RC3'
     nodeVersion = '8.10.0'
+    yarnVersion = '1.5.1'
     gradleWrapperVersion = '4.0'
 }
 
@@ -42,30 +43,23 @@ task wrapper(type: Wrapper) {
 
 node {
     version = nodeVersion
+    yarnVersion = yarnVersion
     download = true
 }
 
-task npmPackage(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'application'
-    description = 'Builds the application'
-    args = ['run', 'package']
-}
-task yarnPackage(type: YarnTask) {
+task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
   group = 'application'
   description = 'Builds the application'
   args = ['run', 'package']
 }
-//distTar.dependsOn(npmPackage)
 distTar.dependsOn(yarnPackage)
 
-task npmTest(type: NpmTask, dependsOn: 'npmInstall') {
+task yarnTest(type: YarnTask, dependsOn: 'yarn') {
     group = 'verification'
     description = 'Executes user interface unit tests'
     args = ['run', 'testOnce']
 }
-
-check.dependsOn(npmTest)
-//check.dependsOn(yarnTest)
+check.dependsOn(yarnTest)
 
 clean {
     delete fileTree(dir: 'dist')
