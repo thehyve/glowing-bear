@@ -85,6 +85,7 @@ export class TransmartMapper {
   }
 
   public static mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
+    console.log('map transmart table: ', transmartTable);
     let dataTable = new DataTable();
     transmartTable.rows.forEach((transmartRow: TransmartRow) => {
       // get data table rows
@@ -133,6 +134,7 @@ export class TransmartMapper {
       dataTable.headerRows.push(headerRow);
     });
 
+    console.log('datatable: ', dataTable)
     return dataTable;
   }
 

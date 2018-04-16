@@ -588,7 +588,7 @@ export class ConstraintService {
     return depth;
   }
 
-  public constraint_1_2() {
+  public constraint_1_2(): Constraint {
     const c1 = this.constraint_1();
     const c2 = this.constraint_2();
     let combo = new CombinationConstraint();
