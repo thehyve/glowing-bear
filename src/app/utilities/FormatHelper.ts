@@ -63,4 +63,12 @@ export class FormatHelper {
     }
   }
 
+  public static formatMetadata(metadata: Map<string, string>): string {
+    let metadataText = '';
+    metadata.forEach((value, key) => {
+      metadataText += key + ': ' + value + '\n';
+    });
+    return metadataText;
+  }
+
 }

@@ -108,7 +108,17 @@ body .gb-spinner.loading {
   padding-right: 15px;
 }
 
-/* Change input placeholder text color */
+/*
+ * Change the primeng tooltip for data table cells
+ */
+.ui-tooltip.ui-widget.ui-tooltip-right,
+.ui-tooltip.ui-widget.ui-tooltip-left {
+  font-size: x-small;
+  width: 300px;
+  min-width: 300px;
+}
+
+  /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
 }
