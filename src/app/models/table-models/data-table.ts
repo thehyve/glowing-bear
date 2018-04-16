@@ -15,9 +15,12 @@ export class DataTable {
   private _cols: Array<Col>;
   // The hierarchical header rows with merged cells, used when cols are now used
   private _headerRows: Array<HeaderRow>;
+  // Indicate if the current data table is dirty
+  private _isDirty: boolean;
 
   constructor() {
     this.constraint = new TrueConstraint();
+    this.isDirty = false;
     this.clear();
   }
 
@@ -83,5 +86,13 @@ export class DataTable {
 
   set constraint(value: Constraint) {
     this._constraint = value;
+  }
+
+  get isDirty(): boolean {
+    return this._isDirty;
+  }
+
+  set isDirty(value: boolean) {
+    this._isDirty = value;
   }
 }

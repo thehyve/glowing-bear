@@ -44,8 +44,6 @@ export class GbSelectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.queryService.update_1(true);
-    this.queryService.update_2();
   }
 
   get subjectCount_1(): string {

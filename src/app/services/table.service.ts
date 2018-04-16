@@ -27,11 +27,11 @@ export class TableService {
     this.currentPage = 1;
     this.isUsingHeaders = false;
 
-    this.mockDataInit();
-    this.mockDataUpdate();
+    // this.mockDataInit();
+    // this.mockDataUpdate();
 
     // TODO: connect to backend calls
-    // this.initializeDimensions();
+    this.updateTable();
   }
 
   mockDataInit() {
@@ -194,32 +194,51 @@ export class TableService {
         this.dataTable.cols.push(col);
       }
     }
+    console.log('datatable: ', this.dataTable);
   }
 
-  initializeDimensions() {
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
-    const projectionConstraint = this.constraintService.generateProjectionConstraint();
-    let combo = new CombinationConstraint();
-    combo.addChild(selectionConstraint);
-    combo.addChild(projectionConstraint);
-    this.dataTable.constraint = combo;
-    this.resourceService.getDimensions(combo)
+  updateTable(targetDataTable?: DataTable) {
+    this.dataTable.isDirty = true;
+    this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
+    const constraint_1_2 = this.constraintService.constraint_1_2();
+    this.dataTable.constraint = constraint_1_2;
+    this.resourceService.getDimensions(constraint_1_2)
       .subscribe((availableDimensions: Dimension[]) => {
-        this.dataTable.rowDimensions = availableDimensions;
-        this.updateTable(this.dataTable);
+        // update dimensions
+        let availableDimensionNames = new Array<string>();
+        availableDimensions.forEach((dim: Dimension) => {
+          availableDimensionNames.push(dim.name);
+        });
+        let takenDimensionNames = new Array<string>();
+        let newRowDimensions = new Array<Dimension>();
+        this.dataTable.rowDimensions.forEach((dim: Dimension) => {
+          if (availableDimensionNames.includes(dim.name)) {
+            newRowDimensions.push(dim);
+            takenDimensionNames.push(dim.name);
+          }
+        });
+        let newColumnDimensions = new Array<Dimension>();
+        this.dataTable.columnDimensions.forEach((dim: Dimension) => {
+          if (availableDimensionNames.includes(dim.name)) {
+            newColumnDimensions.push(dim);
+            takenDimensionNames.push(dim.name);
+          }
+        });
+        availableDimensions.forEach((dim: Dimension) => {
+          if (!takenDimensionNames.includes(dim.name)) {
+            this.dataTable.rowDimensions.push(dim);
+          }
+        });
+        let offset = 0;
+        let limit = 10;
+        this.resourceService.getDataTable(this.dataTable, offset, limit)
+          .subscribe(
+            (newDataTable: DataTable) => {
+              this.dataTable.rows = newDataTable.rows;
+              this.dataTable.isDirty = false;
+            }
+          );
       });
-  }
-
-  updateTable(targetDataTable: DataTable) {
-    let offset = 0;
-    let limit = 10;
-    this.resourceService
-      .getDataTable(targetDataTable, offset, limit)
-      .subscribe(
-        (newDataTable: DataTable) => {
-          this.dataTable = newDataTable;
-        }
-      );
   }
 
   private getDimensionsBelow(dimension: Dimension, dimensions: Dimension[]): Dimension[] {
@@ -317,4 +336,5 @@ export class TableService {
   set isUsingHeaders(value: boolean) {
     this._isUsingHeaders = value;
   }
+
 }

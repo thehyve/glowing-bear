@@ -15,7 +15,7 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
-import {DimensionValue} from "../../models/table-models/dimension-value";
+import {DimensionValue} from '../../models/table-models/dimension-value';
 
 export class TransmartMapper {
 
@@ -101,7 +101,7 @@ export class TransmartMapper {
             this.getDimensionMetadata(inRowDim.dimension, inRowDim.element)));
         } else {
           // if dimension is indexed
-          let indexedDimension: TransmartDimension = transmartTable.rowDimensions.filter(
+          let indexedDimension: TransmartDimension = transmartTable.row_dimensions.filter(
             dim => dim.name === inRowDim.dimension)[0];
           rowDim.values.push(new DimensionValue(indexedDimension.elements[inRowDim.key].label,
             this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key])));
@@ -110,7 +110,7 @@ export class TransmartMapper {
     });
 
     // get data table cols
-    transmartTable.columnHeaders.forEach((transmartColumnHeader: TransmartColumnHeaders) => {
+    transmartTable.column_headers.forEach((transmartColumnHeader: TransmartColumnHeaders) => {
       let headerRow = new HeaderRow();
       if (transmartColumnHeader.keys === null) {
         // if dimension is inline
@@ -123,7 +123,7 @@ export class TransmartMapper {
             this.updateCols(headerRow.cols, null, null);
           } else {
             // if dimension is indexed
-            let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
+            let indexedDimension: TransmartDimension = transmartTable.column_dimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
             this.updateCols(headerRow.cols, indexedDimension.elements[key].label,
               this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]));

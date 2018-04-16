@@ -176,6 +176,9 @@ export class ConstraintService {
     return combination;
   }
 
+  public constraint_1() {
+    return this.generateSelectionConstraint();
+  }
   /**
    * In the 1st step,
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
@@ -251,6 +254,10 @@ export class ConstraintService {
   /*
    * ------------ constraint generation in the 2nd step ------------
    */
+  public constraint_2() {
+    return this.generateProjectionConstraint();
+  }
+
   /**
    * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}
@@ -579,6 +586,15 @@ export class ConstraintService {
       depth += this.depthOfConstraint(constraint.parent);
     }
     return depth;
+  }
+
+  public constraint_1_2() {
+    const c1 = this.constraint_1();
+    const c2 = this.constraint_2();
+    let combo = new CombinationConstraint();
+    combo.addChild(c1);
+    combo.addChild(c2);
+    return combo;
   }
 
   get selectedNode(): any {
