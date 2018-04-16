@@ -4,7 +4,7 @@ Feature: tree node navigation
   Scenario: expand to show sub nodes
     Given I am logged in as 'admin'
     When I expand the first layer of nodes
-    Then there are 35 sub nodes
+    Then there are sub nodes
 
   Scenario: numeric value node
     Given I am logged in as 'admin'

@@ -16,7 +16,7 @@ when("I login with user {string}", (user) => {
 });
 
 then("I am logged in", () => {
-  cy.url().should('eq', Cypress.config('baseUrl') + '/');
+  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
   cy.get('p-treenode').should(($p) => {
     expect($p).to.have.length(8)
   })
@@ -37,8 +37,23 @@ given("I am logged in as {string}", (user) => {
       cy.get('input[name=authorize]').click();
     }
   });
-  cy.url().should('eq', Cypress.config('baseUrl') + '/');
+  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
   cy.get('p-treenode').should(($p) => {
     expect($p).to.have.length(8)
   })
+});
+
+given("I am on the data-selection tab", () => {
+  cy.visit('/data-selection');
+  cy.fixture('admin').as("user");
+  cy.get('@user').then((userData) => {
+    cy.get('#j_username').type(userData.username);
+    cy.get('#j_password').type(userData.password);
+    cy.get('#loginButton').click();
+    if (userData.valid) {
+      cy.get('input[name=authorize]').click();
+    }
+  });
+  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
+  cy.get('input[placeholder="add criterion"]').eq(0).should('be.visible');
 });

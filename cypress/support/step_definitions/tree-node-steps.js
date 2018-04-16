@@ -2,9 +2,9 @@ when("I expand the first layer of nodes", () => {
   cy.get('.ui-tree-toggler').click({ multiple: true });
 });
 
-then("there are {int} sub nodes", (nodeCount) => {
+then("there are sub nodes", () => {
   cy.get('.ui-treenode-content').should(($p) => {
-    expect($p).to.have.length(nodeCount)
+    expect($p).to.have.length(110)
   })
 });
 
