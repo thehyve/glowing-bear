@@ -7,7 +7,7 @@ import {Col} from '../models/table-models/col';
 import {ConstraintService} from './constraint.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
-import {DimensionValue} from "../models/table-models/dimension-value";
+import {DimensionValue} from '../models/table-models/dimension-value';
 
 @Injectable()
 export class TableService {
@@ -31,7 +31,7 @@ export class TableService {
     this.mockDataUpdate();
 
     // TODO: connect to backend calls
-   // this.initializeDimensions();
+    // this.initializeDimensions();
   }
 
   mockDataInit() {
@@ -47,13 +47,13 @@ export class TableService {
     subjectDim.values.push(new DimensionValue('s8'));
     let conceptDim = new Dimension('Concept');
     let ageConceptMetadata = new Map([
-        [ "concept_path", "/Public Studies/CLINICAL_TRIAL/Demography/Age" ],
-        [ "concept_cd", "CT:DEM:AGE"]
-      ]);
+      ['concept_path', '/Public Studies/CLINICAL_TRIAL/Demography/Age'],
+      ['concept_cd', 'CT:DEM:AGE']
+    ]);
     conceptDim.values.push(new DimensionValue('Age', ageConceptMetadata));
     let genderConceptMetadata = new Map([
-      [ "concept_path", "/Public Studies/CATEGORIVAL_VALUES/Demography/Gender"],
-      [ "concept_cd", "CV:DEM:SEX"]
+      ['concept_path', '/Public Studies/CATEGORIVAL_VALUES/Demography/Gender'],
+      ['concept_cd', 'CV:DEM:SEX']
     ]);
     conceptDim.values.push(new DimensionValue(('Gender'), genderConceptMetadata));
     let studyDim = new Dimension('Study');
@@ -62,7 +62,7 @@ export class TableService {
     let visitDim = new Dimension('Visit');
     visitDim.values.push(new DimensionValue('Visit-1'));
     visitDim.values.push(new DimensionValue('Visit-2'));
-    visitDim.values.push(new DimensionValue('Visit-3')) ;
+    visitDim.values.push(new DimensionValue('Visit-3'));
 
     this.rowDimensions.push(subjectDim);
     this.rowDimensions.push(studyDim);

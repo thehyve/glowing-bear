@@ -1,11 +1,16 @@
+import {FormatHelper} from '../../utilities/FormatHelper';
+
 export class Col {
   public static COLUMN_FIELD_PREFIX = 'col';
   private _colspan: number;
   private _header: string;
   private _field: string;
   private _metadata: Map<string, string>;
+  private _metadataText: string;
 
-  constructor(header: string, field: string, metadata?: Map<string, string>, colspan?: number) {
+  constructor(header: string, field: string,
+              metadata?: Map<string, string>,
+              colspan?: number) {
     this.colspan = colspan ? colspan : 1;
     this.header = header;
     this.field = field;
@@ -42,5 +47,14 @@ export class Col {
 
   set metadata(map: Map<string, string>) {
     this._metadata = map;
+    this.metadataText = FormatHelper.formatMetadata(this.metadata);
+  }
+
+  get metadataText(): string {
+    return this._metadataText;
+  }
+
+  set metadataText(value: string) {
+    this._metadataText = value;
   }
 }

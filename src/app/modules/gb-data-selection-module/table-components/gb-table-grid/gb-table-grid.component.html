@@ -1,42 +1,38 @@
 <div>
   <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
+    <!-- header option 1: using merged cell headers -->
     <ng-template *ngIf="isUsingHeaders" pTemplate="header">
       <tr *ngFor="let headerRow of headerRows">
-        <th *ngFor="let col of headerRow.cols" class="gb-table-header" pResizableColumn [attr.colspan]="col.colspan">
-          <span *ngIf="!col.metadata.size; else withTooltipHeader">
-            {{col.header}}
-          </span>
-          <ng-template #withTooltipHeader>
-            <span pTooltip="{{getMetadataValues(col.metadata)}}" appendTo="body" style="position: relative">
+        <th *ngFor="let col of headerRow.cols" class="gb-table-header" pResizableColumn
+            [attr.colspan]="col.colspan">
+          <span pTooltip="{{col.metadataText}}" appendTo="body" style="position: relative">
                 {{col.header}}
-              </span>
-          </ng-template>
+          </span>
         </th>
       </tr>
     </ng-template>
+    <!-- header option 2: using individual cell headers -->
     <ng-template *ngIf="!isUsingHeaders" pTemplate="header" let-columns>
       <tr>
-        <th *ngFor="let col of columns" class="gb-table-header" pResizableColumn style="color: transparent">
-          <span *ngIf="!col.metadata.size; else withTooltipHeader">
+        <th *ngFor="let col of columns" class="gb-table-header" pResizableColumn
+            style="color: transparent">
+          <span>
             {{col.header}}
           </span>
-          <ng-template #withTooltipHeader>
-            <span pTooltip="{{getMetadataValues(col.metadata)}}" appendTo="body" style="position: relative">
-                {{col.header}}
-              </span>
-          </ng-template>
         </th>
       </tr>
     </ng-template>
 
+    <!-- table body -->
     <ng-template pTemplate="body" let-row let-columns="columns">
       <tr>
         <td *ngFor="let col of columns" class="ui-resizable-column">
-          <span *ngIf="row.metadata[col.field] == null; else withTooltip">
+          <span *ngIf="!row.metadata[col.field]; else withTooltip">
             {{row.data[col.field]}}
           </span>
           <ng-template #withTooltip>
-            <span pTooltip="{{getMetadataValues(row.metadata[col.field])}}" appendTo="body" style="position: relative">
+            <span pTooltip="{{row.metadataText[col.field]}}"
+                  appendTo="body" style="position: relative">
               {{row.data[col.field]}}
             </span>
           </ng-template>
@@ -45,6 +41,7 @@
     </ng-template>
   </p-table>
 
+  <!-- pagination buttons -->
   <div class="gb-table-pagination-container">
     <button type="button" class="btn-outline-secondary" (click)="previousPage()">
       previous <i class="fa fa-angle-left"></i>
