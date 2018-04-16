@@ -17,7 +17,14 @@
     <ng-template *ngIf="!isUsingHeaders" pTemplate="header" let-columns>
       <tr>
         <th *ngFor="let col of columns" class="gb-table-header" pResizableColumn style="color: transparent">
-          {{col.header}}
+          <span *ngIf="!col.metadata.size; else withTooltipHeader">
+            {{col.header}}
+          </span>
+          <ng-template #withTooltipHeader>
+            <span pTooltip="{{getMetadataValues(col.metadata)}}" appendTo="body" style="position: relative">
+                {{col.header}}
+              </span>
+          </ng-template>
         </th>
       </tr>
     </ng-template>
@@ -29,7 +36,7 @@
             {{row.data[col.field]}}
           </span>
           <ng-template #withTooltip>
-            <span pTooltip="{{row.metadata[col.field]}}" appendTo="body" style="position: relative">
+            <span pTooltip="{{getMetadataValues(row.metadata[col.field])}}" appendTo="body" style="position: relative">
               {{row.data[col.field]}}
             </span>
           </ng-template>

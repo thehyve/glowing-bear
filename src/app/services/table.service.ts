@@ -27,11 +27,11 @@ export class TableService {
     this.currentPage = 1;
     this.isUsingHeaders = false;
 
-    // this.mockDataInit();
-    // this.mockDataUpdate();
+    this.mockDataInit();
+    this.mockDataUpdate();
 
     // TODO: connect to backend calls
-    this.initializeDimensions();
+   // this.initializeDimensions();
   }
 
   mockDataInit() {
@@ -108,7 +108,7 @@ export class TableService {
           for (let j = 0; j < valueRepetition; j++) {
             headerRow.cols.push(new Col(val.name, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString(),
               val.metadata));
-            row.addDatum(val.name);
+            row.addDatum(val.name, val.metadata);
           }
         }
       }
@@ -190,7 +190,7 @@ export class TableService {
       });
     } else {
       for (let field in this.rows[0].data) {
-        let col = new Col(' - ', field);
+        let col = new Col(' - ', field, this.rows[0].metadata[field]);
         this.dataTable.cols.push(col);
       }
     }
