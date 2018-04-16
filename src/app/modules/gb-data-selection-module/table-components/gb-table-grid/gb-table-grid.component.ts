@@ -48,12 +48,4 @@ export class GbTableGridComponent implements OnInit {
   previousPage() {
     this.tableService.previousPage();
   }
-
-  getMetadataValues(map): string {
-    let metadataText = '';
-    map.forEach((value, key) => {
-      metadataText += key + ': ' + value + '\n';
-    });
-    return metadataText;
-  }
 }
