@@ -231,10 +231,10 @@ export class TableService {
         });
         let offset = 0;
         let limit = 10;
-        this.resourceService.getDataTable(this.dataTable, offset, limit)
+        this.resourceService.getDataTable(this.dataTable, offset, limit, this.isUsingHeaders)
           .subscribe(
             (newDataTable: DataTable) => {
-              this.dataTable.rows = newDataTable.rows;
+              this.dataTable = newDataTable;
               this.dataTable.isDirty = false;
             }
           );

@@ -276,12 +276,12 @@ export class ResourceService {
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(dataTable: DataTable,
-               offset: number, limit: number): Observable<DataTable> {
+               offset: number, limit: number, isUsingHeaders: boolean): Observable<DataTable> {
     const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
     const constraint: Constraint = dataTable.constraint;
     return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
-        return TransmartMapper.mapTransmartDataTable(transmartTable);
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders);
       });
   }
 
