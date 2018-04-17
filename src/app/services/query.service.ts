@@ -17,6 +17,7 @@ import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from './table.service';
 import {ExportDataType} from '../models/export-models/export-data-type';
+import {DataTable} from '../models/table-models/data-table';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -525,6 +526,7 @@ export class QueryService {
               this.isLoadingObservationCount_2 = false;
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
+              this.isDirty_3 = true;
             }
           },
           err => this.handle_error(err)
@@ -543,10 +545,8 @@ export class QueryService {
   /**
    * update the table
    */
-  public update_3() {
-    this.tableService.updateTable();
-    // this.tableService.mockDataUpdate();
-    this.isDirty_3 = false;
+  public update_3(targetDataTable?: DataTable) {
+    this.tableService.updateDataTable(targetDataTable);
   }
 
   public updateExports() {
@@ -629,11 +629,7 @@ export class QueryService {
       this.update_1();
     }
     this.update_2();
-    // TODO: update_3
-    if (query.dataTable) {
-      this.tableService.updateTable(query.dataTable);
-    }
-
+    this.update_3(query.dataTable);
 
     // TODO: To display more information in the alertDetails:
     // - total number of imported nodes/items

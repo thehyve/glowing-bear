@@ -17,6 +17,8 @@ export class DataTable {
   private _headerRows: Array<HeaderRow>;
   // Indicate if the current data table is dirty
   private _isDirty: boolean;
+  // Indicate if the current data table is updating
+  private _isUpdating: boolean;
 
   constructor() {
     this.constraint = new TrueConstraint();
@@ -94,5 +96,13 @@ export class DataTable {
 
   set isDirty(value: boolean) {
     this._isDirty = value;
+  }
+
+  get isUpdating(): boolean {
+    return this._isUpdating;
+  }
+
+  set isUpdating(value: boolean) {
+    this._isUpdating = value;
   }
 }
