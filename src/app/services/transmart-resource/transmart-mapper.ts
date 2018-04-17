@@ -84,57 +84,114 @@ export class TransmartMapper {
     return new TransmartTableState(rowDimensionNames, columnDimensionNames);
   }
 
-  public static mapTransmartDataTable(transmartTable: TransmartDataTable): DataTable {
+  public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean): DataTable {
     console.log('map transmart table: ', transmartTable);
     let dataTable = new DataTable();
-    transmartTable.rows.forEach((transmartRow: TransmartRow) => {
-      // get data table rows
-      let newRow: Row = new Row();
-      transmartRow.row.forEach(value => newRow.addDatum(value));
-      dataTable.rows.push(newRow);
 
-      // get data table rows
-      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
-        let rowDim: Dimension = new Dimension(inRowDim.dimension);
-        if (inRowDim.key === null) {
-          // if dimension is inline
-          rowDim.values.push(new DimensionValue(inRowDim.element['label'],
-            this.getDimensionMetadata(inRowDim.dimension, inRowDim.element)));
-        } else {
-          // if dimension is indexed
-          let indexedDimension: TransmartDimension = transmartTable.row_dimensions.filter(
-            dim => dim.name === inRowDim.dimension)[0];
-          rowDim.values.push(new DimensionValue(indexedDimension.elements[inRowDim.key].label,
-            this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key])));
-        }
+    // get row dimensions
+    transmartTable.row_dimensions.forEach((rowDim: TransmartDimension) => {
+      let rowDimension = new Dimension(rowDim.name);
+      let elements = this.parseObjectToMap(rowDim.elements);
+      elements.forEach((value: Map<string, object>, key: string) => {
+        rowDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(rowDim.name, value)));
       });
+      dataTable.rowDimensions.push(rowDimension);
     });
 
-    // get data table cols
+    // get column dimensions
+    transmartTable.column_dimensions.forEach((colDim: TransmartDimension) => {
+      let colDimension = new Dimension(colDim.name);
+      let elements = this.parseObjectToMap(colDim.elements);
+      elements.forEach((value: Map<string, object>, key: string) => {
+        colDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(colDim.name, value)));
+      });
+      dataTable.columnDimensions.push(colDimension);
+    });
+
+    // get data table column-header rows
     transmartTable.column_headers.forEach((transmartColumnHeader: TransmartColumnHeaders) => {
       let headerRow = new HeaderRow();
-      if (transmartColumnHeader.keys === null) {
+      let row = new Row();
+
+      // add empty space fillers on the top-left corner of the table
+      for (let rowIndex = 0; rowIndex < dataTable.rowDimensions.length; rowIndex++) {
+        if(isUsingHeaders) {
+          headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
+        } else {
+          row.addDatum('');
+        }
+      }
+
+      if (transmartColumnHeader.keys == null) {
         // if dimension is inline
         transmartColumnHeader.elements.forEach(elem => {
-          this.updateCols(headerRow.cols, elem['label'], elem);
+          let metadata = this.getDimensionMetadata(transmartColumnHeader.dimension, elem);
+          if(isUsingHeaders) {
+            this.updateCols(headerRow.cols, elem['label'], metadata);
+          } else {
+            row.addDatum(elem['label'], metadata);
+          }
         });
       } else {
         transmartColumnHeader.keys.forEach((key: string) => {
-          if (key === null) {
-            this.updateCols(headerRow.cols, null, null);
+          if (key == null) {
+            if(isUsingHeaders) {
+              this.updateCols(headerRow.cols, null, null);
+            } else {
+              row.addDatum(null, null);
+            }
           } else {
             // if dimension is indexed
             let indexedDimension: TransmartDimension = transmartTable.column_dimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
-            this.updateCols(headerRow.cols, indexedDimension.elements[key].label,
-              this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]));
+              let metadata = this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]);
+            if(isUsingHeaders) {
+              this.updateCols(headerRow.cols, indexedDimension.elements[key].label, metadata);
+            } else {
+              row.addDatum(indexedDimension.elements[key].label, metadata);
+            }
           }
         });
       }
-      dataTable.headerRows.push(headerRow);
+      if(isUsingHeaders) {
+        dataTable.headerRows.push(headerRow);
+      } else {
+        dataTable.rows.push(row);
+      }
     });
 
-    console.log('datatable: ', dataTable)
+    // get data table rows
+    transmartTable.rows.forEach((transmartRow: TransmartRow) => {
+      let newRow: Row = new Row();
+      // get row dimensions
+      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
+        if (inRowDim.key == null) {
+          // if dimension is inline
+          newRow.addDatum(inRowDim.element['label'], this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
+        } else {
+          // if dimension is indexed
+          let indexedDimension: TransmartDimension = transmartTable.row_dimensions.filter(
+            dim => dim.name === inRowDim.dimension)[0];
+          newRow.addDatum(indexedDimension.elements[inRowDim.key].label,
+            this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key]));
+        }
+      });
+      // get row values
+      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
+        transmartRow.row.forEach(value => newRow.addDatum(value));
+        dataTable.rows.push(newRow);
+      });
+    });
+
+    // get cols
+    if(dataTable.rows.length > 0) {
+      for (let field in dataTable.rows[0].data) {
+        let col = new Col(' - ', field, dataTable.rows[0].metadata[field]);
+        dataTable.cols.push(col);
+      }
+    }
+
+    console.log('datatable: ', dataTable);
     return dataTable;
   }
 
@@ -198,6 +255,14 @@ export class TransmartMapper {
       metadata.set('id', data.id)
     }
     return metadata
+  }
+
+  private static parseObjectToMap(object) {
+    let strMap = new Map();
+    for (let k of Object.keys(object)) {
+      strMap.set(k, object[k]);
+    }
+    return strMap;
   }
 
 }
