@@ -20,6 +20,7 @@ export class Row {
     const field = Col.COLUMN_FIELD_PREFIX + this.length.toString();
     this.data[field] = value;
     if (metadataValue != null && metadataValue.size) {
+      this.data[field] += ' ⓘ';
       this.metadata[field] = metadataValue;
       this.metadataText[field] = FormatHelper.formatMetadata(metadataValue);
     }

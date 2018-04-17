@@ -14,7 +14,13 @@ export class Col {
     this.colspan = colspan ? colspan : 1;
     this.header = header;
     this.field = field;
-    this.metadata = metadata != null && metadata.size ? metadata : new Map();
+    if (metadata != null && metadata.size) {
+      this.metadata = metadata;
+      this.header += ' ⓘ';
+    }
+    else {
+      this.metadata = new Map();
+    }
   }
 
   get colspan(): number {
