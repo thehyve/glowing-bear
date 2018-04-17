@@ -163,6 +163,7 @@ export class TransmartMapper {
     // get data table rows
     transmartTable.rows.forEach((transmartRow: TransmartRow) => {
       let newRow: Row = new Row();
+      // get row dimensions
       transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         if (inRowDim.key == null) {
           // if dimension is inline
@@ -174,6 +175,9 @@ export class TransmartMapper {
           newRow.addDatum(indexedDimension.elements[inRowDim.key].label,
             this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key]));
         }
+      });
+      // get row values
+      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         transmartRow.row.forEach(value => newRow.addDatum(value));
         dataTable.rows.push(newRow);
       });
