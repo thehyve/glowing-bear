@@ -275,8 +275,10 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(dataTable: DataTable,
-               offset: number, limit: number, isUsingHeaders: boolean): Observable<DataTable> {
+  getDataTable(dataTable: DataTable): Observable<DataTable> {
+    let isUsingHeaders = dataTable.isUsingHeaders;
+    let offset = dataTable.offset;
+    let limit = dataTable.limit;
     const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
     const constraint: Constraint = dataTable.constraint;
     return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)

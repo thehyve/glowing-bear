@@ -19,10 +19,18 @@ export class DataTable {
   private _isDirty: boolean;
   // Indicate if the current data table is updating
   private _isUpdating: boolean;
+  // Indicate if using merged-cell headers
+  private _isUsingHeaders: boolean;
+  // The offset and limit used to make table calls with pagination
+  private _offset: number;
+  private _limit: number;
 
   constructor() {
     this.constraint = new TrueConstraint();
     this.isDirty = false;
+    this.isUsingHeaders = false;
+    this.offset = 0;
+    this.limit = 10;
     this.clear();
   }
 
@@ -104,5 +112,29 @@ export class DataTable {
 
   set isUpdating(value: boolean) {
     this._isUpdating = value;
+  }
+
+  get isUsingHeaders(): boolean {
+    return this._isUsingHeaders;
+  }
+
+  set isUsingHeaders(value: boolean) {
+    this._isUsingHeaders = value;
+  }
+
+  get offset(): number {
+    return this._offset;
+  }
+
+  set offset(value: number) {
+    this._offset = value;
+  }
+
+  get limit(): number {
+    return this._limit;
+  }
+
+  set limit(value: number) {
+    this._limit = value;
   }
 }
