@@ -507,12 +507,14 @@ export class TransmartResourceService {
       tableState.rowDimensionSorting.forEach((val, key) => {
         sort.push([key, val]);
       });
+      body['rowSort'] = sort;
       if (sort.length === 1) {
         let dim = sort[0][0];
         let order = sort[0][1];
-        sort = [dim + ':' + order];
+        let sortObj = {};
+        sortObj[dim] = order;
+        body['columnSort'] = sortObj;
       }
-      body['rowSort'] = sort;
     }
     if (tableState.columnDimensionSorting) {
       let sort = [];
