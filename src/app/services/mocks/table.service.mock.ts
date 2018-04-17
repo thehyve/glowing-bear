@@ -11,15 +11,14 @@ export class TableServiceMock {
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
   private _currentPage: number;
-  // Indicate if using merged-cell headers
-  private _isUsingHeaders: boolean;
 
   constructor() {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
     this.currentPage = 1;
-    this.isUsingHeaders = false;
+    this.mockDataInit();
+    this.updateDataTable();
   }
 
   private mockDataInit() {
@@ -202,7 +201,8 @@ export class TableServiceMock {
     return dimensionsAbove;
   }
 
-  updateTable(targetDataTable?: DataTable) {
+  updateDataTable(targetDataTable?: DataTable) {
+    this.mockDataUpdate();
   }
 
   get prevRowDimensions(): Array<Dimension> {
@@ -238,11 +238,7 @@ export class TableServiceMock {
   }
 
   get isUsingHeaders(): boolean {
-    return this._isUsingHeaders;
-  }
-
-  set isUsingHeaders(value: boolean) {
-    this._isUsingHeaders = value;
+    return this.dataTable.isUsingHeaders;
   }
 
   get rows(): Row[] {

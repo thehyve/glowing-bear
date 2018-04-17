@@ -16,8 +16,6 @@ export class TableService {
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
   private _currentPage: number;
-  // Indicate if using merged-cell headers
-  private _isUsingHeaders: boolean;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
@@ -25,7 +23,6 @@ export class TableService {
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
     this.currentPage = 1;
-    this.isUsingHeaders = false;
     this.updateDataTable();
   }
 
@@ -62,9 +59,7 @@ export class TableService {
             this.dataTable.rowDimensions.push(dim);
           }
         });
-        let offset = 0;
-        let limit = 10;
-        this.resourceService.getDataTable(this.dataTable, offset, limit, this.isUsingHeaders)
+        this.resourceService.getDataTable(this.dataTable)
           .subscribe(
             (newDataTable: DataTable) => {
               this.dataTable = newDataTable;
@@ -146,11 +141,7 @@ export class TableService {
   }
 
   get isUsingHeaders(): boolean {
-    return this._isUsingHeaders;
-  }
-
-  set isUsingHeaders(value: boolean) {
-    this._isUsingHeaders = value;
+    return this.dataTable.isUsingHeaders;
   }
 
 }
