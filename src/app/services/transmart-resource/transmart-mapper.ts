@@ -85,7 +85,6 @@ export class TransmartMapper {
   }
 
   public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean): DataTable {
-    console.log('map transmart table: ', transmartTable);
     let dataTable = new DataTable();
 
     // get row dimensions
@@ -115,7 +114,7 @@ export class TransmartMapper {
 
       // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < dataTable.rowDimensions.length; rowIndex++) {
-        if(isUsingHeaders) {
+        if (isUsingHeaders) {
           headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
         } else {
           row.addDatum('');
@@ -126,7 +125,7 @@ export class TransmartMapper {
         // if dimension is inline
         transmartColumnHeader.elements.forEach(elem => {
           let metadata = this.getDimensionMetadata(transmartColumnHeader.dimension, elem);
-          if(isUsingHeaders) {
+          if (isUsingHeaders) {
             this.updateCols(headerRow.cols, elem['label'], metadata);
           } else {
             row.addDatum(elem['label'], metadata);
@@ -135,7 +134,7 @@ export class TransmartMapper {
       } else {
         transmartColumnHeader.keys.forEach((key: string) => {
           if (key == null) {
-            if(isUsingHeaders) {
+            if (isUsingHeaders) {
               this.updateCols(headerRow.cols, null, null);
             } else {
               row.addDatum(null, null);
@@ -144,8 +143,8 @@ export class TransmartMapper {
             // if dimension is indexed
             let indexedDimension: TransmartDimension = transmartTable.column_dimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
-              let metadata = this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]);
-            if(isUsingHeaders) {
+            let metadata = this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]);
+            if (isUsingHeaders) {
               this.updateCols(headerRow.cols, indexedDimension.elements[key].label, metadata);
             } else {
               row.addDatum(indexedDimension.elements[key].label, metadata);
@@ -153,7 +152,7 @@ export class TransmartMapper {
           }
         });
       }
-      if(isUsingHeaders) {
+      if (isUsingHeaders) {
         dataTable.headerRows.push(headerRow);
       } else {
         dataTable.rows.push(row);
@@ -184,14 +183,12 @@ export class TransmartMapper {
     });
 
     // get cols
-    if(dataTable.rows.length > 0) {
+    if (dataTable.rows.length > 0) {
       for (let field in dataTable.rows[0].data) {
         let col = new Col(' - ', field, dataTable.rows[0].metadata[field]);
         dataTable.cols.push(col);
       }
     }
-
-    console.log('datatable: ', dataTable);
     return dataTable;
   }
 
