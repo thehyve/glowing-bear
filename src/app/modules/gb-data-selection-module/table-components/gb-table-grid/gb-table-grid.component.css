@@ -1,3 +1,7 @@
+.gb-table-container {
+  font-size: small;
+}
+
 .gb-table-header {
   border-left: 3px var(--gb-clinical-green-dark) solid;
   border-right: 3px var(--gb-clinical-green-dark) solid;
