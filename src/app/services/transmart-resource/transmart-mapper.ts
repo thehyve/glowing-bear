@@ -4,7 +4,6 @@ import {DataTable} from '../../models/table-models/data-table';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {Dimension} from '../../models/table-models/dimension';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
-import {TransmartRow} from '../../models/transmart-models/transmart-row';
 import {Row} from '../../models/table-models/row';
 import {TransmartInRowDimension} from '../../models/transmart-models/transmart-in-row-dimension';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
@@ -87,6 +86,8 @@ export class TransmartMapper {
   public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean,
                                       requestedOffset: number, limit: number): DataTable {
     let dataTable = new DataTable();
+    let numberOfRows: number = transmartTable.rows.length;
+    const headerNameField = 'name';
 
     // check if it is a last page
     let rowCount = transmartTable['row count'];
@@ -131,9 +132,9 @@ export class TransmartMapper {
         transmartColumnHeader.elements.forEach(elem => {
           let metadata = this.getDimensionMetadata(transmartColumnHeader.dimension, elem);
           if (isUsingHeaders) {
-            this.updateCols(headerRow.cols, elem['label'], metadata);
+            this.updateCols(headerRow.cols, elem[headerNameField], metadata);
           } else {
-            row.addDatum(elem['label'], metadata);
+            row.addDatum(elem[headerNameField], metadata);
           }
         });
       } else {
@@ -149,10 +150,12 @@ export class TransmartMapper {
             let indexedDimension: TransmartDimension = transmartTable.column_dimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
             let metadata = this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]);
+            let val = indexedDimension.elements[key][headerNameField];
+            val = val ? val : indexedDimension.elements[key].label;
             if (isUsingHeaders) {
-              this.updateCols(headerRow.cols, indexedDimension.elements[key].label, metadata);
+              this.updateCols(headerRow.cols, val, metadata);
             } else {
-              row.addDatum(indexedDimension.elements[key].label, metadata);
+              row.addDatum(val, metadata);
             }
           }
         });
@@ -166,19 +169,21 @@ export class TransmartMapper {
 
     // get data table rows
     let offsetIndex = this.getOffsetIndex(limit, requestedOffset, rowCount);
-    for (let i = offsetIndex; i < transmartTable.rows.length ; i++) {
+    for (let i = offsetIndex; i < transmartTable.rows.length; i++) {
       let newRow: Row = new Row();
       // get row dimensions
       transmartTable.rows[i].dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         if (inRowDim.key == null) {
           // if dimension is inline
-          newRow.addDatum(inRowDim.element['label'], this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
+          newRow.addDatum(inRowDim.element[headerNameField],
+            this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
         } else {
           // if dimension is indexed
-          let indexedDimension: TransmartDimension = transmartTable.row_dimensions.filter(
-            dim => dim.name === inRowDim.dimension)[0];
-          newRow.addDatum(indexedDimension.elements[inRowDim.key].label,
-            this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key]));
+          let indexedDimension: TransmartDimension = transmartTable.row_dimensions
+            .filter(dim => dim.name === inRowDim.dimension)[0];
+          let val = indexedDimension.elements[inRowDim.key][headerNameField];
+          val = val ? val : indexedDimension.elements[inRowDim.key].label;
+          newRow.addDatum(val, this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[inRowDim.key]));
         }
       });
       // get row values
@@ -267,8 +272,8 @@ export class TransmartMapper {
     return strMap;
   }
 
-  private static getOffsetIndex(limit: number, requestedOffset: number, totalNumberOfRows?:number): number {
-    if(totalNumberOfRows != null && totalNumberOfRows > limit) {
+  private static getOffsetIndex(limit: number, requestedOffset: number, totalNumberOfRows?: number): number {
+    if (totalNumberOfRows != null && totalNumberOfRows > limit) {
       // skip first few rows of returned results
       return limit - (totalNumberOfRows - requestedOffset)
     } else {
