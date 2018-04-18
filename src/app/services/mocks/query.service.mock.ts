@@ -53,6 +53,7 @@ export class QueryServiceMock {
 
   public update_1() {}
   public update_2() {}
+  public update_3() {}
 
   get isLoadingExportDataTypes(): boolean {
     return this._isLoadingExportDataTypes;

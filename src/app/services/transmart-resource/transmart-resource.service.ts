@@ -487,7 +487,7 @@ export class TransmartResourceService {
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
     const rowDims = tableState.rowDimensions.filter((dim: string) => {
       return !highDims.includes(dim);
     });
@@ -507,43 +507,52 @@ export class TransmartResourceService {
       tableState.rowDimensionSorting.forEach((val, key) => {
         sort.push([key, val]);
       });
+      body['rowSort'] = sort;
       if (sort.length === 1) {
         let dim = sort[0][0];
         let order = sort[0][1];
-        sort = [dim + ':' + order];
+        let sortObj = {};
+        sortObj[dim] = order;
+        body['columnSort'] = sortObj;
       }
-      body['rowSort'] = sort;
     }
     if (tableState.columnDimensionSorting) {
       let sort = [];
       tableState.columnDimensionSorting.forEach((val, key) => {
         sort.push([key, val]);
       });
+      body['columnSort'] = sort;
       if (sort.length === 1) {
         let dim = sort[0][0];
         let order = sort[0][1];
-        sort = [dim + ':' + order];
+        let sortObj = {};
+        sortObj[dim] = order;
+        body['columnSort'] = sortObj;
       }
-      body['columnSort'] = sort;
+
     }
     return this.postCall(urlPart, body, null);
   }
 
   getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
-    const urlPart = 'dimensions/study/elements';
-    const body = {constraint: constraint.toQueryObject()};
+    const urlPart = `dimensions/study/elements?constraint=${JSON.stringify(constraint.toQueryObject())}`;
+    // const body = {constraint: constraint.toQueryObject()};
     const responseField = 'elements';
-    return this.postCall(urlPart, body, responseField);
+    return this.getCall(urlPart, responseField);
   }
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
-    let params = '';
-    for (let name of studyNames) {
-      params += `studyIds=${name}&`
+    if (studyNames && studyNames.length > 0) {
+      let params = '';
+      for (let name of studyNames) {
+        params += `studyIds=${name}&`
+      }
+      params = params.substring(0, params.length - 1);
+      const urlPart = `studies/studyIds?${params}`;
+      const responseField = 'studies';
+      return this.getCall(urlPart, responseField);
+    } else {
+      return Observable.of([]);
     }
-    params = params.substring(0, params.length - 1);
-    const urlPart = `studies/studyIds?${params}`;
-    const responseField = 'studies';
-    return this.getCall(urlPart, responseField);
   }
 }

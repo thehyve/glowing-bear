@@ -17,6 +17,7 @@ import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from './table.service';
 import {ExportDataType} from '../models/export-models/export-data-type';
+import {DataTable} from '../models/table-models/data-table';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -132,7 +133,6 @@ export class QueryService {
    */
   private _instantCountsUpdate_3: boolean;
   private _isUpdating_3 = false;
-  private _isDirty_3 = false;
   /*
    * ------ other variables ------
    */
@@ -169,6 +169,11 @@ export class QueryService {
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.loadQueries();
+
+    // initial updates
+    this.update_1(true);
+    this.update_2();
+    this.update_3();
   }
 
   private handle_error(err) {
@@ -521,6 +526,7 @@ export class QueryService {
               this.isLoadingObservationCount_2 = false;
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
+              this.isDirty_3 = true;
             }
           },
           err => this.handle_error(err)
@@ -539,10 +545,9 @@ export class QueryService {
   /**
    * update the table
    */
-  public update_3() {
-    this.tableService.mockDataUpdate();
-    // TODO: think about the relationship between TableService and QueryService in terms of table updating
-    this.isDirty_3 = false;
+  public update_3(targetDataTable?: DataTable) {
+    this.tableService.dataTable.currentPage = 1;
+    this.tableService.updateDataTable(targetDataTable);
   }
 
   public updateExports() {
@@ -625,11 +630,7 @@ export class QueryService {
       this.update_1();
     }
     this.update_2();
-    // TODO: update_3
-    if (query.dataTable) {
-      this.tableService.updateTable(query.dataTable);
-    }
-
+    this.update_3(query.dataTable);
 
     // TODO: To display more information in the alertDetails:
     // - total number of imported nodes/items
@@ -978,11 +979,11 @@ export class QueryService {
   }
 
   get isDirty_3(): boolean {
-    return this._isDirty_3;
+    return this.tableService.dataTable.isDirty;
   }
 
   set isDirty_3(value: boolean) {
-    this._isDirty_3 = value;
+    this.tableService.dataTable.isDirty = value;
   }
 
   get patientSet_1(): PatientSetConstraint {

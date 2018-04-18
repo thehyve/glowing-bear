@@ -2,7 +2,7 @@ import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
-import {Constraint} from "../../models/constraint-models/constraint";
+import {Constraint} from '../../models/constraint-models/constraint';
 import {Dimension} from '../../models/table-models/dimension';
 import {DataTable} from '../../models/table-models/data-table';
 
@@ -52,5 +52,13 @@ export class ResourceServiceMock {
   getDataTable(dataTable: DataTable,
                offset: number, limit: number): Observable<DataTable> {
     return Observable.of(this.dataTable);
+  }
+
+  getCounts(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({});
   }
 }

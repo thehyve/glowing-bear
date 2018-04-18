@@ -27,4 +27,16 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
+  public generateInclusionConstraint(): Constraint {
+    return this._constraint;
+  }
+
+  public hasExclusionConstraint(): Boolean {
+    return false;
+  }
+
+  public constraint_1_2(): Constraint {
+    return this._constraint;
+  }
+
 }
