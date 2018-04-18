@@ -275,13 +275,15 @@ export class ResourceService {
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(dataTable: DataTable,
-               offset: number, limit: number): Observable<DataTable> {
+  getDataTable(dataTable: DataTable): Observable<DataTable> {
+    let isUsingHeaders = dataTable.isUsingHeaders;
+    let offset = dataTable.offset;
+    let limit = dataTable.limit;
     const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
     const constraint: Constraint = dataTable.constraint;
     return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
-        return TransmartMapper.mapTransmartDataTable(transmartTable);
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit);
       });
   }
 
@@ -291,23 +293,36 @@ export class ResourceService {
    * @returns {Observable<Dimension[]>}
    */
   getDimensions(constraint: Constraint): Observable<Dimension[]> {
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
     return this.transmartResourceService.getStudyNames(constraint)
       .switchMap((studyElements: TransmartStudyDimensionElement[]) => {
         let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);
         return this.transmartResourceService.getAvailableDimensions(studyNames);
       }, (studyElements: TransmartStudyDimensionElement[], transmartStudies: TransmartStudy[]) => {
         let dimensions = new Array<Dimension>();
-        let dimensionNames = new Array<string>();
-        transmartStudies.forEach((study: TransmartStudy) => {
-          study.dimensions.forEach((dimensionName: string) => {
-              if (dimensionNames.indexOf(dimensionName) === -1 && !highDims.includes(dimensionName)) {
-                dimensionNames.push(dimensionName);
-                dimensions.push(new Dimension(dimensionName));
-              }
+        if (transmartStudies && transmartStudies.length > 0) {
+          // get dimension arrays for each study
+          let studiesDimensions = transmartStudies.map(study => study.dimensions);
+
+          // sort to get the shortest dimension at the beginning of the array
+          studiesDimensions.sort(function(a, b) {
+            return a.length - b.length;
+          });
+
+          // get common dimensions for all the studies
+          let commonDimensions = studiesDimensions.shift().filter(function (v) {
+            return studiesDimensions.every(function (a) {
+              return a.indexOf(v) !== -1;
+            });
+          });
+
+          commonDimensions.forEach((name: string) => {
+            if (highDims.indexOf(name) === -1) {
+              dimensions.push(new Dimension(name));
             }
-          );
-        });
+          });
+        }
+
         return dimensions;
       });
   }

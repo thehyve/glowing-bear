@@ -46,4 +46,11 @@ export class TreeNodeServiceMock {
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
   }
+
+  public isTreeNodeLoadingComplete(): boolean {
+    return true;
+  }
+
+  public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
+  }
 }

@@ -1,4 +1,4 @@
-import {DimensionValue} from "./dimension-value";
+import {DimensionValue} from './dimension-value';
 
 export class Dimension {
   private _name: string;

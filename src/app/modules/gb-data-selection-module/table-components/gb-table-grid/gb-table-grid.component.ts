@@ -23,7 +23,11 @@ export class GbTableGridComponent implements OnInit {
 
   get cols(): Col[] {
     if (this.tableService.isUsingHeaders) {
-      return this.tableService.headerRows[this.tableService.headerRows.length - 1].cols;
+      if (this.tableService.headerRows.length > 0) {
+        return this.tableService.headerRows[this.tableService.headerRows.length - 1].cols;
+      } else {
+        return [];
+      }
     } else {
       return this.tableService.cols;
     }
@@ -38,7 +42,7 @@ export class GbTableGridComponent implements OnInit {
   }
 
   get currentPage(): number {
-    return this.tableService.currentPage;
+    return this.tableService.dataTable.currentPage;
   }
 
   nextPage() {
