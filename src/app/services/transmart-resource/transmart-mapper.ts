@@ -87,9 +87,10 @@ export class TransmartMapper {
   public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean,
                                       requestedOffset: number, limit: number): DataTable {
     let dataTable = new DataTable();
+    let numberOfRows: number = transmartTable.rows.length;
 
     // check if it is a last page
-    dataTable.isLastPage = requestedOffset !== transmartTable.offset || transmartTable.rows.length < limit;
+    dataTable.isLastPage = requestedOffset !== transmartTable.offset || numberOfRows < limit;
 
     // get row dimensions
     transmartTable.row_dimensions.forEach((rowDim: TransmartDimension) => {
@@ -164,9 +165,8 @@ export class TransmartMapper {
     });
 
     // get data table rows
-    const correctNumberOfResults =  dataTable.isLastPage ? transmartTable.offset % limit : limit;
-    let skipIndex = limit - correctNumberOfResults;
-    for (let i = skipIndex; i < transmartTable.rows.length ; i++) {
+    let offsetIndex = this.getOffsetIndex(limit, transmartTable.offset, numberOfRows, dataTable.isLastPage);
+    for (let i = offsetIndex; i < transmartTable.rows.length ; i++) {
       let newRow: Row = new Row();
       // get row dimensions
       transmartTable.rows[i].dimensions.forEach((inRowDim: TransmartInRowDimension) => {
@@ -265,6 +265,16 @@ export class TransmartMapper {
       strMap.set(k, object[k]);
     }
     return strMap;
+  }
+
+  private static getOffsetIndex(limit: number, offset: number, numberOfRows:number, isLastPage: boolean): number {
+    if(isLastPage && numberOfRows === limit) {
+      // skip first few rows of returned results
+      return limit - (offset % limit)
+    } else {
+      // start from the first row
+      return 0;
+    }
   }
 
 }
