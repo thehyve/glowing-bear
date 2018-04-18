@@ -15,14 +15,12 @@ export class TableService {
   private _prevRowDimensions: Array<Dimension>;
   private _prevColDimensions: Array<Dimension>;
   private _dataTable: DataTable;
-  private _currentPage: number;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-    this.currentPage = 1;
     this.updateDataTable();
   }
 
@@ -32,7 +30,6 @@ export class TableService {
     this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
     const constraint_1_2 = this.constraintService.constraint_1_2();
     this.dataTable.constraint = constraint_1_2;
-    this.dataTable.offset = this.currentOffset();
     this.resourceService.getDimensions(constraint_1_2)
       .subscribe((availableDimensions: Dimension[]) => {
         // update dimensions
@@ -73,21 +70,17 @@ export class TableService {
   }
 
   public nextPage() {
-    if(!this.dataTable.isLastPage) {
-      this.currentPage++;
+    if (!this.dataTable.isLastPage) {
+      this.dataTable.currentPage++;
       this.updateDataTable();
     }
   }
 
   public previousPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+    if (this.dataTable.currentPage > 1) {
+      this.dataTable.currentPage--;
       this.updateDataTable();
     }
-  }
-
-  currentOffset(): number {
-    return this.dataTable.limit * (this.currentPage - 1)
   }
 
   public updatePrevDimensions() {
@@ -151,14 +144,6 @@ export class TableService {
 
   set prevColDimensions(value: Array<Dimension>) {
     this._prevColDimensions = value;
-  }
-
-  get currentPage(): number {
-    return this._currentPage;
-  }
-
-  set currentPage(value: number) {
-    this._currentPage = value;
   }
 
   get isUsingHeaders(): boolean {

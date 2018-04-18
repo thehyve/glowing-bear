@@ -42,7 +42,7 @@ export class GbTableGridComponent implements OnInit {
   }
 
   get currentPage(): number {
-    return this.tableService.currentPage;
+    return this.tableService.dataTable.currentPage;
   }
 
   nextPage() {
