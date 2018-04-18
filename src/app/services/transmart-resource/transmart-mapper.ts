@@ -84,8 +84,12 @@ export class TransmartMapper {
     return new TransmartTableState(rowDimensionNames, columnDimensionNames);
   }
 
-  public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean): DataTable {
+  public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean,
+                                      requestedOffset: number, limit: number): DataTable {
     let dataTable = new DataTable();
+
+    // check if it is a last page
+    dataTable.isLastPage = requestedOffset !== transmartTable.offset || transmartTable.rows.length < limit;
 
     // get row dimensions
     transmartTable.row_dimensions.forEach((rowDim: TransmartDimension) => {
@@ -160,10 +164,12 @@ export class TransmartMapper {
     });
 
     // get data table rows
-    transmartTable.rows.forEach((transmartRow: TransmartRow) => {
+    const correctNumberOfResults =  dataTable.isLastPage ? transmartTable.offset % limit : limit;
+    let skipIndex = limit - correctNumberOfResults;
+    for (let i = skipIndex; i < transmartTable.rows.length ; i++) {
       let newRow: Row = new Row();
       // get row dimensions
-      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
+      transmartTable.rows[i].dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         if (inRowDim.key == null) {
           // if dimension is inline
           newRow.addDatum(inRowDim.element['label'], this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
@@ -176,10 +182,10 @@ export class TransmartMapper {
         }
       });
       // get row values
-      transmartRow.row.forEach(value => newRow.addDatum(value));
+      transmartTable.rows[i].row.forEach(value => newRow.addDatum(value));
 
       dataTable.rows.push(newRow);
-    });
+    }
 
     // get cols
     if (dataTable.rows.length > 0) {

@@ -283,7 +283,7 @@ export class ResourceService {
     const constraint: Constraint = dataTable.constraint;
     return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
       .map((transmartTable: TransmartDataTable) => {
-        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders);
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit);
       });
   }
 

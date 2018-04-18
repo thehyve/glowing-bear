@@ -32,6 +32,7 @@ export class TableService {
     this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
     const constraint_1_2 = this.constraintService.constraint_1_2();
     this.dataTable.constraint = constraint_1_2;
+    this.dataTable.offset = this.currentOffset();
     this.resourceService.getDimensions(constraint_1_2)
       .subscribe((availableDimensions: Dimension[]) => {
         // update dimensions
@@ -71,13 +72,21 @@ export class TableService {
   }
 
   public nextPage() {
-    // TODO: connect to backend, check if the last page is reached
-    this.currentPage++;
+    if(!this.dataTable.isLastPage) {
+      this.currentPage++;
+      this.updateDataTable();
+    }
   }
 
   public previousPage() {
-    // TODO: connect to backend, check if the first page is reached
-    this.currentPage--;
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDataTable();
+    }
+  }
+
+  currentOffset(): number {
+    return this.dataTable.limit * (this.currentPage - 1)
   }
 
   get rowDimensions(): Dimension[] {
