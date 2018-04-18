@@ -546,6 +546,7 @@ export class QueryService {
    * update the table
    */
   public update_3(targetDataTable?: DataTable) {
+    this.tableService.currentPage = 1;
     this.tableService.updateDataTable(targetDataTable);
   }
 

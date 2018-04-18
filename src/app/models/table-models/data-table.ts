@@ -21,6 +21,8 @@ export class DataTable {
   private _isUpdating: boolean;
   // Indicate if using merged-cell headers
   private _isUsingHeaders: boolean;
+  // Indicate if there is no more data to get from the back-end
+  private _isLastPage: boolean;
   // The offset and limit used to make table calls with pagination
   private _offset: number;
   private _limit: number;
@@ -29,6 +31,7 @@ export class DataTable {
     this.constraint = new TrueConstraint();
     this.isDirty = false;
     this.isUsingHeaders = false;
+    this.isLastPage = false;
     this.offset = 0;
     this.limit = 10;
     this.clear();
@@ -136,5 +139,13 @@ export class DataTable {
 
   set limit(value: number) {
     this._limit = value;
+  }
+
+  get isLastPage(): boolean {
+    return this._isLastPage;
+  }
+
+  set isLastPage(value: boolean) {
+    this._isLastPage = value;
   }
 }
