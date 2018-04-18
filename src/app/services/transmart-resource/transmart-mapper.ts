@@ -176,10 +176,9 @@ export class TransmartMapper {
         }
       });
       // get row values
-      transmartRow.dimensions.forEach((inRowDim: TransmartInRowDimension) => {
-        transmartRow.row.forEach(value => newRow.addDatum(value));
-        dataTable.rows.push(newRow);
-      });
+      transmartRow.row.forEach(value => newRow.addDatum(value));
+
+      dataTable.rows.push(newRow);
     });
 
     // get cols
