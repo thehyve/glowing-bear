@@ -10,6 +10,6 @@ export class TransmartDataTable {
   column_dimensions: Array<TransmartDimension>;
   sorting: TransmartSorting;
   offset: number;
-  rowCount: number;
+  'row count': number;
 
 }
