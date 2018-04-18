@@ -66,6 +66,7 @@ export class TableService {
               this.dataTable = newDataTable;
               this.dataTable.isDirty = false;
               this.dataTable.isUpdating = false;
+              this.updatePrevDimensions();
             }
           );
       });
@@ -87,6 +88,17 @@ export class TableService {
 
   currentOffset(): number {
     return this.dataTable.limit * (this.currentPage - 1)
+  }
+
+  public updatePrevDimensions() {
+    this.prevRowDimensions = [];
+    this.rowDimensions.forEach((dim: Dimension) => {
+      this.prevRowDimensions.push(new Dimension(dim.name));
+    });
+    this.prevColDimensions = [];
+    this.columnDimensions.forEach((dim: Dimension) => {
+      this.prevColDimensions.push(new Dimension(dim.name));
+    });
   }
 
   get rowDimensions(): Dimension[] {
