@@ -19,7 +19,7 @@ describe('GbDashboardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbDashboardComponent', () => {
+  it('GbDashboardComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

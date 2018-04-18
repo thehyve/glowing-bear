@@ -1,5 +1,6 @@
 import {QuerySubscriptionFrequency} from './query-subscription-frequency';
 import {QueryDiffRecord} from './query-diff-record';
+import {DataTable} from '../table-models/data-table';
 
 export class Query {
 
@@ -19,12 +20,14 @@ export class Query {
   private _collapsed: boolean;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
-  // The patient constraint part of the query
-  private _patientsQuery: object;
-  // The observation constraint part of the query
-  private _observationsQuery: {data: string[]};
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
+  // 1st step: The patient constraint part of the query
+  private _patientsQuery: object;
+  // 2nd step: The observation constraint part of the query
+  private _observationsQuery: { data: string[] };
+  // 3rd step: The definition of data table
+  private _dataTable: DataTable;
 
   /*
    * Subscription feature
@@ -50,6 +53,40 @@ export class Query {
     this.selected = false;
     this.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
     this.diffRecords = [];
+  }
+
+  toPlainObject(): object {
+    let obj = {};
+    obj['id'] = this.id;
+    obj['name'] = this.name;
+    obj['bookmarked'] = this.bookmarked;
+    obj['subscribed'] = this.subscribed;
+    if (this.subscriptionFreq) {
+      obj['subscriptionFreq'] = this.subscriptionFreq;
+    }
+    if (this.description) {
+      obj['description'] = this.description;
+    }
+    if (this.createDate) {
+      obj['createDate'] = this.createDate;
+    }
+    if (this.updateDate) {
+      obj['updateDate'] = this.updateDate;
+    }
+    // TODO: refactor patientsQuery to subjectCriteria of type Constraint
+    if (this.patientsQuery) {
+      obj['patientsQuery'] = this.patientsQuery;
+    }
+    // TODO: refactor observationsQuery to variableCriteria of type Array
+    if (this.observationsQuery) {
+      obj['observationsQuery'] = this.observationsQuery;
+    }
+    // TODO: create toPlainObject() function for dataTable
+    // if (this.dataTable) {
+    //   obj['dataTable'] = this.dataTable;
+    // }
+
+    return obj;
   }
 
   get id(): string {
@@ -116,12 +153,20 @@ export class Query {
     this._patientsQuery = value;
   }
 
-  get observationsQuery(): {data: string[]} {
+  get observationsQuery(): { data: string[] } {
     return this._observationsQuery;
   }
 
-  set observationsQuery(value: {data: string[]}) {
+  set observationsQuery(value: { data: string[] }) {
     this._observationsQuery = value;
+  }
+
+  get dataTable(): DataTable {
+    return this._dataTable;
+  }
+
+  set dataTable(value: DataTable) {
+    this._dataTable = value;
   }
 
   get createDate(): string {

@@ -1,3 +1,9 @@
+@import "../../node_modules/primeng/resources/primeng.min.css";
+@import "../../node_modules/font-awesome/css/font-awesome.css";
+@import "../../node_modules/roboto-fontface/css/roboto/roboto-fontface.css";
+@import "./primeng-theme.css";
+@import "./bootstrap.css";
+
 /*
   custom variables
 */
@@ -102,7 +108,17 @@ body .gb-spinner.loading {
   padding-right: 15px;
 }
 
-/* Change input placeholder text color */
+/*
+ * Change the primeng tooltip for data table cells
+ */
+.ui-tooltip.ui-widget.ui-tooltip-right,
+.ui-tooltip.ui-widget.ui-tooltip-left {
+  font-size: x-small;
+  width: 300px;
+  min-width: 300px;
+}
+
+  /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
 }
@@ -391,4 +407,43 @@ gb-queries md2-accordion-tab>.md2-accordion-tab-body {
 
 gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
   color: transparent;
+}
+
+/*
+ * ------------------------------ Styles for gb-table-dimensions component -------------------------------
+ */
+gb-table-dimensions .ui-picklist-droppoint {
+  height: 3px !important;
+}
+
+gb-table-dimensions .ui-picklist-droppoint-highlight {
+  background: var(--gb-clinical-green-dark);
+  height: 2em !important;
+}
+
+gb-table-dimensions .ui-picklist .ui-picklist-caption {
+  font-size: small;
+  font-weight: bold;
+  padding: 0px;
+}
+
+gb-table-dimensions .ui-picklist .ui-picklist-filter-container {
+  font-size: small;
+  padding: 0px 0px 0px .5em;
+}
+
+gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
+  padding: 1px;
+  font-size: small;
+}
+
+/*
+ * ------------------------------ Styles for gb-table-grid component -------------------------------
+ */
+gb-table-grid .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
 }

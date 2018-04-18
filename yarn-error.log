@@ -1,5 +1,5 @@
 Arguments: 
-  /Users/bo/.nvm/versions/node/v8.10.0/bin/node /Users/bo/.nvm/versions/node/v8.10.0/bin/yarn remove @angular/cli@1.7.3
+  /Users/bo/.nvm/versions/node/v8.10.0/bin/node /Users/bo/.nvm/versions/node/v8.10.0/bin/yarn upgrade primeng
 
 PATH: 
   /Users/bo/go/bin:/anaconda3/bin:/Users/bo/.sdkman/candidates/grails/current/bin:/Users/bo/.sdkman/candidates/gradle/current/bin:/Users/bo/.nvm/versions/node/v8.10.0/bin:/usr/local/gradle-2.12/bin:/usr/local/apache-maven-3.3.9/bin:/usr/local/grails-2.3.11/bin:/usr/local/Cellar/postgresql/9.5.2/bin:/Library/Java/JavaVirtualMachines/jdk1.8.0_77.jdk/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/go/bin
@@ -47,7 +47,7 @@ npm manifest:
       "font-awesome": "^4.7.0",
       "md2": "^0.0.29",
       "ng2-simple-timer": "^1.3.1",
-      "primeng": "4.2.2",
+      "primeng": "5.2.3",
       "roboto-fontface": "^0.8.0",
       "rxjs": "^5.1.0",
       "zone.js": "^0.8.4"
@@ -116,7 +116,7 @@ Lockfile:
     dependencies:
       tslib "^1.7.1"
   
-  "@angular/cli@^1.7.3":
+  "@angular/cli@^1.6.5":
     version "1.7.3"
     resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-1.7.3.tgz#ac917b69240bb1b340421e9f985135890e0d53b4"
     dependencies:
@@ -6605,10 +6605,14 @@ Lockfile:
     resolved "https://registry.yarnpkg.com/zone.js/-/zone.js-0.8.20.tgz#a218c48db09464b19ff6fc8f0d4bb5b1046e185d"
 
 Trace: 
-  Error: This module isn't specified in a manifest.
+  Error: Outdated lockfile. Please run `yarn install` and try again.
       at new MessageError (/Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:186:110)
-      at Object.<anonymous> (/Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:60445:15)
+      at /Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:36620:19
       at Generator.next (<anonymous>)
       at step (/Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:98:30)
-      at /Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:109:13
-      at <anonymous>
+      at /Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:116:14
+      at new Promise (<anonymous>)
+      at new F (/Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:23451:28)
+      at /Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:95:12
+      at /Users/bo/.nvm/versions/node/v8.10.0/lib/node_modules/yarn/lib/cli.js:36660:25
+      at Array.map (<anonymous>)

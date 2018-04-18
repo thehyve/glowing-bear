@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {PatientSetConstraint} from '../../../../models/constraints/patient-set-constraint';
+import {PatientSetConstraint} from '../../../../models/constraint-models/patient-set-constraint';
 
 @Component({
   selector: 'gb-patient-set-constraint',

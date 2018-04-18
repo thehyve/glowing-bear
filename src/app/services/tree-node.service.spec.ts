@@ -16,7 +16,7 @@ describe('TreeNodeService', () => {
     });
   });
 
-  it('should inject TreeNodeService', inject([TreeNodeService], (service: TreeNodeService) => {
+  it('TreeNodeService should be injected', inject([TreeNodeService], (service: TreeNodeService) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -15,6 +15,8 @@ import {SimpleTimer} from 'ng2-simple-timer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {TableService} from '../../../../services/table.service';
+import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -49,6 +51,10 @@ describe('GbExportComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: TableService,
+          useClass: TableServiceMock
         }
       ]
     })
@@ -61,7 +67,7 @@ describe('GbExportComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbExportComponent', () => {
+  it('GbExportComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });
