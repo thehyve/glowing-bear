@@ -26,12 +26,15 @@ export class DataTable {
   // The offset and limit used to make table calls with pagination
   private _offset: number;
   private _limit: number;
+  // The current page of the table
+  private _currentPage: number;
 
   constructor() {
     this.constraint = new TrueConstraint();
     this.isDirty = false;
     this.isUsingHeaders = false;
     this.isLastPage = false;
+    this.currentPage = 1;
     this.offset = 0;
     this.limit = 10;
     this.clear();
@@ -148,4 +151,14 @@ export class DataTable {
   set isLastPage(value: boolean) {
     this._isLastPage = value;
   }
+
+  get currentPage(): number {
+    return this._currentPage;
+  }
+
+  set currentPage(value: number) {
+    this._currentPage = value;
+    this.offset = this.limit * (value - 1);
+  }
+
 }
