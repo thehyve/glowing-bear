@@ -172,11 +172,15 @@ export class EndpointService {
     let endpointJSON = localStorage.getItem('endpoint');
     if (endpointJSON) {
       let storedEndpoint = JSON.parse(endpointJSON);
-      this.endpoint.accessToken = storedEndpoint._accessToken;
-      this.endpoint.expiresAt = storedEndpoint._expiresAt;
-    } else {
-      this.navigateToAuthorizationPage(this.endpoint);
+      let currentTime = new Date().getTime();
+      let expirationTime = new Date(storedEndpoint._expiresAt).getTime();
+      if (currentTime < expirationTime) {
+        this.endpoint.accessToken = storedEndpoint._accessToken;
+        this.endpoint.expiresAt = storedEndpoint._expiresAt;
+        return;
+      }
     }
+    this.navigateToAuthorizationPage(this.endpoint);
   }
 
 }
