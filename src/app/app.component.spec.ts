@@ -13,7 +13,7 @@ import {AuthenticationService} from './services/authentication.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
-import {AuthServiceMock} from './services/mocks/auth.service.mock';
+import {AuthenticationServiceMock} from './services/mocks/authentication.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
@@ -72,7 +72,7 @@ describe('AppComponent', () => {
         },
         {
           provide: AuthenticationService,
-          useClass: AuthServiceMock
+          useClass: AuthenticationServiceMock
         },
         {
           provide: TransmartResourceService,

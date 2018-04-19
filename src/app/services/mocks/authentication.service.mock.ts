@@ -1,7 +1,7 @@
 import {Injectable, OnDestroy} from '@angular/core';
 
 @Injectable()
-export class AuthServiceMock implements OnDestroy {
+export class AuthenticationServiceMock implements OnDestroy {
 
   constructor() { }
 
