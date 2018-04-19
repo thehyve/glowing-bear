@@ -17,7 +17,6 @@ export class EndpointService {
       // Check if there is authentication data in the hash fragment of the url
       let oauthGrantFragment: string = parsedUrl.hash;
       if (oauthGrantFragment.length > 1) {
-        console.log('oauthGrantFragment: ', oauthGrantFragment)
         // Update the current endpoint with the received credentials
         this.initializeEndpointWithCredentials(this.endpoint, oauthGrantFragment);
         // Save the endpoint
