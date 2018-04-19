@@ -16,13 +16,9 @@ describe('TransmartResourceService', () => {
       providers: [
         TransmartResourceService,
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
-        },
-        {
           provide: AppConfig,
           useClass: AppConfigMock
-        },
+        }
       ]
     });
   });

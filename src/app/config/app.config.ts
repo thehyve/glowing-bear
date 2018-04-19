@@ -5,6 +5,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 @Injectable()
 export class AppConfig {
 
+  public static path = 'app/config/';
   private config: Object = null;
   private env: Object = null;
 
@@ -36,14 +37,13 @@ export class AppConfig {
   public load() {
     return new Promise((resolve, reject) => {
 
-      let path = 'app/config/';
       const options = {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
         })
       };
       this.http
-        .get(path + 'env.json', options)
+        .get(AppConfig.path + 'env.json', options)
         .catch((error: any): any => {
           console.error('Configuration file "env.json" could not be read');
           resolve(true);
@@ -55,12 +55,12 @@ export class AppConfig {
 
           switch (this.getEnv('env')) {
             case 'prod': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
+              request = this.http.get(AppConfig.path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 
             case 'dev': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
+              request = this.http.get(AppConfig.path + 'config.' + this.getEnv('env') + '.json');
             }
               break;
 

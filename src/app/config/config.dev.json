@@ -1,5 +1,10 @@
 {
-  "api-url": "http://localhost:8080",
+  "api-url": "http://localhost:8082/IRCT-CL/rest",
   "api-version": "v2",
-  "app-url": "http://localhost:4200"
+  "app-url": "http://localhost:4200",
+
+  "idp-url": "http://localhost:8081/auth/realms/master",
+  "oidc-scopes": "openid",
+
+  "irct-resource-name": "i2b2-local"
 }

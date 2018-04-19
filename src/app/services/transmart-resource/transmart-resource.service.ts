@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {EndpointService} from '../endpoint.service';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -24,9 +23,11 @@ export class TransmartResourceService {
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
 
+  // todo: compile fix
+  private endpointService: any;
+
   constructor(private appConfig: AppConfig,
-              private http: HttpClient,
-              private endpointService: EndpointService) {
+              private http: HttpClient) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
   }
 

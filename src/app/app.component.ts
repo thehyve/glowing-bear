@@ -1,5 +1,5 @@
 import {Component, ViewChild, OnInit} from '@angular/core';
-import {EndpointService} from './services/endpoint.service';
+import {AuthenticationService} from './services/authentication.service';
 import {ResourceService} from './services/resource.service';
 import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
   private x_pos: number; // Stores x coordinate of the mouse pointer
   private x_gap: number; // Stores x gap (edge) between mouse and gutter
 
-  constructor(private endpointService: EndpointService,
+  constructor(private authService: AuthenticationService,
               private resourceService: ResourceService,
               private transmartResourceService: TransmartResourceService,
               private treeNodeService: TreeNodeService,
@@ -94,12 +94,6 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
-    this.resourceService.logout()
-      .subscribe(
-        res => {
-          this.endpointService.invalidateToken();
-        }
-      );
+    this.authService.logout();
   }
-
 }
