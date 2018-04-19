@@ -4,7 +4,7 @@
   "license": "GPL-3.0+",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --aot",
     "build": "ng build",
     "package": "ng build --prod",
     "test": "ng test",
