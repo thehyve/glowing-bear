@@ -73,9 +73,7 @@ export class TimeConstraint implements Constraint {
         type: 'DATE'
       },
       operator: operator,
-      values: values,
-      isNegated: this.isNegated,
-      isObservationDate: this.isObservationDate
+      values: values
     };
 
     // Wrap date constraint in a negation if required
