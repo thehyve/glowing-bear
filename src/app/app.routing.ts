@@ -1,6 +1,6 @@
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {AutoLoginComponent} from './auto-login.component';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
 
 // Route Configuration
 export const routes: Routes = [
@@ -23,7 +23,7 @@ export const routes: Routes = [
   },
   {
     path: 'autologin',
-    component: AutoLoginComponent
+    component: GbAutoLoginComponent
   }
 ];
 

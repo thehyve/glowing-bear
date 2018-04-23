@@ -22,7 +22,7 @@ import {TransmartResourceService} from './services/transmart-resource/transmart-
 
 import {AuthModule} from 'angular-auth-oidc-client';
 import {IrctHttpInterceptor} from './services/irct/irct-http-interceptor.service';
-import {AutoLoginComponent} from './auto-login.component';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
 import {AuthenticationService} from './services/authentication.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
@@ -32,7 +32,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
 @NgModule({
   declarations: [
     AppComponent,
-    AutoLoginComponent
+    GbAutoLoginComponent
   ],
   imports: [
     BrowserModule,

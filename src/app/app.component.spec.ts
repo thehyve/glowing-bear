@@ -29,7 +29,7 @@ import {TableService} from './services/table.service';
 import {TableServiceMock} from './services/mocks/table.service.mock';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
-import {AutoLoginComponent} from './auto-login.component';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
 
 
 export function initConfig(config: AppConfig) {
@@ -41,7 +41,7 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         AppComponent,
-        AutoLoginComponent
+        GbAutoLoginComponent
       ],
       imports: [
         BrowserModule,
