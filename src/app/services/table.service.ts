@@ -55,29 +55,31 @@ export class TableService {
         } else {
           // default table representation
           let availableDimensionNames = new Array<string>();
-          studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
-            availableDimensionNames.push(dim.name);
-          });
-          let takenDimensionNames = new Array<string>();
-          let newRowDimensions = new Array<Dimension>();
-          this.dataTable.rowDimensions.forEach((dim: Dimension) => {
-            if (availableDimensionNames.includes(dim.name)) {
-              newRowDimensions.push(dim);
-              takenDimensionNames.push(dim.name);
-            }
-          });
-          let newColumnDimensions = new Array<Dimension>();
-          this.dataTable.columnDimensions.forEach((dim: Dimension) => {
-            if (availableDimensionNames.includes(dim.name)) {
-              newColumnDimensions.push(dim);
-              takenDimensionNames.push(dim.name);
-            }
-          });
-          studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
-            if (!takenDimensionNames.includes(dim.name)) {
-              this.dataTable.rowDimensions.push(dim);
-            }
-          });
+          if (studiesDimensions.availableDimensions != null) {
+            studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+              availableDimensionNames.push(dim.name);
+            });
+            let takenDimensionNames = new Array<string>();
+            let newRowDimensions = new Array<Dimension>();
+            this.dataTable.rowDimensions.forEach((dim: Dimension) => {
+              if (availableDimensionNames.includes(dim.name)) {
+                newRowDimensions.push(dim);
+                takenDimensionNames.push(dim.name);
+              }
+            });
+            let newColumnDimensions = new Array<Dimension>();
+            this.dataTable.columnDimensions.forEach((dim: Dimension) => {
+              if (availableDimensionNames.includes(dim.name)) {
+                newColumnDimensions.push(dim);
+                takenDimensionNames.push(dim.name);
+              }
+            });
+            studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+              if (!takenDimensionNames.includes(dim.name)) {
+                this.dataTable.rowDimensions.push(dim);
+              }
+            });
+          }
         }
         this.resourceService.getDataTable(this.dataTable)
           .subscribe(
