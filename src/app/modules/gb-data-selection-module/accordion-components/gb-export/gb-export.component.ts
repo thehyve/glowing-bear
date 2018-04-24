@@ -21,9 +21,9 @@ export class GbExportComponent implements OnInit {
   ResourceName = ResourceName;
 
   constructor(private constraintService: ConstraintService,
-              private queryService: QueryService,
+              public queryService: QueryService,
               private tableService: TableService,
-              private resourceService: ResourceService,
+              public resourceService: ResourceService,
               private timer: SimpleTimer) {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
