@@ -18,8 +18,7 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
-import {StudiesDimensions} from "../models/table-models/studies-dimensions";
-import {DefaultTableRepresentation} from "../models/table-models/default-table-representation";
+import {TransmartStudiesDimensions} from "../models/transmart-models/transmart-studies-dimensions";
 
 @Injectable()
 export class ResourceService {
@@ -281,12 +280,15 @@ export class ResourceService {
     let isUsingHeaders = dataTable.isUsingHeaders;
     let offset = dataTable.offset;
     let limit = dataTable.limit;
-    const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
-    const constraint: Constraint = dataTable.constraint;
-    return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
-      .map((transmartTable: TransmartDataTable) => {
-        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit);
-      });
+
+    return this.getDimensions(dataTable.constraint).switchMap((transmartStudies: TransmartStudiesDimensions) => {
+      TransmartMapper.mapDefaultDimensionsRepresentation(transmartStudies, dataTable);
+      const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
+      const constraint: Constraint = dataTable.constraint;
+      return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
+    }, (transmartStudies: TransmartStudiesDimensions, transmartTable: TransmartDataTable) => {
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
+    });
   }
 
   /**
@@ -294,53 +296,14 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Dimension[]>}
    */
-  getDimensions(constraint: Constraint): Observable<StudiesDimensions> {
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+  private getDimensions(constraint: Constraint): Observable<TransmartStudiesDimensions> {
     return this.transmartResourceService.getStudyNames(constraint)
       .switchMap((studyElements: TransmartStudyDimensionElement[]) => {
         let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);
         return this.transmartResourceService.getAvailableDimensions(studyNames);
       }, (studyElements: TransmartStudyDimensionElement[], transmartStudies: TransmartStudy[]) => {
-        let studiesDimensions = new StudiesDimensions();
-
-        if (transmartStudies && transmartStudies.length > 0) {
-          let dimensions = new Array<Dimension>();
-
-          // get default table format for the study
-          if(transmartStudies.length === 1 && transmartStudies[0].metadata != null){
-            let defaultTableRepresentation = new DefaultTableRepresentation();
-            transmartStudies[0].metadata.defaultTabularRepresentation.columnDimensions.forEach((dimName: string) =>
-              defaultTableRepresentation.columnDimensions.push(new Dimension(dimName)));
-            transmartStudies[0].metadata.defaultTabularRepresentation.rowDimensions.forEach((dimName: string) =>
-              defaultTableRepresentation.rowDimensions.push(new Dimension(dimName)));
-
-            studiesDimensions.defaultTableRepresentation = defaultTableRepresentation;
-          }
-
-          // get dimension arrays for each study
-          let availableDimensions = transmartStudies.map(study => study.dimensions);
-
-          // sort to get the shortest dimension at the beginning of the array
-          availableDimensions.sort(function(a, b) {
-            return a.length - b.length;
-          });
-
-          // get common dimensions for all the studies
-          let commonDimensions = availableDimensions.shift().filter(function (v) {
-            return availableDimensions.every(function (a) {
-              return a.indexOf(v) !== -1;
-            });
-          });
-
-          commonDimensions.forEach((name: string) => {
-            if (highDims.indexOf(name) === -1) {
-              dimensions.push(new Dimension(name));
-            }
-          });
-          dimensions.forEach((dimension: Dimension) => studiesDimensions.availableDimensions.push(dimension));
-        }
-
-        return studiesDimensions;
+        return TransmartMapper.mapStudiesDimensions(transmartStudies);
       });
   }
+
 }
