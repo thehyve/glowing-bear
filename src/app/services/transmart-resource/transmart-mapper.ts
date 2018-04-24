@@ -246,7 +246,8 @@ export class TransmartMapper {
       let dimensions = new Array<Dimension>();
 
       // get default table format for the study
-      if (transmartStudies.length === 1 && transmartStudies[0].metadata != null) {
+      if (transmartStudies.length === 1 && transmartStudies[0].metadata != null
+        && transmartStudies[0].metadata.defaultTabularRepresentation != null) {
         let rowDimensions = new Array<string>();
         let columnDimensions = new Array<string>();
         transmartStudies[0].metadata.defaultTabularRepresentation.columnDimensions.forEach((dimName: string) =>
@@ -285,8 +286,8 @@ export class TransmartMapper {
 
   public static mapDefaultDimensionsRepresentation(studiesDimensions: TransmartStudiesDimensions, dataTable: DataTable) {
     // update dimensions
+    dataTable.clearDimensions();
     if (studiesDimensions.defaultTableRepresentation != null) {
-      dataTable.clearDimensions();
       // study specific default row dimensions
       studiesDimensions.defaultTableRepresentation.rowDimensions.forEach((rowDimension: string) =>
         dataTable.rowDimensions.push(new Dimension(rowDimension)));
