@@ -92,4 +92,5 @@ publishing {
 }
 publishToMavenLocal.dependsOn 'distTar'
 publish.dependsOn 'distTar'
+distTar.baseName = 'glowing-bear'
 
