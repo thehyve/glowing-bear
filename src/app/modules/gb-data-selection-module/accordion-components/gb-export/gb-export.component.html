@@ -34,9 +34,15 @@
       <button type="button" class="btn btn-primary btn-sm"
               (click)="createExportJob()">Create Export</button>
       <span>&nbsp;</span>
-      <div *ngIf="exportDataView === 'surveyTable'">
-        <p-checkbox class="gb-include-date-columns-checkbox" [(ngModel)]="dateColumnsIncluded" binary="true"></p-checkbox>
-        Include measurement date columns
+      <!-- show the date column checkbox if the resource service is in transmart mode -->
+      <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
+      <div *ngIf="resourceService.resourceName === ResourceName.TRANSMART">
+        <div *ngIf="transmartResourceService.exportDataView === 'surveyTable'">
+          <p-checkbox class="gb-include-date-columns-checkbox"
+                      [(ngModel)]="transmartResourceService.dateColumnsIncluded"
+                      binary="true"></p-checkbox>
+          Include measurement date columns
+        </div>
       </div>
     </div>
   </div>

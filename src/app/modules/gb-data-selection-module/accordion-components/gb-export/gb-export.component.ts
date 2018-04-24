@@ -8,6 +8,8 @@ import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
 import {TableService} from '../../../../services/table.service';
 import {ExportDataType} from '../../../../models/export-models/export-data-type';
+import {TransmartResourceService} from '../../../../services/transmart-resource/transmart-resource.service';
+import {ResourceName} from '../../../../services/resource-name';
 
 @Component({
   selector: 'gb-export',
@@ -18,11 +20,13 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
+  ResourceName = ResourceName;
 
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService,
               private tableService: TableService,
               private resourceService: ResourceService,
+              public transmartResourceService: TransmartResourceService,
               private timer: SimpleTimer) {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
@@ -194,5 +198,4 @@ export class GbExportComponent implements OnInit {
   get exportDataTypes(): ExportDataType[] {
     return this.queryService.exportDataTypes;
   }
-
 }
