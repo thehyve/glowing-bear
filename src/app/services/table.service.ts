@@ -8,7 +8,7 @@ import {ConstraintService} from './constraint.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
 import {DimensionValue} from '../models/table-models/dimension-value';
-import {StudiesDimensions} from "../models/table-models/studies-dimensions";
+import {TransmartStudiesDimensions} from "../models/transmart-models/transmart-studies-dimensions";
 
 @Injectable()
 export class TableService {
@@ -31,66 +31,16 @@ export class TableService {
     this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
     const constraint_1_2 = this.constraintService.constraint_1_2();
     this.dataTable.constraint = constraint_1_2;
-    this.resourceService.getDimensions(constraint_1_2)
-      .subscribe((studiesDimensions: StudiesDimensions) => {
-        // update dimensions
-        if(studiesDimensions.defaultTableRepresentation != null){
-          this.dataTable.clearDimensions();
-          // study specific default row dimensions
-          studiesDimensions.defaultTableRepresentation.rowDimensions.forEach((rowDimension: Dimension) =>
-          this.dataTable.rowDimensions.push(rowDimension));
 
-          // study specific default column dimensions
-          studiesDimensions.defaultTableRepresentation.columnDimensions.forEach((columnDimension: Dimension) =>
-            this.dataTable.columnDimensions.push(columnDimension));
-
-          // dimensions that are not included in a default representation,
-          // but are supported are column dimensions by default
-          studiesDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
-            if(!this.dataTable.rowDimensions.map(dim => dim.name).includes(availableDimension.name)
-              && !this.dataTable.columnDimensions.map(dim => dim.name).includes(availableDimension.name)) {
-              this.dataTable.rowDimensions.push(availableDimension);
-            }
-          });
-        } else {
-          // default table representation
-          let availableDimensionNames = new Array<string>();
-          if (studiesDimensions.availableDimensions != null) {
-            studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
-              availableDimensionNames.push(dim.name);
-            });
-            let takenDimensionNames = new Array<string>();
-            let newRowDimensions = new Array<Dimension>();
-            this.dataTable.rowDimensions.forEach((dim: Dimension) => {
-              if (availableDimensionNames.includes(dim.name)) {
-                newRowDimensions.push(dim);
-                takenDimensionNames.push(dim.name);
-              }
-            });
-            let newColumnDimensions = new Array<Dimension>();
-            this.dataTable.columnDimensions.forEach((dim: Dimension) => {
-              if (availableDimensionNames.includes(dim.name)) {
-                newColumnDimensions.push(dim);
-                takenDimensionNames.push(dim.name);
-              }
-            });
-            studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
-              if (!takenDimensionNames.includes(dim.name)) {
-                this.dataTable.rowDimensions.push(dim);
-              }
-            });
-          }
+    this.resourceService.getDataTable(this.dataTable)
+      .subscribe(
+        (newDataTable: DataTable) => {
+          this.dataTable = newDataTable;
+          this.dataTable.isDirty = false;
+          this.dataTable.isUpdating = false;
+          this.updatePrevDimensions();
         }
-        this.resourceService.getDataTable(this.dataTable)
-          .subscribe(
-            (newDataTable: DataTable) => {
-              this.dataTable = newDataTable;
-              this.dataTable.isDirty = false;
-              this.dataTable.isUpdating = false;
-              this.updatePrevDimensions();
-            }
-          );
-      });
+      );
   }
 
   public nextPage() {

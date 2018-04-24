@@ -15,6 +15,8 @@ import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
+import {TransmartStudy} from "../../models/transmart-models/transmart-study";
+import {TransmartStudiesDimensions} from "../../models/transmart-models/transmart-studies-dimensions";
 
 export class TransmartMapper {
 
@@ -234,6 +236,102 @@ export class TransmartMapper {
       }
     }
     return elements;
+  }
+
+  public static mapStudiesDimensions(transmartStudies: TransmartStudy[]) {
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time']
+    let studiesDimensions = new TransmartStudiesDimensions();
+
+    if (transmartStudies && transmartStudies.length > 0) {
+      let dimensions = new Array<Dimension>();
+
+      // get default table format for the study
+      if (transmartStudies.length === 1 && transmartStudies[0].metadata != null) {
+        let rowDimensions = new Array<string>();
+        let columnDimensions = new Array<string>();
+        transmartStudies[0].metadata.defaultTabularRepresentation.columnDimensions.forEach((dimName: string) =>
+          columnDimensions.push(dimName));
+        transmartStudies[0].metadata.defaultTabularRepresentation.rowDimensions.forEach((dimName: string) =>
+          rowDimensions.push(dimName));
+
+        studiesDimensions.defaultTableRepresentation = new TransmartTableState(rowDimensions, columnDimensions);
+      }
+
+      // get dimension arrays for each study
+      let availableDimensions = transmartStudies.map(study => study.dimensions);
+
+      // sort to get the shortest dimension at the beginning of the array
+      availableDimensions.sort(function (a, b) {
+        return a.length - b.length;
+      });
+
+      // get common dimensions for all the studies
+      let commonDimensions = availableDimensions.shift().filter(function (v) {
+        return availableDimensions.every(function (a) {
+          return a.indexOf(v) !== -1;
+        });
+      });
+
+      commonDimensions.forEach((name: string) => {
+        if (highDims.indexOf(name) === -1) {
+          dimensions.push(new Dimension(name));
+        }
+      });
+      dimensions.forEach((dimension: Dimension) => studiesDimensions.availableDimensions.push(dimension));
+    }
+
+    return studiesDimensions;
+  }
+
+  public static mapDefaultDimensionsRepresentation(studiesDimensions: TransmartStudiesDimensions, dataTable: DataTable) {
+    // update dimensions
+    if (studiesDimensions.defaultTableRepresentation != null) {
+      dataTable.clearDimensions();
+      // study specific default row dimensions
+      studiesDimensions.defaultTableRepresentation.rowDimensions.forEach((rowDimension: string) =>
+        dataTable.rowDimensions.push(new Dimension(rowDimension)));
+
+      // study specific default column dimensions
+      studiesDimensions.defaultTableRepresentation.columnDimensions.forEach((columnDimension: string) =>
+        dataTable.columnDimensions.push(new Dimension(columnDimension)));
+
+      // dimensions that are not included in a default representation, but are supported
+      // will be column dimensions by default
+      studiesDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
+        if (!dataTable.rowDimensions.map(dim => dim.name).includes(availableDimension.name)
+          && !dataTable.columnDimensions.map(dim => dim.name).includes(availableDimension.name)) {
+          dataTable.rowDimensions.push(availableDimension);
+        }
+      });
+    } else {
+      // default table representation
+      let availableDimensionNames = new Array<string>();
+      if (studiesDimensions.availableDimensions != null) {
+        studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+          availableDimensionNames.push(dim.name);
+        });
+        let takenDimensionNames = new Array<string>();
+        let newRowDimensions = new Array<Dimension>();
+        dataTable.rowDimensions.forEach((dim: Dimension) => {
+          if (availableDimensionNames.includes(dim.name)) {
+            newRowDimensions.push(dim);
+            takenDimensionNames.push(dim.name);
+          }
+        });
+        let newColumnDimensions = new Array<Dimension>();
+        dataTable.columnDimensions.forEach((dim: Dimension) => {
+          if (availableDimensionNames.includes(dim.name)) {
+            newColumnDimensions.push(dim);
+            takenDimensionNames.push(dim.name);
+          }
+        });
+        studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+          if (!takenDimensionNames.includes(dim.name)) {
+            dataTable.rowDimensions.push(dim);
+          }
+        });
+      }
+    }
   }
 
   private static updateCols(cols: Array<Col>, newColValue, metadata) {
