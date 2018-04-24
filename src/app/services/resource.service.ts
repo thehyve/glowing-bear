@@ -329,6 +329,18 @@ export class ResourceService {
       });
   }
 
+  get transmartExportDataView(): string {
+    return this.transmartResourceService.exportDataView;
+  }
+
+  get transmartDateColumnIncluded(): boolean {
+    return this.transmartResourceService.dateColumnsIncluded;
+  }
+
+  set transmartDateColumnIncluded(value: boolean) {
+    this.transmartResourceService.dateColumnsIncluded = value;
+  }
+
   get resourceName(): ResourceName {
     return this._resourceName;
   }
