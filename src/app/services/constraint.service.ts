@@ -62,12 +62,12 @@ export class ConstraintService {
     this.rootExclusionConstraint.isRoot = true;
 
     // Construct constraints
-    // todo: this.loadEmptyConstraints();
-    // todo: this.loadStudies();
+    this.loadEmptyConstraints();
+    this.loadStudies();
     // create the pedigree-related constraints
-    // todo: this.loadPedigrees();
+    this.loadPedigrees();
     // also construct concepts while loading the tree nodes
-    // todo: this.treeNodeService.loadTreeNodes(this);
+    this.treeNodeService.loadTreeNodes(this);
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();

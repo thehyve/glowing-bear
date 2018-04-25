@@ -2,10 +2,10 @@ import {Injectable, Injector} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {AuthorizationResult, OidcSecurityService} from 'angular-auth-oidc-client';
 import {Observable} from 'rxjs/Observable';
-import {AppConfig} from '../../config/app.config';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
-export class IrctHttpInterceptor implements HttpInterceptor {
+export class ApiHttpInterceptor implements HttpInterceptor {
   private oidcSecurityService: OidcSecurityService;
   private appConfig: AppConfig;
 
@@ -23,28 +23,28 @@ export class IrctHttpInterceptor implements HttpInterceptor {
       this.appConfig = this.injector.get(AppConfig);
     }
 
-    // skip if request is for config, or if not for IRCT
+    // skip if request is for config, or if not for API
     if (  req.url.includes(AppConfig.path) ||
           !req.url.includes(this.appConfig.getConfig('api-url'))) {
       return next.handle(req);
     }
 
-    // IRCT request: wait for oidc authorization
+    // API request: wait for oidc authorization
     return this.oidcSecurityService.getIsAuthorized().switchMap((isAuthorized) => {
       if (isAuthorized) {
-        return next.handle(this.addIRCTHeaders(req));
+        return next.handle(this.addAPIHeaders(req));
       } else {
         return this.oidcSecurityService.onAuthorizationResult.asObservable().switchMap((authResult) => {
           if (authResult !== AuthorizationResult.authorized) {
             throw new Error('Not authorized');
           }
-          return next.handle(this.addIRCTHeaders(req));
+          return next.handle(this.addAPIHeaders(req));
         });
       }
     });
   }
 
-  private addIRCTHeaders(req: HttpRequest<any>): HttpRequest<any> {
+  private addAPIHeaders(req: HttpRequest<any>): HttpRequest<any> {
     let token = this.oidcSecurityService.getToken();
 
     if (token !== '') {

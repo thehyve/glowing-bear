@@ -27,16 +27,16 @@ export class AuthenticationService implements OnDestroy {
     this.router = this.injector.get(Router);
 
     // load OIDC configuration from IDP
-    this.oidcConfigService.load_using_stsServer(this.config.getConfig('idp-url'));
+    this.oidcConfigService.load_using_stsServer(this.config.getConfig('oidc-server-url'));
 
     // load additional OIDC client configuration
     this.oidcConfigService.onConfigurationLoaded.subscribe(() => {
 
       // oidc implicit flow configuration
       const openIDImplicitFlowConfiguration = new OpenIDImplicitFlowConfiguration();
-      openIDImplicitFlowConfiguration.stsServer = this.config.getConfig('idp-url');
+      openIDImplicitFlowConfiguration.stsServer = this.config.getConfig('oidc-server-url');
       openIDImplicitFlowConfiguration.redirect_url = this.config.getConfig('app-url');
-      openIDImplicitFlowConfiguration.client_id = this.config.getConfig('irct-resource-name');
+      openIDImplicitFlowConfiguration.client_id = this.config.getConfig('oidc-client-id');
       openIDImplicitFlowConfiguration.response_type = 'id_token token';
       openIDImplicitFlowConfiguration.scope = this.config.getConfig('oidc-scopes');
       openIDImplicitFlowConfiguration.post_logout_redirect_uri = this.config.getConfig('app-url');

@@ -21,7 +21,7 @@ import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 
 import {AuthModule} from 'angular-auth-oidc-client';
-import {IrctHttpInterceptor} from './services/irct/irct-http-interceptor.service';
+import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
 import {GbAutoLoginComponent} from './gb-auto-login.component';
 import {AuthenticationService} from './services/authentication.service';
 
@@ -63,7 +63,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
       multi: true
     }, {
       provide: HTTP_INTERCEPTORS,
-      useClass: IrctHttpInterceptor,
+      useClass: ApiHttpInterceptor,
       multi: true
     },
   ],
