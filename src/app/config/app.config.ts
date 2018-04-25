@@ -7,9 +7,11 @@ export class AppConfig {
 
   private config: Object = null;
   private env: Object = null;
+  private envs: Array<string> = null;
 
   // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
   constructor(private http: HttpClient) {
+    this.envs = ['default', 'dev', 'transmart'];
   }
 
   /**
@@ -17,8 +19,8 @@ export class AppConfig {
    * if present; returns default value otherwise.
    */
   public getConfig(key: any, defaultValue: any = null) {
-      let value = this.config[key];
-      return value != null ? value : defaultValue;
+    let value = this.config[key];
+    return value != null ? value : defaultValue;
   }
 
   /**
@@ -51,26 +53,8 @@ export class AppConfig {
         })
         .subscribe((envResponse) => {
           this.env = envResponse;
-          let request: any = null;
-
-          switch (this.getEnv('env')) {
-            case 'prod': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
-            }
-              break;
-
-            case 'dev': {
-              request = this.http.get(path + 'config.' + this.getEnv('env') + '.json');
-            }
-              break;
-
-            case 'default': {
-              console.error('Environment file is not set or invalid');
-              resolve(true);
-            }
-              break;
-          }
-
+          const env = this.getEnv('env');
+          let request = this.envs.includes(env) ? this.http.get(path + 'config.' + env + '.json') : null;
           if (request) {
             request
               .catch((error: any) => {
