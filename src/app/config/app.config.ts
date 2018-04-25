@@ -30,11 +30,7 @@ export class AppConfig {
     return this.env[key];
   }
 
-  /**
-   * This method:
-   *   a) Loads "env.json" to get the current working environment (e.g.: 'production', 'development')
-   *   b) Loads "config.[env].json" to get all env's variables (e.g.: 'config.development.json')
-   */
+
   public load() {
     return new Promise((resolve, reject) => {
 
