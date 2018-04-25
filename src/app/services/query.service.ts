@@ -166,9 +166,9 @@ export class QueryService {
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private tableService: TableService) {
-    this.instantCountsUpdate_1 = false;
-    this.instantCountsUpdate_2 = false;
-    this.instantCountsUpdate_3 = false;
+    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
+    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);;
+    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);;
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
