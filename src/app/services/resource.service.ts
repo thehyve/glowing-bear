@@ -18,12 +18,14 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
+import {ResourceName} from './resource-name';
 
 @Injectable()
 export class ResourceService {
-
+  private _resourceName: ResourceName;
 
   constructor(private transmartResourceService: TransmartResourceService) {
+    this.resourceName = ResourceName.TRANSMART;
   }
 
   /**
@@ -325,5 +327,25 @@ export class ResourceService {
 
         return dimensions;
       });
+  }
+
+  get transmartExportDataView(): string {
+    return this.transmartResourceService.exportDataView;
+  }
+
+  get transmartDateColumnIncluded(): boolean {
+    return this.transmartResourceService.dateColumnsIncluded;
+  }
+
+  set transmartDateColumnIncluded(value: boolean) {
+    this.transmartResourceService.dateColumnsIncluded = value;
+  }
+
+  get resourceName(): ResourceName {
+    return this._resourceName;
+  }
+
+  set resourceName(value: ResourceName) {
+    this._resourceName = value;
   }
 }

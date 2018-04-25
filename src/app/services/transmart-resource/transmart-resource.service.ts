@@ -20,6 +20,7 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 @Injectable()
 export class TransmartResourceService {
 
+  // the export data view has an alternative 'surveyTable', specifically for NTR project
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
 

@@ -7,7 +7,7 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
 import {TableService} from '../../../../services/table.service';
-import {ExportDataType} from '../../../../models/export-models/export-data-type';
+import {ResourceName} from '../../../../services/resource-name';
 
 @Component({
   selector: 'gb-export',
@@ -18,11 +18,12 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
+  ResourceName = ResourceName;
 
   constructor(private constraintService: ConstraintService,
-              private queryService: QueryService,
+              public queryService: QueryService,
               private tableService: TableService,
-              private resourceService: ResourceService,
+              public resourceService: ResourceService,
               private timer: SimpleTimer) {
     this.updateExportJobs();
     this.timer.newTimer('30sec', 30);
@@ -70,14 +71,14 @@ export class GbExportComponent implements OnInit {
     }
 
     // 3. Validate if at least one data type is selected
-    if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
+    if (!this.queryService.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       this.queryService.alert(summary, '', 'warn');
       return false;
     }
 
     // 4. Validate if at least one file format is selected for checked data formats
-    for (let dataFormat of this.exportDataTypes) {
+    for (let dataFormat of this.queryService.exportDataTypes) {
       if (dataFormat['checked'] === true) {
         if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
@@ -130,7 +131,7 @@ export class GbExportComponent implements OnInit {
     let combo = new CombinationConstraint();
     combo.addChild(selectionConstraint);
     combo.addChild(projectionConstraint);
-    this.resourceService.runExportJob(job, this.exportDataTypes, combo, this.tableService.dataTable)
+    this.resourceService.runExportJob(job, this.queryService.exportDataTypes, combo, this.tableService.dataTable)
       .subscribe(
         returnedExportJob => {
           if (returnedExportJob) {
@@ -186,13 +187,4 @@ export class GbExportComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
   }
-
-  get isLoadingExportDataTypes(): boolean {
-    return this.queryService.isLoadingExportDataTypes;
-  }
-
-  get exportDataTypes(): ExportDataType[] {
-    return this.queryService.exportDataTypes;
-  }
-
 }
