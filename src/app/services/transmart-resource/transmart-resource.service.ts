@@ -543,12 +543,8 @@ export class TransmartResourceService {
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
     if (studyNames && studyNames.length > 0) {
-      let params = '';
-      for (let name of studyNames) {
-        params += `studyIds=${name}&`
-      }
-      params = params.substring(0, params.length - 1);
-      const urlPart = `studies/studyIds?${params}`;
+      let params = JSON.stringify(studyNames);
+      const urlPart = `studies/studyIds?studyIds=${params}`;
       const responseField = 'studies';
       return this.getCall(urlPart, responseField);
     } else {
