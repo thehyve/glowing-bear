@@ -26,8 +26,8 @@ export class AppConfig {
   /**
    * Use to get the data found in the first file (env file)
    */
-  public getEnv(key: any) {
-    return this.env[key];
+  public getEnv() {
+    return this.env['env'];
   }
 
 
@@ -49,12 +49,13 @@ export class AppConfig {
         })
         .subscribe((envResponse) => {
           this.env = envResponse;
-          const env = this.getEnv('env');
-          let request = this.envs.includes(env) ? this.http.get(path + 'config.' + env + '.json') : null;
+          const envString = this.getEnv();
+          let request = this.envs.includes(envString) ?
+            this.http.get(path + 'config.' + envString + '.json') : null;
           if (request) {
             request
               .catch((error: any) => {
-                console.error('Error reading ' + this.getEnv('env') + ' configuration file');
+                console.error('Error reading ' + envString + ' configuration file');
                 resolve(error);
                 return Observable.throw(error.json().error || 'Server error');
               })

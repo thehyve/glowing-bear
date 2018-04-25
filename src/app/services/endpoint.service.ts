@@ -11,6 +11,7 @@ export class EndpointService {
     let apiUrl = appConfig.getConfig('api-url');
     let apiVersion = appConfig.getConfig('api-version', 'v2');
     let appUrl = appConfig.getConfig('app-url');
+
     if (this.isValidUrl(apiUrl) && this.isValidUrl(appUrl)) {
       this.endpoint = new Endpoint(apiUrl, apiVersion, appUrl);
       let parsedUrl = this.parseUrl(this.getCurrentUrl());
