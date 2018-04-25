@@ -17,6 +17,8 @@ import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {TableService} from '../../../../services/table.service';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
+import {AppConfig} from '../../../../config/app.config';
+import {AppConfigMock} from '../../../../config/app.config.mock';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -40,6 +42,10 @@ describe('GbExportComponent', () => {
       ],
       providers: [
         SimpleTimer,
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
