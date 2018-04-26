@@ -1,5 +1,5 @@
-import {TransmartDefaultTableRepresentation} from "./transmart-default-table-representation";
+import {TransmartTableState} from "./transmart-table-state";
 
 export class TransmartStudyMetadata {
-  defaultTabularRepresentation: TransmartDefaultTableRepresentation;
+  defaultTabularRepresentation: TransmartTableState;
 }

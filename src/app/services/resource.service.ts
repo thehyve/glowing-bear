@@ -18,7 +18,7 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
-import {TransmartStudiesDimensions} from "../models/transmart-models/transmart-studies-dimensions";
+import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
 
 @Injectable()
 export class ResourceService {
@@ -281,12 +281,12 @@ export class ResourceService {
     let offset = dataTable.offset;
     let limit = dataTable.limit;
 
-    return this.getDimensions(dataTable.constraint).switchMap((transmartStudies: TransmartStudiesDimensions) => {
-      TransmartMapper.mapDefaultDimensionsRepresentation(transmartStudies, dataTable);
+    return this.getDimensions(dataTable.constraint).switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
+      TransmartMapper.mapDefaultDimensionsRepresentation(transmartStudyDimensions, dataTable);
       const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
       const constraint: Constraint = dataTable.constraint;
       return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
-    }, (transmartStudies: TransmartStudiesDimensions, transmartTable: TransmartDataTable) => {
+    }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
         return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
     });
   }
@@ -296,7 +296,7 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Dimension[]>}
    */
-  private getDimensions(constraint: Constraint): Observable<TransmartStudiesDimensions> {
+  private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     return this.transmartResourceService.getStudyNames(constraint)
       .switchMap((studyElements: TransmartStudyDimensionElement[]) => {
         let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);

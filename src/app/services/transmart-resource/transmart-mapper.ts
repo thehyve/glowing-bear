@@ -16,7 +16,7 @@ import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-co
 import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
 import {TransmartStudy} from "../../models/transmart-models/transmart-study";
-import {TransmartStudiesDimensions} from "../../models/transmart-models/transmart-studies-dimensions";
+import {TransmartStudyDimensions} from "../../models/transmart-models/transmart-study-dimensions";
 
 export class TransmartMapper {
 
@@ -240,7 +240,7 @@ export class TransmartMapper {
 
   public static mapStudiesDimensions(transmartStudies: TransmartStudy[]) {
     const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time']
-    let studiesDimensions = new TransmartStudiesDimensions();
+    let studiesDimensions = new TransmartStudyDimensions();
 
     if (transmartStudies && transmartStudies.length > 0) {
       let dimensions = new Array<Dimension>();
@@ -284,7 +284,7 @@ export class TransmartMapper {
     return studiesDimensions;
   }
 
-  public static mapDefaultDimensionsRepresentation(studiesDimensions: TransmartStudiesDimensions, dataTable: DataTable) {
+  public static mapDefaultDimensionsRepresentation(studiesDimensions: TransmartStudyDimensions, dataTable: DataTable) {
     // update dimensions
     dataTable.clearDimensions();
     if (studiesDimensions.defaultTableRepresentation != null) {

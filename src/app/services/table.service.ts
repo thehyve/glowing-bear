@@ -8,7 +8,7 @@ import {ConstraintService} from './constraint.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
 import {DimensionValue} from '../models/table-models/dimension-value';
-import {TransmartStudiesDimensions} from "../models/transmart-models/transmart-studies-dimensions";
+import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
 
 @Injectable()
 export class TableService {
