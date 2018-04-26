@@ -20,9 +20,9 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
 import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
 
+
 @Injectable()
 export class ResourceService {
-
 
   constructor(private transmartResourceService: TransmartResourceService) {
   }
@@ -287,7 +287,7 @@ export class ResourceService {
       const constraint: Constraint = dataTable.constraint;
       return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
     }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
+      return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
     });
   }
 
@@ -304,6 +304,18 @@ export class ResourceService {
       }, (studyElements: TransmartStudyDimensionElement[], transmartStudies: TransmartStudy[]) => {
         return TransmartMapper.mapStudiesDimensions(transmartStudies);
       });
+  }
+
+  get transmartExportDataView(): string {
+    return this.transmartResourceService.exportDataView;
+  }
+
+  get transmartDateColumnIncluded(): boolean {
+    return this.transmartResourceService.dateColumnsIncluded;
+  }
+
+  set transmartDateColumnIncluded(value: boolean) {
+    this.transmartResourceService.dateColumnsIncluded = value;
   }
 
 }

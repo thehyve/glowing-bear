@@ -150,24 +150,29 @@ export class QueryService {
    * Flag indicating if to relay the counts in the current step to the next
    */
   private _countsRelay: boolean;
-  /**
+  /*
    * Flag indicating if the subject selection of step 1 should be automatically
    * saved as subject set in the backend. If true, that subject set is used as the subject constraint
    * for step 2.
    */
   private _autosaveSubjectSets: boolean;
+  /*
+   * Flag indicating if the observation counts are calculated and shown
+   */
+  private _showObservationCounts: boolean;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private tableService: TableService) {
-    this.instantCountsUpdate_1 = false;
-    this.instantCountsUpdate_2 = false;
-    this.instantCountsUpdate_3 = false;
+    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
+    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);;
+    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);;
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
     this.loadQueries();
 
     // initial updates
@@ -1000,5 +1005,13 @@ export class QueryService {
 
   set treeNodeCountsUpdate(value: boolean) {
     this._treeNodeCountsUpdate = value;
+  }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
   }
 }

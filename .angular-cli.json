@@ -11,7 +11,8 @@
         "assets",
         "app/config/env.json",
         "app/config/config.dev.json",
-        "app/config/config.prod.json",
+        "app/config/config.default.json",
+        "app/config/config.transmart.json",
         "favicon.ico"
       ],
       "index": "index.html",

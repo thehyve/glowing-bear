@@ -17,9 +17,12 @@
           <div class="gb-data-selection-accordion-sub-header-2">
             <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_1}}</span> / {{subjectCount_0}}
-              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}},
-              <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
-              <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
+              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_1}}
+              <span *ngIf="queryService.showObservationCounts">
+                ,
+                <span class="gb-data-selection-emphasis-text">{{observationCount_1}}</span> / {{observationCount_0}}
+                <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_1}}
+              </span>
             </span>
             <span *ngIf="!queryService.instantCountsUpdate_1" class="float-right">
               <i *ngIf="queryService.isUpdating_1" class="fa fa-circle-o-notch fa-spin"></i>
@@ -46,12 +49,16 @@
           <div class="gb-data-selection-accordion-sub-header-2">
             <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}}</span> / {{subjectCount_1}}
-              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}},
-              <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
-              <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
+              <span class="gb-data-selection-emphasis-text">subjects</span> {{subjectCountPercentage_2}}
+              <span *ngIf="queryService.showObservationCounts">
+                ,
+                <span class="gb-data-selection-emphasis-text">{{observationCount_2}}</span> / {{observationCount_1}}
+                <span class="gb-data-selection-emphasis-text">observations</span> {{observationCountPercentage_2}}
+              </span>
             </span>
             <span *ngIf="!queryService.instantCountsUpdate_2" class="float-right">
-              <i *ngIf="queryService.isPreparing_2 || queryService.isUpdating_2" class="fa fa-circle-o-notch fa-spin"></i>
+              <i *ngIf="queryService.isPreparing_2 || queryService.isUpdating_2"
+                 class="fa fa-circle-o-notch fa-spin"></i>
               <button type="button"
                       (click)="update_2($event)"
                       class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
@@ -75,7 +82,10 @@
           <div class="gb-data-selection-accordion-sub-header-2">
             <span class="gb-data-selection-accordion-sub-header-3 float-left">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
-              <span class="gb-data-selection-emphasis-text">{{observationCount_2}} observations</span>
+              <span *ngIf="queryService.showObservationCounts"
+                    class="gb-data-selection-emphasis-text">
+                {{observationCount_2}} observations
+              </span>
             </span>
             <span *ngIf="!queryService.instantCountsUpdate_3" class="float-right">
               <i *ngIf="queryService.isUpdating_3" class="fa fa-circle-o-notch fa-spin"></i>
@@ -102,7 +112,10 @@
           <div class="form-inline gb-data-selection-accordion-sub-header-2">
             <div class="gb-data-selection-accordion-sub-header-3">
               <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
-              <span class="gb-data-selection-emphasis-text">{{observationCount_2}} observations</span>
+              <span *ngIf="queryService.showObservationCounts"
+                    class="gb-data-selection-emphasis-text">
+                {{observationCount_2}} observations
+              </span>
             </div>
           </div>
         </div>
