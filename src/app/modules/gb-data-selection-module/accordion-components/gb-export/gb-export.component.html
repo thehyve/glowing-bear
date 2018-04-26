@@ -36,7 +36,7 @@
       <span>&nbsp;</span>
       <!-- show the date column checkbox if the resource service is in transmart mode -->
       <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
-      <div *ngIf="resourceService.resourceName === ResourceName.TRANSMART">
+      <div *ngIf="isTransmartEnv">
         <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
           <p-checkbox class="gb-include-date-columns-checkbox"
                       [(ngModel)]="resourceService.transmartDateColumnIncluded"

@@ -1,7 +1,7 @@
 {
-  "api-url": "http://localhost:8080",
+  "api-url": "https://transmart-test.thehyve.net",
   "api-version": "v2",
-  "app-url": "http://localhost:4200",
+  "app-url": "https://glowingbear2-head.thehyve.net",
   "tree-node-counts-update": true,
   "autosave-subject-sets": false,
   "export-data-view": "default",

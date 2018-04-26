@@ -144,10 +144,13 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
   initUpdate() {
     if (!this.initUpdated) {
-      let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-      if (treeNodeElements && treeNodeElements.length > 0) {
-        this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
-        this.initUpdated = true;
+      let treeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
+      if (treeContainer) {
+        let treeNodeElements = treeContainer.children;
+        if (treeNodeElements && treeNodeElements.length > 0) {
+          this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+          this.initUpdated = true;
+        }
       }
     }
   }

@@ -7,7 +7,7 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {saveAs} from 'file-saver';
 import {QueryService} from '../../../../services/query.service';
 import {TableService} from '../../../../services/table.service';
-import {ResourceName} from '../../../../services/resource-name';
+import {AppConfig} from '../../../../config/app.config';
 
 @Component({
   selector: 'gb-export',
@@ -18,9 +18,9 @@ export class GbExportComponent implements OnInit {
 
   exportJobs: ExportJob[];
   exportJobName: string;
-  ResourceName = ResourceName;
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private appConfig: AppConfig,
+              private constraintService: ConstraintService,
               public queryService: QueryService,
               private tableService: TableService,
               public resourceService: ResourceService,
@@ -186,5 +186,10 @@ export class GbExportComponent implements OnInit {
   onExportJobNameInputDrop(event) {
     event.stopPropagation();
     event.preventDefault();
+  }
+
+  get isTransmartEnv(): boolean {
+    let env = this.appConfig.getEnv();
+    return (env === 'default') || (env === 'transmart');
   }
 }
