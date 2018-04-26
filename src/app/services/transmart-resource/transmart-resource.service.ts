@@ -358,7 +358,7 @@ export class TransmartResourceService {
       includeMeasurementDateColumns: this.dateColumnsIncluded
     };
     if (tableState) {
-      body['tableState'] = tableState;
+      body['defaultTabularRepresentation'] = tableState;
     }
     return this.postCall(urlPart, body, responseField);
   }

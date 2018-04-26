@@ -3,6 +3,6 @@ import {TransmartTableState} from "app/models/transmart-models/transmart-table-s
 
 export class TransmartStudyDimensions {
   availableDimensions: Array<Dimension> = [];
-  defaultTableRepresentation: TransmartTableState;
+  tableState: TransmartTableState;
 
 }

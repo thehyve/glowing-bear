@@ -185,7 +185,7 @@ export class ResourceService {
       }
     }
     if (hasSelectedFormat) {
-      const transmartTableState: TransmartTableState = includeDataTable ? TransmartMapper.mapDataTable(dataTable) : null;
+      const transmartTableState: TransmartTableState = includeDataTable ? TransmartMapper.mapDataTableToTableState(dataTable) : null;
       const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
       return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
     } else {
@@ -282,10 +282,9 @@ export class ResourceService {
     let limit = dataTable.limit;
 
     return this.getDimensions(dataTable.constraint).switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-      TransmartMapper.mapDefaultDimensionsRepresentation(transmartStudyDimensions, dataTable);
-      const transmartTableState: TransmartTableState = TransmartMapper.mapDataTable(dataTable);
+      let tableState: TransmartTableState = TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions);
       const constraint: Constraint = dataTable.constraint;
-      return this.transmartResourceService.getDataTable(transmartTableState, constraint, offset, limit)
+      return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
     }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
       return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
     });
@@ -302,7 +301,7 @@ export class ResourceService {
         let studyNames: string[] = TransmartMapper.mapTransmartStudyDimensionElements(studyElements);
         return this.transmartResourceService.getAvailableDimensions(studyNames);
       }, (studyElements: TransmartStudyDimensionElement[], transmartStudies: TransmartStudy[]) => {
-        return TransmartMapper.mapStudiesDimensions(transmartStudies);
+        return TransmartMapper.mapStudyDimensions(transmartStudies);
       });
   }
 

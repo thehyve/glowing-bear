@@ -67,7 +67,7 @@ export class TransmartMapper {
   }
 
   public static mapQuery(query: Query): TransmartQuery {
-    let transmartTableState: TransmartTableState = this.mapDataTable(query.dataTable);
+    let transmartTableState: TransmartTableState = this.mapDataTableToTableState(query.dataTable);
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
     transmartQuery.patientsQuery = query.patientsQuery;
     transmartQuery.observationsQuery = query.observationsQuery;
@@ -76,7 +76,7 @@ export class TransmartMapper {
     return transmartQuery;
   }
 
-  public static mapDataTable(dataTable: DataTable): TransmartTableState {
+  public static mapDataTableToTableState(dataTable: DataTable): TransmartTableState {
     let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
       dataTable.rowDimensions.map(dim => dim.name) : [];
     let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
@@ -88,7 +88,6 @@ export class TransmartMapper {
   public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean,
                                       requestedOffset: number, limit: number): DataTable {
     let dataTable = new DataTable();
-    let numberOfRows: number = transmartTable.rows.length;
     const headerNameField = 'name';
 
     // check if it is a last page
@@ -238,9 +237,9 @@ export class TransmartMapper {
     return elements;
   }
 
-  public static mapStudiesDimensions(transmartStudies: TransmartStudy[]) {
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time']
-    let studiesDimensions = new TransmartStudyDimensions();
+  public static mapStudyDimensions(transmartStudies: TransmartStudy[]): TransmartStudyDimensions {
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+    let transmartStudyDimensions = new TransmartStudyDimensions();
 
     if (transmartStudies && transmartStudies.length > 0) {
       let dimensions = new Array<Dimension>();
@@ -255,7 +254,7 @@ export class TransmartMapper {
         transmartStudies[0].metadata.defaultTabularRepresentation.rowDimensions.forEach((dimName: string) =>
           rowDimensions.push(dimName));
 
-        studiesDimensions.defaultTableRepresentation = new TransmartTableState(rowDimensions, columnDimensions);
+        transmartStudyDimensions.tableState = new TransmartTableState(rowDimensions, columnDimensions);
       }
 
       // get dimension arrays for each study
@@ -278,61 +277,62 @@ export class TransmartMapper {
           dimensions.push(new Dimension(name));
         }
       });
-      dimensions.forEach((dimension: Dimension) => studiesDimensions.availableDimensions.push(dimension));
+      dimensions.forEach((dimension: Dimension) => transmartStudyDimensions.availableDimensions.push(dimension));
     }
 
-    return studiesDimensions;
+    return transmartStudyDimensions;
   }
 
-  public static mapDefaultDimensionsRepresentation(studiesDimensions: TransmartStudyDimensions, dataTable: DataTable) {
+  public static mapStudyDimensionsToTableState(transmartStudyDimensions: TransmartStudyDimensions): TransmartTableState {
+    let rowDimensions: Array<string> = [];
+    let columnDimensions: Array<string> = [];
+
     // update dimensions
-    dataTable.clearDimensions();
-    if (studiesDimensions.defaultTableRepresentation != null) {
+    if (transmartStudyDimensions.tableState != null) {
       // study specific default row dimensions
-      studiesDimensions.defaultTableRepresentation.rowDimensions.forEach((rowDimension: string) =>
-        dataTable.rowDimensions.push(new Dimension(rowDimension)));
+      transmartStudyDimensions.tableState.rowDimensions.forEach((rowDimension: string) =>
+        rowDimensions.push(rowDimension));
 
       // study specific default column dimensions
-      studiesDimensions.defaultTableRepresentation.columnDimensions.forEach((columnDimension: string) =>
-        dataTable.columnDimensions.push(new Dimension(columnDimension)));
+      transmartStudyDimensions.tableState.columnDimensions.forEach((columnDimension: string) =>
+        columnDimensions.push(columnDimension));
 
       // dimensions that are not included in a default representation, but are supported
       // will be column dimensions by default
-      studiesDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
-        if (!dataTable.rowDimensions.map(dim => dim.name).includes(availableDimension.name)
-          && !dataTable.columnDimensions.map(dim => dim.name).includes(availableDimension.name)) {
-          dataTable.rowDimensions.push(availableDimension);
+      transmartStudyDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
+        if (!rowDimensions.includes(availableDimension.name)
+          && !columnDimensions.includes(availableDimension.name)) {
+          rowDimensions.push(availableDimension.name);
         }
       });
     } else {
       // default table representation
-      let availableDimensionNames = new Array<string>();
-      if (studiesDimensions.availableDimensions != null) {
-        studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+      let availableDimensionNames: Array<string> = [];
+      if (transmartStudyDimensions.availableDimensions != null) {
+        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
           availableDimensionNames.push(dim.name);
         });
-        let takenDimensionNames = new Array<string>();
-        let newRowDimensions = new Array<Dimension>();
-        dataTable.rowDimensions.forEach((dim: Dimension) => {
-          if (availableDimensionNames.includes(dim.name)) {
-            newRowDimensions.push(dim);
-            takenDimensionNames.push(dim.name);
+        let takenDimensionNames: Array<string> = [];
+        rowDimensions.forEach((dim: string) => {
+          if (availableDimensionNames.includes(dim)) {
+            takenDimensionNames.push(dim);
           }
         });
-        let newColumnDimensions = new Array<Dimension>();
-        dataTable.columnDimensions.forEach((dim: Dimension) => {
-          if (availableDimensionNames.includes(dim.name)) {
+        let newColumnDimensions = new Array<string>();
+        columnDimensions.forEach((dim: string) => {
+          if (availableDimensionNames.includes(dim)) {
             newColumnDimensions.push(dim);
-            takenDimensionNames.push(dim.name);
+            takenDimensionNames.push(dim);
           }
         });
-        studiesDimensions.availableDimensions.forEach((dim: Dimension) => {
+        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
           if (!takenDimensionNames.includes(dim.name)) {
-            dataTable.rowDimensions.push(dim);
+            rowDimensions.push(dim.name);
           }
         });
       }
     }
+    return new TransmartTableState(rowDimensions, columnDimensions);
   }
 
   private static updateCols(cols: Array<Col>, newColValue, metadata) {
