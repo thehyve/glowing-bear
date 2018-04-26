@@ -1,5 +1,9 @@
 {
   "api-url": "http://localhost:8080",
   "api-version": "v2",
-  "app-url": "http://localhost:4200"
+  "app-url": "http://localhost:4200",
+
+  "oidc-server-url": "http://localhost:8081/auth/realms/master",
+  "oidc-scopes": "openid",
+  "oidc-client-id": "someid"
 }

@@ -6,13 +6,14 @@ import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
-import {EndpointService} from './services/endpoint.service';
+import {AuthenticationService} from './services/authentication.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
-import {EndpointServiceMock} from './services/mocks/endpoint.service.mock';
+import {AuthenticationServiceMock} from './services/mocks/authentication.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
@@ -28,6 +29,7 @@ import {TableService} from './services/table.service';
 import {TableServiceMock} from './services/mocks/table.service.mock';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
 
 
 export function initConfig(config: AppConfig) {
@@ -38,11 +40,13 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComponent
+        AppComponent,
+        GbAutoLoginComponent
       ],
       imports: [
         BrowserModule,
         FormsModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         GbNavBarModule,
         GbSidePanelModule,
@@ -67,8 +71,8 @@ describe('AppComponent', () => {
           multi: true
         },
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
         },
         {
           provide: TransmartResourceService,

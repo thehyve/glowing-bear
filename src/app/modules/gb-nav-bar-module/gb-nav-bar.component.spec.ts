@@ -8,6 +8,7 @@ import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {GbAutoLoginComponent} from '../../gb-auto-login.component';
 
 describe('GbNavBarComponent', () => {
   let component: GbNavBarComponent;
@@ -15,7 +16,10 @@ describe('GbNavBarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbNavBarComponent],
+      declarations: [
+        GbNavBarComponent,
+        GbAutoLoginComponent
+      ],
       imports: [
         CommonModule,
         RouterModule,

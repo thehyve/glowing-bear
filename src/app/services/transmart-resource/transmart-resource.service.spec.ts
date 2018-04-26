@@ -2,8 +2,6 @@ import {TestBed, inject} from '@angular/core/testing';
 
 import {TransmartResourceService} from './transmart-resource.service';
 import {HttpClientModule} from '@angular/common/http';
-import {EndpointService} from '../endpoint.service';
-import {EndpointServiceMock} from '../mocks/endpoint.service.mock';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 
@@ -16,13 +14,9 @@ describe('TransmartResourceService', () => {
       providers: [
         TransmartResourceService,
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
-        },
-        {
           provide: AppConfig,
           useClass: AppConfigMock
-        },
+        }
       ]
     });
   });
