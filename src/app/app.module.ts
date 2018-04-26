@@ -20,6 +20,7 @@ import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {CrossTableService} from './services/cross-table.service';
 
 
 export function initConfig(config: AppConfig) {
@@ -50,6 +51,7 @@ export function initConfig(config: AppConfig) {
     ConstraintService,
     QueryService,
     TableService,
+    CrossTableService,
     AppConfig,
     {
       provide: APP_INITIALIZER,

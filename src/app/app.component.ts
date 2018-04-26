@@ -6,6 +6,7 @@ import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {CrossTableService} from './services/cross-table.service';
 
 @Component({
   selector: 'app-root',
@@ -29,7 +30,8 @@ export class AppComponent implements OnInit {
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
-              private tableService: TableService) {
+              private tableService: TableService,
+              private crossTableService: CrossTableService) {
   }
 
   ngOnInit() {
