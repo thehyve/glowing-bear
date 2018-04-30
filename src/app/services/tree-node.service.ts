@@ -4,6 +4,7 @@ import {ConceptConstraint} from '../models/constraint-models/concept-constraint'
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
+import {NavbarService} from './navbar.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -27,7 +28,7 @@ export class TreeNodeService {
   private _validTreeNodeTypes: string[] = [];
 
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService, private navbarService: NavbarService) {
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
@@ -423,14 +424,17 @@ export class TreeNodeService {
    */
   public updateTreeNodeCounts(studyCountMap: object,
                               conceptCountMap: object) {
-    let rootTreeNodeElements = document
-      .getElementById('tree-nodes-component')
-      .querySelector('.ui-tree-container').children;
-    this.updateTreeNodeCountsIterative(
-      rootTreeNodeElements,
-      this.treeNodes,
-      studyCountMap,
-      conceptCountMap);
+    // only update the tree node subject counts when it is in data selection
+    if (this.navbarService.isDataSelection) {
+      let rootTreeNodeElements = document
+        .getElementById('tree-nodes-component')
+        .querySelector('.ui-tree-container').children;
+      this.updateTreeNodeCountsIterative(
+        rootTreeNodeElements,
+        this.treeNodes,
+        studyCountMap,
+        conceptCountMap);
+    }
   }
 
   private depthOfTreeNode(node: TreeNode): number {

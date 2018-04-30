@@ -17,5 +17,4 @@ export class GbSummaryComponent implements OnInit {
   get subjectCount(): number {
     return this.queryService.subjectCount_2;
   }
-
 }

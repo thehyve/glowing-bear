@@ -21,6 +21,8 @@ import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {Md2AccordionModule} from 'md2';
 import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
+import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
+import {NavbarService} from '../../services/navbar.service';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -62,12 +64,12 @@ describe('GbSidePanelComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
-        },
-        {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
         },
         ConfirmationService
       ]
