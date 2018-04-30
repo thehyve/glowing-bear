@@ -15,13 +15,11 @@ import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
 import {TableService} from './services/table.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
-
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -38,7 +36,6 @@ export function initConfig(config: AppConfig) {
     BrowserAnimationsModule,
     routing,
     GbNavBarModule,
-    GbDashboardModule,
     GbDataSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule

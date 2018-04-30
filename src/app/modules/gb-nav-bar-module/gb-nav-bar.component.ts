@@ -13,7 +13,6 @@ export class GbNavBarComponent implements OnInit {
   private _items: MenuItem[];
   private _activeItem: MenuItem;
 
-  public isDashboard = true;
   public isDataSelection = false;
   public isAnalysis = false;
 
@@ -26,7 +25,6 @@ export class GbNavBarComponent implements OnInit {
 
   ngOnInit() {
     this._items = [
-      {label: 'Dashboard', routerLink: '/dashboard'},
       {label: 'Data Selection', routerLink: '/data-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
@@ -39,16 +37,13 @@ export class GbNavBarComponent implements OnInit {
   }
 
   updateNavbar(whichStep: string) {
-    this.isDashboard = (whichStep === 'dashboard' || whichStep === '');
-    this.isDataSelection = (whichStep === 'data-selection');
+    this.isDataSelection = (whichStep === 'data-selection' || whichStep === '');
     this.isAnalysis = (whichStep === 'analysis');
 
-    if (this.isDashboard) {
+    if (this.isDataSelection) {
       this._activeItem = this._items[0];
-    } else if (this.isDataSelection) {
-      this._activeItem = this._items[1];
     } else if (this.isAnalysis) {
-      this._activeItem = this._items[2];
+      this._activeItem = this._items[1];
     }
   }
 
