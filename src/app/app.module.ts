@@ -22,6 +22,8 @@ import {TransmartResourceService} from './services/transmart-resource/transmart-
 import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';
+import {MessageService} from './services/message.service';
+import {ExportService} from './services/export.service';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -53,6 +55,8 @@ export function initConfig(config: AppConfig) {
     TableService,
     CrossTableService,
     NavbarService,
+    MessageService,
+    ExportService,
     AppConfig,
     {
       provide: APP_INITIALIZER,

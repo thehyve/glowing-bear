@@ -11,6 +11,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/query-models/step';
 import {FormatHelper} from '../../../../utilities/FormatHelper';
 import {Query} from '../../../../models/query-models/query';
+import {MessageService} from '../../../../services/message.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -59,7 +60,8 @@ export class GbSelectionComponent implements OnInit {
   }
 
   constructor(private constraintService: ConstraintService,
-              private queryService: QueryService) {
+              private queryService: QueryService,
+              private messageService: MessageService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -132,12 +134,12 @@ export class GbSelectionComponent implements OnInit {
         return query;
       } else {
         const msg = 'Invalid file content for query import.';
-        this.queryService.alert(msg, '', 'error');
+        this.messageService.alert(msg, '', 'error');
         return;
       }
     } else {
       const msg = 'Invalid file format for STEP 1.';
-      this.queryService.alert(msg, '', 'error');
+      this.messageService.alert(msg, '', 'error');
       return;
     }
   }

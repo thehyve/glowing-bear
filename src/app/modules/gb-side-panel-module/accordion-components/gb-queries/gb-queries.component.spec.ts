@@ -20,6 +20,8 @@ import {FormsModule} from '@angular/forms';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {Md2AccordionModule} from 'md2';
+import {MessageService} from '../../../../services/message.service';
+import {MessageServiceMock} from '../../../../services/mocks/message.service.mock';
 
 describe('QueriesComponent', () => {
   let component: GbQueriesComponent;
@@ -50,6 +52,10 @@ describe('QueriesComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         },
         ConfirmationService
       ]

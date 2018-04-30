@@ -31,6 +31,10 @@ import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
 import {NavbarService} from './services/navbar.service';
 import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
+import {MessageService} from './services/message.service';
+import {MessageServiceMock} from './services/mocks/message.service.mock';
+import {ExportService} from './services/export.service';
+import {ExportServiceMock} from './services/mocks/export.service.mock';
 
 
 export function initConfig(config: AppConfig) {
@@ -103,6 +107,14 @@ describe('AppComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
+        },
+        {
+          provide: ExportService,
+          useClass: ExportServiceMock
         }
       ]
     }).compileComponents();

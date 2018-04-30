@@ -8,6 +8,8 @@ import {TableService} from './services/table.service';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
 import {NavbarService} from './services/navbar.service';
+import {MessageService} from './services/message.service';
+import {ExportService} from './services/export.service';
 
 @Component({
   selector: 'app-root',
@@ -33,7 +35,9 @@ export class AppComponent implements OnInit {
               private queryService: QueryService,
               private tableService: TableService,
               private crossTableService: CrossTableService,
-              private navbarService: NavbarService) {
+              private navbarService: NavbarService,
+              private exportService: ExportService,
+              private messageService: MessageService) {
   }
 
   ngOnInit() {

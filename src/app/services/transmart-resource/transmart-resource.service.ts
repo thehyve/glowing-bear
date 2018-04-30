@@ -8,7 +8,7 @@ import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedig
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
-import {PatientSet} from '../../models/constraint-models/patient-set';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
@@ -470,7 +470,7 @@ export class TransmartResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
+  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);

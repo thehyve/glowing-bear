@@ -14,8 +14,6 @@ import {ConstraintServiceMock} from '../../services/mocks/constraint.service.moc
 import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
-import {ResourceService} from '../../services/resource.service';
 import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
@@ -23,6 +21,8 @@ import {Md2AccordionModule} from 'md2';
 import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
+import {MessageService} from '../../services/message.service';
+import {MessageServiceMock} from '../../services/mocks/message.service.mock';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -70,6 +70,10 @@ describe('GbSidePanelComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         },
         ConfirmationService
       ]

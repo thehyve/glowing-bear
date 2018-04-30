@@ -10,7 +10,7 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {PatientSetConstraint} from '../models/constraint-models/patient-set-constraint';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {TimeConstraint} from '../models/constraint-models/time-constraint';
 import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-constraint';
@@ -29,6 +29,8 @@ export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+  // the subject-set constraint used to replace the constraint in step 1 to boost performance
+  private _subjectSetConstraint: SubjectSetConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -60,6 +62,7 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
+    this.subjectSetConstraint = null;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -186,7 +189,7 @@ export class ConstraintService {
   }
 
   public constraint_1() {
-    return this.generateSelectionConstraint();
+    return this.subjectSetConstraint? this.subjectSetConstraint : this.generateSelectionConstraint();
   }
 
   /**
@@ -531,13 +534,13 @@ export class ConstraintService {
       (<ValueConstraint>constraint).value = constraintObject['value'];
       (<ValueConstraint>constraint).valueType = constraintObject['valueType'];
     } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
-      constraint = new PatientSetConstraint();
+      constraint = new SubjectSetConstraint();
       if (constraintObject['subjectIds']) {
-        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
+        (<SubjectSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
       } else if (constraintObject['patientIds']) {
-        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
+        (<SubjectSetConstraint>constraint).patientIds = constraintObject['patientIds'];
       } else if (constraintObject['patientSetId']) {
-        (<PatientSetConstraint>constraint).id = constraintObject['patientSetId'];
+        (<SubjectSetConstraint>constraint).id = constraintObject['patientSetId'];
       }
     } else if (type === 'subselection'
       && constraintObject['dimension'] === 'patient') { // -------> If it is a patient sub-selection
@@ -602,6 +605,14 @@ export class ConstraintService {
     combo.addChild(c1);
     combo.addChild(c2);
     return combo;
+  }
+
+  get subjectSetConstraint(): SubjectSetConstraint {
+    return this._subjectSetConstraint;
+  }
+
+  set subjectSetConstraint(value: SubjectSetConstraint) {
+    this._subjectSetConstraint = value;
   }
 
   get selectedNode(): any {

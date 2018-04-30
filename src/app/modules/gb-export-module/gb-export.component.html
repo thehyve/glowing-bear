@@ -5,11 +5,11 @@
     <h5>Create new export for the currently selected data</h5>
   </div>
 
-  <div *ngIf="queryService.exportDataTypes.length > 0" class="gb-export-format-container">
+  <div *ngIf="exportDataTypes.length > 0" class="gb-export-format-container">
 
     <!-- area to indicate which data formats to export -->
     <div class="gb-export-format-header">Select data types and formats to export:</div>
-    <div *ngFor="let dataType of queryService.exportDataTypes">
+    <div *ngFor="let dataType of exportDataTypes">
       <span class="row">
         <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
           <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
@@ -48,7 +48,7 @@
   </div>
 
   <!-- the spinning icon -->
-  <div *ngIf="queryService.isLoadingExportDataTypes">
+  <div *ngIf="isLoadingExportDataTypes">
     <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
   </div>
 

@@ -5,7 +5,7 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
-import {PatientSet} from '../models/constraint-models/patient-set';
+import {SubjectSet} from '../models/constraint-models/subject-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
@@ -267,7 +267,7 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
+  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     return this.transmartResourceService.savePatientSet(name, constraint);
   }
 

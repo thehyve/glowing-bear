@@ -11,6 +11,10 @@ import {AppConfig} from '../config/app.config';
 import {AppConfigMock} from '../config/app.config.mock';
 import {TableServiceMock} from './mocks/table.service.mock';
 import {TableService} from './table.service';
+import {ExportService} from './export.service';
+import {ExportServiceMock} from './mocks/export.service.mock';
+import {MessageService} from './message.service';
+import {MessageServiceMock} from './mocks/message.service.mock';
 
 
 describe('QueryService', () => {
@@ -36,6 +40,14 @@ describe('QueryService', () => {
         {
           provide: TableService,
           useClass: TableServiceMock
+        },
+        {
+          provide: ExportService,
+          useClass: ExportServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         },
         QueryService
       ]

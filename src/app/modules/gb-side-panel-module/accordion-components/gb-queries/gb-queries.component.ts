@@ -7,6 +7,7 @@ import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
 import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
+import {MessageService} from '../../../../services/message.service';
 
 @Component({
   selector: 'gb-queries',
@@ -20,6 +21,7 @@ export class GbQueriesComponent implements OnInit {
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
+              private messageService: MessageService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
@@ -66,12 +68,12 @@ export class GbQueriesComponent implements OnInit {
         return _json;
       } else {
         const msg = 'Invalid file content for query import.';
-        this.queryService.alert(msg, '', 'error');
+        this.messageService.alert(msg, '', 'error');
         return;
       }
     } else {
       const msg = 'Invalid file format for query import.';
-      this.queryService.alert(msg, '', 'error');
+      this.messageService.alert(msg, '', 'error');
       return;
     }
   }
@@ -84,9 +86,9 @@ export class GbQueriesComponent implements OnInit {
       subscribed: query.subscribed
     };
     if (query.subscribed) {
-      queryObj["subscriptionFreq"] =
+      queryObj['subscriptionFreq'] =
         query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObj["subscriptionFreq"];
+      query.subscriptionFreq = queryObj['subscriptionFreq'];
     }
     this.queryService.updateQuery(query, queryObj);
   }

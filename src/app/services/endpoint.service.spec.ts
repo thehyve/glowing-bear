@@ -21,7 +21,7 @@ describe('EndpointService', () => {
     });
   });
 
-  it('EndpointService should be injected', inject([EndpointService], (service: EndpointService) => {
+  it('should be injected', inject([EndpointService], (service: EndpointService) => {
     expect(service).toBeTruthy();
   }));
 });

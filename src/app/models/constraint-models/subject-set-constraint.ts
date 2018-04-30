@@ -1,7 +1,7 @@
 import {Constraint} from './constraint';
 
 
-export class PatientSetConstraint implements Constraint {
+export class SubjectSetConstraint implements Constraint {
 
   private _parent: Constraint;
   private _isSubselection: boolean;
@@ -21,7 +21,7 @@ export class PatientSetConstraint implements Constraint {
   }
 
   getClassName(): string {
-    return 'PatientSetConstraint';
+    return 'SubjectSetConstraint';
   }
 
   toQueryObjectWithSubselection(): Object {
@@ -62,7 +62,7 @@ export class PatientSetConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Patient set constraint';
+    return 'Subject set constraint';
   }
 
   get subjectIds() {

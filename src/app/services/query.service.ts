@@ -5,9 +5,9 @@ import {TreeNodeService} from './tree-node.service';
 import {Query} from '../models/query-models/query';
 import {ConstraintService} from './constraint.service';
 import {Step} from '../models/query-models/step';
-import {PatientSetConstraint} from '../models/constraint-models/patient-set-constraint';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {FormatHelper} from '../utilities/FormatHelper';
-import {PatientSet} from '../models/constraint-models/patient-set';
+import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
 import {QueryDiffRecord} from '../models/query-models/query-diff-record';
@@ -16,8 +16,9 @@ import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {TableService} from './table.service';
-import {ExportDataType} from '../models/export-models/export-data-type';
 import {DataTable} from '../models/table-models/data-table';
+import {ExportService} from './export.service';
+import {MessageService} from './message.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -102,7 +103,6 @@ export class QueryService {
   loadingStateTotal_1: LoadingState = 'complete';
   // the queue that holds the time stamps of the calls made in the 1st step
   private _queueOfCalls_1 = [];
-  private _patientSet_1: PatientSetConstraint = null;
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -138,14 +138,6 @@ export class QueryService {
    */
   // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
   private _treeNodeCountsUpdate: boolean;
-  private _exportDataTypes: ExportDataType[] = [];
-  private _isLoadingExportDataTypes = false;
-  /*
-   * The alert messages (for PrimeNg message UI) that informs the user
-   * whether there is an error saving subject/observation set,
-   * or the saving has been successful
-   */
-  private _alertMessages = [];
   /*
    * Flag indicating if to relay the counts in the current step to the next
    */
@@ -165,10 +157,12 @@ export class QueryService {
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private tableService: TableService) {
+              private tableService: TableService,
+              private messageService: MessageService,
+              private exportService: ExportService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
-    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);;
-    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);;
+    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
+    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
@@ -343,16 +337,16 @@ export class QueryService {
     this.loadingStateTotal_1 = 'complete';
   }
 
-  private updateConceptsAndStudiesForSubjectSet(response: PatientSet,
+  private updateConceptsAndStudiesForSubjectSet(response: SubjectSet,
                                                 selectionConstraint: Constraint,
                                                 timeStamp: Date,
                                                 initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
-      this.patientSet_1 = new PatientSetConstraint();
-      this.patientSet_1.id = response.id;
+      this.subjectSetConstraint_1 = new SubjectSetConstraint();
+      this.subjectSetConstraint_1.id = response.id;
       this.updateSubjectCount_1(response.setSize, initialUpdate);
-      constraint = this.patientSet_1;
+      constraint = this.subjectSetConstraint_1;
     } else {
       constraint = selectionConstraint;
     }
@@ -415,7 +409,7 @@ export class QueryService {
    */
   public update_1(initialUpdate?: boolean) {
     this.isUpdating_1 = true;
-    this.patientSet_1 = null;
+    this.subjectSetConstraint_1 = null;
     // add time stamp to the queue,
     // only when the time stamp is at the end of the queue, the count is updated
     this.clearQueueOfCalls(this.queueOfCalls_1);
@@ -511,13 +505,8 @@ export class QueryService {
       this.isLoadingObservationCount_2 = true;
 
       this.query = null; // clear query
-      const selectionConstraint = this.patientSet_1 ?
-        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
-      const projectionConstraint = this.constraintService.generateProjectionConstraint();
 
-      let combo = new CombinationConstraint();
-      combo.addChild(selectionConstraint);
-      combo.addChild(projectionConstraint);
+      let combo = this.constraintService.constraint_1_2();
 
       // update the subject count and observation count in the 2nd step
       this.resourceService.getCounts(combo)
@@ -536,7 +525,7 @@ export class QueryService {
           },
           err => this.handle_error(err)
         );
-      this.updateExports();
+      this.exportService.updateExports();
     } else {
       window.setTimeout((function () {
         this.update_2();
@@ -555,22 +544,6 @@ export class QueryService {
     this.tableService.updateDataTable(targetDataTable);
   }
 
-  public updateExports() {
-    const selectionConstraint = this.patientSet_1 ?
-      this.patientSet_1 : this.constraintService.generateSelectionConstraint();
-    const projectionConstraint = this.constraintService.generateProjectionConstraint();
-    let combo = new CombinationConstraint();
-    combo.addChild(selectionConstraint);
-    combo.addChild(projectionConstraint);
-    // update the export info
-    this.isLoadingExportDataTypes = true;
-    this.resourceService.getExportDataTypes(combo)
-      .subscribe(dataTypes => {
-        this.exportDataTypes = dataTypes;
-        this.isLoadingExportDataTypes = false;
-      });
-  }
-
   /**
    * ------------------------------------------------- END: step 2 --------------------------------------------------
    */
@@ -585,11 +558,6 @@ export class QueryService {
       queue.length = 0;
       queue.push(lastElement);
     }
-  }
-
-  public alert(summary: string, detail: string, severity: string) {
-    this.alertMessages.length = 0;
-    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
   }
 
   public saveQuery(queryName: string) {
@@ -611,12 +579,12 @@ export class QueryService {
 
         this.queries.push(newlySavedQuery);
         const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-        this.alert(summary, '', 'success');
+        this.messageService.alert(summary, '', 'success');
       },
       (err) => {
         console.error(err);
         const summary = 'Could not add the query "' + queryName + '".';
-        this.alert(summary, '', 'error');
+        this.messageService.alert(summary, '', 'error');
       }
     );
   }
@@ -643,8 +611,7 @@ export class QueryService {
     // - total number of matched/selected tree-nodes
     const alertSummary = 'Success';
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-
-    this.alert(alertSummary, alertDetails, 'info');
+    this.messageService.alert(alertSummary, alertDetails, 'info');
   }
 
   public updateQuery(query: Query, queryObj: object) {
@@ -815,14 +782,6 @@ export class QueryService {
     this._observationCount_2 = value;
   }
 
-  get alertMessages(): Array<object> {
-    return this._alertMessages;
-  }
-
-  set alertMessages(value: Array<object>) {
-    this._alertMessages = value;
-  }
-
   get query(): Query {
     return this._query;
   }
@@ -861,22 +820,6 @@ export class QueryService {
 
   set queueOfCalls_2(value: Array<number>) {
     this._queueOfCalls_2 = value;
-  }
-
-  get exportDataTypes(): ExportDataType[] {
-    return this._exportDataTypes;
-  }
-
-  set exportDataTypes(value: ExportDataType[]) {
-    this._exportDataTypes = value;
-  }
-
-  get isLoadingExportDataTypes(): boolean {
-    return this._isLoadingExportDataTypes;
-  }
-
-  set isLoadingExportDataTypes(value: boolean) {
-    this._isLoadingExportDataTypes = value;
   }
 
   get queries(): Query[] {
@@ -991,14 +934,6 @@ export class QueryService {
     this.tableService.dataTable.isDirty = value;
   }
 
-  get patientSet_1(): PatientSetConstraint {
-    return this._patientSet_1;
-  }
-
-  set patientSet_1(value: PatientSetConstraint) {
-    this._patientSet_1 = value;
-  }
-
   get treeNodeCountsUpdate(): boolean {
     return this._treeNodeCountsUpdate;
   }
@@ -1013,5 +948,13 @@ export class QueryService {
 
   set showObservationCounts(value: boolean) {
     this._showObservationCounts = value;
+  }
+
+  get subjectSetConstraint_1(): SubjectSetConstraint {
+    return this.constraintService.subjectSetConstraint;
+  }
+
+  set subjectSetConstraint_1(value: SubjectSetConstraint) {
+    this.constraintService.subjectSetConstraint = value;
   }
 }

@@ -19,6 +19,8 @@ import {TableService} from '../../services/table.service';
 import {TableServiceMock} from '../../services/mocks/table.service.mock';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {ExportService} from '../../services/export.service';
+import {ExportServiceMock} from '../../services/mocks/export.service.mock';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -47,20 +49,12 @@ describe('GbExportComponent', () => {
           useClass: AppConfigMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: ExportService,
+          useClass: ExportServiceMock
         },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        {
-          provide: QueryService,
-          useClass: QueryServiceMock
-        },
-        {
-          provide: TableService,
-          useClass: TableServiceMock
         }
       ]
     })
@@ -73,7 +67,7 @@ describe('GbExportComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbExportComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });
