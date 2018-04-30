@@ -20,6 +20,7 @@ import {TableService} from './services/table.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
+import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -38,7 +39,8 @@ export function initConfig(config: AppConfig) {
     GbNavBarModule,
     GbDataSelectionModule,
     GbAnalysisModule,
-    GbSidePanelModule
+    GbSidePanelModule,
+    GbExportModule
   ],
   providers: [
     EndpointService,

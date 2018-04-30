@@ -15,6 +15,10 @@ export const routes: Routes = [
   {
     path: 'analysis',
     loadChildren: './modules/gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+  },
+  {
+    path: 'export',
+    loadChildren: './modules/gb-export-module/gb-export.module#GbExportModule'
   }
 ];
 

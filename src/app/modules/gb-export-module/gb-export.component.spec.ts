@@ -7,18 +7,18 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {ResourceService} from '../../../../services/resource.service';
-import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
+import {ConstraintService} from '../../services/constraint.service';
+import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
+import {ResourceService} from '../../services/resource.service';
+import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
-import {TableService} from '../../../../services/table.service';
-import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
-import {AppConfig} from '../../../../config/app.config';
-import {AppConfigMock} from '../../../../config/app.config.mock';
+import {QueryService} from '../../services/query.service';
+import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {TableService} from '../../services/table.service';
+import {TableServiceMock} from '../../services/mocks/table.service.mock';
+import {AppConfig} from '../../config/app.config';
+import {AppConfigMock} from '../../config/app.config.mock';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;

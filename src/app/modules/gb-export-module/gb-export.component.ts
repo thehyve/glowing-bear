@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ResourceService} from '../../../../services/resource.service';
+import {ConstraintService} from '../../services/constraint.service';
+import {ResourceService} from '../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
-import {ExportJob} from '../../../../models/export-models/export-job';
-import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
+import {ExportJob} from '../../models/export-models/export-job';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {saveAs} from 'file-saver';
-import {QueryService} from '../../../../services/query.service';
-import {TableService} from '../../../../services/table.service';
-import {AppConfig} from '../../../../config/app.config';
+import {QueryService} from '../../services/query.service';
+import {TableService} from '../../services/table.service';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-export',

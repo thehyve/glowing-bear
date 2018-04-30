@@ -17,13 +17,11 @@ import {
   TreeModule,
   PanelModule,
   DataListModule,
-  DataTableModule,
   TreeTableModule,
   DropdownModule,
   TooltipModule,
   MessagesModule, PickListModule, PaginatorModule
 } from 'primeng/primeng';
-import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbPatientSetConstraintComponent} from './constraint-components/gb-patient-set-constraint/gb-patient-set-constraint.component';
@@ -45,7 +43,6 @@ import {TableModule} from 'primeng/table';
     TreeModule,
     PanelModule,
     DataListModule,
-    DataTableModule,
     TreeTableModule,
     TableModule,
     PaginatorModule,
@@ -63,7 +60,6 @@ import {TableModule} from 'primeng/table';
   declarations: [
     GbDataSelectionComponent,
     GbSelectionComponent,
-    GbExportComponent,
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,
     GbConstraintComponent,
