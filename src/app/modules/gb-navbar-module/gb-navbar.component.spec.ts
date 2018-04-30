@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbNavBarComponent} from './gb-nav-bar.component';
+import {GbNavbarComponent} from './gb-navbar.component';
 import {MessagesModule, TabMenuModule} from 'primeng/primeng';
 import {RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
@@ -8,14 +8,16 @@ import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {NavbarService} from '../../services/navbar.service';
+import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 
-describe('GbNavBarComponent', () => {
-  let component: GbNavBarComponent;
-  let fixture: ComponentFixture<GbNavBarComponent>;
+describe('GbNavbarComponent', () => {
+  let component: GbNavbarComponent;
+  let fixture: ComponentFixture<GbNavbarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbNavBarComponent],
+      declarations: [GbNavbarComponent],
       imports: [
         CommonModule,
         RouterModule,
@@ -32,6 +34,10 @@ describe('GbNavBarComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
         }
       ]
     })
@@ -39,12 +45,12 @@ describe('GbNavBarComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbNavBarComponent);
+    fixture = TestBed.createComponent(GbNavbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create GbNavBarComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

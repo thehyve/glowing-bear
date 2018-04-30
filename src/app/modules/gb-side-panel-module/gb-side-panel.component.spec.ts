@@ -20,6 +20,7 @@ import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.c
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {Md2AccordionModule} from 'md2';
+import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -30,7 +31,8 @@ describe('GbSidePanelComponent', () => {
       declarations: [
         GbSidePanelComponent,
         GbTreeNodesComponent,
-        GbQueriesComponent
+        GbQueriesComponent,
+        GbSummaryComponent
       ],
       imports: [
         BrowserAnimationsModule,
@@ -79,7 +81,7 @@ describe('GbSidePanelComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbSidePanelComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -63,7 +63,7 @@ describe('QueriesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create QueriesComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

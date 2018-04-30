@@ -171,6 +171,10 @@ gb-nav-bar .ui-tabmenu-nav {
   background-color: #FCFCFC;
 }
 
+gb-nav-bar .ui-menuitem-text {
+  color: hsl(0, 0%, 30%);
+}
+
 /*
  * ------------------------------ Styles for gb-data-selection component -------------------------------
  */

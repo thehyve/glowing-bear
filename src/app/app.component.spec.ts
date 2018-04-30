@@ -19,7 +19,7 @@ import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
 import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
+import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
@@ -29,6 +29,8 @@ import {TransmartResourceService} from './services/transmart-resource/transmart-
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
+import {NavbarService} from './services/navbar.service';
+import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
 
 
 export function initConfig(config: AppConfig) {
@@ -97,12 +99,16 @@ describe('AppComponent', () => {
         {
           provide: CrossTableService,
           useClass: CrossTableServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
         }
       ]
     }).compileComponents();
   }));
 
-  it('AppComponent should be created', async(() => {
+  it('should be created', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();

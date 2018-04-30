@@ -60,7 +60,7 @@ describe('GbConceptConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbConceptConstraintComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

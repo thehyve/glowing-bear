@@ -56,7 +56,7 @@ describe('TreeNodesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create TreeNodesComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });
