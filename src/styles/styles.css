@@ -69,6 +69,12 @@ body .gb-spinner.loading {
   visibility: visible;
 }
 
+body .hline {
+  border-bottom: solid 1px var(--gb-clinical-green-dark);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 /*
  * Style for PrimeNg alert messages
  */
@@ -280,8 +286,21 @@ gb-projection p-treenode {
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */
+gb-summary {
+  font-size: small;
+}
+
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
+}
+
+/*
+ * ------------------------------ Styles for gb-summary component -------------------------------
+ */
+gb-summary .gb-selected-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
 }
 
 /*

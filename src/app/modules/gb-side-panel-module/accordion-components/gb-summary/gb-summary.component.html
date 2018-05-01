@@ -1,3 +1,10 @@
 <div>
-  <span>{{subjectCount}} subjects</span>
+  <div>{{subjectCount}} subjects</div>
+  <div *ngIf="showObservationCounts">{{observationCount}} observations</div>
+  <div class="hline"></div>
+  <div>
+    <p-tree [value]="finalTreeNodes"
+            draggableNodes="true"
+            styleClass="gb-selected-tree-container"></p-tree>
+  </div>
 </div>

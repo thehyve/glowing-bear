@@ -3,6 +3,11 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbSummaryComponent} from './gb-summary.component';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
+import {TreeModule} from 'primeng/tree';
+import {DragDropModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
 
 describe('GbSummaryComponent', () => {
   let component: GbSummaryComponent;
@@ -13,10 +18,19 @@ describe('GbSummaryComponent', () => {
       declarations: [
         GbSummaryComponent
       ],
+      imports: [
+        DragDropModule,
+        FormsModule,
+        TreeModule
+      ],
       providers: [
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         }
       ]
     })

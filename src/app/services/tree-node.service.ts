@@ -12,7 +12,7 @@ type LoadingState = 'loading' | 'complete';
 export class TreeNodeService {
 
   /*
-   * This service keeps track of three trees:
+   * This service maintains three copies of tree nodes:
    * 1. treeNodes - the entire ontology tree representing the data structure of the backend
    * 2. projectionTreeData - the partial ontology tree representing the tree nodes
    *    corresponding to subject group defined in step 1,
@@ -29,7 +29,7 @@ export class TreeNodeService {
   // the selected tree data in the 2nd step (projection)
   private _selectedProjectionTreeData: TreeNode[] = [];
   // the final tree nodes resulted from data selection
-  private _finalTreeNodes: TreeNode[];
+  private _finalTreeNodes: TreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -267,7 +267,7 @@ export class TreeNodeService {
   }
 
   public updateFinalTreeNodes() {
-    console.log('update final', this.selectedProjectionTreeData);
+    this.finalTreeNodes = this.copySelectedTreeNodes(this.projectionTreeData);
   }
 
   private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
@@ -285,6 +285,31 @@ export class TreeNodeService {
       nodesCopy.push(nodeCopy);
       node['parent'] = parent;
       node['children'] = children;
+    }
+    return nodesCopy;
+  }
+
+  private copySelectedTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    let nodesCopy = [];
+    for (let node of nodes) {
+      // if the node has been partially selected
+      let selected = node.partialSelected;
+      // if the node has been selected
+      selected = selected ? true : this.selectedProjectionTreeData.includes(node);
+      if (selected) {
+        let parent = node['parent'];
+        let children = node['children'];
+        node['parent'] = null;
+        node['children'] = null;
+        let nodeCopy = JSON.parse(JSON.stringify(node));
+        if (children) {
+          let childrenCopy = this.copySelectedTreeNodes(children);
+          nodeCopy['children'] = childrenCopy;
+        }
+        nodesCopy.push(nodeCopy);
+        node['parent'] = parent;
+        node['children'] = children;
+      }
     }
     return nodesCopy;
   }
@@ -340,7 +365,7 @@ export class TreeNodeService {
 
   private checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
-      if (checklist && checklist.indexOf(node['fullName']) !== -1) {
+      if (checklist && checklist.includes(node['fullName'])) {
         this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
@@ -546,7 +571,7 @@ export class TreeNodeService {
    */
   public findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
     for (let node of nodes) {
-      if (paths.indexOf(node['fullName']) !== -1) {
+      if (paths.includes(node['fullName'])) {
         foundNodes.push(node);
       }
       if (node['children']) {

@@ -525,7 +525,10 @@ export class QueryService {
           },
           err => this.handle_error(err)
         );
+      // update the export variables
       this.exportService.updateExports();
+      // update the final tree nodes
+      this.treeNodeService.updateFinalTreeNodes();
     } else {
       window.setTimeout((function () {
         this.update_2();
