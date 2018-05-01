@@ -4,13 +4,11 @@ export class ExportDataType {
   private _name: string;
   private _checked: boolean;
   private _fileFormats: ExportFileFormat[];
-  private _dataView: string;
 
-  constructor(name: string, checked: boolean, dataView: string) {
+  constructor(name: string, checked: boolean) {
     this.name = name;
     this.checked = checked;
     this.fileFormats = [];
-    this.dataView = dataView;
   }
 
   get name(): string {
@@ -37,11 +35,4 @@ export class ExportDataType {
     this._fileFormats = value;
   }
 
-  get dataView(): string {
-    return this._dataView;
-  }
-
-  set dataView(value: string) {
-    this._dataView = value;
-  }
 }

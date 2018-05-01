@@ -136,8 +136,7 @@ export class ResourceService {
       .switchMap(fileFormatNames => {
         return this.transmartResourceService.getExportDataFormats(constraint)
       }, (fileFormatNames, dataFormatNames) => {
-        let exportDataView = this.transmartResourceService.exportDataView;
-        return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames, exportDataView);
+        return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
       });
   }
 
@@ -179,7 +178,6 @@ export class ResourceService {
           if (fileFormat.checked) {
             if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
               includeDataTable = true;
-              dataType.dataView = 'dataTable';
             }
             hasSelectedFormat = true;
           }
@@ -188,7 +186,7 @@ export class ResourceService {
     }
     if (hasSelectedFormat) {
       const transmartTableState: TransmartTableState = includeDataTable ? TransmartMapper.mapDataTable(dataTable) : null;
-      const elements = TransmartMapper.mapExportDataTypes(dataTypes);
+      const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
       return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
     } else {
       return Observable.of(null);

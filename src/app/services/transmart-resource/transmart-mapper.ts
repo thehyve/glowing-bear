@@ -206,10 +206,10 @@ export class TransmartMapper {
     return elements.map(elem => elem.name);
   }
 
-  public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[], dataView: string): ExportDataType[] {
+  public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[]): ExportDataType[] {
     let dataTypes = new Array<ExportDataType>();
     for (let dataFormatName of dataFormatNames) {
-      let dataType = new ExportDataType(dataFormatName, true, dataView);
+      let dataType = new ExportDataType(dataFormatName, true);
       for (let fileFormatName of fileFormatNames) {
         dataType.fileFormats.push(new ExportFileFormat(fileFormatName, true));
       }
@@ -218,7 +218,7 @@ export class TransmartMapper {
     return dataTypes;
   }
 
-  public static mapExportDataTypes(dataTypes: ExportDataType[]): TransmartExportElement[] {
+  public static mapExportDataTypes(dataTypes: ExportDataType[], defaultDataView: string): TransmartExportElement[] {
     let elements: TransmartExportElement[] = [];
     for (let dataType of dataTypes) {
       if (dataType.checked) {
@@ -227,7 +227,11 @@ export class TransmartMapper {
             let el = new TransmartExportElement();
             el.dataType = dataType.name;
             el.format = fileFormat.name;
-            el.dataView = dataType.dataView;
+            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
+              el.dataView = 'dataTable';
+            } else {
+              el.dataView = defaultDataView;
+            }
             elements.push(el);
           }
         }
