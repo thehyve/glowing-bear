@@ -389,7 +389,7 @@ export class QueryService {
   }
 
   private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean) {
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const selectionConstraint = this.constraintService.constraint_1();
     if (this.autosaveSubjectSets) {
       // save a subject set for the subject selection, compute tree counts using that subject set
       this.resourceService.savePatientSet('temp', selectionConstraint)
@@ -562,7 +562,7 @@ export class QueryService {
 
   public saveQuery(queryName: string) {
     let newQuery = new Query('', queryName);
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const selectionConstraint = this.constraintService.constraint_1();
     newQuery.patientsQuery = selectionConstraint.toQueryObject(true);
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {

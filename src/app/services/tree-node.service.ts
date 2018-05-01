@@ -11,6 +11,15 @@ type LoadingState = 'loading' | 'complete';
 @Injectable()
 export class TreeNodeService {
 
+  /*
+   * This service keeps track of three trees:
+   * 1. treeNodes - the entire ontology tree representing the data structure of the backend
+   * 2. projectionTreeData - the partial ontology tree representing the tree nodes
+   *    corresponding to subject group defined in step 1,
+   *    and this partial tree is used for variable selection in step 2
+   * 3. finalTreeNodes - the partial ontology tree corresponding to the final tree nodes
+   *    that the user has selected in all the steps of data selection
+   */
   // the variable that holds the entire tree structure, used by the tree on the left side bar
   private _treeNodes: TreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)

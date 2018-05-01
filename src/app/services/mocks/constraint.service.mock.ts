@@ -19,11 +19,11 @@ export class ConstraintServiceMock {
     return 1;
   }
 
-  public generateSelectionConstraint(): Constraint {
+  public constraint_1(): Constraint {
     return this._constraint;
   }
 
-  public generateProjectionConstraint(): Constraint {
+  public constraint_2(): Constraint {
     return this._constraint;
   }
 

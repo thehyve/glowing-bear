@@ -131,7 +131,7 @@ export class ConstraintService {
    * @param query
    * @returns {Array}
    */
-  searchAllConstraints(query: string): Constraint[] {
+  public searchAllConstraints(query: string): Constraint[] {
     query = query.toLowerCase();
     let results = [];
     if (query === '') {
@@ -189,7 +189,7 @@ export class ConstraintService {
   }
 
   public constraint_1() {
-    return this.subjectSetConstraint? this.subjectSetConstraint : this.generateSelectionConstraint();
+    return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
   }
 
   /**
@@ -197,7 +197,7 @@ export class ConstraintService {
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  public generateSelectionConstraint(): Constraint {
+  private generateSelectionConstraint(): Constraint {
     let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
@@ -275,7 +275,7 @@ export class ConstraintService {
    * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}
    */
-  public generateProjectionConstraint(): Constraint {
+  private generateProjectionConstraint(): Constraint {
     let constraint = null;
     let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
     if (selectedTreeNodes && selectedTreeNodes.length > 0) {
@@ -305,7 +305,7 @@ export class ConstraintService {
   }
 
   // generate the constraint instance based on given node (e.g. tree node)
-  generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
+  public generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
     let constraint: Constraint = null;
     // if the dropped node is a tree node
     if (dropMode === DropMode.TreeNode) {
@@ -355,7 +355,7 @@ export class ConstraintService {
   }
 
   // generate the constraint instance based on given constraint object input
-  generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
+  public generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
@@ -554,7 +554,7 @@ export class ConstraintService {
     return constraint;
   }
 
-  optimizeConstraintObject(constraintObject) {
+  private optimizeConstraintObject(constraintObject) {
     let newConstraintObject = Object.assign({}, constraintObject);
 
     // if the object has 'args' property
