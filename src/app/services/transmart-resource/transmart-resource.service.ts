@@ -358,7 +358,7 @@ export class TransmartResourceService {
       includeMeasurementDateColumns: this.dateColumnsIncluded
     };
     if (tableState) {
-      body['tableState'] = tableState;
+      body['tableConfig'] = tableState;
     }
     return this.postCall(urlPart, body, responseField);
   }
@@ -503,9 +503,9 @@ export class TransmartResourceService {
       offset: offset,
       limit: limit
     };
-    if (tableState.rowDimensionSorting) {
+    if (tableState.rowSort) {
       let sort = [];
-      tableState.rowDimensionSorting.forEach((val, key) => {
+      tableState.rowSort.forEach((val, key) => {
         sort.push([key, val]);
       });
       body['rowSort'] = sort;
@@ -517,9 +517,9 @@ export class TransmartResourceService {
         body['columnSort'] = sortObj;
       }
     }
-    if (tableState.columnDimensionSorting) {
+    if (tableState.columnSort) {
       let sort = [];
-      tableState.columnDimensionSorting.forEach((val, key) => {
+      tableState.columnSort.forEach((val, key) => {
         sort.push([key, val]);
       });
       body['columnSort'] = sort;

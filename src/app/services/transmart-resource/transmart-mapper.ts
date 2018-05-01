@@ -206,10 +206,10 @@ export class TransmartMapper {
     return elements.map(elem => elem.name);
   }
 
-  public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[]): ExportDataType[] {
+  public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[], dataView: string): ExportDataType[] {
     let dataTypes = new Array<ExportDataType>();
     for (let dataFormatName of dataFormatNames) {
-      let dataType = new ExportDataType(dataFormatName, true);
+      let dataType = new ExportDataType(dataFormatName, true, dataView);
       for (let fileFormatName of fileFormatNames) {
         dataType.fileFormats.push(new ExportFileFormat(fileFormatName, true));
       }
@@ -218,7 +218,7 @@ export class TransmartMapper {
     return dataTypes;
   }
 
-  public static mapExportDataTypes(dataTypes: ExportDataType[], dataView: string): TransmartExportElement[] {
+  public static mapExportDataTypes(dataTypes: ExportDataType[]): TransmartExportElement[] {
     let elements: TransmartExportElement[] = [];
     for (let dataType of dataTypes) {
       if (dataType.checked) {
@@ -227,7 +227,7 @@ export class TransmartMapper {
             let el = new TransmartExportElement();
             el.dataType = dataType.name;
             el.format = fileFormat.name;
-            el.dataView = dataView;
+            el.dataView = dataType.dataView;
             elements.push(el);
           }
         }
