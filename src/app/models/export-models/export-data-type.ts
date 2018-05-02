@@ -34,4 +34,5 @@ export class ExportDataType {
   set fileFormats(value: ExportFileFormat[]) {
     this._fileFormats = value;
   }
+
 }

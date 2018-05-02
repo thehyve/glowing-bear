@@ -219,7 +219,7 @@ export class TransmartMapper {
     return dataTypes;
   }
 
-  public static mapExportDataTypes(dataTypes: ExportDataType[], dataView: string): TransmartExportElement[] {
+  public static mapExportDataTypes(dataTypes: ExportDataType[], defaultDataView: string): TransmartExportElement[] {
     let elements: TransmartExportElement[] = [];
     for (let dataType of dataTypes) {
       if (dataType.checked) {
@@ -228,7 +228,11 @@ export class TransmartMapper {
             let el = new TransmartExportElement();
             el.dataType = dataType.name;
             el.format = fileFormat.name;
-            el.dataView = dataView;
+            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
+              el.dataView = 'dataTable';
+            } else {
+              el.dataView = defaultDataView;
+            }
             elements.push(el);
           }
         }

@@ -172,11 +172,12 @@ export class ResourceService {
                dataTable: DataTable): Observable<ExportJob> {
     let includeDataTable = false;
     let hasSelectedFormat = false;
+
     for (let dataType of dataTypes) {
       if (dataType.checked) {
         for (let fileFormat of dataType.fileFormats) {
           if (fileFormat.checked) {
-            if (fileFormat.name === 'TSV') {
+            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
               includeDataTable = true;
             }
             hasSelectedFormat = true;
