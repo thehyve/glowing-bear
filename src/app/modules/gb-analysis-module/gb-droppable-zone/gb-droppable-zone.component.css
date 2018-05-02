@@ -3,3 +3,11 @@
   background-color: yellow;
   margin: 5px;
 }
+
+.gb-droppable-zone-container-highlight {
+  background-color: coral;
+}
+
+.gb-draggable-cell-outside-container {
+  margin: 3px;
+}

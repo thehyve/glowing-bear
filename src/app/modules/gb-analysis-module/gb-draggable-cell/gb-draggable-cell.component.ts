@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Constraint} from '../../../models/constraint-models/constraint';
+import {CrossTableService} from '../../../services/cross-table.service';
 
 @Component({
   selector: 'gb-draggable-cell',
@@ -9,10 +10,18 @@ import {Constraint} from '../../../models/constraint-models/constraint';
 export class GbDraggableCellComponent implements OnInit {
 
   @Input() constraint: Constraint;
+  @Output() constraintCellRemoved: EventEmitter<any> = new EventEmitter();
 
-  constructor() { }
+  constructor(private crossTableService: CrossTableService) { }
 
   ngOnInit() {
   }
 
+  remove() {
+    this.constraintCellRemoved.emit();
+  }
+
+  onDragStart(e) {
+    this.crossTableService.selectedConstraintCell = this;
+  }
 }

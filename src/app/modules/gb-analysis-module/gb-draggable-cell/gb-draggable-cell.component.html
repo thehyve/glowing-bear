@@ -1,3 +1,10 @@
-<div class="gb-draggable-cell-container" pDraggable="dd">
-  Draggable cell div {{constraint.getClassName()}}
+<div pDraggable="dd"
+     (onDragStart)="onDragStart($event)"
+     class="gb-draggable-cell-inside-container form-inline">
+  <span>{{constraint.textRepresentation}}</span>
+  <button type="button"
+          class="btn btn-outline-primary btn-sm pull-right gb-draggable-cell-remove-btn"
+          (click)="remove()">
+    <i class="fa fa-times" aria-hidden="true"></i>
+  </button>
 </div>

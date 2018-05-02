@@ -1,5 +1,12 @@
-.gb-draggable-cell-container {
+.gb-draggable-cell-inside-container {
   background-color: lightblue;
   border: solid 1px black;
   width: 100%;
+  padding: 2px;
+  font-size: small;
+}
+
+.gb-draggable-cell-remove-btn {
+  padding: 1px 5px 1px 5px;
+  margin: 1px 1px 3px 3px;
 }

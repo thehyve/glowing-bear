@@ -11,7 +11,7 @@ describe('GbAnalysisComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbAnalysisComponent,
-        MockComponent({selector: 'gb-cross-table'}),
+        MockComponent({selector: 'gb-cross-table'})
       ]
     })
       .compileComponents();
@@ -23,7 +23,7 @@ describe('GbAnalysisComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbAnalysisComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

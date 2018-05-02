@@ -1,6 +1,11 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GbDraggableCellComponent } from './gb-draggable-cell.component';
+import {GbDraggableCellComponent} from './gb-draggable-cell.component';
+import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
+import {CrossTableService} from '../../../services/cross-table.service';
+import {ConceptConstraint} from '../../../models/constraint-models/concept-constraint';
+import {Concept} from '../../../models/constraint-models/concept';
+import {CategoricalAggregate} from '../../../models/constraint-models/categorical-aggregate';
 
 describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
@@ -8,18 +13,38 @@ describe('GbDraggableCellComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GbDraggableCellComponent ]
+      declarations: [
+        GbDraggableCellComponent
+      ],
+      providers: [
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GbDraggableCellComponent);
     component = fixture.componentInstance;
+    let concept = new Concept();
+    concept.name = 'Color';
+    concept.label = 'Color';
+    concept.type = 'CATEGORICAL';
+    let agg = new CategoricalAggregate();
+    agg.valueCounts.set('red', 11);
+    agg.valueCounts.set('yellow', 15);
+    agg.valueCounts.set('blue', 12);
+    concept.aggregate = agg;
+    let cc = new ConceptConstraint();
+    cc.concept = concept;
+    component.constraint = cc;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

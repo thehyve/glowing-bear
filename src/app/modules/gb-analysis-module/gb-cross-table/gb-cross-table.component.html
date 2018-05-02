@@ -1,15 +1,18 @@
-<div>
-  <div>
-    <gb-droppable-zone [constraints]="rowConstraints"></gb-droppable-zone>
+<div class="container">
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-10">
+      <gb-droppable-zone [constraints]="rowConstraints"></gb-droppable-zone>
+    </div>
   </div>
 
-  <!--<div>-->
-    <!--<gb-droppable-zone [constraints]="columnConstraints"></gb-droppable-zone>-->
-  <!--</div>-->
+  <div class="row">
+    <div class="col-md-2">
+      <gb-droppable-zone [constraints]="columnConstraints"></gb-droppable-zone>
+    </div>
+    <div class="col-md-10">
+      <!-- the table content goes here -->
+    </div>
+  </div>
+
 </div>
-
-
-<!--<div pDraggable="dd">Draggable Div</div>-->
-<!--<gb-draggable-cell></gb-draggable-cell>-->
-
-<!--<gb-droppable-zone></gb-droppable-zone>-->

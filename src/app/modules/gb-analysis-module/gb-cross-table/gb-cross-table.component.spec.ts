@@ -1,6 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GbCrossTableComponent } from './gb-cross-table.component';
+import {GbCrossTableComponent} from './gb-cross-table.component';
+import {MockComponent} from 'ng2-mock-component';
+import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
+import {CrossTableService} from '../../../services/cross-table.service';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
@@ -8,9 +11,18 @@ describe('GbCrossTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GbCrossTableComponent ]
+      declarations: [
+        GbCrossTableComponent,
+        MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints']})
+      ],
+      providers: [
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +31,7 @@ describe('GbCrossTableComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });
