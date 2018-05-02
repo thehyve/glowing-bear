@@ -6,7 +6,6 @@ import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
 import {EndpointService} from './services/endpoint.service';
@@ -25,6 +24,11 @@ import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
+import {TableService} from './services/table.service';
+import {TableServiceMock} from './services/mocks/table.service.mock';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -39,7 +43,6 @@ describe('AppComponent', () => {
       imports: [
         BrowserModule,
         FormsModule,
-        HttpModule,
         BrowserAnimationsModule,
         GbNavBarModule,
         GbSidePanelModule,
@@ -68,6 +71,10 @@ describe('AppComponent', () => {
           useClass: EndpointServiceMock
         },
         {
+          provide: TransmartResourceService,
+          useClass: TransmartResourceServiceMock
+        },
+        {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
@@ -82,12 +89,16 @@ describe('AppComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: TableService,
+          useClass: TableServiceMock
         }
       ]
     }).compileComponents();
   }));
 
-  it('should create the app', async(() => {
+  it('AppComponent should be created', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();

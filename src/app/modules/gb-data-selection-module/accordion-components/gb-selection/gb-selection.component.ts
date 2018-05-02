@@ -5,11 +5,12 @@ import {
   trigger, style, animate, transition
 } from '@angular/animations';
 import {GbConstraintComponent} from '../../constraint-components/gb-constraint/gb-constraint.component';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
-import {Step} from '../../../../models/step';
-import {FormatHelper} from "../../../../utilities/FormatHelper";
+import {Step} from '../../../../models/query-models/step';
+import {FormatHelper} from '../../../../utilities/FormatHelper';
+import {Query} from '../../../../models/query-models/query';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -19,7 +20,7 @@ type LoadingState = 'loading' | 'complete';
   styleUrls: ['./gb-selection.component.css'],
   animations: [
     trigger('notifyState', [
-      transition( 'loading => complete', [
+      transition('loading => complete', [
         style({
           background: 'rgba(51, 156, 144, 0.5)'
         }),
@@ -37,14 +38,32 @@ export class GbSelectionComponent implements OnInit {
 
   private isUploadListenerNotAdded: boolean;
 
+  /**
+   * Split a newline separated string into its parts
+   * and returns a patient set query where these parts are used as subject ids.
+   * @param {string} fileContents the newline separated string.
+   * @param {string} name the query name.
+   * @return {Query} the resulting patient set query.
+   */
+  static processSubjectIdsUpload(fileContents: string, name: string): Query {
+    let subjectIds: string[] = fileContents.split(/[\r\n]+/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+    let query = new Query(null, name);
+    query.patientsQuery = {
+      'type': 'patient_set',
+      'subjectIds': subjectIds
+    };
+    query.observationsQuery = {data: null};
+    return query;
+  }
+
   constructor(private constraintService: ConstraintService,
               private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
-    this.queryService.updateCounts_1(true);
-    this.queryService.updateCounts_2();
   }
 
   get subjectCount_1(): string {
@@ -70,7 +89,7 @@ export class GbSelectionComponent implements OnInit {
   clearCriteria() {
     this.queryService.step = Step.I;
     this.constraintService.clearSelectionConstraint();
-    this.queryService.updateCounts_1();
+    this.queryService.update_1();
   }
 
   importCriteria() {
@@ -79,16 +98,16 @@ export class GbSelectionComponent implements OnInit {
       uploadElm
         .addEventListener('change', this.criteriaFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
-      // reset the input path so that it will take the same file again
-      document.getElementById('step1CriteriaFileUpload')['value'] = '';
     }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
     uploadElm.click();
   }
 
   criteriaFileUpload(event) {
     let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
+    let file: File = event.target.files[0];
+    reader.onload = (function (e: Event) {
       let data = e.target['result'];
       let query = this.parseFile(file, data);
       this.queryService.restoreQuery(query);
@@ -96,22 +115,21 @@ export class GbSelectionComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  private parseFile(file: File, data: any) {
-    let patientsQuery = {};
+  private parseFile(file: File, data: any): Query {
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
-      (file.type === '' && file.name.split('.').pop() != 'json')) {
+      (file.type === '' && file.name.split('.').pop() !== 'json')) {
       // we assume the text contains a list of subject Ids
-      patientsQuery = {
-        'type': 'patient_set',
-        'subjectIds': data.split('\n')
-      };
+      return GbSelectionComponent.processSubjectIdsUpload(data as string, file.name);
     } else if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
       if (_json['patientsQuery']) {
-        patientsQuery = _json['patientsQuery'];
+        let name = file.name.substr(0, file.name.indexOf('.'));
+        let query = new Query('', name);
+        query.patientsQuery = _json['patientsQuery'];
+        return query;
       } else {
         const msg = 'Invalid file content for query import.';
         this.queryService.alert(msg, '', 'error');
@@ -122,11 +140,6 @@ export class GbSelectionComponent implements OnInit {
       this.queryService.alert(msg, '', 'error');
       return;
     }
-    return {
-      'name': file.name.substr(0, file.name.indexOf('.')),
-      'patientsQuery': patientsQuery,
-      'observationsQuery': {}
-    };
   }
 
   get loadingStateInclusion(): LoadingState {

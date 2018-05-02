@@ -1,5 +1,12 @@
 {
   "api-url": "http://localhost:8080",
   "api-version": "v2",
-  "app-url": "http://localhost:4200"
+  "app-url": "http://localhost:4200",
+  "tree-node-counts-update": true,
+  "autosave-subject-sets": false,
+  "export-data-view": "default",
+  "show-observation-counts": true,
+  "instant-counts-update-1": false,
+  "instant-counts-update-2": false,
+  "instant-counts-update-3": false
 }

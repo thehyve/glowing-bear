@@ -1,7 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule, APP_INITIALIZER} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
 
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
@@ -18,6 +17,10 @@ import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
+import {TableService} from './services/table.service';
+import {HttpClientModule} from '@angular/common/http';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -30,7 +33,7 @@ export function initConfig(config: AppConfig) {
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     BrowserAnimationsModule,
     routing,
     GbNavBarModule,
@@ -42,9 +45,11 @@ export function initConfig(config: AppConfig) {
   providers: [
     EndpointService,
     ResourceService,
+    TransmartResourceService,
     TreeNodeService,
     ConstraintService,
     QueryService,
+    TableService,
     AppConfig,
     {
       provide: APP_INITIALIZER,

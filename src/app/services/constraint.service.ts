@@ -1,21 +1,21 @@
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraints/combination-constraint';
-import {Constraint} from '../models/constraints/constraint';
-import {TrueConstraint} from '../models/constraints/true-constraint';
-import {StudyConstraint} from '../models/constraints/study-constraint';
-import {Study} from '../models/study';
-import {Concept} from '../models/concept';
-import {ConceptConstraint} from '../models/constraints/concept-constraint';
-import {CombinationState} from '../models/constraints/combination-state';
-import {NegationConstraint} from '../models/constraints/negation-constraint';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {Constraint} from '../models/constraint-models/constraint';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {StudyConstraint} from '../models/constraint-models/study-constraint';
+import {Study} from '../models/constraint-models/study';
+import {Concept} from '../models/constraint-models/concept';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
-import {PedigreeConstraint} from '../models/constraints/pedigree-constraint';
-import {TimeConstraint} from '../models/constraints/time-constraint';
-import {TrialVisitConstraint} from '../models/constraints/trial-visit-constraint';
-import {TrialVisit} from '../models/trial-visit';
-import {ValueConstraint} from '../models/constraints/value-constraint';
+import {PatientSetConstraint} from '../models/constraint-models/patient-set-constraint';
+import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
+import {TimeConstraint} from '../models/constraint-models/time-constraint';
+import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-constraint';
+import {TrialVisit} from '../models/constraint-models/trial-visit';
+import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 
 
@@ -48,6 +48,10 @@ export class ConstraintService {
    * The selected tree node (drag-start) in the side-panel of either
    */
   private _selectedNode: any = null;
+  /*
+   * The maximum number of search results allowed when searching for a constraint
+   */
+  private _maxNumSearchResults = 100;
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {
@@ -60,6 +64,8 @@ export class ConstraintService {
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
     // also construct concepts while loading the tree nodes
     this.treeNodeService.loadTreeNodes(this);
 
@@ -81,7 +87,7 @@ export class ConstraintService {
   private loadStudies() {
     this.resourceService.getStudies()
       .subscribe(
-        studies => {
+        (studies: Study[]) => {
           // reset studies and study constraints
           this.studies = studies;
           this.studyConstraints = [];
@@ -96,6 +102,26 @@ export class ConstraintService {
       );
   }
 
+  private loadPedigrees() {
+    this.resourceService.getPedigreeRelationTypes()
+      .subscribe(
+        relationTypeObjects => {
+          for (let obj of relationTypeObjects) {
+            let pedigreeConstraint = new PedigreeConstraint(obj.label);
+            pedigreeConstraint.description = obj.description;
+            pedigreeConstraint.biological = obj.biological;
+            pedigreeConstraint.symmetrical = obj.symmetrical;
+            this.allConstraints.push(pedigreeConstraint);
+            this.validPedigreeTypes.push({
+              type: pedigreeConstraint.relationType,
+              text: pedigreeConstraint.textRepresentation
+            });
+          }
+        },
+        err => console.error(err)
+      );
+  }
+
   /**
    * Returns a list of all constraints that match the query string.
    * The constraints should be copied when editing them.
@@ -105,12 +131,21 @@ export class ConstraintService {
   searchAllConstraints(query: string): Constraint[] {
     query = query.toLowerCase();
     let results = [];
-    this.allConstraints.forEach((constraint: Constraint) => {
-      let text = constraint.textRepresentation.toLowerCase();
-      if (text.indexOf(query) > -1) {
-        results.push(constraint);
-      }
-    });
+    if (query === '') {
+      results = [].concat(this.allConstraints.slice(0, this.maxNumSearchResults));
+    } else if (query && query.length > 0) {
+      let count = 0;
+      this.allConstraints.forEach((constraint: Constraint) => {
+        let text = constraint.textRepresentation.toLowerCase();
+        if (text.indexOf(query) > -1) {
+          results.push(constraint);
+          count++;
+          if (count >= this.maxNumSearchResults) {
+            return results;
+          }
+        }
+      });
+    }
     return results;
   }
 
@@ -148,6 +183,10 @@ export class ConstraintService {
     combination.addChild(inclusionConstraint);
     combination.addChild(exclusionConstraint);
     return combination;
+  }
+
+  public constraint_1() {
+    return this.generateSelectionConstraint();
   }
 
   /**
@@ -225,28 +264,29 @@ export class ConstraintService {
   /*
    * ------------ constraint generation in the 2nd step ------------
    */
+  public constraint_2() {
+    return this.generateProjectionConstraint();
+  }
+
   /**
    * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}
    */
   public generateProjectionConstraint(): Constraint {
-    let nodes = this.treeNodeService.getTopTreeNodes(this.treeNodeService.selectedProjectionTreeData);
     let constraint = null;
-    if (nodes.length > 0) {
-      let allLeaves = [];
-      for (let node of nodes) {
-        if (node['children']) {
-          let leaves = [];
-          this.treeNodeService
-            .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN', 'STUDY'], leaves);
-          allLeaves = allLeaves.concat(leaves);
-        } else {
-          allLeaves.push(node);
-        }
-      }
+    let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
+    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
+      let leaves = [];
       constraint = new CombinationConstraint();
       constraint.combinationState = CombinationState.Or;
-      for (let leaf of allLeaves) {
+
+      for (let selectedTreeNode of selectedTreeNodes) {
+        let visualAttributes = selectedTreeNode['visualAttributes'];
+        if (visualAttributes && visualAttributes.includes('LEAF')) {
+          leaves.push(selectedTreeNode);
+        }
+      }
+      for (let leaf of leaves) {
         const leafConstraint = this.generateConstraintFromConstraintObject(leaf['constraint']);
         if (leafConstraint) {
           constraint.addChild(leafConstraint);
@@ -277,7 +317,7 @@ export class ConstraintService {
         treeNodeType === 'CATEGORICAL' ||
         treeNodeType === 'DATE' ||
         treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT' ) {
+        treeNodeType === 'TEXT') {
         if (treeNode['constraint']) {
           constraint = this.generateConstraintFromConstraintObject(treeNode['constraint']);
         } else {
@@ -555,6 +595,15 @@ export class ConstraintService {
     return depth;
   }
 
+  public constraint_1_2(): Constraint {
+    const c1 = this.constraint_1();
+    const c2 = this.constraint_2();
+    let combo = new CombinationConstraint();
+    combo.addChild(c1);
+    combo.addChild(c2);
+    return combo;
+  }
+
   get selectedNode(): any {
     return this._selectedNode;
   }
@@ -635,4 +684,11 @@ export class ConstraintService {
     this._conceptLabels = value;
   }
 
+  get maxNumSearchResults(): number {
+    return this._maxNumSearchResults;
+  }
+
+  set maxNumSearchResults(value: number) {
+    this._maxNumSearchResults = value;
+  }
 }

@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {Constraint} from '../../../../models/constraints/constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
+import {Constraint} from '../../../../models/constraint-models/constraint';
 import {
   AutoComplete
 } from 'primeng/components/autocomplete/autocomplete';
-import {CombinationState} from '../../../../models/constraints/combination-state';
-import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {CombinationState} from '../../../../models/constraint-models/combination-state';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -38,7 +38,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
-    this.updateCounts();
+    this.update();
   }
 
   onSearch(event) {
@@ -84,7 +84,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -94,7 +94,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.updateCounts();
+    this.update();
   }
 
   get childContainerClass(): string {

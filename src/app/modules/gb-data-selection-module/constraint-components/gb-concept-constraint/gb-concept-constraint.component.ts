@@ -1,14 +1,14 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {Concept} from '../../../../models/concept';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
-import {ValueConstraint} from '../../../../models/constraints/value-constraint';
-import {TrialVisit} from '../../../../models/trial-visit';
-import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
+import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
+import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
+import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/UIHelper';
-import {DateOperatorState} from '../../../../models/constraints/date-operator-state';
+import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -214,7 +214,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeConstraints();
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -227,7 +227,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyObsDateConstraint = this._applyObsDateConstraint;
     if (conceptConstraint.applyObsDateConstraint) {
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -272,7 +272,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
     if (conceptConstraint.applyTrialVisitConstraint) {
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -436,7 +436,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       }
 
     }
-    this.updateCounts();
+    this.update();
   }
 
   /*
@@ -520,7 +520,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateTrialVisitValues() {
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
-    this.updateCounts();
+    this.update();
   }
 
   onUnselectTrialVisit(visit) {
@@ -542,7 +542,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     const val2 = this.obsDate2;
     let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
     conceptConstraint.obsDateConstraint.date2 = correctedDate2;
-    this.updateCounts();
+    this.update();
   }
 
   /*
@@ -610,7 +610,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     conceptConstraint.obsDateConstraint.isNegated =
       (this.obsDateOperatorState === DateOperatorState.NOT_BETWEEN);
     // Notify constraint service
-    this.updateCounts();
+    this.update();
   }
 
   /**

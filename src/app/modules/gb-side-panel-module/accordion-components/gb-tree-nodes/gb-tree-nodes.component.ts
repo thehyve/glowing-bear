@@ -42,6 +42,11 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   delay: number;
   // indicate if the initUpdate is finished
   initUpdated: boolean;
+  // max number of expanded nodes in search
+  maxNumExpandedNodes = 30;
+  numExpandedNodes = 0;
+  // current number of hits in search
+  hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
@@ -139,10 +144,13 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
   initUpdate() {
     if (!this.initUpdated) {
-      let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-      if (treeNodeElements && treeNodeElements.length > 0) {
-        this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
-        this.initUpdated = true;
+      let treeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
+      if (treeContainer) {
+        let treeNodeElements = treeContainer.children;
+        if (treeNodeElements && treeNodeElements.length > 0) {
+          this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+          this.initUpdated = true;
+        }
       }
     }
   }
@@ -223,7 +231,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * @param filterWord
    * @returns {{hasMatching: boolean}}
    */
-  filterWithHighlightTreeNodes(treeNodes: TreeNode[], field: string, filterWord) {
+  filterWithHighlightTreeNodes(treeNodes: TreeNode[], field: string, filterWord: string) {
     let result = {
       hasMatching: false
     };
@@ -235,14 +243,15 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
           node['expanded'] = false;
           node['styleClass'] = undefined;
           let fieldString = node[field].toLowerCase();
-          if (fieldString.includes(filterWord)) {
+          if (fieldString.includes(filterWord)) { // if there is a hit
+            this.hits++;
             result.hasMatching = true;
             if (node['children'] && node['children'].length > 0) {
               node['styleClass'] = 'gb-highlight-treenode gb-is-not-leaf';
             } else {
               node['styleClass'] = 'gb-highlight-treenode';
             }
-          } else {
+          } else { // if there is no hit
             node['styleClass'] = undefined;
           }
           if (node['children'] && node['children'].length > 0) {
@@ -250,7 +259,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
               this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
             if (subResult.hasMatching) {
               result.hasMatching = true;
-              node['expanded'] = true;
+              if (this.numExpandedNodes < this.maxNumExpandedNodes) {
+                node['expanded'] = true;
+                this.numExpandedNodes++;
+              }
             }
           }
         }
@@ -300,15 +312,21 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    */
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', filterWord);
-    this.removeFalsePrimeNgClasses(this.delay);
-    // this.updateEventListeners()
+    if (filterWord.length > 1) {
+      this.hits = 0;
+      this.numExpandedNodes = 0;
+      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', filterWord);
+      this.treeNodeService.treeNodes.forEach((topNode: TreeNode) => {
+        topNode.expanded = true;
+      });
+      this.removeFalsePrimeNgClasses(this.delay);
 
-    window.setTimeout((function () {
-      let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-      let treeNodes = this.treeNodeService.treeNodes;
-      this.updateEventListeners(treeNodeElements, treeNodes);
-    }).bind(this), this.delay);
+      window.setTimeout((function () {
+        let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+        let treeNodes = this.treeNodeService.treeNodes;
+        this.updateEventListeners(treeNodeElements, treeNodes);
+      }).bind(this), this.delay);
+    }
   }
 
   /**

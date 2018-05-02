@@ -71,14 +71,18 @@ export class GbDataSelectionComponent implements OnInit {
     return FormatHelper.percentage(this.queryService.observationCount_2, this.queryService.observationCount_1);
   }
 
-  updateCounts_1(event) {
+  update_1(event) {
     event.stopPropagation();
-    this.queryService.updateCounts_1();
+    this.queryService.update_1();
   }
 
-  updateCounts_2(event) {
+  update_2(event) {
     event.stopPropagation();
-    this.queryService.updateCounts_2();
+    this.queryService.update_2();
   }
 
+  update_3(event) {
+    event.stopPropagation();
+    this.queryService.update_3();
+  }
 }

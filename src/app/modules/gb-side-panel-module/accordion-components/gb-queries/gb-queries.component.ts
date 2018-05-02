@@ -1,12 +1,12 @@
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {Query} from '../../../../models/query';
+import {Query} from '../../../../models/query-models/query';
 import {QueryService} from '../../../../services/query.service';
-import {QueryDiffRecord} from '../../../../models/query-diff-record';
+import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/DownloadHelper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/UIHelper';
-import {QuerySubscriptionFrequency} from '../../../../models/query-subscription-frequency';
+import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
 
 @Component({
   selector: 'gb-queries',
@@ -34,24 +34,10 @@ export class GbQueriesComponent implements OnInit {
       uploadElm
         .addEventListener('change', this.queryFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
-      // reset the input path so that it will take the same file again
-      document.getElementById('queryFileUpload')['value'] = '';
     }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
     uploadElm.click();
-  }
-
-  processSubjectIdsUpload(fileContents: string, fileName: string): Query {
-    // we assume the text contains a list of subject Ids
-    let subjectIds: string[] = fileContents.split(/(\r?\n)+/)
-      .map(id => id.trim())
-      .filter(id => id.length > 0);
-    let query = new Query(null, fileName);
-    query.patientsQuery = {
-      'type': 'patient_set',
-      'subjectIds': subjectIds
-    };
-    query.observationsQuery = {data: null};
-    return query;
   }
 
   queryFileUpload(event) {
@@ -94,15 +80,15 @@ export class GbQueriesComponent implements OnInit {
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
-    const queryObject = {
+    let queryObj = {
       subscribed: query.subscribed
     };
     if (query.subscribed) {
-      queryObject['subscriptionFreq'] =
+      queryObj["subscriptionFreq"] =
         query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObject['subscriptionFreq'];
+      query.subscriptionFreq = queryObj["subscriptionFreq"];
     }
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -113,10 +99,10 @@ export class GbQueriesComponent implements OnInit {
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
     query.bookmarked = !query.bookmarked;
-    const queryObject = {
-      bookmarked: query.bookmarked
+    let queryObj = {
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -161,18 +147,17 @@ export class GbQueriesComponent implements OnInit {
 
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(query, query.name);
+    DownloadHelper.downloadJSON(query.toPlainObject(), query.name);
   }
 
-  radioCheckSubscriptionFrequency(query) {
-    const queryObject = {
+  radioCheckSubscriptionFrequency(query: Query) {
+    let queryObj = {
       subscriptionFreq: query.subscriptionFreq
     };
-    this.queryService.updateQuery(query, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
-    console.log(query, record);
     const filename = query.name + '-record-' + record.createDate;
     DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }

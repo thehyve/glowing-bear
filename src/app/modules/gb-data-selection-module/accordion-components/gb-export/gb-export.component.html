@@ -5,18 +5,18 @@
     <h5>Create new export for the currently selected data</h5>
   </div>
 
-  <div *ngIf="exportFormats.length > 0" class="gb-export-format-container">
+  <div *ngIf="queryService.exportDataTypes.length > 0" class="gb-export-format-container">
 
     <!-- area to indicate which data formats to export -->
     <div class="gb-export-format-header">Select data types and formats to export:</div>
-    <div *ngFor="let exportFormat of exportFormats">
+    <div *ngFor="let dataType of queryService.exportDataTypes">
       <span class="row">
         <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
-          <p-checkbox [(ngModel)]="exportFormat.checked" binary="true"></p-checkbox>
-          {{exportFormat.name}}
+          <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
+          {{dataType.name}}
         </span>
         (&nbsp;
-        <span *ngFor="let fileFormat of exportFormat.fileFormats">
+        <span *ngFor="let fileFormat of dataType.fileFormats">
           <p-checkbox [(ngModel)]="fileFormat.checked" binary="true"></p-checkbox>
           {{fileFormat.name}} &nbsp;
         </span>
@@ -34,15 +34,21 @@
       <button type="button" class="btn btn-primary btn-sm"
               (click)="createExportJob()">Create Export</button>
       <span>&nbsp;</span>
-      <div *ngIf="exportDataView === 'surveyTable'">
-        <p-checkbox class="gb-include-date-columns-checkbox" [(ngModel)]="dateColumnsIncluded" binary="true"></p-checkbox>
-        Include measurement date columns
+      <!-- show the date column checkbox if the resource service is in transmart mode -->
+      <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
+      <div *ngIf="isTransmartEnv">
+        <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
+          <p-checkbox class="gb-include-date-columns-checkbox"
+                      [(ngModel)]="resourceService.transmartDateColumnIncluded"
+                      binary="true"></p-checkbox>
+          Include measurement date columns
+        </div>
       </div>
     </div>
   </div>
 
   <!-- the spinning icon -->
-  <div *ngIf="isLoadingExportFormats">
+  <div *ngIf="queryService.isLoadingExportDataTypes">
     <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
   </div>
 
@@ -110,7 +116,4 @@
     </p-column>
   </p-dataTable>
 
-
 </div>
-
-

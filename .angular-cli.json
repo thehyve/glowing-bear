@@ -11,7 +11,8 @@
         "assets",
         "app/config/env.json",
         "app/config/config.dev.json",
-        "app/config/config.prod.json",
+        "app/config/config.default.json",
+        "app/config/config.transmart.json",
         "favicon.ico"
       ],
       "index": "index.html",
@@ -22,13 +23,8 @@
       "testTsconfig": "tsconfig.spec.json",
       "prefix": "app",
       "styles": [
-        "../node_modules/primeng/resources/primeng.min.css",
-        "../node_modules/font-awesome/css/font-awesome.css",
-        "../node_modules/roboto-fontface/css/roboto/roboto-fontface.css",
-        "assets/themes/primeng-theme.css",
-        "assets/themes/bootstrap.css",
         "assets/icons/icons.style.css",
-        "styles.css"
+        "styles/styles.css"
       ],
       "scripts": [
       ],

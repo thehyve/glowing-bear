@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
-import {Concept} from '../models/concept';
-import {ConceptConstraint} from '../models/constraints/concept-constraint';
+import {Concept} from '../models/constraint-models/concept';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
@@ -459,7 +459,13 @@ export class TreeNodeService {
     for (let node of nodes) {
       node['expanded'] = value;
       if (node['children']) {
-        this.expandProjectionTreeDataIterative(node['children'], value);
+        if (value) { // If it is expansion, expand it gradually.
+          window.setTimeout((function () {
+            this.expandProjectionTreeDataIterative(node['children'], value);
+          }).bind(this), 100);
+        } else { // If it is collapse, collapse it immediately
+          this.expandProjectionTreeDataIterative(node['children'], value);
+        }
       }
     }
   }
@@ -593,10 +599,10 @@ export class TreeNodeService {
   public isTreeNodeAconcept(node: TreeNode): boolean {
     const type = node['type'];
     return type === 'NUMERIC' ||
-           type === 'CATEGORICAL' ||
-           type === 'DATE' ||
-           type === 'TEXT' ||
-           type === 'HIGH_DIMENSIONAL';
+      type === 'CATEGORICAL' ||
+      type === 'DATE' ||
+      type === 'TEXT' ||
+      type === 'HIGH_DIMENSIONAL';
   }
 
   /**
