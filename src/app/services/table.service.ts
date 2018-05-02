@@ -8,6 +8,7 @@ import {ConstraintService} from './constraint.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
 import {DimensionValue} from '../models/table-models/dimension-value';
+import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
 
 @Injectable()
 export class TableService {
@@ -30,43 +31,16 @@ export class TableService {
     this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
     const constraint_1_2 = this.constraintService.constraint_1_2();
     this.dataTable.constraint = constraint_1_2;
-    this.resourceService.getDimensions(constraint_1_2)
-      .subscribe((availableDimensions: Dimension[]) => {
-        // update dimensions
-        let availableDimensionNames = new Array<string>();
-        availableDimensions.forEach((dim: Dimension) => {
-          availableDimensionNames.push(dim.name);
-        });
-        let takenDimensionNames = new Array<string>();
-        let newRowDimensions = new Array<Dimension>();
-        this.dataTable.rowDimensions.forEach((dim: Dimension) => {
-          if (availableDimensionNames.includes(dim.name)) {
-            newRowDimensions.push(dim);
-            takenDimensionNames.push(dim.name);
-          }
-        });
-        let newColumnDimensions = new Array<Dimension>();
-        this.dataTable.columnDimensions.forEach((dim: Dimension) => {
-          if (availableDimensionNames.includes(dim.name)) {
-            newColumnDimensions.push(dim);
-            takenDimensionNames.push(dim.name);
-          }
-        });
-        availableDimensions.forEach((dim: Dimension) => {
-          if (!takenDimensionNames.includes(dim.name)) {
-            this.dataTable.rowDimensions.push(dim);
-          }
-        });
-        this.resourceService.getDataTable(this.dataTable)
-          .subscribe(
-            (newDataTable: DataTable) => {
-              this.dataTable = newDataTable;
-              this.dataTable.isDirty = false;
-              this.dataTable.isUpdating = false;
-              this.updatePrevDimensions();
-            }
-          );
-      });
+
+    this.resourceService.getDataTable(this.dataTable)
+      .subscribe(
+        (newDataTable: DataTable) => {
+          this.dataTable = newDataTable;
+          this.dataTable.isDirty = false;
+          this.dataTable.isUpdating = false;
+          this.updatePrevDimensions();
+        }
+      );
   }
 
   public nextPage() {

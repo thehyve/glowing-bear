@@ -15,6 +15,8 @@ import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
+import {TransmartStudy} from "../../models/transmart-models/transmart-study";
+import {TransmartStudyDimensions} from "../../models/transmart-models/transmart-study-dimensions";
 
 export class TransmartMapper {
 
@@ -65,7 +67,7 @@ export class TransmartMapper {
   }
 
   public static mapQuery(query: Query): TransmartQuery {
-    let transmartTableState: TransmartTableState = this.mapDataTable(query.dataTable);
+    let transmartTableState: TransmartTableState = this.mapDataTableToTableState(query.dataTable);
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
     transmartQuery.patientsQuery = query.patientsQuery;
     transmartQuery.observationsQuery = query.observationsQuery;
@@ -74,7 +76,7 @@ export class TransmartMapper {
     return transmartQuery;
   }
 
-  public static mapDataTable(dataTable: DataTable): TransmartTableState {
+  public static mapDataTableToTableState(dataTable: DataTable): TransmartTableState {
     let rowDimensionNames = dataTable.rowDimensions.length > 0 ?
       dataTable.rowDimensions.map(dim => dim.name) : [];
     let columnDimensionNames = dataTable.columnDimensions.length > 0 ?
@@ -86,7 +88,6 @@ export class TransmartMapper {
   public static mapTransmartDataTable(transmartTable: TransmartDataTable, isUsingHeaders: boolean,
                                       requestedOffset: number, limit: number): DataTable {
     let dataTable = new DataTable();
-    let numberOfRows: number = transmartTable.rows.length;
     const headerNameField = 'name';
 
     // check if it is a last page
@@ -238,6 +239,104 @@ export class TransmartMapper {
       }
     }
     return elements;
+  }
+
+  public static mapStudyDimensions(transmartStudies: TransmartStudy[]): TransmartStudyDimensions {
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+    let transmartStudyDimensions = new TransmartStudyDimensions();
+
+    if (transmartStudies && transmartStudies.length > 0) {
+      let dimensions = new Array<Dimension>();
+
+      // get default table format for the study
+      if (transmartStudies.length === 1 && transmartStudies[0].metadata != null
+        && transmartStudies[0].metadata.defaultTabularRepresentation != null) {
+        let rowDimensions = new Array<string>();
+        let columnDimensions = new Array<string>();
+        transmartStudies[0].metadata.defaultTabularRepresentation.columnDimensions.forEach((dimName: string) =>
+          columnDimensions.push(dimName));
+        transmartStudies[0].metadata.defaultTabularRepresentation.rowDimensions.forEach((dimName: string) =>
+          rowDimensions.push(dimName));
+
+        transmartStudyDimensions.tableState = new TransmartTableState(rowDimensions, columnDimensions);
+      }
+
+      // get dimension arrays for each study
+      let availableDimensions = transmartStudies.map(study => study.dimensions);
+
+      // sort to get the shortest dimension at the beginning of the array
+      availableDimensions.sort(function (a, b) {
+        return a.length - b.length;
+      });
+
+      // get common dimensions for all the studies
+      let commonDimensions = availableDimensions.shift().filter(function (v) {
+        return availableDimensions.every(function (a) {
+          return a.indexOf(v) !== -1;
+        });
+      });
+
+      commonDimensions.forEach((name: string) => {
+        if (highDims.indexOf(name) === -1) {
+          dimensions.push(new Dimension(name));
+        }
+      });
+      dimensions.forEach((dimension: Dimension) => transmartStudyDimensions.availableDimensions.push(dimension));
+    }
+
+    return transmartStudyDimensions;
+  }
+
+  public static mapStudyDimensionsToTableState(transmartStudyDimensions: TransmartStudyDimensions): TransmartTableState {
+    let rowDimensions: Array<string> = [];
+    let columnDimensions: Array<string> = [];
+
+    // update dimensions
+    if (transmartStudyDimensions.tableState != null) {
+      // study specific default row dimensions
+      transmartStudyDimensions.tableState.rowDimensions.forEach((rowDimension: string) =>
+        rowDimensions.push(rowDimension));
+
+      // study specific default column dimensions
+      transmartStudyDimensions.tableState.columnDimensions.forEach((columnDimension: string) =>
+        columnDimensions.push(columnDimension));
+
+      // dimensions that are not included in a default representation, but are supported
+      // will be column dimensions by default
+      transmartStudyDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
+        if (!rowDimensions.includes(availableDimension.name)
+          && !columnDimensions.includes(availableDimension.name)) {
+          rowDimensions.push(availableDimension.name);
+        }
+      });
+    } else {
+      // default table representation
+      let availableDimensionNames: Array<string> = [];
+      if (transmartStudyDimensions.availableDimensions != null) {
+        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
+          availableDimensionNames.push(dim.name);
+        });
+        let takenDimensionNames: Array<string> = [];
+        rowDimensions.forEach((dim: string) => {
+          if (availableDimensionNames.includes(dim)) {
+            takenDimensionNames.push(dim);
+          }
+        });
+        let newColumnDimensions = new Array<string>();
+        columnDimensions.forEach((dim: string) => {
+          if (availableDimensionNames.includes(dim)) {
+            newColumnDimensions.push(dim);
+            takenDimensionNames.push(dim);
+          }
+        });
+        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
+          if (!takenDimensionNames.includes(dim.name)) {
+            rowDimensions.push(dim.name);
+          }
+        });
+      }
+    }
+    return new TransmartTableState(rowDimensions, columnDimensions);
   }
 
   private static updateCols(cols: Array<Col>, newColValue, metadata) {
