@@ -1,0 +1,13 @@
+<div pDroppable="dd"
+     class="gb-droppable-zone-container"
+     (onDragEnter)="onDragEnter($event)"
+     (onDrop)="onDrop($event)"
+     (onDragLeave)="onDragLeave($event)">
+  Droppable Div
+  <br>
+  {{constraints.length}} constraints available
+
+  <!--<div *ngFor="let constraint of constraints">-->
+    <!--<gb-draggable-cell [constraint]="constraint"></gb-draggable-cell>-->
+  <!--</div>-->
+</div>

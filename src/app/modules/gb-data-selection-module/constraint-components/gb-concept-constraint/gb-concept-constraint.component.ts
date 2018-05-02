@@ -9,6 +9,8 @@ import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/UIHelper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
+import {NumericalAggregate} from '../../../../models/constraint-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../../../models/constraint-models/categorical-aggregate';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -114,7 +116,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
             const code = constraint.concept.code;
             const aggregateObj = response[code];
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-              let aggregate = aggregateObj['numericalValueAggregates'];
+              let aggregate: NumericalAggregate = aggregateObj['numericalValueAggregates'];
               constraint.concept.aggregate = aggregate;
               this.minLimit = aggregate['min'];
               this.maxLimit = aggregate['max'];
@@ -133,18 +135,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
                 }
               }
             } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
-              let aggregate = aggregateObj['categoricalValueAggregates'];
-              let values = [];
-              for (let key in aggregate['valueCounts']) {
-                values.push(key);
+              let aggregate = new CategoricalAggregate();
+              let counts = aggregateObj['categoricalValueAggregates']['valueCounts'];
+              for (let key in counts) {
+                aggregate.valueCounts.set(key, counts[key]);
               }
-              let nullValueCounts = aggregate['nullValueCounts'];
-              if (nullValueCounts != null && nullValueCounts > 0) {
-                values.push(this.nullValueAutocompleteToken);
+              let nullCount = aggregateObj['categoricalValueAggregates']['nullValueCounts'];
+              if (nullCount != null && nullCount > 0) {
+                aggregate.valueCounts.set(this.nullValueAutocompleteToken, nullCount);
               }
-
-              aggregate.values = values;
               constraint.concept.aggregate = aggregate;
+              let values = aggregate.values;
               // if there is existing value constraints
               // use their values as selected categories
               if (constraint.values.length > 0) {
@@ -156,7 +157,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
               this.suggestedCategories = [].concat(values);
             } else if (this.isDate()) { // -------------------------------------> If it's DATE
-              let aggregate = aggregateObj['numericalValueAggregates'];
+              let aggregate: NumericalAggregate = aggregateObj['numericalValueAggregates'];
               constraint.concept.aggregate = aggregate;
               let date1 = constraint.valDateConstraint.date1;
               let date2 = constraint.valDateConstraint.date2;

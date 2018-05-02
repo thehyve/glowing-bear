@@ -11,7 +11,7 @@ export class DataTable {
   private _rowDimensions: Array<Dimension>;
   private _columnDimensions: Array<Dimension>;
   /*
-   * The Stucture of the data table
+   * The structure of the data table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
    * _rows[0] ------> _rows[0].data[_col[0]], _rows[0].data[_col[1]], _rows[0].data[_col[2]], ...
    * _rows[1] ------> _rows[1].data[_col[0]], _rows[1].data[_col[1]], _rows[1].data[_col[2]], ...
@@ -20,7 +20,7 @@ export class DataTable {
    */
   // The actual rows of the table
   private _rows: Array<Row>;
-  // The filler header row, used when headerRows are now used
+  // The index header row, used when headerRows are not used
   private _cols: Array<Col>;
   // The hierarchical header rows with merged cells, used when cols are now used
   private _headerRows: Array<HeaderRow>;

@@ -1,9 +1,11 @@
+import {Aggregate} from './aggregate';
+
 export class Concept {
   private _path: string;
   private _type: string;
   // the display text
   private _label: string;
-  private _aggregate: object;
+  private _aggregate: Aggregate;
   private _code: string;
   private _name: string;
   private _fullName: string;
@@ -27,11 +29,11 @@ export class Concept {
     this._type = value;
   }
 
-  get aggregate(): object {
+  get aggregate(): Aggregate {
     return this._aggregate;
   }
 
-  set aggregate(value: object) {
+  set aggregate(value: Aggregate) {
     this._aggregate = value;
   }
 
