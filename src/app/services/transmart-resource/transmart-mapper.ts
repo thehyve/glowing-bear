@@ -287,53 +287,57 @@ export class TransmartMapper {
     return transmartStudyDimensions;
   }
 
-  public static mapStudyDimensionsToTableState(transmartStudyDimensions: TransmartStudyDimensions): TransmartTableState {
+  public static mapStudyDimensionsToTableState(transmartStudyDimensions: TransmartStudyDimensions,
+                                               currentDataTable: DataTable): TransmartTableState {
     let rowDimensions: Array<string> = [];
     let columnDimensions: Array<string> = [];
 
-    // update dimensions
-    if (transmartStudyDimensions.tableState != null) {
-      // study specific default row dimensions
-      transmartStudyDimensions.tableState.rowDimensions.forEach((rowDimension: string) =>
-        rowDimensions.push(rowDimension));
+    if (currentDataTable.columnDimensions != null && currentDataTable.columnDimensions.length > 0
+      && this.areAllDimensionsAvailable(currentDataTable.columnDimensions, transmartStudyDimensions.availableDimensions)) {
 
-      // study specific default column dimensions
-      transmartStudyDimensions.tableState.columnDimensions.forEach((columnDimension: string) =>
-        columnDimensions.push(columnDimension));
-
-      // dimensions that are not included in a default representation, but are supported
-      // will be column dimensions by default
-      transmartStudyDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
-        if (!rowDimensions.includes(availableDimension.name)
-          && !columnDimensions.includes(availableDimension.name)) {
-          rowDimensions.push(availableDimension.name);
+      // table representation is defined
+      currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
+        columnDimensions.push(columnDimension.name));
+      transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
+        if (columnDimensions.indexOf(dim.name) === -1){
+          rowDimensions.push(dim.name);
         }
       });
+
     } else {
       // default table representation
-      let availableDimensionNames: Array<string> = [];
-      if (transmartStudyDimensions.availableDimensions != null) {
-        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
-          availableDimensionNames.push(dim.name);
-        });
-        let takenDimensionNames: Array<string> = [];
-        rowDimensions.forEach((dim: string) => {
-          if (availableDimensionNames.includes(dim)) {
-            takenDimensionNames.push(dim);
+      if (transmartStudyDimensions.tableState != null) {
+
+        // study specific default row dimensions
+        transmartStudyDimensions.tableState.rowDimensions.forEach((rowDimension: string) =>
+          rowDimensions.push(rowDimension));
+
+        // study specific default column dimensions
+        transmartStudyDimensions.tableState.columnDimensions.forEach((columnDimension: string) =>
+          columnDimensions.push(columnDimension));
+
+        // dimensions that are not included in a default representation, but are supported
+        // will be column dimensions by default
+        transmartStudyDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
+          if (!rowDimensions.includes(availableDimension.name)
+            && !columnDimensions.includes(availableDimension.name)) {
+            rowDimensions.push(availableDimension.name);
           }
         });
-        let newColumnDimensions = new Array<string>();
-        columnDimensions.forEach((dim: string) => {
-          if (availableDimensionNames.includes(dim)) {
-            newColumnDimensions.push(dim);
-            takenDimensionNames.push(dim);
+      } else {
+
+        // default row dimensions: all dimensions as rows
+        if (transmartStudyDimensions.availableDimensions != null) {
+          if (this.areAllDimensionsAvailable(currentDataTable.rowDimensions, transmartStudyDimensions.availableDimensions)) {
+            currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
+              columnDimensions.push(columnDimension.name));
           }
-        });
-        transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
-          if (!takenDimensionNames.includes(dim.name)) {
-            rowDimensions.push(dim.name);
-          }
-        });
+          transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
+            if (rowDimensions.indexOf(dim.name) === -1) {
+              rowDimensions.push(dim.name);
+            }
+          });
+        }
       }
     }
     return new TransmartTableState(rowDimensions, columnDimensions);
@@ -383,6 +387,11 @@ export class TransmartMapper {
       // start from the first row
       return 0;
     }
+  }
+
+  private static areAllDimensionsAvailable(dimensions: Array<Dimension>, availableDimensions: Array<Dimension>): boolean {
+    return dimensions.every((dim: Dimension)  =>
+      availableDimensions.map(ad => ad.name).indexOf(dim.name) !== -1);
   }
 
 }

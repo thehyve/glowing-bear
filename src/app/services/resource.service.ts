@@ -283,7 +283,7 @@ export class ResourceService {
     let limit = dataTable.limit;
 
     return this.getDimensions(dataTable.constraint).switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-      let tableState: TransmartTableState = TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions);
+      let tableState: TransmartTableState = TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
       const constraint: Constraint = dataTable.constraint;
       return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
     }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
