@@ -36,8 +36,7 @@ describe('GbDataSelectionComponent', () => {
         GbDataSelectionComponent,
         MockComponent({selector: 'gb-selection'}),
         MockComponent({selector: 'gb-projection'}),
-        MockComponent({selector: 'gb-table'}),
-        MockComponent({selector: 'gb-export'})
+        MockComponent({selector: 'gb-data-table'})
       ],
       imports: [
         BrowserAnimationsModule,

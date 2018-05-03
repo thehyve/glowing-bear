@@ -1,16 +1,16 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableComponent} from './gb-table.component';
+import {GbDataTableComponent} from './gb-data-table.component';
 import {MockComponent} from 'ng2-mock-component';
 
-describe('GbTableComponent', () => {
-  let component: GbTableComponent;
-  let fixture: ComponentFixture<GbTableComponent>;
+describe('GbDataTableComponent', () => {
+  let component: GbDataTableComponent;
+  let fixture: ComponentFixture<GbDataTableComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbTableComponent,
+        GbDataTableComponent,
         MockComponent({selector: 'gb-table-dimensions'}),
         MockComponent({selector: 'gb-table-grid'})
       ]
@@ -19,7 +19,7 @@ describe('GbTableComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbTableComponent);
+    fixture = TestBed.createComponent(GbDataTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
