@@ -292,15 +292,20 @@ export class TransmartMapper {
     let rowDimensions: Array<string> = [];
     let columnDimensions: Array<string> = [];
 
-    if (currentDataTable.columnDimensions != null && currentDataTable.columnDimensions.length > 0
-      && this.areAllDimensionsAvailable(currentDataTable.columnDimensions, transmartStudyDimensions.availableDimensions)) {
+    if (this.areAllDimensionsAvailable(currentDataTable.columnDimensions.concat(currentDataTable.rowDimensions), transmartStudyDimensions.availableDimensions)) {
 
       // table representation is defined
       currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
         columnDimensions.push(columnDimension.name));
-      transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
+      currentDataTable.rowDimensions.forEach((dim: Dimension) => {
         if (columnDimensions.indexOf(dim.name) === -1){
           rowDimensions.push(dim.name);
+        }
+      });
+      transmartStudyDimensions.availableDimensions.forEach((availableDimension: Dimension) => {
+        if (!rowDimensions.includes(availableDimension.name)
+          && !columnDimensions.includes(availableDimension.name)) {
+          rowDimensions.push(availableDimension.name);
         }
       });
 
@@ -328,15 +333,9 @@ export class TransmartMapper {
 
         // default row dimensions: all dimensions as rows
         if (transmartStudyDimensions.availableDimensions != null) {
-          if (this.areAllDimensionsAvailable(currentDataTable.rowDimensions, transmartStudyDimensions.availableDimensions)) {
-            currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
-              columnDimensions.push(columnDimension.name));
-          }
-          transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) => {
-            if (rowDimensions.indexOf(dim.name) === -1) {
-              rowDimensions.push(dim.name);
-            }
-          });
+          transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) =>
+              rowDimensions.push(dim.name)
+          );
         }
       }
     }
