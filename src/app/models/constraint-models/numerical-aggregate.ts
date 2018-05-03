@@ -1,4 +1,5 @@
 import {Aggregate} from './aggregate';
+import {AggregateType} from './aggregate-type';
 
 export class NumericalAggregate extends Aggregate {
   private _min: number;
@@ -6,6 +7,11 @@ export class NumericalAggregate extends Aggregate {
   private _avg: number;
   private _stdDev: number;
   private _count: number;
+
+  constructor() {
+    super();
+    this.type = AggregateType.NUMERICAL;
+  }
 
   get min(): number {
     return this._min;

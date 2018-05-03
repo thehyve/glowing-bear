@@ -15,10 +15,14 @@ import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
-import {TransmartStudy} from "../../models/transmart-models/transmart-study";
-import {TransmartStudyDimensions} from "../../models/transmart-models/transmart-study-dimensions";
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
+import {Aggregate} from '../../models/constraint-models/aggregate';
+import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
 
 export class TransmartMapper {
+  public static readonly nullValueAutocompleteToken: string = 'MISSING';
 
   public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
     let queries: Query[] = [];
@@ -252,6 +256,32 @@ export class TransmartMapper {
       }
     }
     return elements;
+  }
+
+  public static mapTransmartConceptAggregate(tmConceptAggregate: object, conceptCode: string): Aggregate {
+    let aggregate: Aggregate = null;
+    let aggObj = tmConceptAggregate[conceptCode];
+    if (aggObj['numericalValueAggregates']) {
+      aggregate = new NumericalAggregate();
+      const numAggObj = aggObj['numericalValueAggregates'];
+      (<NumericalAggregate>aggregate).min = numAggObj['min'];
+      (<NumericalAggregate>aggregate).max = numAggObj['max'];
+      (<NumericalAggregate>aggregate).avg = numAggObj['average'];
+      (<NumericalAggregate>aggregate).count = numAggObj['count'];
+      (<NumericalAggregate>aggregate).stdDev = numAggObj['std_dev'];
+    } else if (aggObj['categoricalValueAggregates']) {
+      aggregate = new CategoricalAggregate();
+      const catAggObj = aggObj['categoricalValueAggregates'];
+      const countObj = catAggObj['valueCounts'];
+      for (let key in countObj) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(key, countObj[key]);
+      }
+      const nullCount = catAggObj['nullValueCounts'];
+      if (nullCount && nullCount > 0) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(TransmartMapper.nullValueAutocompleteToken, nullCount);
+      }
+    }
+    return aggregate;
   }
 
   public static mapStudyDimensions(transmartStudies: TransmartStudy[]): TransmartStudyDimensions {

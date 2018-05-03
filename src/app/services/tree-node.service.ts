@@ -5,6 +5,7 @@ import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
 import {NavbarService} from './navbar.service';
+import {ConceptType} from '../models/constraint-models/concept-type';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -188,7 +189,7 @@ export class TreeNodeService {
     let head = fullName.substring(0, fullName.length - tail.length);
     concept.label = treeNode['name'] + ' (' + head + ')';
     concept.path = treeNode['conceptPath'];
-    concept.type = treeNode['type'];
+    concept.type = <ConceptType> treeNode['type'];
     concept.code = treeNode['conceptCode'];
     concept.fullName = treeNode['fullName'];
     concept.name = treeNode['name'];

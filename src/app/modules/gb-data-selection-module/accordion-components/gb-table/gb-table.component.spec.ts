@@ -2,7 +2,6 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTableComponent} from './gb-table.component';
 import {MockComponent} from 'ng2-mock-component';
-import {CheckboxModule} from 'primeng/primeng';
 
 describe('GbTableComponent', () => {
   let component: GbTableComponent;
@@ -25,7 +24,7 @@ describe('GbTableComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbTableComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -1,8 +1,9 @@
 import {Aggregate} from './aggregate';
+import {ConceptType} from './concept-type';
 
 export class Concept {
   private _path: string;
-  private _type: string;
+  private _type: ConceptType;
   // the display text
   private _label: string;
   private _aggregate: Aggregate;
@@ -21,11 +22,11 @@ export class Concept {
     this._path = value;
   }
 
-  get type(): string {
+  get type(): ConceptType {
     return this._type;
   }
 
-  set type(value: string) {
+  set type(value: ConceptType) {
     this._type = value;
   }
 

@@ -4,7 +4,7 @@ import {GbTableGridComponent} from './gb-table-grid.component';
 import {TableService} from '../../../../services/table.service';
 import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
 import {TableModule} from 'primeng/table';
-import {TooltipModule} from "primeng/primeng";
+import {TooltipModule} from 'primeng/primeng';
 
 describe('GbTableGridComponent', () => {
   let component: GbTableGridComponent;
@@ -33,7 +33,7 @@ describe('GbTableGridComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbTableGridComponent should be created.', () => {
+  it('should be created.', () => {
     expect(component).toBeTruthy();
   });
 });

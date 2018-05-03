@@ -3,6 +3,7 @@ import {GbDraggableCellComponent} from '../../modules/gb-analysis-module/gb-drag
 import {Concept} from '../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {ConceptType} from '../../models/constraint-models/concept-type';
 
 export class CrossTableServiceMock {
   private _crossTable: CrossTable;
@@ -10,14 +11,14 @@ export class CrossTableServiceMock {
 
   constructor() {
     this.crossTable = new CrossTable();
-    this.mockData();
+    this.mockDataInit();
   }
 
-  mockData() {
+  mockDataInit() {
     let c1 = new Concept();
     c1.name = 'Race';
     c1.label = 'Race';
-    c1.type = 'CATEGORICAL';
+    c1.type = ConceptType.CATEGORICAL;
     let agg1 = new CategoricalAggregate();
     agg1.valueCounts.set('caucasian', 100);
     agg1.valueCounts.set('latino', 200);
@@ -26,7 +27,7 @@ export class CrossTableServiceMock {
     let c2 = new Concept();
     c2.name = 'Gender';
     c2.label = 'Gender';
-    c2.type = 'CATEGORICAL';
+    c2.type = ConceptType.CATEGORICAL;
     let agg2 = new CategoricalAggregate();
     agg2.valueCounts.set('male', 300);
     agg2.valueCounts.set('female', 400);
@@ -35,7 +36,7 @@ export class CrossTableServiceMock {
     let c3 = new Concept();
     c3.name = 'Color';
     c3.label = 'Color';
-    c3.type = 'CATEGORICAL';
+    c3.type = ConceptType.CATEGORICAL;
     let agg3 = new CategoricalAggregate();
     agg3.valueCounts.set('red', 11);
     agg3.valueCounts.set('yellow', 15);
@@ -45,7 +46,7 @@ export class CrossTableServiceMock {
     let c4 = new Concept();
     c4.name = 'Alcohol';
     c4.label = 'Alcohol';
-    c4.type = 'CATEGORICAL';
+    c4.type = ConceptType.CATEGORICAL;
     let agg4 = new CategoricalAggregate();
     agg4.valueCounts.set('wine', 11);
     agg4.valueCounts.set('beer', 15);

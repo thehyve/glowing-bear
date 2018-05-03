@@ -18,7 +18,9 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
-import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
+import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {Aggregate} from '../models/constraint-models/aggregate';
 
 
 @Injectable()
@@ -108,9 +110,16 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<object>}
    */
-  getAggregate(constraint: Constraint): Observable<object> {
-    return this.transmartResourceService.getAggregate(constraint);
+  getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
+    return this.transmartResourceService.getAggregate(constraint)
+      .map((tmConceptAggregate: object) => {
+        return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
+      });
   }
+
+  // getAggregate1(constraint: Constraint): Observable<Aggregate> {
+  //
+  // }
 
   // -------------------------------------- trial visit calls --------------------------------------
   /**

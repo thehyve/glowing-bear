@@ -42,7 +42,7 @@ describe('GbTableDimensionsComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbTableDimensionsComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

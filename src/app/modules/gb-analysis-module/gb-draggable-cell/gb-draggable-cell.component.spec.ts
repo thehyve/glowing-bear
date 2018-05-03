@@ -6,6 +6,7 @@ import {CrossTableService} from '../../../services/cross-table.service';
 import {ConceptConstraint} from '../../../models/constraint-models/concept-constraint';
 import {Concept} from '../../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../../models/constraint-models/categorical-aggregate';
+import {ConceptType} from '../../../models/constraint-models/concept-type';
 
 describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
@@ -32,7 +33,7 @@ describe('GbDraggableCellComponent', () => {
     let concept = new Concept();
     concept.name = 'Color';
     concept.label = 'Color';
-    concept.type = 'CATEGORICAL';
+    concept.type = ConceptType.CATEGORICAL;
     let agg = new CategoricalAggregate();
     agg.valueCounts.set('red', 11);
     agg.valueCounts.set('yellow', 15);
