@@ -6,11 +6,13 @@ export class TrialVisitConstraint implements Constraint {
   private _parent: Constraint;
   private _trialVisits: TrialVisit[];
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
 
   constructor() {
     this.parent = null;
     this.trialVisits = [];
+    this.textRepresentation = 'Trial visit constraint';
   }
 
   getClassName(): string {
@@ -53,7 +55,11 @@ export class TrialVisitConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Trial visit constraint';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get trialVisits(): TrialVisit[] {

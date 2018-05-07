@@ -17,6 +17,7 @@ import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-cons
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
+import {ConceptType} from '../models/constraint-models/concept-type';
 
 
 /**
@@ -605,6 +606,15 @@ export class ConstraintService {
     combo.addChild(c1);
     combo.addChild(c2);
     return combo;
+  }
+
+  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    let result = false;
+    if (constraint.getClassName() === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
   }
 
   get subjectSetConstraint(): SubjectSetConstraint {

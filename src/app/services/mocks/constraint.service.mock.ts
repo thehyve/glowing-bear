@@ -38,4 +38,7 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
+  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    return true;
+  }
 }

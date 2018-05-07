@@ -15,9 +15,11 @@ export class SubjectSetConstraint implements Constraint {
   private _description: string;
   private _errorMessage: string;
   private _requestConstraints: string;
+  private _textRepresentation: string;
 
   constructor() {
     this.parent = null;
+    this.textRepresentation = 'Subject set constraint';
   }
 
   getClassName(): string {
@@ -62,7 +64,11 @@ export class SubjectSetConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Subject set constraint';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get subjectIds() {
