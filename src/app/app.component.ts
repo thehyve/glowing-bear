@@ -4,7 +4,7 @@ import {ResourceService} from './services/resource.service';
 import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
-import {TableService} from './services/table.service';
+import {DataTableService} from './services/data-table.service';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
 import {NavbarService} from './services/navbar.service';
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
-              private tableService: TableService,
+              private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
               private navbarService: NavbarService,
               private exportService: ExportService,

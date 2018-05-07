@@ -5,8 +5,8 @@ import {ConstraintService} from './constraint.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
-import {TableService} from './table.service';
-import {TableServiceMock} from './mocks/table.service.mock';
+import {DataTableService} from './data-table.service';
+import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {MessageService} from './message.service';
 import {MessageServiceMock} from './mocks/message.service.mock';
 
@@ -23,8 +23,8 @@ describe('ExportService', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
         },
         {
           provide: MessageService,

@@ -3,9 +3,9 @@ import {ExportDataType} from '../models/export-models/export-data-type';
 import {ConstraintService} from './constraint.service';
 import {ResourceService} from './resource.service';
 import {ExportJob} from '../models/export-models/export-job';
-import {TableService} from './table.service';
-import {QueryService} from './query.service';
+import {DataTableService} from './data-table.service';
 import {MessageService} from './message.service';
+import {saveAs} from 'file-saver';
 
 @Injectable()
 export class ExportService {
@@ -18,7 +18,7 @@ export class ExportService {
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private messageService: MessageService,
-              private tableService: TableService) {
+              private dataTableService: DataTableService) {
   }
 
   public updateExports() {
@@ -60,7 +60,7 @@ export class ExportService {
    */
   public runExportJob(job: ExportJob) {
     let constraint = this.constraintService.constraint_1_2();
-    this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.tableService.dataTable)
+    this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
       .subscribe(
         returnedExportJob => {
           if (returnedExportJob) {

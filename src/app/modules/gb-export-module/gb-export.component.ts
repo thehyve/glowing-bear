@@ -1,12 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {ConstraintService} from '../../services/constraint.service';
 import {ResourceService} from '../../services/resource.service';
 import {SimpleTimer} from 'ng2-simple-timer';
 import {ExportJob} from '../../models/export-models/export-job';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {saveAs} from 'file-saver';
-import {QueryService} from '../../services/query.service';
-import {TableService} from '../../services/table.service';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';

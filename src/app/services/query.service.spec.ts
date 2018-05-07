@@ -9,8 +9,8 @@ import {QueryService} from './query.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {AppConfig} from '../config/app.config';
 import {AppConfigMock} from '../config/app.config.mock';
-import {TableServiceMock} from './mocks/table.service.mock';
-import {TableService} from './table.service';
+import {DataTableServiceMock} from './mocks/data-table.service.mock';
+import {DataTableService} from './data-table.service';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
 import {MessageService} from './message.service';
@@ -38,8 +38,8 @@ describe('QueryService', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
         },
         {
           provide: ExportService,

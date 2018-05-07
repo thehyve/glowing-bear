@@ -14,6 +14,7 @@ import {CategoricalAggregate} from '../../../../models/constraint-models/categor
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/constraint-models/aggregate';
 import {ResourceService} from '../../../../services/resource.service';
+import {FormatHelper} from '../../../../utilities/FormatHelper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -403,7 +404,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        newVal.value = (category === ResourceService.nullValuePlaceholder) ? null : category;
+        newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {

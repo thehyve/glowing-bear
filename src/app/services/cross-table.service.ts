@@ -12,6 +12,8 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {Aggregate} from '../models/constraint-models/aggregate';
 import {AxisType} from '../models/table-models/axis-type';
 import {ConstraintService} from './constraint.service';
+import {Row} from '../models/table-models/row';
+import {FormatHelper} from '../utilities/FormatHelper';
 
 @Injectable()
 export class CrossTableService {
@@ -26,10 +28,8 @@ export class CrossTableService {
   }
 
   public updateAllHeaderConstraints() {
-    this.crossTable.rowHeaderConstraints = [];
-    this.updateHeaderConstraints(this.crossTable.rowConstraints, AxisType.ROW);
-    this.crossTable.columnHeaderConstraints = [];
-    this.updateHeaderConstraints(this.crossTable.columnConstraints, AxisType.COL);
+    this.updateHeaderConstraints(AxisType.ROW);
+    this.updateHeaderConstraints(AxisType.COL);
   }
 
   /**
@@ -44,9 +44,13 @@ export class CrossTableService {
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
    * @param {AxisType} axis - enum indicating which axis of header constraints to update
    */
-  private updateHeaderConstraints(constraints: Array<Constraint>, axis: AxisType) {
+  private updateHeaderConstraints(axis: AxisType) {
+    let constraints = axis === AxisType.ROW ? this.crossTable.rowConstraints : this.crossTable.columnConstraints;
     for (let constraint of constraints) {
+      let needsAggregateCall = false;
+      // If the constraint has categorical concept, break it down to value constraints and add those respectively
       if (this.constraintService.isCategoricalConceptConstraint(constraint)) {
+        needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint, axis);
       } else if (constraint.getClassName() === 'CombinationConstraint') {
@@ -61,9 +65,14 @@ export class CrossTableService {
             }
           });
           if (numCategoricalConceptConstraints === 1) {
+            needsAggregateCall = true;
             this.retrieveAggregate(categoricalChild, constraint, axis);
           }
         }
+      }
+      // If the constraint has no categorical concept, add the constraint directly to header constraint list
+      if (!needsAggregateCall) {
+        this.crossTable.addHeaderConstraint(constraint, constraint);
       }
     }
   }
@@ -87,22 +96,44 @@ export class CrossTableService {
                                              peerConstraint: Constraint,
                                              axis: AxisType) {
     let categories = categoricalAggregate.values;
-    let result = new Array<Constraint>();
     for (let category of categories) {
       let val = new ValueConstraint();
       val.valueType = 'STRING';
       val.operator = '=';
-      val.value = (category === ResourceService.nullValuePlaceholder) ? null : category;
-      let combination = new CombinationConstraint();
-      combination.addChild(peerConstraint);
-      combination.addChild(val);
-      result.push(combination);
+      val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      val.textRepresentation = val.value.toString();
+      let combi = new CombinationConstraint();
+      combi.addChild(peerConstraint);
+      combi.addChild(val);
+      combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
+      this.crossTable.addHeaderConstraint(peerConstraint, combi);
     }
-    if (axis === AxisType.ROW) {
-      this.crossTable.rowHeaderConstraints = this.crossTable.rowHeaderConstraints.concat(result);
-    } else {
-      this.crossTable.columnHeaderConstraints = this.crossTable.columnHeaderConstraints.concat(result);
+  }
+
+  private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
+    let description = constraint.textRepresentation;
+    if (constraint.isAnd()) {
+      let numValueConstraints = 0;
+      let numCatConceptConstraints = 0;
+      let valChild = null;
+      let catChild = null;
+      constraint.children.forEach((child: Constraint) => {
+        if (child.getClassName() === 'ValueConstraint') {
+          numValueConstraints++;
+          valChild = child;
+        } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
+          numCatConceptConstraints++;
+          catChild = child;
+        }
+      });
+      if (numValueConstraints === 1) {
+        description = valChild.textRepresentation;
+      } else if (numCatConceptConstraints === 1) {
+        description = catChild.textRepresentation;
+      }
     }
+
+    return description;
   }
 
   mockDataInit() {
@@ -146,12 +177,16 @@ export class CrossTableService {
 
     let cc1 = new ConceptConstraint();
     cc1.concept = c1;
+    cc1.textRepresentation = '- Race -';
     let cc2 = new ConceptConstraint();
     cc2.concept = c2;
+    cc2.textRepresentation = '- Gender -';
     let cc3 = new ConceptConstraint();
     cc3.concept = c3;
+    cc3.textRepresentation = '- Color -';
     let cc4 = new ConceptConstraint();
     cc4.concept = c4;
+    cc4.textRepresentation = '- Alcohol -';
     this.crossTable.rowConstraints.push(cc1);
     this.crossTable.rowConstraints.push(cc2);
     this.crossTable.columnConstraints.push(cc3);
@@ -160,23 +195,7 @@ export class CrossTableService {
     console.log('crosstable: ', this.crossTable);
   }
 
-  private generateHeaderDescription(constraint: CombinationConstraint): string {
-    let description = '';
-    if (constraint.isAnd()) {
-      let numValueConstraints = 0;
-      let valueChild = null;
-      constraint.children.forEach((child: Constraint) => {
-        if (child.getClassName() === 'ValueConstraint') {
-          numValueConstraints++;
-          valueChild = child;
-        }
-      });
-      if (numValueConstraints === 1) {
-        description = valueChild.value;
-      }
-    }
-    return description;
-  }
+
 
   mockDataUpdate() {
     // generate the column-header rows
@@ -187,8 +206,7 @@ export class CrossTableService {
     //   let row = new Row();
     //
     //   // add empty space fillers on the top-left corner of the table
-    //   for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
-    //     headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
+    //   for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
     //     row.addDatum('');
     //   }
     //
@@ -219,7 +237,18 @@ export class CrossTableService {
     //     this.rows.push(row);
     //   }
     // }
-    // // generate the data rows
+
+    // this.columnHeaderConstraints.forEach((colHeaderConstraint: Constraint) => {
+    //   let row = new Row();
+    //   // add empty space fillers on the top-left corner of the table
+    //   this.rowConstraints.forEach((rowConstraint: Constraint) => {
+    //     row.addDatum('');
+    //   });
+    //   // add the column header names
+    //
+    // })
+
+    // generate the data rows
     // let dataRows = [];
     // let rowDim0 = this.rowDimensions[0];
     // // if there at least one row dimension
@@ -320,4 +349,5 @@ export class CrossTableService {
   get columnConstraints(): Array<Constraint> {
     return this.crossTable.columnConstraints;
   }
+
 }

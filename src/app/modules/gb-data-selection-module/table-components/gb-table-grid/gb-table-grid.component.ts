@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {TableService} from '../../../../services/table.service';
+import {DataTableService} from '../../../../services/data-table.service';
 import {Row} from '../../../../models/table-models/row';
 import {HeaderRow} from '../../../../models/table-models/header-row';
 import {Col} from '../../../../models/table-models/col';
@@ -11,45 +11,45 @@ import {Col} from '../../../../models/table-models/col';
 })
 export class GbTableGridComponent implements OnInit {
 
-  constructor(private tableService: TableService) {
+  constructor(private dataTableService: DataTableService) {
   }
 
   ngOnInit() {
   }
 
   get rows(): Row[] {
-    return this.tableService.rows;
+    return this.dataTableService.rows;
   }
 
   get cols(): Col[] {
-    if (this.tableService.isUsingHeaders) {
-      if (this.tableService.headerRows.length > 0) {
-        return this.tableService.headerRows[this.tableService.headerRows.length - 1].cols;
+    if (this.dataTableService.isUsingHeaders) {
+      if (this.dataTableService.headerRows.length > 0) {
+        return this.dataTableService.headerRows[this.dataTableService.headerRows.length - 1].cols;
       } else {
         return [];
       }
     } else {
-      return this.tableService.cols;
+      return this.dataTableService.cols;
     }
   }
 
   get isUsingHeaders(): boolean {
-    return this.tableService.isUsingHeaders;
+    return this.dataTableService.isUsingHeaders;
   }
 
   get headerRows(): HeaderRow[] {
-    return this.tableService.headerRows;
+    return this.dataTableService.headerRows;
   }
 
   get currentPage(): number {
-    return this.tableService.dataTable.currentPage;
+    return this.dataTableService.dataTable.currentPage;
   }
 
   nextPage() {
-    this.tableService.nextPage();
+    this.dataTableService.nextPage();
   }
 
   previousPage() {
-    this.tableService.previousPage();
+    this.dataTableService.previousPage();
   }
 }

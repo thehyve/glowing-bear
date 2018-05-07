@@ -15,7 +15,7 @@ import {QuerySetType} from '../models/query-models/query-set-type';
 import {QueryDiffItem} from '../models/query-models/query-diff-item';
 import {QueryDiffType} from '../models/query-models/query-diff-type';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
-import {TableService} from './table.service';
+import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {MessageService} from './message.service';
@@ -157,7 +157,7 @@ export class QueryService {
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private tableService: TableService,
+              private dataTableService: DataTableService,
               private messageService: MessageService,
               private exportService: ExportService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
@@ -543,8 +543,8 @@ export class QueryService {
    * update the table
    */
   public update_3(targetDataTable?: DataTable) {
-    this.tableService.dataTable.currentPage = 1;
-    this.tableService.updateDataTable(targetDataTable);
+    this.dataTableService.dataTable.currentPage = 1;
+    this.dataTableService.updateDataTable(targetDataTable);
   }
 
   /**
@@ -571,25 +571,25 @@ export class QueryService {
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    newQuery.observationsQuery = { data: data };
-    newQuery.dataTable = this.tableService.dataTable;
+    newQuery.observationsQuery = {data: data};
+    newQuery.dataTable = this.dataTableService.dataTable;
 
     this.resourceService.saveQuery(newQuery)
       .subscribe(
-      (newlySavedQuery: Query) => {
-        newlySavedQuery.collapsed = true;
-        newlySavedQuery.visible = true;
+        (newlySavedQuery: Query) => {
+          newlySavedQuery.collapsed = true;
+          newlySavedQuery.visible = true;
 
-        this.queries.push(newlySavedQuery);
-        const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-        this.messageService.alert(summary, '', 'success');
-      },
-      (err) => {
-        console.error(err);
-        const summary = 'Could not add the query "' + queryName + '".';
-        this.messageService.alert(summary, '', 'error');
-      }
-    );
+          this.queries.push(newlySavedQuery);
+          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
+          this.messageService.alert(summary, '', 'success');
+        },
+        (err) => {
+          console.error(err);
+          const summary = 'Could not add the query "' + queryName + '".';
+          this.messageService.alert(summary, '', 'error');
+        }
+      );
   }
 
   /**
@@ -930,11 +930,11 @@ export class QueryService {
   }
 
   get isDirty_3(): boolean {
-    return this.tableService.dataTable.isDirty;
+    return this.dataTableService.dataTable.isDirty;
   }
 
   set isDirty_3(value: boolean) {
-    this.tableService.dataTable.isDirty = value;
+    this.dataTableService.dataTable.isDirty = value;
   }
 
   get treeNodeCountsUpdate(): boolean {

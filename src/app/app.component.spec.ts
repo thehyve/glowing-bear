@@ -23,8 +23,8 @@ import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
-import {TableService} from './services/table.service';
-import {TableServiceMock} from './services/mocks/table.service.mock';
+import {DataTableService} from './services/data-table.service';
+import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 import {CrossTableService} from './services/cross-table.service';
@@ -97,8 +97,8 @@ describe('AppComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
         },
         {
           provide: CrossTableService,

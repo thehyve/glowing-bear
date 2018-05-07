@@ -16,7 +16,7 @@ import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.mo
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {QueryService} from './services/query.service';
-import {TableService} from './services/table.service';
+import {DataTableService} from './services/data-table.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
@@ -52,7 +52,7 @@ export function initConfig(config: AppConfig) {
     TreeNodeService,
     ConstraintService,
     QueryService,
-    TableService,
+    DataTableService,
     CrossTableService,
     NavbarService,
     MessageService,

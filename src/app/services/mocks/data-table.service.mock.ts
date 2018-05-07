@@ -5,7 +5,7 @@ import {Col} from '../../models/table-models/col';
 import {DimensionValue} from '../../models/table-models/dimension-value';
 import {HeaderRow} from '../../models/table-models/header-row';
 
-export class TableServiceMock {
+export class DataTableServiceMock {
 
   private _prevRowDimensions: Array<Dimension>;
   private _prevColDimensions: Array<Dimension>;

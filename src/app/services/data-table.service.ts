@@ -5,13 +5,10 @@ import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
 import {ConstraintService} from './constraint.service';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {HeaderRow} from '../models/table-models/header-row';
-import {DimensionValue} from '../models/table-models/dimension-value';
-import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
 
 @Injectable()
-export class TableService {
+export class DataTableService {
 
   private _prevRowDimensions: Array<Dimension>;
   private _prevColDimensions: Array<Dimension>;

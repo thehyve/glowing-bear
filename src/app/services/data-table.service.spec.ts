@@ -1,12 +1,12 @@
 import {TestBed, inject} from '@angular/core/testing';
 
-import {TableService} from './table.service';
+import {DataTableService} from './data-table.service';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
-import {ConstraintService} from "./constraint.service";
-import {ConstraintServiceMock} from "./mocks/constraint.service.mock";
+import {ConstraintService} from './constraint.service';
+import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 
-describe('TableService', () => {
+describe('DataTableService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -18,11 +18,11 @@ describe('TableService', () => {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
-        TableService
+        DataTableService
       ]
     });
   });
-  it('TableService should be injected', inject([TableService], (service: TableService) => {
+  it('TableService should be injected', inject([DataTableService], (service: DataTableService) => {
     expect(service).toBeTruthy();
   }));
 });

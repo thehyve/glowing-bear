@@ -21,6 +21,7 @@ import {Aggregate} from '../../models/constraint-models/aggregate';
 import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
 import {ResourceService} from '../resource.service';
+import {FormatHelper} from '../../utilities/FormatHelper';
 
 export class TransmartMapper {
 
@@ -278,7 +279,7 @@ export class TransmartMapper {
       }
       const nullCount = catAggObj['nullValueCounts'];
       if (nullCount && nullCount > 0) {
-        (<CategoricalAggregate>aggregate).valueCounts.set(ResourceService.nullValuePlaceholder, nullCount);
+        (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
       }
     }
     return aggregate;

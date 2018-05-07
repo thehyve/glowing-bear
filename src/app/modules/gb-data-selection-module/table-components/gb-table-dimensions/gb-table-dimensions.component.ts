@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Dimension} from '../../../../models/table-models/dimension';
-import {TableService} from '../../../../services/table.service';
+import {DataTableService} from '../../../../services/data-table.service';
 import {QueryService} from '../../../../services/query.service';
 
 @Component({
@@ -10,7 +10,7 @@ import {QueryService} from '../../../../services/query.service';
 })
 export class GbTableDimensionsComponent implements OnInit {
 
-  constructor(private tableService: TableService,
+  constructor(private dataTableService: DataTableService,
               private queryService: QueryService) {
   }
 
@@ -30,10 +30,10 @@ export class GbTableDimensionsComponent implements OnInit {
    */
   onDrop() {
     let changed = false;
-    if (this.tableService.prevRowDimensions.length === this.tableService.rowDimensions.length) {
-      for (let i = 0; i < this.tableService.rowDimensions.length; i++) {
-        const prev = this.tableService.prevRowDimensions[i].name;
-        const current = this.tableService.rowDimensions[i].name;
+    if (this.dataTableService.prevRowDimensions.length === this.dataTableService.rowDimensions.length) {
+      for (let i = 0; i < this.dataTableService.rowDimensions.length; i++) {
+        const prev = this.dataTableService.prevRowDimensions[i].name;
+        const current = this.dataTableService.rowDimensions[i].name;
         if (prev !== current) {
           changed = true;
           break;
@@ -41,10 +41,10 @@ export class GbTableDimensionsComponent implements OnInit {
       }
     }
     if (!changed) {
-      if (this.tableService.prevColDimensions.length === this.tableService.columnDimensions.length) {
-        for (let i = 0; i < this.tableService.columnDimensions.length; i++) {
-          const prev = this.tableService.prevColDimensions[i].name;
-          const current = this.tableService.columnDimensions[i].name;
+      if (this.dataTableService.prevColDimensions.length === this.dataTableService.columnDimensions.length) {
+        for (let i = 0; i < this.dataTableService.columnDimensions.length; i++) {
+          const prev = this.dataTableService.prevColDimensions[i].name;
+          const current = this.dataTableService.columnDimensions[i].name;
           if (prev !== current) {
             changed = true;
             break;
@@ -58,19 +58,19 @@ export class GbTableDimensionsComponent implements OnInit {
   }
 
   get rowDimensions(): Dimension[] {
-    return this.tableService.rowDimensions;
+    return this.dataTableService.rowDimensions;
   }
 
   set rowDimensions(value: Dimension[]) {
-    this.tableService.rowDimensions = value;
+    this.dataTableService.rowDimensions = value;
   }
 
   get columnDimensions(): Dimension[] {
-    return this.tableService.columnDimensions;
+    return this.dataTableService.columnDimensions;
   }
 
   set columnDimensions(value: Dimension[]) {
-    this.tableService.columnDimensions = value;
+    this.dataTableService.columnDimensions = value;
   }
 
 }

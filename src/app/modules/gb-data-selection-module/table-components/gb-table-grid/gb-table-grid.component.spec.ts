@@ -1,8 +1,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTableGridComponent} from './gb-table-grid.component';
-import {TableService} from '../../../../services/table.service';
-import {TableServiceMock} from '../../../../services/mocks/table.service.mock';
+import {DataTableService} from '../../../../services/data-table.service';
+import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 import {TableModule} from 'primeng/table';
 import {TooltipModule} from 'primeng/primeng';
 
@@ -19,8 +19,8 @@ describe('GbTableGridComponent', () => {
       ],
       providers: [
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
         }
       ]
     })

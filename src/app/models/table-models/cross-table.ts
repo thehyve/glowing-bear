@@ -6,10 +6,7 @@ export class CrossTable {
   // the row and column constraints used in the drag & drop zones
   private _rowConstraints: Array<Constraint> = [];
   private _columnConstraints: Array<Constraint> = [];
-  // the constraints used in the row and column headers of the table
-  // they are derived from _rowConstraints and _columnConstraints
-  private _rowHeaderConstraints: Array<Constraint> = [];
-  private _columnHeaderConstraints: Array<Constraint> = [];
+  private _headerConstraints: Map<Constraint, Array<Constraint>>;
   /*
    * The structure of the cross table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -22,6 +19,19 @@ export class CrossTable {
   private _rows: Array<Row> = [];
   // The index header row
   private _cols: Array<Col> = [];
+
+  constructor() {
+    this.headerConstraints = new Map<Constraint, Array<Constraint>>();
+  }
+
+  addHeaderConstraint(keyConstraint: Constraint, valueConstraint: Constraint) {
+    if (this.rowConstraints.includes(keyConstraint) || this.columnConstraints.includes(keyConstraint)) {
+      let vals = this.headerConstraints.get(keyConstraint);
+      vals = vals ? vals : new Array<Constraint>();
+      vals.push(valueConstraint);
+      this.headerConstraints.set(keyConstraint, vals);
+    }
+  }
 
   get rowConstraints(): Array<Constraint> {
     return this._rowConstraints;
@@ -55,19 +65,11 @@ export class CrossTable {
     this._cols = value;
   }
 
-  get rowHeaderConstraints(): Array<Constraint> {
-    return this._rowHeaderConstraints;
+  get headerConstraints(): Map<Constraint, Array<Constraint>> {
+    return this._headerConstraints;
   }
 
-  set rowHeaderConstraints(value: Array<Constraint>) {
-    this._rowHeaderConstraints = value;
-  }
-
-  get columnHeaderConstraints(): Array<Constraint> {
-    return this._columnHeaderConstraints;
-  }
-
-  set columnHeaderConstraints(value: Array<Constraint>) {
-    this._columnHeaderConstraints = value;
+  set headerConstraints(value: Map<Constraint, Array<Constraint>>) {
+    this._headerConstraints = value;
   }
 }
