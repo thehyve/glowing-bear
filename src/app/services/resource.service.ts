@@ -26,6 +26,8 @@ import {Aggregate} from '../models/constraint-models/aggregate';
 @Injectable()
 export class ResourceService {
 
+  public static readonly nullValuePlaceholder: string = 'MISSING';
+
   constructor(private transmartResourceService: TransmartResourceService) {
   }
 

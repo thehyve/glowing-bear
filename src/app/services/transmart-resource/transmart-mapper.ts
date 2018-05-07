@@ -20,9 +20,9 @@ import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-
 import {Aggregate} from '../../models/constraint-models/aggregate';
 import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
+import {ResourceService} from '../resource.service';
 
 export class TransmartMapper {
-  public static readonly nullValueAutocompleteToken: string = 'MISSING';
 
   public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
     let queries: Query[] = [];
@@ -278,7 +278,7 @@ export class TransmartMapper {
       }
       const nullCount = catAggObj['nullValueCounts'];
       if (nullCount && nullCount > 0) {
-        (<CategoricalAggregate>aggregate).valueCounts.set(TransmartMapper.nullValueAutocompleteToken, nullCount);
+        (<CategoricalAggregate>aggregate).valueCounts.set(ResourceService.nullValuePlaceholder, nullCount);
       }
     }
     return aggregate;
@@ -334,14 +334,15 @@ export class TransmartMapper {
                                                currentDataTable: DataTable): TransmartTableState {
     let rowDimensions: Array<string> = [];
     let columnDimensions: Array<string> = [];
+    let bothDimensions = currentDataTable.columnDimensions.concat(currentDataTable.rowDimensions);
 
-    if (this.areAllDimensionsAvailable(currentDataTable.columnDimensions.concat(currentDataTable.rowDimensions), transmartStudyDimensions.availableDimensions)) {
+    if (this.areAllDimensionsAvailable(bothDimensions, transmartStudyDimensions.availableDimensions)) {
 
       // table representation is defined
       currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
         columnDimensions.push(columnDimension.name));
       currentDataTable.rowDimensions.forEach((dim: Dimension) => {
-        if (columnDimensions.indexOf(dim.name) === -1){
+        if (columnDimensions.indexOf(dim.name) === -1) {
           rowDimensions.push(dim.name);
         }
       });
@@ -377,7 +378,7 @@ export class TransmartMapper {
         // default row dimensions: all dimensions as rows
         if (transmartStudyDimensions.availableDimensions != null) {
           transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) =>
-              rowDimensions.push(dim.name)
+            rowDimensions.push(dim.name)
           );
         }
       }
@@ -432,7 +433,7 @@ export class TransmartMapper {
   }
 
   private static areAllDimensionsAvailable(dimensions: Array<Dimension>, availableDimensions: Array<Dimension>): boolean {
-    return dimensions.every((dim: Dimension)  =>
+    return dimensions.every((dim: Dimension) =>
       availableDimensions.map(ad => ad.name).indexOf(dim.name) !== -1);
   }
 

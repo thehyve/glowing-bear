@@ -13,6 +13,7 @@ import {NumericalAggregate} from '../../../../models/constraint-models/numerical
 import {CategoricalAggregate} from '../../../../models/constraint-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/constraint-models/aggregate';
+import {ResourceService} from '../../../../services/resource.service';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -87,9 +88,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   // modifier
   private _applyModifierConstraint = false;
-
-  // null value representation
-  readonly nullValueAutocompleteToken: string = 'MISSING';
 
   ngOnInit() {
     this.initializeConstraints();
@@ -405,11 +403,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        if (category === this.nullValueAutocompleteToken) {
-          newVal.value = null;
-        } else {
-          newVal.value = category;
-        }
+        newVal.value = (category === ResourceService.nullValuePlaceholder) ? null : category;
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {

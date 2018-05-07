@@ -7,6 +7,12 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
 import {Row} from '../models/table-models/row';
 import {ConceptType} from '../models/constraint-models/concept-type';
+import {AggregateType} from '../models/constraint-models/aggregate-type';
+import {ValueConstraint} from '../models/constraint-models/value-constraint';
+import {ResourceService} from './resource.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {Aggregate} from '../models/constraint-models/aggregate';
+import {AxisType} from '../models/table-models/axis-type';
 
 @Injectable()
 export class CrossTableService {
@@ -14,25 +20,85 @@ export class CrossTableService {
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
-  constructor() {
+  constructor(private resourceService: ResourceService) {
     this.crossTable = new CrossTable();
     this.mockDataInit();
   }
 
   /**
-   * This function is used to generate the list of constraints for the row/column headers:
+   * This function is used to generate the axis constraint(s) for the cross table:
    * Given a constraint, check if it is a categorical concept constraint,
-   * if yes, compose a value constraint for each of its values
-   * else, check if it is a combination constraint with only one categorical concept constraint,
-   * if yes, do the same for this categorical concept constraint as above,
-   * else return an empty list
+   * if yes, fetch its aggregate, assign the target with a list of aggregate-value constraints
+   *
+   * else, check if it is a AND-combination constraint with only one categorical concept constraint child,
+   * if yes, fetch the aggregate for this child, assign the target with a list of aggregate-value constraints
+   *
+   * else, assign the target with the constraint itself
    * @param {Constraint} constraint
-   * @returns {Array<Constraint>}
+   * @param {AxisType} axis - enum to indicate target constraint: row or column constraints in cross table
    */
-  public generateCategoricalValueConstraints(constraint: Constraint): Array<Constraint> {
-    let valConstraints = new Array<Constraint>();
+  public updateAxisConstraints(constraint: Constraint, axis: AxisType) {
+    let targetConstraints = axis === AxisType.ROW ? this.crossTable.rowConstraints : this.crossTable.columnConstraints;
+    if (this.isCategoricalConceptConstraint(constraint)) {
+      let categoricalConceptConstraint = <ConceptConstraint>constraint;
+      this.retrieveAggregate(categoricalConceptConstraint, constraint, targetConstraints);
+    } else if (constraint.getClassName() === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let numCategoricalConceptConstraints = 0;
+        let categoricalChild = null;
+        combiConstraint.children.forEach((child: Constraint) => {
+          if (this.isCategoricalConceptConstraint(child)) {
+            numCategoricalConceptConstraints++;
+            categoricalChild = child;
+          }
+        });
+        if (numCategoricalConceptConstraints === 1) {
+          this.retrieveAggregate(categoricalChild, constraint, targetConstraints);
+        }
+      }
+    }
+  }
 
-    return valConstraints;
+  private isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    let result = false;
+    if (constraint.getClassName() === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
+  }
+
+  private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
+                            peerConstraint: Constraint,
+                            targetConstraints: Array<Constraint>) {
+    if (categoricalConceptConstraint.concept.aggregate) {
+      let categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
+      targetConstraints = this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+    } else {
+      this.resourceService.getAggregate(categoricalConceptConstraint)
+        .subscribe((responseAggregate: Aggregate) => {
+          let categoricalAggregate = <CategoricalAggregate>responseAggregate;
+          targetConstraints = this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+        });
+    }
+  }
+
+  private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
+                                             peerConstraint: Constraint): Array<Constraint> {
+    let categories = categoricalAggregate.values;
+    let result = new Array<Constraint>();
+    for (let category of categories) {
+      let val = new ValueConstraint();
+      val.valueType = 'STRING';
+      val.operator = '=';
+      val.value = (category === ResourceService.nullValuePlaceholder) ? null : category;
+      let combination = new CombinationConstraint();
+      combination.addChild(peerConstraint);
+      combination.addChild(val);
+      result.push(combination);
+    }
+    return result;
   }
 
   mockDataInit() {

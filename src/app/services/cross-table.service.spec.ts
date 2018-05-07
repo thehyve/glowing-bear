@@ -1,11 +1,19 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
-import { CrossTableService } from './cross-table.service';
+import {CrossTableService} from './cross-table.service';
+import {ResourceService} from './resource.service';
+import {ResourceServiceMock} from './mocks/resource.service.mock';
 
 describe('CrossTableService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CrossTableService]
+      providers: [
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
+        },
+        CrossTableService
+      ]
     });
   });
 
