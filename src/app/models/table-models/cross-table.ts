@@ -3,9 +3,13 @@ import {Row} from './row';
 import {Col} from './col';
 
 export class CrossTable {
-  private _constraint: Constraint = null;
+  // the row and column constraints used in the drag & drop zones
   private _rowConstraints: Array<Constraint> = [];
   private _columnConstraints: Array<Constraint> = [];
+  // the constraints used in the row and column headers of the table
+  // they are derived from _rowConstraints and _columnConstraints
+  private _rowHeaderConstraints: Array<Constraint> = [];
+  private _columnHeaderConstraints: Array<Constraint> = [];
   /*
    * The structure of the cross table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -18,15 +22,6 @@ export class CrossTable {
   private _rows: Array<Row> = [];
   // The index header row
   private _cols: Array<Col> = [];
-
-
-  get constraint(): Constraint {
-    return this._constraint;
-  }
-
-  set constraint(value: Constraint) {
-    this._constraint = value;
-  }
 
   get rowConstraints(): Array<Constraint> {
     return this._rowConstraints;
@@ -58,5 +53,21 @@ export class CrossTable {
 
   set cols(value: Array<Col>) {
     this._cols = value;
+  }
+
+  get rowHeaderConstraints(): Array<Constraint> {
+    return this._rowHeaderConstraints;
+  }
+
+  set rowHeaderConstraints(value: Array<Constraint>) {
+    this._rowHeaderConstraints = value;
+  }
+
+  get columnHeaderConstraints(): Array<Constraint> {
+    return this._columnHeaderConstraints;
+  }
+
+  set columnHeaderConstraints(value: Array<Constraint>) {
+    this._columnHeaderConstraints = value;
   }
 }

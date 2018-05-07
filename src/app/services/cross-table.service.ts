@@ -25,8 +25,15 @@ export class CrossTableService {
     this.mockDataInit();
   }
 
+  public updateAllHeaderConstraints() {
+    this.crossTable.rowHeaderConstraints = [];
+    this.updateHeaderConstraints(this.crossTable.rowConstraints, AxisType.ROW);
+    this.crossTable.columnHeaderConstraints = [];
+    this.updateHeaderConstraints(this.crossTable.columnConstraints, AxisType.COL);
+  }
+
   /**
-   * This function is used to generate the axis constraint(s) for the cross table:
+   * This function is used to generate the header constraint(s) for the cross table:
    * Given a constraint, check if it is a categorical concept constraint,
    * if yes, fetch its aggregate, assign the target with a list of aggregate-value constraints
    *
@@ -34,27 +41,28 @@ export class CrossTableService {
    * if yes, fetch the aggregate for this child, assign the target with a list of aggregate-value constraints
    *
    * else, assign the target with the constraint itself
-   * @param {Constraint} constraint
-   * @param {AxisType} axis - enum to indicate target constraint: row or column constraints in cross table
+   * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
+   * @param {AxisType} axis - enum indicating which axis of header constraints to update
    */
-  public updateAxisConstraints(constraint: Constraint, axis: AxisType) {
-    let targetConstraints = axis === AxisType.ROW ? this.crossTable.rowConstraints : this.crossTable.columnConstraints;
-    if (this.isCategoricalConceptConstraint(constraint)) {
-      let categoricalConceptConstraint = <ConceptConstraint>constraint;
-      this.retrieveAggregate(categoricalConceptConstraint, constraint, targetConstraints);
-    } else if (constraint.getClassName() === 'CombinationConstraint') {
-      let combiConstraint = <CombinationConstraint>constraint;
-      if (combiConstraint.isAnd()) {
-        let numCategoricalConceptConstraints = 0;
-        let categoricalChild = null;
-        combiConstraint.children.forEach((child: Constraint) => {
-          if (this.isCategoricalConceptConstraint(child)) {
-            numCategoricalConceptConstraints++;
-            categoricalChild = child;
+  private updateHeaderConstraints(constraints: Array<Constraint>, axis: AxisType) {
+    for (let constraint of constraints) {
+      if (this.isCategoricalConceptConstraint(constraint)) {
+        let categoricalConceptConstraint = <ConceptConstraint>constraint;
+        this.retrieveAggregate(categoricalConceptConstraint, constraint, axis);
+      } else if (constraint.getClassName() === 'CombinationConstraint') {
+        let combiConstraint = <CombinationConstraint>constraint;
+        if (combiConstraint.isAnd()) {
+          let numCategoricalConceptConstraints = 0;
+          let categoricalChild = null;
+          combiConstraint.children.forEach((child: Constraint) => {
+            if (this.isCategoricalConceptConstraint(child)) {
+              numCategoricalConceptConstraints++;
+              categoricalChild = child;
+            }
+          });
+          if (numCategoricalConceptConstraints === 1) {
+            this.retrieveAggregate(categoricalChild, constraint, axis);
           }
-        });
-        if (numCategoricalConceptConstraints === 1) {
-          this.retrieveAggregate(categoricalChild, constraint, targetConstraints);
         }
       }
     }
@@ -71,21 +79,22 @@ export class CrossTableService {
 
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
                             peerConstraint: Constraint,
-                            targetConstraints: Array<Constraint>) {
+                            axis: AxisType) {
     if (categoricalConceptConstraint.concept.aggregate) {
-      let categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
-      targetConstraints = this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+      const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
+      this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint, axis);
     } else {
       this.resourceService.getAggregate(categoricalConceptConstraint)
         .subscribe((responseAggregate: Aggregate) => {
-          let categoricalAggregate = <CategoricalAggregate>responseAggregate;
-          targetConstraints = this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+          const categoricalAggregate = <CategoricalAggregate>responseAggregate;
+          this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint, axis);
         });
     }
   }
 
   private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
-                                             peerConstraint: Constraint): Array<Constraint> {
+                                             peerConstraint: Constraint,
+                                             axis: AxisType) {
     let categories = categoricalAggregate.values;
     let result = new Array<Constraint>();
     for (let category of categories) {
@@ -98,7 +107,11 @@ export class CrossTableService {
       combination.addChild(val);
       result.push(combination);
     }
-    return result;
+    if (axis === AxisType.ROW) {
+      this.crossTable.rowHeaderConstraints = this.crossTable.rowHeaderConstraints.concat(result);
+    } else {
+      this.crossTable.columnHeaderConstraints = this.crossTable.columnHeaderConstraints.concat(result);
+    }
   }
 
   mockDataInit() {
@@ -152,6 +165,8 @@ export class CrossTableService {
     this.crossTable.rowConstraints.push(cc2);
     this.crossTable.columnConstraints.push(cc3);
     this.crossTable.columnConstraints.push(cc4);
+    this.updateAllHeaderConstraints();
+    console.log('crosstable: ', this.crossTable);
   }
 
   mockDataUpdate() {
