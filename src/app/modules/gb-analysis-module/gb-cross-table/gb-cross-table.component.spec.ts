@@ -4,6 +4,7 @@ import {GbCrossTableComponent} from './gb-cross-table.component';
 import {MockComponent} from 'ng2-mock-component';
 import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
 import {CrossTableService} from '../../../services/cross-table.service';
+import {TableModule} from 'primeng/table';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
@@ -14,6 +15,9 @@ describe('GbCrossTableComponent', () => {
       declarations: [
         GbCrossTableComponent,
         MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints']})
+      ],
+      imports: [
+        TableModule
       ],
       providers: [
         {

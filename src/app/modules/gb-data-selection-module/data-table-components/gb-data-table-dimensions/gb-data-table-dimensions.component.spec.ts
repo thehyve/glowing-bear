@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableDimensionsComponent} from './gb-table-dimensions.component';
+import {GbDataTableDimensionsComponent} from './gb-data-table-dimensions.component';
 import {DataTableService} from '../../../../services/data-table.service';
 import {CheckboxModule, PickListModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -9,13 +9,13 @@ import {DataTableServiceMock} from '../../../../services/mocks/data-table.servic
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 
-describe('GbTableDimensionsComponent', () => {
-  let component: GbTableDimensionsComponent;
-  let fixture: ComponentFixture<GbTableDimensionsComponent>;
+describe('GbDataTableDimensionsComponent', () => {
+  let component: GbDataTableDimensionsComponent;
+  let fixture: ComponentFixture<GbDataTableDimensionsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTableDimensionsComponent],
+      declarations: [GbDataTableDimensionsComponent],
       imports: [
         PickListModule,
         CheckboxModule,
@@ -37,7 +37,7 @@ describe('GbTableDimensionsComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbTableDimensionsComponent);
+    fixture = TestBed.createComponent(GbDataTableDimensionsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

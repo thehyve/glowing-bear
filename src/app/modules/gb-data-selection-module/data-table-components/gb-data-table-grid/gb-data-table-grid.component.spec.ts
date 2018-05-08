@@ -1,18 +1,18 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbTableGridComponent} from './gb-table-grid.component';
+import {GbDataTableGridComponent} from './gb-data-table-grid.component';
 import {DataTableService} from '../../../../services/data-table.service';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 import {TableModule} from 'primeng/table';
 import {TooltipModule} from 'primeng/primeng';
 
-describe('GbTableGridComponent', () => {
-  let component: GbTableGridComponent;
-  let fixture: ComponentFixture<GbTableGridComponent>;
+describe('GbDataTableGridComponent', () => {
+  let component: GbDataTableGridComponent;
+  let fixture: ComponentFixture<GbDataTableGridComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTableGridComponent],
+      declarations: [GbDataTableGridComponent],
       imports: [
         TableModule,
         TooltipModule
@@ -28,7 +28,7 @@ describe('GbTableGridComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbTableGridComponent);
+    fixture = TestBed.createComponent(GbDataTableGridComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

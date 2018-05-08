@@ -27,8 +27,8 @@ import {GbProjectionComponent} from './accordion-components/gb-projection/gb-pro
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
 import {GbDataTableComponent} from './accordion-components/gb-data-table/gb-data-table.component';
-import {GbTableDimensionsComponent} from './table-components/gb-table-dimensions/gb-table-dimensions.component';
-import {GbTableGridComponent} from './table-components/gb-table-grid/gb-table-grid.component';
+import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
+import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
 import {TableModule} from 'primeng/table';
 
 @NgModule({
@@ -68,8 +68,8 @@ import {TableModule} from 'primeng/table';
     GbSubjectSetConstraintComponent,
     GbPedigreeConstraintComponent,
     GbDataTableComponent,
-    GbTableDimensionsComponent,
-    GbTableGridComponent
+    GbDataTableDimensionsComponent,
+    GbDataTableGridComponent
   ],
   entryComponents: [
     GbConstraintComponent,

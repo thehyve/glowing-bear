@@ -14,6 +14,7 @@ import {AxisType} from '../models/table-models/axis-type';
 import {ConstraintService} from './constraint.service';
 import {Row} from '../models/table-models/row';
 import {FormatHelper} from '../utilities/FormatHelper';
+import {Col} from '../models/table-models/col';
 
 @Injectable()
 export class CrossTableService {
@@ -25,11 +26,12 @@ export class CrossTableService {
               private constraintService: ConstraintService) {
     this.crossTable = new CrossTable();
     this.mockDataInit();
+    this.mockDataUpdate();
   }
 
-  public updateAllHeaderConstraints() {
-    this.updateHeaderConstraints(AxisType.ROW);
-    this.updateHeaderConstraints(AxisType.COL);
+  public updateHeaderConstraints() {
+    this.updateHeaderConstraintsWithAxis(AxisType.ROW);
+    this.updateHeaderConstraintsWithAxis(AxisType.COL);
   }
 
   /**
@@ -44,7 +46,7 @@ export class CrossTableService {
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
    * @param {AxisType} axis - enum indicating which axis of header constraints to update
    */
-  private updateHeaderConstraints(axis: AxisType) {
+  private updateHeaderConstraintsWithAxis(axis: AxisType) {
     let constraints = axis === AxisType.ROW ? this.crossTable.rowConstraints : this.crossTable.columnConstraints;
     for (let constraint of constraints) {
       let needsAggregateCall = false;
@@ -163,6 +165,8 @@ export class CrossTableService {
     agg3.valueCounts.set('red', 11);
     agg3.valueCounts.set('yellow', 15);
     agg3.valueCounts.set('blue', 12);
+    agg3.valueCounts.set('black', 20);
+    agg3.valueCounts.set('white', 9);
     c3.aggregate = agg3;
 
     let c4 = new Concept();
@@ -191,139 +195,118 @@ export class CrossTableService {
     this.crossTable.rowConstraints.push(cc2);
     this.crossTable.columnConstraints.push(cc3);
     this.crossTable.columnConstraints.push(cc4);
-    this.updateAllHeaderConstraints();
+    this.updateHeaderConstraints();
     console.log('crosstable: ', this.crossTable);
   }
 
 
-
   mockDataUpdate() {
     // generate the column-header rows
-    // let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
-    // for (let colIndex = 0; colIndex < this.columnConstraints.length; colIndex++) {
-    //   let colConstraint: ConceptConstraint = this.columnConstraints[colIndex];
-    //   numColDimColumns = numColDimColumns * colConstraint.values.length;
-    //   let row = new Row();
-    //
-    //   // add empty space fillers on the top-left corner of the table
-    //   for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
-    //     row.addDatum('');
-    //   }
-    //
-    //   // add the column header names
-    //   let dimensionsAbove = this.getDimensionsAbove(colDim, this.columnDimensions);
-    //   let selfRepetition = 1;
-    //   for (let dimAbove of dimensionsAbove) {
-    //     selfRepetition = selfRepetition * dimAbove.values.length;
-    //   }
-    //   let dimensionsBelow = this.getDimensionsBelow(colDim, this.columnDimensions);
-    //   let valueRepetition = 1;
-    //   for (let dimBelow of dimensionsBelow) {
-    //     valueRepetition = valueRepetition * dimBelow.values.length;
-    //   }
-    //
-    //   for (let i = 0; i < selfRepetition; i++) {
-    //     for (let val of colDim.values) {
-    //       for (let j = 0; j < valueRepetition; j++) {
-    //         headerRow.cols.push(new Col(val.name, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString(),
-    //           val.metadata));
-    //         row.addDatum(val.name, val.metadata);
-    //       }
-    //     }
-    //   }
-    //   if (this.isUsingHeaders) {
-    //     headerRows.push(headerRow);
-    //   } else {
-    //     this.rows.push(row);
-    //   }
-    // }
-
-    // this.columnHeaderConstraints.forEach((colHeaderConstraint: Constraint) => {
-    //   let row = new Row();
-    //   // add empty space fillers on the top-left corner of the table
-    //   this.rowConstraints.forEach((rowConstraint: Constraint) => {
-    //     row.addDatum('');
-    //   });
-    //   // add the column header names
-    //
-    // })
+    let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
+    for (let colConstraint of this.columnConstraints) {
+      let valConstraints = this.headerConstraints.get(colConstraint);
+      numColDimColumns = numColDimColumns * valConstraints.length;
+      let row = new Row();
+      // add empty space fillers on the top-left corner of the table
+      for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
+        row.addDatum('');
+      }
+      // add the column header names
+      let above = this.getConstraintsAbove(colConstraint, this.columnConstraints);
+      let selfRepetition = 1;
+      for (let cAbove of above) {
+        selfRepetition = selfRepetition * this.headerConstraints.get(cAbove).length;
+      }
+      let below = this.getConstraintsBelow(colConstraint, this.columnConstraints);
+      let valueRepetition = 1;
+      for (let cBelow of below) {
+        valueRepetition = valueRepetition * this.headerConstraints.get(cBelow).length;
+      }
+      for (let i = 0; i < selfRepetition; i++) {
+        for (let child of this.headerConstraints.get(colConstraint)) {
+          for (let j = 0; j < valueRepetition; j++) {
+            row.addDatum(child.textRepresentation);
+          }
+        }
+      }
+      this.rows.push(row);
+    }
 
     // generate the data rows
-    // let dataRows = [];
-    // let rowDim0 = this.rowDimensions[0];
-    // // if there at least one row dimension
-    // if (rowDim0) {
-    //   let dimensionsRight0 = this.getDimensionsBelow(rowDim0, this.rowDimensions);
-    //   let valueRepetition0 = 1;
-    //   for (let dimRight of dimensionsRight0) {
-    //     valueRepetition0 = valueRepetition0 * dimRight.values.length;
-    //   }
-    //   for (let val of rowDim0.values) {
-    //     for (let j = 0; j < valueRepetition0; j++) {
-    //       let row = new Row();
-    //       row.addDatum(val.name, val.metadata);
-    //       dataRows.push(row);
-    //     }
-    //   }
-    //   let index = 0;
-    //   for (let rowIndex = 1; rowIndex < this.rowDimensions.length; rowIndex++) {
-    //     let rowDim = this.rowDimensions[rowIndex];
-    //     let dimensionsLeft = this.getDimensionsAbove(rowDim, this.rowDimensions);
-    //     let selfRepetition = 1;
-    //     for (let dimLeft of dimensionsLeft) {
-    //       selfRepetition = selfRepetition * dimLeft.values.length;
-    //     }
-    //     let dimensionsRight = this.getDimensionsBelow(rowDim, this.rowDimensions);
-    //     let valueRepetition = 1;
-    //     for (let dimRight of dimensionsRight) {
-    //       valueRepetition = valueRepetition * dimRight.values.length;
-    //     }
-    //     for (let i = 0; i < selfRepetition; i++) {
-    //       for (let val of rowDim.values) {
-    //         for (let j = 0; j < valueRepetition; j++) {
-    //           dataRows[index].addDatum(val.name, val.metadata);
-    //           let nIndex = index + 1;
-    //           index = (nIndex === dataRows.length) ? 0 : nIndex;
-    //         }
-    //       }
-    //     }
-    //   }
-    // } else {// if there is no row dimension
-    //   dataRows.push(new Row());
-    // }
-    // for (let dataRowIndex = 0; dataRowIndex < dataRows.length; dataRowIndex++) {
-    //   let dataRow = dataRows[dataRowIndex];
-    //   for (let i = 0; i < numColDimColumns; i++) {
-    //     dataRow.addDatum('val');
-    //   }
-    //   if (numColDimColumns === 0) {
-    //     dataRow.addDatum('val');
-    //   }
-    //   this.rows.push(dataRow);
-    // }
-    // // generate column headers
-    // if (this.isUsingHeaders) {
-    //   headerRows.forEach((headerRow: HeaderRow) => {
-    //     let newColRow = new HeaderRow();
-    //     headerRow.cols.forEach((col: Col) => {
-    //       if (newColRow.cols.length > 0) {
-    //         if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
-    //           newColRow.cols[newColRow.cols.length - 1].colspan += 1;
-    //         } else {
-    //           newColRow.cols.push(col)
-    //         }
-    //       } else {
-    //         newColRow.cols.push(col)
-    //       }
-    //     });
-    //     this.dataTable.headerRows.push(newColRow);
-    //   });
-    // } else {
-    //   for (let field in this.rows[0].data) {
-    //     let col = new Col(' - ', field, this.rows[0].metadata[field]);
-    //     this.dataTable.cols.push(col);
-    //   }
-    // }
+    let dataRows = [];
+    let rowCon0 = this.rowConstraints[0];
+    // if there at least one row constraint
+    if (rowCon0) {
+      let consRight0 = this.getConstraintsBelow(rowCon0, this.rowConstraints);
+      let valueRepetition0 = 1;
+      for (let conRight of consRight0) {
+        valueRepetition0 = valueRepetition0 * this.headerConstraints.get(conRight).length;
+      }
+      for (let val of this.headerConstraints.get(rowCon0)) {
+        for (let j = 0; j < valueRepetition0; j++) {
+          let row = new Row();
+          row.addDatum(val.textRepresentation);
+          dataRows.push(row);
+        }
+      }
+      let index = 0;
+      for (let rowCon of this.rowConstraints) {
+        let consLeft = this.getConstraintsAbove(rowCon, this.rowConstraints);
+        let selfRepetition = 1;
+        for (let conLeft of consLeft) {
+          selfRepetition = selfRepetition * this.headerConstraints.get(conLeft).length;
+        }
+        let consRight = this.getConstraintsBelow(rowCon, this.rowConstraints);
+        let valueRepetition = 1;
+        for (let conRight of consRight) {
+          valueRepetition = valueRepetition * this.headerConstraints.get(conRight).length;
+        }
+        for (let i = 0; i < selfRepetition; i++) {
+          for (let val of this.headerConstraints.get(rowCon)) {
+            for (let j = 0; j < valueRepetition; j++) {
+              dataRows[index].addDatum(val.textRepresentation);
+              let nIndex = index + 1;
+              index = (nIndex === dataRows.length) ? 0 : nIndex;
+            }
+          }
+        }
+      }
+    } else {// if there is no row dimension
+      dataRows.push(new Row());
+    }
+    for (let dataRow of dataRows) {
+      for (let i = 0; i < numColDimColumns; i++) {
+        dataRow.addDatum('Num');
+      }
+      if (numColDimColumns === 0) {
+        dataRow.addDatum('Num');
+      }
+      this.rows.push(dataRow);
+    }
+
+    // generate column headers
+    for (let field in this.rows[0].data) {
+      let col = new Col(' - ', field);
+      this.cols.push(col);
+    }
+  }
+
+  private getConstraintsBelow(current: Constraint, list: Constraint[]): Constraint[] {
+    let below = [];
+    let index = list.indexOf(current);
+    for (let i = index + 1; i < list.length; i++) {
+      below.push(list[i]);
+    }
+    return below;
+  }
+
+  private getConstraintsAbove(current: Constraint, list: Constraint[]): Constraint[] {
+    let above = [];
+    let index = list.indexOf(current);
+    for (let i = index - 1; i >= 0; i--) {
+      above.push(list[i]);
+    }
+    return above;
   }
 
   get crossTable(): CrossTable {
@@ -348,6 +331,18 @@ export class CrossTableService {
 
   get columnConstraints(): Array<Constraint> {
     return this.crossTable.columnConstraints;
+  }
+
+  get headerConstraints(): Map<Constraint, Array<Constraint>> {
+    return this.crossTable.headerConstraints;
+  }
+
+  get rows(): Array<Row> {
+    return this.crossTable.rows;
+  }
+
+  get cols(): Array<Col> {
+    return this.crossTable.cols;
   }
 
 }

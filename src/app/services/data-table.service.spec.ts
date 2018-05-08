@@ -22,7 +22,7 @@ describe('DataTableService', () => {
       ]
     });
   });
-  it('TableService should be injected', inject([DataTableService], (service: DataTableService) => {
+  it('should be injected', inject([DataTableService], (service: DataTableService) => {
     expect(service).toBeTruthy();
   }));
 });

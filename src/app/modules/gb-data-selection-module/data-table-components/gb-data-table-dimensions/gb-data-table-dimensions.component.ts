@@ -4,11 +4,11 @@ import {DataTableService} from '../../../../services/data-table.service';
 import {QueryService} from '../../../../services/query.service';
 
 @Component({
-  selector: 'gb-table-dimensions',
-  templateUrl: './gb-table-dimensions.component.html',
-  styleUrls: ['./gb-table-dimensions.component.css']
+  selector: 'gb-data-table-dimensions',
+  templateUrl: './gb-data-table-dimensions.component.html',
+  styleUrls: ['./gb-data-table-dimensions.component.css']
 })
-export class GbTableDimensionsComponent implements OnInit {
+export class GbDataTableDimensionsComponent implements OnInit {
 
   constructor(private dataTableService: DataTableService,
               private queryService: QueryService) {

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {CrossTable} from '../../../models/table-models/cross-table';
 import {Constraint} from '../../../models/constraint-models/constraint';
+import {Row} from '../../../models/table-models/row';
+import {Col} from '../../../models/table-models/col';
 
 @Component({
   selector: 'gb-cross-table',
@@ -26,5 +28,13 @@ export class GbCrossTableComponent implements OnInit {
 
   get columnConstraints(): Array<Constraint> {
     return this.crossTable.columnConstraints;
+  }
+
+  get rows(): Array<Row> {
+    return this.crossTable.rows;
+  }
+
+  get cols(): Array<Col> {
+    return this.crossTable.cols;
   }
 }

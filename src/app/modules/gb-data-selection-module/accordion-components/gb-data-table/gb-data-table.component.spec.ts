@@ -11,8 +11,8 @@ describe('GbDataTableComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbDataTableComponent,
-        MockComponent({selector: 'gb-table-dimensions'}),
-        MockComponent({selector: 'gb-table-grid'})
+        MockComponent({selector: 'gb-data-table-dimensions'}),
+        MockComponent({selector: 'gb-data-table-grid'})
       ]
     })
       .compileComponents();

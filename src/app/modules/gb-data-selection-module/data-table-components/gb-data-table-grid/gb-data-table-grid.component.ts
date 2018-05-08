@@ -5,11 +5,11 @@ import {HeaderRow} from '../../../../models/table-models/header-row';
 import {Col} from '../../../../models/table-models/col';
 
 @Component({
-  selector: 'gb-table-grid',
-  templateUrl: './gb-table-grid.component.html',
-  styleUrls: ['./gb-table-grid.component.css']
+  selector: 'gb-data-table-grid',
+  templateUrl: './gb-data-table-grid.component.html',
+  styleUrls: ['./gb-data-table-grid.component.css']
 })
-export class GbTableGridComponent implements OnInit {
+export class GbDataTableGridComponent implements OnInit {
 
   constructor(private dataTableService: DataTableService) {
   }
