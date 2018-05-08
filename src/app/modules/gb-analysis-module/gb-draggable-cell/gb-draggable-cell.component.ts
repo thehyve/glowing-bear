@@ -24,4 +24,8 @@ export class GbDraggableCellComponent implements OnInit {
   onDragStart(e) {
     this.crossTableService.selectedConstraintCell = this;
   }
+
+  get dragDropContext(): string {
+    return this.crossTableService.PrimeNgDragAndDropContext;
+  }
 }

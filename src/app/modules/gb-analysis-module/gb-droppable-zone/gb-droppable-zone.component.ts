@@ -19,7 +19,7 @@ export class GbDroppableZoneComponent implements OnInit {
   }
 
   onDragEnter(e) {
-    if(this.dragCounter < 0) {
+    if (this.dragCounter < 0) {
       this.dragCounter = 0;
     }
     let selection = this.crossTableService.selectedConstraintCell.constraint;
@@ -37,6 +37,7 @@ export class GbDroppableZoneComponent implements OnInit {
       this.crossTableService.selectedConstraintCell.remove();
       this.dragCounter = 0;
     }
+    this.crossTableService.update();
   }
 
   onDragLeave(e) {
@@ -53,6 +54,10 @@ export class GbDroppableZoneComponent implements OnInit {
     if (index > -1) {
       this.constraints.splice(index, 1);
     }
+  }
+
+  get dragDropContext(): string {
+    return this.crossTableService.PrimeNgDragAndDropContext;
   }
 
 }

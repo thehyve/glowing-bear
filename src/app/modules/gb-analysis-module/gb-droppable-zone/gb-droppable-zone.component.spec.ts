@@ -4,6 +4,7 @@ import {GbDroppableZoneComponent} from './gb-droppable-zone.component';
 import {MockComponent} from 'ng2-mock-component';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
+import {DragDropModule} from 'primeng/primeng';
 
 describe('GbDroppableZoneComponent', () => {
   let component: GbDroppableZoneComponent;
@@ -14,6 +15,9 @@ describe('GbDroppableZoneComponent', () => {
       declarations: [
         GbDroppableZoneComponent,
         MockComponent({selector: 'gb-draggable-cell', inputs: ['constraint']})
+      ],
+      imports: [
+        DragDropModule
       ],
       providers: [
         {

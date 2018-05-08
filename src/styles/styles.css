@@ -433,37 +433,48 @@ gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
 }
 
 /*
- * ------------------------------ Styles for gb-table-dimensions component -------------------------------
+ * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
  */
-gb-table-dimensions .ui-picklist-droppoint {
+gb-data-table-dimensions .ui-picklist-droppoint {
   height: 3px !important;
 }
 
-gb-table-dimensions .ui-picklist-droppoint-highlight {
+gb-data-table-dimensions .ui-picklist-droppoint-highlight {
   background: var(--gb-clinical-green-dark);
   height: 2em !important;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-caption {
+gb-data-table-dimensions .ui-picklist .ui-picklist-caption {
   font-size: small;
   font-weight: bold;
   padding: 0px;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-filter-container {
+gb-data-table-dimensions .ui-picklist .ui-picklist-filter-container {
   font-size: small;
   padding: 0px 0px 0px .5em;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
+gb-data-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
   padding: 1px;
   font-size: small;
 }
 
 /*
- * ------------------------------ Styles for gb-table-grid component -------------------------------
+ * ------------------------------ Styles for gb-data-table-grid component -------------------------------
  */
-gb-table-grid .ui-resizable-column {
+gb-data-table-grid .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}
+
+/*
+ * ------------------------------ Styles for gb-cross-table component -------------------------------
+ */
+gb-cross-table .ui-resizable-column {
   background-color: white;
   border: solid lightgray 1px;
   text-align: center;

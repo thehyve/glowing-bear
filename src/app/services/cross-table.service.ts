@@ -19,13 +19,30 @@ import {Col} from '../models/table-models/col';
 @Injectable()
 export class CrossTableService {
 
+  // the drag and drop context used by primeng library to associate draggable and droppable items
+  // this constant is used by gb-draggable-cell and gb-droppable-zone
+  public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
   constructor(private resourceService: ResourceService,
               private constraintService: ConstraintService) {
     this.crossTable = new CrossTable();
+    this.init();
+    this.update();
+  }
+
+  /**
+   * Initialize the cross table
+   */
+  public init() {
     this.mockDataInit();
+  }
+
+  /**
+   * Update the cross table
+   */
+  public update() {
     this.mockDataUpdate();
   }
 
@@ -54,7 +71,7 @@ export class CrossTableService {
       if (this.constraintService.isCategoricalConceptConstraint(constraint)) {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
-        this.retrieveAggregate(categoricalConceptConstraint, constraint, axis);
+        this.retrieveAggregate(categoricalConceptConstraint, constraint);
       } else if (constraint.getClassName() === 'CombinationConstraint') {
         let combiConstraint = <CombinationConstraint>constraint;
         if (combiConstraint.isAnd()) {
@@ -68,7 +85,7 @@ export class CrossTableService {
           });
           if (numCategoricalConceptConstraints === 1) {
             needsAggregateCall = true;
-            this.retrieveAggregate(categoricalChild, constraint, axis);
+            this.retrieveAggregate(categoricalChild, constraint);
           }
         }
       }
@@ -80,23 +97,21 @@ export class CrossTableService {
   }
 
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
-                            peerConstraint: Constraint,
-                            axis: AxisType) {
+                            peerConstraint: Constraint) {
     if (categoricalConceptConstraint.concept.aggregate) {
       const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
-      this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint, axis);
+      this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
     } else {
       this.resourceService.getAggregate(categoricalConceptConstraint)
         .subscribe((responseAggregate: Aggregate) => {
           const categoricalAggregate = <CategoricalAggregate>responseAggregate;
-          this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint, axis);
+          this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
         });
     }
   }
 
   private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
-                                             peerConstraint: Constraint,
-                                             axis: AxisType) {
+                                             peerConstraint: Constraint) {
     let categories = categoricalAggregate.values;
     for (let category of categories) {
       let val = new ValueConstraint();
@@ -146,6 +161,7 @@ export class CrossTableService {
     let agg1 = new CategoricalAggregate();
     agg1.valueCounts.set('caucasian', 100);
     agg1.valueCounts.set('latino', 200);
+    agg1.valueCounts.set('asian', 300);
     c1.aggregate = agg1;
 
     let c2 = new Concept();
@@ -196,11 +212,14 @@ export class CrossTableService {
     this.crossTable.columnConstraints.push(cc3);
     this.crossTable.columnConstraints.push(cc4);
     this.updateHeaderConstraints();
-    console.log('crosstable: ', this.crossTable);
+    console.log('mocked cross table: ', this.crossTable);
   }
 
 
   mockDataUpdate() {
+    //
+    this.crossTable.rows = [];
+    this.crossTable.cols = [];
     // generate the column-header rows
     let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
     for (let colConstraint of this.columnConstraints) {
@@ -209,7 +228,10 @@ export class CrossTableService {
       let row = new Row();
       // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
-        row.addDatum('');
+        row.addDatumObject({
+          isHeader: false,
+          value: ''
+        });
       }
       // add the column header names
       let above = this.getConstraintsAbove(colConstraint, this.columnConstraints);
@@ -225,7 +247,10 @@ export class CrossTableService {
       for (let i = 0; i < selfRepetition; i++) {
         for (let child of this.headerConstraints.get(colConstraint)) {
           for (let j = 0; j < valueRepetition; j++) {
-            row.addDatum(child.textRepresentation);
+            row.addDatumObject({
+              isHeader: true,
+              value: child.textRepresentation
+            });
           }
         }
       }
@@ -245,12 +270,16 @@ export class CrossTableService {
       for (let val of this.headerConstraints.get(rowCon0)) {
         for (let j = 0; j < valueRepetition0; j++) {
           let row = new Row();
-          row.addDatum(val.textRepresentation);
+          row.addDatumObject({
+            isHeader: true,
+            value: val.textRepresentation
+          });
           dataRows.push(row);
         }
       }
       let index = 0;
-      for (let rowCon of this.rowConstraints) {
+      for (let rowIndex = 1; rowIndex < this.rowConstraints.length; rowIndex++) {
+        let rowCon = this.rowConstraints[rowIndex];
         let consLeft = this.getConstraintsAbove(rowCon, this.rowConstraints);
         let selfRepetition = 1;
         for (let conLeft of consLeft) {
@@ -264,7 +293,10 @@ export class CrossTableService {
         for (let i = 0; i < selfRepetition; i++) {
           for (let val of this.headerConstraints.get(rowCon)) {
             for (let j = 0; j < valueRepetition; j++) {
-              dataRows[index].addDatum(val.textRepresentation);
+              dataRows[index].addDatumObject({
+                isHeader: true,
+                value: val.textRepresentation
+              });
               let nIndex = index + 1;
               index = (nIndex === dataRows.length) ? 0 : nIndex;
             }
@@ -276,10 +308,16 @@ export class CrossTableService {
     }
     for (let dataRow of dataRows) {
       for (let i = 0; i < numColDimColumns; i++) {
-        dataRow.addDatum('Num');
+        dataRow.addDatumObject({
+          isHeader: false,
+          value: 'Num'
+        });
       }
       if (numColDimColumns === 0) {
-        dataRow.addDatum('Num');
+        dataRow.addDatumObject({
+          isHeader: false,
+          value: 'Num'
+        });
       }
       this.rows.push(dataRow);
     }

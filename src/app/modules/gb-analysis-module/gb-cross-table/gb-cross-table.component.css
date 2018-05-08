@@ -1,0 +1,9 @@
+.gb-cross-table-container {
+  font-size: small;
+}
+
+.gb-cross-table-header {
+  border-left: 3px var(--gb-clinical-green-dark) solid;
+  border-right: 3px var(--gb-clinical-green-dark) solid;
+  background-color: var(--gb-clinical-green-light-light);
+}

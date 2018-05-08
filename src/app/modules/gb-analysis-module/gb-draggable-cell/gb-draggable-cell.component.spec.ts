@@ -7,6 +7,7 @@ import {ConceptConstraint} from '../../../models/constraint-models/concept-const
 import {Concept} from '../../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../../models/constraint-models/categorical-aggregate';
 import {ConceptType} from '../../../models/constraint-models/concept-type';
+import {DragDropModule} from 'primeng/primeng';
 
 describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
@@ -16,6 +17,9 @@ describe('GbDraggableCellComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbDraggableCellComponent
+      ],
+      imports: [
+        DragDropModule
       ],
       providers: [
         {

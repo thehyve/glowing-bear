@@ -6,6 +6,7 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {ConceptType} from '../../models/constraint-models/concept-type';
 
 export class CrossTableServiceMock {
+  public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 

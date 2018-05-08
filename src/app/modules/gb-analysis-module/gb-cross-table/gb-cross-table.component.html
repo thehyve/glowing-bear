@@ -1,4 +1,4 @@
-<div class="container">
+<div class="gb-cross-table-container">
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-10">
@@ -16,10 +16,11 @@
         <ng-template pTemplate="header" let-columns>
           <tr>
             <th *ngFor="let col of columns" pResizableColumn
+                class="gb-cross-table-header"
                 style="color: transparent">
-          <span>
-            {{col.header}}
-          </span>
+              <span>
+                {{col.header}}
+              </span>
             </th>
           </tr>
         </ng-template>
@@ -28,7 +29,9 @@
         <ng-template pTemplate="body" let-row let-columns="columns">
           <tr>
             <td *ngFor="let col of columns" class="ui-resizable-column">
-              <span>{{row.data[col.field]}}</span>
+              <span [ngClass]="{'font-weight-bold': row.data[col.field]['isHeader']}">
+                {{row.data[col.field]['value']}}
+              </span>
             </td>
           </tr>
         </ng-template>
