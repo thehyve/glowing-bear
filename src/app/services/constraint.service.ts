@@ -18,6 +18,7 @@ import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
+import {TreeNode} from 'primeng/api';
 
 
 /**
@@ -47,10 +48,6 @@ export class ConstraintService {
   private _conceptLabels: string[] = [];
   private _conceptConstraints: Constraint[] = [];
 
-  /*
-   * The selected tree node (drag-start) in the side-panel of either
-   */
-  private _selectedNode: any = null;
   /*
    * The maximum number of search results allowed when searching for a constraint
    */
@@ -306,7 +303,7 @@ export class ConstraintService {
   }
 
   // generate the constraint instance based on given node (e.g. tree node)
-  public generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
     let constraint: Constraint = null;
     // if the dropped node is a tree node
     if (dropMode === DropMode.TreeNode) {
@@ -338,7 +335,7 @@ export class ConstraintService {
           constraint = new CombinationConstraint();
           (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
           for (let descendant of descendants) {
-            let dConstraint = this.generateConstraintFromSelectedNode(descendant, DropMode.TreeNode);
+            let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
             if (dConstraint) {
               (<CombinationConstraint>constraint).addChild(dConstraint);
             }
@@ -349,8 +346,6 @@ export class ConstraintService {
         }
       }
     }
-
-    this.selectedNode = null;
 
     return constraint;
   }
@@ -623,14 +618,6 @@ export class ConstraintService {
 
   set subjectSetConstraint(value: SubjectSetConstraint) {
     this._subjectSetConstraint = value;
-  }
-
-  get selectedNode(): any {
-    return this._selectedNode;
-  }
-
-  set selectedNode(value: any) {
-    this._selectedNode = value;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

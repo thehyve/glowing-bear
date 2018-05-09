@@ -297,7 +297,7 @@ gb-side-panel .ui-accordion .ui-accordion-content {
 /*
  * ------------------------------ Styles for gb-summary component -------------------------------
  */
-gb-summary .gb-selected-tree-container {
+gb-summary .gb-final-tree-container {
   width: auto;
   background-color: transparent;
   border: none;

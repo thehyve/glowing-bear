@@ -29,7 +29,6 @@ export class CrossTableService {
               private constraintService: ConstraintService) {
     this.crossTable = new CrossTable();
     this.init();
-    this.update();
   }
 
   /**
@@ -39,17 +38,16 @@ export class CrossTableService {
     this.mockDataInit();
   }
 
-  /**
-   * Update the cross table
-   */
-  public update() {
+  public updateRows() {
     this.mockDataUpdate();
   }
 
-  public updateHeaderConstraints() {
-    this.updateHeaderConstraintsWithAxis(AxisType.ROW);
-    this.updateHeaderConstraintsWithAxis(AxisType.COL);
-  }
+  /**
+   * Update the cross table
+   */
+  // public update() {
+  //   this.mockDataUpdate();
+  // }
 
   /**
    * This function is used to generate the header constraint(s) for the cross table:
@@ -61,10 +59,10 @@ export class CrossTableService {
    *
    * else, assign the target with the constraint itself
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
-   * @param {AxisType} axis - enum indicating which axis of header constraints to update
    */
-  private updateHeaderConstraintsWithAxis(axis: AxisType) {
-    let constraints = axis === AxisType.ROW ? this.crossTable.rowConstraints : this.crossTable.columnConstraints;
+  public updateHeaderConstraints(constraints: Array<Constraint>) {
+    // clear existing header constraints
+    this.clearHeaderConstraints(constraints);
     for (let constraint of constraints) {
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
@@ -96,6 +94,41 @@ export class CrossTableService {
     }
   }
 
+  private clearHeaderConstraints(targetConstraints: Constraint[]) {
+    targetConstraints.forEach((target: Constraint) => {
+      if (this.headerConstraints.get(target)) {
+        this.headerConstraints.get(target).length = 0;
+      }
+    });
+  }
+
+  private isConjunctiveAndHasOneCategoricalConstraint(constraint: Constraint): boolean {
+    if (constraint.getClassName() === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let numCategoricalConceptConstraints = 0;
+        let categoricalChild: ConceptConstraint = null;
+        combiConstraint.children.forEach((child: Constraint) => {
+          if (this.constraintService.isCategoricalConceptConstraint(child)) {
+            numCategoricalConceptConstraints++;
+            categoricalChild = <ConceptConstraint>child;
+          }
+        });
+        if (numCategoricalConceptConstraints === 1) {
+          // adjust its text representation to its categorical child's name
+          combiConstraint.textRepresentation = categoricalChild.concept.name;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public isValidConstraint(constraint: Constraint): boolean {
+    return this.constraintService.isCategoricalConceptConstraint(constraint)
+      || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
+  }
+
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
                             peerConstraint: Constraint) {
     if (categoricalConceptConstraint.concept.aggregate) {
@@ -125,6 +158,7 @@ export class CrossTableService {
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
       this.crossTable.addHeaderConstraint(peerConstraint, combi);
     }
+    this.updateRows();
   }
 
   private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
@@ -151,6 +185,25 @@ export class CrossTableService {
     }
 
     return description;
+  }
+
+  get areHeaderConstraintsMapped(): boolean {
+    let mapped = true;
+    this.rowConstraints.forEach((con: Constraint) => {
+      let hasIt = this.headerConstraints.has(con);
+      if (!hasIt) {
+        mapped = hasIt;
+      }
+    });
+    if (mapped) {
+      this.columnConstraints.forEach((con: Constraint) => {
+        let hasIt = this.headerConstraints.has(con);
+        if (!hasIt) {
+          mapped = hasIt;
+        }
+      });
+    }
+    return mapped;
   }
 
   mockDataInit() {
@@ -197,135 +250,138 @@ export class CrossTableService {
 
     let cc1 = new ConceptConstraint();
     cc1.concept = c1;
-    cc1.textRepresentation = '- Race -';
+    cc1.textRepresentation = '<Race>';
     let cc2 = new ConceptConstraint();
     cc2.concept = c2;
-    cc2.textRepresentation = '- Gender -';
+    cc2.textRepresentation = '<Gender>';
     let cc3 = new ConceptConstraint();
     cc3.concept = c3;
-    cc3.textRepresentation = '- Color -';
+    cc3.textRepresentation = '<Color>';
     let cc4 = new ConceptConstraint();
     cc4.concept = c4;
-    cc4.textRepresentation = '- Alcohol -';
+    cc4.textRepresentation = '<Alcohol>';
     this.crossTable.rowConstraints.push(cc1);
     this.crossTable.rowConstraints.push(cc2);
     this.crossTable.columnConstraints.push(cc3);
     this.crossTable.columnConstraints.push(cc4);
-    this.updateHeaderConstraints();
-    console.log('mocked cross table: ', this.crossTable);
+    // Update the header constraints
+    this.updateHeaderConstraints(this.rowConstraints);
+    this.updateHeaderConstraints(this.columnConstraints);
+    this.updateRows();
   }
 
-
   mockDataUpdate() {
-    //
-    this.crossTable.rows = [];
-    this.crossTable.cols = [];
-    // generate the column-header rows
-    let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
-    for (let colConstraint of this.columnConstraints) {
-      let valConstraints = this.headerConstraints.get(colConstraint);
-      numColDimColumns = numColDimColumns * valConstraints.length;
-      let row = new Row();
-      // add empty space fillers on the top-left corner of the table
-      for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
-        row.addDatumObject({
-          isHeader: false,
-          value: ''
-        });
-      }
-      // add the column header names
-      let above = this.getConstraintsAbove(colConstraint, this.columnConstraints);
-      let selfRepetition = 1;
-      for (let cAbove of above) {
-        selfRepetition = selfRepetition * this.headerConstraints.get(cAbove).length;
-      }
-      let below = this.getConstraintsBelow(colConstraint, this.columnConstraints);
-      let valueRepetition = 1;
-      for (let cBelow of below) {
-        valueRepetition = valueRepetition * this.headerConstraints.get(cBelow).length;
-      }
-      for (let i = 0; i < selfRepetition; i++) {
-        for (let child of this.headerConstraints.get(colConstraint)) {
-          for (let j = 0; j < valueRepetition; j++) {
-            row.addDatumObject({
-              isHeader: true,
-              value: child.textRepresentation
-            });
-          }
-        }
-      }
-      this.rows.push(row);
-    }
-
-    // generate the data rows
-    let dataRows = [];
-    let rowCon0 = this.rowConstraints[0];
-    // if there at least one row constraint
-    if (rowCon0) {
-      let consRight0 = this.getConstraintsBelow(rowCon0, this.rowConstraints);
-      let valueRepetition0 = 1;
-      for (let conRight of consRight0) {
-        valueRepetition0 = valueRepetition0 * this.headerConstraints.get(conRight).length;
-      }
-      for (let val of this.headerConstraints.get(rowCon0)) {
-        for (let j = 0; j < valueRepetition0; j++) {
-          let row = new Row();
+    if (this.areHeaderConstraintsMapped) {
+      // clear the rows and cols
+      this.crossTable.rows = [];
+      this.crossTable.cols = [];
+      // generate the column-header rows
+      let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
+      for (let colConstraint of this.columnConstraints) {
+        let valConstraints = this.headerConstraints.get(colConstraint);
+        numColDimColumns = numColDimColumns * valConstraints.length;
+        let row = new Row();
+        // add empty space fillers on the top-left corner of the table
+        for (let rowIndex = 0; rowIndex < this.rowConstraints.length; rowIndex++) {
           row.addDatumObject({
-            isHeader: true,
-            value: val.textRepresentation
+            isHeader: false,
+            value: ''
           });
-          dataRows.push(row);
         }
-      }
-      let index = 0;
-      for (let rowIndex = 1; rowIndex < this.rowConstraints.length; rowIndex++) {
-        let rowCon = this.rowConstraints[rowIndex];
-        let consLeft = this.getConstraintsAbove(rowCon, this.rowConstraints);
+        // add the column header names
+        let above = this.getConstraintsAbove(colConstraint, this.columnConstraints);
         let selfRepetition = 1;
-        for (let conLeft of consLeft) {
-          selfRepetition = selfRepetition * this.headerConstraints.get(conLeft).length;
+        for (let cAbove of above) {
+          selfRepetition = selfRepetition * this.headerConstraints.get(cAbove).length;
         }
-        let consRight = this.getConstraintsBelow(rowCon, this.rowConstraints);
+        let below = this.getConstraintsBelow(colConstraint, this.columnConstraints);
         let valueRepetition = 1;
-        for (let conRight of consRight) {
-          valueRepetition = valueRepetition * this.headerConstraints.get(conRight).length;
+        for (let cBelow of below) {
+          valueRepetition = valueRepetition * this.headerConstraints.get(cBelow).length;
         }
         for (let i = 0; i < selfRepetition; i++) {
-          for (let val of this.headerConstraints.get(rowCon)) {
+          for (let child of this.headerConstraints.get(colConstraint)) {
             for (let j = 0; j < valueRepetition; j++) {
-              dataRows[index].addDatumObject({
+              row.addDatumObject({
                 isHeader: true,
-                value: val.textRepresentation
+                value: child.textRepresentation
               });
-              let nIndex = index + 1;
-              index = (nIndex === dataRows.length) ? 0 : nIndex;
             }
           }
         }
+        this.rows.push(row);
       }
-    } else {// if there is no row dimension
-      dataRows.push(new Row());
-    }
-    for (let dataRow of dataRows) {
-      for (let i = 0; i < numColDimColumns; i++) {
-        dataRow.addDatumObject({
-          isHeader: false,
-          value: 'Num'
-        });
-      }
-      if (numColDimColumns === 0) {
-        dataRow.addDatumObject({
-          isHeader: false,
-          value: 'Num'
-        });
-      }
-      this.rows.push(dataRow);
-    }
 
-    // generate column headers
-    for (let field in this.rows[0].data) {
-      let col = new Col(' - ', field);
-      this.cols.push(col);
+      // generate the data rows
+      let dataRows = [];
+      let rowCon0 = this.rowConstraints[0];
+      // if there at least one row constraint
+      if (rowCon0) {
+        let consRight0 = this.getConstraintsBelow(rowCon0, this.rowConstraints);
+        let valueRepetition0 = 1;
+        for (let conRight of consRight0) {
+          valueRepetition0 = valueRepetition0 * this.headerConstraints.get(conRight).length;
+        }
+        for (let val of this.headerConstraints.get(rowCon0)) {
+          for (let j = 0; j < valueRepetition0; j++) {
+            let row = new Row();
+            row.addDatumObject({
+              isHeader: true,
+              value: val.textRepresentation
+            });
+            dataRows.push(row);
+          }
+        }
+        let index = 0;
+        for (let rowIndex = 1; rowIndex < this.rowConstraints.length; rowIndex++) {
+          let rowCon = this.rowConstraints[rowIndex];
+          let consLeft = this.getConstraintsAbove(rowCon, this.rowConstraints);
+          let selfRepetition = 1;
+          for (let conLeft of consLeft) {
+            selfRepetition = selfRepetition * this.headerConstraints.get(conLeft).length;
+          }
+          let consRight = this.getConstraintsBelow(rowCon, this.rowConstraints);
+          let valueRepetition = 1;
+          for (let conRight of consRight) {
+            valueRepetition = valueRepetition * this.headerConstraints.get(conRight).length;
+          }
+          for (let i = 0; i < selfRepetition; i++) {
+            for (let val of this.headerConstraints.get(rowCon)) {
+              for (let j = 0; j < valueRepetition; j++) {
+                dataRows[index].addDatumObject({
+                  isHeader: true,
+                  value: val.textRepresentation
+                });
+                let nIndex = index + 1;
+                index = (nIndex === dataRows.length) ? 0 : nIndex;
+              }
+            }
+          }
+        }
+      } else {// if there is no row dimension
+        dataRows.push(new Row());
+      }
+      for (let dataRow of dataRows) {
+        for (let i = 0; i < numColDimColumns; i++) {
+          dataRow.addDatumObject({
+            isHeader: false,
+            value: 'Num'
+          });
+        }
+        if (numColDimColumns === 0) {
+          dataRow.addDatumObject({
+            isHeader: false,
+            value: 'Num'
+          });
+        }
+        this.rows.push(dataRow);
+      }
+
+      // generate column headers
+      for (let field in this.rows[0].data) {
+        let col = new Col(' - ', field);
+        this.cols.push(col);
+      }
     }
   }
 

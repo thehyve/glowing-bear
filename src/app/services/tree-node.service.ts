@@ -31,6 +31,8 @@ export class TreeNodeService {
   private _selectedProjectionTreeData: TreeNode[] = [];
   // the final tree nodes resulted from data selection
   private _finalTreeNodes: TreeNode[] = [];
+  // the selected tree node in the side-panel by dragging
+  private _selectedTreeNode: TreeNode = null;
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -709,5 +711,13 @@ export class TreeNodeService {
 
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
+  }
+
+  get selectedTreeNode(): TreeNode {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: TreeNode) {
+    this._selectedTreeNode = value;
   }
 }

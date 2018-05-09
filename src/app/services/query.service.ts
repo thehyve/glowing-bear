@@ -490,9 +490,6 @@ export class QueryService {
    */
   public update_2() {
     this.prepareStep2();
-    /*
-     * ====== function starts ======
-     */
     if (!this.isUpdating_1 && !this.isPreparing_2) {
       this.isUpdating_2 = true;
       // add time stamp to the queue,
@@ -505,15 +502,13 @@ export class QueryService {
       this.isLoadingObservationCount_2 = true;
 
       this.query = null; // clear query
-
-      let combo = this.constraintService.constraint_1_2();
-
       // update the subject count and observation count in the 2nd step
-      this.resourceService.getCounts(combo)
+      this.resourceService.getCounts(this.constraintService.constraint_1_2())
         .subscribe(
           (countResponse) => {
             const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
             if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+              // update counts and flags
               this.subjectCount_2 = countResponse['patientCount'];
               this.isLoadingSubjectCount_2 = false;
               this.observationCount_2 = countResponse['observationCount'];
@@ -521,22 +516,23 @@ export class QueryService {
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
               this.isDirty_3 = true;
+              // update the export variables
+              this.exportService.updateExports();
+              // update the final tree nodes in the summary panel
+              if (this.subjectCount_2 > 0) {
+                this.treeNodeService.updateFinalTreeNodes();
+              } else {
+                this.treeNodeService.finalTreeNodes = [];
+              }
             }
           },
           err => this.handle_error(err)
         );
-      // update the export variables
-      this.exportService.updateExports();
-      // update the final tree nodes
-      this.treeNodeService.updateFinalTreeNodes();
     } else {
       window.setTimeout((function () {
         this.update_2();
       }).bind(this), 500);
     }
-    /*
-     * ====== function update_2 ends ======
-     */
   }
 
   /**

@@ -1,6 +1,9 @@
 import {Component, ElementRef, Input, OnInit} from '@angular/core';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../services/cross-table.service';
+import {TreeNodeService} from '../../../services/tree-node.service';
+import {ConstraintService} from '../../../services/constraint.service';
+import {DropMode} from '../../../models/drop-mode';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -11,8 +14,11 @@ export class GbDroppableZoneComponent implements OnInit {
 
   @Input() constraints: Array<Constraint> = [];
   public dragCounter = 0;
+  private onDropTriggered = false;
 
-  constructor(private crossTableService: CrossTableService) {
+  constructor(private crossTableService: CrossTableService,
+              private treeNodeService: TreeNodeService,
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
@@ -22,27 +28,60 @@ export class GbDroppableZoneComponent implements OnInit {
     if (this.dragCounter < 0) {
       this.dragCounter = 0;
     }
-    let selection = this.crossTableService.selectedConstraintCell.constraint;
-    const index = this.constraints.indexOf(selection);
-    if (selection && index === -1) {
+    const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
+    const constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
+    if (constraint) {
+      const index = this.constraints.indexOf(constraint);
+      if (index === -1) {
+        this.dragCounter++;
+      }
+    } else {
       this.dragCounter++;
     }
   }
 
-  onDrop(e) {
-    let selection = this.crossTableService.selectedConstraintCell.constraint;
-    const index = this.constraints.indexOf(selection);
-    if (selection && index === -1) {
-      this.constraints.push(selection);
-      this.crossTableService.selectedConstraintCell.remove();
-      this.dragCounter = 0;
+  onDrop() {
+    this.onDropTriggered = true;
+    const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
+    let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
+    // if no existing constraint is used, try to create a new one based on tree node drop
+    if (!constraint) {
+      if (this.treeNodeService.selectedTreeNode) {
+        constraint = this.constraintService
+          .generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode, DropMode.TreeNode);
+        if (constraint && this.crossTableService.isValidConstraint(constraint)) {
+          this.constraints.push(constraint);
+          this.crossTableService.updateHeaderConstraints(this.constraints);
+        }
+      }
+    } else {
+      const index = this.constraints.indexOf(constraint);
+      if (index === -1) {
+        this.constraints.push(constraint);
+        if (selectedConstraintCell) {
+          selectedConstraintCell.remove();
+        }
+      }
+      this.crossTableService.updateRows();
     }
-    this.crossTableService.update();
+    // reset
+    this.dragCounter = 0;
+    this.crossTableService.selectedConstraintCell = null;
   }
 
   onDragLeave(e) {
     e.preventDefault();
     this.dragCounter--;
+  }
+
+  /**
+   * This handler handles the drop event of a tree node
+   */
+  onDropGeneric() {
+    if (!this.onDropTriggered) {
+      this.onDrop();
+      this.onDropTriggered = false;
+    }
   }
 
   /**
@@ -54,7 +93,7 @@ export class GbDroppableZoneComponent implements OnInit {
     if (index > -1) {
       this.constraints.splice(index, 1);
     }
-    this.crossTableService.update();
+    this.crossTableService.updateRows();
   }
 
   get dragDropContext(): string {
