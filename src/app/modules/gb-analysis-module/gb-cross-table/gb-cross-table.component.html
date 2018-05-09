@@ -1,5 +1,5 @@
 <div class="gb-cross-table-container">
-  <div class="row">
+  <div class="row" style="margin-bottom: 10px">
     <div class="col-md-2"></div>
     <div class="col-md-10">
       <gb-droppable-zone [constraints]="columnConstraints"></gb-droppable-zone>
@@ -16,7 +16,7 @@
         <ng-template pTemplate="header" let-columns>
           <tr>
             <th *ngFor="let col of columns" pResizableColumn
-                class="gb-cross-table-header"
+                class="gb-cross-table-top-header"
                 style="color: transparent">
               <span>
                 {{col.header}}
@@ -28,8 +28,9 @@
         <!-- table body -->
         <ng-template pTemplate="body" let-row let-columns="columns">
           <tr>
-            <td *ngFor="let col of columns" class="ui-resizable-column">
-              <span [ngClass]="{'font-weight-bold': row.data[col.field]['isHeader']}">
+            <td *ngFor="let col of columns" class="ui-resizable-column"
+                [ngClass]="{'gb-cross-table-header': row.data[col.field]['isHeader']}">
+              <span>
                 {{row.data[col.field]['value']}}
               </span>
             </td>

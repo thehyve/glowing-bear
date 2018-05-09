@@ -1,11 +1,14 @@
 .gb-droppable-zone-container {
   height: 100%;
-  background-color: yellow;
+  background-color: whitesmoke;
   margin: 5px;
+  border-radius: 6px;
+  min-height: 30px;
 }
 
 .gb-droppable-zone-container-highlight {
-  background-color: coral;
+  background-color: var(--gb-light-orange);
+  fill-opacity: .6;
 }
 
 .gb-draggable-cell-outside-container {

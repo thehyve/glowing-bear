@@ -54,6 +54,7 @@ export class GbDroppableZoneComponent implements OnInit {
     if (index > -1) {
       this.constraints.splice(index, 1);
     }
+    this.crossTableService.update();
   }
 
   get dragDropContext(): string {
