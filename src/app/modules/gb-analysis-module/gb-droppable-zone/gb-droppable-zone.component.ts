@@ -51,6 +51,7 @@ export class GbDroppableZoneComponent implements OnInit {
           .generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode, DropMode.TreeNode);
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
           this.constraints.push(constraint);
+          // new constraint is introduced, creating new header constraints as well as cells
           this.crossTableService.updateHeaderConstraints(this.constraints);
         }
       }
@@ -62,7 +63,9 @@ export class GbDroppableZoneComponent implements OnInit {
           selectedConstraintCell.remove();
         }
       }
-      this.crossTableService.updateRows();
+      // old constraint is dropped to a different dropzone,
+      // no need to call backend, just update the cells.
+      this.crossTableService.updateCells();
     }
     // reset
     this.dragCounter = 0;
@@ -93,7 +96,7 @@ export class GbDroppableZoneComponent implements OnInit {
     if (index > -1) {
       this.constraints.splice(index, 1);
     }
-    this.crossTableService.updateRows();
+    this.crossTableService.updateCells();
   }
 
   get dragDropContext(): string {

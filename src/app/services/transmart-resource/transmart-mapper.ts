@@ -22,6 +22,8 @@ import {NumericalAggregate} from '../../models/constraint-models/numerical-aggre
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
 import {ResourceService} from '../resource.service';
 import {FormatHelper} from '../../utilities/FormatHelper';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {CrossTable} from '../../models/table-models/cross-table';
 
 export class TransmartMapper {
 
@@ -235,6 +237,11 @@ export class TransmartMapper {
       dataTypes.push(dataType);
     }
     return dataTypes;
+  }
+
+  public static mapTransmartCrossTable(tmCrossTable: TransmartCrossTable): CrossTable {
+    console.log('tmCrossTable: ', tmCrossTable);
+    return new CrossTable();
   }
 
   public static mapExportDataTypes(dataTypes: ExportDataType[], defaultDataView: string): TransmartExportElement[] {

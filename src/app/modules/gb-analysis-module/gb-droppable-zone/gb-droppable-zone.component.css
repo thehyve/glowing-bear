@@ -7,7 +7,7 @@
 }
 
 .gb-droppable-zone-container-highlight {
-  background-color: var(--gb-light-orange);
+  background-color: var(--gb-orange-light-light);
   fill-opacity: .6;
 }
 

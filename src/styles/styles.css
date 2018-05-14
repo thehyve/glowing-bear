@@ -10,7 +10,8 @@
 :root  {
   --gb-loading-bg-color: #28AA9D;
   --gb-navbar-bg-color: #fdfdfd;
-  --gb-light-orange: #ffa27f;
+  --gb-orange-light: #ffa27f;
+  --gb-orange-light-light: #ffd9cb;
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
@@ -342,7 +343,7 @@ gb-tree-nodes .gb-tree-container {
  */
 @keyframes gb-count-element-animation {
   from {
-    background-color: var(--gb-light-orange);
+    background-color: var(--gb-orange-light);
   }
   to {
     background-color: transparent;
@@ -363,7 +364,7 @@ gb-tree-nodes .gb-count-element-updated {
 
 /*tree node styles for filtering*/
 gb-tree-nodes .gb-highlight-treenode {
-  background-color: var(--gb-light-orange) !important;
+  background-color: var(--gb-orange-light) !important;
   border-radius: 10px !important;
   font-weight: bold !important;
 }

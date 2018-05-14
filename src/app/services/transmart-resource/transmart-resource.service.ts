@@ -16,6 +16,7 @@ import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transm
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 
 @Injectable()
 export class TransmartResourceService {
@@ -551,5 +552,23 @@ export class TransmartResourceService {
     } else {
       return Observable.of([]);
     }
+  }
+
+  getCrossTable(rowConstraints: Array<Constraint>,
+                columnConstraints: Array<Constraint>): Observable<TransmartCrossTable> {
+    const urlPart = 'observations/crosstable';
+    let rowConstraintArr = [];
+    rowConstraints.forEach((constraint: Constraint) => {
+      rowConstraintArr.push(constraint.toQueryObject());
+    });
+    let columnConstraintArr = [];
+    columnConstraints.forEach((constraint: Constraint) => {
+      columnConstraintArr.push(constraint.toQueryObject());
+    });
+    const body = {
+      rowConstraints: rowConstraintArr,
+      columnConstraints: columnConstraintArr
+    }
+    return this.postCall(urlPart, body, null);
   }
 }

@@ -9,6 +9,10 @@
   font-weight: bold;
 }
 
+.gb-draggable-cell-inside-container:hover {
+  cursor: move;
+}
+
 .gb-draggable-cell-remove-btn {
   padding: 1px 3px 1px 3px;
   margin: 1px 1px 1px 3px;

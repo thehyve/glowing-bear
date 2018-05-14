@@ -38,16 +38,17 @@ export class CrossTableService {
     this.mockDataInit();
   }
 
-  public updateRows() {
+  /**
+   * Only update the rows of the cross table based on its cells,
+   * provided that the header constraints remain the same,
+   * just the row/col constraints got switched or ordered differently
+   * workflow:
+   * 1. remove possible redundant header constraints and cells
+   * 2. create the rows and cols from cells
+   */
+  public updateCells() {
     this.mockDataUpdate();
   }
-
-  /**
-   * Update the cross table
-   */
-  // public update() {
-  //   this.mockDataUpdate();
-  // }
 
   /**
    * This function is used to generate the header constraint(s) for the cross table:
@@ -58,6 +59,10 @@ export class CrossTableService {
    * if yes, fetch the aggregate for this child, assign the target with a list of aggregate-value constraints
    *
    * else, assign the target with the constraint itself
+   *
+   * *** Remark ***
+   * Only use this function when new constraint got introduced into the table,
+   * since the hader constraints will be recreated and old pointer are lost
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
    */
   public updateHeaderConstraints(constraints: Array<Constraint>) {
@@ -158,7 +163,7 @@ export class CrossTableService {
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
       this.crossTable.addHeaderConstraint(peerConstraint, combi);
     }
-    this.updateRows();
+    this.updateCells();
   }
 
   private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
@@ -267,7 +272,7 @@ export class CrossTableService {
     // Update the header constraints
     this.updateHeaderConstraints(this.rowConstraints);
     this.updateHeaderConstraints(this.columnConstraints);
-    this.updateRows();
+    this.updateCells();
   }
 
   mockDataUpdate() {

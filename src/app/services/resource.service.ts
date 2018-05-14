@@ -21,6 +21,8 @@ import {Dimension} from '../models/table-models/dimension';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {Aggregate} from '../models/constraint-models/aggregate';
+import {CrossTable} from '../models/table-models/cross-table';
+import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 
 
 @Injectable()
@@ -276,7 +278,7 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
+  saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     return this.transmartResourceService.savePatientSet(name, constraint);
   }
 
@@ -291,13 +293,15 @@ export class ResourceService {
     let offset = dataTable.offset;
     let limit = dataTable.limit;
 
-    return this.getDimensions(dataTable.constraint).switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-      let tableState: TransmartTableState = TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
-      const constraint: Constraint = dataTable.constraint;
-      return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
-    }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-      return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
-    });
+    return this.getDimensions(dataTable.constraint)
+      .switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
+        let tableState: TransmartTableState =
+          TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
+        const constraint: Constraint = dataTable.constraint;
+        return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
+      }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
+      });
   }
 
   /**
@@ -327,4 +331,12 @@ export class ResourceService {
     this.transmartResourceService.dateColumnsIncluded = value;
   }
 
+  // -------------------------------------- cross table ---------------------------------------------
+  getCrossTable(rowConstraints: Array<Constraint>,
+                columnConstraints: Array<Constraint>): Observable<CrossTable> {
+    return this.transmartResourceService.getCrossTable(rowConstraints, columnConstraints)
+      .map((tmCrossTable: TransmartCrossTable) => {
+        return TransmartMapper.mapTransmartCrossTable(tmCrossTable);
+      });
+  }
 }

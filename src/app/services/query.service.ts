@@ -392,7 +392,7 @@ export class QueryService {
     const selectionConstraint = this.constraintService.constraint_1();
     if (this.autosaveSubjectSets) {
       // save a subject set for the subject selection, compute tree counts using that subject set
-      this.resourceService.savePatientSet('temp', selectionConstraint)
+      this.resourceService.saveSubjectSet('temp', selectionConstraint)
         .subscribe((response) => {
             this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
           },

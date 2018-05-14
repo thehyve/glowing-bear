@@ -1,12 +1,24 @@
 import {Constraint} from '../constraint-models/constraint';
 import {Row} from './row';
 import {Col} from './col';
+import {CrossTableCell} from './cross-table-cell';
 
 export class CrossTable {
   // the row and column constraints used in the drag & drop zones
   private _rowConstraints: Array<Constraint> = [];
   private _columnConstraints: Array<Constraint> = [];
+  /*
+   * the keys of the header constraints are the row/column constraints,
+   * the header constraints are the ones that are sent to backend to get the table content,
+   * usually a header constraint is a value constraint from one of the row/col constraints,
+   * sometimes combined with a study constraint
+   */
   private _headerConstraints: Map<Constraint, Array<Constraint>>;
+  /*
+   * the cells of the cross table, the rows (see below) are constructed from the cells,
+   * the cells keep a dictionary of cells based on their header constraint coordinates
+   */
+  private _cells: Array<CrossTableCell> = [];
   /*
    * The structure of the cross table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -31,6 +43,15 @@ export class CrossTable {
       vals.push(valueConstraint);
       this.headerConstraints.set(keyConstraint, vals);
     }
+  }
+
+  getCell(constraintOne: Constraint, constraintTheOther: Constraint): CrossTableCell {
+    for (let cell of this.cells) {
+      if (cell.match(constraintOne, constraintTheOther)) {
+        return cell;
+      }
+    }
+    return null;
   }
 
   get rowConstraints(): Array<Constraint> {
@@ -71,5 +92,13 @@ export class CrossTable {
 
   set headerConstraints(value: Map<Constraint, Array<Constraint>>) {
     this._headerConstraints = value;
+  }
+
+  get cells(): Array<CrossTableCell> {
+    return this._cells;
+  }
+
+  set cells(value: Array<CrossTableCell>) {
+    this._cells = value;
   }
 }
