@@ -1,22 +1,23 @@
 import {Order} from '../table-models/order';
+import {TransmartSort} from "./transmart-sorting";
 
 export class TransmartTableState {
   public rowDimensions: Array<string>;
   public columnDimensions: Array<string>;
-  public rowSort: Map<string, Order>;
-  public columnSort: Map<string, Order>;
+  public rowSort: Array<TransmartSort>;
+  public columnSort: Array<TransmartSort>;
 
   constructor(rowDimensions: Array<string>,
               columnDimensions: Array<string>) {
     this.rowDimensions = rowDimensions;
-    this.rowSort = new Map<string, Order>();
+    this.rowSort = [];
     for (let rowDim of rowDimensions) {
-      this.rowSort.set(rowDim, Order.ASC);
+      this.rowSort.push(new TransmartSort(rowDim, Order.ASC));
     }
     this.columnDimensions = columnDimensions;
-    this.columnSort = new Map<string, Order>();
+    this.columnSort = [];
     for (let colDim of columnDimensions) {
-      this.columnSort.set(colDim, Order.ASC);
+      this.columnSort.push(new TransmartSort(colDim, Order.ASC));
     }
   }
 

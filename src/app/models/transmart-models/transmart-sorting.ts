@@ -1,7 +1,12 @@
 import {Order} from '../table-models/order';
 
-export class TransmartSorting {
+export class TransmartSort {
   dimension: string;
-  order: Order;
-  userRequested: boolean;
+  sortOrder: Order;
+  'user_requested': boolean;
+
+  constructor(dimension: string, order: Order){
+    this.dimension = dimension;
+    this.sortOrder = order;
+  }
 }
