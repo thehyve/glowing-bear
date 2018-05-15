@@ -97,20 +97,28 @@ export class TransmartMapper {
     // get row dimensions
     transmartTable.row_dimensions.forEach((rowDim: TransmartDimension) => {
       let rowDimension = new Dimension(rowDim.name);
-      let elements = this.parseObjectToMap(rowDim.elements);
-      elements.forEach((value: Map<string, object>, key: string) => {
-        rowDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(rowDim.name, value)));
-      });
+      if (rowDim.elements != null) {
+        let elements = this.parseObjectToMap(rowDim.elements);
+        elements.forEach((value: Map<string, object>, key: string) => {
+          rowDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(rowDim.name, value)));
+        });
+      } else {
+        rowDimension.values.push(new DimensionValue(null));
+      }
       dataTable.rowDimensions.push(rowDimension);
     });
 
     // get column dimensions
     transmartTable.column_dimensions.forEach((colDim: TransmartDimension) => {
       let colDimension = new Dimension(colDim.name);
-      let elements = this.parseObjectToMap(colDim.elements);
-      elements.forEach((value: Map<string, object>, key: string) => {
-        colDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(colDim.name, value)));
-      });
+      if (colDim.elements != null) {
+        let elements = this.parseObjectToMap(colDim.elements);
+        elements.forEach((value: Map<string, object>, key: string) => {
+          colDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(colDim.name, value)));
+        });
+      } else {
+        colDimension.values.push(new DimensionValue(null));
+      }
       dataTable.columnDimensions.push(colDimension);
     });
 
@@ -135,7 +143,7 @@ export class TransmartMapper {
           if (isUsingHeaders) {
             this.updateCols(headerRow.cols, elem[headerNameField], metadata);
           } else {
-            row.addDatum(elem[headerNameField], metadata);
+            elem == null ? row.addDatum(null) : row.addDatum(elem[headerNameField], metadata);
           }
         });
       } else {
@@ -175,9 +183,14 @@ export class TransmartMapper {
       // get row dimensions
       transmartTable.rows[i].dimensions.forEach((inRowDim: TransmartInRowDimension) => {
         if (inRowDim.key == null) {
-          // if dimension is inline
-          newRow.addDatum(inRowDim.element[headerNameField],
-            this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
+          if (inRowDim.element == null) {
+            // if dimension element is null
+            newRow.addDatum(null);
+          } else {
+            // if dimension is inline
+            newRow.addDatum(inRowDim.element[headerNameField],
+              this.getDimensionMetadata(inRowDim.dimension, inRowDim.element));
+          }
         } else {
           // if dimension is indexed
           let indexedDimension: TransmartDimension = transmartTable.row_dimensions
@@ -242,7 +255,7 @@ export class TransmartMapper {
   }
 
   public static mapStudyDimensions(transmartStudies: TransmartStudy[]): TransmartStudyDimensions {
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
     let transmartStudyDimensions = new TransmartStudyDimensions();
 
     if (transmartStudies && transmartStudies.length > 0) {
@@ -350,7 +363,7 @@ export class TransmartMapper {
         cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString(), metadata));
       }
     } else {
-      cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + (cols.length + 1).toString(), metadata));
+      cols.push(new Col(newColValue, Col.COLUMN_FIELD_PREFIX + 1, metadata));
     }
   }
 
