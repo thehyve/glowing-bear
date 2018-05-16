@@ -15,6 +15,8 @@ import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
 import {MessageService} from './message.service';
 import {MessageServiceMock} from './mocks/message.service.mock';
+import {CrossTableService} from './cross-table.service';
+import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 
 
 describe('QueryService', () => {
@@ -40,6 +42,10 @@ describe('QueryService', () => {
         {
           provide: DataTableService,
           useClass: DataTableServiceMock
+        },
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
         },
         {
           provide: ExportService,

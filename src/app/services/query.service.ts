@@ -19,6 +19,7 @@ import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {MessageService} from './message.service';
+import {CrossTableService} from './cross-table.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -158,6 +159,7 @@ export class QueryService {
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private dataTableService: DataTableService,
+              private crossTableService: CrossTableService,
               private messageService: MessageService,
               private exportService: ExportService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
@@ -503,7 +505,8 @@ export class QueryService {
 
       this.query = null; // clear query
       // update the subject count and observation count in the 2nd step
-      this.resourceService.getCounts(this.constraintService.constraint_1_2())
+      const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
+      this.resourceService.getCounts(constraint_1_2)
         .subscribe(
           (countResponse) => {
             const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
@@ -524,6 +527,8 @@ export class QueryService {
               } else {
                 this.treeNodeService.finalTreeNodes = [];
               }
+              // update the cross table baseline constraint
+              this.crossTableService.crossTable.constraint = this.constraintService.constraint_1();
             }
           },
           err => this.handle_error(err)

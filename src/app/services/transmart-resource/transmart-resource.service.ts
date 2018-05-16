@@ -17,6 +17,8 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import {CrossTable} from '../../models/table-models/cross-table';
 
 @Injectable()
 export class TransmartResourceService {
@@ -554,18 +556,21 @@ export class TransmartResourceService {
     }
   }
 
-  getCrossTable(rowConstraints: Array<Constraint>,
-                columnConstraints: Array<Constraint>): Observable<TransmartCrossTable> {
+  getCrossTable(crossTable: CrossTable): Observable<TransmartCrossTable> {
+    const baseConstraint = crossTable.constraint;
+    const rowHeaderConstraints = crossTable.rowHeaderConstraints;
+    const columnHeaderConstraints = crossTable.columnHeaderConstraints;
     const urlPart = 'observations/crosstable';
     let rowConstraintArr = [];
-    rowConstraints.forEach((constraint: Constraint) => {
+    rowHeaderConstraints.forEach((constraint: Constraint) => {
       rowConstraintArr.push(constraint.toQueryObject());
     });
     let columnConstraintArr = [];
-    columnConstraints.forEach((constraint: Constraint) => {
+    columnHeaderConstraints.forEach((constraint: Constraint) => {
       columnConstraintArr.push(constraint.toQueryObject());
     });
     const body = {
+      subjectConstraint: baseConstraint.toQueryObject(),
       rowConstraints: rowConstraintArr,
       columnConstraints: columnConstraintArr
     }

@@ -10,7 +10,6 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Aggregate} from '../models/constraint-models/aggregate';
-import {AxisType} from '../models/table-models/axis-type';
 import {ConstraintService} from './constraint.service';
 import {Row} from '../models/table-models/row';
 import {FormatHelper} from '../utilities/FormatHelper';
@@ -19,6 +18,14 @@ import {Col} from '../models/table-models/col';
 @Injectable()
 export class CrossTableService {
 
+  /*
+   * General workflow of this service
+   * 1. (updateValueConstraints) - if a new row/col constraint is introduced to the table,
+   *    retrieve the aggregate and update the value constraints
+   * 2. (updateCells) - when the value constraints are up to date,
+   *    first update the header constraints, which form the headers of the table,
+   *    and are used for backend calls, then update the cells by making the getCrossTable call
+   */
   // the drag and drop context used by primeng library to associate draggable and droppable items
   // this constant is used by gb-draggable-cell and gb-droppable-zone
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
@@ -35,23 +42,11 @@ export class CrossTableService {
    * Initialize the cross table
    */
   public init() {
-    this.mockDataInit();
+    // this.mockDataInit();
   }
 
   /**
-   * Only update the rows of the cross table based on its cells,
-   * provided that the header constraints remain the same,
-   * just the row/col constraints got switched or ordered differently
-   * workflow:
-   * 1. remove possible redundant header constraints and cells
-   * 2. create the rows and cols from cells
-   */
-  public updateCells() {
-    this.mockDataUpdate();
-  }
-
-  /**
-   * This function is used to generate the header constraint(s) for the cross table:
+   * This function is used to generate the value constraint(s) for the cross table:
    * Given a constraint, check if it is a categorical concept constraint,
    * if yes, fetch its aggregate, assign the target with a list of aggregate-value constraints
    *
@@ -62,12 +57,14 @@ export class CrossTableService {
    *
    * *** Remark ***
    * Only use this function when new constraint got introduced into the table,
-   * since the hader constraints will be recreated and old pointer are lost
+   * since the value constraints will be recreated and old pointers are lost,
+   * the cells of the table will also be renewed
+   *
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
    */
-  public updateHeaderConstraints(constraints: Array<Constraint>) {
-    // clear existing header constraints
-    this.clearHeaderConstraints(constraints);
+  public updateValueConstraints(constraints: Array<Constraint>) {
+    // clear existing value constraints
+    this.clearValueConstraints(constraints);
     for (let constraint of constraints) {
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
@@ -92,17 +89,49 @@ export class CrossTableService {
           }
         }
       }
-      // If the constraint has no categorical concept, add the constraint directly to header constraint list
+      // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addHeaderConstraint(constraint, constraint);
+        this.crossTable.addValueConstraint(constraint, constraint);
       }
+    }
+    this.updateCells();
+  }
+
+  /**
+   * a. call resource service to get the new cells for the table,
+   * b. replace the old cells with the new cells
+   * c. construct rows and cols based on the new cells
+   */
+  public updateCells() {
+    if (this.areValueConstraintsMapped) {
+      console.log('update cells: ')
+      this.crossTable.updateHeaderConstraints();
+      this.resourceService.getCrossTable(this.crossTable)
+        .subscribe((crossTable: CrossTable) => {
+          console.log('new cross table response: ', crossTable)
+          this.crossTable = crossTable;
+        });
+    } else {console.log('wait for updating cells: ')
+      window.setTimeout((function () {
+        this.updateCells();
+      }).bind(this), 500);
     }
   }
 
-  private clearHeaderConstraints(targetConstraints: Constraint[]) {
+  /**
+   * Check if a given constraint is usable in cross table
+   * @param {Constraint} constraint
+   * @returns {boolean}
+   */
+  public isValidConstraint(constraint: Constraint): boolean {
+    return this.constraintService.isCategoricalConceptConstraint(constraint)
+      || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
+  }
+
+  private clearValueConstraints(targetConstraints: Constraint[]) {
     targetConstraints.forEach((target: Constraint) => {
-      if (this.headerConstraints.get(target)) {
-        this.headerConstraints.get(target).length = 0;
+      if (this.valueConstraints.get(target)) {
+        this.valueConstraints.get(target).length = 0;
       }
     });
   }
@@ -127,11 +156,6 @@ export class CrossTableService {
       }
     }
     return false;
-  }
-
-  public isValidConstraint(constraint: Constraint): boolean {
-    return this.constraintService.isCategoricalConceptConstraint(constraint)
-      || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
   }
 
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
@@ -161,9 +185,8 @@ export class CrossTableService {
       combi.addChild(peerConstraint);
       combi.addChild(val);
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
-      this.crossTable.addHeaderConstraint(peerConstraint, combi);
+      this.crossTable.addValueConstraint(peerConstraint, combi);
     }
-    this.updateCells();
   }
 
   private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
@@ -192,19 +215,19 @@ export class CrossTableService {
     return description;
   }
 
-  get areHeaderConstraintsMapped(): boolean {
+  get areValueConstraintsMapped(): boolean {
     let mapped = true;
     this.rowConstraints.forEach((con: Constraint) => {
-      let hasIt = this.headerConstraints.has(con);
+      let hasIt = this.valueConstraints.has(con);
       if (!hasIt) {
-        mapped = hasIt;
+        mapped = false;
       }
     });
     if (mapped) {
       this.columnConstraints.forEach((con: Constraint) => {
-        let hasIt = this.headerConstraints.has(con);
+        let hasIt = this.valueConstraints.has(con);
         if (!hasIt) {
-          mapped = hasIt;
+          mapped = false;
         }
       });
     }
@@ -269,21 +292,20 @@ export class CrossTableService {
     this.crossTable.rowConstraints.push(cc2);
     this.crossTable.columnConstraints.push(cc3);
     this.crossTable.columnConstraints.push(cc4);
-    // Update the header constraints
-    this.updateHeaderConstraints(this.rowConstraints);
-    this.updateHeaderConstraints(this.columnConstraints);
-    this.updateCells();
+    // Update the value constraints
+    this.updateValueConstraints(this.rowConstraints);
+    this.updateValueConstraints(this.columnConstraints);
   }
 
   mockDataUpdate() {
-    if (this.areHeaderConstraintsMapped) {
+    if (this.areValueConstraintsMapped) {
       // clear the rows and cols
       this.crossTable.rows = [];
       this.crossTable.cols = [];
       // generate the column-header rows
       let numColDimColumns = this.columnConstraints.length > 0 ? 1 : 0;
       for (let colConstraint of this.columnConstraints) {
-        let valConstraints = this.headerConstraints.get(colConstraint);
+        let valConstraints = this.valueConstraints.get(colConstraint);
         numColDimColumns = numColDimColumns * valConstraints.length;
         let row = new Row();
         // add empty space fillers on the top-left corner of the table
@@ -297,15 +319,15 @@ export class CrossTableService {
         let above = this.getConstraintsAbove(colConstraint, this.columnConstraints);
         let selfRepetition = 1;
         for (let cAbove of above) {
-          selfRepetition = selfRepetition * this.headerConstraints.get(cAbove).length;
+          selfRepetition = selfRepetition * this.valueConstraints.get(cAbove).length;
         }
         let below = this.getConstraintsBelow(colConstraint, this.columnConstraints);
         let valueRepetition = 1;
         for (let cBelow of below) {
-          valueRepetition = valueRepetition * this.headerConstraints.get(cBelow).length;
+          valueRepetition = valueRepetition * this.valueConstraints.get(cBelow).length;
         }
         for (let i = 0; i < selfRepetition; i++) {
-          for (let child of this.headerConstraints.get(colConstraint)) {
+          for (let child of this.valueConstraints.get(colConstraint)) {
             for (let j = 0; j < valueRepetition; j++) {
               row.addDatumObject({
                 isHeader: true,
@@ -325,9 +347,9 @@ export class CrossTableService {
         let consRight0 = this.getConstraintsBelow(rowCon0, this.rowConstraints);
         let valueRepetition0 = 1;
         for (let conRight of consRight0) {
-          valueRepetition0 = valueRepetition0 * this.headerConstraints.get(conRight).length;
+          valueRepetition0 = valueRepetition0 * this.valueConstraints.get(conRight).length;
         }
-        for (let val of this.headerConstraints.get(rowCon0)) {
+        for (let val of this.valueConstraints.get(rowCon0)) {
           for (let j = 0; j < valueRepetition0; j++) {
             let row = new Row();
             row.addDatumObject({
@@ -343,15 +365,15 @@ export class CrossTableService {
           let consLeft = this.getConstraintsAbove(rowCon, this.rowConstraints);
           let selfRepetition = 1;
           for (let conLeft of consLeft) {
-            selfRepetition = selfRepetition * this.headerConstraints.get(conLeft).length;
+            selfRepetition = selfRepetition * this.valueConstraints.get(conLeft).length;
           }
           let consRight = this.getConstraintsBelow(rowCon, this.rowConstraints);
           let valueRepetition = 1;
           for (let conRight of consRight) {
-            valueRepetition = valueRepetition * this.headerConstraints.get(conRight).length;
+            valueRepetition = valueRepetition * this.valueConstraints.get(conRight).length;
           }
           for (let i = 0; i < selfRepetition; i++) {
-            for (let val of this.headerConstraints.get(rowCon)) {
+            for (let val of this.valueConstraints.get(rowCon)) {
               for (let j = 0; j < valueRepetition; j++) {
                 dataRows[index].addDatumObject({
                   isHeader: true,
@@ -382,7 +404,7 @@ export class CrossTableService {
         this.rows.push(dataRow);
       }
 
-      // generate column headers
+      // generate the cols serving as indices for rows
       for (let field in this.rows[0].data) {
         let col = new Col(' - ', field);
         this.cols.push(col);
@@ -432,8 +454,8 @@ export class CrossTableService {
     return this.crossTable.columnConstraints;
   }
 
-  get headerConstraints(): Map<Constraint, Array<Constraint>> {
-    return this.crossTable.headerConstraints;
+  get valueConstraints(): Map<Constraint, Array<Constraint>> {
+    return this.crossTable.valueConstraints;
   }
 
   get rows(): Array<Row> {

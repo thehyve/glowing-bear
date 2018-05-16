@@ -20,10 +20,11 @@ import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-
 import {Aggregate} from '../../models/constraint-models/aggregate';
 import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
-import {ResourceService} from '../resource.service';
 import {FormatHelper} from '../../utilities/FormatHelper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 
 export class TransmartMapper {
 
@@ -239,9 +240,66 @@ export class TransmartMapper {
     return dataTypes;
   }
 
-  public static mapTransmartCrossTable(tmCrossTable: TransmartCrossTable): CrossTable {
-    console.log('tmCrossTable: ', tmCrossTable);
-    return new CrossTable();
+  public static mapTransmartCrossTable(tmCrossTable: TransmartCrossTable,
+                                       crossTable: CrossTable): CrossTable {
+    const matrix = tmCrossTable.rows;
+
+    crossTable.rows = [];
+    crossTable.cols = [];
+    // add top rows
+    let colHeaders = crossTable.columnHeaderConstraints;
+    for (let i = 0; i < crossTable.columnConstraints.length; i++) {
+      let row = new Row();
+      // add blanks
+      for (let rowCon of crossTable.rowConstraints) {
+        row.addDatumObject({
+          isHeader: false,
+          value: ''
+        })
+      }
+      // add col headers
+      for (let colHeader of colHeaders) {
+        let val = 'NUM';
+        if (colHeader.getClassName() === 'CombinationConstraint') {
+          val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
+        } else if (colHeader.getClassName() === 'TrueConstraint') {
+          val = 'true';
+        }
+        row.addDatumObject({
+          isHeader: true,
+          value: val
+        });
+      }
+      crossTable.rows.push(row);
+    }
+    // add data rows
+    let rowHeaders = crossTable.rowHeaderConstraints;
+    for (let i = 0; i < rowHeaders.length; i++) {
+      let row = new Row();
+      if (rowHeaders[i].getClassName() === 'CombinationConstraint') {
+        let children = (<CombinationConstraint>rowHeaders[i]).children;
+        for (let child of children) {
+          row.addDatumObject({
+            isHeader: true,
+            value: child.textRepresentation
+          })
+        }
+      }
+      for (let j = 0; j < colHeaders.length; j++) {
+        row.addDatumObject({
+          isHeader: false,
+          value: matrix[i][j]
+        })
+      }
+      crossTable.rows.push(row);
+    }
+    // add the cols serving as indices for rows
+    for (let field in crossTable.rows[0].data) {
+      let col = new Col(' - ', field);
+      crossTable.cols.push(col);
+    }
+
+    return crossTable;
   }
 
   public static mapExportDataTypes(dataTypes: ExportDataType[], defaultDataView: string): TransmartExportElement[] {

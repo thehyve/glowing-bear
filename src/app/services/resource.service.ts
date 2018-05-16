@@ -332,11 +332,11 @@ export class ResourceService {
   }
 
   // -------------------------------------- cross table ---------------------------------------------
-  getCrossTable(rowConstraints: Array<Constraint>,
-                columnConstraints: Array<Constraint>): Observable<CrossTable> {
-    return this.transmartResourceService.getCrossTable(rowConstraints, columnConstraints)
+  getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
+    return this.transmartResourceService
+      .getCrossTable(crossTable)
       .map((tmCrossTable: TransmartCrossTable) => {
-        return TransmartMapper.mapTransmartCrossTable(tmCrossTable);
+        return TransmartMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
       });
   }
 }

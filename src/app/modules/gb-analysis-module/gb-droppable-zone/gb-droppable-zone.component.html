@@ -13,6 +13,8 @@
                          (constraintCellRemoved)="onConstraintCellRemoved(constraint)">
       </gb-draggable-cell>
     </div>
+    <span *ngIf="constraints.length === 0"
+          class="gb-droppable-zone-info-container">drop zone</span>
   </div>
 
 </div>

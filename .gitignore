@@ -36,9 +36,6 @@ npm-debug.log
 testem.log
 /typings
 
-# e2e
-/e2e/*.js
-/e2e/*.map
 
 # System Files
 .DS_Store
@@ -53,5 +50,8 @@ out
 
 src/app/config/env.json
 /src/app/config/env.json
-yarn.lock
 
+# yarn
+*.log
+yarn.lock
+yarn-error.log*

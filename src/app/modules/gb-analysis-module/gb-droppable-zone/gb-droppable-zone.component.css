@@ -14,3 +14,11 @@
 .gb-draggable-cell-outside-container {
   margin: 3px;
 }
+
+.gb-droppable-zone-info-container {
+  padding-left: 1em;
+  padding-top: .6em;
+  color: darkgray;
+  font-weight: bold;
+  font-size: medium;
+}

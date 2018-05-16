@@ -52,20 +52,23 @@ export class GbDroppableZoneComponent implements OnInit {
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
           this.constraints.push(constraint);
           // new constraint is introduced, creating new header constraints as well as cells
-          this.crossTableService.updateHeaderConstraints(this.constraints);
+          this.crossTableService.updateValueConstraints(this.constraints);
         }
       }
     } else {
       const index = this.constraints.indexOf(constraint);
       if (index === -1) {
+        // old constraint is dropped to the other drop zone,
+        // no need to call backend to update value aggregates and cells
+        // just update the rows and cols based on existing cells
         this.constraints.push(constraint);
         if (selectedConstraintCell) {
           selectedConstraintCell.remove();
         }
+      } else {
+        // own constraint is dropped to the same zone, re-ordering action
+        // do nothing for now, possible extension:
       }
-      // old constraint is dropped to a different dropzone,
-      // no need to call backend, just update the cells.
-      this.crossTableService.updateCells();
     }
     // reset
     this.dragCounter = 0;
@@ -88,7 +91,8 @@ export class GbDroppableZoneComponent implements OnInit {
   }
 
   /**
-   * Remove the selected cosntraint from the list
+   * Remove the selected constraint from the list
+   * @param {any} onlyUpdateHeaders - indicate if to update the cells or just the headers
    * @param {Constraint} constraint
    */
   onConstraintCellRemoved(constraint: Constraint) {
