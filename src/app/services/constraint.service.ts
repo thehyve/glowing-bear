@@ -253,6 +253,7 @@ export class ConstraintService {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);
         }
+        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.getClassName() === 'NegationConstraint') {
       this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
