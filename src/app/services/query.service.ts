@@ -602,23 +602,26 @@ export class QueryService {
     }
     newQuery.observationsQuery = { data: data };
     newQuery.dataTable = this.tableService.dataTable;
+    this.saveQueryObj(newQuery);
+  }
 
-    this.resourceService.saveQuery(newQuery)
+  public saveQueryObj(query: Query) {
+    this.resourceService.saveQuery(query)
       .subscribe(
-      (newlySavedQuery: Query) => {
-        newlySavedQuery.collapsed = true;
-        newlySavedQuery.visible = true;
+        (newlySavedQuery: Query) => {
+          newlySavedQuery.collapsed = true;
+          newlySavedQuery.visible = true;
 
-        this.queries.push(newlySavedQuery);
-        const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-        this.alert(summary, '', 'success');
-      },
-      (err) => {
-        console.error(err);
-        const summary = 'Could not add the query "' + queryName + '".';
-        this.alert(summary, '', 'error');
-      }
-    );
+          this.queries.push(newlySavedQuery);
+          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
+          this.alert(summary, '', 'success');
+        },
+        (err) => {
+          console.error(err);
+          const summary = 'Could not add the query "' + query.name + '".';
+          this.alert(summary, '', 'error');
+        }
+      );
   }
 
   /**
