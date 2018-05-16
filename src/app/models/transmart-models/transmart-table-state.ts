@@ -1,5 +1,5 @@
 import {Order} from '../table-models/order';
-import {TransmartSort} from "./transmart-sorting";
+import {TransmartSort} from "./transmart-sort";
 
 export class TransmartTableState {
   public rowDimensions: Array<string>;

@@ -16,7 +16,7 @@ import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transm
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
-import {TransmartSort} from "../../models/transmart-models/transmart-sorting";
+import {TransmartSort} from "../../models/transmart-models/transmart-sort";
 
 @Injectable()
 export class TransmartResourceService {
