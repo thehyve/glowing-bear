@@ -58,7 +58,6 @@ export function initConfig(config: AppConfig) {
     NavbarService,
     MessageService,
     ExportService,
-    DatePipe,
     AppConfig,
     {
       provide: APP_INITIALIZER,

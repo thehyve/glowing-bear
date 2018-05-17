@@ -18,7 +18,7 @@ export class ExportService {
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
-              private messageService: MessageService,
+              public messageService: MessageService,
               private dataTableService: DataTableService,
               private datePipe: DatePipe) {
   }

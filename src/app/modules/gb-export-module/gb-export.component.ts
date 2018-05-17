@@ -18,7 +18,7 @@ export class GbExportComponent implements OnInit {
               private exportService: ExportService,
               public resourceService: ResourceService,
               private timer: SimpleTimer,
-              private messageService: MessageService) {
+              public messageService: MessageService) {
     this.exportService.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.exportService.updateExportJobs());
