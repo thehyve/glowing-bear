@@ -7,6 +7,9 @@ import {ConceptType} from '../../models/constraint-models/concept-type';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Row} from '../../models/table-models/row';
 import {Col} from '../../models/table-models/col';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ValueConstraint} from '../../models/constraint-models/value-constraint';
+import {FormatHelper} from '../../utilities/FormatHelper';
 
 export class CrossTableServiceMock {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
@@ -85,13 +88,99 @@ export class CrossTableServiceMock {
     // clear existing value constraints
     this.clearValueConstraints(constraints);
     for (let constraint of constraints) {
-      this.crossTable.addValueConstraint(constraint, constraint);
+      let needsAggregateCall = false;
+      // If the constraint has categorical concept, break it down to value constraints and add those respectively
+      if (this.isCategoricalConceptConstraint(constraint)) {
+        needsAggregateCall = true;
+        let categoricalConceptConstraint = <ConceptConstraint>constraint;
+        this.retrieveAggregate(categoricalConceptConstraint, constraint);
+      } else if (constraint.getClassName() === 'CombinationConstraint') {
+        let combiConstraint = <CombinationConstraint>constraint;
+        if (combiConstraint.isAnd()) {
+          let numCategoricalConceptConstraints = 0;
+          let categoricalChild = null;
+          combiConstraint.children.forEach((child: Constraint) => {
+            if (this.isCategoricalConceptConstraint(child)) {
+              numCategoricalConceptConstraints++;
+              categoricalChild = child;
+            }
+          });
+          if (numCategoricalConceptConstraints === 1) {
+            needsAggregateCall = true;
+            this.retrieveAggregate(categoricalChild, constraint);
+          }
+        }
+      }
+      // If the constraint has no categorical concept, add the constraint directly to value constraint list
+      if (!needsAggregateCall) {
+        this.crossTable.addValueConstraint(constraint, constraint);
+      }
     }
     this.updateCells();
   }
 
+  private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
+                            peerConstraint: Constraint) {
+    const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
+    this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+  }
+
+  private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
+                                             peerConstraint: Constraint) {
+    let categories = categoricalAggregate.values;
+    for (let category of categories) {
+      let val = new ValueConstraint();
+      val.valueType = 'STRING';
+      val.operator = '=';
+      val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      val.textRepresentation = val.value.toString();
+      let combi = new CombinationConstraint();
+      combi.addChild(peerConstraint);
+      combi.addChild(val);
+      combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
+      this.crossTable.addValueConstraint(peerConstraint, combi);
+    }
+  }
+
+  private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
+    let description = constraint.textRepresentation;
+    if (constraint.isAnd()) {
+      let numValueConstraints = 0;
+      let numCatConceptConstraints = 0;
+      let valChild = null;
+      let catChild = null;
+      constraint.children.forEach((child: Constraint) => {
+        if (child.getClassName() === 'ValueConstraint') {
+          numValueConstraints++;
+          valChild = child;
+        } else if (this.isCategoricalConceptConstraint(child)) {
+          numCatConceptConstraints++;
+          catChild = child;
+        }
+      });
+      if (numValueConstraints === 1) {
+        description = valChild.textRepresentation;
+      } else if (numCatConceptConstraints === 1) {
+        description = catChild.textRepresentation;
+      }
+    }
+
+    return description;
+  }
+
+  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    let result = false;
+    if (constraint.getClassName() === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
+  }
+
   public updateCells() {
-    this.mockDataUpdate();
+    if (this.areValueConstraintsMapped) {
+      this.mockDataUpdate();
+    }
   }
 
   private clearValueConstraints(targetConstraints: Constraint[]) {
@@ -231,6 +320,25 @@ export class CrossTableServiceMock {
       above.push(list[i]);
     }
     return above;
+  }
+
+  get areValueConstraintsMapped(): boolean {
+    let mapped = true;
+    this.rowConstraints.forEach((con: Constraint) => {
+      let hasIt = this.valueConstraints.has(con);
+      if (!hasIt) {
+        mapped = false;
+      }
+    });
+    if (mapped) {
+      this.columnConstraints.forEach((con: Constraint) => {
+        let hasIt = this.valueConstraints.has(con);
+        if (!hasIt) {
+          mapped = false;
+        }
+      });
+    }
+    return mapped;
   }
 
   get valueConstraints(): Map<Constraint, Array<Constraint>> {
