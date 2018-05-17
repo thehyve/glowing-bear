@@ -40,8 +40,12 @@ export class GbDroppableZoneComponent implements OnInit {
     }
   }
 
+  onDragLeave(e) {
+    e.preventDefault();
+    this.dragCounter--;
+  }
+
   onDrop() {
-    this.onDropTriggered = true;
     const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
     // if no existing constraint is used, try to create a new one based on tree node drop
@@ -73,21 +77,6 @@ export class GbDroppableZoneComponent implements OnInit {
     // reset
     this.dragCounter = 0;
     this.crossTableService.selectedConstraintCell = null;
-  }
-
-  onDragLeave(e) {
-    e.preventDefault();
-    this.dragCounter--;
-  }
-
-  /**
-   * This handler handles the drop event of a tree node
-   */
-  onDropGeneric() {
-    if (!this.onDropTriggered) {
-      this.onDrop();
-      this.onDropTriggered = false;
-    }
   }
 
   /**
