@@ -1,5 +1,4 @@
 import {Query} from '../../models/query-models/query';
-import {ExportDataType} from '../../models/export-models/export-data-type';
 
 export class QueryServiceMock {
   private _queries: Query[] = [];
@@ -34,42 +33,13 @@ export class QueryServiceMock {
   private _studyCount_2 = 0;
 
 
-  private _validTreeNodeTypes: string[] = [];
-
-  private _exportDataTypes: ExportDataType[] = [];
-  private _isLoadingExportDataTypes = false;
-
   constructor() {
-    this._validTreeNodeTypes = [
-      'NUMERIC',
-      'CATEGORICAL',
-      'DATE',
-      'STUDY',
-      'TEXT',
-      'HIGH_DIMENSIONAL',
-      'UNKNOWN'
-    ];
   }
 
   public update_1() {}
   public update_2() {}
   public update_3() {}
 
-  get isLoadingExportDataTypes(): boolean {
-    return this._isLoadingExportDataTypes;
-  }
-
-  set isLoadingExportDataTypes(value: boolean) {
-    this._isLoadingExportDataTypes = value;
-  }
-
-  get exportDataTypes(): ExportDataType[] {
-    return this._exportDataTypes;
-  }
-
-  set exportDataTypes(value: ExportDataType[]) {
-    this._exportDataTypes = value;
-  }
 
   get queries(): Query[] {
     return this._queries;

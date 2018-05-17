@@ -1,9 +1,12 @@
+import {Aggregate} from './aggregate';
+import {ConceptType} from './concept-type';
+
 export class Concept {
   private _path: string;
-  private _type: string;
+  private _type: ConceptType;
   // the display text
   private _label: string;
-  private _aggregate: object;
+  private _aggregate: Aggregate;
   private _code: string;
   private _name: string;
   private _fullName: string;
@@ -19,19 +22,19 @@ export class Concept {
     this._path = value;
   }
 
-  get type(): string {
+  get type(): ConceptType {
     return this._type;
   }
 
-  set type(value: string) {
+  set type(value: ConceptType) {
     this._type = value;
   }
 
-  get aggregate(): object {
+  get aggregate(): Aggregate {
     return this._aggregate;
   }
 
-  set aggregate(value: object) {
+  set aggregate(value: Aggregate) {
     this._aggregate = value;
   }
 

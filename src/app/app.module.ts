@@ -13,14 +13,17 @@ import {AppConfig} from './config/app.config';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
-import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
+import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {QueryService} from './services/query.service';
-import {TableService} from './services/table.service';
+import {DataTableService} from './services/data-table.service';
 import {HttpClientModule} from '@angular/common/http';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
-
+import {CrossTableService} from './services/cross-table.service';
+import {GbExportModule} from './modules/gb-export-module/gb-export.module';
+import {NavbarService} from './services/navbar.service';
+import {MessageService} from './services/message.service';
+import {ExportService} from './services/export.service';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -37,10 +40,10 @@ export function initConfig(config: AppConfig) {
     BrowserAnimationsModule,
     routing,
     GbNavBarModule,
-    GbDashboardModule,
     GbDataSelectionModule,
     GbAnalysisModule,
-    GbSidePanelModule
+    GbSidePanelModule,
+    GbExportModule
   ],
   providers: [
     EndpointService,
@@ -49,7 +52,11 @@ export function initConfig(config: AppConfig) {
     TreeNodeService,
     ConstraintService,
     QueryService,
-    TableService,
+    DataTableService,
+    CrossTableService,
+    NavbarService,
+    MessageService,
+    ExportService,
     AppConfig,
     {
       provide: APP_INITIALIZER,

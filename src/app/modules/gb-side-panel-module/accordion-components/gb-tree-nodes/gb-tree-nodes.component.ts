@@ -1,6 +1,5 @@
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
@@ -49,7 +48,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
               private queryService: QueryService,
               private element: ElementRef) {
     this.expansionStatus = {
@@ -111,7 +109,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       let handleDragstart = (function (event) {
         event.stopPropagation();
         dataObject['dropMode'] = DropMode.TreeNode;
-        this.constraintService.selectedNode = dataObject;
+        this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
       let showInfo = (function (event) {

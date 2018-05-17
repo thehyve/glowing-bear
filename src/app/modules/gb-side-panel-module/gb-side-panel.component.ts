@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {NavbarService} from '../../services/navbar.service';
 
 @Component({
   selector: 'gb-side-panel',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GbSidePanelComponent implements OnInit {
 
-  constructor() { }
+  constructor(private navbarService: NavbarService) {
+  }
 
   ngOnInit() {
   }
 
+  get isDataSelection(): boolean {
+    return this.navbarService.isDataSelection;
+  }
 }

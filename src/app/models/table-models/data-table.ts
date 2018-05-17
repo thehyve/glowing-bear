@@ -10,8 +10,17 @@ export class DataTable {
   private _constraint: Constraint;
   private _rowDimensions: Array<Dimension>;
   private _columnDimensions: Array<Dimension>;
+  /*
+   * The structure of the data table
+   * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
+   * _rows[0] ------> _rows[0].data[_col[0]], _rows[0].data[_col[1]], _rows[0].data[_col[2]], ...
+   * _rows[1] ------> _rows[1].data[_col[0]], _rows[1].data[_col[1]], _rows[1].data[_col[2]], ...
+   * _rows[2] ------> _rows[2].data[_col[0]], _rows[2].data[_col[1]], _rows[2].data[_col[2]], ...
+   * _rows[3] ------> _rows[3].data[_col[0]], _rows[3].data[_col[1]], _rows[3].data[_col[2]], ...
+   */
+  // The actual rows of the table
   private _rows: Array<Row>;
-  // The filler header row, used when headerRows are now used
+  // The index header row, used when headerRows are not used
   private _cols: Array<Col>;
   // The hierarchical header rows with merged cells, used when cols are now used
   private _headerRows: Array<HeaderRow>;

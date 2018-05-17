@@ -8,7 +8,7 @@ import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedig
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
-import {PatientSet} from '../../models/constraint-models/patient-set';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
@@ -16,7 +16,8 @@ import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transm
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
-import {TransmartSort} from "../../models/transmart-models/transmart-sort";
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {CrossTable} from '../../models/table-models/cross-table';
 
 @Injectable()
 export class TransmartResourceService {
@@ -471,7 +472,7 @@ export class TransmartResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
+  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
@@ -525,5 +526,26 @@ export class TransmartResourceService {
     } else {
       return Observable.of([]);
     }
+  }
+
+  getCrossTable(crossTable: CrossTable): Observable<TransmartCrossTable> {
+    const baseConstraint = crossTable.constraint;
+    const rowHeaderConstraints = crossTable.rowHeaderConstraints;
+    const columnHeaderConstraints = crossTable.columnHeaderConstraints;
+    const urlPart = 'observations/crosstable';
+    let rowConstraintArr = [];
+    rowHeaderConstraints.forEach((constraint: Constraint) => {
+      rowConstraintArr.push(constraint.toQueryObject());
+    });
+    let columnConstraintArr = [];
+    columnHeaderConstraints.forEach((constraint: Constraint) => {
+      columnConstraintArr.push(constraint.toQueryObject());
+    });
+    const body = {
+      subjectConstraint: baseConstraint.toQueryObject(),
+      rowConstraints: rowConstraintArr,
+      columnConstraints: columnConstraintArr
+    }
+    return this.postCall(urlPart, body, null);
   }
 }

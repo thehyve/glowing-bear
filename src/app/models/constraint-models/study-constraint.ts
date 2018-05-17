@@ -6,6 +6,7 @@ export class StudyConstraint implements Constraint {
   private _parent: Constraint;
   private _studies: Study[];
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
   constructor() {
     this._studies = [];
@@ -64,12 +65,19 @@ export class StudyConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
+    /*
+     * TODO: avoid checking studies during runtime
+     */
     let result: string = (this.studies) ? 'Study: ' : 'Study';
     for (let study of this.studies) {
       result += study.studyId + ', ';
     }
     result = (this.studies) ? result.substring(0, result.length - 2) : result;
     return result;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get isSubselection(): boolean {

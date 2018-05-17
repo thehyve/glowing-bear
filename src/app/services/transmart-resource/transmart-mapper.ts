@@ -15,8 +15,16 @@ import {Col} from '../../models/table-models/col';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
-import {TransmartStudy} from "../../models/transmart-models/transmart-study";
-import {TransmartStudyDimensions} from "../../models/transmart-models/transmart-study-dimensions";
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
+import {Aggregate} from '../../models/constraint-models/aggregate';
+import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
+import {FormatHelper} from '../../utilities/FormatHelper';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {CrossTable} from '../../models/table-models/cross-table';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 
 export class TransmartMapper {
 
@@ -232,6 +240,68 @@ export class TransmartMapper {
     return dataTypes;
   }
 
+  public static mapTransmartCrossTable(tmCrossTable: TransmartCrossTable,
+                                       crossTable: CrossTable): CrossTable {
+    const matrix = tmCrossTable.rows;
+
+    crossTable.rows = [];
+    crossTable.cols = [];
+    // add top rows
+    let colHeaders = crossTable.columnHeaderConstraints;
+    for (let i = 0; i < crossTable.columnConstraints.length; i++) {
+      let row = new Row();
+      // add blanks
+      for (let rowCon of crossTable.rowConstraints) {
+        row.addDatumObject({
+          isHeader: false,
+          value: ''
+        })
+      }
+      // add col headers
+      for (let colHeader of colHeaders) {
+        let val = 'NUM';
+        if (colHeader.getClassName() === 'CombinationConstraint') {
+          val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
+        } else if (colHeader.getClassName() === 'TrueConstraint') {
+          val = 'true';
+        }
+        row.addDatumObject({
+          isHeader: true,
+          value: val
+        });
+      }
+      crossTable.rows.push(row);
+    }
+    // add data rows
+    let rowHeaders = crossTable.rowHeaderConstraints;
+    for (let i = 0; i < rowHeaders.length; i++) {
+      let row = new Row();
+      if (rowHeaders[i].getClassName() === 'CombinationConstraint') {
+        let children = (<CombinationConstraint>rowHeaders[i]).children;
+        for (let child of children) {
+          row.addDatumObject({
+            isHeader: true,
+            value: child.textRepresentation
+          })
+        }
+      }
+      for (let j = 0; j < colHeaders.length; j++) {
+        row.addDatumObject({
+          isHeader: false,
+          value: matrix[i][j]
+        })
+      }
+      crossTable.rows.push(row);
+    }
+    // add the cols serving as indices for rows
+    for (let field in crossTable.rows[0].data) {
+      let col = new Col(' - ', field);
+      crossTable.cols.push(col);
+    }
+
+    return crossTable;
+  }
+
   public static mapExportDataTypes(dataTypes: ExportDataType[], defaultDataView: string): TransmartExportElement[] {
     let elements: TransmartExportElement[] = [];
     for (let dataType of dataTypes) {
@@ -252,6 +322,32 @@ export class TransmartMapper {
       }
     }
     return elements;
+  }
+
+  public static mapTransmartConceptAggregate(tmConceptAggregate: object, conceptCode: string): Aggregate {
+    let aggregate: Aggregate = null;
+    let aggObj = tmConceptAggregate[conceptCode];
+    if (aggObj['numericalValueAggregates']) {
+      aggregate = new NumericalAggregate();
+      const numAggObj = aggObj['numericalValueAggregates'];
+      (<NumericalAggregate>aggregate).min = numAggObj['min'];
+      (<NumericalAggregate>aggregate).max = numAggObj['max'];
+      (<NumericalAggregate>aggregate).avg = numAggObj['average'];
+      (<NumericalAggregate>aggregate).count = numAggObj['count'];
+      (<NumericalAggregate>aggregate).stdDev = numAggObj['std_dev'];
+    } else if (aggObj['categoricalValueAggregates']) {
+      aggregate = new CategoricalAggregate();
+      const catAggObj = aggObj['categoricalValueAggregates'];
+      const countObj = catAggObj['valueCounts'];
+      for (let key in countObj) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(key, countObj[key]);
+      }
+      const nullCount = catAggObj['nullValueCounts'];
+      if (nullCount && nullCount > 0) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
+      }
+    }
+    return aggregate;
   }
 
   public static mapStudyDimensions(transmartStudies: TransmartStudy[]): TransmartStudyDimensions {
@@ -304,14 +400,15 @@ export class TransmartMapper {
                                                currentDataTable: DataTable): TransmartTableState {
     let rowDimensions: Array<string> = [];
     let columnDimensions: Array<string> = [];
+    let bothDimensions = currentDataTable.columnDimensions.concat(currentDataTable.rowDimensions);
 
-    if (this.areAllDimensionsAvailable(currentDataTable.columnDimensions.concat(currentDataTable.rowDimensions), transmartStudyDimensions.availableDimensions)) {
+    if (this.areAllDimensionsAvailable(bothDimensions, transmartStudyDimensions.availableDimensions)) {
 
       // table representation is defined
       currentDataTable.columnDimensions.forEach((columnDimension: Dimension) =>
         columnDimensions.push(columnDimension.name));
       currentDataTable.rowDimensions.forEach((dim: Dimension) => {
-        if (columnDimensions.indexOf(dim.name) === -1){
+        if (columnDimensions.indexOf(dim.name) === -1) {
           rowDimensions.push(dim.name);
         }
       });
@@ -347,7 +444,7 @@ export class TransmartMapper {
         // default row dimensions: all dimensions as rows
         if (transmartStudyDimensions.availableDimensions != null) {
           transmartStudyDimensions.availableDimensions.forEach((dim: Dimension) =>
-              rowDimensions.push(dim.name)
+            rowDimensions.push(dim.name)
           );
         }
       }
@@ -402,7 +499,7 @@ export class TransmartMapper {
   }
 
   private static areAllDimensionsAvailable(dimensions: Array<Dimension>, availableDimensions: Array<Dimension>): boolean {
-    return dimensions.every((dim: Dimension)  =>
+    return dimensions.every((dim: Dimension) =>
       availableDimensions.map(ad => ad.name).indexOf(dim.name) !== -1);
   }
 

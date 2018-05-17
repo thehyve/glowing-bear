@@ -10,7 +10,8 @@
 :root  {
   --gb-loading-bg-color: #28AA9D;
   --gb-navbar-bg-color: #fdfdfd;
-  --gb-light-orange: #ffa27f;
+  --gb-orange-light: #ffa27f;
+  --gb-orange-light-light: #ffd9cb;
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
@@ -67,6 +68,12 @@ body .gb-spinner {
 body .gb-spinner.loading {
   display: inline-block;
   visibility: visible;
+}
+
+body .hline {
+  border-bottom: solid 1px var(--gb-clinical-green-dark);
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 /*
@@ -169,6 +176,10 @@ gb-nav-bar .ui-tabmenuitem .ui-state-active {
 gb-nav-bar .ui-tabmenu-nav {
   border: none;
   background-color: #FCFCFC;
+}
+
+gb-nav-bar .ui-menuitem-text {
+  color: hsl(0, 0%, 30%);
 }
 
 /*
@@ -276,8 +287,21 @@ gb-projection p-treenode {
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */
+gb-summary {
+  font-size: small;
+}
+
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
+}
+
+/*
+ * ------------------------------ Styles for gb-summary component -------------------------------
+ */
+gb-summary .gb-final-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
 }
 
 /*
@@ -319,7 +343,7 @@ gb-tree-nodes .gb-tree-container {
  */
 @keyframes gb-count-element-animation {
   from {
-    background-color: var(--gb-light-orange);
+    background-color: var(--gb-orange-light);
   }
   to {
     background-color: transparent;
@@ -340,7 +364,7 @@ gb-tree-nodes .gb-count-element-updated {
 
 /*tree node styles for filtering*/
 gb-tree-nodes .gb-highlight-treenode {
-  background-color: var(--gb-light-orange) !important;
+  background-color: var(--gb-orange-light) !important;
   border-radius: 10px !important;
   font-weight: bold !important;
 }
@@ -410,37 +434,48 @@ gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
 }
 
 /*
- * ------------------------------ Styles for gb-table-dimensions component -------------------------------
+ * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
  */
-gb-table-dimensions .ui-picklist-droppoint {
+gb-data-table-dimensions .ui-picklist-droppoint {
   height: 3px !important;
 }
 
-gb-table-dimensions .ui-picklist-droppoint-highlight {
+gb-data-table-dimensions .ui-picklist-droppoint-highlight {
   background: var(--gb-clinical-green-dark);
   height: 2em !important;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-caption {
+gb-data-table-dimensions .ui-picklist .ui-picklist-caption {
   font-size: small;
   font-weight: bold;
   padding: 0px;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-filter-container {
+gb-data-table-dimensions .ui-picklist .ui-picklist-filter-container {
   font-size: small;
   padding: 0px 0px 0px .5em;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
+gb-data-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
   padding: 1px;
   font-size: small;
 }
 
 /*
- * ------------------------------ Styles for gb-table-grid component -------------------------------
+ * ------------------------------ Styles for gb-data-table-grid component -------------------------------
  */
-gb-table-grid .ui-resizable-column {
+gb-data-table-grid .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}
+
+/*
+ * ------------------------------ Styles for gb-cross-table component -------------------------------
+ */
+gb-cross-table .ui-resizable-column {
   background-color: white;
   border: solid lightgray 1px;
   text-align: center;

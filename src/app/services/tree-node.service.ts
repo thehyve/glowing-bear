@@ -4,20 +4,35 @@ import {ConceptConstraint} from '../models/constraint-models/concept-constraint'
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
+import {NavbarService} from './navbar.service';
+import {ConceptType} from '../models/constraint-models/concept-type';
 
 type LoadingState = 'loading' | 'complete';
 
 @Injectable()
 export class TreeNodeService {
 
-  // the variable that holds the entire tree structure, used by the tree on the left
-  public treeNodes: TreeNode[] = [];
+  /*
+   * This service maintains three copies of tree nodes:
+   * 1. treeNodes - the entire ontology tree representing the data structure of the backend
+   * 2. projectionTreeData - the partial ontology tree representing the tree nodes
+   *    corresponding to subject group defined in step 1,
+   *    and this partial tree is used for variable selection in step 2
+   * 3. finalTreeNodes - the partial ontology tree corresponding to the final tree nodes
+   *    that the user has selected in all the steps of data selection
+   */
+  // the variable that holds the entire tree structure, used by the tree on the left side bar
+  private _treeNodes: TreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
-  public treeNodesCopy: TreeNode[] = [];
-  // the entire tree table data that holds the patients' observations in the 2nd step (projection)
+  private _treeNodesCopy: TreeNode[] = [];
+  // the tree data that is rendered in the 2nd step (projection)
   private _projectionTreeData: TreeNode[] = [];
-  // the selected tree table data that holds the patients' observations in the 2nd step (projection)
+  // the selected tree data in the 2nd step (projection)
   private _selectedProjectionTreeData: TreeNode[] = [];
+  // the final tree nodes resulted from data selection
+  private _finalTreeNodes: TreeNode[] = [];
+  // the selected tree node in the side-panel by dragging
+  private _selectedTreeNode: TreeNode = null;
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -27,7 +42,7 @@ export class TreeNodeService {
   private _validTreeNodeTypes: string[] = [];
 
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService, private navbarService: NavbarService) {
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
@@ -176,7 +191,7 @@ export class TreeNodeService {
     let head = fullName.substring(0, fullName.length - tail.length);
     concept.label = treeNode['name'] + ' (' + head + ')';
     concept.path = treeNode['conceptPath'];
-    concept.type = treeNode['type'];
+    concept.type = <ConceptType> treeNode['type'];
     concept.code = treeNode['conceptCode'];
     concept.fullName = treeNode['fullName'];
     concept.name = treeNode['name'];
@@ -254,6 +269,10 @@ export class TreeNodeService {
     this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
   }
 
+  public updateFinalTreeNodes() {
+    this.finalTreeNodes = this.copySelectedTreeNodes(this.projectionTreeData);
+  }
+
   private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
@@ -269,6 +288,31 @@ export class TreeNodeService {
       nodesCopy.push(nodeCopy);
       node['parent'] = parent;
       node['children'] = children;
+    }
+    return nodesCopy;
+  }
+
+  private copySelectedTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    let nodesCopy = [];
+    for (let node of nodes) {
+      // if the node has been partially selected
+      let selected = node.partialSelected;
+      // if the node has been selected
+      selected = selected ? true : this.selectedProjectionTreeData.includes(node);
+      if (selected) {
+        let parent = node['parent'];
+        let children = node['children'];
+        node['parent'] = null;
+        node['children'] = null;
+        let nodeCopy = JSON.parse(JSON.stringify(node));
+        if (children) {
+          let childrenCopy = this.copySelectedTreeNodes(children);
+          nodeCopy['children'] = childrenCopy;
+        }
+        nodesCopy.push(nodeCopy);
+        node['parent'] = parent;
+        node['children'] = children;
+      }
     }
     return nodesCopy;
   }
@@ -324,7 +368,7 @@ export class TreeNodeService {
 
   private checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
-      if (checklist && checklist.indexOf(node['fullName']) !== -1) {
+      if (checklist && checklist.includes(node['fullName'])) {
         this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
@@ -423,14 +467,17 @@ export class TreeNodeService {
    */
   public updateTreeNodeCounts(studyCountMap: object,
                               conceptCountMap: object) {
-    let rootTreeNodeElements = document
-      .getElementById('tree-nodes-component')
-      .querySelector('.ui-tree-container').children;
-    this.updateTreeNodeCountsIterative(
-      rootTreeNodeElements,
-      this.treeNodes,
-      studyCountMap,
-      conceptCountMap);
+    // only update the tree node subject counts when it is in data selection
+    if (this.navbarService.isDataSelection) {
+      let rootTreeNodeElements = document
+        .getElementById('tree-nodes-component')
+        .querySelector('.ui-tree-container').children;
+      this.updateTreeNodeCountsIterative(
+        rootTreeNodeElements,
+        this.treeNodes,
+        studyCountMap,
+        conceptCountMap);
+    }
   }
 
   private depthOfTreeNode(node: TreeNode): number {
@@ -527,7 +574,7 @@ export class TreeNodeService {
    */
   public findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
     for (let node of nodes) {
-      if (paths.indexOf(node['fullName']) !== -1) {
+      if (paths.includes(node['fullName'])) {
         foundNodes.push(node);
       }
       if (node['children']) {
@@ -565,30 +612,6 @@ export class TreeNodeService {
     let foundNodes = [];
     this.findTreeNodesByPaths(this.treeNodes, paths, foundNodes);
     return foundNodes;
-  }
-
-  get projectionTreeData(): TreeNode[] {
-    return this._projectionTreeData;
-  }
-
-  set projectionTreeData(value: TreeNode[]) {
-    this._projectionTreeData = value;
-  }
-
-  get selectedProjectionTreeData(): TreeNode[] {
-    return this._selectedProjectionTreeData;
-  }
-
-  set selectedProjectionTreeData(value: TreeNode[]) {
-    this._selectedProjectionTreeData = value;
-  }
-
-  get validTreeNodeTypes(): string[] {
-    return this._validTreeNodeTypes;
-  }
-
-  set validTreeNodeTypes(value: string[]) {
-    this._validTreeNodeTypes = value;
   }
 
   /**
@@ -640,5 +663,61 @@ export class TreeNodeService {
         }
       }
     });
+  }
+
+  get treeNodes(): TreeNode[] {
+    return this._treeNodes;
+  }
+
+  set treeNodes(value: TreeNode[]) {
+    this._treeNodes = value;
+  }
+
+  get finalTreeNodes(): TreeNode[] {
+    return this._finalTreeNodes;
+  }
+
+  set finalTreeNodes(value: TreeNode[]) {
+    this._finalTreeNodes = value;
+  }
+
+  get treeNodesCopy(): TreeNode[] {
+    return this._treeNodesCopy;
+  }
+
+  set treeNodesCopy(value: TreeNode[]) {
+    this._treeNodesCopy = value;
+  }
+
+  get projectionTreeData(): TreeNode[] {
+    return this._projectionTreeData;
+  }
+
+  set projectionTreeData(value: TreeNode[]) {
+    this._projectionTreeData = value;
+  }
+
+  get selectedProjectionTreeData(): TreeNode[] {
+    return this._selectedProjectionTreeData;
+  }
+
+  set selectedProjectionTreeData(value: TreeNode[]) {
+    this._selectedProjectionTreeData = value;
+  }
+
+  get validTreeNodeTypes(): string[] {
+    return this._validTreeNodeTypes;
+  }
+
+  set validTreeNodeTypes(value: string[]) {
+    this._validTreeNodeTypes = value;
+  }
+
+  get selectedTreeNode(): TreeNode {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: TreeNode) {
+    this._selectedTreeNode = value;
   }
 }

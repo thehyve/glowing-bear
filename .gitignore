@@ -18,7 +18,6 @@
 .settings/
 *.sublime-workspace
 *.iml
-*.js
 
 # IDE - VSCode
 .vscode/*
@@ -53,5 +52,8 @@ out
 
 src/app/config/env.json
 /src/app/config/env.json
-yarn.lock
 
+# yarn
+*.log
+yarn.lock
+yarn-error.log*

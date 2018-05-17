@@ -1,0 +1,20 @@
+.gb-draggable-cell-inside-container {
+  background-color: lightblue;
+  border: solid 1px lightgray;
+  width: 100%;
+  padding: 1px 0px 1px 1px;
+  font-size: smaller;
+  margin: 3px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.gb-draggable-cell-inside-container:hover {
+  cursor: move;
+}
+
+.gb-draggable-cell-remove-btn {
+  padding: 1px 3px 1px 3px;
+  margin: 1px 1px 1px 3px;
+  font-size: x-small;
+}

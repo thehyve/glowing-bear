@@ -13,7 +13,7 @@
                          [constraint]="constraint"></gb-concept-constraint>
   <gb-study-constraint *ngIf="constraint.getClassName() === 'StudyConstraint' "
                        [constraint]="constraint"></gb-study-constraint>
-  <gb-patient-set-constraint *ngIf="constraint.getClassName() === 'PatientSetConstraint' "
+  <gb-patient-set-constraint *ngIf="constraint.getClassName() === 'SubjectSetConstraint' "
                              [constraint]="constraint"></gb-patient-set-constraint>
   <gb-pedigree-constraint *ngIf="constraint.getClassName() === 'PedigreeConstraint' "
                              [constraint]="constraint"></gb-pedigree-constraint>

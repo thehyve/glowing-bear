@@ -9,6 +9,12 @@ import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/UIHelper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
+import {NumericalAggregate} from '../../../../models/constraint-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../../../models/constraint-models/categorical-aggregate';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {Aggregate} from '../../../../models/constraint-models/aggregate';
+import {ResourceService} from '../../../../services/resource.service';
+import {FormatHelper} from '../../../../utilities/FormatHelper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -84,9 +90,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   // modifier
   private _applyModifierConstraint = false;
 
-  // null value representation
-  readonly nullValueAutocompleteToken: string = 'MISSING';
-
   ngOnInit() {
     this.initializeConstraints();
   }
@@ -110,14 +113,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       conceptOnlyConstraint.concept = constraint.concept;
       this.resourceService.getAggregate(conceptOnlyConstraint)
         .subscribe(
-          response => {
-            const code = constraint.concept.code;
-            const aggregateObj = response[code];
+          (responseAggregate: Aggregate) => {
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-              let aggregate = aggregateObj['numericalValueAggregates'];
-              constraint.concept.aggregate = aggregate;
-              this.minLimit = aggregate['min'];
-              this.maxLimit = aggregate['max'];
+              constraint.concept.aggregate = responseAggregate;
+              this.minLimit = responseAggregate['min'];
+              this.maxLimit = responseAggregate['max'];
               // if there is existing numeric values
               // fill their values in
               if (constraint.values.length > 0) {
@@ -133,18 +133,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
                 }
               }
             } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
-              let aggregate = aggregateObj['categoricalValueAggregates'];
-              let values = [];
-              for (let key in aggregate['valueCounts']) {
-                values.push(key);
-              }
-              let nullValueCounts = aggregate['nullValueCounts'];
-              if (nullValueCounts != null && nullValueCounts > 0) {
-                values.push(this.nullValueAutocompleteToken);
-              }
-
-              aggregate.values = values;
-              constraint.concept.aggregate = aggregate;
+              constraint.concept.aggregate = responseAggregate;
+              let values = (<CategoricalAggregate>responseAggregate).values;
               // if there is existing value constraints
               // use their values as selected categories
               if (constraint.values.length > 0) {
@@ -156,13 +146,12 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
               this.suggestedCategories = [].concat(values);
             } else if (this.isDate()) { // -------------------------------------> If it's DATE
-              let aggregate = aggregateObj['numericalValueAggregates'];
-              constraint.concept.aggregate = aggregate;
+              constraint.concept.aggregate = responseAggregate;
               let date1 = constraint.valDateConstraint.date1;
               let date2 = constraint.valDateConstraint.date2;
               if (Math.abs(date1.getTime() - date2.getTime()) < 1000) {
-                this.valDate1 = new Date(aggregate['min']);
-                this.valDate2 = new Date(aggregate['max']);
+                this.valDate1 = new Date(responseAggregate['min']);
+                this.valDate2 = new Date(responseAggregate['max']);
               } else {
                 this.valDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
                 this.valDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
@@ -415,11 +404,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        if (category === this.nullValueAutocompleteToken) {
-          newVal.value = null;
-        } else {
-          newVal.value = category;
-        }
+        newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {
@@ -553,7 +538,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'NUMERIC';
+    return concept.type === ConceptType.NUMERICAL;
   }
 
   isCategorical() {
@@ -561,7 +546,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'CATEGORICAL';
+    return concept.type === ConceptType.CATEGORICAL;
   }
 
   isDate() {
@@ -569,7 +554,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'DATE';
+    return concept.type === ConceptType.DATE;
   }
 
   isBetween() {

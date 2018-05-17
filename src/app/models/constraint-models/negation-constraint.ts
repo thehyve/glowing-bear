@@ -5,10 +5,12 @@ export class NegationConstraint implements Constraint {
   private _parent: Constraint;
   private _constraint: Constraint;
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
   constructor(constraint: Constraint) {
-    this._constraint = constraint;
+    this.constraint = constraint;
     this.parent = null;
+    this.textRepresentation = 'Negation';
   }
 
   get constraint(): Constraint {
@@ -50,7 +52,11 @@ export class NegationConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Negation';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get isSubselection(): boolean {

@@ -8,6 +8,7 @@ export class ConceptConstraint implements Constraint {
   private _parent: Constraint;
   private _isSubselection: boolean;
   private _concept: Concept;
+  private _textRepresentation: string;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
   // the time constraint used for date type constraint of this concept
@@ -31,6 +32,7 @@ export class ConceptConstraint implements Constraint {
     this.obsDateConstraint.isObservationDate = true;
     this.trialVisitConstraint = new TrialVisitConstraint();
     this.parent = null;
+    this.textRepresentation = 'Concept';
   }
 
   get concept(): Concept {
@@ -39,6 +41,7 @@ export class ConceptConstraint implements Constraint {
 
   set concept(value: Concept) {
     this._concept = value;
+    this.textRepresentation = `Concept: ${value.label}`;
   }
 
   get values(): ValueConstraint[] {
@@ -128,10 +131,11 @@ export class ConceptConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    if (this.concept) {
-      return `Concept: ${this.concept.label}`;
-    }
-    return 'Concept';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get valDateConstraint(): TimeConstraint {

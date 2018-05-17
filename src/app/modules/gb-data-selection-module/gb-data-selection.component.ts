@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {QueryService} from '../../services/query.service';
 import {FormatHelper} from '../../utilities/FormatHelper';
+import {MessageService} from '../../services/message.service';
+import {QueryService} from '../../services/query.service';
 
 @Component({
   selector: 'gb-data-selection',
@@ -9,7 +10,7 @@ import {FormatHelper} from '../../utilities/FormatHelper';
 })
 export class GbDataSelectionComponent implements OnInit {
 
-  constructor(public queryService: QueryService) {
+  constructor(public messageService: MessageService, public queryService: QueryService) {
   }
 
   ngOnInit() {

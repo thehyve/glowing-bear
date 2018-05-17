@@ -1,13 +1,27 @@
 <div>
   <p-accordion>
-    <p-accordionTab header="Tree" [selected]="true">
-      <gb-tree-nodes></gb-tree-nodes>
-    </p-accordionTab>
-    <p-accordionTab header="Queries" [selected]="true">
-      <gb-queries></gb-queries>
-    </p-accordionTab>
+    
+    <div>
+      <p-accordionTab header="Summary" [selected]="true">
+        <gb-summary></gb-summary>
+      </p-accordionTab>
+    </div>
+
+    <div *ngIf="isDataSelection">
+      <p-accordionTab header="Ontology" [selected]="true">
+        <gb-tree-nodes></gb-tree-nodes>
+      </p-accordionTab>
+    </div>
+
+    <div *ngIf="isDataSelection">
+      <p-accordionTab header="Queries" [selected]="true">
+        <gb-queries></gb-queries>
+      </p-accordionTab>
+    </div>
+
   </p-accordion>
 
+  <br>
   <br>
   <br>
   <br>
