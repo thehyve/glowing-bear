@@ -2,9 +2,8 @@
      class="container gb-droppable-zone-container"
      [ngClass]="{'gb-droppable-zone-container-highlight': dragCounter > 0}"
      (onDragEnter)="onDragEnter($event)"
-     (onDrop)="onDrop()"
-     (drop)="onDropGeneric()"
-     (onDragLeave)="onDragLeave($event)">
+     (onDragLeave)="onDragLeave($event)"
+     (drop)="onDrop()">
 
   <div class="row">
     <div *ngFor="let constraint of constraints"
