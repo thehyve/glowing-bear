@@ -14,7 +14,6 @@ export class GbDroppableZoneComponent implements OnInit {
 
   @Input() constraints: Array<Constraint> = [];
   public dragCounter = 0;
-  private onDropTriggered = false;
 
   constructor(private crossTableService: CrossTableService,
               private treeNodeService: TreeNodeService,
