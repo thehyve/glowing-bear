@@ -1,5 +1,4 @@
 import {Query} from '../../models/query-models/query';
-import {ExportDataType} from '../../models/export-models/export-data-type';
 
 export class QueryServiceMock {
   private _queries: Query[] = [];
