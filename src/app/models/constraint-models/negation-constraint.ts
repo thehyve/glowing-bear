@@ -25,29 +25,29 @@ export class NegationConstraint implements Constraint {
     return 'NegationConstraint';
   }
 
-  toQueryObjectWithSubselection(): Object {
+  toQueryObjectWithSubselection(full?: boolean): Object {
     return {
       'type': 'negation',
       'arg': {
         'type': 'subselection',
         'dimension': 'patient',
-        'constraint': this._constraint.toQueryObject()
+        'constraint': this._constraint.toQueryObject(full)
       }
     };
   }
 
-  toQueryObjectWithoutSubselection(): object {
+  toQueryObjectWithoutSubselection(full?: boolean): object {
     return {
       type: 'negation',
-      arg: this._constraint.toQueryObject()
+      arg: this._constraint.toQueryObject(full)
     };
   }
 
-  toQueryObject(): Object {
+  toQueryObject(full?: boolean): Object {
     if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
+      return this.toQueryObjectWithSubselection(full);
     } else {
-      return this.toQueryObjectWithoutSubselection();
+      return this.toQueryObjectWithoutSubselection(full);
     }
   }
 

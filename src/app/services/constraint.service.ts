@@ -20,7 +20,6 @@ import {ResourceService} from './resource.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {TreeNode} from 'primeng/api';
 
-
 /**
  * This service concerns with
  * (1) translating string or JSON objects into Constraint class instances
@@ -61,7 +60,6 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.subjectSetConstraint = null;
-
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
@@ -254,6 +252,7 @@ export class ConstraintService {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);
         }
+        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.getClassName() === 'NegationConstraint') {
       this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);

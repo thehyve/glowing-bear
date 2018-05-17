@@ -75,7 +75,7 @@ export class TransmartMapper {
   }
 
   public static mapQuery(query: Query): TransmartQuery {
-    let transmartTableState: TransmartTableState = this.mapDataTableToTableState(query.dataTable);
+    let transmartTableState: TransmartTableState = query.dataTable ? this.mapDataTableToTableState(query.dataTable) : null;
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
     transmartQuery.patientsQuery = query.patientsQuery;
     transmartQuery.observationsQuery = query.observationsQuery;

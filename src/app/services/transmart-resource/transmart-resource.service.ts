@@ -17,7 +17,6 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
-import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {CrossTable} from '../../models/table-models/cross-table';
 
 @Injectable()
@@ -504,37 +503,10 @@ export class TransmartResourceService {
       rowDimensions: rowDims,
       columnDimensions: colDims,
       offset: offset,
-      limit: limit
+      limit: limit,
+      rowSort: tableState.rowSort,
+      columnSort: tableState.columnSort
     };
-    if (tableState.rowSort) {
-      let sort = [];
-      tableState.rowSort.forEach((val, key) => {
-        sort.push([key, val]);
-      });
-      body['rowSort'] = sort;
-      if (sort.length === 1) {
-        let dim = sort[0][0];
-        let order = sort[0][1];
-        let sortObj = {};
-        sortObj[dim] = order;
-        body['columnSort'] = sortObj;
-      }
-    }
-    if (tableState.columnSort) {
-      let sort = [];
-      tableState.columnSort.forEach((val, key) => {
-        sort.push([key, val]);
-      });
-      body['columnSort'] = sort;
-      if (sort.length === 1) {
-        let dim = sort[0][0];
-        let order = sort[0][1];
-        let sortObj = {};
-        sortObj[dim] = order;
-        body['columnSort'] = sortObj;
-      }
-
-    }
     return this.postCall(urlPart, body, null);
   }
 

@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
 import {Query} from '../models/query-models/query';
@@ -574,8 +573,11 @@ export class QueryService {
     }
     newQuery.observationsQuery = {data: data};
     newQuery.dataTable = this.dataTableService.dataTable;
+    this.saveQueryObj(newQuery);
+  }
 
-    this.resourceService.saveQuery(newQuery)
+  public saveQueryObj(query: Query) {
+    this.resourceService.saveQuery(query)
       .subscribe(
         (newlySavedQuery: Query) => {
           newlySavedQuery.collapsed = true;
@@ -587,7 +589,7 @@ export class QueryService {
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not add the query "' + queryName + '".';
+          const summary = 'Could not add the query "' + query.name + '".';
           this.messageService.alert(summary, '', 'error');
         }
       );
