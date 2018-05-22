@@ -110,4 +110,12 @@ export class AppComponent implements OnInit {
       );
   }
 
+  get messages(): any[] {
+    return this.messageService.messages;
+  }
+
+  set messages(value: any[]) {
+    this.messageService.messages = value;
+  }
+
 }

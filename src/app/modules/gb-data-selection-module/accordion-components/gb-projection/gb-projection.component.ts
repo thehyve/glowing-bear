@@ -85,8 +85,7 @@ export class GbProjectionComponent implements OnInit {
       } else if (_json['observationsQuery']) {
         observationQuery = _json['observationsQuery'];
       } else {
-        const msg = 'Invalid file content for STEP 2.';
-        this.messageService.alert(msg, '', 'error');
+        this.messageService.alert('error', 'Invalid file content for STEP 2.');
         return;
       }
       return {
@@ -94,8 +93,7 @@ export class GbProjectionComponent implements OnInit {
         'observationsQuery': observationQuery
       };
     } else {
-      const msg = 'Invalid file format for STEP 2.';
-      this.messageService.alert(msg, '', 'error');
+      this.messageService.alert('error', 'Invalid file format for STEP 2.');
       return;
     }
   }

@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+import {Message} from 'primeng/api';
 
 @Injectable()
 export class MessageService {
@@ -8,20 +9,22 @@ export class MessageService {
    * whether there is an error saving subject/observation set,
    * or the saving has been successful
    */
-  private _alertMessages = [];
+  private _messages: Message[];
 
-  constructor() { }
-
-  public alert(summary: string, detail: string, severity: string) {
-    this.alertMessages.length = 0;
-    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
+  constructor() {
+    this.messages = [];
   }
 
-  get alertMessages(): Array<object> {
-    return this._alertMessages;
+  public alert(severity: string, summary: string, detail?: string) {
+    let _detail = detail ? detail : '';
+    this.messages.push({severity: severity, summary: summary, detail: _detail});
   }
 
-  set alertMessages(value: Array<object>) {
-    this._alertMessages = value;
+  get messages(): Message[] {
+    return this._messages;
+  }
+
+  set messages(value: Message[]) {
+    this._messages = value;
   }
 }

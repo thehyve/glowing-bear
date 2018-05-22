@@ -25,6 +25,7 @@ import {NavbarService} from './services/navbar.service';
 import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
+import {GrowlModule} from 'primeng/growl';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -39,6 +40,7 @@ export function initConfig(config: AppConfig) {
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    GrowlModule,
     routing,
     GbNavBarModule,
     GbDataSelectionModule,
