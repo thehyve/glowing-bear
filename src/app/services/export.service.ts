@@ -6,7 +6,7 @@ import {ExportJob} from '../models/export-models/export-job';
 import {DataTableService} from './data-table.service';
 import {MessageService} from './message.service';
 import {saveAs} from 'file-saver';
-import {DatePipe} from "@angular/common";
+import {DatePipe} from '@angular/common';
 
 @Injectable()
 export class ExportService {
@@ -38,8 +38,8 @@ export class ExportService {
    * Create the export job when the user clicks the 'Export selected sets' button
    */
   createExportJob() {
-    let exportDate = this.datePipe.transform(new Date(),"yyyy-MM-dd HH.mm");
-    let name = this.exportJobName ? this.exportJobName.trim() + " " + exportDate : '';
+    let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
+    let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
 
     if (this.validateExportJob(name)) {
       let summary = 'Running export job "' + name + '".';

@@ -24,7 +24,7 @@ import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';
 import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
-import {DatePipe} from "@angular/common";
+import {DatePipe} from '@angular/common';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -58,6 +58,7 @@ export function initConfig(config: AppConfig) {
     NavbarService,
     MessageService,
     ExportService,
+    DatePipe,
     AppConfig,
     {
       provide: APP_INITIALIZER,
