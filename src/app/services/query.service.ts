@@ -585,12 +585,12 @@ export class QueryService {
 
           this.queries.push(newlySavedQuery);
           const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-          this.messageService.alert(summary, '', 'success');
+          this.messageService.alert('success', summary);
         },
         (err) => {
           console.error(err);
           const summary = 'Could not add the query "' + query.name + '".';
-          this.messageService.alert(summary, '', 'error');
+          this.messageService.alert('error', summary);
         }
       );
   }
@@ -615,9 +615,8 @@ export class QueryService {
     // - total number of imported nodes/items
     // - total number of items not found in tree
     // - total number of matched/selected tree-nodes
-    const alertSummary = 'Success';
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-    this.messageService.alert(alertSummary, alertDetails, 'info');
+    this.messageService.alert('info', 'Success', alertDetails);
   }
 
   public updateQuery(query: Query, queryObj: object) {

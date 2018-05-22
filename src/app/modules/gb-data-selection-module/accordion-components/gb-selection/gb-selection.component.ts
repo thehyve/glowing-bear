@@ -133,13 +133,11 @@ export class GbSelectionComponent implements OnInit {
         query.patientsQuery = _json['patientsQuery'];
         return query;
       } else {
-        const msg = 'Invalid file content for query import.';
-        this.messageService.alert(msg, '', 'error');
+        this.messageService.alert('error', 'Invalid file content for query import.');
         return;
       }
     } else {
-      const msg = 'Invalid file format for STEP 1.';
-      this.messageService.alert(msg, '', 'error');
+      this.messageService.alert('error', 'Invalid file format for STEP 1.');
       return;
     }
   }

@@ -67,13 +67,11 @@ export class GbQueriesComponent implements OnInit {
       if (_json['patientsQuery'] || _json['observationsQuery']) {
         return _json;
       } else {
-        const msg = 'Invalid file content for query import.';
-        this.messageService.alert(msg, '', 'error');
+        this.messageService.alert('error', 'Invalid file content for query import.');
         return;
       }
     } else {
-      const msg = 'Invalid file format for query import.';
-      this.messageService.alert(msg, '', 'error');
+      this.messageService.alert('error', 'Invalid file content for query import.');
       return;
     }
   }

@@ -43,12 +43,12 @@ export class ExportService {
 
     if (this.validateExportJob(name)) {
       let summary = 'Running export job "' + name + '".';
-      this.messageService.alert(summary, '', 'info');
+      this.messageService.alert('info', summary);
       this.resourceService.createExportJob(name)
         .subscribe(
           newJob => {
             summary = 'Export job "' + name + '" is created.';
-            this.messageService.alert(summary, '', 'success');
+            this.messageService.alert('success', summary);
             this.exportJobName = '';
             this.runExportJob(newJob);
           },
@@ -139,7 +139,7 @@ export class ExportService {
     // 1. Validate if job name is specified
     if (!validName) {
       const summary = 'Please specify the job name.';
-      this.messageService.alert(summary, '', 'warn');
+      this.messageService.alert('warn', summary);
       return false;
     }
 
@@ -147,7 +147,7 @@ export class ExportService {
     for (let job of this.exportJobs) {
       if (job['jobName'] === name) {
         const summary = 'Duplicate job name, choose a new name.';
-        this.messageService.alert(summary, '', 'warn');
+        this.messageService.alert('warn', summary);
         return false;
       }
     }
@@ -155,7 +155,7 @@ export class ExportService {
     // 3. Validate if at least one data type is selected
     if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
-      this.messageService.alert(summary, '', 'warn');
+      this.messageService.alert('warn', summary);
       return false;
     }
 
@@ -164,7 +164,7 @@ export class ExportService {
       if (dataFormat['checked'] === true) {
         if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
-          this.messageService.alert(summary, '', 'warn');
+          this.messageService.alert('warn', summary);
           return false;
         }
       }
@@ -174,7 +174,7 @@ export class ExportService {
     // TODO: refactor this, while avoiding cyclic dependencies between expoert service and query service
     // if (this.queryService.observationCount_2 < 1) {
     //   const summary = 'No observation included to be exported.';
-    //   this.messageService.alert(summary, '', 'warn');
+    //   this.messageService.alert('warn', summary);
     //   return false;
     // }
 
