@@ -511,10 +511,10 @@ export class TransmartResourceService {
   }
 
   getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
-    const urlPart = `dimensions/study/elements?constraint=${JSON.stringify(constraint.toQueryObject())}`;
-    // const body = {constraint: constraint.toQueryObject()};
+    const urlPart = `dimensions/study/elements`;
+    const body = {constraint: constraint.toQueryObject()};
     const responseField = 'elements';
-    return this.getCall(urlPart, responseField);
+    return this.postCall(urlPart, body, responseField);
   }
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
