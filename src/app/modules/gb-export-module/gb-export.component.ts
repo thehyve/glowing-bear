@@ -5,6 +5,7 @@ import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {MessageService} from "../../services/message.service";
 
 @Component({
   selector: 'gb-export',
@@ -16,7 +17,8 @@ export class GbExportComponent implements OnInit {
   constructor(private appConfig: AppConfig,
               private exportService: ExportService,
               public resourceService: ResourceService,
-              private timer: SimpleTimer) {
+              private timer: SimpleTimer,
+              public messageService: MessageService) {
     this.exportService.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.exportService.updateExportJobs());
@@ -27,6 +29,18 @@ export class GbExportComponent implements OnInit {
 
   createExportJob() {
     this.exportService.createExportJob();
+  }
+
+  downloadExportJob(job) {
+    this.exportService.downloadExportJob(job);
+  }
+
+  cancelExportJob(job) {
+    this.exportService.cancelExportJob(job);
+  }
+
+  archiveExportJob(job) {
+    this.exportService.archiveExportJob(job)
   }
 
   onExportJobNameInputDrop(event) {
