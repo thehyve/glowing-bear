@@ -3,13 +3,13 @@ Feature: create constraints by selecting nodes from the tree
 
   Scenario: create a study constraint
     Given I am on the data-selection tab
-    When I use study 'Vital Signs ' as a constraint
-    Then there are '6' patients and '19' observations
+    When I use public study 'CATEGORICAL_VALUES ' as a constraint
+    Then there are '3' patients and '9' observations
 
   Scenario: create a study restricted categorical constraint
     Given I am on the data-selection tab
-    When I select all female patients from survey1
-    Then there are '5' patients and '14' observations
+    When I select all female patients from CATEGORICAL_VALUES
+    Then there are '1' patients and '3' observations
 
   Scenario: create a constraint with exclusion
     Given I am on the data-selection tab

@@ -23,3 +23,16 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
+  cy.contains(nodeName).parent().parent().children('.ui-tree-toggler').should('be.visible');
+  cy.contains(nodeName).parent().parent().children('.ui-tree-toggler').click();
+});
+
+Cypress.Commands.add('drag', (nodeName, options = {}) => {
+  cy.contains(nodeName).trigger('dragstart');
+});
+
+Cypress.Commands.add('drop', (inputNum, options = {}) => {
+  cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop');
+});

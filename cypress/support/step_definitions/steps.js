@@ -17,9 +17,7 @@ when("I login with user {string}", (user) => {
 
 then("I am logged in", () => {
   cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
-  cy.get('p-treenode').should(($p) => {
-    expect($p).to.have.length(8)
-  })
+  cy.contains("Step 1").should('be.visible');
 });
 
 then("I am not logged in", () => {
@@ -38,12 +36,12 @@ given("I am logged in as {string}", (user) => {
     }
   });
   cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
-  cy.get('p-treenode').should(($p) => {
-    expect($p).to.have.length(8)
-  })
+  cy.contains("Step 1").should('be.visible');
 });
 
 given("I am on the data-selection tab", () => {
+  cy.server();
+  cy.route('POST', '**/v2/observations/counts_per_study').as('getCounts');
   cy.visit('/data-selection');
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
@@ -56,4 +54,7 @@ given("I am on the data-selection tab", () => {
   });
   cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
   cy.get('input[placeholder="add criterion"]').eq(0).should('be.visible');
+
+  cy.wait('@getCounts', {timeout: 10000});
 });
+

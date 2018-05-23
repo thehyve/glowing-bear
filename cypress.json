@@ -1,5 +1,5 @@
 {
-  "redirectUrl": "http://localhost:8080/",
-  "baseUrl": "http://localhost:4200/",
+  "redirectUrl": "https://transmart-test.thehyve.net/",
+  "baseUrl": "https://glowingbear-test.thehyve.net/",
   "chromeWebSecurity": false
 }
