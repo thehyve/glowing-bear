@@ -7,7 +7,7 @@
 /*
   custom variables
 */
-:root  {
+:root {
   --gb-loading-bg-color: #28AA9D;
   --gb-navbar-bg-color: #fdfdfd;
   --gb-orange-light: #ffa27f;
@@ -77,24 +77,25 @@ body .hline {
 }
 
 /*
- * Style for PrimeNg alert messages
+ * Style for PrimeNg growl messages
  */
-.ui-messages.ui-messages-success {
-  /* #80bd9e: stem green */
-  background-color: rgba(51, 156, 144, 0.8);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-warn {
+  background-color: #f4b30a;
   color: white;
 }
 
-.ui-messages.ui-messages-warn {
-  background-color: rgba(255, 0, 0, 0.5);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-success {
+  background-color: #5db85c;
   color: white;
 }
 
-.ui-messages.ui-messages-error {
-  background-color: rgba(255, 0, 0, 0.5);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-info {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.gb-container .ui-growl .ui-growl-message-error {
+  background-color: #d9534f;
   color: white;
 }
 
@@ -125,7 +126,7 @@ body .hline {
   min-width: 300px;
 }
 
-  /* Change input placeholder text color */
+/* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
 }
@@ -186,7 +187,7 @@ gb-nav-bar .ui-menuitem-text {
  * ------------------------------ Styles for gb-data-selection component -------------------------------
  */
 /*Change the color theme of the accordion in data-selection to clinical green*/
-gb-data-selection md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+gb-data-selection md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-color: var(--gb-clinical-green) !important;
   box-shadow: 0 1px 0 var(--gb-clinical-green) !important;
 }
@@ -211,6 +212,7 @@ gb-data-selection .gb-data-selection-control-btn {
 gb-selection .ui-panel-titlebar {
   padding: 1px !important;
 }
+
 /*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
@@ -225,6 +227,7 @@ gb-selection .gb-concept-constraint-input > input {
 gb-selection .ui-inputtext {
   height: 2em;
 }
+
 /* Fix cutting off letters inside inputtext field.
  Rendering engines of Firefox and Safari render line height slightly different than Chrome.
  Editing component css doesn't work. */
@@ -406,7 +409,7 @@ gb-queries .gb-query-panel {
   font-size: small;
 }
 
-gb-queries md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-width: medium;
   border-color: lightgray !important;
   box-shadow: 0 1px 0 lightgray !important;
@@ -414,7 +417,7 @@ gb-queries md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
   padding-left: 0.5em;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-header {
+gb-queries md2-accordion-tab > .md2-accordion-header {
   background-color: white;
   padding-left: 0.5em;
   font-size: small;
@@ -422,14 +425,14 @@ gb-queries md2-accordion-tab>.md2-accordion-header {
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-tab-body {
+gb-queries md2-accordion-tab > .md2-accordion-tab-body {
   background-color: #fbfbfb;
   padding-left: 0.5em;
   font-size: small;
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
+gb-queries md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
   color: transparent;
 }
 

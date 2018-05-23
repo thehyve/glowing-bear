@@ -66,7 +66,7 @@ export class GbNavbarComponent implements OnInit {
       this.queryService.saveQuery(name);
       this.queryName = '';
     } else {
-      this.messageService.alert('warn', 'Please specify the query name.', '');
+      this.messageService.alert('error', 'Please specify the query name.', '');
     }
   }
 }
