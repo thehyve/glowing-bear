@@ -5,7 +5,7 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
-import {PatientSet} from '../models/constraint-models/patient-set';
+import {SubjectSet} from '../models/constraint-models/subject-set';
 import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
 import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
@@ -18,7 +18,11 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
-import {TransmartStudyDimensions} from "../models/transmart-models/transmart-study-dimensions";
+import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {Aggregate} from '../models/constraint-models/aggregate';
+import {CrossTable} from '../models/table-models/cross-table';
+import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 
 
 @Injectable()
@@ -108,9 +112,16 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<object>}
    */
-  getAggregate(constraint: Constraint): Observable<object> {
-    return this.transmartResourceService.getAggregate(constraint);
+  getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
+    return this.transmartResourceService.getAggregate(constraint)
+      .map((tmConceptAggregate: object) => {
+        return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
+      });
   }
+
+  // getAggregate1(constraint: Constraint): Observable<Aggregate> {
+  //
+  // }
 
   // -------------------------------------- trial visit calls --------------------------------------
   /**
@@ -267,7 +278,7 @@ export class ResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
+  saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     return this.transmartResourceService.savePatientSet(name, constraint);
   }
 
@@ -282,13 +293,15 @@ export class ResourceService {
     let offset = dataTable.offset;
     let limit = dataTable.limit;
 
-    return this.getDimensions(dataTable.constraint).switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-      let tableState: TransmartTableState = TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions);
-      const constraint: Constraint = dataTable.constraint;
-      return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
-    }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-      return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
-    });
+    return this.getDimensions(dataTable.constraint)
+      .switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
+        let tableState: TransmartTableState =
+          TransmartMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
+        const constraint: Constraint = dataTable.constraint;
+        return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
+      }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
+        return TransmartMapper.mapTransmartDataTable(transmartTable, isUsingHeaders, offset, limit)
+      });
   }
 
   /**
@@ -318,4 +331,12 @@ export class ResourceService {
     this.transmartResourceService.dateColumnsIncluded = value;
   }
 
+  // -------------------------------------- cross table ---------------------------------------------
+  getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
+    return this.transmartResourceService
+      .getCrossTable(crossTable)
+      .map((tmCrossTable: TransmartCrossTable) => {
+        return TransmartMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
+      });
+  }
 }

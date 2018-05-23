@@ -92,7 +92,7 @@
   margin-top: -5px;
 }
 .gb-top-panel button:hover {
-  color: var(--gb-light-orange)
+  color: var(--gb-orange-light)
 }
 .gb-top-panel button:active {
   border: none;

@@ -6,9 +6,11 @@ export class ValueConstraint implements Constraint {
   private _operator: string;
   private _value: any;
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
   constructor() {
     this.parent = null;
+    this.textRepresentation = 'Value';
   }
 
   get valueType(): string {
@@ -62,7 +64,11 @@ export class ValueConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Value';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get isSubselection(): boolean {

@@ -1,6 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GbAnalysisComponent } from './gb-analysis.component';
+import {GbAnalysisComponent} from './gb-analysis.component';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbAnalysisComponent', () => {
   let component: GbAnalysisComponent;
@@ -8,9 +9,12 @@ describe('GbAnalysisComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GbAnalysisComponent ]
+      declarations: [
+        GbAnalysisComponent,
+        MockComponent({selector: 'gb-cross-table'})
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
@@ -19,7 +23,7 @@ describe('GbAnalysisComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbAnalysisComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

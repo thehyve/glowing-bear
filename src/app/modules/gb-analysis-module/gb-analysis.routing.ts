@@ -4,7 +4,10 @@ import {GbAnalysisComponent} from './gb-analysis.component';
 
 
 const routes: Routes = [
-  {path: '', component: GbAnalysisComponent}
+  {
+    path: '',
+    component: GbAnalysisComponent
+  }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forChild(routes);

@@ -17,17 +17,25 @@ import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
-import {GbDashboardModule} from './modules/gb-dashboard-module/gb-dashboard.module';
 import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {GbNavBarModule} from './modules/gb-nav-bar-module/gb-nav-bar.module';
+import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
-import {TableService} from './services/table.service';
-import {TableServiceMock} from './services/mocks/table.service.mock';
+import {DataTableService} from './services/data-table.service';
+import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
 import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+import {CrossTableService} from './services/cross-table.service';
+import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
+import {NavbarService} from './services/navbar.service';
+import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
+import {MessageService} from './services/message.service';
+import {MessageServiceMock} from './services/mocks/message.service.mock';
+import {ExportService} from './services/export.service';
+import {ExportServiceMock} from './services/mocks/export.service.mock';
+import {GrowlModule} from 'primeng/growl';
 
 
 export function initConfig(config: AppConfig) {
@@ -44,9 +52,9 @@ describe('AppComponent', () => {
         BrowserModule,
         FormsModule,
         BrowserAnimationsModule,
+        GrowlModule,
         GbNavBarModule,
         GbSidePanelModule,
-        GbDashboardModule,
         GbDataSelectionModule,
         GbAnalysisModule,
         routing
@@ -91,14 +99,30 @@ describe('AppComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
+        },
+        {
+          provide: ExportService,
+          useClass: ExportServiceMock
         }
       ]
     }).compileComponents();
   }));
 
-  it('AppComponent should be created', async(() => {
+  it('should be created', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
     expect(app).toBeTruthy();

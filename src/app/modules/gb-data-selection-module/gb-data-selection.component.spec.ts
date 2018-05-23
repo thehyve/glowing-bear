@@ -21,8 +21,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {TableService} from '../../services/table.service';
-import {TableServiceMock} from '../../services/mocks/table.service.mock';
+import {DataTableService} from '../../services/data-table.service';
+import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
+import {MessageServiceMock} from '../../services/mocks/message.service.mock';
+import {MessageService} from '../../services/message.service';
 
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
@@ -34,8 +36,7 @@ describe('GbDataSelectionComponent', () => {
         GbDataSelectionComponent,
         MockComponent({selector: 'gb-selection'}),
         MockComponent({selector: 'gb-projection'}),
-        MockComponent({selector: 'gb-table'}),
-        MockComponent({selector: 'gb-export'})
+        MockComponent({selector: 'gb-data-table'})
       ],
       imports: [
         BrowserAnimationsModule,
@@ -72,8 +73,12 @@ describe('GbDataSelectionComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: TableService,
-          useClass: TableServiceMock
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         }
       ]
     })
@@ -86,7 +91,7 @@ describe('GbDataSelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('GbDataSelectionComponent should be created', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -53,7 +53,7 @@ describe('GbStudyConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbStudyConstraintComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

@@ -10,6 +10,8 @@ export class TreeNodeServiceMock {
   private _projectionTreeData: TreeNode[] = [];
   // the selected tree table data that holds the patients' observations in the 2nd step (projection)
   private _selectedProjectionTreeData: TreeNode[] = [];
+  // the final tree nodes resulted from data selection
+  private _finalTreeNodes: TreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -17,11 +19,19 @@ export class TreeNodeServiceMock {
   private _validTreeNodeTypes: string[] = [];
 
   constructor() {
+    this._validTreeNodeTypes = [
+      'NUMERIC',
+      'CATEGORICAL',
+      'DATE',
+      'STUDY',
+      'TEXT',
+      'HIGH_DIMENSIONAL',
+      'UNKNOWN'
+    ];
   }
 
   public loadTreeNodes(constraintService: ConstraintService) {
   }
-
 
   get projectionTreeData(): TreeNode[] {
     return this._projectionTreeData;
@@ -53,4 +63,13 @@ export class TreeNodeServiceMock {
 
   public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
   }
+
+  get finalTreeNodes(): TreeNode[] {
+    return this._finalTreeNodes;
+  }
+
+  set finalTreeNodes(value: TreeNode[]) {
+    this._finalTreeNodes = value;
+  }
+
 }

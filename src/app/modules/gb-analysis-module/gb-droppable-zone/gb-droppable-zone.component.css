@@ -1,0 +1,24 @@
+.gb-droppable-zone-container {
+  height: 100%;
+  background-color: whitesmoke;
+  margin: 5px;
+  border-radius: 6px;
+  min-height: 30px;
+}
+
+.gb-droppable-zone-container-highlight {
+  background-color: var(--gb-orange-light-light);
+  fill-opacity: .6;
+}
+
+.gb-draggable-cell-outside-container {
+  margin: 3px;
+}
+
+.gb-droppable-zone-info-container {
+  padding-left: 1em;
+  padding-top: .6em;
+  color: darkgray;
+  font-weight: bold;
+  font-size: medium;
+}

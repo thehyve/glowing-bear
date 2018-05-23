@@ -1,6 +1,5 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {ConceptConstraint} from "../../models/constraint-models/concept-constraint";
 
 export class ConstraintServiceMock {
 
@@ -19,11 +18,11 @@ export class ConstraintServiceMock {
     return 1;
   }
 
-  public generateSelectionConstraint(): Constraint {
+  public constraint_1(): Constraint {
     return this._constraint;
   }
 
-  public generateProjectionConstraint(): Constraint {
+  public constraint_2(): Constraint {
     return this._constraint;
   }
 
@@ -39,4 +38,7 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
+  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    return true;
+  }
 }

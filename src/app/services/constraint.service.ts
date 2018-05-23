@@ -10,14 +10,15 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {PatientSetConstraint} from '../models/constraint-models/patient-set-constraint';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {TimeConstraint} from '../models/constraint-models/time-constraint';
 import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
-
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {TreeNode} from 'primeng/api';
 
 /**
  * This service concerns with
@@ -29,6 +30,8 @@ export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
+  // the subject-set constraint used to replace the constraint in step 1 to boost performance
+  private _subjectSetConstraint: SubjectSetConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -45,10 +48,6 @@ export class ConstraintService {
   private _conceptConstraints: Constraint[] = [];
 
   /*
-   * The selected tree node (drag-start) in the side-panel of either
-   */
-  private _selectedNode: any = null;
-  /*
    * The maximum number of search results allowed when searching for a constraint
    */
   private _maxNumSearchResults = 100;
@@ -60,7 +59,7 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-
+    this.subjectSetConstraint = null;
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
@@ -128,7 +127,7 @@ export class ConstraintService {
    * @param query
    * @returns {Array}
    */
-  searchAllConstraints(query: string): Constraint[] {
+  public searchAllConstraints(query: string): Constraint[] {
     query = query.toLowerCase();
     let results = [];
     if (query === '') {
@@ -186,7 +185,7 @@ export class ConstraintService {
   }
 
   public constraint_1() {
-    return this.generateSelectionConstraint();
+    return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
   }
 
   /**
@@ -194,7 +193,7 @@ export class ConstraintService {
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  public generateSelectionConstraint(): Constraint {
+  private generateSelectionConstraint(): Constraint {
     let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
@@ -253,6 +252,7 @@ export class ConstraintService {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);
         }
+        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.getClassName() === 'NegationConstraint') {
       this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
@@ -272,7 +272,7 @@ export class ConstraintService {
    * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}
    */
-  public generateProjectionConstraint(): Constraint {
+  private generateProjectionConstraint(): Constraint {
     let constraint = null;
     let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
     if (selectedTreeNodes && selectedTreeNodes.length > 0) {
@@ -302,7 +302,7 @@ export class ConstraintService {
   }
 
   // generate the constraint instance based on given node (e.g. tree node)
-  generateConstraintFromSelectedNode(selectedNode: object, dropMode: DropMode): Constraint {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
     let constraint: Constraint = null;
     // if the dropped node is a tree node
     if (dropMode === DropMode.TreeNode) {
@@ -334,7 +334,7 @@ export class ConstraintService {
           constraint = new CombinationConstraint();
           (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
           for (let descendant of descendants) {
-            let dConstraint = this.generateConstraintFromSelectedNode(descendant, DropMode.TreeNode);
+            let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
             if (dConstraint) {
               (<CombinationConstraint>constraint).addChild(dConstraint);
             }
@@ -346,13 +346,11 @@ export class ConstraintService {
       }
     }
 
-    this.selectedNode = null;
-
     return constraint;
   }
 
   // generate the constraint instance based on given constraint object input
-  generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
+  public generateConstraintFromConstraintObject(constraintObjectInput: object): Constraint {
     let constraintObject = this.optimizeConstraintObject(constraintObjectInput);
     let type = constraintObject['type'];
     let constraint: Constraint = null;
@@ -531,13 +529,13 @@ export class ConstraintService {
       (<ValueConstraint>constraint).value = constraintObject['value'];
       (<ValueConstraint>constraint).valueType = constraintObject['valueType'];
     } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
-      constraint = new PatientSetConstraint();
+      constraint = new SubjectSetConstraint();
       if (constraintObject['subjectIds']) {
-        (<PatientSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
+        (<SubjectSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
       } else if (constraintObject['patientIds']) {
-        (<PatientSetConstraint>constraint).patientIds = constraintObject['patientIds'];
+        (<SubjectSetConstraint>constraint).patientIds = constraintObject['patientIds'];
       } else if (constraintObject['patientSetId']) {
-        (<PatientSetConstraint>constraint).id = constraintObject['patientSetId'];
+        (<SubjectSetConstraint>constraint).id = constraintObject['patientSetId'];
       }
     } else if (type === 'subselection'
       && constraintObject['dimension'] === 'patient') { // -------> If it is a patient sub-selection
@@ -551,7 +549,7 @@ export class ConstraintService {
     return constraint;
   }
 
-  optimizeConstraintObject(constraintObject) {
+  private optimizeConstraintObject(constraintObject) {
     let newConstraintObject = Object.assign({}, constraintObject);
 
     // if the object has 'args' property
@@ -604,12 +602,21 @@ export class ConstraintService {
     return combo;
   }
 
-  get selectedNode(): any {
-    return this._selectedNode;
+  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    let result = false;
+    if (constraint.getClassName() === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
   }
 
-  set selectedNode(value: any) {
-    this._selectedNode = value;
+  get subjectSetConstraint(): SubjectSetConstraint {
+    return this._subjectSetConstraint;
+  }
+
+  set subjectSetConstraint(value: SubjectSetConstraint) {
+    this._subjectSetConstraint = value;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

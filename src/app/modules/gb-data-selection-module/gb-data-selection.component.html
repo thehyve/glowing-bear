@@ -1,13 +1,10 @@
 <div class="gb-data-selection-container">
 
-  <!--Alert message-->
-  <p-messages [(value)]="queryService.alertMessages"></p-messages>
-
   <!-- The accordions -->
   <md2-accordion [multiple]="true"
                  (open)="openAccordion($event)"
                  (close)="closeAccordion($event)">
-    <!-- The 1st step -->
+    <!-- The 1st step: subject selection -->
     <md2-accordion-tab [active]="true">
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
@@ -39,7 +36,7 @@
       <gb-selection></gb-selection>
     </md2-accordion-tab>
 
-    <!-- The 2nd step -->
+    <!-- The 2nd step: variable selection -->
     <md2-accordion-tab [active]="false">
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
@@ -72,7 +69,7 @@
       <gb-projection></gb-projection>
     </md2-accordion-tab>
 
-    <!-- The 3rd step -->
+    <!-- The 3rd step: data table view and variable filtering -->
     <md2-accordion-tab [active]="false">
       <md2-accordion-header>
         <div class="gb-data-selection-accordion-header">
@@ -99,30 +96,8 @@
           </div>
         </div>
       </md2-accordion-header>
-      <gb-table></gb-table>
+      <gb-data-table></gb-data-table>
     </md2-accordion-tab>
-
-    <!-- The 4th step -->
-    <md2-accordion-tab>
-      <md2-accordion-header>
-        <div class="gb-data-selection-accordion-header">
-          <div class="gb-data-selection-accordion-sub-header-1">
-            Step 4: Export the selected data
-          </div>
-          <div class="form-inline gb-data-selection-accordion-sub-header-2">
-            <div class="gb-data-selection-accordion-sub-header-3">
-              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
-              <span *ngIf="queryService.showObservationCounts"
-                    class="gb-data-selection-emphasis-text">
-                {{observationCount_2}} observations
-              </span>
-            </div>
-          </div>
-        </div>
-      </md2-accordion-header>
-      <gb-export></gb-export>
-    </md2-accordion-tab>
-
 
   </md2-accordion>
 </div>

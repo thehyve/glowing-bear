@@ -1,4 +1,5 @@
 export class FormatHelper {
+  public static readonly nullValuePlaceholder: string = 'MISSING';
 
   public static formatCountNumber(x: number): string {
     if (typeof(x) === 'number') {

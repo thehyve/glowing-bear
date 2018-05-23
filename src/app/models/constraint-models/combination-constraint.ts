@@ -9,12 +9,14 @@ export class CombinationConstraint implements Constraint {
   private _combinationState: CombinationState;
   private _isSubselection: boolean;
   private _isRoot: boolean;
+  private _textRepresentation: string;
 
   constructor() {
     this._children = [];
     this.combinationState = CombinationState.And;
     this.isRoot = false;
     this.parent = null;
+    this.textRepresentation = 'Group';
   }
 
   getClassName(): string {
@@ -168,7 +170,11 @@ export class CombinationConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'Group';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   isAnd() {

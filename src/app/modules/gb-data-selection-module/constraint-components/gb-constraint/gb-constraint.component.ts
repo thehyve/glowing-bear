@@ -8,6 +8,7 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
+import {TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'gb-constraint',
@@ -66,9 +67,10 @@ export class GbConstraintComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
-    let selectedNode = this.constraintService.selectedNode;
+    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     let droppedConstraint: Constraint =
-      this.constraintService.generateConstraintFromSelectedNode(selectedNode, selectedNode['dropMode']);
+      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
+    this.treeNodeService.selectedTreeNode = null;
 
     if (droppedConstraint) {
       if (this.constraint instanceof CombinationConstraint) {

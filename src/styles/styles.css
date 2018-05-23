@@ -7,10 +7,11 @@
 /*
   custom variables
 */
-:root  {
+:root {
   --gb-loading-bg-color: #28AA9D;
   --gb-navbar-bg-color: #fdfdfd;
-  --gb-light-orange: #ffa27f;
+  --gb-orange-light: #ffa27f;
+  --gb-orange-light-light: #ffd9cb;
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
@@ -69,25 +70,32 @@ body .gb-spinner.loading {
   visibility: visible;
 }
 
+body .hline {
+  border-bottom: solid 1px var(--gb-clinical-green-dark);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 /*
- * Style for PrimeNg alert messages
+ * Style for PrimeNg growl messages
  */
-.ui-messages.ui-messages-success {
-  /* #80bd9e: stem green */
-  background-color: rgba(51, 156, 144, 0.8);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-warn {
+  background-color: #f4b30a;
   color: white;
 }
 
-.ui-messages.ui-messages-warn {
-  background-color: rgba(255, 0, 0, 0.5);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-success {
+  background-color: #5db85c;
   color: white;
 }
 
-.ui-messages.ui-messages-error {
-  background-color: rgba(255, 0, 0, 0.5);
-  border: none;
+.gb-container .ui-growl .ui-growl-message-info {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.gb-container .ui-growl .ui-growl-message-error {
+  background-color: #d9534f;
   color: white;
 }
 
@@ -118,7 +126,7 @@ body .gb-spinner.loading {
   min-width: 300px;
 }
 
-  /* Change input placeholder text color */
+/* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;
 }
@@ -171,11 +179,15 @@ gb-nav-bar .ui-tabmenu-nav {
   background-color: #FCFCFC;
 }
 
+gb-nav-bar .ui-menuitem-text {
+  color: hsl(0, 0%, 30%);
+}
+
 /*
  * ------------------------------ Styles for gb-data-selection component -------------------------------
  */
 /*Change the color theme of the accordion in data-selection to clinical green*/
-gb-data-selection md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+gb-data-selection md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-color: var(--gb-clinical-green) !important;
   box-shadow: 0 1px 0 var(--gb-clinical-green) !important;
 }
@@ -200,6 +212,7 @@ gb-data-selection .gb-data-selection-control-btn {
 gb-selection .ui-panel-titlebar {
   padding: 1px !important;
 }
+
 /*
  * style fix for a concept constraint input
  * displayed text aligned from right to left
@@ -214,6 +227,7 @@ gb-selection .gb-concept-constraint-input > input {
 gb-selection .ui-inputtext {
   height: 2em;
 }
+
 /* Fix cutting off letters inside inputtext field.
  Rendering engines of Firefox and Safari render line height slightly different than Chrome.
  Editing component css doesn't work. */
@@ -276,8 +290,21 @@ gb-projection p-treenode {
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */
+gb-summary {
+  font-size: small;
+}
+
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
+}
+
+/*
+ * ------------------------------ Styles for gb-summary component -------------------------------
+ */
+gb-summary .gb-final-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
 }
 
 /*
@@ -319,7 +346,7 @@ gb-tree-nodes .gb-tree-container {
  */
 @keyframes gb-count-element-animation {
   from {
-    background-color: var(--gb-light-orange);
+    background-color: var(--gb-orange-light);
   }
   to {
     background-color: transparent;
@@ -340,7 +367,7 @@ gb-tree-nodes .gb-count-element-updated {
 
 /*tree node styles for filtering*/
 gb-tree-nodes .gb-highlight-treenode {
-  background-color: var(--gb-light-orange) !important;
+  background-color: var(--gb-orange-light) !important;
   border-radius: 10px !important;
   font-weight: bold !important;
 }
@@ -382,7 +409,7 @@ gb-queries .gb-query-panel {
   font-size: small;
 }
 
-gb-queries md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
+gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-width: medium;
   border-color: lightgray !important;
   box-shadow: 0 1px 0 lightgray !important;
@@ -390,7 +417,7 @@ gb-queries md2-accordion-tab.md2-accordion-tab-active>.md2-accordion-header {
   padding-left: 0.5em;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-header {
+gb-queries md2-accordion-tab > .md2-accordion-header {
   background-color: white;
   padding-left: 0.5em;
   font-size: small;
@@ -398,49 +425,60 @@ gb-queries md2-accordion-tab>.md2-accordion-header {
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-tab-body {
+gb-queries md2-accordion-tab > .md2-accordion-tab-body {
   background-color: #fbfbfb;
   padding-left: 0.5em;
   font-size: small;
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab>.md2-accordion-tab-body.ng-animating {
+gb-queries md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
   color: transparent;
 }
 
 /*
- * ------------------------------ Styles for gb-table-dimensions component -------------------------------
+ * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
  */
-gb-table-dimensions .ui-picklist-droppoint {
+gb-data-table-dimensions .ui-picklist-droppoint {
   height: 3px !important;
 }
 
-gb-table-dimensions .ui-picklist-droppoint-highlight {
+gb-data-table-dimensions .ui-picklist-droppoint-highlight {
   background: var(--gb-clinical-green-dark);
   height: 2em !important;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-caption {
+gb-data-table-dimensions .ui-picklist .ui-picklist-caption {
   font-size: small;
   font-weight: bold;
   padding: 0px;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-filter-container {
+gb-data-table-dimensions .ui-picklist .ui-picklist-filter-container {
   font-size: small;
   padding: 0px 0px 0px .5em;
 }
 
-gb-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
+gb-data-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
   padding: 1px;
   font-size: small;
 }
 
 /*
- * ------------------------------ Styles for gb-table-grid component -------------------------------
+ * ------------------------------ Styles for gb-data-table-grid component -------------------------------
  */
-gb-table-grid .ui-resizable-column {
+gb-data-table-grid .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}
+
+/*
+ * ------------------------------ Styles for gb-cross-table component -------------------------------
+ */
+gb-cross-table .ui-resizable-column {
   background-color: white;
   border: solid lightgray 1px;
   text-align: center;

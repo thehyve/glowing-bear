@@ -8,7 +8,7 @@ import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedig
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
-import {PatientSet} from '../../models/constraint-models/patient-set';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
@@ -16,6 +16,8 @@ import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transm
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {CrossTable} from '../../models/table-models/cross-table';
 
 @Injectable()
 export class TransmartResourceService {
@@ -470,7 +472,7 @@ export class TransmartResourceService {
   }
 
   // -------------------------------------- patient set calls --------------------------------------
-  savePatientSet(name: string, constraint: Constraint): Observable<PatientSet> {
+  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = constraint.toQueryObject();
     return this.postCall(urlPart, body, null);
@@ -488,7 +490,7 @@ export class TransmartResourceService {
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
     const rowDims = tableState.rowDimensions.filter((dim: string) => {
       return !highDims.includes(dim);
     });
@@ -501,45 +503,18 @@ export class TransmartResourceService {
       rowDimensions: rowDims,
       columnDimensions: colDims,
       offset: offset,
-      limit: limit
+      limit: limit,
+      rowSort: tableState.rowSort,
+      columnSort: tableState.columnSort
     };
-    if (tableState.rowSort) {
-      let sort = [];
-      tableState.rowSort.forEach((val, key) => {
-        sort.push([key, val]);
-      });
-      body['rowSort'] = sort;
-      if (sort.length === 1) {
-        let dim = sort[0][0];
-        let order = sort[0][1];
-        let sortObj = {};
-        sortObj[dim] = order;
-        body['columnSort'] = sortObj;
-      }
-    }
-    if (tableState.columnSort) {
-      let sort = [];
-      tableState.columnSort.forEach((val, key) => {
-        sort.push([key, val]);
-      });
-      body['columnSort'] = sort;
-      if (sort.length === 1) {
-        let dim = sort[0][0];
-        let order = sort[0][1];
-        let sortObj = {};
-        sortObj[dim] = order;
-        body['columnSort'] = sortObj;
-      }
-
-    }
     return this.postCall(urlPart, body, null);
   }
 
   getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
-    const urlPart = `dimensions/study/elements?constraint=${JSON.stringify(constraint.toQueryObject())}`;
-    // const body = {constraint: constraint.toQueryObject()};
+    const urlPart = `dimensions/study/elements`;
+    const body = {constraint: constraint.toQueryObject()};
     const responseField = 'elements';
-    return this.getCall(urlPart, responseField);
+    return this.postCall(urlPart, body, responseField);
   }
 
   getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
@@ -551,5 +526,26 @@ export class TransmartResourceService {
     } else {
       return Observable.of([]);
     }
+  }
+
+  getCrossTable(crossTable: CrossTable): Observable<TransmartCrossTable> {
+    const baseConstraint = crossTable.constraint;
+    const rowHeaderConstraints = crossTable.rowHeaderConstraints;
+    const columnHeaderConstraints = crossTable.columnHeaderConstraints;
+    const urlPart = 'observations/crosstable';
+    let rowConstraintArr = [];
+    rowHeaderConstraints.forEach((constraint: Constraint) => {
+      rowConstraintArr.push(constraint.toQueryObject());
+    });
+    let columnConstraintArr = [];
+    columnHeaderConstraints.forEach((constraint: Constraint) => {
+      columnConstraintArr.push(constraint.toQueryObject());
+    });
+    const body = {
+      subjectConstraint: baseConstraint.toQueryObject(),
+      rowConstraints: rowConstraintArr,
+      columnConstraints: columnConstraintArr
+    }
+    return this.postCall(urlPart, body, null);
   }
 }

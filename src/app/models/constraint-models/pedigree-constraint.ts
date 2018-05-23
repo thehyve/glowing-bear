@@ -14,37 +14,46 @@ export class PedigreeConstraint implements Constraint {
   private _relationType: PedigreeState;
   private _rightHandSideConstraint: CombinationConstraint;
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
   constructor(label: string) {
     this.parent = null;
     this.label = label;
+    let relation = '';
     switch (label) {
       case 'PAR': {
         this.relationType = PedigreeState.Parent;
+        relation = 'Parent of ';
         break;
       }
       case 'CHI': {
         this.relationType = PedigreeState.Child;
+        relation = 'Child of ';
         break;
       }
       case 'SPO': {
         this.relationType = PedigreeState.Spouse;
+        relation = 'Spouse of ';
         break;
       }
       case 'SIB': {
         this.relationType = PedigreeState.Sibling;
+        relation = 'Sibling of ';
         break;
       }
       case 'MZ': {
         this.relationType = PedigreeState.MonozygoticTwin;
+        relation = 'Monozygotic Twin to ';
         break;
       }
       case 'DZ': {
         this.relationType = PedigreeState.DizygoticTwin;
+        relation = 'Dizygotic Twin to ';
         break;
       }
       case 'COT': {
         this.relationType = PedigreeState.UnknownTwin;
+        relation = 'Twin with unknown zygosity to ';
         break;
       }
     }
@@ -52,6 +61,7 @@ export class PedigreeConstraint implements Constraint {
     this.rightHandSideConstraint.parent = this;
     this.biological = undefined;
     this.shareHousehold = undefined;
+    this.textRepresentation = `Pedigree: ${relation}`;
   }
 
   getClassName(): string {
@@ -89,38 +99,11 @@ export class PedigreeConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    let relation = '';
-    switch (this.relationType) {
-      case PedigreeState.Parent: {
-        relation = 'Parent of ';
-        break;
-      }
-      case PedigreeState.Child: {
-        relation = 'Child of ';
-        break;
-      }
-      case PedigreeState.Spouse: {
-        relation = 'Spouse of ';
-        break;
-      }
-      case PedigreeState.Sibling: {
-        relation = 'Sibling of ';
-        break;
-      }
-      case PedigreeState.DizygoticTwin: {
-        relation = 'Dizygotic Twin to ';
-        break;
-      }
-      case PedigreeState.MonozygoticTwin: {
-        relation = 'Monozygotic Twin to ';
-        break;
-      }
-      case PedigreeState.UnknownTwin: {
-        relation = 'Twin with unknown zygosity to ';
-        break;
-      }
-    }
-    return `Pedigree: ${relation}`;
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get rightHandSideConstraint(): CombinationConstraint {

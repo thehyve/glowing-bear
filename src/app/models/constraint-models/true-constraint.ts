@@ -4,9 +4,11 @@ export class TrueConstraint implements Constraint {
 
   private _parent: Constraint;
   private _isSubselection: boolean;
+  private _textRepresentation: string;
 
   constructor() {
     this.parent = null;
+    this.textRepresentation = 'True';
   }
 
   getClassName(): string {
@@ -35,7 +37,11 @@ export class TrueConstraint implements Constraint {
   }
 
   get textRepresentation(): string {
-    return 'True';
+    return this._textRepresentation;
+  }
+
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
   }
 
   get isSubselection(): boolean {
