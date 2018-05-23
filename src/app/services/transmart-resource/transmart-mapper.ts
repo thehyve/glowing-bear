@@ -100,7 +100,7 @@ export class TransmartMapper {
     dataTable.currentPage = requestedOffset / dataTable.limit + 1;
     dataTable.offset = requestedOffset;
 
-    // check if it is a last page 
+    // check if it is a last page
     let rowCount = transmartTable['row count'];
     dataTable.isLastPage = rowCount != null;
 

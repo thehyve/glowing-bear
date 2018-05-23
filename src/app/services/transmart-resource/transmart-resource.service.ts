@@ -490,7 +490,7 @@ export class TransmartResourceService {
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type', 'end time'];
+    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
     const rowDims = tableState.rowDimensions.filter((dim: string) => {
       return !highDims.includes(dim);
     });
