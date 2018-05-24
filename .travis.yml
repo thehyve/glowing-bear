@@ -20,7 +20,6 @@ env:
     - GB_BASE=$TRAVIS_BUILD_DIR
 
 before_install:
-  - pip install --user codecov
   - sudo chown root /opt/google/chrome/chrome-sandbox
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - export TZ=Europe/Amsterdam
@@ -37,7 +36,7 @@ install:
 script:
   - travis_retry ${GRADLE_SCRIPT} check
 after_success:
-  - ng test --code-coverage --single-run
+#  - ng test --code-coverage --single-run
   - codecov
 
 notifications:
