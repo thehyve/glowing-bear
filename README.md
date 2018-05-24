@@ -1,5 +1,6 @@
 # GlowingBear
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=master)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 A cohort selection user interface for [TranSMART].
 
