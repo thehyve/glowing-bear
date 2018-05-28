@@ -5,7 +5,6 @@ import {FormsModule} from '@angular/forms';
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 
-import {EndpointService} from './services/endpoint.service';
 import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
 import {ResourceService} from './services/resource.service';
 import {TreeNodeService} from './services/tree-node.service';
@@ -26,14 +25,23 @@ import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
+import {TableService} from './services/table.service';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
 
-export function initConfig(config: AppConfig) {
-  return () => config.load();
+import {AuthModule} from 'angular-auth-oidc-client';
+import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
+import {AuthenticationService} from './services/authentication.service';
+
+export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
+  return () => config.load().then(() => authService.load());
 }
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    GbAutoLoginComponent
   ],
   imports: [
     BrowserModule,
@@ -46,10 +54,10 @@ export function initConfig(config: AppConfig) {
     GbDataSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
-    GbExportModule
+    GbExportModule,
+    AuthModule.forRoot()
   ],
   providers: [
-    EndpointService,
     ResourceService,
     TransmartResourceService,
     TreeNodeService,
@@ -62,12 +70,17 @@ export function initConfig(config: AppConfig) {
     ExportService,
     DatePipe,
     AppConfig,
+    AuthenticationService,
     {
       provide: APP_INITIALIZER,
-      useFactory: initConfig,
-      deps: [AppConfig],
+      useFactory: initConfigAndAuth,
+      deps: [AppConfig, AuthenticationService],
       multi: true
-    }
+    }, {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ApiHttpInterceptor,
+      multi: true
+    },
   ],
   bootstrap: [AppComponent]
 })

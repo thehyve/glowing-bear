@@ -44,15 +44,6 @@ export class ResourceService {
     console.error(res['error']);
   }
 
-
-  /**
-   * Logout from the authserver with a cookie attached
-   * @returns {Observable<{}>}
-   */
-  logout(): Observable<{}> {
-    return this.transmartResourceService.logout();
-  }
-
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.

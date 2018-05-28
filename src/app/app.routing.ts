@@ -1,5 +1,6 @@
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
+import {GbAutoLoginComponent} from './gb-auto-login.component';
 
 // Route Configuration
 export const routes: Routes = [
@@ -19,6 +20,10 @@ export const routes: Routes = [
   {
     path: 'export',
     loadChildren: './modules/gb-export-module/gb-export.module#GbExportModule'
+  },
+  {
+    path: 'autologin',
+    component: GbAutoLoginComponent
   }
 ];
 

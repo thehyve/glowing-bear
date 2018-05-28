@@ -8,7 +8,6 @@ import {
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {EndpointService} from '../../services/endpoint.service';
 import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
@@ -52,10 +51,6 @@ describe('GbDataSelectionComponent', () => {
         TooltipModule
       ],
       providers: [
-        {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
-        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
