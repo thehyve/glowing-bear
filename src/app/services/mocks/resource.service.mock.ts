@@ -61,4 +61,8 @@ export class ResourceServiceMock {
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
     return Observable.of({});
   }
+
+  logout() {
+    return Observable.of({});
+  }
 }

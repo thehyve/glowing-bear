@@ -1,9 +1,9 @@
-import {TestBed, async} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture, tick, fakeAsync} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
 import {AppConfig} from './config/app.config';
-import {APP_INITIALIZER} from '@angular/core';
+import {APP_INITIALIZER, DebugElement} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -37,12 +37,18 @@ import {ExportService} from './services/export.service';
 import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
 
-
 export function initConfig(config: AppConfig) {
   return () => config.load();
 }
 
 describe('AppComponent', () => {
+
+  let fixture: ComponentFixture<AppComponent>;
+  let debugElement: DebugElement;
+  let component: AppComponent;
+  let resourceService: ResourceService;
+  let messageService: MessageService;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -120,11 +126,35 @@ describe('AppComponent', () => {
         }
       ]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    debugElement = fixture.debugElement;
+    component = fixture.componentInstance;
+    resourceService = TestBed.get(ResourceService);
+    messageService = TestBed.get(MessageService);
   }));
 
   it('should be created', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   }));
+
+  it('should logout', () => {
+    spyOn(component, 'logout').and.callThrough();
+    spyOn(resourceService, 'logout').and.callThrough();
+    component.logout();
+    expect(component.logout).toHaveBeenCalled();
+    expect(resourceService.logout).toHaveBeenCalled();
+  });
+
+  it('should get messages', () => {
+    spyOnProperty(component, 'messages', 'get').and.callThrough();
+    expect(component.messages).toBe(messageService.messages);
+  });
+
+  it('should set messages', () => {
+    const dummy = [{foo: 'bar'}];
+    spyOnProperty(component, 'messages', 'set').and.callThrough();
+    component.messages = dummy;
+    expect(component.messages).toBe(dummy);
+  });
 });
