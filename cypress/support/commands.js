@@ -36,3 +36,8 @@ Cypress.Commands.add('drag', (nodeName, options = {}) => {
 Cypress.Commands.add('drop', (inputNum, options = {}) => {
   cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop');
 });
+
+Cypress.Commands.add('removeChip', (chipName, options = {}) => {
+  cy.contains(chipName).parent().children('.fa-close').click();
+});
+

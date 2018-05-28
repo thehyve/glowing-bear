@@ -28,9 +28,9 @@ Run `ng test` to execute the unit tests via [Karma], run `ng test --code-coverag
 
 For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
 [Cypress] is install as part of the your `npm install` command. 
-To run the tests `npm run e2e` to run using the headless browser or `npm run cypress` to launch the GUI.
-Currently the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
-
+To run the tests using the headless browser `npm run e2e` or `npm run cypress` to launch the GUI.
+by default the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
+WARNING: tests alter state. All saved queries are deleted.
 
 ### Further help
 

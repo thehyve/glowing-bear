@@ -30,11 +30,12 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
   cy.drag('categorical_10 ').drop(1);
 
   cy.contains('Stomach').should('be.visible');
-  cy.get('.fa-close').eq(8).click();
-  cy.get('.fa-close').eq(8).click();
-  cy.get('.fa-close').eq(8).click();
-  cy.get('.fa-close').eq(8).click();
-  cy.get('.fa-close').eq(8).click();
+
+  cy.removeChip('Stomach');
+  cy.removeChip('Lung');
+  cy.removeChip('Head');
+  cy.removeChip('Liver');
+
   cy.get('.gb-data-selection-update-btn').eq(0).click();
 });
 
@@ -51,10 +52,11 @@ when("I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TR
 });
 
 when("I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10", () => {
-  cy.get('.ui-tree-toggler').eq(1).click();
-  cy.get('.ui-tree-toggler').eq(8).click();
-  cy.get('.ui-tree-toggler').eq(11).click();
-  cy.get('.ui-tree-toggler').eq(10).click();
+  cy.toggleNode('Public Studies ')
+    .toggleNode('Oracle_1000_Patient ')
+    .toggleNode('Demographics ')
+    .toggleNode('Numerical Variables ');
+
   cy.contains('Age ').trigger('dragstart');
   cy.get('input[placeholder="add criterion"]').eq(0).trigger('drop');
   cy.get('input[placeholder="min:50"]').type('50');
