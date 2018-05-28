@@ -18,6 +18,7 @@ export class CrossTableServiceMock {
 
   constructor() {
     this.crossTable = new CrossTable();
+    this.selectedConstraintCell = null;
     this.mockDataInit();
   }
 
