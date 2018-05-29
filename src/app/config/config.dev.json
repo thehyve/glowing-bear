@@ -8,7 +8,7 @@
   "show-observation-counts": true,
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
-  "instant-counts-update-3": false
+  "instant-counts-update-3": false,
   "oidc-server-url": "http://localhost:8081/auth/realms/master",
   "oidc-scopes": "openid",
   "oidc-client-id": "someid"
