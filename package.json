@@ -10,7 +10,8 @@
     "test": "ng test",
     "testOnce": "ng test --single-run",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "report-coverage": "codecov"
   },
   "private": true,
   "dependencies": {
