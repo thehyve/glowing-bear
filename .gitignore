@@ -55,5 +55,5 @@ src/app/config/env.json
 
 # yarn
 *.log
-yarn.lock
+#yarn.lock
 #yarn-error.log*

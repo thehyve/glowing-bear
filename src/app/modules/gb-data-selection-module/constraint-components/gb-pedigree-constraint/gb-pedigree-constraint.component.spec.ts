@@ -61,7 +61,6 @@ describe('GbPedigreeConstraintComponent', () => {
   });
 
   it('should be created', () => {
-    // expect(component).toBeTruthy();
-    expect(true).toBe(true);
+    expect(component).toBeTruthy();
   });
 });
