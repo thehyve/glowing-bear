@@ -454,13 +454,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.updateConceptValues();
   }
 
-  onUnselectCategories(category) {
-    // For some funny reason, the selection model always lags behind the current selection
-    const index = this.selectedCategories.indexOf(category);
-    this.selectedCategories.splice(index, 1);
-    this.updateConceptValues();
-  }
-
   /*
    * -------------------- event handlers: trial-visit autocomplete --------------------
    */
