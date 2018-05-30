@@ -13,6 +13,7 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {Observable} from 'rxjs/Observable';
 import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
 import {FormatHelper} from '../utilities/FormatHelper';
+import {CombinationState} from '../models/constraint-models/combination-state';
 
 describe('CrossTableService', () => {
   let crossTableService: CrossTableService;
@@ -92,6 +93,23 @@ describe('CrossTableService', () => {
       expect(spy6).toHaveBeenCalled();
     });
 
+  it('should adjust combination constraint text representation', () => {
+    let combi = new CombinationConstraint();
+    combi.addChild(new TrueConstraint());
+    let spy1 = spyOn(crossTableService, 'adjustCombinationConstraintTextRepresentation').and.callThrough();
+    let description = crossTableService.adjustCombinationConstraintTextRepresentation(combi);
+    expect(spy1).toHaveBeenCalled();
+    expect(description).toBe(combi.textRepresentation);
+
+    let categoricalConcept = new ConceptConstraint();
+    let concept = new Concept();
+    concept.type = ConceptType.CATEGORICAL;
+    categoricalConcept.concept = concept;
+    combi.addChild(categoricalConcept);
+    description = crossTableService.adjustCombinationConstraintTextRepresentation(combi);
+    expect(description).toBe(categoricalConcept.textRepresentation);
+  })
+
   it('should verify updateValueConstraints for combination constraint',
     () => {
       let categoricalConcept = new ConceptConstraint();
@@ -104,12 +122,25 @@ describe('CrossTableService', () => {
       let retrieveAggregateSpy = spyOn<any>(crossTableService, 'retrieveAggregate').and.stub();
       spyOn(combi, 'isAnd').and.callThrough();
       let catChildSpy = spyOn(constraintService, 'isCategoricalConceptConstraint').and.callThrough();
+      let addValSpy = spyOn(crossTableService.crossTable, 'addValueConstraint').and.stub();
       crossTableService.updateValueConstraints([combi]);
       expect(crossTableService.updateCells).toHaveBeenCalled();
       expect(retrieveAggregateSpy).toHaveBeenCalled();
       expect(catChildSpy).toHaveBeenCalled();
       expect(constraintService.isCategoricalConceptConstraint).toHaveBeenCalled();
       expect(combi.isAnd).toHaveBeenCalled();
+
+      combi.addChild(new TrueConstraint());
+      crossTableService.updateValueConstraints([combi]);
+      expect(retrieveAggregateSpy).toHaveBeenCalled();
+
+      combi.addChild(categoricalConcept);
+      crossTableService.updateValueConstraints([combi]);
+      expect(addValSpy).toHaveBeenCalled();
+
+      combi.combinationState = CombinationState.Or;
+      crossTableService.updateValueConstraints([combi]);
+      expect(addValSpy).toHaveBeenCalled();
     });
 
   it('should verify updateValueConstraints for other constraint',
@@ -138,6 +169,18 @@ describe('CrossTableService', () => {
     expect(spy3).toHaveBeenCalled();
   });
 
+  it('should pause updating cells when value constraints are not mapped', () => {
+    let spy1 =
+      spyOnProperty(crossTableService, 'areValueConstraintsMapped', 'get')
+        .and.callFake(() => {
+        return false;
+      });
+    let spy2 = spyOn(window, 'setTimeout').and.stub();
+    crossTableService.updateCells();
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  })
+
   it('should check if a constraint is valid for cross table', () => {
     let categoricalConcept = new ConceptConstraint();
     let concept = new Concept();
@@ -145,6 +188,7 @@ describe('CrossTableService', () => {
     categoricalConcept.concept = concept;
     let combi = new CombinationConstraint();
     combi.addChild(categoricalConcept);
+    combi.addChild(new TrueConstraint());
     let spy1 = spyOn(crossTableService, 'isValidConstraint').and.callThrough();
     let spy2 = spyOn(constraintService, 'isCategoricalConceptConstraint').and.callThrough();
     let spy3 =
@@ -156,6 +200,14 @@ describe('CrossTableService', () => {
     expect(result).toBe(true);
     result = crossTableService.isValidConstraint(new TrueConstraint());
     expect(result).toBe(false);
+
+    combi.addChild(categoricalConcept);
+    result = crossTableService.isValidConstraint(combi);
+    expect(result).toBe(false);
+
+    combi.combinationState = CombinationState.Or;
+    result = crossTableService.isValidConstraint(combi);
+    expect(result).toBe(false);
   })
 
   it('should check if value constraints are mapped', function () {
@@ -163,6 +215,24 @@ describe('CrossTableService', () => {
     let result = crossTableService.areValueConstraintsMapped;
     expect(spy1).toHaveBeenCalled();
     expect(result).toBe(true);
+
+    let dummy = new TrueConstraint();
+    crossTableService.crossTable.rowConstraints = [dummy];
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(false);
+
+    crossTableService.crossTable.valueConstraints.set(dummy, []);
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(true);
+
+    crossTableService.crossTable.rowConstraints = [];
+    crossTableService.crossTable.columnConstraints = [dummy];
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(true);
+
+    crossTableService.crossTable.valueConstraints.clear();
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(false);
   })
 
   it('should get and set selectedConstraintCell', () => {

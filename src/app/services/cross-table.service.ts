@@ -177,27 +177,25 @@ export class CrossTableService {
     }
   }
 
-  private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
+  public adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
     let description = constraint.textRepresentation;
-    if (constraint.isAnd()) {
-      let numValueConstraints = 0;
-      let numCatConceptConstraints = 0;
-      let valChild = null;
-      let catChild = null;
-      constraint.children.forEach((child: Constraint) => {
-        if (child.getClassName() === 'ValueConstraint') {
-          numValueConstraints++;
-          valChild = child;
-        } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
-          numCatConceptConstraints++;
-          catChild = child;
-        }
-      });
-      if (numValueConstraints === 1) {
-        description = valChild.textRepresentation;
-      } else if (numCatConceptConstraints === 1) {
-        description = catChild.textRepresentation;
+    let numValueConstraints = 0;
+    let numCatConceptConstraints = 0;
+    let valChild = null;
+    let catChild = null;
+    constraint.children.forEach((child: Constraint) => {
+      if (child.getClassName() === 'ValueConstraint') {
+        numValueConstraints++;
+        valChild = child;
+      } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
+        numCatConceptConstraints++;
+        catChild = child;
       }
+    });
+    if (numValueConstraints === 1) {
+      description = valChild.textRepresentation;
+    } else if (numCatConceptConstraints === 1) {
+      description = catChild.textRepresentation;
     }
 
     return description;
