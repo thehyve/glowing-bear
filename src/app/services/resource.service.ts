@@ -119,10 +119,6 @@ export class ResourceService {
       });
   }
 
-  // getAggregate1(constraint: Constraint): Observable<Aggregate> {
-  //
-  // }
-
   // -------------------------------------- trial visit calls --------------------------------------
   /**
    * Given a constraint, normally a concept or a study constraint, return the corresponding trial visit list

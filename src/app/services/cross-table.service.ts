@@ -167,7 +167,7 @@ export class CrossTableService {
       let val = new ValueConstraint();
       val.valueType = 'STRING';
       val.operator = '=';
-      val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      val.value = category;
       val.textRepresentation = val.value.toString();
       let combi = new CombinationConstraint();
       combi.addChild(peerConstraint);

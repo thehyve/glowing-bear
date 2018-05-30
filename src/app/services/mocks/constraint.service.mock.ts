@@ -1,5 +1,7 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {ConceptType} from '../../models/constraint-models/concept-type';
 
 export class ConstraintServiceMock {
 
@@ -39,6 +41,12 @@ export class ConstraintServiceMock {
   }
 
   public isCategoricalConceptConstraint(constraint: Constraint): boolean {
-    return true;
+    let result = false;
+    if (constraint.getClassName() === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
   }
+
 }
