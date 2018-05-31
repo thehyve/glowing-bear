@@ -8,10 +8,6 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Aggregate} from '../models/constraint-models/aggregate';
-import {ConstraintService} from './constraint.service';
-import {Row} from '../models/table-models/row';
-import {FormatHelper} from '../utilities/format-helper';
-import {Col} from '../models/table-models/col';
 
 @Injectable()
 export class CrossTableService {
@@ -30,9 +26,8 @@ export class CrossTableService {
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
-  constructor(private resourceService: ResourceService,
-              private constraintService: ConstraintService) {
-    this.crossTable = new CrossTable();
+  constructor(private resourceService: ResourceService) {
+    this._crossTable = new CrossTable();
   }
 
   /**
@@ -58,7 +53,7 @@ export class CrossTableService {
     for (let constraint of constraints) {
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
-      if (ConstraintService.isCategoricalConceptConstraint(constraint)) {
+      if (ConceptConstraint.isCategoricalConceptConstraint(constraint)) {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
@@ -68,7 +63,7 @@ export class CrossTableService {
           let numCategoricalConceptConstraints = 0;
           let categoricalChild = null;
           combiConstraint.children.forEach((child: Constraint) => {
-            if (ConstraintService.isCategoricalConceptConstraint(child)) {
+            if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
               numCategoricalConceptConstraints++;
               categoricalChild = child;
             }
@@ -97,7 +92,7 @@ export class CrossTableService {
       this.crossTable.updateHeaderConstraints();
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
-          this.crossTable = crossTable;
+          this._crossTable = crossTable;
         });
     } else {
       window.setTimeout((function () {
@@ -112,7 +107,7 @@ export class CrossTableService {
    * @returns {boolean}
    */
   public isValidConstraint(constraint: Constraint): boolean {
-    return ConstraintService.isCategoricalConceptConstraint(constraint)
+    return ConceptConstraint.isCategoricalConceptConstraint(constraint)
       || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
   }
 
@@ -131,7 +126,7 @@ export class CrossTableService {
         let numCategoricalConceptConstraints = 0;
         let categoricalChild: ConceptConstraint = null;
         combiConstraint.children.forEach((child: Constraint) => {
-          if (ConstraintService.isCategoricalConceptConstraint(child)) {
+          if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
             numCategoricalConceptConstraints++;
             categoricalChild = <ConceptConstraint>child;
           }
@@ -187,7 +182,7 @@ export class CrossTableService {
       if (child.className === 'ValueConstraint') {
         numValueConstraints++;
         valChild = child;
-      } else if (ConstraintService.isCategoricalConceptConstraint(child)) {
+      } else if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
         numCatConceptConstraints++;
         catChild = child;
       }
@@ -222,10 +217,6 @@ export class CrossTableService {
 
   get crossTable(): CrossTable {
     return this._crossTable;
-  }
-
-  set crossTable(value: CrossTable) {
-    this._crossTable = value;
   }
 
   get selectedConstraintCell(): GbDraggableCellComponent {

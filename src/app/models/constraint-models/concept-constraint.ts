@@ -3,8 +3,10 @@ import {Concept} from './concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
+import {ConceptType} from './concept-type';
 
 export class ConceptConstraint extends Constraint {
+
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
@@ -20,6 +22,14 @@ export class ConceptConstraint extends Constraint {
   private _applyTrialVisitConstraint = false;
   private _trialVisitConstraint: TrialVisitConstraint;
 
+  public static isCategoricalConceptConstraint(constraint: Constraint): boolean {
+    let result = false;
+    if (constraint.className === 'ConceptConstraint') {
+      let conceptConstraint = <ConceptConstraint>constraint;
+      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    }
+    return result;
+  }
 
   constructor() {
     super();
