@@ -76,6 +76,7 @@ task yarnCodecov(type: YarnTask, dependsOn: 'yarn') {
 
 clean {
     delete fileTree(dir: 'dist')
+    delete 'coverage'
 }
 
 distributions {
