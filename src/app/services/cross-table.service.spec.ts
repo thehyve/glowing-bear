@@ -230,45 +230,27 @@ describe('CrossTableService', () => {
 });
 
 
-
-
-
 function combineCategoricalValueConstraints(conceptCode1: string, value1: string, conceptCode2, value2: string): any {
-  if (conceptCode1) {
-    return {
-      type: 'and', args: [
-        {type: 'and', args: [
-          {type: 'concept', conceptCode: conceptCode1},
-          {type: 'value', valueType: 'STRING', operator: '=', value: value1}
-          ]},
-        {type: 'and', args: [
-          {type: 'concept', conceptCode: conceptCode2},
-          {type: 'value', valueType: 'STRING', operator: '=', value: value2}
-          ]}
-      ]
-    };
-  } else {
-    return {
-      type: 'and', args: [
-        {
-          type: 'subselection', constraint: {
-            type: 'and', args: [
-              {type: 'concept', conceptCode: conceptCode1},
-              {type: 'value', valueType: 'STRING', operator: '=', value: value1}
-            ]
-          }
-        },
-        {
-          type: 'subselection', constraint: {
-            type: 'and', args: [
-              {type: 'concept', conceptCode: conceptCode2},
-              {type: 'value', valueType: 'STRING', operator: '=', value: value2}
-            ]
-          }
-        },
-      ]
-    };
-  }
+  return {
+    type: 'and', args: [
+      {
+        type: 'subselection', dimension: 'patient', constraint: {
+          type: 'and', args: [
+            {type: 'concept', conceptCode: conceptCode1},
+            {type: 'value', valueType: 'STRING', operator: '=', value: value1}
+          ]
+        }
+      },
+      {
+        type: 'subselection', dimension: 'patient', constraint: {
+          type: 'and', args: [
+            {type: 'concept', conceptCode: conceptCode2},
+            {type: 'value', valueType: 'STRING', operator: '=', value: value2}
+          ]
+        }
+      },
+    ]
+  };
 }
 
 
