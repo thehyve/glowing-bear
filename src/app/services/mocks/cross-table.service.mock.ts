@@ -230,7 +230,7 @@ export class CrossTableServiceMock {
           }
         }
       }
-      this.rows.push(row);
+      this.crossTable.rows.push(row);
     }
 
     // generate the data rows
@@ -295,13 +295,13 @@ export class CrossTableServiceMock {
           value: 'Num'
         });
       }
-      this.rows.push(dataRow);
+      this.crossTable.rows.push(dataRow);
     }
 
     // generate the cols serving as indices for rows
-    for (let field in this.rows[0].data) {
+    for (let field in this.crossTable.rows[0].data) {
       let col = new Col(' - ', field);
-      this.cols.push(col);
+      this.crossTable.cols.push(col);
     }
   }
 
@@ -370,11 +370,4 @@ export class CrossTableServiceMock {
     return this.crossTable.columnConstraints;
   }
 
-  get rows(): Array<Row> {
-    return this.crossTable.rows;
-  }
-
-  get cols(): Array<Col> {
-    return this.crossTable.cols;
-  }
 }
