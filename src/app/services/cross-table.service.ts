@@ -248,12 +248,4 @@ export class CrossTableService {
     return this.crossTable.valueConstraints;
   }
 
-  get rows(): Array<Row> {
-    return this.crossTable.rows;
-  }
-
-  get cols(): Array<Col> {
-    return this.crossTable.cols;
-  }
-
 }

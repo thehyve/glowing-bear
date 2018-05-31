@@ -252,8 +252,4 @@ describe('CrossTableService', () => {
     expect(crossTableService.valueConstraints).toBe(crossTableService.crossTable.valueConstraints);
   });
 
-  it('should get rows and cols', () => {
-    expect(crossTableService.rows).toBe(crossTableService.crossTable.rows);
-    expect(crossTableService.cols).toBe(crossTableService.crossTable.cols);
-  });
 });

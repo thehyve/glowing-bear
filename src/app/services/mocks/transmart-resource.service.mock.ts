@@ -37,4 +37,8 @@ export class TransmartResourceServiceMock {
   getExportJobs(): Observable<ExportJob[]> {
     return Observable.of(this.exportJobs);
   }
+
+  logout() {
+    return Observable.of({});
+  }
 }
