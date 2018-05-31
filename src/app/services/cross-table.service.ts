@@ -8,6 +8,7 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Aggregate} from '../models/constraint-models/aggregate';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
 
 @Injectable()
 export class CrossTableService {
@@ -25,6 +26,24 @@ export class CrossTableService {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
+
+  static getConstraintsBelow(current: Constraint, list: Constraint[]): Constraint[] {
+    let below = [];
+    let index = list.indexOf(current);
+    for (let i = index + 1; i < list.length; i++) {
+      below.push(list[i]);
+    }
+    return below;
+  }
+
+  static getConstraintsAbove(current: Constraint, list: Constraint[]): Constraint[] {
+    let above = [];
+    let index = list.indexOf(current);
+    for (let i = index - 1; i >= 0; i--) {
+      above.push(list[i]);
+    }
+    return above;
+  }
 
   constructor(private resourceService: ResourceService) {
     this._crossTable = new CrossTable();
@@ -76,10 +95,63 @@ export class CrossTableService {
       }
       // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addValueConstraint(constraint, constraint);
+        this.crossTable.addValueConstraints(constraint, [constraint]);
       }
     }
     this.updateCells();
+  }
+
+  public updateHeaderConstraints() {
+    this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
+    this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+  }
+
+  public crossConstraints(constraints: Array<Constraint>): Array<Constraint> {
+    if (constraints.length > 0) {
+      let combinations = [];
+      // first constraint
+      let below0 = CrossTableService.getConstraintsBelow(constraints[0], constraints);
+      let valueRepetition0 = 1;
+      for (let b of below0) {
+        valueRepetition0 = valueRepetition0 * this.valueConstraints.get(b).length;
+      }
+      let vals0 = this.valueConstraints.get(constraints[0]);
+      for (let val of vals0) {
+        for (let i = 0; i < valueRepetition0; i++) {
+          let c = new CombinationConstraint();
+          c.addChild(val);
+          // FIXME c.mark = ConstraintMark.SUBJECT;
+          combinations.push(c);
+        }
+      }
+      // the remaining constraints
+      let index = 0;
+      for (let i = 1; i < constraints.length; i++) {
+        let above = CrossTableService.getConstraintsAbove(constraints[i], constraints);
+        let selfRepetition = 1;
+        for (let a of above) {
+          selfRepetition = selfRepetition * this.valueConstraints.get(a).length;
+        }
+        let below = CrossTableService.getConstraintsBelow(constraints[i], constraints);
+        let valueRepetition = 1;
+        for (let b of below) {
+          valueRepetition = valueRepetition * this.valueConstraints.get(b).length;
+        }
+        let vals = this.valueConstraints.get(constraints[i]);
+        for (let j = 0; j < selfRepetition; j++) {
+          for (let val of vals) {
+            for (let k = 0; k < valueRepetition; k++) {
+              combinations[index].addChild(val);
+              let nIndex = index + 1;
+              index = (nIndex === combinations.length) ? 0 : nIndex;
+            }
+          }
+        }
+      }
+      return combinations;
+    } else {
+      return [new TrueConstraint()];
+    }
   }
 
   /**
@@ -89,7 +161,7 @@ export class CrossTableService {
    */
   public updateCells() {
     if (this.areValueConstraintsMapped) {
-      this.crossTable.updateHeaderConstraints();
+      this.updateHeaderConstraints();
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
           this._crossTable = crossTable;
@@ -157,19 +229,19 @@ export class CrossTableService {
 
   private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
                                              peerConstraint: Constraint) {
-    let categories = categoricalAggregate.values;
-    for (let category of categories) {
+    let valueConstraints = categoricalAggregate.values.map((value) => {
       let val = new ValueConstraint();
       val.valueType = 'STRING';
       val.operator = '=';
-      val.value = category;
+      val.value = value;
       val.textRepresentation = val.value.toString();
       let combi = new CombinationConstraint();
       combi.addChild(peerConstraint);
       combi.addChild(val);
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
-      this.crossTable.addValueConstraint(peerConstraint, combi);
-    }
+      return combi;
+    });
+    this.crossTable.addValueConstraints(peerConstraint, valueConstraints);
   }
 
   public adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
@@ -197,22 +269,12 @@ export class CrossTableService {
   }
 
   get areValueConstraintsMapped(): boolean {
-    let mapped = true;
-    this.rowConstraints.forEach((con: Constraint) => {
-      let hasIt = this.valueConstraints.has(con);
-      if (!hasIt) {
-        mapped = false;
-      }
-    });
-    if (mapped) {
-      this.columnConstraints.forEach((con: Constraint) => {
-        let hasIt = this.valueConstraints.has(con);
-        if (!hasIt) {
-          mapped = false;
-        }
-      });
-    }
-    return mapped;
+    return  this.rowConstraints.every((constraint: Constraint) => {
+              return this.valueConstraints.has(constraint);
+            }) &&
+            this.columnConstraints.every((constraint: Constraint) => {
+              return this.valueConstraints.has(constraint);
+            });
   }
 
   get crossTable(): CrossTable {

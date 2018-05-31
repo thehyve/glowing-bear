@@ -330,9 +330,10 @@ export class ResourceService {
   // -------------------------------------- cross table ---------------------------------------------
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
     return this.transmartResourceService
-      .getCrossTable(crossTable)
+      .getCrossTable(crossTable.constraint, crossTable.rowHeaderConstraints, crossTable.columnHeaderConstraints)
       .map((tmCrossTable: TransmartCrossTable) => {
         return TransmartMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
       });
   }
+
 }
