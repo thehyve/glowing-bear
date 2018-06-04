@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
 import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
@@ -9,6 +8,8 @@ import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Aggregate} from '../models/constraint-models/aggregate';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {ConstraintHelper} from '../utilities/ConstraintHelper';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 
 @Injectable()
 export class CrossTableService {
@@ -72,7 +73,7 @@ export class CrossTableService {
     for (let constraint of constraints) {
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
-      if (ConceptConstraint.isCategoricalConceptConstraint(constraint)) {
+      if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
@@ -82,7 +83,7 @@ export class CrossTableService {
           let numCategoricalConceptConstraints = 0;
           let categoricalChild = null;
           combiConstraint.children.forEach((child: Constraint) => {
-            if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
+            if (ConstraintHelper.isCategoricalConceptConstraint(child)) {
               numCategoricalConceptConstraints++;
               categoricalChild = child;
             }
@@ -179,7 +180,7 @@ export class CrossTableService {
    * @returns {boolean}
    */
   public isValidConstraint(constraint: Constraint): boolean {
-    return ConceptConstraint.isCategoricalConceptConstraint(constraint)
+    return ConstraintHelper.isCategoricalConceptConstraint(constraint)
       || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
   }
 
@@ -198,7 +199,7 @@ export class CrossTableService {
         let numCategoricalConceptConstraints = 0;
         let categoricalChild: ConceptConstraint = null;
         combiConstraint.children.forEach((child: Constraint) => {
-          if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
+          if (ConstraintHelper.isCategoricalConceptConstraint(child)) {
             numCategoricalConceptConstraints++;
             categoricalChild = <ConceptConstraint>child;
           }
@@ -254,7 +255,7 @@ export class CrossTableService {
       if (child.className === 'ValueConstraint') {
         numValueConstraints++;
         valChild = child;
-      } else if (ConceptConstraint.isCategoricalConceptConstraint(child)) {
+      } else if (ConstraintHelper.isCategoricalConceptConstraint(child)) {
         numCatConceptConstraints++;
         catChild = child;
       }
