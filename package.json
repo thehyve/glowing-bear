@@ -9,7 +9,7 @@
     "package": "ng build --prod",
     "test": "ng test",
     "testOnce": "ng test --single-run",
-    "lint": "ng lint",
+    "lint": "ng lint --type-check",
     "e2e": "ng e2e"
   },
   "private": true,
@@ -41,7 +41,7 @@
     "@angular/compiler-cli": "^5.2.1",
     "@types/jasmine": "2.5.47",
     "@types/node": "~6.0.60",
-    "codelyzer": "~4.1.0",
+    "codelyzer": "~4.3.0",
     "cucumber": "^2.1.0",
     "es6-promise": "^4.1.1",
     "jasmine-core": "~2.6.2",

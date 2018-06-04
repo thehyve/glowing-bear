@@ -54,6 +54,13 @@ task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
 }
 distTar.dependsOn(yarnPackage)
 
+task yarnLint(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Performs static code analysis'
+  args = ['run', 'lint']
+}
+check.dependsOn(yarnLint)
+
 task yarnTest(type: YarnTask, dependsOn: 'yarn') {
   group = 'verification'
   description = 'Executes user interface unit tests'
