@@ -15,8 +15,8 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
-import {MessageServiceMock} from "../../services/mocks/message.service.mock";
-import {MessageService} from "../../services/message.service";
+import {MessageServiceMock} from '../../services/mocks/message.service.mock';
+import {MessageService} from '../../services/message.service';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;

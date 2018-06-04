@@ -1,4 +1,4 @@
-import {TransmartStudyMetadata} from "./transmart-study-metadata";
+import {TransmartStudyMetadata} from './transmart-study-metadata';
 
 export class TransmartStudy {
   id: number;
