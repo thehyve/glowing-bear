@@ -23,7 +23,6 @@ import {CategoricalAggregate} from '../../models/constraint-models/categorical-a
 import {FormatHelper} from '../../utilities/FormatHelper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
-import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 
 export class TransmartMapper {
@@ -262,9 +261,9 @@ export class TransmartMapper {
       // add col headers
       for (let colHeader of colHeaders) {
         let val = 'NUM';
-        if (colHeader.getClassName() === 'CombinationConstraint') {
+        if (colHeader.className === 'CombinationConstraint') {
           val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
-        } else if (colHeader.getClassName() === 'TrueConstraint') {
+        } else if (colHeader.className === 'TrueConstraint') {
           val = 'true';
         }
         row.addDatumObject({
@@ -278,7 +277,7 @@ export class TransmartMapper {
     let rowHeaders = crossTable.rowHeaderConstraints;
     for (let i = 0; i < rowHeaders.length; i++) {
       let row = new Row();
-      if (rowHeaders[i].getClassName() === 'CombinationConstraint') {
+      if (rowHeaders[i].className === 'CombinationConstraint') {
         let children = (<CombinationConstraint>rowHeaders[i]).children;
         for (let child of children) {
           row.addDatumObject({

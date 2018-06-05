@@ -19,6 +19,7 @@ import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
+import {TransmartConstraintMapper} from './transmart-resource/transmart-constraint-mapper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -566,7 +567,7 @@ export class QueryService {
   public saveQuery(queryName: string) {
     let newQuery = new Query('', queryName);
     const selectionConstraint = this.constraintService.constraint_1();
-    newQuery.patientsQuery = selectionConstraint.toQueryObject(true);
+    newQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(selectionConstraint);
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);

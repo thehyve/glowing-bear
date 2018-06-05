@@ -42,7 +42,7 @@ export class ConstraintServiceMock {
 
   public isCategoricalConceptConstraint(constraint: Constraint): boolean {
     let result = false;
-    if (constraint.getClassName() === 'ConceptConstraint') {
+    if (constraint.className === 'ConceptConstraint') {
       let conceptConstraint = <ConceptConstraint>constraint;
       result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
     }

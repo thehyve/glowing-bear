@@ -6,7 +6,7 @@ import {EndpointServiceMock} from './mocks/endpoint.service.mock';
 import {TransmartResourceService} from './transmart-resource/transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 
-fdescribe('ResourceService', () => {
+describe('ResourceService', () => {
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
 
@@ -54,5 +54,5 @@ fdescribe('ResourceService', () => {
     resourceService.logout();
     expect(transmartResourceService.logout).toHaveBeenCalled();
   })
-  
+
 });

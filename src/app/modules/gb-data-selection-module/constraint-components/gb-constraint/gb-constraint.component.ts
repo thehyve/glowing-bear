@@ -77,7 +77,7 @@ export class GbConstraintComponent implements OnInit {
         let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
         combinationConstraint.addChild(droppedConstraint);
         this.update();
-      } else if (this.constraint.getClassName() === droppedConstraint.getClassName()) {
+      } else if (this.constraint.className === droppedConstraint.className) {
         if (this.constraint instanceof StudyConstraint) {
           let study = (<StudyConstraint>droppedConstraint).studies[0];
           let studies = (<StudyConstraint>this.constraint).studies;
@@ -107,7 +107,7 @@ export class GbConstraintComponent implements OnInit {
 
   get containerClass(): string {
     if (this.element.nativeElement.children[0].classList.length === 0) {
-      const containerClassName = (this.constraint.getClassName() === 'CombinationConstraint'
+      const containerClassName = (this.constraint.className === 'CombinationConstraint'
         && (<CombinationConstraint>this.constraint).isRoot) ?
         'gb-constraint-container-root ' : 'gb-constraint-container';
 

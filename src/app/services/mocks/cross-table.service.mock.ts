@@ -95,7 +95,7 @@ export class CrossTableServiceMock {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
-      } else if (constraint.getClassName() === 'CombinationConstraint') {
+      } else if (constraint.className === 'CombinationConstraint') {
         let combiConstraint = <CombinationConstraint>constraint;
         if (combiConstraint.isAnd()) {
           let numCategoricalConceptConstraints = 0;
@@ -151,7 +151,7 @@ export class CrossTableServiceMock {
       let valChild = null;
       let catChild = null;
       constraint.children.forEach((child: Constraint) => {
-        if (child.getClassName() === 'ValueConstraint') {
+        if (child.className === 'ValueConstraint') {
           numValueConstraints++;
           valChild = child;
         } else if (this.isCategoricalConceptConstraint(child)) {
@@ -171,7 +171,7 @@ export class CrossTableServiceMock {
 
   public isCategoricalConceptConstraint(constraint: Constraint): boolean {
     let result = false;
-    if (constraint.getClassName() === 'ConceptConstraint') {
+    if (constraint.className === 'ConceptConstraint') {
       let conceptConstraint = <ConceptConstraint>constraint;
       result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
     }

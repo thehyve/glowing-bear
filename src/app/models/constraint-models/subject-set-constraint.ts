@@ -1,10 +1,7 @@
 import {Constraint} from './constraint';
 
 
-export class SubjectSetConstraint implements Constraint {
-
-  private _parent: Constraint;
-  private _isSubselection: boolean;
+export class SubjectSetConstraint extends Constraint {
   // external subject Ids
   private _subjectIds = [];
   // internal subject Ids
@@ -15,60 +12,14 @@ export class SubjectSetConstraint implements Constraint {
   private _description: string;
   private _errorMessage: string;
   private _requestConstraints: string;
-  private _textRepresentation: string;
 
   constructor() {
-    this.parent = null;
+    super();
     this.textRepresentation = 'Subject set constraint';
   }
 
-  getClassName(): string {
+  get className(): string {
     return 'SubjectSetConstraint';
-  }
-
-  toQueryObjectWithSubselection(): Object {
-    // Whenever using patient set constraint to query patients,
-    // there is no need to wrap the constraint in subselection,
-    // unlike the other constraints
-    return this.toQueryObject();
-  }
-
-  toQueryObjectWithoutSubselection(): object {
-    const type = 'patient_set';
-    if (this.subjectIds.length > 0) {
-      return {
-        'type': type,
-        'subjectIds': this.subjectIds
-      };
-    } else if (this.patientIds.length > 0) {
-      return {
-        'type': type,
-        'patientIds': this.patientIds
-      };
-    } else if (this.id) {
-      return {
-        'type': type,
-        'patientSetId': this.id
-      };
-    } else {
-      return null;
-    }
-  }
-
-  toQueryObject(): Object {
-    if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
-    } else {
-      return this.toQueryObjectWithoutSubselection();
-    }
-  }
-
-  get textRepresentation(): string {
-    return this._textRepresentation;
-  }
-
-  set textRepresentation(value: string) {
-    this._textRepresentation = value;
   }
 
   get subjectIds() {
@@ -85,22 +36,6 @@ export class SubjectSetConstraint implements Constraint {
 
   set patientIds(value) {
     this._patientIds = value;
-  }
-
-  get isSubselection(): boolean {
-    return this._isSubselection;
-  }
-
-  set isSubselection(value: boolean) {
-    this._isSubselection = value;
-  }
-
-  get parent(): Constraint {
-    return this._parent;
-  }
-
-  set parent(value: Constraint) {
-    this._parent = value;
   }
 
   get setSize(): number {

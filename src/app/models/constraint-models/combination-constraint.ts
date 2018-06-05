@@ -1,180 +1,35 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
-import {TrueConstraint} from './true-constraint';
+import {TransmartConstraintMapper} from '../../services/transmart-resource/transmart-constraint-mapper';
 
-export class CombinationConstraint implements Constraint {
+export class CombinationConstraint extends Constraint {
 
-  private _parent: Constraint;
   private _children: Constraint[];
   private _combinationState: CombinationState;
-  private _isSubselection: boolean;
   private _isRoot: boolean;
-  private _textRepresentation: string;
 
   constructor() {
+    super();
     this._children = [];
     this.combinationState = CombinationState.And;
     this.isRoot = false;
-    this.parent = null;
     this.textRepresentation = 'Group';
   }
 
-  getClassName(): string {
+  get className(): string {
     return 'CombinationConstraint';
   }
 
   hasNonEmptyChildren(): boolean {
-    return this.getNonEmptyChildObjects().length > 0;
+    return TransmartConstraintMapper.getNonEmptyChildObjects(this).length > 0;
   }
 
   addChild(constraint: Constraint) {
-    if (!(constraint.getClassName() === 'CombinationConstraint'
+    if (!(constraint.className === 'CombinationConstraint'
         && (<CombinationConstraint>constraint).isRoot)) {
       constraint.parent = this;
     }
     this.children.push(constraint);
-  }
-
-  /**
-   * Collects all non-empty query objects
-   * @returns {Object[]}
-   */
-  getNonEmptyChildObjects(full?: boolean): Object[] {
-    let childQueryObjects: Object[] =
-      this._children.reduce((result: Object[], constraint: Constraint) => {
-        let queryObject: Object = constraint.toQueryObject(full);
-        if (queryObject && Object.keys(queryObject).length > 0) {
-          result.push(queryObject);
-        }
-        return result;
-      }, []);
-    return childQueryObjects;
-  }
-
-  /**
-   * This method is used to unwrap nested combination constraint
-   * with single child
-   * @param {Object} queryObject
-   * @returns {Object}
-   */
-  unWrapNestedQueryObject(queryObject: object): object {
-    const type = queryObject['type'];
-    // If the query object is a combination constraint
-    if (type === 'and' || type === 'or') {
-      if (queryObject['args'].length === 1) {
-        return this.unWrapNestedQueryObject(queryObject['args'][0]);
-      } else {
-        return queryObject;
-      }
-    } else {
-      return queryObject;
-    }
-  }
-
-  /**
-   * Wrap a given query object with subselection clause
-   * @param {Object} queryObject
-   * @returns {Object}
-   */
-  wrapWithSubselection(queryObject: object): object {
-    let queryObj = this.unWrapNestedQueryObject(queryObject);
-    if (queryObj['type'] === 'true') {
-      return {'type': 'true'};
-    } else if (queryObj['type'] !== 'negation') {
-      return {
-        'type': 'subselection',
-        'dimension': 'patient',
-        'constraint': queryObj
-      };
-    } else {
-      const arg = queryObj['arg'];
-      const sub = {
-        'type': 'subselection',
-        'dimension': 'patient',
-        'constraint': arg
-      };
-      return {
-        'type': 'negation',
-        'arg': sub
-      };
-    }
-  }
-
-  /**
-   * This method is for querying patients,
-   * which requires a speicial subselection wrapper
-   * @returns {Object}
-   */
-  toQueryObjectWithSubselection(full?: boolean): object {
-    // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyChildObjects(full);
-    if (childQueryObjects.length === 0) {
-      // No children, so ignore this constraint
-      // TODO: show validation error instead?
-      return new TrueConstraint().toQueryObjectWithSubselection();
-    }
-
-    // Combination
-    let queryObject: Object;
-    if (childQueryObjects.length === 1) {
-      // Only one child, so don't wrap it in and/or
-      queryObject = this.wrapWithSubselection(childQueryObjects[0]);
-    } else {
-      // Wrap the child query objects in subselections
-      childQueryObjects = childQueryObjects.map(queryObj => {
-        return this.wrapWithSubselection(queryObj);
-      });
-
-      // Wrap in and/or constraint
-      queryObject = {
-        type: this._combinationState === CombinationState.And ? 'and' : 'or',
-        args: childQueryObjects
-      };
-    }
-    return queryObject;
-  }
-
-  toQueryObjectWithoutSubselection(full?: boolean): object {
-    // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyChildObjects(full);
-    if (childQueryObjects.length === 0) {
-      // No children, so ignore this constraint
-      // TODO: show validation error instead?
-      return new TrueConstraint().toQueryObject();
-    }
-    // Combination
-    let queryObject: Object;
-    if (childQueryObjects.length === 1) {
-      queryObject = childQueryObjects[0];
-    } else {
-      // Wrap in and/or constraint
-      queryObject = {
-        type: this._combinationState === CombinationState.And ? 'and' : 'or',
-        args: childQueryObjects
-      };
-    }
-    return queryObject;
-  }
-
-  /**
-   * The normal conversion from constraint to object
-   * TODO: optimize a nested combination constraint, detect empty or single child
-   * @returns {Object}
-   */
-  toQueryObject(full?: boolean): Object {
-    if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection(full);
-    } else {
-      return this.toQueryObjectWithoutSubselection(full);
-    }
-  }
-
-  get textRepresentation(): string {
-    return this._textRepresentation;
-  }
-
-  set textRepresentation(value: string) {
-    this._textRepresentation = value;
   }
 
   isAnd() {
@@ -209,14 +64,6 @@ export class CombinationConstraint implements Constraint {
     }
   }
 
-  get isSubselection(): boolean {
-    return this._isSubselection;
-  }
-
-  set isSubselection(value: boolean) {
-    this._isSubselection = value;
-  }
-
   get isRoot(): boolean {
     return this._isRoot;
   }
@@ -225,11 +72,4 @@ export class CombinationConstraint implements Constraint {
     this._isRoot = value;
   }
 
-  get parent(): Constraint {
-    return this._parent;
-  }
-
-  set parent(value: Constraint) {
-    this._parent = value;
-  }
 }

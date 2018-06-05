@@ -19,6 +19,7 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {TreeNode} from 'primeng/api';
+import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 
 /**
  * This service concerns with
@@ -71,10 +72,10 @@ export class ConstraintService {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.isSubselection = true;
+    this.rootInclusionConstraint.mark = ConstraintMark.SUBJECT;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.isSubselection = true;
+    this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
   }
 
   private loadEmptyConstraints() {
@@ -224,7 +225,7 @@ export class ConstraintService {
       // Otherwise just return the inclusion part
       resultConstraint = inclusionConstraint;
     }
-    resultConstraint.isSubselection = true;
+    resultConstraint.mark = ConstraintMark.SUBJECT;
     return resultConstraint;
   }
 
@@ -237,16 +238,16 @@ export class ConstraintService {
   }
 
   public restoreSelectionConstraint(constraint: Constraint) {
-    if (constraint.getClassName() === 'CombinationConstraint') { // If it is a combination constraint
+    if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
-        && (children[1].getClassName() === 'NegationConstraint' || children[0].getClassName() === 'NegationConstraint');
+        && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');
       if (hasNegation) {
         let negationConstraint =
-          <NegationConstraint>(children[1].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+          <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
         this.rootExclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
-          <NegationConstraint>(children[0].getClassName() === 'NegationConstraint' ? children[1] : children[0]);
+          <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
         this.restoreSelectionConstraint(remainingConstraint);
       } else {
         for (let child of children) {
@@ -254,9 +255,9 @@ export class ConstraintService {
         }
         this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
-    } else if (constraint.getClassName() === 'NegationConstraint') {
+    } else if (constraint.className === 'NegationConstraint') {
       this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
-    } else if (constraint.getClassName() !== 'TrueConstraint') {
+    } else if (constraint.className !== 'TrueConstraint') {
       this.rootInclusionConstraint.addChild(constraint);
     }
   }
@@ -427,7 +428,7 @@ export class ConstraintService {
         } else if (arg['type'] === 'or') {
           let isValues = true;
           for (let val of (<CombinationConstraint>child).children) {
-            if (val.getClassName() !== 'ValueConstraint') {
+            if (val.className !== 'ValueConstraint') {
               isValues = false;
             } else {
               prospectValues.push(<ValueConstraint>val);
@@ -499,13 +500,13 @@ export class ConstraintService {
       let rightHandSide =
         this.generateConstraintFromConstraintObject(constraintObject['relatedSubjectsConstraint']);
       (<PedigreeConstraint>constraint).rightHandSideConstraint.children.length = 0;
-      if (rightHandSide.getClassName() === 'CombinationConstraint') {
+      if (rightHandSide.className === 'CombinationConstraint') {
         (<PedigreeConstraint>constraint).rightHandSideConstraint = <CombinationConstraint>rightHandSide;
         for (let child of (<CombinationConstraint>rightHandSide).children) {
           (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(child);
         }
       } else {
-        if (rightHandSide.getClassName() !== 'TrueConstraint') {
+        if (rightHandSide.className !== 'TrueConstraint') {
           (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(rightHandSide);
         }
       }
@@ -604,7 +605,7 @@ export class ConstraintService {
 
   public isCategoricalConceptConstraint(constraint: Constraint): boolean {
     let result = false;
-    if (constraint.getClassName() === 'ConceptConstraint') {
+    if (constraint.className === 'ConceptConstraint') {
       let conceptConstraint = <ConceptConstraint>constraint;
       result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
     }

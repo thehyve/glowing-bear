@@ -1,28 +1,45 @@
-export interface Constraint {
+import {ConstraintMark} from './constraint-mark';
+
+export class Constraint {
 
   // The textual representation of this constraint
-  textRepresentation: string;
-  // The flag indicating if the output query object should be wrapped with
-  // the subselection clause for patient selection
-  isSubselection: boolean;
+  protected _textRepresentation: string;
+  // The enum indicating the purpose of the constraint: is it for querying subjects? Or observations?
+  protected _mark: ConstraintMark;
   // The parent constraint
-  parent: Constraint;
+  protected _parent: Constraint;
 
-  /**
-   * Returns the name of the constraint class.
-   */
-  getClassName(): string;
+  constructor() {
+    this.textRepresentation = '';
+    this.mark = ConstraintMark.OBSERVATION;
+    this.parent = null;
+  }
 
-  /**
-   * Returns a javascript object representation of the constraint to be used
-   * in queries to the backend.
-   * The flag 'full' indicates if the to concept query object contains extra info,
-   * which is used in saved queries
-   */
-  toQueryObject(full?: boolean): object;
+  get textRepresentation(): string {
+    return this._textRepresentation;
+  }
 
-  toQueryObjectWithSubselection(): object;
+  set textRepresentation(value: string) {
+    this._textRepresentation = value;
+  }
 
-  toQueryObjectWithoutSubselection(): object;
+  get mark(): ConstraintMark {
+    return this._mark;
+  }
 
+  set mark(value: ConstraintMark) {
+    this._mark = value;
+  }
+
+  get parent(): Constraint {
+    return this._parent;
+  }
+
+  set parent(value: Constraint) {
+    this._parent = value;
+  }
+
+  get className(): string {
+    return 'Constraint';
+  }
 }

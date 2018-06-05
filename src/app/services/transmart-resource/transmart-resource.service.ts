@@ -18,6 +18,7 @@ import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
+import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 
 @Injectable()
 export class TransmartResourceService {
@@ -26,12 +27,24 @@ export class TransmartResourceService {
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
 
+  /**
+   * handle error
+   * @param {HttpErrorResponse | any} res
+   */
+  static handleError(res: HttpErrorResponse | any) {
+    const status = res['status'];
+    const url = res['url'];
+    const message = res['message'];
+    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
+    console.error(summary);
+    console.error(res['error']);
+  }
+
   constructor(private appConfig: AppConfig,
               private http: HttpClient,
               private endpointService: EndpointService) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
   }
-
 
   get exportDataView(): string {
     return this._exportDataView;
@@ -47,19 +60,6 @@ export class TransmartResourceService {
 
   set dateColumnsIncluded(value: boolean) {
     this._dateColumnsIncluded = value;
-  }
-
-  /**
-   * handles error
-   * @param {HttpErrorResponse | any} error
-   */
-  public handleError(res: HttpErrorResponse | any) {
-    const status = res['status'];
-    const url = res['url'];
-    const message = res['message'];
-    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-    console.error(summary);
-    console.error(res['error']);
   }
 
   /**
@@ -82,13 +82,13 @@ export class TransmartResourceService {
       if (responseField) {
         return this.http.post(url, body, options)
           .map(res => res[responseField])
-          .catch(this.handleError.bind(this));
+          .catch(TransmartResourceService.handleError.bind(this));
       } else {
         return this.http.post(url, body, options)
-          .catch(this.handleError.bind(this));
+          .catch(TransmartResourceService.handleError.bind(this));
       }
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
     }
   }
 
@@ -111,14 +111,14 @@ export class TransmartResourceService {
       if (responseField) {
         return this.http.get(url, options)
           .map(res => res[responseField])
-          .catch(this.handleError.bind(this));
+          .catch(TransmartResourceService.handleError.bind(this));
       } else {
         return this.http.get(url, options)
-          .catch(this.handleError.bind(this));
+          .catch(TransmartResourceService.handleError.bind(this));
       }
 
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
     }
   }
 
@@ -139,9 +139,9 @@ export class TransmartResourceService {
       };
       let url = `${endpoint.getUrl()}/${urlPart}`;
       return this.http.put(url, body, options)
-        .catch(this.handleError.bind(this));
+        .catch(TransmartResourceService.handleError.bind(this));
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
     }
   }
 
@@ -161,9 +161,9 @@ export class TransmartResourceService {
       };
       let url = `${endpoint.getUrl()}/${urlPart}`;
       return this.http.delete(url, options)
-        .catch(this.handleError.bind(this));
+        .catch(TransmartResourceService.handleError.bind(this));
     } else {
-      this.handleError({message: 'Could not establish endpoint.'});
+      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
     }
   }
 
@@ -179,7 +179,7 @@ export class TransmartResourceService {
       withCredentials: true
     };
     return this.http.post(url, body, options)
-      .catch(this.handleError.bind(this));
+      .catch(TransmartResourceService.handleError.bind(this));
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -222,7 +222,7 @@ export class TransmartResourceService {
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_study_and_concept';
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
     return this.postCall(urlPart, body, responseField);
   }
@@ -235,7 +235,7 @@ export class TransmartResourceService {
    */
   getCountsPerStudy(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_study';
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
     return this.postCall(urlPart, body, responseField);
   }
@@ -248,7 +248,7 @@ export class TransmartResourceService {
    */
   getCounts(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts';
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = false;
     return this.postCall(urlPart, body, responseField);
   }
@@ -262,7 +262,7 @@ export class TransmartResourceService {
    */
   getAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_concept';
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerConcept';
     return this.postCall(urlPart, body, responseField);
   }
@@ -274,7 +274,7 @@ export class TransmartResourceService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
-    const constraintString = JSON.stringify(constraint.toQueryObject());
+    const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
     const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
     const responseField = 'elements';
     return this.getCall(urlPart, responseField);
@@ -299,7 +299,7 @@ export class TransmartResourceService {
    */
   getExportDataFormats(constraint: Constraint): Observable<string[]> {
     const urlPart = 'export/data_formats';
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'dataFormats';
     return this.postCall(urlPart, body, responseField);
   }
@@ -341,11 +341,10 @@ export class TransmartResourceService {
    *    dataView: 'default' | 'surveyTable', // NTR specific
    * }]
    *
-   * @param jobId
-   * @param elements
-   * @param constraint
-   * @param includeMeasurementDateColumns
-   * @param tableState - included only, if at least one of the formats of elements is 'TSV'
+   * @param {string} jobId
+   * @param {Constraint} constraint
+   * @param {TransmartExportElement[]} elements
+   * @param {TransmartTableState} tableState - included only, if at least one of the formats of elements is 'TSV'
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
@@ -355,7 +354,7 @@ export class TransmartResourceService {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {
-      constraint: constraint.toQueryObject(),
+      constraint: TransmartConstraintMapper.mapConstraint(constraint),
       elements: elements,
       includeMeasurementDateColumns: this.dateColumnsIncluded
     };
@@ -383,7 +382,7 @@ export class TransmartResourceService {
       })
     };
     return this.http.get(url, {...options, responseType: 'blob'})
-      .catch(this.handleError.bind(this));
+      .catch(TransmartResourceService.handleError.bind(this));
   }
 
   /**
@@ -417,11 +416,10 @@ export class TransmartResourceService {
     const responseField = 'queries';
     return this.getCall(urlPart, responseField);
   }
-
   /**
-   * Save a new query.
-   * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * save a new query
+   * @param {TransmartQuery} transmartQuery
+   * @returns {Observable<TransmartQuery>}
    */
   saveQuery(transmartQuery: TransmartQuery): Observable<TransmartQuery> {
     const urlPart = `queries`;
@@ -474,7 +472,7 @@ export class TransmartResourceService {
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
-    const body = constraint.toQueryObject();
+    const body = TransmartConstraintMapper.mapConstraint(constraint);
     return this.postCall(urlPart, body, null);
   }
 
@@ -499,7 +497,7 @@ export class TransmartResourceService {
     });
     let body = {
       type: 'clinical',
-      constraint: constraint.toQueryObject(),
+      constraint: TransmartConstraintMapper.mapConstraint(constraint),
       rowDimensions: rowDims,
       columnDimensions: colDims,
       offset: offset,
@@ -512,7 +510,7 @@ export class TransmartResourceService {
 
   getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
     const urlPart = `dimensions/study/elements`;
-    const body = {constraint: constraint.toQueryObject()};
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
     return this.postCall(urlPart, body, responseField);
   }
@@ -535,17 +533,17 @@ export class TransmartResourceService {
     const urlPart = 'observations/crosstable';
     let rowConstraintArr = [];
     rowHeaderConstraints.forEach((constraint: Constraint) => {
-      rowConstraintArr.push(constraint.toQueryObjectWithSubselection());
+      rowConstraintArr.push(TransmartConstraintMapper.mapConstraint(constraint));
     });
     let columnConstraintArr = [];
     columnHeaderConstraints.forEach((constraint: Constraint) => {
-      columnConstraintArr.push(constraint.toQueryObjectWithSubselection());
+      columnConstraintArr.push(TransmartConstraintMapper.mapConstraint(constraint));
     });
     const body = {
-      subjectConstraint: baseConstraint.toQueryObject(),
+      subjectConstraint: TransmartConstraintMapper.mapConstraint(baseConstraint),
       rowConstraints: rowConstraintArr,
       columnConstraints: columnConstraintArr
-    }
+    };
     return this.postCall(urlPart, body, null);
   }
 }

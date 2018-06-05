@@ -62,7 +62,7 @@ export class CrossTableService {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
-      } else if (constraint.getClassName() === 'CombinationConstraint') {
+      } else if (constraint.className === 'CombinationConstraint') {
         let combiConstraint = <CombinationConstraint>constraint;
         if (combiConstraint.isAnd()) {
           let numCategoricalConceptConstraints = 0;
@@ -125,7 +125,7 @@ export class CrossTableService {
   }
 
   private isConjunctiveAndHasOneCategoricalConstraint(constraint: Constraint): boolean {
-    if (constraint.getClassName() === 'CombinationConstraint') {
+    if (constraint.className === 'CombinationConstraint') {
       let combiConstraint = <CombinationConstraint>constraint;
       if (combiConstraint.isAnd()) {
         let numCategoricalConceptConstraints = 0;
@@ -184,7 +184,7 @@ export class CrossTableService {
     let valChild = null;
     let catChild = null;
     constraint.children.forEach((child: Constraint) => {
-      if (child.getClassName() === 'ValueConstraint') {
+      if (child.className === 'ValueConstraint') {
         numValueConstraints++;
         valChild = child;
       } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
