@@ -5,7 +5,7 @@ export class TransmartSort {
   sortOrder: Order;
   'user_requested': boolean;
 
-  constructor(dimension: string, order: Order){
+  constructor(dimension: string, order: Order) {
     this.dimension = dimension;
     this.sortOrder = order;
   }

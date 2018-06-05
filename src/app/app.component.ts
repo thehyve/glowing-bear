@@ -12,7 +12,7 @@ import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 'gb-app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
