@@ -19,7 +19,7 @@ import {TrialVisit} from '../../models/constraint-models/trial-visit';
 
 export class TransmartConstraintMapper {
 
-  public static mapConstraint(constraint: Constraint): object {
+  public static mapConstraint(constraint: Constraint, full?: boolean): object {
     let result = null;
     switch (constraint.className) {
       case 'CombinationConstraint': {
@@ -27,7 +27,7 @@ export class TransmartConstraintMapper {
         break;
       }
       case 'ConceptConstraint': {
-        result = TransmartConstraintMapper.mapConceptConstraint(<ConceptConstraint>constraint);
+        result = TransmartConstraintMapper.mapConceptConstraint(<ConceptConstraint>constraint, full);
         break;
       }
       case 'NegationConstraint': {
@@ -481,7 +481,16 @@ export class TransmartConstraintMapper {
     return result;
   }
 
-  public static mapConceptConstraint(constraint: ConceptConstraint): object {
+  /**
+   * Map a concept constraint to its object form,
+   * the full param is a flag indicating if the four attributes: name, fullName, conceptPath and valueType
+   * should be incldued in the final object.
+   * These four attributes are needed for saving and restoring a query, otherwise not needed.
+   * @param {ConceptConstraint} constraint
+   * @param {boolean} full
+   * @returns {object}
+   */
+  public static mapConceptConstraint(constraint: ConceptConstraint, full?: boolean): object {
     let result = null;
     if (constraint.mark === ConstraintMark.OBSERVATION) {
       if (constraint.concept) {
@@ -490,11 +499,12 @@ export class TransmartConstraintMapper {
           type: 'concept',
           conceptCode: constraint.concept.code,
         };
-        // TODO: only add these four attributes when saving a query, maybe in transmart-resource-service
-        conceptObj['name'] = constraint.concept.name;
-        conceptObj['fullName'] = constraint.concept.fullName;
-        conceptObj['conceptPath'] = constraint.concept.path;
-        conceptObj['valueType'] = constraint.concept.type;
+        if (full) {
+          conceptObj['name'] = constraint.concept.name;
+          conceptObj['fullName'] = constraint.concept.fullName;
+          conceptObj['conceptPath'] = constraint.concept.path;
+          conceptObj['valueType'] = constraint.concept.type;
+        }
         args.push(conceptObj);
 
         if (constraint.values.length > 0) {

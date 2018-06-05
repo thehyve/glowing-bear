@@ -3,6 +3,7 @@ import {Row} from './row';
 import {Col} from './col';
 import {TrueConstraint} from '../constraint-models/true-constraint';
 import {CombinationConstraint} from '../constraint-models/combination-constraint';
+import {ConstraintMark} from '../constraint-models/constraint-mark';
 
 export class CrossTable {
   // the base constraint that the row/col constraints are conditioned on
@@ -67,6 +68,7 @@ export class CrossTable {
         for (let i = 0; i < valueRepetition0; i++) {
           let c = new CombinationConstraint();
           c.addChild(val);
+          c.mark = ConstraintMark.SUBJECT;
           combinations.push(c);
         }
       }

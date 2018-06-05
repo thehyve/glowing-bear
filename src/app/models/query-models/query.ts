@@ -75,11 +75,9 @@ export class Query {
     if (this.updateDate) {
       obj['updateDate'] = this.updateDate;
     }
-    // TODO: refactor patientsQuery to subjectCriteria of type Constraint
     if (this.subjectQuery) {
-      obj['patientsQuery'] = TransmartConstraintMapper.mapConstraint(this.subjectQuery);
+      obj['patientsQuery'] = TransmartConstraintMapper.mapConstraint(this.subjectQuery, true);
     }
-    // TODO: refactor observationsQuery to variableCriteria of type Array
     if (this.observationQuery) {
       obj['observationsQuery'] = this.observationQuery;
     }
