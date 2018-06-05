@@ -29,7 +29,7 @@ export class TransmartResourceService {
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
-    this.endpointUrl = this.appConfig.getConfig('api-url');
+    this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
   }
 
 
