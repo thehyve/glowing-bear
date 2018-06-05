@@ -5,7 +5,7 @@ import {Query} from '../models/query-models/query';
 import {ConstraintService} from './constraint.service';
 import {Step} from '../models/query-models/step';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
-import {FormatHelper} from '../utilities/FormatHelper';
+import {FormatHelper} from '../utilities/format-helper';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
@@ -19,7 +19,7 @@ import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
-import {TransmartConstraintMapper} from './transmart-resource/transmart-constraint-mapper';
+import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -457,7 +457,7 @@ export class QueryService {
 
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
-        let checklist = this.query ? this.query.observationsQuery['data'] : null;
+        let checklist = this.query ? this.query.observationQuery['data'] : null;
         if (checklist) {
           let parentPaths = [];
           for (let path of checklist) {
@@ -566,19 +566,14 @@ export class QueryService {
 
   public saveQuery(queryName: string) {
     let newQuery = new Query('', queryName);
-    const selectionConstraint = this.constraintService.constraint_1();
-    newQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(selectionConstraint);
+    newQuery.subjectQuery = this.constraintService.constraint_1();
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    newQuery.observationsQuery = {data: data};
+    newQuery.observationQuery = {data: data};
     newQuery.dataTable = this.dataTableService.dataTable;
-    this.saveQueryObj(newQuery);
-  }
-
-  public saveQueryObj(query: Query) {
-    this.resourceService.saveQuery(query)
+    this.resourceService.saveQuery(newQuery)
       .subscribe(
         (newlySavedQuery: Query) => {
           newlySavedQuery.collapsed = true;
@@ -590,7 +585,7 @@ export class QueryService {
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not add the query "' + query.name + '".';
+          const summary = 'Could not add the query "' + newQuery.name + '".';
           this.messageService.alert('error', summary);
         }
       );
@@ -605,7 +600,7 @@ export class QueryService {
     this.step = Step.I;
     if (query['patientsQuery']) {
       this.constraintService.clearSelectionConstraint();
-      let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
+      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['patientsQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
       this.update_1();
     }

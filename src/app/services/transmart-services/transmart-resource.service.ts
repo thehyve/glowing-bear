@@ -18,7 +18,7 @@ import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
-import {TransmartConstraintMapper} from './transmart-constraint-mapper';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 @Injectable()
 export class TransmartResourceService {

@@ -1,6 +1,8 @@
 import {QuerySubscriptionFrequency} from './query-subscription-frequency';
 import {QueryDiffRecord} from './query-diff-record';
 import {DataTable} from '../table-models/data-table';
+import {Constraint} from '../constraint-models/constraint';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 export class Query {
 
@@ -22,11 +24,11 @@ export class Query {
   private _selected: boolean;
   // The visual indicator flags the visibility of the query
   private _visible: boolean;
-  // 1st step: The patient constraint part of the query
-  private _patientsQuery: object;
-  // 2nd step: The observation constraint part of the query
-  private _observationsQuery: { data: string[] };
-  // 3rd step: The definition of data table
+  // 1st step: the subject constraint part of the query
+  private _subjectQuery: Constraint;
+  // 2nd step: the observation constraint part of the query
+  private _observationQuery: { data: string[] };
+  // 3rd step: the definition of data table
   private _dataTable: DataTable;
 
   /*
@@ -74,12 +76,12 @@ export class Query {
       obj['updateDate'] = this.updateDate;
     }
     // TODO: refactor patientsQuery to subjectCriteria of type Constraint
-    if (this.patientsQuery) {
-      obj['patientsQuery'] = this.patientsQuery;
+    if (this.subjectQuery) {
+      obj['patientsQuery'] = TransmartConstraintMapper.mapConstraint(this.subjectQuery);
     }
     // TODO: refactor observationsQuery to variableCriteria of type Array
-    if (this.observationsQuery) {
-      obj['observationsQuery'] = this.observationsQuery;
+    if (this.observationQuery) {
+      obj['observationsQuery'] = this.observationQuery;
     }
     // TODO: create toPlainObject() function for dataTable
     // if (this.dataTable) {
@@ -145,20 +147,20 @@ export class Query {
     this._selected = value;
   }
 
-  get patientsQuery(): Object {
-    return this._patientsQuery;
+  get subjectQuery(): Constraint {
+    return this._subjectQuery;
   }
 
-  set patientsQuery(value: Object) {
-    this._patientsQuery = value;
+  set subjectQuery(value: Constraint) {
+    this._subjectQuery = value;
   }
 
-  get observationsQuery(): { data: string[] } {
-    return this._observationsQuery;
+  get observationQuery(): { data: string[] } {
+    return this._observationQuery;
   }
 
-  set observationsQuery(value: { data: string[] }) {
-    this._observationsQuery = value;
+  set observationQuery(value: { data: string[] }) {
+    this._observationQuery = value;
   }
 
   get dataTable(): DataTable {

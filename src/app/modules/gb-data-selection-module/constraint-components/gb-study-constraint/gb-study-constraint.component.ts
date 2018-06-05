@@ -3,7 +3,7 @@ import {Study} from '../../../../models/constraint-models/study';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
   selector: 'gb-study-constraint',

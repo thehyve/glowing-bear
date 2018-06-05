@@ -1,6 +1,6 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
-import {TransmartConstraintMapper} from '../../services/transmart-resource/transmart-constraint-mapper';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 export class CombinationConstraint extends Constraint {
 

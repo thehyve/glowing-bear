@@ -12,7 +12,7 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Observable} from 'rxjs/Observable';
 import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
-import {FormatHelper} from '../utilities/FormatHelper';
+import {FormatHelper} from '../utilities/format-helper';
 import {CombinationState} from '../models/constraint-models/combination-state';
 
 describe('CrossTableService', () => {
@@ -58,7 +58,7 @@ describe('CrossTableService', () => {
       let spy2 = spyOn(crossTableService, 'updateValueConstraints').and.callThrough();
       let spy3 = spyOn(crossTableService, 'updateCells').and.stub();
       let spy4 = spyOn<any>(crossTableService, 'retrieveAggregate').and.callThrough();
-      let spy5 = spyOn(constraintService, 'isCategoricalConceptConstraint').and.callFake(() => {
+      let spy5 = spyOn(ConstraintService, 'isCategoricalConceptConstraint').and.callFake(() => {
         return true;
       });
       let spy6 = spyOn<any>(crossTableService, 'composeCategoricalValueConstraints').and.callThrough();
@@ -121,13 +121,13 @@ describe('CrossTableService', () => {
       spyOn(crossTableService, 'updateCells').and.stub();
       let retrieveAggregateSpy = spyOn<any>(crossTableService, 'retrieveAggregate').and.stub();
       spyOn(combi, 'isAnd').and.callThrough();
-      let catChildSpy = spyOn(constraintService, 'isCategoricalConceptConstraint').and.callThrough();
+      let catChildSpy = spyOn(ConstraintService, 'isCategoricalConceptConstraint').and.callThrough();
       let addValSpy = spyOn(crossTableService.crossTable, 'addValueConstraint').and.stub();
       crossTableService.updateValueConstraints([combi]);
       expect(crossTableService.updateCells).toHaveBeenCalled();
       expect(retrieveAggregateSpy).toHaveBeenCalled();
       expect(catChildSpy).toHaveBeenCalled();
-      expect(constraintService.isCategoricalConceptConstraint).toHaveBeenCalled();
+      expect(ConstraintService.isCategoricalConceptConstraint).toHaveBeenCalled();
       expect(combi.isAnd).toHaveBeenCalled();
 
       combi.addChild(new TrueConstraint());
@@ -147,7 +147,7 @@ describe('CrossTableService', () => {
     () => {
       spyOn(crossTableService, 'updateCells').and.stub();
       spyOn(crossTableService.crossTable, 'addValueConstraint').and.stub();
-      spyOn(constraintService, 'isCategoricalConceptConstraint').and.callFake(() => {
+      spyOn(ConstraintService, 'isCategoricalConceptConstraint').and.callFake(() => {
         return false;
       });
       crossTableService.updateValueConstraints([new TrueConstraint()]);
@@ -190,7 +190,7 @@ describe('CrossTableService', () => {
     combi.addChild(categoricalConcept);
     combi.addChild(new TrueConstraint());
     let spy1 = spyOn(crossTableService, 'isValidConstraint').and.callThrough();
-    let spy2 = spyOn(constraintService, 'isCategoricalConceptConstraint').and.callThrough();
+    let spy2 = spyOn(ConstraintService, 'isCategoricalConceptConstraint').and.callThrough();
     let spy3 =
       spyOn<any>(crossTableService, 'isConjunctiveAndHasOneCategoricalConstraint').and.callThrough();
     let result = crossTableService.isValidConstraint(combi);

@@ -10,7 +10,7 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {Aggregate} from '../models/constraint-models/aggregate';
 import {ConstraintService} from './constraint.service';
 import {Row} from '../models/table-models/row';
-import {FormatHelper} from '../utilities/FormatHelper';
+import {FormatHelper} from '../utilities/format-helper';
 import {Col} from '../models/table-models/col';
 
 @Injectable()
@@ -58,7 +58,7 @@ export class CrossTableService {
     for (let constraint of constraints) {
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
-      if (this.constraintService.isCategoricalConceptConstraint(constraint)) {
+      if (ConstraintService.isCategoricalConceptConstraint(constraint)) {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
@@ -68,7 +68,7 @@ export class CrossTableService {
           let numCategoricalConceptConstraints = 0;
           let categoricalChild = null;
           combiConstraint.children.forEach((child: Constraint) => {
-            if (this.constraintService.isCategoricalConceptConstraint(child)) {
+            if (ConstraintService.isCategoricalConceptConstraint(child)) {
               numCategoricalConceptConstraints++;
               categoricalChild = child;
             }
@@ -112,7 +112,7 @@ export class CrossTableService {
    * @returns {boolean}
    */
   public isValidConstraint(constraint: Constraint): boolean {
-    return this.constraintService.isCategoricalConceptConstraint(constraint)
+    return ConstraintService.isCategoricalConceptConstraint(constraint)
       || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
   }
 
@@ -131,7 +131,7 @@ export class CrossTableService {
         let numCategoricalConceptConstraints = 0;
         let categoricalChild: ConceptConstraint = null;
         combiConstraint.children.forEach((child: Constraint) => {
-          if (this.constraintService.isCategoricalConceptConstraint(child)) {
+          if (ConstraintService.isCategoricalConceptConstraint(child)) {
             numCategoricalConceptConstraints++;
             categoricalChild = <ConceptConstraint>child;
           }
@@ -187,7 +187,7 @@ export class CrossTableService {
       if (child.className === 'ValueConstraint') {
         numValueConstraints++;
         valChild = child;
-      } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
+      } else if (ConstraintService.isCategoricalConceptConstraint(child)) {
         numCatConceptConstraints++;
         catChild = child;
       }

@@ -9,7 +9,7 @@ import {Row} from '../../models/table-models/row';
 import {Col} from '../../models/table-models/col';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class CrossTableServiceMock {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';

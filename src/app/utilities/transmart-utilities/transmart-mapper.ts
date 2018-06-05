@@ -20,10 +20,12 @@ import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-
 import {Aggregate} from '../../models/constraint-models/aggregate';
 import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
 import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../format-helper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ConstraintService} from '../../services/constraint.service';
+import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 
 export class TransmartMapper {
 
@@ -40,8 +42,8 @@ export class TransmartMapper {
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.patientsQuery = transmartQuery.patientsQuery;
-    query.observationsQuery = transmartQuery.observationsQuery;
+    query.subjectQuery =  TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.patientsQuery);
+    query.observationQuery = transmartQuery.observationsQuery;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
@@ -76,8 +78,8 @@ export class TransmartMapper {
   public static mapQuery(query: Query): TransmartQuery {
     let transmartTableState: TransmartTableState = query.dataTable ? this.mapDataTableToTableState(query.dataTable) : null;
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = query.patientsQuery;
-    transmartQuery.observationsQuery = query.observationsQuery;
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery);
+    transmartQuery.observationsQuery = query.observationQuery;
     transmartQuery.queryBlob = {dataTableState: transmartTableState};
 
     return transmartQuery;

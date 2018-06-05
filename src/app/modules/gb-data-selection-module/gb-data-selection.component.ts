@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 import {MessageService} from '../../services/message.service';
 import {QueryService} from '../../services/query.service';
 
