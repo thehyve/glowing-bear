@@ -56,6 +56,8 @@ export class GbDroppableZoneComponent implements OnInit {
           this.constraints.push(constraint);
           // new constraint is introduced, creating new header constraints as well as cells
           this.crossTableService.updateValueConstraints(this.constraints);
+        } else {
+          console.error('Not a valid constraint', constraint);
         }
       }
     } else {

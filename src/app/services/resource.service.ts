@@ -23,6 +23,8 @@ import {ConceptConstraint} from '../models/constraint-models/concept-constraint'
 import {Aggregate} from '../models/constraint-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
+import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
+import {ConstraintHelper} from '../utilities/constraint-helper';
 
 
 @Injectable()
@@ -330,7 +332,10 @@ export class ResourceService {
   // -------------------------------------- cross table ---------------------------------------------
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
     return this.transmartResourceService
-      .getCrossTable(crossTable.constraint, crossTable.rowHeaderConstraints, crossTable.columnHeaderConstraints)
+      .getCrossTable(
+        crossTable.constraint,
+        crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+        crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
       .map((tmCrossTable: TransmartCrossTable) => {
         return TransmartMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
       });

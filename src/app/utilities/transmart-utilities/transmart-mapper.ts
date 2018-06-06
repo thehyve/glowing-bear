@@ -262,15 +262,9 @@ export class TransmartMapper {
       }
       // add col headers
       for (let colHeader of colHeaders) {
-        let val = 'NUM';
-        if (colHeader.className === 'CombinationConstraint') {
-          val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
-        } else if (colHeader.className === 'TrueConstraint') {
-          val = 'true';
-        }
         row.addDatumObject({
           isHeader: true,
-          value: val
+          value: colHeader[i].textRepresentation
         });
       }
       crossTable.rows.push(row);
@@ -279,15 +273,12 @@ export class TransmartMapper {
     let rowHeaders = crossTable.rowHeaderConstraints;
     for (let i = 0; i < rowHeaders.length; i++) {
       let row = new Row();
-      if (rowHeaders[i].className === 'CombinationConstraint') {
-        let children = (<CombinationConstraint>rowHeaders[i]).children;
-        for (let child of children) {
-          row.addDatumObject({
-            isHeader: true,
-            value: child.textRepresentation
-          })
-        }
-      }
+      rowHeaders[i].forEach(constraint => {
+        row.addDatumObject({
+          isHeader: true,
+          value: constraint.textRepresentation
+        })
+      });
       for (let j = 0; j < colHeaders.length; j++) {
         row.addDatumObject({
           isHeader: false,

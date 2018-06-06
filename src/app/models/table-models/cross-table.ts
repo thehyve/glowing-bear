@@ -18,8 +18,8 @@ export class CrossTable {
   /*
    * the header constraints used as input params for backend call
    */
-  private _rowHeaderConstraints: Array<Constraint> = [];
-  private _columnHeaderConstraints: Array<Constraint> = [];
+  private _rowHeaderConstraints: Constraint[][];
+  private _columnHeaderConstraints: Constraint[][];
   /*
    * The structure of the cross table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -85,19 +85,19 @@ export class CrossTable {
     this._valueConstraints = value;
   }
 
-  get rowHeaderConstraints(): Array<Constraint> {
+  get rowHeaderConstraints(): Constraint[][] {
     return this._rowHeaderConstraints;
   }
 
-  set rowHeaderConstraints(value: Array<Constraint>) {
+  set rowHeaderConstraints(value: Constraint[][]) {
     this._rowHeaderConstraints = value;
   }
 
-  get columnHeaderConstraints(): Array<Constraint> {
+  get columnHeaderConstraints(): Constraint[][] {
     return this._columnHeaderConstraints;
   }
 
-  set columnHeaderConstraints(value: Array<Constraint>) {
+  set columnHeaderConstraints(value: Constraint[][]) {
     this._columnHeaderConstraints = value;
   }
 

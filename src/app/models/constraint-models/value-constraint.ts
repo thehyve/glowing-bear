@@ -33,6 +33,7 @@ export class ValueConstraint extends Constraint {
 
   set value(value: any) {
     this._value = value;
+    this.textRepresentation = value.toString();
   }
 
   get className(): string {
