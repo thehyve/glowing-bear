@@ -12,7 +12,6 @@ import {Observable} from 'rxjs/Observable';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {FormatHelper} from '../utilities/format-helper';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 
 
@@ -86,33 +85,29 @@ describe('CrossTableService', () => {
     spyOn(crossTableService, 'updateCells').and.stub();
     let retrieveAggregateSpy = spyOn<any>(crossTableService, 'retrieveAggregate').and.stub();
     spyOn(combi, 'isAnd').and.callThrough();
-    let addValSpy = spyOn(crossTableService.crossTable, 'setValueConstraints').and.stub();
     crossTableService.updateValueConstraints([combi]);
     expect(crossTableService.updateCells).toHaveBeenCalled();
     expect(retrieveAggregateSpy).toHaveBeenCalled();
     expect(combi.isAnd).toHaveBeenCalled();
 
     combi.addChild(new TrueConstraint());
+    crossTableService.columnConstraints.push(combi);
     crossTableService.updateValueConstraints([combi]);
     expect(retrieveAggregateSpy).toHaveBeenCalled();
 
     combi.addChild(categoricalConcept);
     crossTableService.updateValueConstraints([combi]);
-    expect(addValSpy).toHaveBeenCalled();
 
     combi.combinationState = CombinationState.Or;
     crossTableService.updateValueConstraints([combi]);
-    expect(addValSpy).toHaveBeenCalled();
   });
 
   it('should verify updateValueConstraints for other constraint', () => {
     spyOn(crossTableService, 'updateCells').and.stub();
-    spyOn(crossTableService.crossTable, 'setValueConstraints').and.stub();
     let constraint = new TrueConstraint();
     crossTableService.rowConstraints.push(constraint);
     crossTableService.updateValueConstraints([constraint]);
     expect(crossTableService.updateCells).toHaveBeenCalled();
-    expect(crossTableService.crossTable.setValueConstraints).toHaveBeenCalled();
   });
 
   it('should update cells when value constraints are mapped', () => {
@@ -172,20 +167,22 @@ describe('CrossTableService', () => {
     expect(result).toBe(true);
 
     let dummy = new TrueConstraint();
-    crossTableService.crossTable.rowConstraints = [dummy];
+    crossTableService.rowConstraints.length = 0;
+    crossTableService.rowConstraints.push(dummy);
     result = crossTableService.areValueConstraintsMapped;
     expect(result).toBe(false);
 
-    crossTableService.crossTable.valueConstraints.set(dummy, []);
+    crossTableService.valueConstraints.set(dummy, []);
     result = crossTableService.areValueConstraintsMapped;
     expect(result).toBe(true);
 
-    crossTableService.crossTable.rowConstraints = [];
-    crossTableService.crossTable.columnConstraints = [dummy];
+    crossTableService.rowConstraints.length = 0;
+    crossTableService.columnConstraints.length = 0;
+    crossTableService.columnConstraints.push(dummy);
     result = crossTableService.areValueConstraintsMapped;
     expect(result).toBe(true);
 
-    crossTableService.crossTable.valueConstraints.clear();
+    crossTableService.valueConstraints.clear();
     result = crossTableService.areValueConstraintsMapped;
     expect(result).toBe(false);
   });
@@ -209,33 +206,48 @@ describe('CrossTableService', () => {
     let fooConstraint = new ConceptConstraint();
     fooConstraint.concept = concept;
 
-    let valueConstraints: ValueConstraint[] = [new ValueConstraint(), new ValueConstraint()];
-    valueConstraints[0].value = 'a';
-    valueConstraints[0].valueType = 'STRING';
-    valueConstraints[0].operator = '=';
-    valueConstraints[1].value = 'b';
-    valueConstraints[1].valueType = 'STRING';
-    valueConstraints[1].operator = '=';
+    let aggregateCall = spyOn(resourceService, 'getAggregate')
+      .and.callFake((constraint: ConceptConstraint) => {
+        let aggregate: CategoricalAggregate = new CategoricalAggregate();
+        switch (constraint.concept.code) {
+          case 'foo':
+            aggregate.valueCounts.set('a', 1);
+            aggregate.valueCounts.set('b', 2);
+            return Observable.of(aggregate);
+          default:
+            throw new Error('No mock data for the concept');
+        }
+      });
 
-    let crossTable = crossTableService.crossTable;
-    crossTable.rowConstraints.push(fooConstraint);
-    crossTable.setValueConstraints(fooConstraint, valueConstraints);
-    let crossConstraints = crossTableService.crossConstraints(crossTable.rowConstraints);
+    crossTableService.rowConstraints.push(fooConstraint);
+    crossTableService.updateValueConstraints([fooConstraint]);
 
-    let expected = [
-      [{type: 'and', args: [
+    // FIXME: Set a timeout to wait until aggregates have been fetched,
+    // because the requests are returned as a chain of promises.
+    setTimeout(function() {
+
+      let crossConstraints = crossTableService.crossConstraints(crossTableService.rowConstraints);
+
+      let expected = [
+        [{
+          type: 'and', args: [
             {type: 'concept', conceptCode: 'foo'},
             {type: 'value', valueType: 'STRING', operator: '=', value: 'a'},
-          ]}],
-      [{type: 'and', args: [
+          ]
+        }],
+        [{
+          type: 'and', args: [
             {type: 'concept', conceptCode: 'foo'},
             {type: 'value', valueType: 'STRING', operator: '=', value: 'b'},
-          ]}]
-    ];
-    expect(crossConstraints.map(constraints =>
-      constraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)))).toEqual(expected);
-    expect(crossConstraints.map(constraints =>
-      constraints.map(constraint => constraint.textRepresentation))).toEqual([['a'], ['b']]);
+          ]
+        }]
+      ];
+      expect(crossConstraints.map(constraints =>
+        constraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)))).toEqual(expected);
+      expect(crossConstraints.map(constraints =>
+        constraints.map(constraint => constraint.textRepresentation))).toEqual([['a'], ['b']]);
+
+    }, 500);
   });
 
   it('should correctly create cross constraints for multiple concepts', () => {
@@ -251,52 +263,69 @@ describe('CrossTableService', () => {
     let barConstraint = new ConceptConstraint();
     barConstraint.concept = conceptBar;
 
-    let fooValueConstraints: ValueConstraint[] = [new ValueConstraint()];
-    fooValueConstraints[0].value = 'a';
-    fooValueConstraints[0].valueType = 'STRING';
-    fooValueConstraints[0].operator = '=';
-    let barValueConstraints: ValueConstraint[] = [new ValueConstraint(), new ValueConstraint()];
-    barValueConstraints[0].value = 'x';
-    barValueConstraints[0].valueType = 'STRING';
-    barValueConstraints[0].operator = '=';
-    barValueConstraints[1].value = 'y';
-    barValueConstraints[1].valueType = 'STRING';
-    barValueConstraints[1].operator = '=';
+    spyOn(resourceService, 'getAggregate')
+      .and.callFake((constraint: ConceptConstraint) => {
+      let aggregate: CategoricalAggregate = new CategoricalAggregate();
+      switch (constraint.concept.code) {
+        case 'foo':
+          aggregate.valueCounts.set('a', 1);
+          return Observable.of(aggregate);
+        case 'bar':
+          aggregate.valueCounts.set('x', 3);
+          aggregate.valueCounts.set('y', 7);
+          return Observable.of(aggregate);
+        default:
+          throw new Error('No mock data for the concept');
+      }
+    });
 
-    let crossTable = crossTableService.crossTable;
-    crossTable.rowConstraints.push(fooConstraint);
-    crossTable.setValueConstraints(fooConstraint, fooValueConstraints);
-    crossTable.rowConstraints.push(barConstraint);
-    crossTable.setValueConstraints(barConstraint, barValueConstraints);
-    let crossConstraints = crossTableService.crossConstraints(crossTable.rowConstraints);
+    crossTableService.rowConstraints.push(fooConstraint);
+    crossTableService.rowConstraints.push(barConstraint);
+    crossTableService.updateValueConstraints([fooConstraint, barConstraint]);
 
-    let expected = [
-      [
-        {type: 'and', args: [
+    // FIXME: Set a timeout to wait until aggregates have been fetched,
+    // because the requests are returned as a chain of promises.
+    setTimeout(function() {
+
+      let crossConstraints = crossTableService.crossConstraints(crossTableService.rowConstraints);
+
+      let expected = [
+        [
+          {
+            type: 'and', args: [
               {type: 'concept', conceptCode: 'foo'},
               {type: 'value', valueType: 'STRING', operator: '=', value: 'a'},
-            ]},
-        {type: 'and', args: [
+            ]
+          },
+          {
+            type: 'and', args: [
               {type: 'concept', conceptCode: 'bar'},
               {type: 'value', valueType: 'STRING', operator: '=', value: 'x'},
-            ]}
-      ],
-      [
-          {type: 'and', args: [
-                {type: 'concept', conceptCode: 'foo'},
-                {type: 'value', valueType: 'STRING', operator: '=', value: 'a'},
-              ]},
-          {type: 'and', args: [
-                {type: 'concept', conceptCode: 'bar'},
-                {type: 'value', valueType: 'STRING', operator: '=', value: 'y'},
-              ]}
+            ]
+          }
+        ],
+        [
+          {
+            type: 'and', args: [
+              {type: 'concept', conceptCode: 'foo'},
+              {type: 'value', valueType: 'STRING', operator: '=', value: 'a'},
+            ]
+          },
+          {
+            type: 'and', args: [
+              {type: 'concept', conceptCode: 'bar'},
+              {type: 'value', valueType: 'STRING', operator: '=', value: 'y'},
+            ]
+          }
         ]
-    ];
-    expect(crossConstraints.map(constraints =>
+      ];
+      expect(crossConstraints.map(constraints =>
         constraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)))).toEqual(expected);
-    expect(crossConstraints.map(constraints =>
+      expect(crossConstraints.map(constraints =>
         constraints.map(constraint => constraint.textRepresentation))).toEqual(
-          [['a', 'x'], ['a', 'y']]);
+        [['a', 'x'], ['a', 'y']]);
+
+    }, 500);
   });
 
 });

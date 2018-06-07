@@ -120,7 +120,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
       });
 
     // Call the service
-    crossTableService.crossTable.rowConstraints.push(fooConstraint);
+    crossTableService.rowConstraints.push(fooConstraint);
     crossTableService.updateValueConstraints([fooConstraint]);
 
     expect(aggregateCall).toHaveBeenCalled();
@@ -170,7 +170,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
       });
 
     // Call the service
-    crossTableService.crossTable.rowConstraints.push(fooConstraint);
+    crossTableService.rowConstraints.push(fooConstraint);
     crossTableService.updateValueConstraints([fooConstraint]);
 
     expect(aggregateCall).toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
     // Dummy result for four rows
     testRows = [[1], [2], [3], [4]];
 
-    crossTableService.crossTable.rowConstraints.push(barConstraint);
+    crossTableService.rowConstraints.push(barConstraint);
     crossTableService.updateValueConstraints([barConstraint]);
 
     expect(aggregateCall).toHaveBeenCalled();
@@ -229,33 +229,31 @@ describe('Test cross table retrieval calls for TranSMART', () => {
         return Observable.of(result);
       });
 
-    let crossTable = crossTableService.crossTable;
-
     // Call the service
-    crossTable.rowConstraints.push(fooAConstraint);
+    crossTableService.rowConstraints.push(fooAConstraint);
     crossTableService.updateValueConstraints([fooAConstraint]);
 
     testRows = [[1, 2], [3, 4]];
 
-    crossTable.columnConstraints.push(barConstraint);
+    crossTableService.columnConstraints.push(barConstraint);
     crossTableService.updateValueConstraints([barConstraint]);
 
-    let columnHeaders = crossTable.cols.map(col => col.header);
+    let columnHeaders = crossTableService.cols.map(col => col.header);
     expect(columnHeaders).toEqual([' - ', ' - ', ' - ']);
 
-    let rows = crossTable.rows.map(row =>
-      crossTable.cols.map(col => row.data[col.field].value));
+    let rows = crossTableService.rows.map(row =>
+      crossTableService.cols.map(col => row.data[col.field].value));
     expect(rows).toEqual([
       ['', 'A', 'B'],
       ['one', 1, 2],
       ['two', 3, 4]
     ]);
 
-    expect(crossTable.rowConstraints.map(constraint => constraint.textRepresentation)).toEqual(
+    expect(crossTableService.rowConstraints.map(constraint => constraint.textRepresentation)).toEqual(
       ['Foo']
     );
 
-    expect(crossTable.columnConstraints.map(constraint => constraint.textRepresentation)).toEqual(
+    expect(crossTableService.columnConstraints.map(constraint => constraint.textRepresentation)).toEqual(
       ['Bar']
     );
   });

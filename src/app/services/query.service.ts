@@ -528,7 +528,7 @@ export class QueryService {
                 this.treeNodeService.finalTreeNodes = [];
               }
               // update the cross table baseline constraint
-              this.crossTableService.crossTable.constraint = this.constraintService.constraint_1();
+              this.crossTableService.constraint = this.constraintService.constraint_1();
             }
           },
           err => this.handle_error(err)

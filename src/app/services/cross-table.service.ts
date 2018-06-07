@@ -11,6 +11,8 @@ import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintBrief} from '../utilities/constraints/constraint-brief';
+import {Col} from '../models/table-models/col';
+import {Row} from '../models/table-models/row';
 
 @Injectable()
 export class CrossTableService {
@@ -26,7 +28,7 @@ export class CrossTableService {
   // the drag and drop context used by primeng library to associate draggable and droppable items
   // this constant is used by gb-draggable-cell and gb-droppable-zone
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
-  private _crossTable: CrossTable;
+  private crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
   /**
@@ -51,7 +53,7 @@ export class CrossTableService {
   }
 
   constructor(private resourceService: ResourceService) {
-    this._crossTable = new CrossTable();
+    this.crossTable = new CrossTable();
   }
 
   /**
@@ -128,6 +130,9 @@ export class CrossTableService {
    */
   public crossConstraints(constraints: Constraint[]): Constraint[][] {
     let constraintsWithValues = constraints.map(constraint => {
+      if (!this.valueConstraints.has(constraint)) {
+        throw new Error('No value mapping for constraint');
+      }
       let valuesForConstraint = this.valueConstraints.get(constraint);
       return valuesForConstraint.map(valueConstraint => {
         let combination = new CombinationConstraint();
@@ -151,7 +156,7 @@ export class CrossTableService {
       this.updateHeaderConstraints();
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
-          this._crossTable = crossTable;
+          this.crossTable = crossTable;
         });
     } else {
       window.setTimeout((function () {
@@ -214,10 +219,6 @@ export class CrossTableService {
             });
   }
 
-  get crossTable(): CrossTable {
-    return this._crossTable;
-  }
-
   get selectedConstraintCell(): GbDraggableCellComponent {
     return this._selectedConstraintCell;
   }
@@ -236,6 +237,26 @@ export class CrossTableService {
 
   get valueConstraints(): Map<Constraint, Array<Constraint>> {
     return this.crossTable.valueConstraints;
+  }
+
+  /**
+   * Sets the baseline constraint on the cross table.
+   * @param {Constraint} value
+   */
+  set constraint(value: Constraint) {
+    this.crossTable.constraint = value;
+  }
+
+  get rows(): Row[] {
+    return this.crossTable.rows;
+  }
+
+  get cols(): Col[] {
+    return this.crossTable.cols;
+  }
+
+  get rowHeaderConstraints(): Constraint[][] {
+    return this.crossTable.rowHeaderConstraints;
   }
 
 }
