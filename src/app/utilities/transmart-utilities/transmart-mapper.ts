@@ -17,14 +17,12 @@ import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {Aggregate} from '../../models/constraint-models/aggregate';
-import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
-import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
+import {Aggregate} from '../../models/aggregate-models/aggregate';
+import {NumericalAggregate} from '../../models/aggregate-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {FormatHelper} from '../format-helper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConstraintService} from '../../services/constraint.service';
 import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 
 export class TransmartMapper {

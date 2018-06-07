@@ -1,6 +1,5 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 export class CombinationConstraint extends Constraint {
 
@@ -21,7 +20,13 @@ export class CombinationConstraint extends Constraint {
   }
 
   hasNonEmptyChildren(): boolean {
-    return TransmartConstraintMapper.getNonEmptyChildObjects(this).length > 0;
+    return this.children.some((child: Constraint) => {
+      if (child.className === 'CombinationConstraint') {
+        return (<CombinationConstraint>child).hasNonEmptyChildren();
+      }
+      // all other types of constraints count as non-empty children.
+      return true;
+    });
   }
 
   addChild(constraint: Constraint) {

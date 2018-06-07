@@ -4,7 +4,7 @@ import {EndpointService} from '../endpoint.service';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedigree-relation-type-response';
+import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';

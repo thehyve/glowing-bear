@@ -37,9 +37,9 @@ export class ConceptConstraint extends Constraint {
     return this._concept;
   }
 
-  set concept(value: Concept) {
-    this._concept = value;
-    this.textRepresentation = `Concept: ${value.label}`;
+  set concept(concept: Concept) {
+    this._concept = concept;
+    this.textRepresentation = `Concept: ${concept.label}`;
   }
 
   get values(): ValueConstraint[] {

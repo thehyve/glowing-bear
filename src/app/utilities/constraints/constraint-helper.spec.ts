@@ -1,9 +1,9 @@
-import {Constraint} from '../models/constraint-models/constraint';
+import {Constraint} from '../../models/constraint-models/constraint';
 import {ConstraintHelper} from './constraint-helper';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
-import {ValueConstraint} from '../models/constraint-models/value-constraint';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 
 describe('ConstraintHelper', () => {
 

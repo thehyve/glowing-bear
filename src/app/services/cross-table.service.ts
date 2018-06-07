@@ -1,13 +1,13 @@
 import {Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
-import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
 import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Aggregate} from '../models/constraint-models/aggregate';
-import {ConstraintHelper} from '../utilities/constraint-helper';
+import {Aggregate} from '../models/aggregate-models/aggregate';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 
@@ -53,7 +53,7 @@ export class CrossTableService {
     // clear existing value constraints
     this.clearValueConstraints(constraints);
     for (let constraint of constraints) {
-      constraint.textRepresentation = ConstraintHelper.renderConstraint(constraint);
+      constraint.textRepresentation = ConstraintHelper.brief(constraint);
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
       if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {

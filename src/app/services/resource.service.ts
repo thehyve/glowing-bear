@@ -6,7 +6,7 @@ import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {SubjectSet} from '../models/constraint-models/subject-set';
-import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
+import {PedigreeRelationTypeResponse} from '../models/response-models/pedigree-relation-type-response';
 import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
@@ -20,11 +20,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {Aggregate} from '../models/constraint-models/aggregate';
+import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
-import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
-import {ConstraintHelper} from '../utilities/constraint-helper';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 
 
 @Injectable()

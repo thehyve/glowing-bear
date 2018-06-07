@@ -9,7 +9,7 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Observable} from 'rxjs/Observable';
-import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {FormatHelper} from '../utilities/format-helper';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';

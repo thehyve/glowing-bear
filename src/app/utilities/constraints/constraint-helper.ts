@@ -1,12 +1,11 @@
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {ConceptType} from '../models/constraint-models/concept-type';
-import {Constraint} from '../models/constraint-models/constraint';
-import {StudyConstraint} from '../models/constraint-models/study-constraint';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {ConceptType} from '../../models/constraint-models/concept-type';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {CombinationState} from '../../models/constraint-models/combination-state';
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
+import {ConstraintBrief} from './constraint-brief';
 
 export class ConstraintHelper {
 
@@ -75,35 +74,11 @@ export class ConstraintHelper {
   }
 
   /**
-   * Return a simple string representation of a string.
+   * Return a brief string representation of a constraint.
    * Note that not all constraint types are supported.
    */
-  public static renderConstraint(constraint: Constraint): string {
-    switch (constraint.className) {
-      case 'TrueConstraint':
-        return '';
-      case 'StudyConstraint':
-        return constraint.textRepresentation;
-      case 'ConceptConstraint':
-        return constraint.textRepresentation;
-      case 'ValueConstraint':
-        return constraint.textRepresentation;
-      case 'CombinationConstraint':
-        let combination = <CombinationConstraint>constraint;
-        switch (combination.combinationState) {
-          case CombinationState.And:
-            return combination.children.map(child => this.renderConstraint(child)).join(', ');
-          case CombinationState.Or:
-            return combination.children.map(child => this.renderConstraint(child)).join(' or ');
-          default:
-            throw new Error(`Unsupported state: ${combination.combinationState}`);
-        }
-      case 'NegationConstraint':
-        let negation = <NegationConstraint>constraint;
-        return `not ${this.renderConstraint(negation.constraint)}`;
-      default:
-        throw new Error(`Unsupported constraint type: ${constraint.className}`);
-    }
+  public static brief(constraint: Constraint): string {
+    return new ConstraintBrief().visit(constraint);
   }
 
   /**

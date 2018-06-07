@@ -1,5 +1,5 @@
 import {TestBed} from '@angular/core/testing';
-import {CategoricalAggregate} from '../app/models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
 import {TransmartResourceServiceMock} from '../app/services/mocks/transmart-resource.service.mock';
 import {CrossTableService} from '../app/services/cross-table.service';
@@ -12,6 +12,10 @@ import {ResourceService} from '../app/services/resource.service';
 import {Constraint} from '../app/models/constraint-models/constraint';
 import Spy = jasmine.Spy;
 import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/transmart-constraint-mapper';
+import {Study} from '../app/models/constraint-models/study';
+import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
+import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {ConstraintHelper} from '../app/utilities/constraints/constraint-helper';
 
 
 const mapConstraint = TransmartConstraintMapper.mapConstraint;
@@ -188,6 +192,74 @@ describe('Test cross table retrieval calls for TranSMART', () => {
 
     expect(aggregateCall).toHaveBeenCalled();
     expect(crossTableCall).toHaveBeenCalled()
+  });
+
+  it('should return a cross table when adding concepts to row and column constraints', () => {
+    // Prepare input
+    let fooConcept = new Concept();
+    fooConcept.type = ConceptType.CATEGORICAL;
+    fooConcept.code = 'foo';
+    fooConcept.name = 'Foo';
+    let fooConstraint = new ConceptConstraint();
+    fooConstraint.concept = fooConcept;
+    let studyA = new Study();
+    studyA.studyId = 'A Study';
+    let studyAConstraint = new StudyConstraint();
+    studyAConstraint.studies.push(studyA);
+    let fooAConstraint = new CombinationConstraint();
+    fooAConstraint.addChild(studyAConstraint);
+    fooAConstraint.addChild(fooConstraint);
+    fooAConstraint.textRepresentation = ConstraintHelper.brief(fooAConstraint);
+    expect(fooAConstraint.textRepresentation).toEqual('A Study, Foo');
+
+    let barConcept = new Concept();
+    barConcept.type = ConceptType.CATEGORICAL;
+    barConcept.code = 'bar';
+    barConcept.name = 'Bar';
+    let barConstraint = new ConceptConstraint();
+    barConstraint.concept = barConcept;
+    barConstraint.textRepresentation = ConstraintHelper.brief(barConstraint);
+
+    // Dummy result for two rows
+    let testRows = [[5], [6]];
+
+    // Prepare checks for the first call
+    crossTableCall = spyOn(transmartResourceService, 'getCrossTable').and.callFake(
+      (baseConstraint: Constraint, rowConstraints: Constraint[], columnConstraints: Constraint[]) => {
+        let result = new TransmartCrossTable();
+        result.rows = testRows;
+        return Observable.of(result);
+      });
+
+    let crossTable = crossTableService.crossTable;
+
+    // Call the service
+    crossTable.rowConstraints.push(fooAConstraint);
+    crossTableService.updateValueConstraints([fooAConstraint]);
+
+    testRows = [[1, 2], [3, 4]];
+
+    crossTable.columnConstraints.push(barConstraint);
+    crossTableService.updateValueConstraints([barConstraint]);
+
+    let columnHeaders = crossTable.cols.map(col => col.header);
+    expect(columnHeaders).toEqual([' - ', ' - ', ' - ']);
+
+    let rows = crossTable.rows.map(row =>
+      crossTable.cols.map(col => row.data[col.field].value));
+    expect(rows).toEqual([
+      ['', 'A', 'B'],
+      ['one', 1, 2],
+      ['two', 3, 4]
+    ]);
+
+    expect(crossTable.rowConstraints.map(constraint => constraint.textRepresentation)).toEqual(
+      ['A Study, Foo']
+    );
+
+    expect(crossTable.columnConstraints.map(constraint => constraint.textRepresentation)).toEqual(
+      ['Bar']
+    );
   });
 
 });
