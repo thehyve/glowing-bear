@@ -46,7 +46,7 @@ describe('CrossTableService', () => {
     let spy2 = spyOn(crossTableService, 'updateValueConstraints').and.callThrough();
     let spy3 = spyOn(crossTableService, 'updateCells').and.stub();
     let spy4 = spyOn<any>(crossTableService, 'retrieveAggregate').and.callThrough();
-    let spy6 = spyOn<any>(crossTableService, 'addCategoricalValueConstraints').and.callThrough();
+    let spy6 = spyOn<any>(crossTableService, 'setCategoricalValueConstraints').and.callThrough();
     let spy7 = spyOn(resourceService, 'getAggregate').and.callFake(() => {
       let aggregate: CategoricalAggregate = new CategoricalAggregate();
       aggregate.valueCounts.set('one', 1);
@@ -86,7 +86,7 @@ describe('CrossTableService', () => {
     spyOn(crossTableService, 'updateCells').and.stub();
     let retrieveAggregateSpy = spyOn<any>(crossTableService, 'retrieveAggregate').and.stub();
     spyOn(combi, 'isAnd').and.callThrough();
-    let addValSpy = spyOn(crossTableService.crossTable, 'addValueConstraints').and.stub();
+    let addValSpy = spyOn(crossTableService.crossTable, 'setValueConstraints').and.stub();
     crossTableService.updateValueConstraints([combi]);
     expect(crossTableService.updateCells).toHaveBeenCalled();
     expect(retrieveAggregateSpy).toHaveBeenCalled();
@@ -107,12 +107,12 @@ describe('CrossTableService', () => {
 
   it('should verify updateValueConstraints for other constraint', () => {
     spyOn(crossTableService, 'updateCells').and.stub();
-    spyOn(crossTableService.crossTable, 'addValueConstraints').and.stub();
+    spyOn(crossTableService.crossTable, 'setValueConstraints').and.stub();
     let constraint = new TrueConstraint();
     crossTableService.rowConstraints.push(constraint);
     crossTableService.updateValueConstraints([constraint]);
     expect(crossTableService.updateCells).toHaveBeenCalled();
-    expect(crossTableService.crossTable.addValueConstraints).toHaveBeenCalled();
+    expect(crossTableService.crossTable.setValueConstraints).toHaveBeenCalled();
   });
 
   it('should update cells when value constraints are mapped', () => {
@@ -219,7 +219,7 @@ describe('CrossTableService', () => {
 
     let crossTable = crossTableService.crossTable;
     crossTable.rowConstraints.push(fooConstraint);
-    crossTable.addValueConstraints(fooConstraint, valueConstraints);
+    crossTable.setValueConstraints(fooConstraint, valueConstraints);
     let crossConstraints = crossTableService.crossConstraints(crossTable.rowConstraints);
 
     let expected = [
@@ -265,9 +265,9 @@ describe('CrossTableService', () => {
 
     let crossTable = crossTableService.crossTable;
     crossTable.rowConstraints.push(fooConstraint);
-    crossTable.addValueConstraints(fooConstraint, fooValueConstraints);
+    crossTable.setValueConstraints(fooConstraint, fooValueConstraints);
     crossTable.rowConstraints.push(barConstraint);
-    crossTable.addValueConstraints(barConstraint, barValueConstraints);
+    crossTable.setValueConstraints(barConstraint, barValueConstraints);
     let crossConstraints = crossTableService.crossConstraints(crossTable.rowConstraints);
 
     let expected = [

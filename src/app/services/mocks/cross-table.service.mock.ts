@@ -114,7 +114,7 @@ export class CrossTableServiceMock {
       }
       // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addValueConstraints(constraint, [constraint]);
+        this.crossTable.setValueConstraints(constraint, [constraint]);
       }
     }
     this.updateCells();
@@ -139,7 +139,7 @@ export class CrossTableServiceMock {
       combi.addChild(peerConstraint);
       combi.addChild(val);
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
-      this.crossTable.addValueConstraints(peerConstraint, [combi]);
+      this.crossTable.setValueConstraints(peerConstraint, [combi]);
     }
   }
 

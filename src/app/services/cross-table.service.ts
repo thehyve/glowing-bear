@@ -96,7 +96,7 @@ export class CrossTableService {
       }
       // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addValueConstraints(constraint, [constraint]);
+        this.crossTable.setValueConstraints(constraint, [constraint]);
       }
     }
     this.updateCells();
@@ -182,18 +182,18 @@ export class CrossTableService {
                             peerConstraint: Constraint) {
     if (categoricalConceptConstraint.concept.aggregate) {
       const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
-      this.addCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+      this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
     } else {
       this.resourceService.getAggregate(categoricalConceptConstraint)
         .subscribe((responseAggregate: Aggregate) => {
           const categoricalAggregate = <CategoricalAggregate>responseAggregate;
-          this.addCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+          this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
         });
     }
   }
 
-  private addCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
-                                             peerConstraint: Constraint) {
+  private setCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
+                                         peerConstraint: Constraint) {
     let valueConstraints = categoricalAggregate.values.map((value) => {
       let val = new ValueConstraint();
       val.valueType = 'STRING';
@@ -202,7 +202,7 @@ export class CrossTableService {
       val.textRepresentation = val.value.toString();
       return val;
     });
-    this.crossTable.addValueConstraints(peerConstraint, valueConstraints);
+    this.crossTable.setValueConstraints(peerConstraint, valueConstraints);
   }
 
   get areValueConstraintsMapped(): boolean {

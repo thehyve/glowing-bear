@@ -38,7 +38,7 @@ export class CrossTable {
     this.valueConstraints = new Map<Constraint, Array<Constraint>>();
   }
 
-  public addValueConstraints(keyConstraint: Constraint, valueConstraints: Constraint[]) {
+  public setValueConstraints(keyConstraint: Constraint, valueConstraints: Constraint[]) {
     if (!(this.rowConstraints.includes(keyConstraint) || this.columnConstraints.includes(keyConstraint))) {
       throw new Error('Constraint not present in the cross table');
     }
