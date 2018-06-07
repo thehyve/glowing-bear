@@ -10,6 +10,7 @@ import {Aggregate} from '../models/aggregate-models/aggregate';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
+import {ConstraintBrief} from '../utilities/constraints/constraint-brief';
 
 @Injectable()
 export class CrossTableService {
@@ -27,6 +28,27 @@ export class CrossTableService {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
+
+  /**
+   * Return a brief string representation of a constraint.
+   * Note that not all constraint types are supported.
+   */
+  public static brief(constraint: Constraint): string {
+    // For a combination with one concept constraint, return the concept name
+    if (constraint.className === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+          ConstraintHelper.isCategoricalConceptConstraint(child)
+        );
+        if (categoricalConceptConstraints.length === 1) {
+          return new ConstraintBrief().visit(categoricalConceptConstraints[0]);
+        }
+      }
+    }
+    // Else, create a brief representation of the constraint
+    return new ConstraintBrief().visit(constraint);
+  }
 
   constructor(private resourceService: ResourceService) {
     this._crossTable = new CrossTable();
@@ -53,7 +75,7 @@ export class CrossTableService {
     // clear existing value constraints
     this.clearValueConstraints(constraints);
     for (let constraint of constraints) {
-      constraint.textRepresentation = ConstraintHelper.brief(constraint);
+      constraint.textRepresentation = CrossTableService.brief(constraint);
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
       if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {

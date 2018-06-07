@@ -15,7 +15,6 @@ import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/tr
 import {Study} from '../app/models/constraint-models/study';
 import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
-import {ConstraintHelper} from '../app/utilities/constraints/constraint-helper';
 
 
 const mapConstraint = TransmartConstraintMapper.mapConstraint;
@@ -209,8 +208,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
     let fooAConstraint = new CombinationConstraint();
     fooAConstraint.addChild(studyAConstraint);
     fooAConstraint.addChild(fooConstraint);
-    fooAConstraint.textRepresentation = ConstraintHelper.brief(fooAConstraint);
-    expect(fooAConstraint.textRepresentation).toEqual('A Study, Foo');
+    fooAConstraint.textRepresentation = CrossTableService.brief(fooAConstraint);
 
     let barConcept = new Concept();
     barConcept.type = ConceptType.CATEGORICAL;
@@ -218,7 +216,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
     barConcept.name = 'Bar';
     let barConstraint = new ConceptConstraint();
     barConstraint.concept = barConcept;
-    barConstraint.textRepresentation = ConstraintHelper.brief(barConstraint);
+    barConstraint.textRepresentation = CrossTableService.brief(barConstraint);
 
     // Dummy result for two rows
     let testRows = [[5], [6]];
@@ -254,7 +252,7 @@ describe('Test cross table retrieval calls for TranSMART', () => {
     ]);
 
     expect(crossTable.rowConstraints.map(constraint => constraint.textRepresentation)).toEqual(
-      ['A Study, Foo']
+      ['Foo']
     );
 
     expect(crossTable.columnConstraints.map(constraint => constraint.textRepresentation)).toEqual(

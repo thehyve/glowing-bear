@@ -74,14 +74,6 @@ export class ConstraintHelper {
   }
 
   /**
-   * Return a brief string representation of a constraint.
-   * Note that not all constraint types are supported.
-   */
-  public static brief(constraint: Constraint): string {
-    return new ConstraintBrief().visit(constraint);
-  }
-
-  /**
    * Checks if the constraint is a conjunctive combination constraint with one categorical concept constraint
    * as child.
    *
