@@ -19,16 +19,6 @@ export class CombinationConstraint extends Constraint {
     return 'CombinationConstraint';
   }
 
-  hasNonEmptyChildren(): boolean {
-    return this.children.some((child: Constraint) => {
-      if (child.className === 'CombinationConstraint') {
-        return (<CombinationConstraint>child).hasNonEmptyChildren();
-      }
-      // all other types of constraints count as non-empty children.
-      return true;
-    });
-  }
-
   addChild(constraint: Constraint) {
     if (!(constraint.className === 'CombinationConstraint'
         && (<CombinationConstraint>constraint).isRoot)) {

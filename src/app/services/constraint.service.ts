@@ -21,6 +21,7 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {TreeNode} from 'primeng/api';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 
 /**
  * This service concerns with
@@ -187,12 +188,12 @@ export class ConstraintService {
    */
   public generateInclusionConstraint(): Constraint {
     let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
-    return (<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren() ?
+    return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
       inclusionConstraint : new TrueConstraint();
   }
 
   public hasExclusionConstraint(): Boolean {
-    return this.rootExclusionConstraint.hasNonEmptyChildren();
+    return ConstraintHelper.hasNonEmptyChildren(this.rootExclusionConstraint);
   }
 
   /**
@@ -227,13 +228,13 @@ export class ConstraintService {
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
     let trueInclusion = false;
     // Inclusion part
-    if (!(<CombinationConstraint>inclusionConstraint).hasNonEmptyChildren()) {
+    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint)) {
       inclusionConstraint = new TrueConstraint();
       trueInclusion = true;
     }
 
     // Only use exclusion if there's something there
-    if ((<CombinationConstraint>exclusionConstraint).hasNonEmptyChildren()) {
+    if (ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>exclusionConstraint)) {
       // Wrap exclusion in negation
       let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
 

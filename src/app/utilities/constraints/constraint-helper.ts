@@ -5,7 +5,6 @@ import {CombinationConstraint} from '../../models/constraint-models/combination-
 import {CombinationState} from '../../models/constraint-models/combination-state';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {ConstraintBrief} from './constraint-brief';
 
 export class ConstraintHelper {
 
@@ -94,5 +93,22 @@ export class ConstraintHelper {
     return false;
   }
 
+  /**
+   * Checks if the combination has any children other than combinations
+   * without non-empty children.
+   *
+   * @param {CombinationConstraint} combination
+   * @return {boolean} true iff the combination has any children other than combinations
+   * or this property holds recursively for any of its children.
+   */
+  static hasNonEmptyChildren(combination: CombinationConstraint): boolean {
+    return combination.children.some((child: Constraint) => {
+      if (child.className === 'CombinationConstraint') {
+        return this.hasNonEmptyChildren(<CombinationConstraint>child);
+      }
+      // all other types of constraints count as non-empty children.
+      return true;
+    });
+  }
 
 }
