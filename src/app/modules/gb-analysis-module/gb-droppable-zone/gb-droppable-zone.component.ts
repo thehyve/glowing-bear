@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {TreeNodeService} from '../../../services/tree-node.service';
@@ -53,9 +53,12 @@ export class GbDroppableZoneComponent implements OnInit {
         constraint = this.constraintService
           .generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode, DropMode.TreeNode);
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
+          constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);
           // new constraint is introduced, creating new header constraints as well as cells
           this.crossTableService.updateValueConstraints(this.constraints);
+        } else {
+          console.error('Not a valid constraint', constraint);
         }
       }
     } else {

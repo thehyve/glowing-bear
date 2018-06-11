@@ -9,11 +9,9 @@ import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
-import {NumericalAggregate} from '../../../../models/constraint-models/numerical-aggregate';
-import {CategoricalAggregate} from '../../../../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
-import {Aggregate} from '../../../../models/constraint-models/aggregate';
-import {ResourceService} from '../../../../services/resource.service';
+import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {FormatHelper} from '../../../../utilities/format-helper';
 
 @Component({

@@ -17,14 +17,12 @@ import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {Aggregate} from '../../models/constraint-models/aggregate';
-import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
-import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
+import {Aggregate} from '../../models/aggregate-models/aggregate';
+import {NumericalAggregate} from '../../models/aggregate-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {FormatHelper} from '../format-helper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConstraintService} from '../../services/constraint.service';
 import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 
 export class TransmartMapper {
@@ -262,15 +260,9 @@ export class TransmartMapper {
       }
       // add col headers
       for (let colHeader of colHeaders) {
-        let val = 'NUM';
-        if (colHeader.className === 'CombinationConstraint') {
-          val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
-        } else if (colHeader.className === 'TrueConstraint') {
-          val = 'true';
-        }
         row.addDatumObject({
           isHeader: true,
-          value: val
+          value: colHeader[i].textRepresentation
         });
       }
       crossTable.rows.push(row);
@@ -279,15 +271,12 @@ export class TransmartMapper {
     let rowHeaders = crossTable.rowHeaderConstraints;
     for (let i = 0; i < rowHeaders.length; i++) {
       let row = new Row();
-      if (rowHeaders[i].className === 'CombinationConstraint') {
-        let children = (<CombinationConstraint>rowHeaders[i]).children;
-        for (let child of children) {
-          row.addDatumObject({
-            isHeader: true,
-            value: child.textRepresentation
-          })
-        }
-      }
+      rowHeaders[i].forEach(constraint => {
+        row.addDatumObject({
+          isHeader: true,
+          value: constraint.textRepresentation
+        })
+      });
       for (let j = 0; j < colHeaders.length; j++) {
         row.addDatumObject({
           isHeader: false,

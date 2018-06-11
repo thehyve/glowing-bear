@@ -5,6 +5,7 @@ import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
 
 export class ConceptConstraint extends Constraint {
+
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
@@ -36,9 +37,9 @@ export class ConceptConstraint extends Constraint {
     return this._concept;
   }
 
-  set concept(value: Concept) {
-    this._concept = value;
-    this.textRepresentation = `Concept: ${value.label}`;
+  set concept(concept: Concept) {
+    this._concept = concept;
+    this.textRepresentation = `Concept: ${concept.label}`;
   }
 
   get values(): ValueConstraint[] {

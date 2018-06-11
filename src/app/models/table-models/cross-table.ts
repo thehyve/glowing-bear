@@ -2,8 +2,6 @@ import {Constraint} from '../constraint-models/constraint';
 import {Row} from './row';
 import {Col} from './col';
 import {TrueConstraint} from '../constraint-models/true-constraint';
-import {CombinationConstraint} from '../constraint-models/combination-constraint';
-import {ConstraintMark} from '../constraint-models/constraint-mark';
 
 export class CrossTable {
   // the base constraint that the row/col constraints are conditioned on
@@ -20,8 +18,8 @@ export class CrossTable {
   /*
    * the header constraints used as input params for backend call
    */
-  private _rowHeaderConstraints: Array<Constraint> = [];
-  private _columnHeaderConstraints: Array<Constraint> = [];
+  private _rowHeaderConstraints: Constraint[][];
+  private _columnHeaderConstraints: Constraint[][];
   /*
    * The structure of the cross table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -40,85 +38,11 @@ export class CrossTable {
     this.valueConstraints = new Map<Constraint, Array<Constraint>>();
   }
 
-  public addValueConstraint(keyConstraint: Constraint, valueConstraint: Constraint) {
-    if (this.rowConstraints.includes(keyConstraint) || this.columnConstraints.includes(keyConstraint)) {
-      let vals = this.valueConstraints.get(keyConstraint);
-      vals = vals ? vals : new Array<Constraint>();
-      vals.push(valueConstraint);
-      this.valueConstraints.set(keyConstraint, vals);
+  public setValueConstraints(keyConstraint: Constraint, valueConstraints: Constraint[]) {
+    if (!(this.rowConstraints.includes(keyConstraint) || this.columnConstraints.includes(keyConstraint))) {
+      throw new Error('Constraint not present in the cross table');
     }
-  }
-
-  public updateHeaderConstraints() {
-    this.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
-    this.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
-  }
-
-  private crossConstraints(constraints: Array<Constraint>): Array<Constraint> {
-    if (constraints.length > 0) {
-      let combinations = new Array<CombinationConstraint>();
-      // first constraint
-      let below0 = this.getConstraintsBelow(constraints[0], constraints);
-      let valueRepetition0 = 1;
-      for (let b of below0) {
-        valueRepetition0 = valueRepetition0 * this.valueConstraints.get(b).length;
-      }
-      let vals0 = this.valueConstraints.get(constraints[0]);
-      for (let val of vals0) {
-        for (let i = 0; i < valueRepetition0; i++) {
-          let c = new CombinationConstraint();
-          c.addChild(val);
-          c.mark = ConstraintMark.SUBJECT;
-          combinations.push(c);
-        }
-      }
-      // the remaining constraints
-      let index = 0;
-      for (let i = 1; i < constraints.length; i++) {
-        let above = this.getConstraintsAbove(constraints[i], constraints);
-        let selfRepetition = 1;
-        for (let a of above) {
-          selfRepetition = selfRepetition * this.valueConstraints.get(a).length;
-        }
-        let below = this.getConstraintsBelow(constraints[i], constraints);
-        let valueRepetition = 1;
-        for (let b of below) {
-          valueRepetition = valueRepetition * this.valueConstraints.get(b).length;
-        }
-        let vals = this.valueConstraints.get(constraints[i]);
-        for (let j = 0; j < selfRepetition; j++) {
-          for (let val of vals) {
-            for (let k = 0; k < valueRepetition; k++) {
-              combinations[index].addChild(val);
-              let nIndex = index + 1;
-              index = (nIndex === combinations.length) ? 0 : nIndex;
-            }
-          }
-        }
-      }
-      return combinations;
-    } else {
-      return [new TrueConstraint()];
-    }
-
-  }
-
-  private getConstraintsBelow(current: Constraint, list: Constraint[]): Constraint[] {
-    let below = [];
-    let index = list.indexOf(current);
-    for (let i = index + 1; i < list.length; i++) {
-      below.push(list[i]);
-    }
-    return below;
-  }
-
-  private getConstraintsAbove(current: Constraint, list: Constraint[]): Constraint[] {
-    let above = [];
-    let index = list.indexOf(current);
-    for (let i = index - 1; i >= 0; i--) {
-      above.push(list[i]);
-    }
-    return above;
+    this.valueConstraints.set(keyConstraint, valueConstraints);
   }
 
   get rowConstraints(): Array<Constraint> {
@@ -161,19 +85,19 @@ export class CrossTable {
     this._valueConstraints = value;
   }
 
-  get rowHeaderConstraints(): Array<Constraint> {
+  get rowHeaderConstraints(): Constraint[][] {
     return this._rowHeaderConstraints;
   }
 
-  set rowHeaderConstraints(value: Array<Constraint>) {
+  set rowHeaderConstraints(value: Constraint[][]) {
     this._rowHeaderConstraints = value;
   }
 
-  get columnHeaderConstraints(): Array<Constraint> {
+  get columnHeaderConstraints(): Constraint[][] {
     return this._columnHeaderConstraints;
   }
 
-  set columnHeaderConstraints(value: Array<Constraint>) {
+  set columnHeaderConstraints(value: Constraint[][]) {
     this._columnHeaderConstraints = value;
   }
 

@@ -23,15 +23,10 @@ export class StudyConstraint extends Constraint {
   }
 
   get textRepresentation(): string {
-    /*
-     * TODO: avoid checking studies during runtime
-     */
     let result: string = (this.studies) ? 'Study: ' : 'Study';
-    for (let study of this.studies) {
-      result += study.studyId + ', ';
-    }
-    this._textRepresentation = (this.studies) ? result.substring(0, result.length - 2) : result;
-    return this.textRepresentation;
+    result += this.studies.map(study => study.studyId).join(', ');
+    this._textRepresentation = result;
+    return this._textRepresentation;
   }
 
   set textRepresentation(value: string) {

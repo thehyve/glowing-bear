@@ -2,6 +2,8 @@ import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {Constraint} from '../../models/constraint-models/constraint';
 
 export class TransmartResourceServiceMock {
   private studies: Study[];
@@ -41,4 +43,13 @@ export class TransmartResourceServiceMock {
   logout() {
     return Observable.of({});
   }
+
+  getCrossTable(baseConstraint: Constraint,
+                rowConstraints: Constraint[],
+                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
+    let crossTableResult = new TransmartCrossTable();
+    crossTableResult.rows = [[0]];
+    return Observable.of(crossTableResult);
+  }
+
 }

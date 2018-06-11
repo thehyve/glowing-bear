@@ -4,7 +4,7 @@ import {EndpointService} from '../endpoint.service';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {PedigreeRelationTypeResponse} from '../../models/constraint-models/pedigree-relation-type-response';
+import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
@@ -17,7 +17,6 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
-import {CrossTable} from '../../models/table-models/cross-table';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 @Injectable()
@@ -526,24 +525,16 @@ export class TransmartResourceService {
     }
   }
 
-  getCrossTable(crossTable: CrossTable): Observable<TransmartCrossTable> {
-    const baseConstraint = crossTable.constraint;
-    const rowHeaderConstraints = crossTable.rowHeaderConstraints;
-    const columnHeaderConstraints = crossTable.columnHeaderConstraints;
+  getCrossTable(baseConstraint: Constraint,
+                rowConstraints: Constraint[],
+                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
     const urlPart = 'observations/crosstable';
-    let rowConstraintArr = [];
-    rowHeaderConstraints.forEach((constraint: Constraint) => {
-      rowConstraintArr.push(TransmartConstraintMapper.mapConstraint(constraint));
-    });
-    let columnConstraintArr = [];
-    columnHeaderConstraints.forEach((constraint: Constraint) => {
-      columnConstraintArr.push(TransmartConstraintMapper.mapConstraint(constraint));
-    });
     const body = {
       subjectConstraint: TransmartConstraintMapper.mapConstraint(baseConstraint),
-      rowConstraints: rowConstraintArr,
-      columnConstraints: columnConstraintArr
+      rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)),
+      columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint))
     };
     return this.postCall(urlPart, body, null);
   }
+
 }
