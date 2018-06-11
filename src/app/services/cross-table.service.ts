@@ -46,6 +46,8 @@ export class CrossTableService {
           return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
         }
       }
+    } else if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
+      return (<ConceptConstraint>constraint).concept.name;
     }
     // Else, create a brief representation of the constraint
     return constraint.textRepresentation;
@@ -210,12 +212,12 @@ export class CrossTableService {
   }
 
   get areValueConstraintsMapped(): boolean {
-    return  this.rowConstraints.every((constraint: Constraint) => {
-              return this.valueConstraints.has(constraint);
-            }) &&
-            this.columnConstraints.every((constraint: Constraint) => {
-              return this.valueConstraints.has(constraint);
-            });
+    return this.rowConstraints.every((constraint: Constraint) => {
+        return this.valueConstraints.has(constraint);
+      }) &&
+      this.columnConstraints.every((constraint: Constraint) => {
+        return this.valueConstraints.has(constraint);
+      });
   }
 
   get selectedConstraintCell(): GbDraggableCellComponent {
