@@ -69,10 +69,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
 
-      if (newConstraint.getClassName() === 'CombinationConstraint') {
+      if (newConstraint.className === 'CombinationConstraint') {
         // we don't want to copy a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
-      } else if (newConstraint.getClassName() === 'PedigreeConstraint') {
+      } else if (newConstraint.className === 'PedigreeConstraint') {
         // we don't want to copy a PedigreeConstraint's right-hand-side constraint
         (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
       }

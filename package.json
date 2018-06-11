@@ -7,10 +7,11 @@
     "start": "ng serve --aot",
     "build": "ng build",
     "package": "ng build --prod",
-    "test": "ng test",
-    "testOnce": "ng test --single-run",
+    "test": "ng test --code-coverage",
+    "testOnce": "ng test --single-run --code-coverage",
     "lint": "ng lint --type-check",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "report-coverage": "codecov"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +42,7 @@
     "@angular/compiler-cli": "^5.2.1",
     "@types/jasmine": "2.5.47",
     "@types/node": "~6.0.60",
+    "codecov": "^3.0.2",
     "codelyzer": "~4.3.0",
     "cucumber": "^2.1.0",
     "es6-promise": "^4.1.1",
@@ -52,6 +54,7 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-spec-reporter": "^0.0.32",
     "ng2-mock-component": "^0.1.0",
     "protractor": "~5.1.2",
     "protractor-cucumber-framework": "^3.1.0",

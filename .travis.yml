@@ -37,8 +37,7 @@ install:
 script:
   - travis_retry ${GRADLE_SCRIPT} check
 after_success:
-#  - ng test --code-coverage --single-run
-  - codecov
+  - ${GRADLE_SCRIPT} yarnCodecov
 
 notifications:
   webhooks:

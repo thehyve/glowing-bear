@@ -65,7 +65,7 @@ files in `app/config`.
 Example `env.json`:
 ```json
 {
-  "env": "prod"
+  "env": "default"
 }
 ```
 Example `config.prod.json`:

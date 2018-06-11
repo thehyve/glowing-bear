@@ -1,4 +1,4 @@
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class Col {
   public static COLUMN_FIELD_PREFIX = 'col';

@@ -55,7 +55,7 @@
                     [suggestions]="suggestedCategories"
                     (completeMethod)="onCategorySearch($event)"
                     (onSelect)="updateConceptValues($event)"
-                    (onUnselect)="onUnselectCategories($event)"
+                    (onUnselect)="updateConceptValues($event)"
                     [multiple]="true"></p-autoComplete>
     <button type="button" class="btn btn-outline-secondary"
             (click)="selectAllCategories()">

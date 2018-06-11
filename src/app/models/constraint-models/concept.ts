@@ -1,4 +1,4 @@
-import {Aggregate} from './aggregate';
+import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
 
 export class Concept {
