@@ -3,9 +3,9 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query-models/query';
 import {QueryService} from '../../../../services/query.service';
 import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
-import {DownloadHelper} from '../../../../utilities/DownloadHelper';
+import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
 import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
 import {MessageService} from '../../../../services/message.service';
 

@@ -9,9 +9,11 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/query-models/step';
-import {FormatHelper} from '../../../../utilities/FormatHelper';
+import {FormatHelper} from '../../../../utilities/format-helper';
 import {Query} from '../../../../models/query-models/query';
 import {MessageService} from '../../../../services/message.service';
+import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
+import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -51,11 +53,10 @@ export class GbSelectionComponent implements OnInit {
       .map(id => id.trim())
       .filter(id => id.length > 0);
     let query = new Query(null, name);
-    query.patientsQuery = {
-      'type': 'patient_set',
-      'subjectIds': subjectIds
-    };
-    query.observationsQuery = {data: null};
+    let subjectSetConstraint = new SubjectSetConstraint();
+    subjectSetConstraint.subjectIds = subjectIds;
+    query.subjectQuery = subjectSetConstraint;
+    query.observationQuery = {data: null};
     return query;
   }
 
@@ -130,7 +131,7 @@ export class GbSelectionComponent implements OnInit {
       if (_json['patientsQuery']) {
         let name = file.name.substr(0, file.name.indexOf('.'));
         let query = new Query('', name);
-        query.patientsQuery = _json['patientsQuery'];
+        query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
         return query;
       } else {
         this.messageService.alert('error', 'Invalid file content for query import.');

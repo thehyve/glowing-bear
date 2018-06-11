@@ -17,6 +17,8 @@ export class MessageService {
 
   public alert(severity: string, summary: string, detail?: string) {
     let _detail = detail ? detail : '';
+    // This hack is to address the bug where primneNg growl does not time out
+    this.messages = [].concat(this.messages);
     this.messages.push({severity: severity, summary: summary, detail: _detail});
   }
 

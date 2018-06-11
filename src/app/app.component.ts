@@ -5,14 +5,14 @@ import {ConstraintService} from './services/constraint.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {QueryService} from './services/query.service';
 import {DataTableService} from './services/data-table.service';
-import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
 import {NavbarService} from './services/navbar.service';
 import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 
 @Component({
-  selector: 'app-root',
+  selector: 'gb-app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

@@ -7,9 +7,10 @@
     "start": "ng serve --aot",
     "build": "ng build",
     "package": "ng build --prod",
-    "test": "ng test",
-    "testOnce": "ng test --single-run",
-    "lint": "ng lint",
+    "test": "ng test --code-coverage",
+    "testOnce": "ng test --single-run --code-coverage",
+    "lint": "ng lint --type-check",
+    "report-coverage": "codecov",
     "e2e": "npx cypress run",
     "cypress": "npx cypress open"
   },
@@ -42,7 +43,8 @@
     "@angular/compiler-cli": "^5.2.1",
     "@types/jasmine": "2.5.47",
     "@types/node": "~6.0.60",
-    "codelyzer": "~4.1.0",
+    "codecov": "^3.0.2",
+    "codelyzer": "~4.3.0",
     "cucumber": "^2.1.0",
     "cypress": "^2.1.0",
     "cypress-cucumber-preprocessor": "^0.6.0",
@@ -55,11 +57,17 @@
     "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-spec-reporter": "^0.0.32",
     "ng2-mock-component": "^0.1.0",
     "protractor": "~5.1.2",
     "protractor-cucumber-framework": "^3.1.0",
     "ts-node": "~2.0.0",
     "tslint": "~5.0.0",
     "typescript": "2.4.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thehyve/glowing-bear.git"
+  },
+  "homepage": "https://glowingbear.app/"
 }

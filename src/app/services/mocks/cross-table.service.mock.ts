@@ -1,7 +1,7 @@
 import {CrossTable} from '../../models/table-models/cross-table';
 import {GbDraggableCellComponent} from '../../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
 import {Concept} from '../../models/constraint-models/concept';
-import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {ConceptType} from '../../models/constraint-models/concept-type';
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -9,7 +9,7 @@ import {Row} from '../../models/table-models/row';
 import {Col} from '../../models/table-models/col';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class CrossTableServiceMock {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
@@ -18,6 +18,7 @@ export class CrossTableServiceMock {
 
   constructor() {
     this.crossTable = new CrossTable();
+    this.selectedConstraintCell = null;
     this.mockDataInit();
   }
 
@@ -94,7 +95,7 @@ export class CrossTableServiceMock {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
-      } else if (constraint.getClassName() === 'CombinationConstraint') {
+      } else if (constraint.className === 'CombinationConstraint') {
         let combiConstraint = <CombinationConstraint>constraint;
         if (combiConstraint.isAnd()) {
           let numCategoricalConceptConstraints = 0;
@@ -113,7 +114,7 @@ export class CrossTableServiceMock {
       }
       // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addValueConstraint(constraint, constraint);
+        this.crossTable.setValueConstraints(constraint, [constraint]);
       }
     }
     this.updateCells();
@@ -138,7 +139,7 @@ export class CrossTableServiceMock {
       combi.addChild(peerConstraint);
       combi.addChild(val);
       combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
-      this.crossTable.addValueConstraint(peerConstraint, combi);
+      this.crossTable.setValueConstraints(peerConstraint, [combi]);
     }
   }
 
@@ -150,7 +151,7 @@ export class CrossTableServiceMock {
       let valChild = null;
       let catChild = null;
       constraint.children.forEach((child: Constraint) => {
-        if (child.getClassName() === 'ValueConstraint') {
+        if (child.className === 'ValueConstraint') {
           numValueConstraints++;
           valChild = child;
         } else if (this.isCategoricalConceptConstraint(child)) {
@@ -170,7 +171,7 @@ export class CrossTableServiceMock {
 
   public isCategoricalConceptConstraint(constraint: Constraint): boolean {
     let result = false;
-    if (constraint.getClassName() === 'ConceptConstraint') {
+    if (constraint.className === 'ConceptConstraint') {
       let conceptConstraint = <ConceptConstraint>constraint;
       result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
     }
@@ -229,7 +230,7 @@ export class CrossTableServiceMock {
           }
         }
       }
-      this.rows.push(row);
+      this.crossTable.rows.push(row);
     }
 
     // generate the data rows
@@ -294,13 +295,13 @@ export class CrossTableServiceMock {
           value: 'Num'
         });
       }
-      this.rows.push(dataRow);
+      this.crossTable.rows.push(dataRow);
     }
 
     // generate the cols serving as indices for rows
-    for (let field in this.rows[0].data) {
+    for (let field in this.crossTable.rows[0].data) {
       let col = new Col(' - ', field);
-      this.cols.push(col);
+      this.crossTable.cols.push(col);
     }
   }
 
@@ -369,11 +370,4 @@ export class CrossTableServiceMock {
     return this.crossTable.columnConstraints;
   }
 
-  get rows(): Array<Row> {
-    return this.crossTable.rows;
-  }
-
-  get cols(): Array<Col> {
-    return this.crossTable.cols;
-  }
 }

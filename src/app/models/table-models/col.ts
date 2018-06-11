@@ -1,4 +1,4 @@
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class Col {
   public static COLUMN_FIELD_PREFIX = 'col';
@@ -17,8 +17,7 @@ export class Col {
     if (metadata != null && metadata.size) {
       this.metadata = metadata;
       this.header += ' ⓘ';
-    }
-    else {
+    } else {
       this.metadata = new Map();
     }
   }

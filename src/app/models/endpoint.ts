@@ -53,11 +53,11 @@ export class Endpoint {
     this._isAuthenticated = value;
   }
 
-  get expiresAt():number {
+  get expiresAt(): number {
     return this._expiresAt;
   }
 
-  set expiresAt(value:number) {
+  set expiresAt(value: number) {
     this._expiresAt = value;
   }
 }

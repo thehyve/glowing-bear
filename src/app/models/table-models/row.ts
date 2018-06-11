@@ -1,5 +1,5 @@
 import {Col} from './col';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class Row {
   /*

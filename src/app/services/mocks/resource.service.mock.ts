@@ -5,6 +5,9 @@ import {Query} from '../../models/query-models/query';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Dimension} from '../../models/table-models/dimension';
 import {DataTable} from '../../models/table-models/data-table';
+import {CrossTable} from '../../models/table-models/cross-table';
+import {Aggregate} from '../../models/aggregate-models/aggregate';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -14,6 +17,8 @@ export class ResourceServiceMock {
   private exportJobs: ExportJob[];
   private dimensions: Dimension[];
   private dataTable: DataTable;
+  private crossTable: CrossTable;
+  private aggregate: Aggregate;
 
   constructor() {
     this.studies = [];
@@ -23,6 +28,8 @@ export class ResourceServiceMock {
     this.exportJobs = [];
     this.dimensions = [];
     this.dataTable = new DataTable();
+    this.crossTable = new CrossTable();
+    this.aggregate = new Aggregate();
   }
 
   getStudies(): Observable<Study[]> {
@@ -54,11 +61,23 @@ export class ResourceServiceMock {
     return Observable.of(this.dataTable);
   }
 
+  getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
+    return Observable.of(this.crossTable);
+  }
+
   getCounts(constraint: Constraint): Observable<object> {
     return Observable.of({});
   }
 
+  getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
+    return Observable.of(this.aggregate);
+  }
+
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  logout() {
     return Observable.of({});
   }
 }

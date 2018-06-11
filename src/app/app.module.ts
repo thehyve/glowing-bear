@@ -18,7 +18,7 @@ import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module'
 import {QueryService} from './services/query.service';
 import {DataTableService} from './services/data-table.service';
 import {HttpClientModule} from '@angular/common/http';
-import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';

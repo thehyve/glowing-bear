@@ -6,13 +6,13 @@ import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {SubjectSet} from '../models/constraint-models/subject-set';
-import {PedigreeRelationTypeResponse} from '../models/constraint-models/pedigree-relation-type-response';
+import {PedigreeRelationTypeResponse} from '../models/response-models/pedigree-relation-type-response';
 import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
-import {TransmartResourceService} from './transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
-import {TransmartMapper} from './transmart-resource/transmart-mapper';
+import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {TransmartStudyDimensionElement} from '../models/transmart-models/transmart-study-dimension-element';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {ExportDataType} from '../models/export-models/export-data-type';
@@ -20,9 +20,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Dimension} from '../models/table-models/dimension';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {Aggregate} from '../models/constraint-models/aggregate';
+import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 
 
 @Injectable()
@@ -118,10 +119,6 @@ export class ResourceService {
         return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
       });
   }
-
-  // getAggregate1(constraint: Constraint): Observable<Aggregate> {
-  //
-  // }
 
   // -------------------------------------- trial visit calls --------------------------------------
   /**
@@ -334,9 +331,13 @@ export class ResourceService {
   // -------------------------------------- cross table ---------------------------------------------
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
     return this.transmartResourceService
-      .getCrossTable(crossTable)
+      .getCrossTable(
+        crossTable.constraint,
+        crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+        crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
       .map((tmCrossTable: TransmartCrossTable) => {
         return TransmartMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
       });
   }
+
 }

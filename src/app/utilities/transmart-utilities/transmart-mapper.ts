@@ -17,14 +17,13 @@ import {HeaderRow} from '../../models/table-models/header-row';
 import {DimensionValue} from '../../models/table-models/dimension-value';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {Aggregate} from '../../models/constraint-models/aggregate';
-import {NumericalAggregate} from '../../models/constraint-models/numerical-aggregate';
-import {CategoricalAggregate} from '../../models/constraint-models/categorical-aggregate';
-import {FormatHelper} from '../../utilities/FormatHelper';
+import {Aggregate} from '../../models/aggregate-models/aggregate';
+import {NumericalAggregate} from '../../models/aggregate-models/numerical-aggregate';
+import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
+import {FormatHelper} from '../format-helper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
-import {Constraint} from '../../models/constraint-models/constraint';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 
 export class TransmartMapper {
 
@@ -41,8 +40,8 @@ export class TransmartMapper {
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.patientsQuery = transmartQuery.patientsQuery;
-    query.observationsQuery = transmartQuery.observationsQuery;
+    query.subjectQuery =  TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.patientsQuery);
+    query.observationQuery = transmartQuery.observationsQuery;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
@@ -77,8 +76,8 @@ export class TransmartMapper {
   public static mapQuery(query: Query): TransmartQuery {
     let transmartTableState: TransmartTableState = query.dataTable ? this.mapDataTableToTableState(query.dataTable) : null;
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = query.patientsQuery;
-    transmartQuery.observationsQuery = query.observationsQuery;
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery);
+    transmartQuery.observationsQuery = query.observationQuery;
     transmartQuery.queryBlob = {dataTableState: transmartTableState};
 
     return transmartQuery;
@@ -261,15 +260,9 @@ export class TransmartMapper {
       }
       // add col headers
       for (let colHeader of colHeaders) {
-        let val = 'NUM';
-        if (colHeader.getClassName() === 'CombinationConstraint') {
-          val = (<CombinationConstraint>colHeader).children[i].textRepresentation;
-        } else if (colHeader.getClassName() === 'TrueConstraint') {
-          val = 'true';
-        }
         row.addDatumObject({
           isHeader: true,
-          value: val
+          value: colHeader[i].textRepresentation
         });
       }
       crossTable.rows.push(row);
@@ -278,15 +271,12 @@ export class TransmartMapper {
     let rowHeaders = crossTable.rowHeaderConstraints;
     for (let i = 0; i < rowHeaders.length; i++) {
       let row = new Row();
-      if (rowHeaders[i].getClassName() === 'CombinationConstraint') {
-        let children = (<CombinationConstraint>rowHeaders[i]).children;
-        for (let child of children) {
-          row.addDatumObject({
-            isHeader: true,
-            value: child.textRepresentation
-          })
-        }
-      }
+      rowHeaders[i].forEach(constraint => {
+        row.addDatumObject({
+          isHeader: true,
+          value: constraint.textRepresentation
+        })
+      });
       for (let j = 0; j < colHeaders.length; j++) {
         row.addDatumObject({
           isHeader: false,
