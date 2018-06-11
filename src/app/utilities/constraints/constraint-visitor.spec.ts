@@ -8,12 +8,12 @@ import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constr
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
-import {ConstraintBrief} from './constraint-brief';
 import {Concept} from '../../models/constraint-models/concept';
+import {TransmartConstraintSerialiser} from '../transmart-utilities/transmart-constraint-serialiser';
 
 describe('ConstraintVisitor', () => {
 
-  it('ConstraintBrief should not fail on any constraint type', () => {
+  it('TransmartConstraintSerialiser should not fail on any constraint type', () => {
     const conceptConstraint = new ConceptConstraint();
     const concept = new Concept();
     concept.name = 'Concept name';
@@ -31,7 +31,7 @@ describe('ConstraintVisitor', () => {
       new TimeConstraint()
     ];
 
-    let visitor = new ConstraintBrief();
+    let visitor = new TransmartConstraintSerialiser(false);
 
     for (let constraint of constraints) {
       expect(visitor.visit(constraint)).toBeDefined(
