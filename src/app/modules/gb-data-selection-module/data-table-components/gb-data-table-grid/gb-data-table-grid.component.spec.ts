@@ -30,7 +30,6 @@ describe('GbDataTableGridComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbDataTableGridComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should be created.', () => {

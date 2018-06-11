@@ -9,7 +9,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
-import {AuthenticationService} from './services/authentication.service';
+import {AuthenticationService} from './services/authentication/authentication.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
@@ -37,7 +37,7 @@ import {MessageServiceMock} from './services/mocks/message.service.mock';
 import {ExportService} from './services/export.service';
 import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
-import {GbAutoLoginComponent} from './gb-auto-login.component';
+import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 
 
 export function initConfig(config: AppConfig) {
@@ -48,8 +48,7 @@ describe('AppComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComponent,
-        GbAutoLoginComponent
+        AppComponent
       ],
       imports: [
         BrowserModule,
@@ -57,6 +56,7 @@ describe('AppComponent', () => {
         HttpClientModule,
         BrowserAnimationsModule,
         GrowlModule,
+        GbMainModule,
         GbNavBarModule,
         GbSidePanelModule,
         GbDataSelectionModule,

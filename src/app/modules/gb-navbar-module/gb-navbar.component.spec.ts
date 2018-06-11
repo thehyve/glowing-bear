@@ -12,7 +12,7 @@ import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {MessageService} from '../../services/message.service';
 import {MessageServiceMock} from '../../services/mocks/message.service.mock';
-import {GbAutoLoginComponent} from '../../gb-auto-login.component';
+import {GbMainModule} from '../gb-main-module/gb-main.module';
 
 describe('GbNavbarComponent', () => {
   let component: GbNavbarComponent;
@@ -20,15 +20,12 @@ describe('GbNavbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        GbNavbarComponent,
-        GbAutoLoginComponent
-      ],
       imports: [
         CommonModule,
         RouterModule,
         TabMenuModule,
         FormsModule,
+        GbMainModule,
         MessagesModule,
         routing
       ],

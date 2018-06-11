@@ -168,6 +168,10 @@ export class QueryService {
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
+  }
+
+  init() {
+    console.log('Query service initialised.');
     this.loadQueries();
 
     // initial updates
@@ -183,7 +187,7 @@ export class QueryService {
   /**
    * Update the queries on the left-side panel
    */
-  public loadQueries() {
+  private loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {

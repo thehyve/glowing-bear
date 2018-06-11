@@ -19,6 +19,7 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {TreeNode} from 'primeng/api';
+import {AuthenticationService} from './authentication/authentication.service';
 
 /**
  * This service concerns with
@@ -53,20 +54,14 @@ export class ConstraintService {
   private _maxNumSearchResults = 100;
 
   constructor(private treeNodeService: TreeNodeService,
-              private resourceService: ResourceService) {
+              private resourceService: ResourceService,
+              private authenticationService: AuthenticationService) {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.subjectSetConstraint = null;
-    // Construct constraints
-    this.loadEmptyConstraints();
-    this.loadStudies();
-    // create the pedigree-related constraints
-    this.loadPedigrees();
-    // also construct concepts while loading the tree nodes
-    this.treeNodeService.loadTreeNodes(this);
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -75,6 +70,17 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.rootExclusionConstraint.isSubselection = true;
+  }
+
+  init() {
+    console.log('Initialise constraint service ...');
+    // Construct constraints
+    this.loadEmptyConstraints();
+    this.loadStudies();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
+    // also construct concepts while loading the tree nodes
+    this.treeNodeService.loadTreeNodes(this);
   }
 
   private loadEmptyConstraints() {

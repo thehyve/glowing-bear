@@ -19,6 +19,10 @@ export class DataTableService {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
+  }
+
+  init() {
+    console.log('Initialise data table service ...');
     this.updateDataTable();
   }
 

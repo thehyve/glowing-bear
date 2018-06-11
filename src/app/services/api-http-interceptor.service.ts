@@ -1,12 +1,13 @@
 import {Injectable, Injector} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {AuthorizationResult, OidcSecurityService} from 'angular-auth-oidc-client';
 import {Observable} from 'rxjs/Observable';
 import {AppConfig} from '../config/app.config';
+import {AuthenticationService} from './authentication/authentication.service';
+import {AuthorisationResult} from './authentication/authorisation-result';
 
 @Injectable()
 export class ApiHttpInterceptor implements HttpInterceptor {
-  private oidcSecurityService: OidcSecurityService;
+  private authenticationService: AuthenticationService;
   private appConfig: AppConfig;
 
   constructor(private injector: Injector) { }
@@ -16,8 +17,8 @@ export class ApiHttpInterceptor implements HttpInterceptor {
    */
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-    if (this.oidcSecurityService === undefined) {
-      this.oidcSecurityService = this.injector.get(OidcSecurityService);
+    if (this.authenticationService === undefined) {
+      this.authenticationService = this.injector.get(AuthenticationService);
     }
     if (this.appConfig === undefined) {
       this.appConfig = this.injector.get(AppConfig);
@@ -25,17 +26,19 @@ export class ApiHttpInterceptor implements HttpInterceptor {
 
     // skip if request is for config, or if not for API
     if (  req.url.includes(AppConfig.path) ||
-          !req.url.includes(this.appConfig.getConfig('api-url'))) {
+          !req.url.includes(this.appConfig.getConfig('api-url')) ||
+          req.url.endsWith('/oauth/token')
+    ) {
       return next.handle(req);
     }
 
-    // API request: wait for oidc authorization
-    return this.oidcSecurityService.getIsAuthorized().switchMap((isAuthorized) => {
-      if (isAuthorized) {
+    // API request: wait for authorization
+    return this.authenticationService.authorised.switchMap((isAuthorized) => {
+      if (isAuthorized && this.authenticationService.validToken) {
         return next.handle(this.addAPIHeaders(req));
       } else {
-        return this.oidcSecurityService.onAuthorizationResult.asObservable().switchMap((authResult) => {
-          if (authResult !== AuthorizationResult.authorized) {
+        return this.authenticationService.authorise().switchMap((authResult: AuthorisationResult) => {
+          if (authResult !== 'authorized') {
             throw new Error('Not authorized');
           }
           return next.handle(this.addAPIHeaders(req));
@@ -45,7 +48,7 @@ export class ApiHttpInterceptor implements HttpInterceptor {
   }
 
   private addAPIHeaders(req: HttpRequest<any>): HttpRequest<any> {
-    let token = this.oidcSecurityService.getToken();
+    let token = this.authenticationService.token;
 
     if (token !== '') {
       return req.clone({ setHeaders: {
@@ -56,4 +59,5 @@ export class ApiHttpInterceptor implements HttpInterceptor {
       throw new Error('Token is null');
     }
   }
+
 }

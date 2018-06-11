@@ -28,8 +28,10 @@ import {TransmartResourceService} from './services/transmart-resource/transmart-
 
 import {AuthModule} from 'angular-auth-oidc-client';
 import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
-import {GbAutoLoginComponent} from './gb-auto-login.component';
-import {AuthenticationService} from './services/authentication.service';
+import {AuthenticationService} from './services/authentication/authentication.service';
+import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
+import {OidcAuthentication} from './services/authentication/oidc-authentication';
+import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -37,8 +39,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
 
 @NgModule({
   declarations: [
-    AppComponent,
-    GbAutoLoginComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
@@ -47,6 +48,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     BrowserAnimationsModule,
     GrowlModule,
     routing,
+    GbMainModule,
     GbNavBarModule,
     GbDataSelectionModule,
     GbAnalysisModule,
@@ -68,10 +70,12 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     DatePipe,
     AppConfig,
     AuthenticationService,
+    Oauth2Authentication,
+    OidcAuthentication,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,
-      deps: [AppConfig, AuthenticationService],
+      deps: [AppConfig, AuthenticationService, Oauth2Authentication, OidcAuthentication],
       multi: true
     }, {
       provide: HTTP_INTERCEPTORS,
