@@ -195,10 +195,10 @@ export class QueryService {
             query.visible = true;
             query.subscriptionCollapsed = true;
             if (query.createDate) {
-              query.createDateInfo = FormatHelper.formatDateSemantics(query.createDate);
+              query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
             }
             if (query.updateDate) {
-              query.updateDateInfo = FormatHelper.formatDateSemantics(query.updateDate);
+              query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
             }
             if (query.subscribed) {
               if (!query.subscriptionFreq) {
