@@ -10,7 +10,6 @@ import {Aggregate} from '../models/aggregate-models/aggregate';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintBrief} from '../utilities/constraints/constraint-brief';
 import {Col} from '../models/table-models/col';
 import {Row} from '../models/table-models/row';
 
@@ -44,12 +43,12 @@ export class CrossTableService {
           ConstraintHelper.isCategoricalConceptConstraint(child)
         );
         if (categoricalConceptConstraints.length === 1) {
-          return new ConstraintBrief().visit(categoricalConceptConstraints[0]);
+          return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
         }
       }
     }
     // Else, create a brief representation of the constraint
-    return new ConstraintBrief().visit(constraint);
+    return constraint.textRepresentation;
   }
 
   constructor(private resourceService: ResourceService) {
