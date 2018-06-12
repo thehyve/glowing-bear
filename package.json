@@ -10,8 +10,9 @@
     "test": "ng test --code-coverage",
     "testOnce": "ng test --single-run --code-coverage",
     "lint": "ng lint --type-check",
-    "e2e": "ng e2e",
-    "report-coverage": "codecov"
+    "report-coverage": "codecov",
+    "e2e": "npx cypress run",
+    "cypress": "npx cypress open"
   },
   "private": true,
   "dependencies": {
@@ -46,6 +47,8 @@
     "codecov": "^3.0.2",
     "codelyzer": "~4.3.0",
     "cucumber": "^2.1.0",
+    "cypress": "^2.1.0",
+    "cypress-cucumber-preprocessor": "^0.6.0",
     "es6-promise": "^4.1.1",
     "jasmine-core": "~2.6.2",
     "jasmine-spec-reporter": "~3.2.0",

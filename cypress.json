@@ -1,0 +1,7 @@
+{
+  "redirectUrl": "https://transmart-dev.thehyve.net/",
+  "baseUrl": "https://glowingbear-dev.thehyve.net/",
+  "chromeWebSecurity": false,
+  "videoRecording": false,
+  "fixturesFolder": "cypress/fixtures/dev"
+}
