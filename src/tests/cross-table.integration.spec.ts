@@ -15,6 +15,8 @@ import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/tr
 import {Study} from '../app/models/constraint-models/study';
 import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {MessageService} from '../app/services/message.service';
+import {MessageServiceMock} from '../app/services/mocks/message.service.mock';
 
 
 const mapConstraint = TransmartConstraintMapper.mapConstraint;
@@ -61,6 +63,10 @@ describe('Test cross table retrieval calls for TranSMART', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         },
         ResourceService,
         CrossTableService

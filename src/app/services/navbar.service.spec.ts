@@ -9,7 +9,7 @@ describe('NavbarService', () => {
     });
   });
 
-  it('should be created', inject([NavbarService], (service: NavbarService) => {
+  it('should be injected', inject([NavbarService], (service: NavbarService) => {
     expect(service).toBeTruthy();
   }));
 });

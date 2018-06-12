@@ -20,6 +20,7 @@ import {ExportService} from './export.service';
 import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
+import {HttpErrorResponse} from '@angular/common/http';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -177,8 +178,8 @@ export class QueryService {
     this.update_3();
   }
 
-  private handle_error(err) {
-    console.error(err);
+  private handleError(error: HttpErrorResponse) {
+    this.resourceService.handleError(error);
   }
 
   /**
@@ -188,43 +189,47 @@ export class QueryService {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
-          this.queries.length = 0;
-          let bookmarkedQueries = [];
-          queries.forEach(query => {
-            query.collapsed = true;
-            query.visible = true;
-            query.subscriptionCollapsed = true;
-            if (query.createDate) {
-              query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
-            }
-            if (query.updateDate) {
-              query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
-            }
-            if (query.subscribed) {
-              if (!query.subscriptionFreq) {
-                query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
-              }
-              /*
-               * load query diff records for this query
-               */
-              this.resourceService.diffQuery(query.id)
-                .subscribe(
-                  (records) => {
-                    query.diffRecords = this.parseQueryDiffRecords(records);
-                  }
-                );
-            }
-
-            if (query.bookmarked) {
-              bookmarkedQueries.push(query);
-            } else {
-              this.queries.push(query);
-            }
-          });
-          this.queries = bookmarkedQueries.concat(this.queries);
+          this.handleLoadedQueries(queries);
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
+  }
+
+  private handleLoadedQueries(queries: Query[]) {
+    this.queries.length = 0;
+    let bookmarkedQueries = [];
+    queries.forEach(query => {
+      query.collapsed = true;
+      query.visible = true;
+      query.subscriptionCollapsed = true;
+      if (query.createDate) {
+        query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
+      }
+      if (query.updateDate) {
+        query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
+      }
+      if (query.subscribed) {
+        if (!query.subscriptionFreq) {
+          query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+        }
+        /*
+         * load query diff records for this query
+         */
+        this.resourceService.diffQuery(query.id)
+          .subscribe(
+            (records) => {
+              query.diffRecords = this.parseQueryDiffRecords(records);
+            }
+          );
+      }
+
+      if (query.bookmarked) {
+        bookmarkedQueries.push(query);
+      } else {
+        this.queries.push(query);
+      }
+    });
+    this.queries = bookmarkedQueries.concat(this.queries);
   }
 
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
@@ -279,7 +284,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handle_error(err);
+            this.handleError(err);
             this.loadingStateInclusion = 'complete';
           }
         );
@@ -312,7 +317,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handle_error(err);
+            this.handleError(err);
             this.loadingStateExclusion = 'complete';
           }
         );
@@ -381,12 +386,12 @@ export class QueryService {
                     this.studyCountMap_1 = studyCountObj;
                     this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
                   },
-                  err => this.handle_error(err)
+                  err => this.handleError(err)
                 );
             }
           }
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
@@ -398,7 +403,7 @@ export class QueryService {
         .subscribe((response) => {
             this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
           },
-          err => this.handle_error(err)
+          err => this.handleError(err)
         );
     } else {
       // compute tree counts without saving a subject set
@@ -531,7 +536,7 @@ export class QueryService {
               this.crossTableService.constraint = this.constraintService.constraint_1();
             }
           },
-          err => this.handle_error(err)
+          err => this.handleError(err)
         );
     } else {
       window.setTimeout((function () {
@@ -628,7 +633,7 @@ export class QueryService {
               );
           }
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
@@ -645,7 +650,7 @@ export class QueryService {
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
