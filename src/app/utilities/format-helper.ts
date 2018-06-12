@@ -1,5 +1,11 @@
+import * as moment from 'moment';
+import Diff = moment.unitOfTime.Diff;
+
 export class FormatHelper {
+
   public static readonly nullValuePlaceholder: string = 'MISSING';
+
+  static readonly timeUnits: Diff[] = ['year', 'month', 'day', 'hour', 'minute', 'second'];
 
   public static formatCountNumber(x: number): string {
     if (typeof(x) === 'number') {
@@ -13,50 +19,22 @@ export class FormatHelper {
     }
   }
 
-  public static formatDateSemantics(s: string): string {
-    const then = new Date(s);
-    const now = new Date();
-    // difference in seconds
-    let diff = (now.getTime() - then.getTime()) / 1000;
-    let unit = 'seconds';
-    if (diff >= 60) {
-      // difference in minutes
-      diff = diff / 60;
-      unit = 'minutes';
-      if (diff >= 60) {
-        // difference in hours
-        diff = diff / 60;
-        unit = 'hours';
-        if (diff >= 24) {
-          // difference in days
-          diff = diff / 24;
-          unit = 'days';
-          if (diff >= 7) {
-            // difference in weeks
-            diff = diff / 7;
-            unit = 'weeks';
-            if (diff >= 4) {
-              // difference in months
-              diff = diff / 4;
-              unit = 'months';
-              if (diff >= 12) {
-                diff = diff / 12;
-                unit = 'years';
-              }
-            }
-          }
-        }
+  public static formatDateSemantics(t: Date): string {
+    let t1 = moment(Date.now());
+    let t2 = moment(t);
+    let past = t2.isBefore(t1);
+    for (let i = 0; i < this.timeUnits.length; i++) {
+      let unit = this.timeUnits[i];
+      let diff = Math.abs(Math.round(t1.diff(t2, unit)));
+      if (diff > 0) {
+        return `${past ? '' : 'in '}${diff} ${unit}${diff > 1 ? 's' : ''}${past ? ' ago' : ''}`;
       }
     }
-    diff = Math.floor(diff);
-    if (diff === 0 || diff === 1) {
-      unit = unit.substring(0, unit.length - 1);
-    }
-    return diff + ' ' + unit + ' ago';
+    return 'now';
   }
 
   public static percentage(part: number, total: number): string {
-    if (total === null || total === 0 || part < 0) {
+    if (total === null || total === 0 || part === null || part < 0) {
       return '';
     } else {
       let perc = part ? (part / total) * 100 : 0;
