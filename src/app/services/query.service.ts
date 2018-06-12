@@ -178,7 +178,7 @@ export class QueryService {
     this.update_3();
   }
 
-  private handleError(error: HttpErrorResponse) {
+  handleError(error: HttpErrorResponse) {
     this.resourceService.handleError(error);
   }
 
@@ -195,7 +195,7 @@ export class QueryService {
       );
   }
 
-  private handleLoadedQueries(queries: Query[]) {
+  handleLoadedQueries(queries: Query[]) {
     this.queries.length = 0;
     let bookmarkedQueries = [];
     queries.forEach(query => {
