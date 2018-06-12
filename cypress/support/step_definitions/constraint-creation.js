@@ -31,10 +31,11 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
 
   cy.contains('Stomach').should('be.visible');
 
-  cy.removeChip('Stomach');
-  cy.removeChip('Lung');
-  cy.removeChip('Head');
-  cy.removeChip('Liver');
+  cy.removeChip('Mouth');
+  cy.removeChip('Leg');
+  cy.removeChip('Breast');
+  cy.removeChip('Heart');
+  cy.removeChip('Arm');
 
   cy.get('.gb-data-selection-update-btn').eq(0).click();
 });
