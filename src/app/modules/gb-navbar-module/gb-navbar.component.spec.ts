@@ -10,8 +10,6 @@ import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
-import {MessageService} from '../../services/message.service';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
 
 describe('GbNavbarComponent', () => {
   let component: GbNavbarComponent;
@@ -42,10 +40,6 @@ describe('GbNavbarComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })

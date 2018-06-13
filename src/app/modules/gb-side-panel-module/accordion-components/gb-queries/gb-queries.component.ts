@@ -7,8 +7,8 @@ import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
-import {MessageService} from '../../../../services/message.service';
 import {ConstraintHelper} from '../../../../utilities/constraints/constraint-helper';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-queries',
@@ -22,7 +22,6 @@ export class GbQueriesComponent implements OnInit {
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
-              private messageService: MessageService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
@@ -44,7 +43,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   queryFileUpload(event) {
-    this.messageService.alert('info', 'Query file is being processed, waiting for response.');
+    MessageHelper.alert('info', 'Query file is being processed, waiting for response.');
     let reader = new FileReader();
     let file = event.target.files[0];
     reader.onload = (function (e) {
@@ -64,11 +63,11 @@ export class GbQueriesComponent implements OnInit {
       if (_json['subjectQuery'] || _json['observationQuery']) {
         return _json;
       } else {
-        this.messageService.alert('error', 'Invalid file content for query import.');
+        MessageHelper.alert('error', 'Invalid file content for query import.');
         return;
       }
     } else {
-      this.messageService.alert('error', 'Invalid file content for query import.');
+      MessageHelper.alert('error', 'Invalid file content for query import.');
       return;
     }
   }

@@ -7,6 +7,8 @@ import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
 import {Query} from '../../models/query-models/query';
+import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
+import {MessageHelper} from '../message-helper';
 
 export class ConstraintHelper {
 
@@ -157,7 +159,7 @@ export class ConstraintHelper {
     if (query.observationQuery) {
       obj['observationQuery'] = query.observationQuery;
     }
-    // TODO: create toPlainObject() function for dataTable
+    // TODO: create function for mappding dataTable to object
     // if (this.dataTable) {
     //   obj['dataTable'] = this.dataTable;
     // }
@@ -165,6 +167,23 @@ export class ConstraintHelper {
   }
 
   static mapObjectToQuery(obj: object): Query {
+    try {
+      let query = new Query(obj['id'], obj['name']);
+      query.bookmarked = obj['bookmarked'] ? true : false;
+      query.subscribed = obj['subscribed'] ? true : false;
+      if (query.subscribed) {
+        query.subscriptionFreq = obj['subscriptionFreq'] ? obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
+      }
+      query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
+      query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
+      query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
+      query.observationQuery = obj['observationQuery'];
+      return query;
+    } catch (e) {
+      const message = 'Failed to convert to query.';
+      console.error(message);
+      MessageHelper.alert('error', message);
+    }
     return null;
   }
 

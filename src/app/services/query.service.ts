@@ -17,11 +17,11 @@ import {QuerySubscriptionFrequency} from '../models/query-models/query-subscript
 import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
-import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -162,7 +162,6 @@ export class QueryService {
               private constraintService: ConstraintService,
               private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
-              private messageService: MessageService,
               private exportService: ExportService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
@@ -596,12 +595,12 @@ export class QueryService {
 
           this.queries.push(newlySavedQuery);
           const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-          this.messageService.alert('success', summary);
+          MessageHelper.alert('success', summary);
         },
         (err) => {
           console.error(err);
           const summary = 'Could not add the query "' + newQuery.name + '".';
-          this.messageService.alert('error', summary);
+          MessageHelper.alert('error', summary);
         }
       );
   }
@@ -627,7 +626,7 @@ export class QueryService {
     // - total number of items not found in tree
     // - total number of matched/selected tree-nodes
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-    this.messageService.alert('info', 'Success', alertDetails);
+    MessageHelper.alert('info', 'Success', alertDetails);
   }
 
   public updateQuery(query: Query, queryObj: object) {

@@ -21,8 +21,6 @@ import {Md2AccordionModule} from 'md2';
 import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
-import {MessageService} from '../../services/message.service';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -70,10 +68,6 @@ describe('GbSidePanelComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         },
         ConfirmationService
       ]

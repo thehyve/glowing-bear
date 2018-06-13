@@ -5,7 +5,6 @@ import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
-import {MessageService} from '../../services/message.service';
 
 @Component({
   selector: 'gb-export',
@@ -17,8 +16,7 @@ export class GbExportComponent implements OnInit {
   constructor(private appConfig: AppConfig,
               private exportService: ExportService,
               public resourceService: ResourceService,
-              private timer: SimpleTimer,
-              public messageService: MessageService) {
+              private timer: SimpleTimer) {
     this.exportService.updateExportJobs();
     this.timer.newTimer('30sec', 30);
     this.timer.subscribe('30sec', () => this.exportService.updateExportJobs());

@@ -24,14 +24,13 @@ import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
-import {MessageService} from './message.service';
+import {MessageHelper} from '../utilities/message-helper';
 
 
 @Injectable()
 export class ResourceService {
 
-  constructor(private transmartResourceService: TransmartResourceService,
-              private messageService: MessageService) {
+  constructor(private transmartResourceService: TransmartResourceService) {
   }
 
   /**
@@ -42,7 +41,7 @@ export class ResourceService {
     if (res.error instanceof ErrorEvent) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('A client-side or network error occurred:', res.error.message);
-      this.messageService.alert('error', 'A client-side or network error occurred');
+      MessageHelper.alert('error', 'A client-side or network error occurred');
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong,
@@ -52,7 +51,7 @@ export class ResourceService {
       const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
       console.error(summary);
       console.error(res.error);
-      this.messageService.alert('error', 'A server-side error occured');
+      MessageHelper.alert('error', 'A server-side error occured');
     }
   }
 

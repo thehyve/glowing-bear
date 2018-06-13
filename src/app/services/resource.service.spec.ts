@@ -5,14 +5,12 @@ import {EndpointService} from './endpoint.service';
 import {EndpointServiceMock} from './mocks/endpoint.service.mock';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
-import {MessageService} from './message.service';
-import {MessageServiceMock} from './mocks/message.service.mock';
 import {HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {MessageHelper} from '../utilities/message-helper';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
-  let messageService: MessageService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -23,10 +21,6 @@ describe('ResourceService', () => {
           useClass: EndpointServiceMock
         },
         {
-          provide: MessageService,
-          useClass: MessageServiceMock
-        },
-        {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
         }
@@ -34,7 +28,6 @@ describe('ResourceService', () => {
     });
     resourceService = TestBed.get(ResourceService);
     transmartResourceService = TestBed.get(TransmartResourceService);
-    messageService = TestBed.get(MessageService)
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -50,7 +43,7 @@ describe('ResourceService', () => {
       url: 'url'
     });
     spyOn(console, 'error').and.stub();
-    spyOn(messageService, 'alert').and.stub();
+    spyOn(MessageHelper, 'alert').and.stub();
     resourceService.handleError(res);
     const status = res['status'];
     const url = res['url'];
@@ -58,7 +51,7 @@ describe('ResourceService', () => {
     const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
     expect(console.error).toHaveBeenCalledWith(summary);
     expect(console.error).toHaveBeenCalledWith(res['error']);
-    expect(messageService.alert).toHaveBeenCalled();
+    expect(MessageHelper.alert).toHaveBeenCalled();
   })
 
   it('should log out', () => {

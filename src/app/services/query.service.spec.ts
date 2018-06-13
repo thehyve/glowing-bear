@@ -13,8 +13,6 @@ import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {DataTableService} from './data-table.service';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
-import {MessageService} from './message.service';
-import {MessageServiceMock} from './mocks/message.service.mock';
 import {CrossTableService} from './cross-table.service';
 import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -58,10 +56,6 @@ describe('QueryService', () => {
         {
           provide: ExportService,
           useClass: ExportServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         },
         QueryService
       ]
