@@ -8,6 +8,7 @@ import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
 import {MessageService} from '../../../../services/message.service';
+import {ConstraintHelper} from '../../../../utilities/constraints/constraint-helper';
 
 @Component({
   selector: 'gb-queries',
@@ -43,28 +44,24 @@ export class GbQueriesComponent implements OnInit {
   }
 
   queryFileUpload(event) {
+    this.messageService.alert('info', 'Query file is being processed, waiting for response.');
     let reader = new FileReader();
     let file = event.target.files[0];
     reader.onload = (function (e) {
       let data = e.target['result'];
-      let query = this.parseFile(file, data);
-      const queryObj = {
-        name: query.name,
-        patientsQuery: query.patientsQuery,
-        observationsQuery: query.observationsQuery,
-        bookmarked: false
-      };
-      this.queryService.saveQueryObj(queryObj);
+      let queryObj = this.parseFile(file, data);
+      this.queryService.saveQueryByObject(queryObj);
     }).bind(this);
     reader.readAsText(file);
   }
 
-  private parseFile(file: File, data: any) {
+  // parse the uploaded query file
+  parseFile(file: File, data: any) {
     // file.type is empty for some browsers and Windows OS
     if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
-      if (_json['patientsQuery'] || _json['observationsQuery']) {
+      if (_json['subjectQuery'] || _json['observationQuery']) {
         return _json;
       } else {
         this.messageService.alert('error', 'Invalid file content for query import.');
@@ -147,7 +144,7 @@ export class GbQueriesComponent implements OnInit {
 
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(query.toPlainObject(), query.name);
+    DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(query), query.name);
   }
 
   radioCheckSubscriptionFrequency(query: Query) {

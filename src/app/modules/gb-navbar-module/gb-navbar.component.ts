@@ -63,7 +63,7 @@ export class GbNavbarComponent implements OnInit {
     let name = this.queryName ? this.queryName.trim() : '';
     let queryNameIsValid = name !== '';
     if (queryNameIsValid) {
-      this.queryService.saveQuery(name);
+      this.queryService.saveQueryByName(name);
       this.queryName = '';
     } else {
       this.messageService.alert('error', 'Please specify the query name.', '');

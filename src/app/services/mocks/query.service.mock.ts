@@ -54,6 +54,6 @@ export class QueryServiceMock {
     this._queries = value;
   }
 
-  saveQuery(name: string) {
+  saveQueryByName(name: string) {
   }
 }

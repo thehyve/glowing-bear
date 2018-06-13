@@ -101,9 +101,9 @@ describe('GbNavbarComponent', () => {
     expect(component.saveQuery).toHaveBeenCalled();
     // when queryName is defiend
     component.queryName = 'test name';
-    spyOn(queryService, 'saveQuery').and.callThrough();
+    spyOn(queryService, 'saveQueryByName').and.callThrough();
     component.saveQuery();
-    expect(queryService.saveQuery).toHaveBeenCalled();
+    expect(queryService.saveQueryByName).toHaveBeenCalled();
   });
 
   it('should handle router events', () => {

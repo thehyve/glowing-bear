@@ -21,6 +21,7 @@ import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {HttpErrorResponse} from '@angular/common/http';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -569,7 +570,7 @@ export class QueryService {
     }
   }
 
-  public saveQuery(queryName: string) {
+  public saveQueryByName(queryName: string) {
     let newQuery = new Query('', queryName);
     newQuery.subjectQuery = this.constraintService.constraint_1();
     let data = [];
@@ -578,6 +579,15 @@ export class QueryService {
     }
     newQuery.observationQuery = {data: data};
     newQuery.dataTable = this.dataTableService.dataTable;
+    this.saveQuery(newQuery);
+  }
+
+  public saveQueryByObject(queryObj: object) {
+    let newQuery: Query = ConstraintHelper.mapObjectToQuery(queryObj);
+    this.saveQuery(newQuery);
+  }
+
+  saveQuery(newQuery: Query) {
     this.resourceService.saveQuery(newQuery)
       .subscribe(
         (newlySavedQuery: Query) => {
