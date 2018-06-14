@@ -4,7 +4,7 @@ import {ResourceService} from '../../services/resource.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
-import {TransmartResourceService} from '../../services/transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 
 @Component({
   selector: 'gb-main',

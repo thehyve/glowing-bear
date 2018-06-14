@@ -16,7 +16,7 @@ buildscript {
 ext {
     glowingBearVersion = '0.0.1-SNAPSHOT'
     nodeVersion = '8.10.0'
-    yarnVersion = '1.5.1'
+    yarnVersion = '1.7.0'
     gradleWrapperVersion = '4.0'
 }
 
@@ -54,6 +54,13 @@ task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
 }
 distTar.dependsOn(yarnPackage)
 
+task yarnLint(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Performs static code analysis'
+  args = ['run', 'lint']
+}
+check.dependsOn(yarnLint)
+
 task yarnTest(type: YarnTask, dependsOn: 'yarn') {
   group = 'verification'
   description = 'Executes user interface unit tests'
@@ -61,8 +68,15 @@ task yarnTest(type: YarnTask, dependsOn: 'yarn') {
 }
 check.dependsOn(yarnTest)
 
+task yarnCodecov(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Report code coverage'
+  args = ['run', 'report-coverage']
+}
+
 clean {
     delete fileTree(dir: 'dist')
+    delete 'coverage'
 }
 
 distributions {

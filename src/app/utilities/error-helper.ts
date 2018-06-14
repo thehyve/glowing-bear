@@ -3,16 +3,16 @@ import {HttpErrorResponse} from '@angular/common/http';
 export class ErrorHelper {
 
   /**
-   * handles error
-   * @param {HttpErrorResponse} error
+   * handle error
+   * @param {HttpErrorResponse | any} res
    */
-  static handleError(error: HttpErrorResponse) {
-    const status = error['status'];
-    const url = error['url'];
-    const message = error['message'];
+  static handleError(res: HttpErrorResponse | any) {
+    const status = res['status'];
+    const url = res['url'];
+    const message = res['message'];
     const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
     console.error(summary);
-    console.error(error['error']);
+    console.error(res['error']);
   }
 
 }

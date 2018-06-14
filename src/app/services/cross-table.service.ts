@@ -1,17 +1,17 @@
 import {Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {CategoricalAggregate} from '../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
 import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Aggregate} from '../models/constraint-models/aggregate';
-import {ConstraintService} from './constraint.service';
-import {Row} from '../models/table-models/row';
-import {FormatHelper} from '../utilities/FormatHelper';
+import {Aggregate} from '../models/aggregate-models/aggregate';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
 import {Col} from '../models/table-models/col';
+import {Row} from '../models/table-models/row';
 
 @Injectable()
 export class CrossTableService {
@@ -27,11 +27,33 @@ export class CrossTableService {
   // the drag and drop context used by primeng library to associate draggable and droppable items
   // this constant is used by gb-draggable-cell and gb-droppable-zone
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
-  private _crossTable: CrossTable;
+  private crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
-  constructor(private resourceService: ResourceService,
-              private constraintService: ConstraintService) {
+  /**
+   * Return a brief string representation of a constraint.
+   * Note that not all constraint types are supported.
+   */
+  public static brief(constraint: Constraint): string {
+    // For a combination with one concept constraint, return the concept name
+    if (constraint.className === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+          ConstraintHelper.isCategoricalConceptConstraint(child)
+        );
+        if (categoricalConceptConstraints.length === 1) {
+          return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
+        }
+      }
+    } else if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
+      return (<ConceptConstraint>constraint).concept.name;
+    }
+    // Else, create a brief representation of the constraint
+    return constraint.textRepresentation;
+  }
+
+  constructor(private resourceService: ResourceService) {
     this.crossTable = new CrossTable();
   }
 
@@ -56,35 +78,73 @@ export class CrossTableService {
     // clear existing value constraints
     this.clearValueConstraints(constraints);
     for (let constraint of constraints) {
+      constraint.textRepresentation = CrossTableService.brief(constraint);
       let needsAggregateCall = false;
       // If the constraint has categorical concept, break it down to value constraints and add those respectively
-      if (this.constraintService.isCategoricalConceptConstraint(constraint)) {
+      if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
         needsAggregateCall = true;
         let categoricalConceptConstraint = <ConceptConstraint>constraint;
         this.retrieveAggregate(categoricalConceptConstraint, constraint);
-      } else if (constraint.getClassName() === 'CombinationConstraint') {
+      } else if (constraint.className === 'CombinationConstraint') {
         let combiConstraint = <CombinationConstraint>constraint;
         if (combiConstraint.isAnd()) {
-          let numCategoricalConceptConstraints = 0;
-          let categoricalChild = null;
-          combiConstraint.children.forEach((child: Constraint) => {
-            if (this.constraintService.isCategoricalConceptConstraint(child)) {
-              numCategoricalConceptConstraints++;
-              categoricalChild = child;
-            }
-          });
-          if (numCategoricalConceptConstraints === 1) {
+          let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+            ConstraintHelper.isCategoricalConceptConstraint(child)
+          );
+          if (categoricalConceptConstraints.length === 1) {
             needsAggregateCall = true;
-            this.retrieveAggregate(categoricalChild, constraint);
+            this.retrieveAggregate(<ConceptConstraint>categoricalConceptConstraints[0], constraint);
           }
         }
       }
       // If the constraint has no categorical concept, add the constraint directly to value constraint list
       if (!needsAggregateCall) {
-        this.crossTable.addValueConstraint(constraint, constraint);
+        this.crossTable.setValueConstraints(constraint, [constraint]);
       }
     }
     this.updateCells();
+  }
+
+  public updateHeaderConstraints() {
+    this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
+    this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+  }
+
+  /**
+   * Compute combinations of all value constraints for each of the (concept) constraints
+   * in the provided list of constraints.
+   * This fetches value constraints for each of the provided constraints.
+   * The result will be a list with constraint tuples. Each of the tuples has as many
+   * constraints as constraints in the input list and will be a combination of an input constraint
+   * with a value constraint.
+   *
+   * Example: for an input list [ConceptConstraint('foo'), ConceptConstraint('bar')] and a value
+   * mapping {'foo' => [ValueConstraint('a')], 'bar' => [ValueConstraint('x'), ValueConstraint('y')]},
+   * this will generate the combinations:
+   * [
+   *   [Combination([ConceptConstraint('foo'), ValueConstraint('a')], Combination([ConceptConstraint('bar'), ValueConstraint('x')])],
+   *   [Combination([ConceptConstraint('foo'), ValueConstraint('a')], Combination([ConceptConstraint('bar'), ValueConstraint('y')])]
+   * ]
+   *
+   * @param {Constraint[]} constraints
+   * @return {Constraint[][]}
+   */
+  public crossConstraints(constraints: Constraint[]): Constraint[][] {
+    let constraintsWithValues = constraints.map(constraint => {
+      if (!this.valueConstraints.has(constraint)) {
+        throw new Error('No value mapping for constraint');
+      }
+      let valuesForConstraint = this.valueConstraints.get(constraint);
+      return valuesForConstraint.map(valueConstraint => {
+        let combination = new CombinationConstraint();
+        combination.combinationState = CombinationState.And;
+        combination.addChild(constraint);
+        combination.addChild(valueConstraint);
+        combination.textRepresentation = valueConstraint.textRepresentation;
+        return combination;
+      })
+    });
+    return ConstraintHelper.permuteConstraints(constraintsWithValues);
   }
 
   /**
@@ -94,7 +154,7 @@ export class CrossTableService {
    */
   public updateCells() {
     if (this.areValueConstraintsMapped) {
-      this.crossTable.updateHeaderConstraints();
+      this.updateHeaderConstraints();
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
           this.crossTable = crossTable;
@@ -112,8 +172,8 @@ export class CrossTableService {
    * @returns {boolean}
    */
   public isValidConstraint(constraint: Constraint): boolean {
-    return this.constraintService.isCategoricalConceptConstraint(constraint)
-      || this.isConjunctiveAndHasOneCategoricalConstraint(constraint);
+    return ConstraintHelper.isCategoricalConceptConstraint(constraint)
+      || ConstraintHelper.isConjunctiveAndHasOneCategoricalConstraint(constraint);
   }
 
   private clearValueConstraints(targetConstraints: Constraint[]) {
@@ -124,110 +184,40 @@ export class CrossTableService {
     });
   }
 
-  private isConjunctiveAndHasOneCategoricalConstraint(constraint: Constraint): boolean {
-    if (constraint.getClassName() === 'CombinationConstraint') {
-      let combiConstraint = <CombinationConstraint>constraint;
-      if (combiConstraint.isAnd()) {
-        let numCategoricalConceptConstraints = 0;
-        let categoricalChild: ConceptConstraint = null;
-        combiConstraint.children.forEach((child: Constraint) => {
-          if (this.constraintService.isCategoricalConceptConstraint(child)) {
-            numCategoricalConceptConstraints++;
-            categoricalChild = <ConceptConstraint>child;
-          }
-        });
-        if (numCategoricalConceptConstraints === 1) {
-          // adjust its text representation to its categorical child's name
-          combiConstraint.textRepresentation = categoricalChild.concept.name;
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
                             peerConstraint: Constraint) {
     if (categoricalConceptConstraint.concept.aggregate) {
       const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
-      this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+      this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
     } else {
       this.resourceService.getAggregate(categoricalConceptConstraint)
         .subscribe((responseAggregate: Aggregate) => {
           const categoricalAggregate = <CategoricalAggregate>responseAggregate;
-          this.composeCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+          this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
         });
     }
   }
 
-  private composeCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
-                                             peerConstraint: Constraint) {
-    let categories = categoricalAggregate.values;
-    for (let category of categories) {
+  private setCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
+                                         peerConstraint: Constraint) {
+    let valueConstraints = categoricalAggregate.values.map((value) => {
       let val = new ValueConstraint();
       val.valueType = 'STRING';
       val.operator = '=';
-      val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      val.value = value;
       val.textRepresentation = val.value.toString();
-      let combi = new CombinationConstraint();
-      combi.addChild(peerConstraint);
-      combi.addChild(val);
-      combi.textRepresentation = this.adjustCombinationConstraintTextRepresentation(combi);
-      this.crossTable.addValueConstraint(peerConstraint, combi);
-    }
-  }
-
-  private adjustCombinationConstraintTextRepresentation(constraint: CombinationConstraint): string {
-    let description = constraint.textRepresentation;
-    if (constraint.isAnd()) {
-      let numValueConstraints = 0;
-      let numCatConceptConstraints = 0;
-      let valChild = null;
-      let catChild = null;
-      constraint.children.forEach((child: Constraint) => {
-        if (child.getClassName() === 'ValueConstraint') {
-          numValueConstraints++;
-          valChild = child;
-        } else if (this.constraintService.isCategoricalConceptConstraint(child)) {
-          numCatConceptConstraints++;
-          catChild = child;
-        }
-      });
-      if (numValueConstraints === 1) {
-        description = valChild.textRepresentation;
-      } else if (numCatConceptConstraints === 1) {
-        description = catChild.textRepresentation;
-      }
-    }
-
-    return description;
+      return val;
+    });
+    this.crossTable.setValueConstraints(peerConstraint, valueConstraints);
   }
 
   get areValueConstraintsMapped(): boolean {
-    let mapped = true;
-    this.rowConstraints.forEach((con: Constraint) => {
-      let hasIt = this.valueConstraints.has(con);
-      if (!hasIt) {
-        mapped = false;
-      }
-    });
-    if (mapped) {
-      this.columnConstraints.forEach((con: Constraint) => {
-        let hasIt = this.valueConstraints.has(con);
-        if (!hasIt) {
-          mapped = false;
-        }
+    return this.rowConstraints.every((constraint: Constraint) => {
+        return this.valueConstraints.has(constraint);
+      }) &&
+      this.columnConstraints.every((constraint: Constraint) => {
+        return this.valueConstraints.has(constraint);
       });
-    }
-    return mapped;
-  }
-
-  get crossTable(): CrossTable {
-    return this._crossTable;
-  }
-
-  set crossTable(value: CrossTable) {
-    this._crossTable = value;
   }
 
   get selectedConstraintCell(): GbDraggableCellComponent {
@@ -250,12 +240,24 @@ export class CrossTableService {
     return this.crossTable.valueConstraints;
   }
 
-  get rows(): Array<Row> {
+  /**
+   * Sets the baseline constraint on the cross table.
+   * @param {Constraint} value
+   */
+  set constraint(value: Constraint) {
+    this.crossTable.constraint = value;
+  }
+
+  get rows(): Row[] {
     return this.crossTable.rows;
   }
 
-  get cols(): Array<Col> {
+  get cols(): Col[] {
     return this.crossTable.cols;
+  }
+
+  get rowHeaderConstraints(): Constraint[][] {
+    return this.crossTable.rowHeaderConstraints;
   }
 
 }

@@ -18,23 +18,20 @@ export class GbCrossTableComponent implements OnInit {
   ngOnInit() {
   }
 
-  get crossTable(): CrossTable {
-    return this.crossTableService.crossTable;
-  }
-
   get rowConstraints(): Array<Constraint> {
-    return this.crossTable.rowConstraints;
+    return this.crossTableService.rowConstraints;
   }
 
   get columnConstraints(): Array<Constraint> {
-    return this.crossTable.columnConstraints;
+    return this.crossTableService.columnConstraints;
   }
 
   get rows(): Array<Row> {
-    return this.crossTable.rows;
+    return this.crossTableService.rows;
   }
 
   get cols(): Array<Col> {
-    return this.crossTable.cols;
+    return this.crossTableService.cols;
   }
+
 }

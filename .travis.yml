@@ -18,6 +18,7 @@ cache:
 env:
   global:
     - GB_BASE=$TRAVIS_BUILD_DIR
+    - TERM=dumb
 
 before_install:
   - sudo chown root /opt/google/chrome/chrome-sandbox
@@ -36,8 +37,7 @@ install:
 script:
   - travis_retry ${GRADLE_SCRIPT} check
 after_success:
-#  - ng test --code-coverage --single-run
-  - codecov
+  - ${GRADLE_SCRIPT} yarnCodecov
 
 notifications:
   webhooks:

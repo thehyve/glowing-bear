@@ -18,7 +18,7 @@ import {GbAnalysisModule} from '../gb-analysis-module/gb-analysis.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
 import {GbDataSelectionModule} from '../gb-data-selection-module/gb-data-selection.module';
-import {TransmartResourceService} from '../../services/transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 import {DataTableService} from '../../services/data-table.service';
 import {ExportService} from '../../services/export.service';
 import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';

@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from './services/authentication/authentication.service';
 import {MessageService} from './services/message.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from './services/authentication/authentication.service';
 
 @Component({
   selector: 'gb-app-root',
