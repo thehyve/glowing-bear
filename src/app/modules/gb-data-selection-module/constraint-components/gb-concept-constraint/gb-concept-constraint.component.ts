@@ -7,14 +7,12 @@ import {GbConceptOperatorState} from './gb-concept-operator-state';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
 import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
 import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
-import {NumericalAggregate} from '../../../../models/constraint-models/numerical-aggregate';
-import {CategoricalAggregate} from '../../../../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
-import {Aggregate} from '../../../../models/constraint-models/aggregate';
-import {ResourceService} from '../../../../services/resource.service';
-import {FormatHelper} from '../../../../utilities/FormatHelper';
+import {Aggregate} from '../../../../models/aggregate-models/aggregate';
+import {FormatHelper} from '../../../../utilities/format-helper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -451,13 +449,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   clearAllCategories() {
     this.selectedCategories = [];
-    this.updateConceptValues();
-  }
-
-  onUnselectCategories(category) {
-    // For some funny reason, the selection model always lags behind the current selection
-    const index = this.selectedCategories.indexOf(category);
-    this.selectedCategories.splice(index, 1);
     this.updateConceptValues();
   }
 

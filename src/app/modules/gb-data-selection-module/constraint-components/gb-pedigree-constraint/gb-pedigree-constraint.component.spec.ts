@@ -33,12 +33,12 @@ describe('GbPedigreeConstraintComponent', () => {
       ],
       providers: [
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
         },
         {
           provide: TreeNodeService,
@@ -60,7 +60,7 @@ describe('GbPedigreeConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

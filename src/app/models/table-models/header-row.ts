@@ -1,4 +1,4 @@
-import {Col} from "./col";
+import {Col} from './col';
 
 export class HeaderRow {
   _cols: Array<Col>;

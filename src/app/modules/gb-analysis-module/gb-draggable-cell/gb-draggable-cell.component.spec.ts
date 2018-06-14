@@ -5,7 +5,7 @@ import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service
 import {CrossTableService} from '../../../services/cross-table.service';
 import {ConceptConstraint} from '../../../models/constraint-models/concept-constraint';
 import {Concept} from '../../../models/constraint-models/concept';
-import {CategoricalAggregate} from '../../../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../models/constraint-models/concept-type';
 import {DragDropModule} from 'primeng/primeng';
 

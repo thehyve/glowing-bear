@@ -59,19 +59,19 @@ describe('GbConstraintComponent', () => {
 
   it('should create GbConstraintComponent for StudyConstraint', () => {
     component.constraint = new StudyConstraint();
-    expect(component.constraint.getClassName()).toBe('StudyConstraint');
+    expect(component.constraint.className).toBe('StudyConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for ConceptConstraint', () => {
     component.constraint = new ConceptConstraint();
-    expect(component.constraint.getClassName()).toBe('ConceptConstraint');
+    expect(component.constraint.className).toBe('ConceptConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for CombinationConstraint', () => {
     component.constraint = new CombinationConstraint();
-    expect(component.constraint.getClassName()).toBe('CombinationConstraint');
+    expect(component.constraint.className).toBe('CombinationConstraint');
     expect(component).toBeTruthy();
   });
 

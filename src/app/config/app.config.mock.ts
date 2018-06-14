@@ -5,7 +5,8 @@ export class AppConfigMock {
     this.config = {
       'api-url': '',
       'api-version': '',
-      'app-url': ''
+      'app-url': '',
+      'authentication-method': 'oauth2'
     };
   }
   public getConfig(key: any) {

@@ -4,11 +4,9 @@ import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
 
-export class ConceptConstraint implements Constraint {
-  private _parent: Constraint;
-  private _isSubselection: boolean;
+export class ConceptConstraint extends Constraint {
+
   private _concept: Concept;
-  private _textRepresentation: string;
   // the value constraints used for numeric or categorical values of this concept
   private _values: ValueConstraint[];
   // the time constraint used for date type constraint of this concept
@@ -25,13 +23,13 @@ export class ConceptConstraint implements Constraint {
 
 
   constructor() {
+    super();
     this.values = [];
     this.valDateConstraint = new TimeConstraint();
     this.valDateConstraint.isObservationDate = false;
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.isObservationDate = true;
     this.trialVisitConstraint = new TrialVisitConstraint();
-    this.parent = null;
     this.textRepresentation = 'Concept';
   }
 
@@ -39,9 +37,9 @@ export class ConceptConstraint implements Constraint {
     return this._concept;
   }
 
-  set concept(value: Concept) {
-    this._concept = value;
-    this.textRepresentation = `Concept: ${value.label}`;
+  set concept(concept: Concept) {
+    this._concept = concept;
+    this.textRepresentation = `Concept: ${concept.label}`;
   }
 
   get values(): ValueConstraint[] {
@@ -52,90 +50,8 @@ export class ConceptConstraint implements Constraint {
     this._values = value;
   }
 
-  getClassName(): string {
+  get className(): string {
     return 'ConceptConstraint';
-  }
-
-  toQueryObjectWithSubselection(): object {
-    // TODO: implement the 'subselection' wrapper on a normal query object
-    return null;
-  }
-
-  toQueryObjectWithoutSubselection(full?: boolean): object {
-    // When no concept is selected, we cannot create a query object (it should be ignored)
-    if (!this.concept) {
-      return null;
-    }
-
-    let args = [];
-    let conceptObj = {
-      type: 'concept',
-      conceptCode: this.concept.code,
-    };
-    if (full) {
-      conceptObj['name'] = this.concept.name;
-      conceptObj['fullName'] = this.concept.fullName;
-      conceptObj['conceptPath'] = this.concept.path;
-      conceptObj['valueType'] = this.concept.type;
-    }
-    args.push(conceptObj);
-
-    if (this.values.length > 0) {
-      if (this.concept.type === 'NUMERIC') {
-        // Add numerical values directly to the main constraint
-        for (let value of this.values) {
-          args.push(value.toQueryObject());
-        }
-      } else if (this.concept.type === 'CATEGORICAL') {
-        // Wrap categorical values in an OR constraint
-        let categorical = {
-          type: 'or',
-          args: this.values.map((value: ValueConstraint) => value.toQueryObject())
-        };
-        if (categorical.args.length === 1) {
-          args.push(categorical.args[0]);
-        } else {
-          args.push(categorical);
-        }
-      }
-    }
-
-    if (this.applyValDateConstraint) {
-      args.push(this.valDateConstraint.toQueryObject());
-    }
-
-    if (this.applyObsDateConstraint) {
-      args.push(this.obsDateConstraint.toQueryObject());
-    }
-
-    if (this.applyTrialVisitConstraint) {
-      args.push(this.trialVisitConstraint.toQueryObject());
-    }
-
-    if (args.length === 1) {
-      return args[0];
-    } else {
-      return {
-        type: 'and',
-        args: args
-      };
-    }
-  }
-
-  toQueryObject(full?: boolean): Object {
-    if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
-    } else {
-      return this.toQueryObjectWithoutSubselection(full);
-    }
-  }
-
-  get textRepresentation(): string {
-    return this._textRepresentation;
-  }
-
-  set textRepresentation(value: string) {
-    this._textRepresentation = value;
   }
 
   get valDateConstraint(): TimeConstraint {
@@ -184,21 +100,5 @@ export class ConceptConstraint implements Constraint {
 
   set applyValDateConstraint(value: boolean) {
     this._applyValDateConstraint = value;
-  }
-
-  get isSubselection(): boolean {
-    return this._isSubselection;
-  }
-
-  set isSubselection(value: boolean) {
-    this._isSubselection = value;
-  }
-
-  get parent(): Constraint {
-    return this._parent;
-  }
-
-  set parent(value: Constraint) {
-    this._parent = value;
   }
 }
