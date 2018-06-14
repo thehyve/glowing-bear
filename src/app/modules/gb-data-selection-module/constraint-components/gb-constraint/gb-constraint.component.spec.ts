@@ -7,9 +7,9 @@ import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 import {MockComponent} from 'ng2-mock-component';
@@ -59,19 +59,19 @@ describe('GbConstraintComponent', () => {
 
   it('should create GbConstraintComponent for StudyConstraint', () => {
     component.constraint = new StudyConstraint();
-    expect(component.constraint.getClassName()).toBe('StudyConstraint');
+    expect(component.constraint.className).toBe('StudyConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for ConceptConstraint', () => {
     component.constraint = new ConceptConstraint();
-    expect(component.constraint.getClassName()).toBe('ConceptConstraint');
+    expect(component.constraint.className).toBe('ConceptConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for CombinationConstraint', () => {
     component.constraint = new CombinationConstraint();
-    expect(component.constraint.getClassName()).toBe('CombinationConstraint');
+    expect(component.constraint.className).toBe('CombinationConstraint');
     expect(component).toBeTruthy();
   });
 

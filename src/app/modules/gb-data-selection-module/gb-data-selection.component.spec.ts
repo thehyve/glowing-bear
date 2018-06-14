@@ -8,7 +8,6 @@ import {
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {EndpointService} from '../../services/endpoint.service';
 import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
@@ -21,6 +20,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
+import {DataTableService} from '../../services/data-table.service';
+import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
+import {MessageServiceMock} from '../../services/mocks/message.service.mock';
+import {MessageService} from '../../services/message.service';
 
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
@@ -32,7 +35,7 @@ describe('GbDataSelectionComponent', () => {
         GbDataSelectionComponent,
         MockComponent({selector: 'gb-selection'}),
         MockComponent({selector: 'gb-projection'}),
-        MockComponent({selector: 'gb-export'})
+        MockComponent({selector: 'gb-data-table'})
       ],
       imports: [
         BrowserAnimationsModule,
@@ -49,10 +52,6 @@ describe('GbDataSelectionComponent', () => {
       ],
       providers: [
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
@@ -67,6 +66,14 @@ describe('GbDataSelectionComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         }
       ]
     })
@@ -79,7 +86,7 @@ describe('GbDataSelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbDataSelectionComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

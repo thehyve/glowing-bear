@@ -1,25 +1,11 @@
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
+import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
 
 // Route Configuration
 export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: '/data-selection',
-    pathMatch: 'full'
-  },
-  {
-    path: 'dashboard',
-    loadChildren: './modules/gb-dashboard-module/gb-dashboard.module#GbDashboardModule'
-  },
-  {
-    path: 'data-selection',
-    loadChildren: './modules/gb-data-selection-module/gb-data-selection.module#GbDataSelectionModule'
-  },
-  {
-    path: 'analysis',
-    loadChildren: './modules/gb-analysis-module/gb-analysis.module#GbAnalysisModule'
-  }
-];
+  {path: '', redirectTo: 'main/data-selection', pathMatch: 'full'},
+  {path: 'main', component: GbMainComponent},
+  {path: '**', component: GbMainComponent}];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);

@@ -1,14 +1,18 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {Concept} from '../../../../models/concept';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
-import {ValueConstraint} from '../../../../models/constraints/value-constraint';
-import {GbDateOperatorState} from './gb-date-operator-state';
-import {TrialVisit} from '../../../../models/trial-visit';
-import {TrialVisitConstraint} from '../../../../models/constraints/trial-visit-constraint';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
+import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
+import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
+import {UIHelper} from '../../../../utilities/ui-helper';
+import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
+import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {Aggregate} from '../../../../models/aggregate-models/aggregate';
+import {FormatHelper} from '../../../../utilities/format-helper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -17,16 +21,16 @@ import {UIHelper} from '../../../../utilities/UIHelper';
 })
 export class GbConceptConstraintComponent extends GbConstraintComponent implements OnInit {
   static readonly valDateOperatorSequence = {
-    [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
-    [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
-    [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
-    [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
+    [DateOperatorState.BETWEEN]: DateOperatorState.AFTER,
+    [DateOperatorState.AFTER]: DateOperatorState.BEFORE,
+    [DateOperatorState.BEFORE]: DateOperatorState.NOT_BETWEEN,
+    [DateOperatorState.NOT_BETWEEN]: DateOperatorState.BETWEEN
   };
   static readonly obsDateOperatorSequence = {
-    [GbDateOperatorState.BETWEEN]: GbDateOperatorState.AFTER,
-    [GbDateOperatorState.AFTER]: GbDateOperatorState.BEFORE,
-    [GbDateOperatorState.BEFORE]: GbDateOperatorState.NOT_BETWEEN,
-    [GbDateOperatorState.NOT_BETWEEN]: GbDateOperatorState.BETWEEN
+    [DateOperatorState.BETWEEN]: DateOperatorState.AFTER,
+    [DateOperatorState.AFTER]: DateOperatorState.BEFORE,
+    [DateOperatorState.BEFORE]: DateOperatorState.NOT_BETWEEN,
+    [DateOperatorState.NOT_BETWEEN]: DateOperatorState.BETWEEN
   };
   @ViewChild('autoComplete') autoComplete: AutoComplete;
   @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
@@ -49,8 +53,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * date value range
    */
-  private _valDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
-  public ValDateOperatorStateEnum = GbDateOperatorState; // make enum visible in template
+  private _valDateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
+  public ValDateOperatorStateEnum = DateOperatorState; // make enum visible in template
   private _valDate1: Date;
   private _valDate2: Date;
 
@@ -70,8 +74,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * observation date range (i.e. the reported date range)
    */
   private _applyObsDateConstraint = false;
-  private _obsDateOperatorState: GbDateOperatorState = GbDateOperatorState.BETWEEN;
-  public ObsDateOperatorStateEnum = GbDateOperatorState; // make enum visible in template
+  private _obsDateOperatorState: DateOperatorState = DateOperatorState.BETWEEN;
+  public ObsDateOperatorStateEnum = DateOperatorState; // make enum visible in template
   private _obsDate1: Date;
   private _obsDate2: Date;
 
@@ -83,7 +87,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   // modifier
   private _applyModifierConstraint = false;
-
 
   ngOnInit() {
     this.initializeConstraints();
@@ -98,7 +101,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.selectedCategories = [];
     this.suggestedCategories = [];
 
-    this._obsDateOperatorState = GbDateOperatorState.BETWEEN;
+    this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     if (constraint.concept) {
@@ -108,14 +111,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       conceptOnlyConstraint.concept = constraint.concept;
       this.resourceService.getAggregate(conceptOnlyConstraint)
         .subscribe(
-          response => {
-            const code = constraint.concept.code;
-            const aggregateObj = response[code];
+          (responseAggregate: Aggregate) => {
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-              let aggregate = aggregateObj['numericalValueAggregates'];
-              constraint.concept.aggregate = aggregate;
-              this.minLimit = aggregate['min'];
-              this.maxLimit = aggregate['max'];
+              constraint.concept.aggregate = responseAggregate;
+              this.minLimit = responseAggregate['min'];
+              this.maxLimit = responseAggregate['max'];
               // if there is existing numeric values
               // fill their values in
               if (constraint.values.length > 0) {
@@ -131,13 +131,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
                 }
               }
             } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
-              let aggregate = aggregateObj['categoricalValueAggregates'];
-              let values = [];
-              for (let key in aggregate['valueCounts']) {
-                values.push(key);
-              }
-              aggregate.values = values;
-              constraint.concept.aggregate = aggregate;
+              constraint.concept.aggregate = responseAggregate;
+              let values = (<CategoricalAggregate>responseAggregate).values;
               // if there is existing value constraints
               // use their values as selected categories
               if (constraint.values.length > 0) {
@@ -149,13 +144,12 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
               this.suggestedCategories = [].concat(values);
             } else if (this.isDate()) { // -------------------------------------> If it's DATE
-              let aggregate = aggregateObj['numericalValueAggregates'];
-              constraint.concept.aggregate = aggregate;
+              constraint.concept.aggregate = responseAggregate;
               let date1 = constraint.valDateConstraint.date1;
               let date2 = constraint.valDateConstraint.date2;
               if (Math.abs(date1.getTime() - date2.getTime()) < 1000) {
-                this.valDate1 = new Date(aggregate['min']);
-                this.valDate2 = new Date(aggregate['max']);
+                this.valDate1 = new Date(responseAggregate['min']);
+                this.valDate2 = new Date(responseAggregate['max']);
               } else {
                 this.valDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
                 this.valDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
@@ -207,7 +201,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (value instanceof Concept) {
       (<ConceptConstraint>this.constraint).concept = value;
       this.initializeConstraints();
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -220,7 +214,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyObsDateConstraint = this._applyObsDateConstraint;
     if (conceptConstraint.applyObsDateConstraint) {
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -248,11 +242,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._obsDate2 = value;
   }
 
-  get obsDateOperatorState(): GbDateOperatorState {
+  get obsDateOperatorState(): DateOperatorState {
     return this._obsDateOperatorState;
   }
 
-  set obsDateOperatorState(value: GbDateOperatorState) {
+  set obsDateOperatorState(value: DateOperatorState) {
     this._obsDateOperatorState = value;
   }
 
@@ -265,7 +259,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
     if (conceptConstraint.applyTrialVisitConstraint) {
-      this.updateCounts();
+      this.update();
     }
   }
 
@@ -317,11 +311,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._valDate2 = value;
   }
 
-  get valDateOperatorState(): GbDateOperatorState {
+  get valDateOperatorState(): DateOperatorState {
     return this._valDateOperatorState;
   }
 
-  set valDateOperatorState(value: GbDateOperatorState) {
+  set valDateOperatorState(value: DateOperatorState) {
     this._valDateOperatorState = value;
   }
 
@@ -408,7 +402,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
-        newVal.value = category;
+        newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
         conceptConstraint.values.push(newVal);
       }
     } else if (this.isDate()) {
@@ -425,7 +419,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       }
 
     }
-    this.updateCounts();
+    this.update();
   }
 
   /*
@@ -455,13 +449,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   clearAllCategories() {
     this.selectedCategories = [];
-    this.updateConceptValues();
-  }
-
-  onUnselectCategories(category) {
-    // For some funny reason, the selection model always lags behind the current selection
-    const index = this.selectedCategories.indexOf(category);
-    this.selectedCategories.splice(index, 1);
     this.updateConceptValues();
   }
 
@@ -509,7 +496,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateTrialVisitValues() {
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
-    this.updateCounts();
+    this.update();
   }
 
   onUnselectTrialVisit(visit) {
@@ -531,7 +518,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     const val2 = this.obsDate2;
     let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
     conceptConstraint.obsDateConstraint.date2 = correctedDate2;
-    this.updateCounts();
+    this.update();
   }
 
   /*
@@ -542,7 +529,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'NUMERIC';
+    return concept.type === ConceptType.NUMERICAL;
   }
 
   isCategorical() {
@@ -550,7 +537,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'CATEGORICAL';
+    return concept.type === ConceptType.CATEGORICAL;
   }
 
   isDate() {
@@ -558,7 +545,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (!concept) {
       return false;
     }
-    return concept.type === 'DATE';
+    return concept.type === ConceptType.DATE;
   }
 
   isBetween() {
@@ -597,9 +584,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.obsDateConstraint.dateOperator = this.obsDateOperatorState;
     conceptConstraint.obsDateConstraint.isNegated =
-      (this.obsDateOperatorState === GbDateOperatorState.NOT_BETWEEN);
+      (this.obsDateOperatorState === DateOperatorState.NOT_BETWEEN);
     // Notify constraint service
-    this.updateCounts();
+    this.update();
   }
 
   /**
@@ -613,7 +600,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.valDateConstraint.dateOperator = this.valDateOperatorState;
     conceptConstraint.valDateConstraint.isNegated =
-      (this.valDateOperatorState === GbDateOperatorState.NOT_BETWEEN);
+      (this.valDateOperatorState === DateOperatorState.NOT_BETWEEN);
     this.updateConceptValues();
   }
 

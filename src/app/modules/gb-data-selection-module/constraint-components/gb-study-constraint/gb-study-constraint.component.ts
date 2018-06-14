@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Study} from '../../../../models/study';
-import {StudyConstraint} from '../../../../models/constraints/study-constraint';
+import {Study} from '../../../../models/constraint-models/study';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
   selector: 'gb-study-constraint',
@@ -58,11 +58,11 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     // For some funny reason, the study is still in the list when this handler is invoked
     let index = this.selectedStudies.indexOf(studyObject);
     this.selectedStudies.splice(index, 1);
-    this.updateCounts();
+    this.update();
   }
 
   updateStudies(studyObject) {
-    this.updateCounts();
+    this.update();
   }
 
 }

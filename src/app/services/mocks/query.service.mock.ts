@@ -1,4 +1,4 @@
-import {Query} from '../../models/query';
+import {Query} from '../../models/query-models/query';
 
 export class QueryServiceMock {
   private _queries: Query[] = [];
@@ -33,41 +33,18 @@ export class QueryServiceMock {
   private _studyCount_2 = 0;
 
 
-  private _validTreeNodeTypes: string[] = [];
-
-  private _isLoadingExportFormats = true;
-  private _exportFormats = [];
-
   constructor() {
-    this._validTreeNodeTypes = [
-      'NUMERIC',
-      'CATEGORICAL',
-      'DATE',
-      'STUDY',
-      'TEXT',
-      'HIGH_DIMENSIONAL',
-      'UNKNOWN'
-    ];
   }
 
-  public updateCounts_1() {}
-  public updateCounts_2() {}
-
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
+  public update_1() {
   }
 
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
+  public update_2() {
   }
 
-  get exportFormats(): Array<object> {
-    return this._exportFormats;
+  public update_3() {
   }
 
-  set exportFormats(value: Array<object>) {
-    this._exportFormats = value;
-  }
 
   get queries(): Query[] {
     return this._queries;
@@ -75,5 +52,8 @@ export class QueryServiceMock {
 
   set queries(value: Query[]) {
     this._queries = value;
+  }
+
+  saveQuery(name: string) {
   }
 }

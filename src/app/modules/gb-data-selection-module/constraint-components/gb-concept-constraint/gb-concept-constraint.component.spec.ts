@@ -9,7 +9,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {ConceptConstraint} from '../../../../models/constraints/concept-constraint';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
@@ -60,7 +60,7 @@ describe('GbConceptConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbConceptConstraintComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

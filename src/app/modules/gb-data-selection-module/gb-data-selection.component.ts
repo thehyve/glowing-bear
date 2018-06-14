@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
+import {FormatHelper} from '../../utilities/format-helper';
+import {MessageService} from '../../services/message.service';
 import {QueryService} from '../../services/query.service';
-import {FormatHelper} from '../../utilities/FormatHelper';
 
 @Component({
   selector: 'gb-data-selection',
@@ -9,7 +10,7 @@ import {FormatHelper} from '../../utilities/FormatHelper';
 })
 export class GbDataSelectionComponent implements OnInit {
 
-  constructor(public queryService: QueryService) {
+  constructor(public messageService: MessageService, public queryService: QueryService) {
   }
 
   ngOnInit() {
@@ -71,14 +72,18 @@ export class GbDataSelectionComponent implements OnInit {
     return FormatHelper.percentage(this.queryService.observationCount_2, this.queryService.observationCount_1);
   }
 
-  updateCounts_1(event) {
+  update_1(event) {
     event.stopPropagation();
-    this.queryService.updateCounts_1();
+    this.queryService.update_1();
   }
 
-  updateCounts_2(event) {
+  update_2(event) {
     event.stopPropagation();
-    this.queryService.updateCounts_2();
+    this.queryService.update_2();
   }
 
+  update_3(event) {
+    event.stopPropagation();
+    this.queryService.update_3();
+  }
 }

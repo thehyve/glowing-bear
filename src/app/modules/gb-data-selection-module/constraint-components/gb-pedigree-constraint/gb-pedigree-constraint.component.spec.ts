@@ -9,7 +9,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {CheckboxModule, DropdownModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
@@ -33,12 +33,12 @@ describe('GbPedigreeConstraintComponent', () => {
       ],
       providers: [
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
         },
         {
           provide: TreeNodeService,
@@ -60,7 +60,7 @@ describe('GbPedigreeConstraintComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

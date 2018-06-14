@@ -1,5 +1,6 @@
 # GlowingBear
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=master)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 A cohort selection user interface for [TranSMART].
 
@@ -26,11 +27,11 @@ Run `ng test` to execute the unit tests via [Karma], run `ng test --code-coverag
 
 ### Running end-to-end tests
 
-For e2e test we use [Protractor] in combination with the [cucumber-js] framework.
-To install protractor run `npm install -g protractor`. 
-To run the tests you need to have an up to dated version of chrome installed and the TranSMART application running, by default on `localhost:8080`.
-To run all tests: `protractor`.
-To run specific feature files: `protractor --specs=e2e/features/name-of.feature`.
+For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
+[Cypress] is install as part of the your `npm install` command. 
+To run the tests using the headless browser `npm run e2e` or `npm run cypress` to launch the GUI.
+by default the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
+WARNING: tests alter state. All saved queries are deleted.
 
 ### Further help
 
@@ -64,7 +65,7 @@ files in `app/config`.
 Example `env.json`:
 ```json
 {
-  "env": "prod"
+  "env": "default"
 }
 ```
 Example `config.prod.json`:
@@ -87,6 +88,15 @@ Supported properties in the `config.*.json` files:
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user. |
 | `tree-node-counts-update` | `true`    | Fetch counts for study nodes in step 2 of Data Selection. |
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
+| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
+| `show-observation-counts` | `true`    | |
+| `instant-counts-update-1` | `false`   | |
+| `instant-counts-update-2` | `false`   | |
+| `instant-counts-update-3` | `false`   | |
+| `authentication-method`   | `oauth2`  | Authentication method (`oauth2`, `oidc`) |
+| `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}` |
+| `oidc-scopes`             | `openid`  | |
+| `oidc-client-id`          | `glowingbear-js` | |
 
 
 ## License
@@ -114,3 +124,5 @@ along with this program. If not, see https://www.gnu.org/licenses/.
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [nginx]: https://nginx.org
 [Apache]: https://httpd.apache.org
+[Cypress]: https://www.cypress.io/
+[cypress-cucumber-preprocessor]: https://github.com/TheBrainFamily/cypress-cucumber-preprocessor

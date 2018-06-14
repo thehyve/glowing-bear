@@ -1,0 +1,487 @@
+@import "../../node_modules/primeng/resources/primeng.min.css";
+@import "../../node_modules/font-awesome/css/font-awesome.css";
+@import "../../node_modules/roboto-fontface/css/roboto/roboto-fontface.css";
+@import "./primeng-theme.css";
+@import "./bootstrap.css";
+
+/*
+  custom variables
+*/
+:root {
+  --gb-loading-bg-color: #28AA9D;
+  --gb-navbar-bg-color: #fdfdfd;
+  --gb-orange-light: #ffa27f;
+  --gb-orange-light-light: #ffd9cb;
+  --gb-clinical-green: #339C90;
+  --gb-clinical-green-light: #84c3bc;
+  --gb-clinical-green-light-light: #c8eae6;
+  --gb-clinical-green-dark: #2d8c81;
+  --gb-top-panel-height: 26px;
+}
+
+/*
+  All elements have padding and border
+  included in the element's total width and height
+ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #FCFCFC;
+  cursor: auto;
+}
+
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: 'Roboto', sans-serif;
+}
+
+.loading-message {
+  background-color: var(--gb-loading-bg-color);
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 300%;
+  text-align: center;
+  padding: 200px;
+  opacity: .8;
+  border-color: transparent;
+  height: 100vh;
+  width: 100%;
+  display: block;
+}
+
+.loading-message img {
+  margin-top: -100px;
+  width: 60%;
+  height: auto;
+}
+
+body .gb-spinner {
+  display: none;
+  visibility: hidden;
+}
+
+body .gb-spinner.loading {
+  display: inline-block;
+  visibility: visible;
+}
+
+body .hline {
+  border-bottom: solid 1px var(--gb-clinical-green-dark);
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/*
+ * Style for PrimeNg growl messages
+ */
+.gb-container .ui-growl .ui-growl-message-warn {
+  background-color: #f4b30a;
+  color: white;
+}
+
+.gb-container .ui-growl .ui-growl-message-success {
+  background-color: #5db85c;
+  color: white;
+}
+
+.gb-container .ui-growl .ui-growl-message-info {
+  background-color: #5bc0de;
+  color: white;
+}
+
+.gb-container .ui-growl .ui-growl-message-error {
+  background-color: #d9534f;
+  color: white;
+}
+
+/*
+ * Change the primeng data table border to lightgrey
+ */
+.ui-datatable .ui-datatable-thead > tr > th,
+.ui-datatable .ui-datatable-tfoot > tr > td,
+.ui-datatable .ui-datatable-data > tr > td {
+  border-color: lightgrey;
+}
+
+/*
+ * Change the primeng confirmation dialog of deleting the query
+ */
+.ui-confirmdialog.ui-dialog .ui-dialog-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/*
+ * Change the primeng tooltip for data table cells
+ */
+.ui-tooltip.ui-widget.ui-tooltip-right,
+.ui-tooltip.ui-widget.ui-tooltip-left {
+  font-size: x-small;
+  width: 300px;
+  min-width: 300px;
+}
+
+/* Change input placeholder text color */
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  color: lightgray;
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: lightgray;
+  opacity: 1;
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: lightgray;
+  opacity: 1;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: lightgray;
+}
+
+.form-control::-webkit-input-placeholder {
+  color: lightgray;
+}
+
+.form-control:-moz-placeholder {
+  color: lightgray;
+}
+
+.form-control::-moz-placeholder {
+  color: lightgray;
+}
+
+.form-control:-ms-input-placeholder {
+  color: lightgray;
+}
+
+/*
+ * ------------------------------ Styles for gb-nav-bar component -------------------------------
+ */
+/*Style fix for adding border radius to navbar*/
+gb-nav-bar .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
+  border-radius: 10px;
+}
+
+gb-nav-bar .ui-tabmenuitem .ui-state-active {
+  border-radius: 10px;
+}
+
+/*Style fix for hiding the border in tab menu bar*/
+gb-nav-bar .ui-tabmenu-nav {
+  border: none;
+  background-color: #FCFCFC;
+}
+
+gb-nav-bar .ui-menuitem-text {
+  color: hsl(0, 0%, 30%);
+}
+
+/*
+ * ------------------------------ Styles for gb-data-selection component -------------------------------
+ */
+/*Change the color theme of the accordion in data-selection to clinical green*/
+gb-data-selection md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+  border-color: var(--gb-clinical-green) !important;
+  box-shadow: 0 1px 0 var(--gb-clinical-green) !important;
+}
+
+gb-data-selection .v-align-center {
+  display: flex;
+  align-items: center;
+}
+
+/*
+ * Style for buttons such as update, clear criteria, expand all/none, check all/none
+ * in Data Selection
+ */
+gb-data-selection .gb-data-selection-control-btn {
+  border-radius: 2em;
+}
+
+/*
+ * ------------------------------ Styles for gb-selection component -------------------------------
+ */
+/*Style for the padding of the constraint*/
+gb-selection .ui-panel-titlebar {
+  padding: 1px !important;
+}
+
+/*
+ * style fix for a concept constraint input
+ * displayed text aligned from right to left
+ * text overflow is turned on
+ */
+gb-selection .gb-concept-constraint-input > input {
+  text-overflow: ellipsis;
+  direction: ltr;
+}
+
+/* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
+gb-selection .ui-inputtext {
+  height: 2em;
+}
+
+/* Fix cutting off letters inside inputtext field.
+ Rendering engines of Firefox and Safari render line height slightly different than Chrome.
+ Editing component css doesn't work. */
+gb-selection .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+  padding-bottom: 3px;
+}
+
+gb-selection .ui-autocomplete .ui-autocomplete-dropdown {
+  height: 2em;
+}
+
+gb-selection .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
+  padding: 0.1em;
+  height: 100%;
+}
+
+/*Fix the width of placeholder in multiple autocomplete input field*/
+gb-selection .ui-autocomplete-input-token {
+  width: 10em;
+}
+
+/*Style for the p-panel in a concept constraint*/
+gb-selection .gb-constraint-child-container p-panel .ui-panel {
+  margin-left: 5px;
+  padding: 0px;
+  background-color: transparent;
+  width: 90%;
+  border: none;
+}
+
+/* Fix multiple autocomplete dropdown button new line break */
+gb-selection .ui-autocomplete {
+  display: inline-flex;
+}
+
+/*
+ * ------------------------------ Styles for gb-projection component -------------------------------
+ */
+/*style fix for the primeng tree-container in the 2nd step (padding: top, right, bottom, left)*/
+gb-projection .gb-projection-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+}
+
+gb-projection .gb-projection-tree-container .ui-tree-container {
+  width: 100%;
+}
+
+gb-projection .gb-projection-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+  padding: 1px 6px 1px 6px;
+  background-color: #67a2cf;
+}
+
+/*Make the font size in the tree smaller*/
+gb-projection p-treenode {
+  font-size: small;
+}
+
+/*
+ * ------------------------------ Styles for gb-side-panel component -------------------------------
+ */
+gb-summary {
+  font-size: small;
+}
+
+gb-side-panel .ui-accordion .ui-accordion-content {
+  padding: 1em;
+}
+
+/*
+ * ------------------------------ Styles for gb-summary component -------------------------------
+ */
+gb-summary .gb-final-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+}
+
+/*
+ * ------------------------------ Styles for gb-tree-nodes component -------------------------------
+ */
+/*Make the font size in the tree smaller*/
+gb-tree-nodes p-treenode {
+  font-size: small;
+}
+
+/*Style for the search box in the tree-node accordion on the left side*/
+gb-tree-nodes .gb-tree-filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  min-width: 150px;
+}
+
+/*
+ * Fix the style of the PrimeNg overlay panel so that it always stays on top
+ * (overlay panel is used in the tree section on the left side)
+ */
+gb-tree-nodes .ui-overlaypanel {
+  position: fixed !important;
+}
+
+/*
+ * style class for loading tree nodes and patient counts
+ */
+/*style fix for the primeng tree-container in the side-panel*/
+gb-tree-nodes .gb-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+}
+
+/*
+ * Style for the count element in a tree node on the left side
+ * padding: top, right, bottom, left
+ */
+@keyframes gb-count-element-animation {
+  from {
+    background-color: var(--gb-orange-light);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+gb-tree-nodes .gb-count-element {
+  background-color: transparent;
+  padding: 1px 1px 1px 2px;
+  border-radius: 6px;
+  vertical-align: middle;
+}
+
+gb-tree-nodes .gb-count-element-updated {
+  animation-name: gb-count-element-animation;
+  animation-duration: 2s;
+}
+
+/*tree node styles for filtering*/
+gb-tree-nodes .gb-highlight-treenode {
+  background-color: var(--gb-orange-light) !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
+}
+
+/*
+ * A marker css class to indicate if a tree node is leaf or not,
+ * should be left empty
+ */
+gb-tree-nodes .gb-is-not-leaf {
+}
+
+/*
+ * ------------------------------ Styles for gb-queries component -------------------------------
+ */
+/*Make the font size in the saved query list smaller*/
+gb-queries p-dataList {
+  font-size: small;
+}
+
+/*Style for the search box in the queries accordion on the left side*/
+gb-queries .gb-query-filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  min-width: 150px;
+}
+
+/*style fix for hiding the border in data list in saved queries in the side panel*/
+gb-queries .ui-widget-content {
+  border: none;
+}
+
+/*style for a query item on the side panel*/
+gb-queries .gb-query-panel {
+  padding: 0px;
+  border-radius: 5px;
+  margin-bottom: 2px;
+  background-color: #fafafa;
+  border: 1px solid #D5D5D5;
+  font-size: small;
+}
+
+gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+  border-width: medium;
+  border-color: lightgray !important;
+  box-shadow: 0 1px 0 lightgray !important;
+  background-color: #f2f2f2;
+  padding-left: 0.5em;
+}
+
+gb-queries md2-accordion-tab > .md2-accordion-header {
+  background-color: white;
+  padding-left: 0.5em;
+  font-size: small;
+  min-width: 200px;
+  color: dimgray;
+}
+
+gb-queries md2-accordion-tab > .md2-accordion-tab-body {
+  background-color: #fbfbfb;
+  padding-left: 0.5em;
+  font-size: small;
+  color: dimgray;
+}
+
+gb-queries md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
+  color: transparent;
+}
+
+/*
+ * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
+ */
+gb-data-table-dimensions .ui-picklist-droppoint {
+  height: 3px !important;
+}
+
+gb-data-table-dimensions .ui-picklist-droppoint-highlight {
+  background: var(--gb-clinical-green-dark);
+  height: 2em !important;
+}
+
+gb-data-table-dimensions .ui-picklist .ui-picklist-caption {
+  font-size: small;
+  font-weight: bold;
+  padding: 0px;
+}
+
+gb-data-table-dimensions .ui-picklist .ui-picklist-filter-container {
+  font-size: small;
+  padding: 0px 0px 0px .5em;
+}
+
+gb-data-table-dimensions .ui-picklist .ui-picklist-list .ui-picklist-item {
+  padding: 1px;
+  font-size: small;
+}
+
+/*
+ * ------------------------------ Styles for gb-data-table-grid component -------------------------------
+ */
+gb-data-table-grid .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}
+
+/*
+ * ------------------------------ Styles for gb-cross-table component -------------------------------
+ */
+gb-cross-table .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}

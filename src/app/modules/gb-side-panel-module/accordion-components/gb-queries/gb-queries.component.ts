@@ -1,10 +1,13 @@
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {Query} from '../../../../models/query';
+import {Query} from '../../../../models/query-models/query';
 import {QueryService} from '../../../../services/query.service';
-import {DownloadHelper} from '../../../../utilities/DownloadHelper';
+import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
+import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
+import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
+import {MessageService} from '../../../../services/message.service';
 
 @Component({
   selector: 'gb-queries',
@@ -18,6 +21,7 @@ export class GbQueriesComponent implements OnInit {
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
+              private messageService: MessageService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
@@ -33,6 +37,8 @@ export class GbQueriesComponent implements OnInit {
         .addEventListener('change', this.queryFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
     }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
     uploadElm.click();
   }
 
@@ -40,59 +46,49 @@ export class GbQueriesComponent implements OnInit {
     let reader = new FileReader();
     let file = event.target.files[0];
     reader.onload = (function (e) {
-      if (file.type === 'application/json') {
-        let _json = JSON.parse(e.target['result']);
-        let pathArray = null;
-        // If the json is of standard format
-        if (_json['patientsQuery'] || _json['observationsQuery']) {
-          this.queryService.restoreQuery(_json);
-        } else if (_json['names']) {
-          pathArray = [];
-          this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
-        } else if (_json['paths']) {
-          pathArray = _json['paths'];
-        } else if (_json.constructor === Array) {
-          pathArray = _json;
-        }
-        if (pathArray) {
-          let query = {
-            'name': file.name,
-            'observationsQuery': {
-              data: pathArray
-            }
-          };
-          this.queryService.restoreQuery(query);
-        }
-      } else if (file.type === 'text/plain' ||
-        file.type === 'text/tab-separated-values' ||
-        file.type === 'text/csv' ||
-        file.type === '') {
-        // we assume the text contains a list of subject Ids
-        let query = {
-          'name': file.name,
-          'patientsQuery': {
-            'type': 'patient_set',
-            'subjectIds': e.target['result'].split('\n')
-          },
-          'observationsQuery': {}
-        };
-        this.queryService.restoreQuery(query);
-      }
-
-      // reset the input path so that it will take the same file again
-      document.getElementById('queryFileUpload')['value'] = '';
+      let data = e.target['result'];
+      let query = this.parseFile(file, data);
+      const queryObj = {
+        name: query.name,
+        patientsQuery: query.patientsQuery,
+        observationsQuery: query.observationsQuery,
+        bookmarked: false
+      };
+      this.queryService.saveQueryObj(queryObj);
     }).bind(this);
     reader.readAsText(file);
+  }
+
+  private parseFile(file: File, data: any) {
+    // file.type is empty for some browsers and Windows OS
+    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
+      let _json = JSON.parse(data);
+      // If the json is of standard format
+      if (_json['patientsQuery'] || _json['observationsQuery']) {
+        return _json;
+      } else {
+        this.messageService.alert('error', 'Invalid file content for query import.');
+        return;
+      }
+    } else {
+      this.messageService.alert('error', 'Invalid file content for query import.');
+      return;
+    }
   }
 
   // query subscription
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
     query.subscribed = !query.subscribed;
-    const queryObject = {
-      bookmarked: query.subscribed
+    let queryObj = {
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    if (query.subscribed) {
+      queryObj['subscriptionFreq'] =
+        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
+      query.subscriptionFreq = queryObj['subscriptionFreq'];
+    }
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -103,10 +99,10 @@ export class GbQueriesComponent implements OnInit {
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
     query.bookmarked = !query.bookmarked;
-    const queryObject = {
-      bookmarked: query.bookmarked
+    let queryObj = {
+      subscribed: query.subscribed
     };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.updateQuery(query, queryObj);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -120,6 +116,14 @@ export class GbQueriesComponent implements OnInit {
     }
     selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
+  }
+
+  toggleSubscriptionPanel(query: Query) {
+    query.subscriptionCollapsed = !query.subscriptionCollapsed;
+  }
+
+  toggleSubscriptionRecordPanel(record: QueryDiffRecord) {
+    record.showCompleteRepresentation = !record.showCompleteRepresentation;
   }
 
   removeQuery(event: Event, query: Query) {
@@ -143,7 +147,19 @@ export class GbQueriesComponent implements OnInit {
 
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(query, query.name);
+    DownloadHelper.downloadJSON(query.toPlainObject(), query.name);
+  }
+
+  radioCheckSubscriptionFrequency(query: Query) {
+    let queryObj = {
+      subscriptionFreq: query.subscriptionFreq
+    };
+    this.queryService.updateQuery(query, queryObj);
+  }
+
+  downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
+    const filename = query.name + '-record-' + record.createDate;
+    DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }
 
   onFiltering(event) {

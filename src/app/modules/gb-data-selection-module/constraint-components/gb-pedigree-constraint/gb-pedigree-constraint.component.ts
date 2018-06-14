@@ -1,8 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SelectItem} from 'primeng/primeng';
-import {Constraint} from '../../../../models/constraints/constraint';
-import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {Constraint} from '../../../../models/constraint-models/constraint';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 
 type TriState = true | false | undefined;
 
@@ -40,7 +40,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   updateRelationType(event) {
     (<PedigreeConstraint>this.constraint).relationType = event.value;
-    this.updateCounts();
+    this.update();
   }
 
   get selectedPedigreeType(): SelectItem {
@@ -73,7 +73,7 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set biological(value: TriState) {
     (<PedigreeConstraint>this.constraint).biological = value;
-    this.updateCounts();
+    this.update();
   }
 
   get shareHousehold(): TriState {
@@ -82,6 +82,6 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
 
   set shareHousehold(value: TriState) {
     (<PedigreeConstraint>this.constraint).shareHousehold = value;
-    this.updateCounts();
+    this.update();
   }
 }

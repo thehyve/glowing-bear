@@ -1,15 +1,25 @@
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraints/combination-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
-import {Query} from '../models/query';
+import {Query} from '../models/query-models/query';
 import {ConstraintService} from './constraint.service';
-import {Step} from '../models/step';
-import {PatientSetConstraint} from '../models/constraints/patient-set-constraint';
-import {FormatHelper} from '../utilities/FormatHelper';
-import {PatientSet} from '../models/patient-set';
-import {Constraint} from '../models/constraints/constraint';
+import {Step} from '../models/query-models/step';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
+import {FormatHelper} from '../utilities/format-helper';
+import {SubjectSet} from '../models/constraint-models/subject-set';
+import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
+import {QueryDiffRecord} from '../models/query-models/query-diff-record';
+import {QuerySetType} from '../models/query-models/query-set-type';
+import {QueryDiffItem} from '../models/query-models/query-diff-item';
+import {QueryDiffType} from '../models/query-models/query-diff-type';
+import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {DataTableService} from './data-table.service';
+import {DataTable} from '../models/table-models/data-table';
+import {ExportService} from './export.service';
+import {MessageService} from './message.service';
+import {CrossTableService} from './cross-table.service';
+import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -51,7 +61,7 @@ export class QueryService {
   private _inclusionObservationCount = 0;
   private _exclusionObservationCount = 0;
   /*
-   * when step 1 constraints are changed, whether to call updateCounts_1 immediately,
+   * when step 1 constraints are changed, whether to call update_1 immediately,
    * used in gb-constraint-component
    */
   private _instantCountsUpdate_1: boolean;
@@ -91,16 +101,15 @@ export class QueryService {
   private _studyCountMap_1 = {};
   loadingStateInclusion: LoadingState = 'complete';
   loadingStateExclusion: LoadingState = 'complete';
-  loadingStateTotal: LoadingState = 'complete';
+  loadingStateTotal_1: LoadingState = 'complete';
   // the queue that holds the time stamps of the calls made in the 1st step
   private _queueOfCalls_1 = [];
-  private _patientSet_1: PatientSetConstraint = null;
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
    */
   /*
-   * when step 2 constraints are changed, whether to call updateCounts_2 immediately,
+   * when step 2 constraints are changed, whether to call update_2 immediately,
    * used in gb-projection-component
    */
   private _instantCountsUpdate_2: boolean;
@@ -120,42 +129,56 @@ export class QueryService {
   private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
   // the queue that holds the time stamps of the calls made in the 2nd step
   private _queueOfCalls_2 = [];
-
+  /*
+   *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
+   */
+  private _instantCountsUpdate_3: boolean;
+  private _isUpdating_3 = false;
   /*
    * ------ other variables ------
    */
   // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
   private _treeNodeCountsUpdate: boolean;
-  private _exportFormats: object[] = [];
-  private _isLoadingExportFormats = false;
-  private _exportDataView = 'default';
-  /*
-   * The alert messages (for PrimeNg message UI) that informs the user
-   * whether there is an error saving subject/observation set,
-   * or the saving has been successful
-   */
-  private _alertMessages = [];
   /*
    * Flag indicating if to relay the counts in the current step to the next
    */
   private _countsRelay: boolean;
-  /**
+  /*
    * Flag indicating if the subject selection of step 1 should be automatically
    * saved as subject set in the backend. If true, that subject set is used as the subject constraint
    * for step 2.
    */
   private _autosaveSubjectSets: boolean;
+  /*
+   * Flag indicating if the observation counts are calculated and shown
+   */
+  private _showObservationCounts: boolean;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService) {
-    this.instantCountsUpdate_1 = false;
-    this.instantCountsUpdate_2 = false;
+              private constraintService: ConstraintService,
+              private dataTableService: DataTableService,
+              private crossTableService: CrossTableService,
+              private messageService: MessageService,
+              private exportService: ExportService) {
+    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
+    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
+    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
     this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
+  }
+
+  init() {
+    console.log('Query service initialised.');
     this.loadQueries();
+
+    // initial updates
+    this.update_1(true);
+    this.update_2();
+    this.update_3();
   }
 
   private handle_error(err) {
@@ -165,7 +188,7 @@ export class QueryService {
   /**
    * Update the queries on the left-side panel
    */
-  public loadQueries() {
+  private loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
@@ -174,12 +197,28 @@ export class QueryService {
           queries.forEach(query => {
             query.collapsed = true;
             query.visible = true;
+            query.subscriptionCollapsed = true;
             if (query.createDate) {
-              query.createDateInfo = FormatHelper.formatDateSemantics(query.createDate);
+              query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
             }
             if (query.updateDate) {
-              query.updateDateInfo = FormatHelper.formatDateSemantics(query.updateDate);
+              query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
             }
+            if (query.subscribed) {
+              if (!query.subscriptionFreq) {
+                query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+              }
+              /*
+               * load query diff records for this query
+               */
+              this.resourceService.diffQuery(query.id)
+                .subscribe(
+                  (records) => {
+                    query.diffRecords = this.parseQueryDiffRecords(records);
+                  }
+                );
+            }
+
             if (query.bookmarked) {
               bookmarkedQueries.push(query);
             } else {
@@ -193,11 +232,6 @@ export class QueryService {
   }
 
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
-    if (this.autosaveSubjectSets) {
-      // Not computing the counts based on inclusion and exclusion counts,
-      // but using the subject set and counts per study concept response instead.
-      return;
-    }
     this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
     this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
     if (initialUpdate) {
@@ -205,10 +239,10 @@ export class QueryService {
       this.observationCount_0 = this.observationCount_1;
     }
     this.isUpdating_1 = false;
-    this.loadingStateTotal = 'complete';
+    this.loadingStateTotal_1 = 'complete';
   }
 
-    /**
+  /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
   // Relay counts from step 1 to step 2
@@ -229,31 +263,42 @@ export class QueryService {
   }
 
   private updateInclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    let inclusionConstraint = this.constraintService.generateInclusionConstraint();
-    this.resourceService.getCounts(inclusionConstraint)
-      .subscribe(
-        countResponse => {
-          const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            this.inclusionSubjectCount = countResponse['patientCount'];
-            this.inclusionObservationCount = countResponse['observationCount'];
-            this.loadingStateInclusion = 'complete';
-            if (this.loadingStateTotal !== 'complete' && this.loadingStateExclusion === 'complete') {
-              this.mergeInclusionAndExclusionCounts(initialUpdate);
-              // relay the current counts to the next step: subjects and observations
-              this.relayCounts_1_2();
+    // No need to compute the inclusion count if subject sets are auto saved,
+    // the saved subject sets will be used in updateConceptsAndStudies to calculate the inclusion counts
+    if (!this.autosaveSubjectSets) {
+      let inclusionConstraint = this.constraintService.generateInclusionConstraint();
+      this.resourceService.getCounts(inclusionConstraint)
+        .subscribe(
+          countResponse => {
+            const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
+            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+              this.inclusionSubjectCount = countResponse['patientCount'];
+              this.inclusionObservationCount = countResponse['observationCount'];
+              this.loadingStateInclusion = 'complete';
+              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateExclusion === 'complete') {
+                this.mergeInclusionAndExclusionCounts(initialUpdate);
+                // relay the current counts to the next step: subjects and observations
+                this.relayCounts_1_2();
+              }
             }
+          },
+          err => {
+            this.handle_error(err);
+            this.loadingStateInclusion = 'complete';
           }
-        },
-        err => {
-          this.handle_error(err);
-          this.loadingStateInclusion = 'complete';
-        }
-      );
+        );
+    } else {
+      if (this.loadingStateTotal_1 === 'complete' && this.loadingStateExclusion === 'complete') {
+        this.inclusionSubjectCount = this.subjectCount_1 + this.exclusionSubjectCount;
+        this.inclusionObservationCount = this.observationCount_1 + this.exclusionObservationCount;
+        this.loadingStateInclusion = 'complete';
+        this.relayCounts_1_2();
+      }
+    }
   }
 
   private updateExclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    if (this.constraintService.rootExclusionConstraint.hasNonEmptyChildren()) {
+    if (this.constraintService.hasExclusionConstraint()) {
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
       this.resourceService.getCounts(exclusionConstraint)
         .subscribe(
@@ -263,7 +308,7 @@ export class QueryService {
               this.exclusionSubjectCount = countResponse['patientCount'];
               this.exclusionObservationCount = countResponse['observationCount'];
               this.loadingStateExclusion = 'complete';
-              if (this.loadingStateTotal !== 'complete' && this.loadingStateInclusion === 'complete') {
+              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateInclusion === 'complete') {
                 this.mergeInclusionAndExclusionCounts(initialUpdate);
                 // relay the current counts to the next step: subjects and observations
                 this.relayCounts_1_2();
@@ -277,34 +322,37 @@ export class QueryService {
         );
     } else {
       this.exclusionSubjectCount = 0;
+      this.exclusionObservationCount = 0;
       this.loadingStateExclusion = 'complete';
     }
   }
 
-  private updateSubjectCount(subjectCount: number, initialUpdate?: boolean) {
+  private updateSubjectCount_1(subjectCount: number, initialUpdate?: boolean) {
     this.subjectCount_1 = subjectCount;
     if (initialUpdate) {
       this.subjectCount_0 = this.subjectCount_1;
     }
   }
 
-  private updateObservationCount(observationCount: number, initialUpdate?: boolean) {
+  private updateObservationCount_1(observationCount: number, initialUpdate?: boolean) {
     this.observationCount_1 = observationCount;
     if (initialUpdate) {
       this.observationCount_0 = this.observationCount_1;
     }
     this.isUpdating_1 = false;
-    this.loadingStateTotal = 'complete';
+    this.loadingStateTotal_1 = 'complete';
   }
 
-  private updateConceptsAndStudiesForSubjectSet(
-      response: PatientSet, selectionConstraint: Constraint, timeStamp: Date, initialUpdate: boolean) {
+  private updateConceptsAndStudiesForSubjectSet(response: SubjectSet,
+                                                selectionConstraint: Constraint,
+                                                timeStamp: Date,
+                                                initialUpdate: boolean) {
     let constraint: Constraint;
     if (response) {
-      this.patientSet_1 = new PatientSetConstraint();
-      this.patientSet_1.id = response.id;
-      this.updateSubjectCount(response.setSize, initialUpdate);
-      constraint = this.patientSet_1;
+      this.subjectSetConstraint_1 = new SubjectSetConstraint();
+      this.subjectSetConstraint_1.id = response.id;
+      this.updateSubjectCount_1(response.setSize, initialUpdate);
+      constraint = this.subjectSetConstraint_1;
     } else {
       constraint = selectionConstraint;
     }
@@ -322,7 +370,13 @@ export class QueryService {
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
-            this.updateObservationCount(observationCount, initialUpdate);
+            if (this.autosaveSubjectSets) {
+              // Update observation count based on the sum of the tree observation counts
+              this.updateObservationCount_1(observationCount, initialUpdate);
+              // Update inclusion counts
+              this.updateInclusionCounts(timeStamp, initialUpdate);
+            }
+
             // construct study count map in the 1st step if flag is true
             if (this.treeNodeCountsUpdate) {
               this.resourceService.getCountsPerStudy(constraint)
@@ -334,10 +388,6 @@ export class QueryService {
                   err => this.handle_error(err)
                 );
             }
-            /*
-             * update the tree nodes in the 2nd step
-             */
-            this.prepareStep2();
           }
         },
         err => this.handle_error(err)
@@ -345,20 +395,61 @@ export class QueryService {
   }
 
   private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean) {
-    const selectionConstraint = this.constraintService.generateSelectionConstraint();
+    const selectionConstraint = this.constraintService.constraint_1();
     if (this.autosaveSubjectSets) {
       // save a subject set for the subject selection, compute tree counts using that subject set
-      this.resourceService.savePatientSet('temp', selectionConstraint).subscribe((response) => {
-          this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
-        },
-        err => this.handle_error(err)
-      );
+      this.resourceService.saveSubjectSet('temp', selectionConstraint)
+        .subscribe((response) => {
+            this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
+          },
+          err => this.handle_error(err)
+        );
     } else {
       // compute tree counts without saving a subject set
       this.updateConceptsAndStudiesForSubjectSet(null, selectionConstraint, timeStamp, initialUpdate);
     }
   }
 
+  /**
+   * update the subject, observation, concept and study counts in the first step
+   */
+  public update_1(initialUpdate?: boolean) {
+    this.isUpdating_1 = true;
+    this.subjectSetConstraint_1 = null;
+    // add time stamp to the queue,
+    // only when the time stamp is at the end of the queue, the count is updated
+    this.clearQueueOfCalls(this.queueOfCalls_1);
+    let timeStamp = new Date();
+    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
+    // set the flags
+    this.loadingStateInclusion = 'loading';
+    this.loadingStateExclusion = 'loading';
+    this.loadingStateTotal_1 = 'loading';
+    // also update the flags for the counts in the 2nd step
+    this.isLoadingSubjectCount_2 = true;
+    this.isLoadingObservationCount_2 = true;
+    /*
+     * Update the inclusion counts
+     */
+    this.updateInclusionCounts(timeStamp, initialUpdate);
+    /*
+     * Update exclusion constraint counts
+     * (Only execute the exclusion constraint if it has non-empty children)
+     */
+    this.updateExclusionCounts(timeStamp, initialUpdate);
+    /*
+     * update concept and study counts in the first step
+     */
+    this.updateConceptsAndStudies(timeStamp, initialUpdate);
+  }
+
+  /**
+   * ------------------------------------------------- END: step 1 ---------------------------------------------------
+   */
+
+  /**
+   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
+   */
   /**
    * This function handles the asynchronicity
    * between updating the 2nd-step counts and the loading of tree nodes:
@@ -370,7 +461,7 @@ export class QueryService {
 
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
-        let checklist = this.query ? this.query.observationsQuery['data'] : null;
+        let checklist = this.query ? this.query.observationQuery['data'] : null;
         if (checklist) {
           let parentPaths = [];
           for (let path of checklist) {
@@ -401,63 +492,10 @@ export class QueryService {
   }
 
   /**
-   * update the subject, observation, concept and study counts in the first step
-   */
-  public updateCounts_1(initialUpdate?: boolean) {
-    this.isUpdating_1 = true;
-    this.isPreparing_2 = true;
-    this.patientSet_1 = null;
-    /*
-     * ====== function updateCounts_1 starts ======
-     */
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_1);
-    let timeStamp = new Date();
-    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
-    // set the flags
-    this.loadingStateInclusion = 'loading';
-    this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal = 'loading';
-    // also update the flags for the counts in the 2nd step
-    this.isLoadingSubjectCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    /*
-     * Inclusion constraint subject count
-     */
-    this.updateInclusionCounts(timeStamp, initialUpdate);
-    /*
-     * Exclusion constraint subject count
-     * (Only execute the exclusion constraint if it has non-empty children)
-     */
-    this.updateExclusionCounts(timeStamp, initialUpdate);
-    /*
-     * update concept and study counts in the first step
-     */
-    this.updateConceptsAndStudies(timeStamp, initialUpdate);
-    /*
-     * create patient set for the current query in step 1
-     */
-    // this.updatePatientSet(timeStamp);
-    /*
-     * ====== function updateCounts_1 ends ======
-     */
-  }
-
-  /**
-   * ------------------------------------------------- END: step 1 ---------------------------------------------------
-   */
-
-  /**
-   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
-   */
-  /**
    * update the subject, observation, concept and study counts in the second step
    */
-  public updateCounts_2() {
-    /*
-     * ====== function updateCounts_2 starts ======
-     */
+  public update_2() {
+    this.prepareStep2();
     if (!this.isUpdating_1 && !this.isPreparing_2) {
       this.isUpdating_2 = true;
       // add time stamp to the queue,
@@ -470,78 +508,48 @@ export class QueryService {
       this.isLoadingObservationCount_2 = true;
 
       this.query = null; // clear query
-      const selectionConstraint = this.patientSet_1 ?
-        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
-      const projectionConstraint = this.constraintService.generateProjectionConstraint();
-
-      let combo = new CombinationConstraint();
-      combo.addChild(selectionConstraint);
-      combo.addChild(projectionConstraint);
-
       // update the subject count and observation count in the 2nd step
-      this.resourceService.getCounts(combo)
+      const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
+      this.resourceService.getCounts(constraint_1_2)
         .subscribe(
           (countResponse) => {
             const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
             if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+              // update counts and flags
               this.subjectCount_2 = countResponse['patientCount'];
               this.isLoadingSubjectCount_2 = false;
               this.observationCount_2 = countResponse['observationCount'];
               this.isLoadingObservationCount_2 = false;
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
+              this.isDirty_3 = true;
+              // update the export variables
+              this.exportService.updateExports();
+              // update the final tree nodes in the summary panel
+              if (this.subjectCount_2 > 0) {
+                this.treeNodeService.updateFinalTreeNodes();
+              } else {
+                this.treeNodeService.finalTreeNodes = [];
+              }
+              // update the cross table baseline constraint
+              this.crossTableService.constraint = this.constraintService.constraint_1();
             }
           },
           err => this.handle_error(err)
         );
-      this.updateExports();
     } else {
       window.setTimeout((function () {
-        this.updateCounts_2();
+        this.update_2();
       }).bind(this), 500);
     }
-    /*
-     * ====== function updateCounts_2 ends ======
-     */
   }
 
-  public updateExports() {
-    const selectionConstraint = this.patientSet_1 ?
-        this.patientSet_1 : this.constraintService.generateSelectionConstraint();
-    const projectionConstraint = this.constraintService.generateProjectionConstraint();
-    let combo = new CombinationConstraint();
-    combo.addChild(selectionConstraint);
-    combo.addChild(projectionConstraint);
-    // update the export info
-    this.isLoadingExportFormats = true;
-    this.resourceService.getExportFileFormats(this.exportDataView)
-      .subscribe(
-        (fileFormatNames: string[]) => {
-          this.resourceService.getExportDataFormats(combo)
-            .subscribe(
-              (dataFormatNames: string[]) => {
-                this.exportFormats = [];
-                for (let dataFormatName of dataFormatNames) {
-                  let format = {
-                    name: dataFormatName,
-                    checked: true,
-                    fileFormats: []
-                  };
-                  for (let fileFormatName of fileFormatNames) {
-                    format.fileFormats.push({
-                      name: fileFormatName,
-                      checked: true
-                    });
-                  }
-                  this.exportFormats.push(format);
-                }
-                this.isLoadingExportFormats = false;
-              },
-              err => this.handle_error(err)
-            );
-        },
-        err => this.handle_error(err)
-      );
+  /**
+   * update the table
+   */
+  public update_3(targetDataTable?: DataTable) {
+    this.dataTableService.dataTable.currentPage = 1;
+    this.dataTableService.updateDataTable(targetDataTable);
   }
 
   /**
@@ -560,39 +568,29 @@ export class QueryService {
     }
   }
 
-  public alert(summary: string, detail: string, severity: string) {
-    this.alertMessages.length = 0;
-    this.alertMessages.push({severity: severity, summary: summary, detail: detail});
-  }
-
   public saveQuery(queryName: string) {
-    const patientConstraintObj = this.constraintService.generateSelectionConstraint().toQueryObject(true);
+    let newQuery = new Query('', queryName);
+    newQuery.subjectQuery = this.constraintService.constraint_1();
     let data = [];
     for (let item of this.treeNodeService.selectedProjectionTreeData) {
       data.push(item['fullName']);
     }
-    const observationConstraintObj = {
-      data: data
-    };
-    const queryObj = {
-      name: queryName,
-      patientsQuery: patientConstraintObj,
-      observationsQuery: observationConstraintObj,
-      bookmarked: false
-    };
-    this.resourceService.saveQuery(queryObj)
+    newQuery.observationQuery = {data: data};
+    newQuery.dataTable = this.dataTableService.dataTable;
+    this.resourceService.saveQuery(newQuery)
       .subscribe(
-        (newlySavedQuery) => {
-          newlySavedQuery['collapsed'] = true;
-          newlySavedQuery['visible'] = true;
+        (newlySavedQuery: Query) => {
+          newlySavedQuery.collapsed = true;
+          newlySavedQuery.visible = true;
+
           this.queries.push(newlySavedQuery);
-          const summary = 'Query "' + queryName + '" is saved.';
-          this.alert(summary, '', 'success');
+          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
+          this.messageService.alert('success', summary);
         },
         (err) => {
           console.error(err);
-          const summary = 'Could not save the query "' + queryName + '".';
-          this.alert(summary, '', 'error');
+          const summary = 'Could not add the query "' + newQuery.name + '".';
+          this.messageService.alert('error', summary);
         }
       );
   }
@@ -603,38 +601,42 @@ export class QueryService {
    */
   public restoreQuery(query: Query) {
     this.query = query;
+    this.step = Step.I;
     if (query['patientsQuery']) {
       this.constraintService.clearSelectionConstraint();
-      let selectionConstraint = this.constraintService.generateConstraintFromConstraintObject(query['patientsQuery']);
+      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['patientsQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
-      this.step = Step.I;
-      this.updateCounts_1();
-    } else {
-      this.prepareStep2();
-      this.step = Step.II;
+      this.update_1();
     }
-    this.updateCounts_2();
+    this.update_2();
+    this.update_3(query.dataTable);
 
     // TODO: To display more information in the alertDetails:
     // - total number of imported nodes/items
     // - total number of items not found in tree
     // - total number of matched/selected tree-nodes
-    const alertSummary = 'Success';
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-
-    this.alert(alertSummary, alertDetails, 'info');
+    this.messageService.alert('info', 'Success', alertDetails);
   }
 
-  public updateQuery(queryId: string, queryObject: object) {
-    this.resourceService.updateQuery(queryId, queryObject)
+  public updateQuery(query: Query, queryObj: object) {
+    this.resourceService.updateQuery(query.id, queryObj)
       .subscribe(
         () => {
+          if (query.subscribed) {
+            this.resourceService.diffQuery(query.id)
+              .subscribe(
+                records => {
+                  query.diffRecords = this.parseQueryDiffRecords(records);
+                }
+              );
+          }
         },
         err => this.handle_error(err)
       );
   }
 
-  public deleteQuery(query) {
+  public deleteQuery(query: Query) {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
@@ -649,6 +651,44 @@ export class QueryService {
         },
         err => this.handle_error(err)
       );
+  }
+
+  public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
+    let diffRecords: QueryDiffRecord[] = [];
+    for (let record of records) {
+      let items = [];
+      // parse the added objects
+      if (record['objectsAdded']) {
+        for (let objectId of record['objectsAdded']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.ADDED;
+          items.push(item);
+        }
+      }
+      // parse the removed objects
+      if (record['objectsRemoved']) {
+        for (let objectId of record['objectsRemoved']) {
+          let item = new QueryDiffItem();
+          item.objectId = objectId;
+          item.diffType = QueryDiffType.REMOVED;
+          items.push(item);
+        }
+      }
+      if (items.length > 0) {
+        let diffRecord: QueryDiffRecord = new QueryDiffRecord();
+        diffRecord.id = record['id'];
+        diffRecord.queryName = record['queryName'];
+        diffRecord.queryUsername = record['queryUsername'];
+        diffRecord.setId = record['setId'];
+        diffRecord.setType = record['setType'] === 'PATIENT' ?
+          QuerySetType.PATIENT : QuerySetType.SAMPLE;
+        diffRecord.createDate = record['createDate'];
+        diffRecord.diffItems = items;
+        diffRecords.push(diffRecord);
+      }
+    }
+    return diffRecords;
   }
 
   get inclusionSubjectCount(): number {
@@ -747,14 +787,6 @@ export class QueryService {
     this._observationCount_2 = value;
   }
 
-  get alertMessages(): Array<object> {
-    return this._alertMessages;
-  }
-
-  set alertMessages(value: Array<object>) {
-    this._alertMessages = value;
-  }
-
   get query(): Query {
     return this._query;
   }
@@ -795,30 +827,6 @@ export class QueryService {
     this._queueOfCalls_2 = value;
   }
 
-  get exportFormats(): object[] {
-    return this._exportFormats;
-  }
-
-  set exportFormats(value: object[]) {
-    this._exportFormats = value;
-  }
-
-  get isLoadingExportFormats(): boolean {
-    return this._isLoadingExportFormats;
-  }
-
-  set isLoadingExportFormats(value: boolean) {
-    this._isLoadingExportFormats = value;
-  }
-
-  get exportDataView(): string {
-    return this._exportDataView;
-  }
-
-  set exportDataView(value: string) {
-    this._exportDataView = value;
-  }
-
   get queries(): Query[] {
     return this._queries;
   }
@@ -841,6 +849,14 @@ export class QueryService {
 
   set instantCountsUpdate_2(value: boolean) {
     this._instantCountsUpdate_2 = value;
+  }
+
+  get instantCountsUpdate_3(): boolean {
+    return this._instantCountsUpdate_3;
+  }
+
+  set instantCountsUpdate_3(value: boolean) {
+    this._instantCountsUpdate_3 = value;
   }
 
   get countsRelay(): boolean {
@@ -883,6 +899,14 @@ export class QueryService {
     this._isUpdating_2 = value;
   }
 
+  get isUpdating_3(): boolean {
+    return this._isUpdating_3;
+  }
+
+  set isUpdating_3(value: boolean) {
+    this._isUpdating_3 = value;
+  }
+
   get isPreparing_2(): boolean {
     return this._isPreparing_2;
   }
@@ -907,12 +931,12 @@ export class QueryService {
     this._isDirty_2 = value;
   }
 
-  get patientSet_1(): PatientSetConstraint {
-    return this._patientSet_1;
+  get isDirty_3(): boolean {
+    return this.dataTableService.dataTable.isDirty;
   }
 
-  set patientSet_1(value: PatientSetConstraint) {
-    this._patientSet_1 = value;
+  set isDirty_3(value: boolean) {
+    this.dataTableService.dataTable.isDirty = value;
   }
 
   get treeNodeCountsUpdate(): boolean {
@@ -921,5 +945,21 @@ export class QueryService {
 
   set treeNodeCountsUpdate(value: boolean) {
     this._treeNodeCountsUpdate = value;
+  }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
+  }
+
+  get subjectSetConstraint_1(): SubjectSetConstraint {
+    return this.constraintService.subjectSetConstraint;
+  }
+
+  set subjectSetConstraint_1(value: SubjectSetConstraint) {
+    this.constraintService.subjectSetConstraint = value;
   }
 }

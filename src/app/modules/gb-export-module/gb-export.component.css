@@ -1,0 +1,57 @@
+.fa-plus{
+  color: white;
+}
+
+.export-container {
+  margin-left: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: small;
+}
+
+.form-inline {
+  margin: 5px;
+}
+
+#exportTaskNameInput {
+  margin-right: 10px;
+}
+
+.gb-export-format-header {
+  margin-bottom: 10px;
+}
+
+.gb-export-format-container {
+  text-align: left;
+  margin-left: 10px;
+}
+
+.gb-export-btn-container {
+  margin-top: 20px;
+}
+
+.gb-export-format-item {
+  /*font-size: normal;*/
+  background-color: transparent;
+  /*border-bottom: 1px dashed #e0e0e0;*/
+  /* padding: top right bottom left */
+  padding: 2px 6px 2px 6px;
+}
+
+#exportJobNameInput {
+  margin-top: 0px;
+}
+
+.export-section-banner {
+  align-self: center;
+  color: darkgray;
+  text-align: center;
+  width: 76%;
+  padding: 0px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.gb-include-date-columns-checkbox {
+  padding-left: 10px;
+}

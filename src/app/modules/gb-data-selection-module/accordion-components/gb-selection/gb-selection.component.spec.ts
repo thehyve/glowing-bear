@@ -9,6 +9,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
+import {MessageServiceMock} from '../../../../services/mocks/message.service.mock';
+import {MessageService} from '../../../../services/message.service';
 
 describe('GbSelectionComponent', () => {
   let component: GbSelectionComponent;
@@ -36,6 +38,10 @@ describe('GbSelectionComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         }
       ]
     })
@@ -48,7 +54,7 @@ describe('GbSelectionComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create GbSelectionComponent', () => {
+  it('GbSelectionComponent should be created', () => {
     expect(component).toBeTruthy();
   });
 });

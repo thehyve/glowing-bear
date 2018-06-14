@@ -18,7 +18,6 @@
 .settings/
 *.sublime-workspace
 *.iml
-*.js
 
 # IDE - VSCode
 .vscode/*
@@ -40,6 +39,9 @@ testem.log
 /e2e/*.js
 /e2e/*.map
 
+# cypress
+!/cypress/**/*.js
+
 # System Files
 .DS_Store
 Thumbs.db
@@ -53,5 +55,7 @@ out
 
 src/app/config/env.json
 /src/app/config/env.json
-yarn.lock
 
+# yarn
+*.log
+cypress/screenshots

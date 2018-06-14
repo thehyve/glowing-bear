@@ -10,6 +10,7 @@ import {
   DragDropModule,
   InputTextModule,
   PanelModule,
+  RadioButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -19,6 +20,8 @@ import {FormsModule} from '@angular/forms';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {Md2AccordionModule} from 'md2';
+import {MessageService} from '../../../../services/message.service';
+import {MessageServiceMock} from '../../../../services/mocks/message.service.mock';
 
 describe('QueriesComponent', () => {
   let component: GbQueriesComponent;
@@ -38,7 +41,8 @@ describe('QueriesComponent', () => {
         FormsModule,
         AutoCompleteModule,
         ConfirmDialogModule,
-        Md2AccordionModule
+        Md2AccordionModule,
+        RadioButtonModule
       ],
       providers: [
         {
@@ -48,6 +52,10 @@ describe('QueriesComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: MessageService,
+          useClass: MessageServiceMock
         },
         ConfirmationService
       ]
@@ -61,7 +69,7 @@ describe('QueriesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create QueriesComponent', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });
