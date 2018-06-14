@@ -6,7 +6,6 @@ import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {QuerySubscriptionFrequency} from '../../../../models/query-models/query-subscription-frequency';
 import {ConstraintHelper} from '../../../../utilities/constraints/constraint-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 
@@ -18,7 +17,8 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
-  private isUploadListenerNotAdded: boolean;
+  isUploadListenerNotAdded: boolean;
+  file: File; // holds the uploaded query file
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
@@ -45,17 +45,19 @@ export class GbQueriesComponent implements OnInit {
   queryFileUpload(event) {
     MessageHelper.alert('info', 'Query file is being processed, waiting for response.');
     let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      let data = e.target['result'];
-      let queryObj = this.parseFile(file, data);
-      this.queryService.saveQueryByObject(queryObj);
-    }).bind(this);
-    reader.readAsText(file);
+    this.file = event.target.files[0];
+    reader.onload = this.handleQueryFileUploadEvent.bind(this);
+    reader.readAsText(this.file);
   }
 
-  // parse the uploaded query file
-  parseFile(file: File, data: any) {
+  handleQueryFileUploadEvent(e) {
+    let data = e.target['result'];
+    let queryObj = this.verifyFile(this.file, data);
+    this.queryService.saveQueryByObject(queryObj);
+  }
+
+  // verify the uploaded query file
+  verifyFile(file: File, data: any) {
     // file.type is empty for some browsers and Windows OS
     if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
@@ -75,16 +77,7 @@ export class GbQueriesComponent implements OnInit {
   // query subscription
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
-    query.subscribed = !query.subscribed;
-    let queryObj = {
-      subscribed: query.subscribed
-    };
-    if (query.subscribed) {
-      queryObj['subscriptionFreq'] =
-        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObj['subscriptionFreq'];
-    }
-    this.queryService.updateQuery(query, queryObj);
+    this.queryService.toggleQuerySubscription(query);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
@@ -94,11 +87,7 @@ export class GbQueriesComponent implements OnInit {
   // query bookmark
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
-    query.bookmarked = !query.bookmarked;
-    let queryObj = {
-      subscribed: query.subscribed
-    };
-    this.queryService.updateQuery(query, queryObj);
+    this.queryService.toggleQueryBookmark(query);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
@@ -137,6 +126,7 @@ export class GbQueriesComponent implements OnInit {
         this.removeQuery(event, query);
       },
       reject: () => {
+        MessageHelper.alert('error', `Cannot remove the query ${query.name}`);
       }
     });
   }
@@ -219,7 +209,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   sortByBookmark() {
-    this.queries.sort((q1, q2) => {
+    this.queries.sort((q1, q2) => { console.log(q1.id, q2.id);
       if (q1.bookmarked && !q2.bookmarked) {
         return -1;
       } else if (!q1.bookmarked && q2.bookmarked) {

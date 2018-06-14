@@ -56,4 +56,22 @@ export class QueryServiceMock {
 
   saveQueryByName(name: string) {
   }
+
+  saveQueryByObject(obj: object) {
+  }
+
+  toggleQuerySubscription(query: Query) {
+  }
+
+  toggleQueryBookmark(query: Query) {
+  }
+
+  restoreQuery(query: Query) {
+  }
+
+  deleteQuery(query: Query) {
+  }
+
+  updateQuery(query: Query, queryObj: object) {
+  }
 }

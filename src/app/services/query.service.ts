@@ -701,6 +701,27 @@ export class QueryService {
     return diffRecords;
   }
 
+  public toggleQuerySubscription(query: Query) {
+    query.subscribed = !query.subscribed;
+    let queryObj = {
+      subscribed: query.subscribed
+    };
+    if (query.subscribed) {
+      queryObj['subscriptionFreq'] =
+        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
+      query.subscriptionFreq = queryObj['subscriptionFreq'];
+    }
+    this.updateQuery(query, queryObj);
+  }
+
+  public toggleQueryBookmark(query: Query) {
+    query.bookmarked = !query.bookmarked;
+    let queryObj = {
+      subscribed: query.subscribed
+    };
+    this.updateQuery(query, queryObj);
+  }
+
   get inclusionSubjectCount(): number {
     return this._inclusionSubjectCount;
   }

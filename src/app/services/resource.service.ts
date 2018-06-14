@@ -261,7 +261,10 @@ export class ResourceService {
     let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
     return this.transmartResourceService.saveQuery(transmartQuery)
       .map((newlySavedQuery: TransmartQuery) => {
-        return TransmartMapper.mapTransmartQuery(newlySavedQuery);
+        // since we already know what query we want to save, i.e. the one in the input argument
+        // there is no need to use the returned transmart query and map it to Query,
+        // it is fine just returning the existing query
+        return query;
       });
   }
 
