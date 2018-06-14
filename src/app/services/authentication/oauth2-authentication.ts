@@ -153,7 +153,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       setTimeout(() => {
           // Redirect to login page
           window.location.assign(target);
-        }, 4000
+        }, 2000
       );
     }));
   }
@@ -204,7 +204,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     console.log(`Redirecting to ${target} ...`);
     setTimeout(() => {
         window.location.assign(target);
-      }, 5000
+      }, 4000
     );
   }
 

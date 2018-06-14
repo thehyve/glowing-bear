@@ -12,7 +12,8 @@
     "lint": "ng lint --type-check",
     "report-coverage": "codecov",
     "e2e": "npx cypress run",
-    "cypress": "npx cypress open"
+    "cypress": "npx cypress open",
+    "cypressDev": "npx cypress open --config baseUrl=http://localhost:4200 --env apiUrl=http://localhost:8080"
   },
   "private": true,
   "dependencies": {

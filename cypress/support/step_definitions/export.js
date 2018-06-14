@@ -4,18 +4,18 @@ given("there are no export jobs pending", () => {
   //login
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
-    cy.request('POST', Cypress.config('redirectUrl') + 'oauth/token?grant_type=password&client_id=glowingbear-js&client_secret=&username=' + userData.username + '&password=' + userData.password)
+    cy.request('POST', Cypress.env('apiUrl') + '/oauth/token?grant_type=password&client_id=glowingbear-js&client_secret=&username=' + userData.username + '&password=' + userData.password)
       .then((authResponce) => {
 
         // get job list
         cy.request({
-          'url': Cypress.config('redirectUrl') + 'v2/export/jobs',
+          'url': Cypress.env('apiUrl') + '/v2/export/jobs',
           'method': 'GET',
           'auth': {'bearer': authResponce.body['access_token']}
         }).then((queriesResponce) => {
           queriesResponce.body["exportJobs"].map(x => x["id"]).forEach(x => {
             cy.request({
-              'url': Cypress.config('redirectUrl') + 'v2/export/' + x,
+              'url': Cypress.env('apiUrl') + '/v2/export/' + x,
               'method': 'DELETE',
               'auth': {'bearer': authResponce.body['access_token']}
             })
@@ -39,5 +39,5 @@ when('I export this data with the name {string}', (jobName) => {
 });
 
 then('then the job {string} has status {string}', (jobName, status) => {
-  cy.get('.ui-datatable-even').contains(jobName, {timeout: 1000000}).parent().parent().get('td').eq(1).contains(status);
+  cy.get('.ui-datatable-even').contains(jobName, {timeout: 2000000}).parent().parent().get('td').eq(1).contains(status);
 });
