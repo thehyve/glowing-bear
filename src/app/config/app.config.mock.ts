@@ -18,3 +18,24 @@ export class AppConfigMock {
 
   load() {}
 }
+
+export class OidcConfigMock {
+  private config: Object = null;
+  private env: Object = {};
+  constructor() {
+    this.config = {
+      'api-url': '',
+      'api-version': '',
+      'app-url': '',
+      'authentication-method': 'oidc'
+    };
+  }
+  public getConfig(key: any) {
+    return this.config[key];
+  }
+  public getEnv(key: any) {
+    return this.env[key];
+  }
+
+  load() {}
+}

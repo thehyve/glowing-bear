@@ -34,6 +34,20 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private _lock: boolean;
   private _tokenResult: BehaviorSubject<AuthorisationResult>;
 
+  /**
+   * Gets the authorisation code from the URL.
+   * @return {string} the authorisation code if present; null otherwise.
+   */
+  static getAuthorisationCode(): string {
+    let authorisationCode: string = null;
+    let search: string = window.location.search;
+    if (search.startsWith('?code=')) {
+      authorisationCode = search.substring('?code='.length);
+      console.log(`Authorisation code: ${authorisationCode}`);
+    }
+    return authorisationCode;
+  }
+
   constructor(private injector: Injector) { }
 
   private redirect(authorisation: AuthorisationResult) {
@@ -108,12 +122,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.apiUrl = this.config.getConfig('api-url');
       this.appUrl = this.config.getConfig('app-url');
 
-      let authorisationCode: string;
-      let search: string = window.location.search;
-      if (search.startsWith('?code=')) {
-        authorisationCode = search.substring('?code='.length);
-        console.log(`Authorisation code: ${authorisationCode}`);
-      }
+      let authorisationCode = Oauth2Authentication.getAuthorisationCode();
       if (authorisationCode) {
         history.replaceState({}, window.document.title, this.appUrl);
         // use access code to retrieve access token
@@ -171,7 +180,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     console.log(`Valid token available.`);
     console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
     this._authorised.next(true);
-    return Observable.of(<AuthorisationResult>'authorised');
+    return Observable.of(<AuthorisationResult>'authorized');
   }
 
   private get hasToken(): boolean {
@@ -191,7 +200,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
   }
 
   get token(): string {
-    return this._token.accessToken;
+    return this._token === null ? null : this._token.accessToken;
   }
 
   onDestroy(): void {

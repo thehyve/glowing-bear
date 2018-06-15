@@ -31,6 +31,10 @@ export class OidcAuthentication implements AuthenticationMethod {
 
   private _authorised: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  static isTokenRedirect(): boolean {
+    return window.location.hash !== null && window.location.hash !== '';
+  }
+
   constructor(private injector: Injector) { }
 
   private loadConfiguration() {
@@ -83,13 +87,14 @@ export class OidcAuthentication implements AuthenticationMethod {
     this.messageService = this.injector.get(MessageService);
     this.oidcConfigService = this.injector.get(OidcConfigService);
     this.oidcSecurityService = this.injector.get(OidcSecurityService);
-    // load OIDC configuration from IDP
-    this.oidcConfigService.load_using_stsServer(this.config.getConfig('oidc-server-url'));
 
     // load additional OIDC client configuration
     this.oidcConfigService.onConfigurationLoaded.subscribe(() =>
       this.loadConfiguration()
     );
+
+    // load OIDC configuration from IDP
+    this.oidcConfigService.load_using_stsServer(this.config.getConfig('oidc-server-url'));
 
     if (this.oidcSecurityService.moduleSetup) {
       return this.onOidcModuleSetup();
@@ -110,7 +115,7 @@ export class OidcAuthentication implements AuthenticationMethod {
       resolve('unauthorized');
       setTimeout(() => {
           this.oidcSecurityService.authorize();
-        }, 4000
+        }, 2000
       );
     }));
   }
@@ -119,10 +124,9 @@ export class OidcAuthentication implements AuthenticationMethod {
    * Handles the callback from the IDP, or redirect to the IDP if not authorized.
    */
   private onOidcModuleSetup(): Promise<AuthorisationResult> {
-    if (window.location.hash) {
+    if (OidcAuthentication.isTokenRedirect()) {
       console.log(`Token received from identity provider ...`);
-      this.oidcSecurityService.authorizedCallback();
-      return new Promise((resolve) => {
+      let promise = new Promise<AuthorisationResult>((resolve) => {
         this.oidcSecurityService.onAuthorizationResult.subscribe(() => {
           this.authorisation.subscribe((authorisation: AuthorisationResult) => {
             console.log(`Authorisation result: ${authorisation}`);
@@ -131,6 +135,8 @@ export class OidcAuthentication implements AuthenticationMethod {
           });
         });
       });
+      this.oidcSecurityService.authorizedCallback();
+      return promise;
     } else {
       console.log(`Set redirect to: ${window.location.pathname}`);
       localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
