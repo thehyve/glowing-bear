@@ -34,5 +34,6 @@ describe('GbDataTableGridComponent', () => {
 
   it('should be created.', () => {
     expect(component).toBeTruthy();
+    component.ngOnInit();
   });
 });

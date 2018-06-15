@@ -17,6 +17,9 @@ export class DataTableServiceMock {
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
     this.currentPage = 1;
+  }
+
+  init() {
     this.mockDataInit();
     this.updateDataTable();
   }
