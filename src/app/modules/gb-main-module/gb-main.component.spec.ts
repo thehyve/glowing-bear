@@ -114,5 +114,7 @@ describe('GbMainComponent', () => {
     fixture = TestBed.createComponent(GbMainComponent);
     component = fixture.componentInstance;
     expect(component).toBeTruthy();
+    component.ngOnInit();
   });
+
 });
