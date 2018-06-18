@@ -23,7 +23,7 @@ import {ConceptConstraint} from '../models/constraint-models/concept-constraint'
 import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
-import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 
 
