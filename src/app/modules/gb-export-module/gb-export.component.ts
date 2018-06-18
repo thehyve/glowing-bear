@@ -1,28 +1,32 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ResourceService} from '../../services/resource.service';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import Timer = NodeJS.Timer;
 
 @Component({
   selector: 'gb-export',
   templateUrl: './gb-export.component.html',
   styleUrls: ['./gb-export.component.css']
 })
-export class GbExportComponent implements OnInit {
+export class GbExportComponent implements OnInit, OnDestroy {
+
+  private timer: Timer;
 
   constructor(private appConfig: AppConfig,
               private exportService: ExportService,
-              public resourceService: ResourceService,
-              private timer: SimpleTimer) {
-    this.exportService.updateExportJobs();
-    this.timer.newTimer('30sec', 30);
-    this.timer.subscribe('30sec', () => this.exportService.updateExportJobs());
+              public resourceService: ResourceService) {
   }
 
   ngOnInit() {
+    this.exportService.updateExportJobs();
+    this.timer = setInterval(() => this.exportService.updateExportJobs(), 30 * 1000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timer);
   }
 
   createExportJob() {

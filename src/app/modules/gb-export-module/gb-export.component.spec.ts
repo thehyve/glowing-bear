@@ -9,7 +9,6 @@ import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ResourceService} from '../../services/resource.service';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
@@ -37,7 +36,6 @@ describe('GbExportComponent', () => {
         MessagesModule
       ],
       providers: [
-        SimpleTimer,
         {
           provide: AppConfig,
           useClass: AppConfigMock
