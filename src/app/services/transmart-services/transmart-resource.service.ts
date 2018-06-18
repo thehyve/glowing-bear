@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
-import {EndpointService} from '../endpoint.service';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -18,6 +17,7 @@ import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {ErrorHelper} from '../../utilities/error-helper';
 
 @Injectable()
 export class TransmartResourceService {
@@ -25,24 +25,12 @@ export class TransmartResourceService {
   // the export data view has an alternative 'surveyTable', specifically for NTR project
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
-
-  /**
-   * handle error
-   * @param {HttpErrorResponse | any} res
-   */
-  static handleError(res: HttpErrorResponse | any) {
-    const status = res['status'];
-    const url = res['url'];
-    const message = res['message'];
-    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-    console.error(summary);
-    console.error(res['error']);
-  }
+  private _endpointUrl: string;
 
   constructor(private appConfig: AppConfig,
-              private http: HttpClient,
-              private endpointService: EndpointService) {
+              private http: HttpClient) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
+    this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
   }
 
   get exportDataView(): string {
@@ -61,6 +49,14 @@ export class TransmartResourceService {
     this._dateColumnsIncluded = value;
   }
 
+  get endpointUrl(): string {
+    return this._endpointUrl;
+  }
+
+  set endpointUrl(value: string) {
+    this._endpointUrl = value;
+  }
+
   /**
    * Make a post http request
    * @param urlPart - the part used in baseUrl/urlPart
@@ -69,25 +65,14 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private postCall(urlPart, body, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.post(url, body, options)
-          .map(res => res[responseField])
-          .catch(TransmartResourceService.handleError.bind(this));
-      } else {
-        return this.http.post(url, body, options)
-          .catch(TransmartResourceService.handleError.bind(this));
-      }
+    const url = `${this.endpointUrl}/${urlPart}`;
+    if (responseField) {
+      return this.http.post(url, body)
+        .map(res => res[responseField])
+        .catch(ErrorHelper.handleError.bind(this));
     } else {
-      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
+      return this.http.post(url, body)
+        .catch(ErrorHelper.handleError.bind(this));
     }
   }
 
@@ -98,26 +83,14 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private getCall(urlPart, responseField) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      const url = `${endpoint.getUrl()}/${urlPart}`;
-      if (responseField) {
-        return this.http.get(url, options)
-          .map(res => res[responseField])
-          .catch(TransmartResourceService.handleError.bind(this));
-      } else {
-        return this.http.get(url, options)
-          .catch(TransmartResourceService.handleError.bind(this));
-      }
-
+    const url = `${this.endpointUrl}/${urlPart}`;
+    if (responseField) {
+      return this.http.get(url)
+        .map(res => res[responseField])
+        .catch(ErrorHelper.handleError.bind(this));
     } else {
-      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
+      return this.http.get(url)
+        .catch(ErrorHelper.handleError.bind(this));
     }
   }
 
@@ -128,20 +101,9 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private putCall(urlPart, body) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.put(url, body, options)
-        .catch(TransmartResourceService.handleError.bind(this));
-    } else {
-      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
-    }
+    let url = `${this.endpointUrl}/${urlPart}`;
+    return this.http.put(url, body)
+      .catch(ErrorHelper.handleError.bind(this));
   }
 
   /**
@@ -150,35 +112,9 @@ export class TransmartResourceService {
    * @returns {Observable<any | any>}
    */
   private deleteCall(urlPart) {
-    const endpoint = this.endpointService.getEndpoint();
-    if (endpoint) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${endpoint.accessToken}`
-        })
-      };
-      let url = `${endpoint.getUrl()}/${urlPart}`;
-      return this.http.delete(url, options)
-        .catch(TransmartResourceService.handleError.bind(this));
-    } else {
-      TransmartResourceService.handleError({message: 'Could not establish endpoint.'});
-    }
-  }
-
-  /**
-   * Logout from the authserver with a cookie attached
-   * @returns {Observable<{}>}
-   */
-  logout(): Observable<object> {
-    const endpoint = this.endpointService.getEndpoint();
-    const url = `${endpoint.apiUrl}/logout`;
-    const body = {};
-    const options = {
-      withCredentials: true
-    };
-    return this.http.post(url, body, options)
-      .catch(TransmartResourceService.handleError.bind(this));
+    let url = `${this.endpointUrl}/${urlPart}`;
+    return this.http.delete(url)
+      .catch(ErrorHelper.handleError.bind(this));
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -369,19 +305,9 @@ export class TransmartResourceService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let endpoint = this.endpointService.getEndpoint();
-    let headers = new Headers();
-    headers.append('Content-Type', 'application/zip');
-    headers.append('Authorization', `Bearer ${endpoint.accessToken}`);
-    let url = `${endpoint.getUrl()}/export/${jobId}/download`;
-    const options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${endpoint.accessToken}`
-      })
-    };
-    return this.http.get(url, {...options, responseType: 'blob'})
-      .catch(TransmartResourceService.handleError.bind(this));
+    let url = `${this.endpointUrl}/export/${jobId}/download`;
+    return this.http.get(url, {responseType: 'blob'})
+      .catch(ErrorHelper.handleError.bind(this));
   }
 
   /**

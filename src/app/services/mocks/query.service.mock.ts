@@ -36,6 +36,9 @@ export class QueryServiceMock {
   constructor() {
   }
 
+  init() {
+  }
+
   public update_1() {
   }
 
@@ -44,7 +47,6 @@ export class QueryServiceMock {
 
   public update_3() {
   }
-
 
   get queries(): Query[] {
     return this._queries;
@@ -74,4 +76,5 @@ export class QueryServiceMock {
 
   updateQuery(query: Query, queryObj: object) {
   }
+
 }

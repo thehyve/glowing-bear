@@ -1,28 +1,9 @@
-<div #parentContainer class="gb-container">
-  <p-growl [(value)]="messages" life="3000"></p-growl>
-  <!-- Top panel -->
-  <div class="gb-top-panel">
-    <span class="float-right">
-      <button type="button" class="btn btn-outline-secondary"
-              (click)="logout()">
-        <i class="fa fa-sign-out" aria-hidden="true"></i>
-      </button>
-    </span>
-  </div>
-  <!-- Left panel -->
-  <div #leftPanel class="gb-left-panel">
-    <gb-side-panel></gb-side-panel>
-  </div>
+<p-growl [(value)]="messages" life="3000"></p-growl>
 
-  <!-- Middle split bar -->
-  <div #gutter class="gutter"></div>
+<gb-main *ngIf="(authenticated?.value)"></gb-main>
 
-  <!-- Right panel -->
-  <div #rightPanel class="gb-right-panel">
-    <gb-nav-bar></gb-nav-bar>
-    <div class="gb-router-outlet-container">
-      <router-outlet></router-outlet>
-    </div>
-
+<div class="gb-page" *ngIf="!(authenticated?.value)">
+  <div class="gb-message-box gb-warning">
+  Not authenticated. You are being redirected to the login page ...
   </div>
 </div>

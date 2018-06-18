@@ -12,12 +12,7 @@ import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
-import {TimeConstraint} from '../models/constraint-models/time-constraint';
-import {TrialVisitConstraint} from '../models/constraint-models/trial-visit-constraint';
-import {TrialVisit} from '../models/constraint-models/trial-visit';
-import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
-import {ConceptType} from '../models/constraint-models/concept-type';
 import {TreeNode} from 'primeng/api';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
@@ -64,15 +59,6 @@ export class ConstraintService {
     return depth;
   }
 
-  public static isCategoricalConceptConstraint(constraint: Constraint): boolean {
-    let result = false;
-    if (constraint.className === 'ConceptConstraint') {
-      let conceptConstraint = <ConceptConstraint>constraint;
-      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
-    }
-    return result;
-  }
-
   public constraint_1_2(): Constraint {
     const c1 = this.constraint_1();
     const c2 = this.constraint_2();
@@ -90,13 +76,6 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.subjectSetConstraint = null;
-    // Construct constraints
-    this.loadEmptyConstraints();
-    this.loadStudies();
-    // create the pedigree-related constraints
-    this.loadPedigrees();
-    // also construct concepts while loading the tree nodes
-    this.treeNodeService.loadTreeNodes(this);
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -105,6 +84,17 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
+  }
+
+  init() {
+    console.log('Initialise constraint service ...');
+    // Construct constraints
+    this.loadEmptyConstraints();
+    this.loadStudies();
+    // create the pedigree-related constraints
+    this.loadPedigrees();
+    // also construct concepts while loading the tree nodes
+    this.treeNodeService.loadTreeNodes(this);
   }
 
   private loadEmptyConstraints() {

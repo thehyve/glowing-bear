@@ -19,6 +19,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Query} from '../models/query-models/query';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {ErrorHelper} from '../utilities/error-helper';
 
 
 describe('QueryService', () => {
@@ -75,21 +76,15 @@ describe('QueryService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should handle error', () => {
-    spyOn(resourceService, 'handleError').and.stub();
-    queryService.handleError(httpErrorResponse);
-    expect(resourceService.handleError).toHaveBeenCalled();
-  })
-
   it('should handle error when loading queries', () => {
     spyOn(resourceService, 'getQueries').and.callFake(() => {
       return Observable.throw(httpErrorResponse);
-    })
-    spyOn(queryService, 'handleError').and.stub();
-    queryService.loadQueries();
+    });
+    spyOn(ErrorHelper, 'handleError').and.stub();
+    queryService.init();
     expect(resourceService.getQueries).toHaveBeenCalled();
-    expect(queryService.handleError).toHaveBeenCalled();
-  })
+    expect(ErrorHelper.handleError).toHaveBeenCalled();
+  });
 
   it('should handle loaded queries', () => {
     let q = new Query('test query id', 'test query name');
@@ -121,6 +116,6 @@ describe('QueryService', () => {
     expect(queryService.queries[0].id).toBe(q.id);
     expect(queryService.queries[1].id).toBe(q2.id);
     expect(queryService.queries[2].id).toBe(q1.id);
-  })
+  });
 
 });

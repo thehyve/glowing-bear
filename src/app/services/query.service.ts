@@ -19,9 +19,9 @@ import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
-import {HttpErrorResponse} from '@angular/common/http';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
+import {ErrorHelper} from '../utilities/error-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -170,6 +170,10 @@ export class QueryService {
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
+  }
+
+  init() {
+    console.log('Query service initialised.');
     this.loadQueries();
 
     // initial updates
@@ -178,20 +182,16 @@ export class QueryService {
     this.update_3();
   }
 
-  handleError(error: HttpErrorResponse) {
-    this.resourceService.handleError(error);
-  }
-
   /**
    * Update the queries on the left-side panel
    */
-  public loadQueries() {
+  private loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
           this.handleLoadedQueries(queries);
         },
-        err => this.handleError(err)
+        err => ErrorHelper.handleError(err)
       );
   }
 
@@ -284,7 +284,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handleError(err);
+            ErrorHelper.handleError(err);
             this.loadingStateInclusion = 'complete';
           }
         );
@@ -317,7 +317,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handleError(err);
+            ErrorHelper.handleError(err);
             this.loadingStateExclusion = 'complete';
           }
         );
@@ -386,12 +386,12 @@ export class QueryService {
                     this.studyCountMap_1 = studyCountObj;
                     this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
                   },
-                  err => this.handleError(err)
+                  err => ErrorHelper.handleError(err)
                 );
             }
           }
         },
-        err => this.handleError(err)
+        err => ErrorHelper.handleError(err)
       );
   }
 
@@ -403,7 +403,7 @@ export class QueryService {
         .subscribe((response) => {
             this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
           },
-          err => this.handleError(err)
+          err => ErrorHelper.handleError(err)
         );
     } else {
       // compute tree counts without saving a subject set
@@ -536,7 +536,7 @@ export class QueryService {
               this.crossTableService.constraint = this.constraintService.constraint_1();
             }
           },
-          err => this.handleError(err)
+          err => ErrorHelper.handleError(err)
         );
     } else {
       window.setTimeout((function () {
@@ -642,7 +642,7 @@ export class QueryService {
               );
           }
         },
-        err => this.handleError(err)
+        err => ErrorHelper.handleError(err)
       );
   }
 
@@ -659,7 +659,7 @@ export class QueryService {
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },
-        err => this.handleError(err)
+        err => ErrorHelper.handleError(err)
       );
   }
 

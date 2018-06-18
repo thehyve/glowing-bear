@@ -7,6 +7,7 @@ import {DataTableService} from './data-table.service';
 import {saveAs} from 'file-saver';
 import {DatePipe} from '@angular/common';
 import {MessageHelper} from '../utilities/message-helper';
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class ExportService {
@@ -69,7 +70,7 @@ export class ExportService {
             this.updateExportJobs();
           }
         },
-        err => this.resourceService.handleError(err)
+        err => ErrorHelper.handleError(err)
       );
   }
 

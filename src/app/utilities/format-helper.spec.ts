@@ -19,8 +19,8 @@ describe('FormatHelper.formatCountNumber', () => {
 
 });
 
-function dateFromSecondsAgo(secondsAgo: number): Date {
-  return moment(Date.now()).subtract(secondsAgo, 'seconds').toDate();
+function dateFromSecondsAgo(now: number, secondsAgo: number): Date {
+  return moment(now).subtract(secondsAgo, 'seconds').toDate();
 }
 
 describe('FormatHelper.formatDateSemantics', () => {
@@ -43,8 +43,11 @@ describe('FormatHelper.formatDateSemantics', () => {
     expected.set(60 * 60 * 24 * 540.1, '1 year ago');
     expected.set(60 * 60 * 24 * 365 * 14.9, '14 years ago');
 
+    const mockDate = Date.now();
+    spyOn(Date, 'now').and.callFake(() => mockDate);
     expected.forEach((expectedResult, secondsAgo) =>
-      expect(FormatHelper.formatDateSemantics(dateFromSecondsAgo(secondsAgo))).toEqual(expectedResult)
+      expect(FormatHelper.formatDateSemantics(dateFromSecondsAgo(mockDate, secondsAgo )))
+        .toEqual(expectedResult)
     );
   });
 

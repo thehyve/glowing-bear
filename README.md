@@ -89,6 +89,14 @@ Supported properties in the `config.*.json` files:
 | `tree-node-counts-update` | `true`    | Fetch counts for study nodes in step 2 of Data Selection. |
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
+| `show-observation-counts` | `true`    | |
+| `instant-counts-update-1` | `false`   | |
+| `instant-counts-update-2` | `false`   | |
+| `instant-counts-update-3` | `false`   | |
+| `authentication-method`   | `oauth2`  | Authentication method (`oauth2`, `oidc`) |
+| `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}` |
+| `oidc-scopes`             | `openid`  | |
+| `oidc-client-id`          | `glowingbear-js` | |
 
 
 ## License

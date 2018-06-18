@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture, tick, fakeAsync} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
@@ -6,13 +6,14 @@ import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER, DebugElement} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
-import {EndpointService} from './services/endpoint.service';
+import {AuthenticationService} from './services/authentication/authentication.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
-import {EndpointServiceMock} from './services/mocks/endpoint.service.mock';
+import {AuthenticationServiceMock} from './services/mocks/authentication.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
@@ -34,6 +35,7 @@ import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
 import {ExportService} from './services/export.service';
 import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
+import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 
 export function initConfig(config: AppConfig) {
@@ -45,7 +47,7 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let debugElement: DebugElement;
   let component: AppComponent;
-  let resourceService: ResourceService;
+  let authenticationService: AuthenticationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -55,8 +57,10 @@ describe('AppComponent', () => {
       imports: [
         BrowserModule,
         FormsModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         GrowlModule,
+        GbMainModule,
         GbNavBarModule,
         GbSidePanelModule,
         GbDataSelectionModule,
@@ -79,8 +83,8 @@ describe('AppComponent', () => {
           multi: true
         },
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
         },
         {
           provide: TransmartResourceService,
@@ -124,7 +128,7 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
-    resourceService = TestBed.get(ResourceService);
+    authenticationService = TestBed.get(AuthenticationService);
   }));
 
   it('should be created', async(() => {
@@ -133,10 +137,10 @@ describe('AppComponent', () => {
 
   it('should logout', () => {
     spyOn(component, 'logout').and.callThrough();
-    spyOn(resourceService, 'logout').and.callThrough();
+    spyOn(authenticationService, 'logout').and.callThrough();
     component.logout();
     expect(component.logout).toHaveBeenCalled();
-    expect(resourceService.logout).toHaveBeenCalled();
+    expect(authenticationService.logout).toHaveBeenCalled();
   });
 
   it('should get messages', () => {

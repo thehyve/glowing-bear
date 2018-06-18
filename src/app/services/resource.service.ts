@@ -33,37 +33,6 @@ export class ResourceService {
   constructor(private transmartResourceService: TransmartResourceService) {
   }
 
-  /**
-   * handles error
-   * @param {HttpErrorResponse} error
-   */
-  public handleError(res: HttpErrorResponse) {
-    if (res.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('A client-side or network error occurred:', res.error.message);
-      MessageHelper.alert('error', 'A client-side or network error occurred');
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      const status = res.status;
-      const url = res.url;
-      const message = res.message;
-      const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-      console.error(summary);
-      console.error(res.error);
-      MessageHelper.alert('error', 'A server-side error occured');
-    }
-  }
-
-
-  /**
-   * Logout from the authserver with a cookie attached
-   * @returns {Observable<{}>}
-   */
-  logout(): Observable<{}> {
-    return this.transmartResourceService.logout();
-  }
-
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.

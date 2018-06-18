@@ -1,12 +1,16 @@
 {
-  "api-url": "https://transmart-test.thehyve.net",
+  "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
-  "app-url": "https://glowingbear2-head.thehyve.net",
+  "app-url": "https://glowingbear-dev.thehyve.net",
   "tree-node-counts-update": true,
   "autosave-subject-sets": false,
   "export-data-view": "default",
   "show-observation-counts": true,
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
-  "instant-counts-update-3": false
+  "instant-counts-update-3": false,
+  "authentication-method": "oauth2",
+  "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev",
+  "oidc-scopes": "openid",
+  "oidc-client-id": "glowingbear-js"
 }

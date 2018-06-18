@@ -1,7 +1,5 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {ConceptType} from '../../models/constraint-models/concept-type';
 
 export class ConstraintServiceMock {
 
@@ -14,6 +12,9 @@ export class ConstraintServiceMock {
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
+  }
+
+  init() {
   }
 
   public depthOfConstraint(constraint: Constraint): number {
@@ -38,15 +39,6 @@ export class ConstraintServiceMock {
 
   public constraint_1_2(): Constraint {
     return this._constraint;
-  }
-
-  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
-    let result = false;
-    if (constraint.className === 'ConceptConstraint') {
-      let conceptConstraint = <ConceptConstraint>constraint;
-      result = conceptConstraint.concept.type === ConceptType.CATEGORICAL;
-    }
-    return result;
   }
 
 }

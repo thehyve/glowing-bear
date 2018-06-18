@@ -7,7 +7,7 @@ Feature: Login
     When I login with user 'admin'
     Then I am logged in
 
-  Scenario: login with correct credentials
+  Scenario: login with incorrect credentials
     Given I am on the login page
     When I login with user 'nonuser'
     Then I am not logged in
