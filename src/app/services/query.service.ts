@@ -17,9 +17,11 @@ import {QuerySubscriptionFrequency} from '../models/query-models/query-subscript
 import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
-import {MessageService} from './message.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -160,7 +162,6 @@ export class QueryService {
               private constraintService: ConstraintService,
               private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
-              private messageService: MessageService,
               private exportService: ExportService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
@@ -177,8 +178,8 @@ export class QueryService {
     this.update_3();
   }
 
-  private handle_error(err) {
-    console.error(err);
+  handleError(error: HttpErrorResponse) {
+    this.resourceService.handleError(error);
   }
 
   /**
@@ -188,43 +189,47 @@ export class QueryService {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
-          this.queries.length = 0;
-          let bookmarkedQueries = [];
-          queries.forEach(query => {
-            query.collapsed = true;
-            query.visible = true;
-            query.subscriptionCollapsed = true;
-            if (query.createDate) {
-              query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
-            }
-            if (query.updateDate) {
-              query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
-            }
-            if (query.subscribed) {
-              if (!query.subscriptionFreq) {
-                query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
-              }
-              /*
-               * load query diff records for this query
-               */
-              this.resourceService.diffQuery(query.id)
-                .subscribe(
-                  (records) => {
-                    query.diffRecords = this.parseQueryDiffRecords(records);
-                  }
-                );
-            }
-
-            if (query.bookmarked) {
-              bookmarkedQueries.push(query);
-            } else {
-              this.queries.push(query);
-            }
-          });
-          this.queries = bookmarkedQueries.concat(this.queries);
+          this.handleLoadedQueries(queries);
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
+  }
+
+  handleLoadedQueries(queries: Query[]) {
+    this.queries.length = 0;
+    let bookmarkedQueries = [];
+    queries.forEach(query => {
+      query.collapsed = true;
+      query.visible = true;
+      query.subscriptionCollapsed = true;
+      if (query.createDate) {
+        query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
+      }
+      if (query.updateDate) {
+        query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
+      }
+      if (query.subscribed) {
+        if (!query.subscriptionFreq) {
+          query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+        }
+        /*
+         * load query diff records for this query
+         */
+        this.resourceService.diffQuery(query.id)
+          .subscribe(
+            (records) => {
+              query.diffRecords = this.parseQueryDiffRecords(records);
+            }
+          );
+      }
+
+      if (query.bookmarked) {
+        bookmarkedQueries.push(query);
+      } else {
+        this.queries.push(query);
+      }
+    });
+    this.queries = bookmarkedQueries.concat(this.queries);
   }
 
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
@@ -279,7 +284,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handle_error(err);
+            this.handleError(err);
             this.loadingStateInclusion = 'complete';
           }
         );
@@ -312,7 +317,7 @@ export class QueryService {
             }
           },
           err => {
-            this.handle_error(err);
+            this.handleError(err);
             this.loadingStateExclusion = 'complete';
           }
         );
@@ -381,12 +386,12 @@ export class QueryService {
                     this.studyCountMap_1 = studyCountObj;
                     this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
                   },
-                  err => this.handle_error(err)
+                  err => this.handleError(err)
                 );
             }
           }
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
@@ -398,7 +403,7 @@ export class QueryService {
         .subscribe((response) => {
             this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
           },
-          err => this.handle_error(err)
+          err => this.handleError(err)
         );
     } else {
       // compute tree counts without saving a subject set
@@ -531,7 +536,7 @@ export class QueryService {
               this.crossTableService.constraint = this.constraintService.constraint_1();
             }
           },
-          err => this.handle_error(err)
+          err => this.handleError(err)
         );
     } else {
       window.setTimeout((function () {
@@ -564,7 +569,7 @@ export class QueryService {
     }
   }
 
-  public saveQuery(queryName: string) {
+  public saveQueryByName(queryName: string) {
     let newQuery = new Query('', queryName);
     newQuery.subjectQuery = this.constraintService.constraint_1();
     let data = [];
@@ -573,6 +578,15 @@ export class QueryService {
     }
     newQuery.observationQuery = {data: data};
     newQuery.dataTable = this.dataTableService.dataTable;
+    this.saveQuery(newQuery);
+  }
+
+  public saveQueryByObject(queryObj: object) {
+    let newQuery: Query = ConstraintHelper.mapObjectToQuery(queryObj);
+    this.saveQuery(newQuery);
+  }
+
+  saveQuery(newQuery: Query) {
     this.resourceService.saveQuery(newQuery)
       .subscribe(
         (newlySavedQuery: Query) => {
@@ -581,12 +595,12 @@ export class QueryService {
 
           this.queries.push(newlySavedQuery);
           const summary = 'Query "' + newlySavedQuery.name + '" is added.';
-          this.messageService.alert('success', summary);
+          MessageHelper.alert('success', summary);
         },
         (err) => {
           console.error(err);
           const summary = 'Could not add the query "' + newQuery.name + '".';
-          this.messageService.alert('error', summary);
+          MessageHelper.alert('error', summary);
         }
       );
   }
@@ -612,7 +626,7 @@ export class QueryService {
     // - total number of items not found in tree
     // - total number of matched/selected tree-nodes
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-    this.messageService.alert('info', 'Success', alertDetails);
+    MessageHelper.alert('info', 'Success', alertDetails);
   }
 
   public updateQuery(query: Query, queryObj: object) {
@@ -628,7 +642,7 @@ export class QueryService {
               );
           }
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
@@ -645,7 +659,7 @@ export class QueryService {
           // but this approach retrieves new query objects and
           // leaves the all queries to remain collapsed
         },
-        err => this.handle_error(err)
+        err => this.handleError(err)
       );
   }
 
@@ -685,6 +699,27 @@ export class QueryService {
       }
     }
     return diffRecords;
+  }
+
+  public toggleQuerySubscription(query: Query) {
+    query.subscribed = !query.subscribed;
+    let queryObj = {
+      subscribed: query.subscribed
+    };
+    if (query.subscribed) {
+      queryObj['subscriptionFreq'] =
+        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
+      query.subscriptionFreq = queryObj['subscriptionFreq'];
+    }
+    this.updateQuery(query, queryObj);
+  }
+
+  public toggleQueryBookmark(query: Query) {
+    query.bookmarked = !query.bookmarked;
+    let queryObj = {
+      subscribed: query.subscribed
+    };
+    this.updateQuery(query, queryObj);
   }
 
   get inclusionSubjectCount(): number {

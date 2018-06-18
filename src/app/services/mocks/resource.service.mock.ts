@@ -8,6 +8,7 @@ import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {HttpErrorResponse} from '@angular/common/http';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -30,6 +31,9 @@ export class ResourceServiceMock {
     this.dataTable = new DataTable();
     this.crossTable = new CrossTable();
     this.aggregate = new Aggregate();
+  }
+
+  handleError(res: HttpErrorResponse) {
   }
 
   getStudies(): Observable<Study[]> {
@@ -79,5 +83,9 @@ export class ResourceServiceMock {
 
   logout() {
     return Observable.of({});
+  }
+
+  diffQuery(queryId: string): Observable<object[]> {
+    return Observable.of([{}]);
   }
 }

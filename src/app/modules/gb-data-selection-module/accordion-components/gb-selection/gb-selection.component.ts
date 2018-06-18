@@ -11,9 +11,9 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/query-models/step';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {Query} from '../../../../models/query-models/query';
-import {MessageService} from '../../../../services/message.service';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -61,8 +61,7 @@ export class GbSelectionComponent implements OnInit {
   }
 
   constructor(private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private messageService: MessageService) {
+              private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -134,11 +133,11 @@ export class GbSelectionComponent implements OnInit {
         query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
         return query;
       } else {
-        this.messageService.alert('error', 'Invalid file content for query import.');
+        MessageHelper.alert('error', 'Invalid file content for query import.');
         return;
       }
     } else {
-      this.messageService.alert('error', 'Invalid file format for STEP 1.');
+      MessageHelper.alert('error', 'Invalid file format for STEP 1.');
       return;
     }
   }

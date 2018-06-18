@@ -3,7 +3,7 @@ import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
-import {MessageService} from '../../../../services/message.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-projection',
@@ -15,8 +15,7 @@ export class GbProjectionComponent implements OnInit {
   private isUploadListenerNotAdded: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
-              private queryService: QueryService,
-              private messageService: MessageService) {
+              private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -85,7 +84,7 @@ export class GbProjectionComponent implements OnInit {
       } else if (_json['observationsQuery']) {
         observationQuery = _json['observationsQuery'];
       } else {
-        this.messageService.alert('error', 'Invalid file content for STEP 2.');
+        MessageHelper.alert('error', 'Invalid file content for STEP 2.');
         return;
       }
       return {
@@ -93,7 +92,7 @@ export class GbProjectionComponent implements OnInit {
         'observationsQuery': observationQuery
       };
     } else {
-      this.messageService.alert('error', 'Invalid file format for STEP 2.');
+      MessageHelper.alert('error', 'Invalid file format for STEP 2.');
       return;
     }
   }

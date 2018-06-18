@@ -8,8 +8,8 @@ import {DataTableService} from './services/data-table.service';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {CrossTableService} from './services/cross-table.service';
 import {NavbarService} from './services/navbar.service';
-import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
+import {MessageHelper} from './utilities/message-helper';
 
 @Component({
   selector: 'gb-app-root',
@@ -36,8 +36,7 @@ export class AppComponent implements OnInit {
               private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
               private navbarService: NavbarService,
-              private exportService: ExportService,
-              private messageService: MessageService) {
+              private exportService: ExportService) {
   }
 
   ngOnInit() {
@@ -111,11 +110,11 @@ export class AppComponent implements OnInit {
   }
 
   get messages(): any[] {
-    return this.messageService.messages;
+    return MessageHelper.messages;
   }
 
   set messages(value: any[]) {
-    this.messageService.messages = value;
+    MessageHelper.messages = value;
   }
 
 }

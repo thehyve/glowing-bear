@@ -24,6 +24,7 @@ import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 
 @Injectable()
@@ -34,15 +35,24 @@ export class ResourceService {
 
   /**
    * handles error
-   * @param {HttpErrorResponse | any} error
+   * @param {HttpErrorResponse} error
    */
-  public handleError(res: HttpErrorResponse | any) {
-    const status = res['status'];
-    const url = res['url'];
-    const message = res['message'];
-    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-    console.error(summary);
-    console.error(res['error']);
+  public handleError(res: HttpErrorResponse) {
+    if (res.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('A client-side or network error occurred:', res.error.message);
+      MessageHelper.alert('error', 'A client-side or network error occurred');
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      const status = res.status;
+      const url = res.url;
+      const message = res.message;
+      const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
+      console.error(summary);
+      console.error(res.error);
+      MessageHelper.alert('error', 'A server-side error occured');
+    }
   }
 
 
@@ -251,7 +261,10 @@ export class ResourceService {
     let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
     return this.transmartResourceService.saveQuery(transmartQuery)
       .map((newlySavedQuery: TransmartQuery) => {
-        return TransmartMapper.mapTransmartQuery(newlySavedQuery);
+        // since we already know what query we want to save, i.e. the one in the input argument
+        // there is no need to use the returned transmart query and map it to Query,
+        // it is fine just returning the existing query
+        return query;
       });
   }
 

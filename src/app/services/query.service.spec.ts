@@ -13,13 +13,19 @@ import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {DataTableService} from './data-table.service';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
-import {MessageService} from './message.service';
-import {MessageServiceMock} from './mocks/message.service.mock';
 import {CrossTableService} from './cross-table.service';
 import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable} from 'rxjs/Observable';
+import {Query} from '../models/query-models/query';
+import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 
 
 describe('QueryService', () => {
+  let resourceService: ResourceService;
+  let queryService: QueryService;
+  let httpErrorResponse: HttpErrorResponse;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -51,16 +57,70 @@ describe('QueryService', () => {
           provide: ExportService,
           useClass: ExportServiceMock
         },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
-        },
         QueryService
       ]
     });
+    resourceService = TestBed.get(ResourceService);
+    queryService = TestBed.get(QueryService);
+    httpErrorResponse = new HttpErrorResponse({
+      error: 'error',
+      headers: null,
+      status: 404,
+      statusText: 'status text',
+      url: 'url'
+    });
   });
 
-  it('QueryService should be injected', inject([QueryService], (service: QueryService) => {
+  it('should be injected', inject([QueryService], (service: QueryService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('should handle error', () => {
+    spyOn(resourceService, 'handleError').and.stub();
+    queryService.handleError(httpErrorResponse);
+    expect(resourceService.handleError).toHaveBeenCalled();
+  })
+
+  it('should handle error when loading queries', () => {
+    spyOn(resourceService, 'getQueries').and.callFake(() => {
+      return Observable.throw(httpErrorResponse);
+    })
+    spyOn(queryService, 'handleError').and.stub();
+    queryService.loadQueries();
+    expect(resourceService.getQueries).toHaveBeenCalled();
+    expect(queryService.handleError).toHaveBeenCalled();
+  })
+
+  it('should handle loaded queries', () => {
+    let q = new Query('test query id', 'test query name');
+    q.createDate = '2015-03-25';
+    q.updateDate = '2015-03-26';
+    q.subscribed = true;
+    q.bookmarked = true;
+    q.subscriptionFreq = null;
+    let q1 = new Query('test query id 1', 'test query name 1');
+    q1.createDate = null;
+    q1.updateDate = null;
+    q1.subscribed = true;
+    q1.bookmarked = false;
+    q1.subscriptionFreq = QuerySubscriptionFrequency.DAILY;
+    let q2 = new Query('test query id 2', 'test query name 2');
+    q2.createDate = null;
+    q2.updateDate = null;
+    q2.subscribed = false;
+    q2.bookmarked = true;
+    q2.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+    let spy1 = spyOn(resourceService, 'diffQuery').and.callFake(() => {
+      return Observable.of(['foo']);
+    });
+    let spy2 = spyOn(queryService, 'parseQueryDiffRecords').and.stub();
+    queryService.handleLoadedQueries([q, q1, q2]);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect(q.subscriptionFreq).toBe(QuerySubscriptionFrequency.WEEKLY);
+    expect(queryService.queries[0].id).toBe(q.id);
+    expect(queryService.queries[1].id).toBe(q2.id);
+    expect(queryService.queries[2].id).toBe(q1.id);
+  })
+
 });

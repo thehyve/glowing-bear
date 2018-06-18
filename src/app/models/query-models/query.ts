@@ -3,6 +3,7 @@ import {QueryDiffRecord} from './query-diff-record';
 import {DataTable} from '../table-models/data-table';
 import {Constraint} from '../constraint-models/constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {ConstraintHelper} from '../../utilities/constraints/constraint-helper';
 
 export class Query {
 
@@ -55,38 +56,6 @@ export class Query {
     this.selected = false;
     this.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
     this.diffRecords = [];
-  }
-
-  toPlainObject(): object {
-    let obj = {};
-    obj['id'] = this.id;
-    obj['name'] = this.name;
-    obj['bookmarked'] = this.bookmarked;
-    obj['subscribed'] = this.subscribed;
-    if (this.subscriptionFreq) {
-      obj['subscriptionFreq'] = this.subscriptionFreq;
-    }
-    if (this.description) {
-      obj['description'] = this.description;
-    }
-    if (this.createDate) {
-      obj['createDate'] = this.createDate;
-    }
-    if (this.updateDate) {
-      obj['updateDate'] = this.updateDate;
-    }
-    if (this.subjectQuery) {
-      obj['patientsQuery'] = TransmartConstraintMapper.mapConstraint(this.subjectQuery, true);
-    }
-    if (this.observationQuery) {
-      obj['observationsQuery'] = this.observationQuery;
-    }
-    // TODO: create toPlainObject() function for dataTable
-    // if (this.dataTable) {
-    //   obj['dataTable'] = this.dataTable;
-    // }
-
-    return obj;
   }
 
   get id(): string {

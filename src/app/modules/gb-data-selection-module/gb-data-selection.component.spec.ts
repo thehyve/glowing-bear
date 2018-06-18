@@ -23,8 +23,6 @@ import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
-import {MessageService} from '../../services/message.service';
 
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
@@ -75,10 +73,6 @@ describe('GbDataSelectionComponent', () => {
         {
           provide: DataTableService,
           useClass: DataTableServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })

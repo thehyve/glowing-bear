@@ -3,7 +3,7 @@ import {Router, NavigationEnd} from '@angular/router';
 import {MenuItem} from 'primeng/components/common/api';
 import {QueryService} from '../../services/query.service';
 import {NavbarService} from '../../services/navbar.service';
-import {MessageService} from '../../services/message.service';
+import {MessageHelper} from '../../utilities/message-helper';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -16,7 +16,6 @@ export class GbNavbarComponent implements OnInit {
 
   constructor(private router: Router,
               private navbarService: NavbarService,
-              private messageService: MessageService,
               private queryService: QueryService) {
     this.queryName = '';
   }
@@ -63,10 +62,10 @@ export class GbNavbarComponent implements OnInit {
     let name = this.queryName ? this.queryName.trim() : '';
     let queryNameIsValid = name !== '';
     if (queryNameIsValid) {
-      this.queryService.saveQuery(name);
+      this.queryService.saveQueryByName(name);
       this.queryName = '';
     } else {
-      this.messageService.alert('error', 'Please specify the query name.', '');
+      MessageHelper.alert('error', 'Please specify the query name.', '');
     }
   }
 }

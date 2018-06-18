@@ -5,6 +5,8 @@ import {EndpointService} from './endpoint.service';
 import {EndpointServiceMock} from './mocks/endpoint.service.mock';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
+import {HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {MessageHelper} from '../utilities/message-helper';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -33,13 +35,15 @@ describe('ResourceService', () => {
   }));
 
   it('should handle error', () => {
-    let res = {
-      status: 'status',
-      url: 'url',
-      message: 'message',
-      error: 'error'
-    }
+    let res: HttpErrorResponse = new HttpErrorResponse({
+      error: 'error',
+      headers: null,
+      status: 404,
+      statusText: 'status text',
+      url: 'url'
+    });
     spyOn(console, 'error').and.stub();
+    spyOn(MessageHelper, 'alert').and.stub();
     resourceService.handleError(res);
     const status = res['status'];
     const url = res['url'];
@@ -47,6 +51,7 @@ describe('ResourceService', () => {
     const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
     expect(console.error).toHaveBeenCalledWith(summary);
     expect(console.error).toHaveBeenCalledWith(res['error']);
+    expect(MessageHelper.alert).toHaveBeenCalled();
   })
 
   it('should log out', () => {

@@ -22,7 +22,6 @@ import {TransmartResourceService} from './services/transmart-services/transmart-
 import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';
-import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
@@ -58,7 +57,6 @@ export function initConfig(config: AppConfig) {
     DataTableService,
     CrossTableService,
     NavbarService,
-    MessageService,
     ExportService,
     DatePipe,
     AppConfig,
