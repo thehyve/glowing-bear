@@ -8,8 +8,8 @@ import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {MessageService} from '../message.service';
 import {ErrorHelper} from '../../utilities/error-helper';
+import {MessageHelper} from '../../utilities/message-helper';
 
 /**
  * Implementation of the OAuth2 authorisation flow:
@@ -22,7 +22,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
 
   private config: AppConfig;
   private router: Router;
-  private messageService: MessageService;
   private activatedRoute: ActivatedRoute;
   private http: HttpClient;
 
@@ -116,7 +115,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
       // inject services (not in constructor to avoid cyclic dependency)
       this.config = this.injector.get(AppConfig);
       this.router = this.injector.get(Router);
-      this.messageService = this.injector.get(MessageService);
       this.activatedRoute = this.injector.get(ActivatedRoute);
       this.http = this.injector.get(HttpClient);
       this.apiUrl = this.config.getConfig('api-url');
@@ -209,7 +207,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
   logout(): void {
     localStorage.removeItem('token');
     let target = `${this.apiUrl}/logout`;
-    this.messageService.alert('info', 'Redirect to logout page ...');
+    MessageHelper.alert('info', 'Redirect to logout page ...');
     console.log(`Redirecting to ${target} ...`);
     setTimeout(() => {
         window.location.assign(target);

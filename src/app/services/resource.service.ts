@@ -24,25 +24,13 @@ import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 
 @Injectable()
 export class ResourceService {
 
   constructor(private transmartResourceService: TransmartResourceService) {
-  }
-
-  /**
-   * handles error
-   * @param {HttpErrorResponse | any} error
-   */
-  public handleError(res: HttpErrorResponse | any) {
-    const status = res['status'];
-    const url = res['url'];
-    const message = res['message'];
-    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-    console.error(summary);
-    console.error(res['error']);
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -242,7 +230,10 @@ export class ResourceService {
     let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
     return this.transmartResourceService.saveQuery(transmartQuery)
       .map((newlySavedQuery: TransmartQuery) => {
-        return TransmartMapper.mapTransmartQuery(newlySavedQuery);
+        // since we already know what query we want to save, i.e. the one in the input argument
+        // there is no need to use the returned transmart query and map it to Query,
+        // it is fine just returning the existing query
+        return query;
       });
   }
 

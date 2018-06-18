@@ -9,7 +9,6 @@ import {AuthenticationMethod} from './authentication-method';
 import {Observable} from 'rxjs/Observable';
 import {AuthorisationResult} from './authorisation-result';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {MessageService} from '../message.service';
 
 /**
  * Implementation of the OpenID Connect (OIDC) implicit flow,
@@ -25,7 +24,6 @@ export class OidcAuthentication implements AuthenticationMethod {
 
   private config: AppConfig;
   private router: Router;
-  private messageService: MessageService;
   private oidcSecurityService: OidcSecurityService;
   private oidcConfigService: OidcConfigService;
 
@@ -84,7 +82,6 @@ export class OidcAuthentication implements AuthenticationMethod {
     // inject services (not in constructor to avoid cyclic dependency)
     this.config = this.injector.get(AppConfig);
     this.router = this.injector.get(Router);
-    this.messageService = this.injector.get(MessageService);
     this.oidcConfigService = this.injector.get(OidcConfigService);
     this.oidcSecurityService = this.injector.get(OidcSecurityService);
 

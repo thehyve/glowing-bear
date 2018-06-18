@@ -1,4 +1,4 @@
-import {TestBed, async, ComponentFixture, tick, fakeAsync} from '@angular/core/testing';
+import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
@@ -32,12 +32,11 @@ import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
 import {NavbarService} from './services/navbar.service';
 import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
-import {MessageService} from './services/message.service';
-import {MessageServiceMock} from './services/mocks/message.service.mock';
 import {ExportService} from './services/export.service';
 import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
+import {MessageHelper} from './utilities/message-helper';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -49,7 +48,6 @@ describe('AppComponent', () => {
   let debugElement: DebugElement;
   let component: AppComponent;
   let authenticationService: AuthenticationService;
-  let messageService: MessageService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -121,10 +119,6 @@ describe('AppComponent', () => {
           useClass: NavbarServiceMock
         },
         {
-          provide: MessageService,
-          useClass: MessageServiceMock
-        },
-        {
           provide: ExportService,
           useClass: ExportServiceMock
         }
@@ -135,7 +129,6 @@ describe('AppComponent', () => {
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
     authenticationService = TestBed.get(AuthenticationService);
-    messageService = TestBed.get(MessageService);
   }));
 
   it('should be created', async(() => {
@@ -152,7 +145,7 @@ describe('AppComponent', () => {
 
   it('should get messages', () => {
     spyOnProperty(component, 'messages', 'get').and.callThrough();
-    expect(component.messages).toBe(messageService.messages);
+    expect(component.messages).toBe(MessageHelper.messages);
   });
 
   it('should set messages', () => {

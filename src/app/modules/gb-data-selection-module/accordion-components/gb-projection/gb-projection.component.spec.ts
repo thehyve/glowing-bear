@@ -6,8 +6,6 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
-import {MessageService} from '../../../../services/message.service';
-import {MessageServiceMock} from '../../../../services/mocks/message.service.mock';
 
 describe('GbProjectionComponent', () => {
   let component: GbProjectionComponent;
@@ -29,10 +27,6 @@ describe('GbProjectionComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })

@@ -1,7 +1,7 @@
-import {MessageService} from './services/message.service';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from './services/authentication/authentication.service';
+import {MessageHelper} from './utilities/message-helper';
 
 @Component({
   selector: 'gb-app-root',
@@ -10,15 +10,14 @@ import {AuthenticationService} from './services/authentication/authentication.se
 })
 export class AppComponent implements OnInit {
 
-  constructor(private authenticationService: AuthenticationService,
-              private messageService: MessageService) {
+  constructor(private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
     this.authenticated.subscribe((authenticated) => {
       if (authenticated) {
         console.log(`Authentication completed.`);
-        this.messageService.alert('info', 'Authentication successful!');
+        MessageHelper.alert('info', 'Authentication successful!');
       } else {
         console.warn('Authenticated failed.');
       }
@@ -34,11 +33,11 @@ export class AppComponent implements OnInit {
   }
 
   get messages(): any[] {
-    return this.messageService.messages;
+    return MessageHelper.messages;
   }
 
   set messages(value: any[]) {
-    this.messageService.messages = value;
+    MessageHelper.messages = value;
   }
 
 }

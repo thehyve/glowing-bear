@@ -5,6 +5,10 @@ import {CombinationConstraint} from '../../models/constraint-models/combination-
 import {CombinationState} from '../../models/constraint-models/combination-state';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
+import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
+import {Query} from '../../models/query-models/query';
+import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
+import {MessageHelper} from '../message-helper';
 
 export class ConstraintHelper {
 
@@ -109,6 +113,78 @@ export class ConstraintHelper {
       // all other types of constraints count as non-empty children.
       return true;
     });
+  }
+
+  /**
+   * map a constraint to plain object that can be downloaded in json, and later imported as well
+   * @param {Constraint} constraint
+   * @returns {object}
+   */
+  static mapConstraintToObject(constraint: Constraint): object {
+    let obj: object = TransmartConstraintMapper.mapConstraint(constraint, true);
+    return obj;
+  }
+
+  /**
+   * map an object to constraint
+   * @param {object} obj
+   * @returns {Constraint}
+   */
+  static mapObjectToConstraint(obj: object): Constraint {
+    let constraint: Constraint = TransmartConstraintMapper.generateConstraintFromObject(obj);
+    return constraint;
+  }
+
+  static mapQueryToObject(query: Query): object {
+    let obj = {};
+    obj['id'] = query.id;
+    obj['name'] = query.name;
+    obj['bookmarked'] = query.bookmarked;
+    obj['subscribed'] = query.subscribed;
+    if (query.subscriptionFreq) {
+      obj['subscriptionFreq'] = query.subscriptionFreq;
+    }
+    if (query.description) {
+      obj['description'] = query.description;
+    }
+    if (query.createDate) {
+      obj['createDate'] = query.createDate;
+    }
+    if (query.updateDate) {
+      obj['updateDate'] = query.updateDate;
+    }
+    if (query.subjectQuery) {
+      obj['subjectQuery'] = ConstraintHelper.mapConstraintToObject(query.subjectQuery);
+    }
+    if (query.observationQuery) {
+      obj['observationQuery'] = query.observationQuery;
+    }
+    // TODO: create function for mappding dataTable to object
+    // if (this.dataTable) {
+    //   obj['dataTable'] = this.dataTable;
+    // }
+    return obj;
+  }
+
+  static mapObjectToQuery(obj: object): Query {
+    try {
+      let query = new Query(obj['id'], obj['name']);
+      query.bookmarked = obj['bookmarked'] ? true : false;
+      query.subscribed = obj['subscribed'] ? true : false;
+      if (query.subscribed) {
+        query.subscriptionFreq = obj['subscriptionFreq'] ? obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
+      }
+      query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
+      query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
+      query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
+      query.observationQuery = obj['observationQuery'];
+      return query;
+    } catch (e) {
+      const message = 'Failed to convert to query.';
+      console.error(message);
+      MessageHelper.alert('error', message);
+    }
+    return null;
   }
 
 }

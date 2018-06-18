@@ -26,21 +26,4 @@ describe('ResourceService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should handle error', () => {
-    let res = {
-      status: 'status',
-      url: 'url',
-      message: 'message',
-      error: 'error'
-    };
-    spyOn(console, 'error').and.stub();
-    resourceService.handleError(res);
-    const status = res['status'];
-    const url = res['url'];
-    const message = res['message'];
-    const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-    expect(console.error).toHaveBeenCalledWith(summary);
-    expect(console.error).toHaveBeenCalledWith(res['error']);
-  });
-
 });

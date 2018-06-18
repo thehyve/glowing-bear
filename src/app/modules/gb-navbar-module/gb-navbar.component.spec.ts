@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbNavbarComponent} from './gb-navbar.component';
 import {MessagesModule, TabMenuModule} from 'primeng/primeng';
-import {NavigationEnd, Router, RouterModule} from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
@@ -10,8 +10,6 @@ import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
-import {MessageService} from '../../services/message.service';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
 import {GbMainModule} from '../gb-main-module/gb-main.module';
 
 describe('GbNavbarComponent', () => {
@@ -43,10 +41,6 @@ describe('GbNavbarComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })
@@ -100,11 +94,11 @@ describe('GbNavbarComponent', () => {
     spyOn(component, 'saveQuery').and.callThrough();
     component.saveQuery();
     expect(component.saveQuery).toHaveBeenCalled();
-    // when queryName is defiend
+    // when queryName is defined
     component.queryName = 'test name';
-    spyOn(queryService, 'saveQuery').and.callThrough();
+    spyOn(queryService, 'saveQueryByName').and.callThrough();
     component.saveQuery();
-    expect(queryService.saveQuery).toHaveBeenCalled();
+    expect(queryService.saveQueryByName).toHaveBeenCalled();
   });
 
   it('should handle router events', () => {

@@ -7,8 +7,6 @@ import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
-import {MessageService} from './message.service';
-import {MessageServiceMock} from './mocks/message.service.mock';
 import {DatePipe} from '@angular/common';
 
 describe('ExportService', () => {
@@ -26,10 +24,6 @@ describe('ExportService', () => {
         {
           provide: DataTableService,
           useClass: DataTableServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         },
         ExportService,
         DatePipe

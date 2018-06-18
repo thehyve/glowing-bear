@@ -19,7 +19,6 @@ import {DataTableService} from './services/data-table.service';
 import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';
-import {MessageService} from './services/message.service';
 import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
@@ -65,7 +64,6 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     DataTableService,
     CrossTableService,
     NavbarService,
-    MessageService,
     ExportService,
     DatePipe,
     AppConfig,

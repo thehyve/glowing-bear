@@ -7,8 +7,6 @@ import {Oauth2Authentication} from './oauth2-authentication';
 import {routing} from '../../app.routing';
 import {GbMainModule} from '../../modules/gb-main-module/gb-main.module';
 import {APP_BASE_HREF} from '@angular/common';
-import {MessageService} from '../message.service';
-import {MessageServiceMock} from '../mocks/message.service.mock';
 import {AuthorisationResult} from './authorisation-result';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {OidcAuthentication} from './oidc-authentication';
@@ -38,10 +36,6 @@ describe('Oauth2Authentication', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     });
@@ -121,10 +115,6 @@ describe('OidcAuthentication', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     });
