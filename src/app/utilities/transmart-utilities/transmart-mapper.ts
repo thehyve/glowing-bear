@@ -30,7 +30,11 @@ export class TransmartMapper {
   public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
     let queries: Query[] = [];
     transmartQueries.forEach(tmQuery => {
-      queries.push(this.mapTransmartQuery(tmQuery));
+      try {
+        queries.push(this.mapTransmartQuery(tmQuery));
+      } catch (err) {
+        console.error(`Error while mapping query: ${tmQuery.name}`, tmQuery);
+      }
     });
     return queries;
   }
