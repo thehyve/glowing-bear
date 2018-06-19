@@ -4,6 +4,7 @@ import {CrossTableService} from '../../../services/cross-table.service';
 import {TreeNodeService} from '../../../services/tree-node.service';
 import {ConstraintService} from '../../../services/constraint.service';
 import {DropMode} from '../../../models/drop-mode';
+import {MessageHelper} from '../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -58,7 +59,9 @@ export class GbDroppableZoneComponent implements OnInit {
           // new constraint is introduced, creating new header constraints as well as cells
           this.crossTableService.updateValueConstraints(this.constraints);
         } else {
-          console.error('Not a valid constraint', constraint);
+          const summary = 'Not a valid constraint';
+          MessageHelper.alert('error', summary);
+          console.error(summary, constraint);
         }
       }
     } else {
@@ -68,9 +71,7 @@ export class GbDroppableZoneComponent implements OnInit {
         // no need to call backend to update value aggregates and cells
         // just update the rows and cols based on existing cells
         this.constraints.push(constraint);
-        if (selectedConstraintCell) {
-          selectedConstraintCell.remove();
-        }
+        selectedConstraintCell.remove();
       } else {
         // own constraint is dropped to the same zone, re-ordering action
         // do nothing for now, possible extension:

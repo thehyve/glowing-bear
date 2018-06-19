@@ -370,4 +370,8 @@ export class CrossTableServiceMock {
     return this.crossTable.columnConstraints;
   }
 
+  isValidConstraint(constraint: Constraint): boolean {
+    return false;
+  }
+
 }
