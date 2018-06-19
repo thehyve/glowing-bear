@@ -117,7 +117,7 @@ describe('GbMainComponent', () => {
   });
 
 
-  it('should handle mouse down', () => {
+  it('should handle mouse down, indicating the gutter is being dragged, and setting its position', () => {
     let e = new Event('');
     let spy1 = spyOn(e, 'preventDefault').and.stub();
     component.gutter = {
@@ -132,13 +132,13 @@ describe('GbMainComponent', () => {
     expect(component.x_gap).toEqual(17);
   })
 
-  it('should handle mouse up', () => {
+  it('should handle mouse up, indicating the gutter is being dragged no more', () => {
     let e = new Event('');
     component.onMouseUp(e);
     expect(component.isGutterDragged).toBe(false);
   })
 
-  it('should handle resize', () => {
+  it('should handle resize, resetting elements style widths', () => {
     let e = new Event('');
     component.leftPanel = {
       nativeElement: {
@@ -179,7 +179,7 @@ describe('GbMainComponent', () => {
     expect(component.rightPanel.nativeElement.style.width).toEqual('');
   })
 
-  it('should handle mouse move', () => {
+  it('should handle mouse move, when dragged, calculate left and right widths', () => {
     let e = new MouseEvent('');
     spyOnProperty(e, 'pageX', 'get').and.returnValue(35);
     let spy1 = spyOn(component, 'adjustNavbarWidth').and.stub();
@@ -223,7 +223,7 @@ describe('GbMainComponent', () => {
     expect(component.rightPanel.nativeElement.style.width).toEqual('58px');
   })
 
-  it('should adjust navbar width', () => {
+  it('should adjust navbar width according to the drag', () => {
     component.parentContainer = {
       nativeElement: {
         querySelector: function () {
