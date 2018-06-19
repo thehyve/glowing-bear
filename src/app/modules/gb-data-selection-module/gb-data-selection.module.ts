@@ -22,7 +22,6 @@ import {
   TooltipModule,
   MessagesModule, PickListModule, PaginatorModule
 } from 'primeng/primeng';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
@@ -53,9 +52,6 @@ import {TableModule} from 'primeng/table';
   ],
   exports: [
     RouterModule
-  ],
-  providers: [
-    SimpleTimer
   ],
   declarations: [
     GbDataSelectionComponent,
