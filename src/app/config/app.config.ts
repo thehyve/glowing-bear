@@ -1,17 +1,18 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {MessageHelper} from '../utilities/message-helper';
 
 @Injectable()
 export class AppConfig {
 
-  public static path = 'app/config/';
-  private config: Object = null;
-  private env: Object = null;
-  private envs: Array<string> = null;
+  static path = 'app/config/';
+  config: Object = null;
+  env: Object = null;
+  envs: Array<string> = null;
 
   // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
-  constructor(private http: HttpClient) {
+  constructor(public http: HttpClient) {
     this.envs = ['default', 'dev', 'transmart'];
   }
 
@@ -42,11 +43,6 @@ export class AppConfig {
       };
       this.http
         .get(AppConfig.path + 'env.json', options)
-        .catch((error: any): any => {
-          console.error('Configuration file "env.json" could not be read');
-          resolve(true);
-          return Observable.throw(error.json().error || 'Server error');
-        })
         .subscribe((envResponse) => {
           this.env = envResponse;
           const envString = this.getEnv();
@@ -54,20 +50,27 @@ export class AppConfig {
             this.http.get(AppConfig.path + 'config.' + envString + '.json') : null;
           if (request) {
             request
-              .catch((error: any) => {
-                console.error('Error reading ' + envString + ' configuration file');
-                resolve(error);
-                return Observable.throw(error.json().error || 'Server error');
-              })
               .subscribe((responseData) => {
                 this.config = responseData;
                 console.log('Successfully retrieved config: ', this.config);
                 resolve(true);
+              }, (err) => {
+                const summary = 'Error reading ' + envString + ' configuration file';
+                MessageHelper.alert('error', summary);
+                console.error(summary);
+                resolve(err);
               });
           } else {
-            console.error('Env config file "env.json" is not valid');
+            const summary = 'Env config file "env.json" is  invalid';
+            MessageHelper.alert('error', summary);
+            console.error(summary);
             resolve(true);
           }
+        }, (err) => {
+          const summary = 'Configuration environment could not be read.';
+          MessageHelper.alert('error', summary);
+          console.error(summary);
+          resolve(err);
         });
 
     });
