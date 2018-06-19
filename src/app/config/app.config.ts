@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class AppConfig {
@@ -55,8 +56,8 @@ export class AppConfig {
                 console.log('Successfully retrieved config: ', this.config);
                 resolve(true);
               }, (err) => {
+                ErrorHelper.handleError(err);
                 const summary = 'Error reading ' + envString + ' configuration file';
-                MessageHelper.alert('error', summary);
                 console.error(summary);
                 resolve(err);
               });
@@ -67,8 +68,8 @@ export class AppConfig {
             resolve(true);
           }
         }, (err) => {
+          ErrorHelper.handleError(err);
           const summary = 'Configuration environment could not be read.';
-          MessageHelper.alert('error', summary);
           console.error(summary);
           resolve(err);
         });
