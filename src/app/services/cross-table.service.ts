@@ -7,7 +7,7 @@ import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Aggregate} from '../models/aggregate-models/aggregate';
-import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {Col} from '../models/table-models/col';

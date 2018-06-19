@@ -17,9 +17,10 @@ export class AppComponent implements OnInit {
     this.authenticated.subscribe((authenticated) => {
       if (authenticated) {
         console.log(`Authentication completed.`);
-        MessageHelper.alert('info', 'Authentication successful!');
+        MessageHelper.alert('success', 'Authentication successful!');
       } else {
         console.warn('Authenticated failed.');
+        MessageHelper.alert('error', 'Authentication failed!');
       }
     });
   }

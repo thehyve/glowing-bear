@@ -11,7 +11,7 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
-import {AbstractConstraintVisitor} from '../constraints/abstract-constraint-visitor';
+import {AbstractConstraintVisitor} from '../constraint-utilities/abstract-constraint-visitor';
 import {Constraint} from '../../models/constraint-models/constraint';
 
 /**

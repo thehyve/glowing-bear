@@ -16,7 +16,7 @@ import {ResourceService} from './resource.service';
 import {TreeNode} from 'primeng/api';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 
 /**
  * This service concerns with

@@ -52,7 +52,7 @@ describe('Oauth2Authentication', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should be loaded with status unauthorised', (done) => {
+  it('should be loaded with status unauthorised for OAuth2', (done) => {
     authenticationService.load().then((result: AuthorisationResult) => {
       expect(result).toEqual('unauthorized');
       expect(authenticationService.validToken).toEqual(false);
@@ -132,7 +132,7 @@ describe('OidcAuthentication', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should be loaded with status unauthorised', (done) => {
+  it('should be loaded with status unauthorised for OIDC', (done) => {
     let authorize = spyOn(oidcSecurityService, 'authorize').and.callThrough();
     authenticationService.load().then((result: AuthorisationResult) => {
       expect(result).toEqual('unauthorized');

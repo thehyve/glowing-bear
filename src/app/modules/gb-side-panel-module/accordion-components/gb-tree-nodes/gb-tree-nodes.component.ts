@@ -105,7 +105,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       let metadata = dataObject['metadata'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
       let treeNodeElmIcon = elm.querySelector('li.ui-treenode .ui-treenode-icon');
-
       let handleDragstart = (function (event) {
         event.stopPropagation();
         dataObject['dropMode'] = DropMode.TreeNode;
@@ -186,42 +185,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   }
 
   /**
-   * Recursively filter the tree nodes and return the copied tree nodes that match,
-   * return the reduced tree as a new instance
-   * (An alternative solution as backup)
-   * @param treeNodes
-   * @param field
-   * @param filterWord
-   * @returns {Array}
-   */
-  filterWithCopiedTreeNodes(treeNodes, field, filterWord) {
-    let result = {
-      hasMatching: false,
-      matchingTreeNodes: [] // matchingTreeNodes is a subset of treeNodes
-    };
-    for (let node of treeNodes) {
-      let nodeCopy = Object.assign({}, node);
-      nodeCopy['expanded'] = true;
-      let fieldString = node[field].toLowerCase();
-      if (fieldString.includes(filterWord)) {
-        result.hasMatching = true;
-        result.matchingTreeNodes.push(nodeCopy);
-      }
-      if (node['children'] && node['children'].length > 0) {
-        let subResult = this.filterWithCopiedTreeNodes(node['children'], field, filterWord);
-        if (subResult.hasMatching) {
-          nodeCopy['children'] = subResult.matchingTreeNodes;
-          result.hasMatching = true;
-          if (result.matchingTreeNodes.indexOf(nodeCopy) === -1) {
-            result.matchingTreeNodes.push(nodeCopy);
-          }
-        }
-      }
-    }
-    return result;
-  }
-
-  /**
    * Recursively filter the original tree nodes in the dimension registry,
    * assign highlight css classes to tree nodes
    * @param {TreeNode[]} treeNodes
@@ -269,10 +232,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
           node['expanded'] = false;
           if (node['children'] && node['children'].length > 0) {
             node['styleClass'] = 'is-not-leaf';
+            this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
           } else {
             node['styleClass'] = undefined;
           }
-          this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
         }
       }
     }

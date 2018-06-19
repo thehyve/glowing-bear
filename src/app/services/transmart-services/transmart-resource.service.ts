@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
+import 'rxjs/Rx'
 import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';

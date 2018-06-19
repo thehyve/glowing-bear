@@ -13,6 +13,7 @@ export class TreeNodeServiceMock {
   // the final tree nodes resulted from data selection
   private _finalTreeNodes: TreeNode[] = [];
 
+  public selectedTreeNode;
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
 

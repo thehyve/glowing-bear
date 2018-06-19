@@ -6,7 +6,7 @@ import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {ConstraintHelper} from '../../../../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
@@ -209,7 +209,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   sortByBookmark() {
-    this.queries.sort((q1, q2) => { console.log(q1.id, q2.id);
+    this.queries.sort((q1, q2) => {
       if (q1.bookmarked && !q2.bookmarked) {
         return -1;
       } else if (!q1.bookmarked && q2.bookmarked) {

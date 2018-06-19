@@ -3,7 +3,7 @@ import {QueryDiffRecord} from './query-diff-record';
 import {DataTable} from '../table-models/data-table';
 import {Constraint} from '../constraint-models/constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ConstraintHelper} from '../../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../../utilities/constraint-utilities/constraint-helper';
 
 export class Query {
 

@@ -1,5 +1,7 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {TreeNode} from 'primeng/api';
+import {DropMode} from '../../models/drop-mode';
 
 export class ConstraintServiceMock {
 
@@ -38,6 +40,10 @@ export class ConstraintServiceMock {
   }
 
   public constraint_1_2(): Constraint {
+    return this._constraint;
+  }
+
+  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
     return this._constraint;
   }
 

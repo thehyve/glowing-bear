@@ -31,7 +31,8 @@ export class TransmartMapper {
     let queries: Query[] = [];
     transmartQueries.forEach(tmQuery => {
       try {
-        queries.push(this.mapTransmartQuery(tmQuery));
+        let query = this.mapTransmartQuery(tmQuery);
+        queries.push(query);
       } catch (err) {
         console.error(`Error while mapping query: ${tmQuery.name}`, tmQuery);
       }

@@ -85,7 +85,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
         .set('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
       console.log(`Fetching access token using ${grantType} from ${url}`);
       this.http.post(url, body.toString(), {headers: headers})
-        .catch(ErrorHelper.handleError.bind(this))
         .subscribe((result: any) => {
           console.log(`Token retrieved.`);
           this._token = Oauth2Token.from(result);
@@ -96,6 +95,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
             this._lock = false;
           });
         }, (error: any) => {
+          ErrorHelper.handleError(error);
           console.error(`Error retrieving token using ${grantType}: ${error}`);
           if (grantType === 'refresh_token') {
             // Remove previous token

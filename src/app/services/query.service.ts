@@ -19,7 +19,7 @@ import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {CrossTableService} from './cross-table.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ConstraintHelper} from '../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 

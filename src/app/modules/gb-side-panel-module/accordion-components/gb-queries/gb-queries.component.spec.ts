@@ -27,7 +27,7 @@ import {get} from 'selenium-webdriver/http';
 import {Query} from '../../../../models/query-models/query';
 import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
-import {ConstraintHelper} from '../../../../utilities/constraints/constraint-helper';
+import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
 
 describe('QueriesComponent', () => {
