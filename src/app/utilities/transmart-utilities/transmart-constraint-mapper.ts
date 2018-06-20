@@ -168,7 +168,7 @@ export class TransmartConstraintMapper {
           prospectConcept.trialVisitConstraint = prospectTrialVisit;
         }
         if (prospectValues) {
-          prospectConcept.values = prospectValues;
+          prospectConcept.valueConstraints = prospectValues;
         }
         constraint = prospectConcept;
       }

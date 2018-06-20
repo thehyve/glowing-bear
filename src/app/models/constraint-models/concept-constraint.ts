@@ -8,7 +8,7 @@ export class ConceptConstraint extends Constraint {
 
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
-  private _values: ValueConstraint[];
+  private _valueConstraints: ValueConstraint[];
   // the time constraint used for date type constraint of this concept
   private _valDateConstraint: TimeConstraint;
   private _applyValDateConstraint = false;
@@ -24,7 +24,7 @@ export class ConceptConstraint extends Constraint {
 
   constructor() {
     super();
-    this.values = [];
+    this.valueConstraints = [];
     this.valDateConstraint = new TimeConstraint();
     this.valDateConstraint.isObservationDate = false;
     this.obsDateConstraint = new TimeConstraint();
@@ -42,12 +42,12 @@ export class ConceptConstraint extends Constraint {
     this.textRepresentation = `Concept: ${concept.label}`;
   }
 
-  get values(): ValueConstraint[] {
-    return this._values;
+  get valueConstraints(): ValueConstraint[] {
+    return this._valueConstraints;
   }
 
-  set values(value: ValueConstraint[]) {
-    this._values = value;
+  set valueConstraints(value: ValueConstraint[]) {
+    this._valueConstraints = value;
   }
 
   get className(): string {

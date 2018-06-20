@@ -13,6 +13,7 @@ import {CategoricalAggregate} from '../../../../models/aggregate-models/categori
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {FormatHelper} from '../../../../utilities/format-helper';
+import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -62,7 +63,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * categorical value range
    */
   selectedCategories: string[];
-  suggestedCategories: string[];
+  suggestedCategories: SelectItem[];
 
   // ------ more options ------
   /*
@@ -112,14 +113,15 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       this.resourceService.getAggregate(conceptOnlyConstraint)
         .subscribe(
           (responseAggregate: Aggregate) => {
+            console.log('get aggregate: ', responseAggregate);
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
               constraint.concept.aggregate = responseAggregate;
               this.minLimit = responseAggregate['min'];
               this.maxLimit = responseAggregate['max'];
               // if there is existing numeric values
               // fill their values in
-              if (constraint.values.length > 0) {
-                for (let val of constraint.values) {
+              if (constraint.valueConstraints.length > 0) {
+                for (let val of constraint.valueConstraints) {
                   if (val.operator.includes('>')) {
                     this.minVal = val.value;
                   } else if (val.operator.includes('<')) {
@@ -132,17 +134,20 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
               }
             } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
               constraint.concept.aggregate = responseAggregate;
-              let values = (<CategoricalAggregate>responseAggregate).values;
+              let values = (<CategoricalAggregate>constraint.concept.aggregate).values;
+              let valueCounts = (<CategoricalAggregate>constraint.concept.aggregate).valueCounts;
               // if there is existing value constraints
               // use their values as selected categories
-              if (constraint.values.length > 0) {
-                for (let val of constraint.values) {
-                  this.selectedCategories.push(val.value);
+              if (constraint.valueConstraints.length > 0) {
+                values = [];
+                for (let val of constraint.valueConstraints) {
+                  values.push(val.value);
                 }
-              } else {
-                this.selectedCategories = [].concat(values);
               }
-              this.suggestedCategories = [].concat(values);
+              this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, values);
+              this.selectedCategories = this.suggestedCategories.map((item: SelectItem) => {
+                return item.value;
+              });
             } else if (this.isDate()) { // -------------------------------------> If it's DATE
               constraint.concept.aggregate = responseAggregate;
               let date1 = constraint.valDateConstraint.date1;
@@ -190,6 +195,20 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
+  generateCategoricalValueItems(valueCounts: Map<string, number>, targetValues: string[]): SelectItem[] {
+    let items = [];
+    targetValues.forEach((target) => {
+      if (valueCounts.has(target)) {
+        const count = valueCounts.get(target);
+        items.push({
+          label: target + ' (' + count + ')',
+          value: target
+        });
+      }
+    });
+    return items;
+  }
+
   /*
    * -------------------- getters and setters --------------------
    */
@@ -198,11 +217,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   set selectedConcept(value: Concept) {
-    if (value instanceof Concept) {
-      (<ConceptConstraint>this.constraint).concept = value;
-      this.initializeConstraints();
-      this.update();
-    }
+    (<ConceptConstraint>this.constraint).concept = value;
+    this.initializeConstraints();
+    this.update();
   }
 
   get applyObsDateConstraint(): boolean {
@@ -369,11 +386,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           newVal.valueType = this.selectedConcept.type;
           newVal.operator = '=';
           newVal.value = this.equalVal;
-          conceptConstraint.values = [];
-          conceptConstraint.values.push(newVal);
+          conceptConstraint.valueConstraints = [];
+          conceptConstraint.valueConstraints.push(newVal);
         } // else if to define a value range
       } else if (this.operatorState === GbConceptOperatorState.BETWEEN) {
-        conceptConstraint.values = [];
+        conceptConstraint.valueConstraints = [];
         if (typeof this.minVal === 'number') {
           let newMinVal: ValueConstraint = new ValueConstraint();
           newMinVal.valueType = this.selectedConcept.type;
@@ -382,7 +399,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
             newMinVal.operator = '>=';
           }
           newMinVal.value = this.minVal;
-          conceptConstraint.values.push(newMinVal);
+          conceptConstraint.valueConstraints.push(newMinVal);
         }
 
         if (typeof this.maxVal === 'number') {
@@ -393,17 +410,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
             newMaxVal.operator = '<=';
           }
           newMaxVal.value = this.maxVal;
-          conceptConstraint.values.push(newMaxVal);
+          conceptConstraint.valueConstraints.push(newMaxVal);
         }
       } // else if the concept is categorical
     } else if (this.isCategorical()) {
-      conceptConstraint.values = [];
+      conceptConstraint.valueConstraints = [];
       for (let category of this.selectedCategories) {
         let newVal: ValueConstraint = new ValueConstraint();
         newVal.valueType = 'STRING';
         newVal.operator = '=';
         newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
-        conceptConstraint.values.push(newVal);
+        conceptConstraint.valueConstraints.push(newVal);
       }
     } else if (this.isDate()) {
       conceptConstraint.applyValDateConstraint = true;
@@ -420,36 +437,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
     }
     this.update();
-  }
-
-  /*
-   * -------------------- event handlers: category autocomplete --------------------
-   */
-  /**
-   * when the user searches through the category list of a selected concept
-   * @param event
-   */
-  onCategorySearch(event) {
-    let query = event.query.toLowerCase().trim();
-
-    let categories = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
-    if (query) {
-      this.suggestedCategories =
-        categories.filter((category: string) => category.toLowerCase().includes(query));
-    } else {
-      this.suggestedCategories = categories;
-    }
-  }
-
-  selectAllCategories() {
-    const values = (<ConceptConstraint>this.constraint).concept.aggregate['values'];
-    this.selectedCategories = [].concat(values);
-    this.updateConceptValues();
-  }
-
-  clearAllCategories() {
-    this.selectedCategories = [];
-    this.updateConceptValues();
   }
 
   /*

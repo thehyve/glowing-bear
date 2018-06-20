@@ -276,17 +276,17 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         }
         args.push(conceptObj);
 
-        if (constraint.values.length > 0) {
+        if (constraint.valueConstraints.length > 0) {
           if (constraint.concept.type === 'NUMERIC') {
             // Add numerical values directly to the main constraint
-            for (let val of constraint.values) {
+            for (let val of constraint.valueConstraints) {
               args.push(this.visit(val));
             }
           } else if (constraint.concept.type === 'CATEGORICAL') {
             // Wrap categorical values in an OR constraint
             let categorical = {
               type: 'or',
-              args: constraint.values.map((val: ValueConstraint) => this.visit(val))
+              args: constraint.valueConstraints.map((val: ValueConstraint) => this.visit(val))
             };
             if (categorical.args.length === 1) {
               args.push(categorical.args[0]);

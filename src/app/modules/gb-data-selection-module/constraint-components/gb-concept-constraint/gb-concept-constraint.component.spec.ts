@@ -2,7 +2,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbConceptConstraintComponent} from './gb-concept-constraint.component';
 import {FormsModule} from '@angular/forms';
-import {AutoCompleteModule, CalendarModule, CheckboxModule, PanelModule} from 'primeng/primeng';
+import {AutoCompleteModule, CalendarModule, CheckboxModule, MultiSelectModule, PanelModule} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ResourceService} from '../../../../services/resource.service';
@@ -29,7 +29,8 @@ describe('GbConceptConstraintComponent', () => {
         AutoCompleteModule,
         CheckboxModule,
         CalendarModule,
-        PanelModule
+        PanelModule,
+        MultiSelectModule
       ],
       providers: [
         {
