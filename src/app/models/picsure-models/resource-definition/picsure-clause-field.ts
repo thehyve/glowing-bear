@@ -1,11 +1,11 @@
-import {IRCTDataTypeDef} from './irct-data-type-definition';
+import {PicsureDataType} from './picsure-data-type';
 
-export class IRCTFieldDef {
+export class PicsureClauseField {
   name: string;
   path: string;
   description: string;
   required: boolean;
-  dataTypes: IRCTDataTypeDef[];
+  dataTypes: PicsureDataType[];
   permittedValues: string[];
   relationship: string;
 }

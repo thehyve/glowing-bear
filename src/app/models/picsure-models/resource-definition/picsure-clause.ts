@@ -1,6 +1,6 @@
-import {IRCTFieldDef} from './irct-field-definition';
+import {PicsureClauseField} from './picsure-clause-field';
 
-export class IRCTClauseDef {
+export class PicsureClause {
   // where
   predicateName: string;
 
@@ -14,10 +14,10 @@ export class IRCTClauseDef {
   description: string;
   default: boolean;
 
-  fields: IRCTFieldDef[];
+  fields: PicsureClauseField[];
   dataTypes: string[];
   paths: string[];
 
   // process, visualization
-  returns: IRCTFieldDef[];
+  returns: PicsureClauseField[];
 }

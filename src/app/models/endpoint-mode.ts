@@ -8,5 +8,5 @@
 
 export enum EndpointMode {
   TRANSMART = 'TranSMART',
-  I2B2 = 'i2b2'
+  PICSURE = 'PIC-SURE'
 }

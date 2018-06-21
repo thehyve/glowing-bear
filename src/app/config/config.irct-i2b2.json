@@ -14,7 +14,7 @@
   "oidc-scopes": "openid",
   "oidc-client-id": "i2b2-local",
 
-  "api-type": "picsure",
+  "endpoint-mode": "picsure",
   "picsure-resource-name": "i2b2-local",
   "enable-query-saving": false,
   "enable-variable-selection": false,

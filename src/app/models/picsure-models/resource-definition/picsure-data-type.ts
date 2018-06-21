@@ -1,4 +1,4 @@
-export class IRCTDataTypeDef {
+export class PicsureDataType {
   name: string;
   pattern: string;
   description: string;

@@ -35,7 +35,9 @@ import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transma
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
-
+import {AppConfig} from '../config/app.config';
+import {PicSureResourceService} from './picsure-services/picsure-resource.service';
+import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 
 @Injectable()
 export class ResourceService {
@@ -45,14 +47,35 @@ export class ResourceService {
   private _exclusionCounts: CountItem;
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
 
-  constructor(private transmartResourceService: TransmartResourceService) {
-    this.endpointMode = EndpointMode.TRANSMART;
+  constructor(private transmartResourceService: TransmartResourceService,
+              private picSureResourceService: PicSureResourceService,
+              private config: AppConfig) {
+    this.endpointMode = EndpointMode[String(this.config.getConfig('endpoint-mode', 'transmart')).toUpperCase()];
+    if (!this.endpointMode) {
+      this.handleEndpointModeError(`endpoint-mode ${this.config.getConfig('endpoint-mode')} is invalid`);
+    }
+
+    switch (this.endpointMode) {
+      case EndpointMode.PICSURE:
+        this.picSureResourceService.init();
+    }
   }
 
-  handleEndpointModeError(): Observable<any> {
-    const msg = 'Incorrect Endpoint Mode is used.';
-    console.error(msg);
+  handleEndpointModeError(msg?: string): Observable<any> {
+    console.error(msg ? msg : 'endpoint error');
     return Observable.throw(new Error(msg));
+  }
+
+  // -------------------------------------- utilities calls --------------------------------------
+
+  generateConstraintFromObject(constraintObjectInput: object): Constraint {
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART:
+        return TransmartConstraintMapper.generateConstraintFromObject(constraintObjectInput);
+
+      case EndpointMode.PICSURE:
+        this.handleEndpointModeError('Not supported: PIC-SURE does not support custom constraints from tree');
+    }
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -75,6 +98,23 @@ export class ResourceService {
   }
 
   /**
+   * Get tree nodes from the root
+   * @param {number} depth - the depth of the tree we want to access
+   * @param {boolean} hasCounts - whether we want to include patient and observation counts in the tree nodes
+   * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
+   * @returns {Observable<Object>}
+   */
+  getRootTreeNodes(depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> { // todo: to treenode
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART:
+        return this.transmartResourceService.getTreeNodes('\\', depth, hasCounts, hasTags);
+
+      case EndpointMode.PICSURE:
+        return this.picSureResourceService.getRootTreeNodes();
+    }
+  }
+
+  /**
    * Get a specific branch of the tree nodes
    * @param {string} root - the path to the specific tree node
    * @param {number} depth - the depth of the tree we want to access
@@ -82,14 +122,13 @@ export class ResourceService {
    * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
    * @returns {Observable<Object>}
    */
-  getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
+  getChildTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> { // todo: to treenode
     switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
+      case EndpointMode.TRANSMART:
         return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
+
+      case EndpointMode.PICSURE:
+        return this.picSureResourceService.getChildNodes(root);
     }
   }
 
@@ -194,9 +233,8 @@ export class ResourceService {
             return TransmartMapper.mapTransmartCountItem(tmCountItem);
           });
       }
-      default: {
-        return this.handleEndpointModeError();
-      }
+      case EndpointMode.PICSURE:
+        return this.picSureResourceService.getPatientsCounts(constraint);
     }
   }
 
@@ -215,9 +253,8 @@ export class ResourceService {
             return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
           });
       }
-      default: {
-        return this.handleEndpointModeError();
-      }
+      case EndpointMode.PICSURE:
+        return this.picSureResourceService.getAggregate(constraint.concept);
     }
   }
 
@@ -232,9 +269,8 @@ export class ResourceService {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getTrialVisits(constraint);
       }
-      default: {
-        return this.handleEndpointModeError();
-      }
+      case EndpointMode.PICSURE:
+        return Observable.of([]);
     }
   }
 
@@ -248,9 +284,8 @@ export class ResourceService {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getPedigrees();
       }
-      default: {
-        return this.handleEndpointModeError();
-      }
+      case EndpointMode.PICSURE:
+        return Observable.of([]);
     }
   }
 
@@ -323,7 +358,6 @@ export class ResourceService {
             if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
               includeDataTable = true;
             }
-            hasSelectedFormat = true;
           }
         }
       }
@@ -408,8 +442,9 @@ export class ResourceService {
             return TransmartMapper.mapTransmartQueries(transmartQueries);
           });
       }
-      default: {
-        return this.handleEndpointModeError();
+      case EndpointMode.PICSURE: {
+        console.warn('getQueries() not supported');
+        return Observable.of([]);
       }
     }
   }
@@ -512,8 +547,9 @@ export class ResourceService {
             return newDataTable;
           });
       }
-      default: {
-        return this.handleEndpointModeError();
+      case EndpointMode.PICSURE: {
+        console.warn('getDataTable() not supported');
+        return Observable.of(dataTable);
       }
     }
   }

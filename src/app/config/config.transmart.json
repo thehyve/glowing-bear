@@ -15,7 +15,7 @@
   "oidc-scopes": "openid",
   "oidc-client-id": "glowingbear-js",
 
-  "api-type": "transmart",
+  "endpoint-mode": "transmart",
   "enable-query-saving": true,
   "enable-variable-selection": true,
   "enable-data-table": true,
