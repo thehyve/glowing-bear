@@ -568,28 +568,6 @@ describe('TreeNodeService', () => {
     expect(found.includes(nodeADE)).toBe(true);
   })
 
-  it('should find tree node ancestors', () => {
-    let nodeABC: TreeNode = {};
-    nodeABC['fullName'] = '\\A\\B\\C\\';
-    let nodeAB: TreeNode = {};
-    nodeAB['fullName'] = '\\A\\B\\';
-    nodeAB.children = [nodeABC];
-    let nodeADE: TreeNode = {};
-    nodeADE['fullName'] = '\\A\\D\\E\\';
-    let nodeADEF: TreeNode = {};
-    nodeADEF['fullName'] = '\\A\\D\\E\\F\\';
-    nodeADE.children = [nodeADEF];
-    let nodeAD: TreeNode = {};
-    nodeAD['fullName'] = '\\A\\D\\';
-    nodeAD.children = [nodeADE];
-    let nodeA: TreeNode = {};
-    nodeA['fullName'] = '\\A\\';
-    nodeA.children = [nodeAB, nodeAD];
-    treeNodeService.treeNodes = [nodeA];
-    let found = treeNodeService.findTreeNodeAncestors(nodeABC);
-    expect(found.length).toBe(2);
-  })
-
   it('should convert tree nodes to paths', () => {
     let nodeABC: TreeNode = {};
     nodeABC['fullName'] = '\\A\\B\\C\\';

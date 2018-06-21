@@ -254,7 +254,6 @@ export class CrossTableService {
                                          peerConstraint: Constraint) {
     let valueConstraints = categoricalAggregate.values.map((value) => {
       let val = new ValueConstraint();
-      val.valueType = 'STRING';
       val.operator = '=';
       val.value = value;
       val.textRepresentation = val.value.toString();

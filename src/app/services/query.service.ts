@@ -301,7 +301,7 @@ export class QueryService {
         } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
           checklist = [];
           for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
-            checklist.push(selectedNode['fullName']);
+            checklist.push(selectedNode.path);
           }
         }
         this.treeNodeService.updateProjectionTreeData(checklist);

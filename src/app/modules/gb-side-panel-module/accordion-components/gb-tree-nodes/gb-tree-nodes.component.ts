@@ -7,12 +7,14 @@
  */
 
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
-import {TreeNode} from 'primeng/components/common/api';
+import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -56,6 +58,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
+              private constraintService: ConstraintService,
               private queryService: QueryService,
               private element: ElementRef) {
     this.expansionStatus = {
@@ -109,13 +112,12 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodes[index];
-      let dataObjectType = dataObject['type'];
-      let metadata = dataObject['metadata'];
+      let metadata = dataObject.metadata;
       let treeNodeElm = elm.querySelector('li.ui-treenode');
       let treeNodeElmIcon = elm.querySelector('li.ui-treenode .ui-treenode-icon');
       let handleDragstart = (function (event) {
         event.stopPropagation();
-        dataObject['dropMode'] = DropMode.TreeNode;
+        dataObject.dropMode = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
@@ -129,8 +131,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
         this.treeNodeMetadataPanel.hide(event);
       }).bind(this);
 
-      // if the data object type belongs to the listed types
-      if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)) {
+      // if the data object type is known, it is considered queryable
+      if (dataObject.nodeType !== TreeNodeType.UNKNOWN) {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       // if metadata exits
@@ -161,9 +163,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   }
 
   update() {
-    if (this.expansionStatus['expanded']) {
+    // wait for the children to be loaded
+    let treeNode = this.expansionStatus['treeNode'] as TreeNode;
+    if (this.expansionStatus['expanded'] && treeNode.childrenAttached) {
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
-      let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
       this.updateEventListeners(newChildren, treeNode.children);
 
@@ -185,6 +188,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       this.expansionStatus['expanded'] = true;
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
+      this.treeNodeService.loadChildren(event.node, this.constraintService);
     }
   }
 
@@ -205,27 +209,27 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       // if there is a filter word
       if (filterWord.length > 0) {
         for (let node of treeNodes) {
-          node['expanded'] = false;
-          node['styleClass'] = undefined;
+          node.expanded = false;
+          node.styleClass = undefined;
           let fieldString = node[field].toLowerCase();
           if (fieldString.includes(filterWord)) { // if there is a hit
             this.hits++;
             result.hasMatching = true;
-            if (node['children'] && node['children'].length > 0) {
-              node['styleClass'] = 'gb-highlight-treenode gb-is-not-leaf';
+            if (!node.leaf) {
+              node.styleClass = 'gb-highlight-treenode gb-is-not-leaf';
             } else {
-              node['styleClass'] = 'gb-highlight-treenode';
+              node.styleClass = 'gb-highlight-treenode';
             }
           } else { // if there is no hit
-            node['styleClass'] = undefined;
+            node.styleClass = undefined;
           }
-          if (node['children'] && node['children'].length > 0) {
+          if (!node.leaf) {
             let subResult =
-              this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
+              this.filterWithHighlightTreeNodes(node.children, field, filterWord);
             if (subResult.hasMatching) {
               result.hasMatching = true;
               if (this.numExpandedNodes < this.maxNumExpandedNodes) {
-                node['expanded'] = true;
+                node.expanded = true;
                 this.numExpandedNodes++;
               }
             }
@@ -233,12 +237,12 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
         }
       } else { // if the filter word is empty
         for (let node of treeNodes) {
-          node['expanded'] = false;
-          if (node['children'] && node['children'].length > 0) {
-            node['styleClass'] = 'is-not-leaf';
-            this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
+          node.expanded = false;
+          if (!node.leaf) {
+            node.styleClass = 'is-not-leaf';
+            this.filterWithHighlightTreeNodes(node.children, field, filterWord);
           } else {
-            node['styleClass'] = undefined;
+            node.styleClass = undefined;
           }
         }
       }

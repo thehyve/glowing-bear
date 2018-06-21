@@ -142,7 +142,6 @@ export class CrossTableServiceMock {
     let categories = categoricalAggregate.values;
     for (let category of categories) {
       let val = new ValueConstraint();
-      val.valueType = 'STRING';
       val.operator = '=';
       val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
       val.textRepresentation = val.value.toString();

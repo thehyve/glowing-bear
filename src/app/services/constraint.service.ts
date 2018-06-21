@@ -21,11 +21,11 @@ import {TreeNodeService} from './tree-node.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
-import {TreeNode} from 'primeng/api';
+import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
-import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
+import {TreeNodeType} from '../models/tree-models/tree-node-type';
 
 /**
  * This service concerns with
@@ -77,12 +77,6 @@ export class ConstraintService {
 
   constructor(private treeNodeService: TreeNodeService,
               private resourceService: ResourceService) {
-    // Initialize the root inclusion and exclusion constraints in the 1st step
-    this.rootInclusionConstraint = new CombinationConstraint();
-    this.rootInclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint = new CombinationConstraint();
-    this.rootExclusionConstraint.isRoot = true;
-
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
@@ -311,13 +305,12 @@ export class ConstraintService {
       constraint.combinationState = CombinationState.Or;
 
       for (let selectedTreeNode of selectedTreeNodes) {
-        let visualAttributes = selectedTreeNode['visualAttributes'];
-        if (visualAttributes && visualAttributes.includes('LEAF')) {
+        if (selectedTreeNode.leaf) {
           leaves.push(selectedTreeNode);
         }
       }
       for (let leaf of leaves) {
-        const leafConstraint = TransmartConstraintMapper.generateConstraintFromObject(leaf['constraint']);
+        const leafConstraint = this.resourceService.generateConstraintFromObject(leaf.constraint);
         if (leafConstraint) {
           constraint.addChild(leafConstraint);
         } else {
@@ -337,43 +330,49 @@ export class ConstraintService {
     // if the dropped node is a tree node
     if (dropMode === DropMode.TreeNode) {
       let treeNode = selectedNode;
-      let treeNodeType = treeNode['type'];
-      if (treeNodeType === 'STUDY') {
-        let study: Study = new Study();
-        study.id = treeNode['constraint']['studyId'];
-        constraint = new StudyConstraint();
-        (<StudyConstraint>constraint).studies.push(study);
-      } else if (treeNodeType === 'NUMERIC' ||
-        treeNodeType === 'CATEGORICAL' ||
-        treeNodeType === 'CATEGORICAL_OPTION' ||
-        treeNodeType === 'DATE' ||
-        treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT') {
-        if (treeNode['constraint']) {
-          constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
-        } else {
-          let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-          constraint = new ConceptConstraint();
-          (<ConceptConstraint>constraint).concept = concept;
-        }
-      } else if (treeNodeType === 'UNKNOWN') {
-        let descendants = [];
-        this.treeNodeService
-          .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
-            ['UNKNOWN'], descendants);
-        if (descendants.length < 6) {
-          constraint = new CombinationConstraint();
-          (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
-          for (let descendant of descendants) {
-            let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
-            if (dConstraint) {
-              (<CombinationConstraint>constraint).addChild(dConstraint);
+      switch (treeNode.nodeType) {
+        case TreeNodeType.STUDY:
+          // case where node is a study
+          let study: Study = new Study();
+          study.id = treeNode.constraint['studyId'];
+          constraint = new StudyConstraint();
+          (<StudyConstraint>constraint).studies.push(study);
+          break;
+
+        case TreeNodeType.CONCEPT:
+          if (treeNode.constraint) {
+            constraint = this.resourceService.generateConstraintFromObject(treeNode.constraint);
+          } else {
+            let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
+            constraint = new ConceptConstraint();
+            (<ConceptConstraint>constraint).concept = concept;
+          }
+          break;
+
+        case TreeNodeType.UNKNOWN:
+          let descendants = [];
+          this.treeNodeService
+            .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
+              [TreeNodeType.UNKNOWN], descendants);
+          if (descendants.length < 6) {
+            constraint = new CombinationConstraint();
+            (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
+            for (let descendant of descendants) {
+              let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
+              if (dConstraint) {
+                (<CombinationConstraint>constraint).addChild(dConstraint);
+              }
             }
+            if ((<CombinationConstraint>constraint).children.length === 0) {
+              constraint = null;
+            }
+          } else {
+            console.warn(`Too many descendants: ${descendants.length}`);
           }
-          if ((<CombinationConstraint>constraint).children.length === 0) {
-            constraint = null;
-          }
-        }
+          break;
+
+        default:
+          console.warn(`Could not get constraint from node ${treeNode.path}`);
       }
     }
 

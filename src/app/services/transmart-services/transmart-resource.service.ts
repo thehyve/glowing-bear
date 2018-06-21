@@ -32,6 +32,9 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {ApiEndpointService} from '../api-endpoint.service';
+import {Concept} from '../../models/constraint-models/concept';
+import {MessageHelper} from '../../utilities/message-helper';
+import {ConceptType} from '../../models/constraint-models/concept-type';
 
 @Injectable()
 export class TransmartResourceService {
@@ -204,6 +207,38 @@ export class TransmartResourceService {
     //   node.constraint['conceptCode'] = node.conceptCode;
     //   node.constraint['valueType'] = node.type;
     // }
+    // todo:
+    // validtreenotypes
+    // } else if (treeNodeType === 'NUMERIC' ||
+    //         treeNodeType === 'CATEGORICAL' ||
+    //         treeNodeType === 'CATEGORICAL_OPTION' ||
+    //         treeNodeType === 'DATE' ||
+    //         treeNodeType === 'HIGH_DIMENSIONAL' ||
+    //         treeNodeType === 'TEXT') {
+    // ==> CONCEPT type tree node
+
+    // todo 2:
+    //    if (treeNode['name'] &&
+    //       treeNode['fullName'] &&
+    //       treeNode['conceptPath'] &&
+    //       treeNode['conceptCode'] &&
+    //       treeNode['type']) {
+    //       let concept = new Concept();
+    //       const tail = '\\' + treeNode['name'] + '\\';
+    //       const fullName = treeNode['fullName'];
+    //       let head = fullName.substring(0, fullName.length - tail.length);
+    //       concept.label = treeNode['name'] + ' (' + head + ')';
+    //       concept.path = treeNode['conceptPath'];
+    //       concept.type = <ConceptType> treeNode['type'];
+    //       concept.code = treeNode['conceptCode'];
+    //       concept.fullName = treeNode['fullName'];
+    //       concept.name = treeNode['name'];
+    //       return concept;
+    //     } else {
+    //       const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';
+    //       MessageHelper.alert('error', summary);
+    //       return null;
+    //     }
   }
 
   // -------------------------------------- count calls --------------------------------------

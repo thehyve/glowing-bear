@@ -11,21 +11,12 @@ import {FormatHelper} from '../../utilities/format-helper';
 
 export class ValueConstraint extends Constraint {
 
-  private _valueType: string;
   private _operator: string;
   private _value: any;
 
   constructor() {
     super();
     this.textRepresentation = 'Value';
-  }
-
-  get valueType(): string {
-    return this._valueType;
-  }
-
-  set valueType(value: string) {
-    this._valueType = value;
   }
 
   get operator(): string {
