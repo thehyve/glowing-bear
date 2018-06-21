@@ -16,7 +16,8 @@
 
     <div class="form-inline gb-combination-constraint-input-container">
 
-      <button type="button"
+      <button *ngIf="allowGroupChildren()"
+              type="button"
               (click)="addChildCombinationConstraint()"
               class="btn btn-outline-secondary gb-combination-constraint-add-btn"
               pTooltip="Add group constraint">

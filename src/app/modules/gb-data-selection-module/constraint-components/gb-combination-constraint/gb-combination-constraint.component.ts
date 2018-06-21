@@ -13,7 +13,7 @@ import {Constraint} from '../../../../models/constraint-models/constraint';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
-import {TreeNode} from 'primeng/api';
+import {TreeNode} from '../../../../models/tree-models/tree-node';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -88,6 +88,14 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
       combinationConstraint.addChild(newConstraint);
 
+      // force combination state if i2b2 style nesting
+      let parentConstraint = this.constraint.parent as CombinationConstraint;
+      if (this.config.getConfig('force-i2b2-nesting-style', false) &&
+        parentConstraint && parentConstraint.isRoot) {
+        (<CombinationConstraint>this.constraint).combinationState = CombinationState.Or;
+      }
+      this.update();
+
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
@@ -104,6 +112,14 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
       combinationConstraint.addChild(this.droppedConstraint);
+
+      // force combination state if free nesting not supported
+      let parentConstraint = this.constraint.parent as CombinationConstraint;
+      if (this.config.getConfig('force-i2b2-nesting-style', false) &&
+        parentConstraint && parentConstraint.isRoot) {
+        combinationConstraint.combinationState = CombinationState.Or;
+      }
+
       this.update();
       this.droppedConstraint = null;
     }
@@ -114,8 +130,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   toggleJunction() {
-    (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.update();
+    if (!this.config.getConfig('force-i2b2-nesting-style', false)) {
+      (<CombinationConstraint>this.constraint).switchCombinationState();
+      this.update();
+    }
   }
 
   get childContainerClass(): string {
@@ -127,4 +145,16 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
   }
 
+  // todo: check behavior of allowGroupChildren if we get pedigree or something similar
+  allowGroupChildren(): boolean {
+    if (!(this.constraint instanceof CombinationConstraint)) {
+      return false;
+    }
+
+    if (!this.config.getConfig('force-i2b2-nesting-style', false)) {
+      return true;
+    } else {
+      return this.constraint.isRoot;
+    }
+  }
 }

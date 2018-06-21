@@ -7,7 +7,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {TreeNode} from 'primeng/primeng';
+import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';

@@ -12,7 +12,7 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {TreeNode} from 'primeng/api';
+import {TreeNode} from '../../../../models/tree-models/tree-node';
 
 @Component({
   selector: 'gb-study-constraint',
