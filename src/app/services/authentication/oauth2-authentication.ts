@@ -207,6 +207,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
           resolve('authorized');
         } else {
           console.warn(`No valid token found.`);
+          this._token = null;
           this._authorised.next(false);
           this._authorised.complete();
           this.requestToken().subscribe(result => resolve(result));

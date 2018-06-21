@@ -35,4 +35,8 @@ export class OidcSecurityServiceMock {
   setupModule(openIDImplicitFlowConfiguration: OpenIDImplicitFlowConfiguration,
               authWellKnownEndpoints: AuthWellKnownEndpoints): void { }
 
+  logoff(): void {
+
+  }
+
 }
