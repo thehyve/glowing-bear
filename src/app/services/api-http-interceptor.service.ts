@@ -27,7 +27,8 @@ export class ApiHttpInterceptor implements HttpInterceptor {
     // skip if request is for config, or if not for API
     if (  req.url.includes(AppConfig.path) ||
           !req.url.includes(this.appConfig.getConfig('api-url')) ||
-          req.url.endsWith('/oauth/token')
+          req.url.endsWith('/oauth/token') ||
+          req.url.endsWith('/oauth/inspectToken')
     ) {
       return next.handle(req);
     }

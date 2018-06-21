@@ -9,7 +9,7 @@
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
   "instant-counts-update-3": false,
-  "authentication-method": "oauth2",
+  "authentication-method": "oidc",
   "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev",
   "oidc-scopes": "openid",
   "oidc-client-id": "glowingbear-js"

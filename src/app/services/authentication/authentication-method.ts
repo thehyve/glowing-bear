@@ -1,13 +1,13 @@
 import {Observable} from 'rxjs/Observable';
 import {AuthorisationResult} from './authorisation-result';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 export interface AuthenticationMethod {
 
   /**
    * If true, a token is available.
    */
-  authorised: BehaviorSubject<boolean>;
+  authorised: AsyncSubject<boolean>;
 
   /**
    * Tries to authorise the current user and returns 'authorized' if successful.

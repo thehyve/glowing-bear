@@ -8,7 +8,7 @@ import {Injectable, Injector} from '@angular/core';
 import {AuthenticationMethod} from './authentication-method';
 import {Observable} from 'rxjs/Observable';
 import {AuthorisationResult} from './authorisation-result';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 /**
  * Implementation of the OpenID Connect (OIDC) implicit flow,
@@ -27,7 +27,7 @@ export class OidcAuthentication implements AuthenticationMethod {
   private oidcSecurityService: OidcSecurityService;
   private oidcConfigService: OidcConfigService;
 
-  private _authorised: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
 
   static isTokenRedirect(): boolean {
     return window.location.hash !== null && window.location.hash !== '';
@@ -141,7 +141,7 @@ export class OidcAuthentication implements AuthenticationMethod {
     }
   }
 
-  get authorised(): BehaviorSubject<boolean> {
+  get authorised(): AsyncSubject<boolean> {
     return this._authorised;
   }
 
@@ -151,11 +151,13 @@ export class OidcAuthentication implements AuthenticationMethod {
         if (result) {
           console.log(`Valid token available.`);
           this._authorised.next(true);
+          this._authorised.complete();
           resolve('authorized');
         } else {
-          console.log(`No valid token found.`);
+          console.log(`No valid token found. About to redirect ..`);
           this._authorised.next(false);
-          return this.requestToken().subscribe((res) =>
+          this._authorised.complete();
+          this.requestToken().subscribe((res) =>
             resolve(res)
           );
         }
@@ -176,6 +178,7 @@ export class OidcAuthentication implements AuthenticationMethod {
   }
 
   logout(): void {
+    console.log(`Logging off ...`);
     this.oidcSecurityService.logoff();
   }
 

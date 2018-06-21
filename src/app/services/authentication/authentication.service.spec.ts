@@ -74,12 +74,15 @@ describe('Oauth2Authentication', () => {
         done();
       });
     });
-    const req = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
-    expect(req.request.method).toBe('POST')
-    req.flush({
+    const tokenRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
+    expect(tokenRequest.request.method).toBe('POST')
+    tokenRequest.flush({
       access_token: 'XYZ',
       expires_in: 10
     });
+    const validationRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/inspectToken`);
+    expect(validationRequest.request.method).toBe('GET')
+    validationRequest.flush({});
   });
 
 });
