@@ -209,7 +209,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   sortByBookmark() {
-    this.queries.sort((q1, q2) => { console.log(q1.id, q2.id);
+    this.queries.sort((q1, q2) => {
       if (q1.bookmarked && !q2.bookmarked) {
         return -1;
       } else if (!q1.bookmarked && q2.bookmarked) {

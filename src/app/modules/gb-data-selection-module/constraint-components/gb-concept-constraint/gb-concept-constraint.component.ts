@@ -87,9 +87,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _selectedTrialVisits: TrialVisit[];
   private _suggestedTrialVisits: TrialVisit[];
 
-  // modifier
-  private _applyModifierConstraint = false;
-
   ngOnInit() {
     this.initializeConstraints();
   }
@@ -298,14 +295,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (conceptConstraint.applyTrialVisitConstraint) {
       this.update();
     }
-  }
-
-  get applyModifierConstraint(): boolean {
-    return this._applyModifierConstraint;
-  }
-
-  set applyModifierConstraint(value: boolean) {
-    this._applyModifierConstraint = value;
   }
 
   get allTrialVisits(): TrialVisit[] {
