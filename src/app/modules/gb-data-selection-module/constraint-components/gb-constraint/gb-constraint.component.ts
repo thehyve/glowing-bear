@@ -71,7 +71,7 @@ export class GbConstraintComponent implements OnInit {
     this.element.nativeElement.firstChild.classList.remove('dropzone');
   }
 
-  protected update() {
+  update() {
     this.queryService.step = Step.I;
     if (this.queryService.instantCountsUpdate_1) {
       this.queryService.update_1();

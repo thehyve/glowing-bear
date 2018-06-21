@@ -24,11 +24,13 @@ import {GbConceptOperatorState} from './gb-concept-operator-state';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {TimeConstraint} from '../../../../models/constraint-models/time-constraint';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
   let fixture: ComponentFixture<GbConceptConstraintComponent>;
   let resourceService: ResourceService;
+  let constraintService: ConstraintService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -71,6 +73,7 @@ describe('GbConceptConstraintComponent', () => {
     component = fixture.componentInstance;
     component.constraint = new ConceptConstraint();
     resourceService = TestBed.get(ResourceService);
+    constraintService = TestBed.get(ConstraintService);
     fixture.detectChanges();
   });
 
@@ -238,4 +241,104 @@ describe('GbConceptConstraintComponent', () => {
     expect(component.valDate1.getTime()).toEqual(1434664800000);
     expect(component.valDate2.getTime()).toEqual(1529584961623);
   })
+
+  it('should update concept values', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+
+    constraint.concept.type = null;
+    component.updateConceptValues();
+
+    let spy1 = spyOn(component, 'updateNumericConceptValues').and.stub();
+    constraint.concept.type = ConceptType.NUMERICAL;
+    component.updateConceptValues();
+    expect(spy1).toHaveBeenCalledTimes(1);
+
+    let spy2 = spyOn(component, 'updateCategoricalConceptValues').and.stub();
+    constraint.concept.type = ConceptType.CATEGORICAL;
+    component.updateConceptValues();
+    expect(spy2).toHaveBeenCalledTimes(1);
+
+    let spy3 = spyOn(component, 'updateDateConceptValues').and.stub();
+    constraint.concept.type = ConceptType.DATE;
+    component.updateConceptValues();
+    expect(spy3).toHaveBeenCalledTimes(1);
+  })
+
+  it('should set selected concept', () => {
+    let oldConcept = new Concept();
+    let newConcept = new Concept();
+    let spy1 = spyOn(component, 'initializeConstraints').and.stub();
+    let spy2 = spyOn(component, 'update').and.stub();
+    let constraint = new ConceptConstraint();
+    constraint.concept = oldConcept;
+    component.constraint = constraint;
+    component.selectedConcept = newConcept;
+    expect((<ConceptConstraint>component.constraint).concept).toBe(newConcept);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  })
+
+  it('should set observation dates', () => {
+    let dummy = new Date();
+    component.obsDate1 = dummy;
+    expect(component.obsDate1).toBe(dummy);
+    let invalidDummy = null;
+    component.obsDate1 = invalidDummy;
+    expect(component.obsDate1).toBe(dummy);
+    invalidDummy = undefined;
+    component.obsDate1 = invalidDummy;
+    expect(component.obsDate1).toBe(dummy);
+
+    component.obsDate2 = dummy;
+    expect(component.obsDate2).toBe(dummy);
+    invalidDummy = null;
+    component.obsDate2 = invalidDummy;
+    expect(component.obsDate2).toBe(dummy);
+    invalidDummy = undefined;
+    component.obsDate2 = invalidDummy;
+    expect(component.obsDate2).toBe(dummy);
+  })
+
+  it('should search and find intended concepts', () => {
+    let c = new Concept();
+    c.path = 'test path';
+    let c1 = new Concept();
+    c1.path = 'other path';
+    let dummies = [c, c1];
+    let e = {
+      query: 'some query'
+    };
+    constraintService.concepts = dummies;
+    component.onSearch(e);
+    expect(component.searchResults.length).toEqual(0);
+    e.query = 'tESt';
+    component.onSearch(e);
+    expect(component.searchResults[0]).toEqual(c);
+    e.query = '';
+    component.onSearch(e);
+    expect(component.searchResults.length).toEqual(2);
+  })
+
+  it('should handle drop down', () => {
+    let c = new Concept();
+    constraintService.concepts = [c];
+    let e = new Event('');
+    e['originalEvent'] = {
+      stopPropagation: function () {
+      },
+      preventDefault: function () {
+      }
+    };
+    let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
+    component.onDropdown(e);
+    expect(component.searchResults.length).toBe(1);
+    expect(spy).toHaveBeenCalled();
+  })
+
+  it('should update numeric concept values', () => {
+
+  })
+
 });
