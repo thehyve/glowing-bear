@@ -15,7 +15,7 @@
   </div>
 
   <!-- if the concept is NUMERIC -->
-  <div *ngIf="isNumeric()" class="form-inline gb-constraint-child-container">
+  <div *ngIf="constraintConcept.type === ConceptType.NUMERICAL" class="form-inline gb-constraint-child-container">
     <span>with value</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchOperatorState()">
@@ -48,14 +48,14 @@
   </div>
 
   <!-- if the concept is CATEGORICAL -->
-  <div *ngIf="isCategorical()" class="v-align-center form-inline gb-constraint-child-container">
+  <div *ngIf="constraintConcept.type === ConceptType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
                    [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"></p-multiSelect>
   </div>
 
   <!--  if the concept is DATE -->
-  <div *ngIf="isDate()" class="form-inline gb-constraint-child-container">
+  <div *ngIf="constraintConcept.type === ConceptType.DATE" class="form-inline gb-constraint-child-container">
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">

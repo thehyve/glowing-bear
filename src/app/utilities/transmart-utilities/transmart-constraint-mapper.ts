@@ -247,7 +247,6 @@ export class TransmartConstraintMapper {
     constraint = new ValueConstraint();
     (<ValueConstraint>constraint).operator = constraintObject['operator'];
     (<ValueConstraint>constraint).value = constraintObject['value'];
-    (<ValueConstraint>constraint).valueType = constraintObject['valueType'];
     return constraint;
   }
 
