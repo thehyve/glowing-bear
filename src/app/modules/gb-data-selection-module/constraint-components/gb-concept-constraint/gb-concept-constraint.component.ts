@@ -13,7 +13,7 @@ import {CategoricalAggregate} from '../../../../models/aggregate-models/categori
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {FormatHelper} from '../../../../utilities/format-helper';
-import {SelectItem} from 'primeng/api';
+import {SelectItem, TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -113,7 +113,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       this.resourceService.getAggregate(conceptOnlyConstraint)
         .subscribe(
           (responseAggregate: Aggregate) => {
-            console.log('get aggregate: ', responseAggregate);
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
               constraint.concept.aggregate = responseAggregate;
               this.minLimit = responseAggregate['min'];
@@ -596,6 +595,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    */
   toggleMoreOptions() {
     this.showMoreOptions = !this.showMoreOptions;
+  }
+
+  onDrop(event: DragEvent) {
+    event.stopPropagation();
+    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
+    this.droppedConstraint =
+      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
+    this.treeNodeService.selectedTreeNode = null;
+    if (this.droppedConstraint) {
+      this.constraint = this.droppedConstraint;
+      // TODO: still needs to update the aggregates fo the ConceptConstraintComponent?
+      this.update();
+    }
   }
 
   get operatorState(): GbConceptOperatorState {
