@@ -9,11 +9,8 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "app/config/env.json",
-        "app/config/config.dev.json",
-        "app/config/config.default.json",
-        "app/config/config.transmart.json",
-        "favicon.ico"
+        "favicon.ico",
+        { "input": "app/config/", "glob": "*.json" , "output": "app/config/"}
       ],
       "index": "index.html",
       "main": "main.ts",
