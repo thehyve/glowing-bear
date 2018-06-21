@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {AuthenticationMethod} from '../authentication/authentication-method';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class AuthenticationServiceMock implements OnDestroy {
@@ -19,7 +19,7 @@ export class AuthenticationServiceMock implements OnDestroy {
   logout() {
   }
 
-  get authorised(): BehaviorSubject<boolean> {
+  get authorised(): AsyncSubject<boolean> {
     return this.authenticationMethod.authorised;
   }
 }

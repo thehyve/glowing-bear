@@ -5,7 +5,7 @@ import {AuthenticationMethod} from './authentication-method';
 import {OidcAuthentication} from './oidc-authentication';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorisationResult} from './authorisation-result';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class AuthenticationService implements OnDestroy {
@@ -43,7 +43,7 @@ export class AuthenticationService implements OnDestroy {
     this.authenticationMethod.logout();
   }
 
-  get authorised(): BehaviorSubject<boolean> {
+  get authorised(): AsyncSubject<boolean> {
     return this.authenticationMethod.authorised;
   }
 

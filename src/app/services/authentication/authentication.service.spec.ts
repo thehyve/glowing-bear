@@ -74,12 +74,38 @@ describe('Oauth2Authentication', () => {
         done();
       });
     });
-    const req = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
-    expect(req.request.method).toBe('POST')
-    req.flush({
+    const tokenRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
+    expect(tokenRequest.request.method).toBe('POST');
+    tokenRequest.flush({
       access_token: 'XYZ',
       expires_in: 10
     });
+    const validationRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/inspectToken`);
+    expect(validationRequest.request.method).toBe('GET');
+    validationRequest.flush({});
+  });
+
+  it('should fail when token is rejected by the server', (done) => {
+    spyOn(Oauth2Authentication, 'getAuthorisationCode').and.callFake(() =>
+      'abc123'
+    );
+    authenticationService.load().then((result: AuthorisationResult) => {
+      expect(result).toEqual('unauthorized');
+      expect(authenticationService.validToken).toEqual(false);
+      authenticationService.authorised.subscribe((value) => {
+        expect(value).toEqual(false);
+        done();
+      });
+    });
+    const tokenRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
+    expect(tokenRequest.request.method).toBe('POST');
+    tokenRequest.flush({
+      access_token: 'XYZ',
+      expires_in: 10
+    });
+    const validationRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/inspectToken`);
+    expect(validationRequest.request.method).toBe('GET');
+    validationRequest.error(new ErrorEvent('Invalid token'));
   });
 
 });
@@ -133,7 +159,7 @@ describe('OidcAuthentication', () => {
   }));
 
   it('should be loaded with status unauthorised for OIDC', (done) => {
-    let authorize = spyOn(oidcSecurityService, 'authorize').and.callThrough();
+    // let authorize = spyOn(oidcSecurityService, 'authorize').and.callThrough();
     authenticationService.load().then((result: AuthorisationResult) => {
       expect(result).toEqual('unauthorized');
       expect(authenticationService.validToken).toEqual(false);
@@ -154,6 +180,19 @@ describe('OidcAuthentication', () => {
         expect(value).toEqual(true);
         done();
       });
+    });
+  });
+
+  it('should log off', (done) => {
+    spyOn(OidcAuthentication, 'isTokenRedirect').and.callFake(() => true);
+    let logoff = spyOn(oidcSecurityService, 'logoff').and.callThrough();
+    authenticationService.load().then((result: AuthorisationResult) => {
+      expect(result).toEqual('authorized');
+
+      // logout
+      authenticationService.logout();
+      expect(logoff).toHaveBeenCalled();
+      done();
     });
   });
 

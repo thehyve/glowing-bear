@@ -1,4 +1,3 @@
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {MessageHelper} from './utilities/message-helper';
@@ -10,14 +9,17 @@ import {MessageHelper} from './utilities/message-helper';
 })
 export class AppComponent implements OnInit {
 
+  private _authenticationCompleted = false;
+
   constructor(private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
-    this.authenticated.subscribe((authenticated) => {
+    this.authenticationService.authorised.subscribe((authenticated) => {
       if (authenticated) {
         console.log(`Authentication completed.`);
         MessageHelper.alert('success', 'Authentication successful!');
+        this._authenticationCompleted = true;
       } else {
         console.warn('Authenticated failed.');
         MessageHelper.alert('error', 'Authentication failed!');
@@ -29,8 +31,8 @@ export class AppComponent implements OnInit {
     this.authenticationService.logout();
   }
 
-  get authenticated(): BehaviorSubject<boolean> {
-    return this.authenticationService.authorised;
+  get authenticationCompleted(): boolean {
+    return this._authenticationCompleted;
   }
 
   get messages(): any[] {

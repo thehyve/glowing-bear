@@ -10,6 +10,7 @@ import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 /**
  * Implementation of the OAuth2 authorisation flow:
@@ -28,7 +29,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private apiUrl: string;
   private appUrl: string;
 
-  private _authorised: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _token: Oauth2Token = null;
   private _lock: boolean;
   private _tokenResult: BehaviorSubject<AuthorisationResult>;
@@ -100,6 +101,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
           if (grantType === 'refresh_token') {
             // Remove previous token
             localStorage.removeItem('token');
+            this._token = null;
           }
           this.authorisation.subscribe((authorisation: AuthorisationResult) => {
             resolve(authorisation);
@@ -165,20 +167,53 @@ export class Oauth2Authentication implements AuthenticationMethod {
     }));
   }
 
+  private checkValidity(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      const url = `${this.apiUrl}/oauth/inspectToken`;
+      let headers = new HttpHeaders()
+        .set('Authorization', `Bearer ${this._token.accessToken}`)
+        .set('Accept', 'application/json; charset=utf-8');
+      console.log(`Checking access token ...`);
+      this.http.get(url, {headers: headers})
+        .subscribe((result: any) => {
+          console.log(`Token valid.`, result);
+          resolve(true);
+        }, (error: any) => {
+          ErrorHelper.handleError(error);
+          console.error('Token is invalid', error);
+          resolve(false);
+        });
+    });
+  }
+
   get authorisation(): Observable<AuthorisationResult> {
     if (!this.hasToken) {
-      console.warn(`No valid token found.`);
+      console.warn(`No token found.`);
       this._authorised.next(false);
+      this._authorised.complete();
       return this.requestToken();
     }
     if (this.tokenExpired && this._token.refreshToken) {
       console.warn('Token expired.');
       return Observable.from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
     }
-    console.log(`Valid token available.`);
-    console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
-    this._authorised.next(true);
-    return Observable.of(<AuthorisationResult>'authorized');
+    return Observable.from(new Promise<AuthorisationResult>(resolve => {
+      this.checkValidity().then(valid => {
+        if (valid) {
+          console.log(`Valid token available.`);
+          console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
+          this._authorised.next(true);
+          this._authorised.complete();
+          resolve('authorized');
+        } else {
+          console.warn(`No valid token found.`);
+          this._token = null;
+          this._authorised.next(false);
+          this._authorised.complete();
+          this.requestToken().subscribe(result => resolve(result));
+        }
+      });
+    }));
   }
 
   private get hasToken(): boolean {
@@ -189,7 +224,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     return moment(this._token.expires).isBefore(moment());
   }
 
-  get authorised(): BehaviorSubject<boolean> {
+  get authorised(): AsyncSubject<boolean> {
     return this._authorised;
   }
 
