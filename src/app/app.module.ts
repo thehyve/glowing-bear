@@ -17,8 +17,7 @@ import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-
 import {ResourceService} from './services/resource.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {AppConfig} from './config/app.config';
-import {IRCTEndPointService} from './services/irct/irct-endpoint.service';
-import {IRCTResourceService} from './services/irct/irct-resource.service';
+import {PicSureResourceService} from './services/picsure-services/picsure-resource.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
@@ -107,8 +106,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     ResourceService,
     TransmartResourceService,
     TreeNodeService,
-    IRCTEndPointService,
-    IRCTResourceService,
+    PicSureResourceService,
     ConstraintService,
     QueryService,
     DataTableService,

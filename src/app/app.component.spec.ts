@@ -46,6 +46,8 @@ import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {Observable} from 'rxjs/Observable';
+import {PicSureResourceService} from './services/picsure-services/picsure-resource.service';
+import {PicSureResourceServiceMock} from './services/mocks/picsure-resource.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -130,6 +132,10 @@ describe('AppComponent', () => {
         {
           provide: ExportService,
           useClass: ExportServiceMock
+        },
+        {
+          provide: PicSureResourceService,
+          useClass: PicSureResourceServiceMock
         }
       ]
     }).compileComponents();
