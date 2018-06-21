@@ -1,6 +1,5 @@
 {
   "api-url": "http://localhost:8081",
-  "api-version": "v2",
   "app-url": "http://localhost:4200",
   "autosave-subject-sets": false,
   "export-data-view": "default",

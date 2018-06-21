@@ -96,7 +96,15 @@ Supported properties in the `config.*.json` files:
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
-
+| `api-type`                | `transmart` | API type to use (`transmart` or `picsure`) |
+| `picsure-resource-name`   |           | Name of the PIC-SURE resource to use if relevant (e.g. `i2b2-local`) |
+| `enable-query-saving`     | `true`    | Enable query saving feature |
+| `enable-variable-selection` | `true`  | Enable variable selection step |
+| `enable-data-table`       | `true`    | Enable data table step |
+| `enable-analysis`         | `true`    | Enable analysis features |
+| `enable-export`           | `true`    | Enable data export features |
+| `force-i2b2-nesting-style` | `false`  | Enforce the AND/OR i2b2 query format (if `false`, format is free) |
+| `enable-greedy-tree-loading` | `true` | Enable greedy tree loading (load whole tree at startup) | 
 
 ## License
 

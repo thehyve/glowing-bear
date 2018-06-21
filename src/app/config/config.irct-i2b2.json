@@ -1,0 +1,26 @@
+{
+  "api-url": "http://localhost:8082/IRCT-CL/rest",
+  "app-url": "http://localhost:4200",
+  "tree-node-counts-update": false,
+  "autosave-subject-sets": false,
+  "export-data-view": "default",
+  "show-observation-counts": false,
+  "instant-counts-update-1": false,
+  "instant-counts-update-2": false,
+  "instant-counts-update-3": false,
+
+  "authentication-method": "oidc",
+  "oidc-server-url": "http://localhost:8081/auth/realms/master",
+  "oidc-scopes": "openid",
+  "oidc-client-id": "i2b2-local",
+
+  "api-type": "picsure",
+  "picsure-resource-name": "i2b2-local",
+  "enable-query-saving": false,
+  "enable-variable-selection": false,
+  "enable-data-table": false,
+  "enable-analysis": false,
+  "enable-export": false,
+  "force-i2b2-nesting-style": true,
+  "enable-greedy-tree-loading": false
+}
