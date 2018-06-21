@@ -14,6 +14,7 @@ import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {SelectItem, TreeNode} from 'primeng/api';
+import {ErrorHelper} from '../../../../utilities/error-helper';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -114,55 +115,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         .subscribe(
           (responseAggregate: Aggregate) => {
             if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-              constraint.concept.aggregate = responseAggregate;
-              this.minLimit = responseAggregate['min'];
-              this.maxLimit = responseAggregate['max'];
-              // if there is existing numeric values
-              // fill their values in
-              if (constraint.valueConstraints.length > 0) {
-                for (let val of constraint.valueConstraints) {
-                  if (val.operator.includes('>')) {
-                    this.minVal = val.value;
-                  } else if (val.operator.includes('<')) {
-                    this.maxVal = val.value;
-                  } else if (val.operator === '=') {
-                    this.equalVal = val.value;
-                    this.operatorState = GbConceptOperatorState.EQUAL;
-                  }
-                }
-              }
+              this.handleNumericAggregate(responseAggregate);
             } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
-              constraint.concept.aggregate = responseAggregate;
-              let values = (<CategoricalAggregate>constraint.concept.aggregate).values;
-              let valueCounts = (<CategoricalAggregate>constraint.concept.aggregate).valueCounts;
-              // if there is existing value constraints
-              // use their values as selected categories
-              if (constraint.valueConstraints.length > 0) {
-                values = [];
-                for (let val of constraint.valueConstraints) {
-                  values.push(val.value);
-                }
-              }
-              this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, values);
-              this.selectedCategories = this.suggestedCategories.map((item: SelectItem) => {
-                return item.value;
-              });
+              this.handleCategoricalAggregate(responseAggregate);
             } else if (this.isDate()) { // -------------------------------------> If it's DATE
-              constraint.concept.aggregate = responseAggregate;
-              let date1 = constraint.valDateConstraint.date1;
-              let date2 = constraint.valDateConstraint.date2;
-              if (Math.abs(date1.getTime() - date2.getTime()) < 1000) {
-                this.valDate1 = new Date(responseAggregate['min']);
-                this.valDate2 = new Date(responseAggregate['max']);
-              } else {
-                this.valDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
-                this.valDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
-              }
-
-              this.valDateOperatorState = constraint.valDateConstraint.dateOperator;
+              this.handleDateAggregate(responseAggregate);
             }
           },
-          err => console.error(err)
+          err => ErrorHelper.handleError(err)
         );
 
       // Initialize the dates from the time constraint
@@ -183,15 +143,76 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       this.resourceService.getTrialVisits(conceptOnlyConstraint)
         .subscribe(
           visits => {
-            this.allTrialVisits = visits;
-            this.selectedTrialVisits = visits.slice(0);
-            constraint.trialVisitConstraint.trialVisits = visits.slice(0);
-          }
+            this.handleTrialVisits(visits);
+          },
+          err => ErrorHelper.handleError(err)
         );
 
       // Initialize flags
       this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
     }
+  }
+
+  handleNumericAggregate(responseAggregate: Aggregate) {
+    let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    constraint.concept.aggregate = responseAggregate;
+    this.minLimit = responseAggregate['min'];
+    this.maxLimit = responseAggregate['max'];
+    // if there is existing numeric values
+    // fill their values in
+    if (constraint.valueConstraints.length > 0) {
+      for (let val of constraint.valueConstraints) {
+        if (val.operator.includes('>')) {
+          this.minVal = val.value;
+        } else if (val.operator.includes('<')) {
+          this.maxVal = val.value;
+        } else if (val.operator === '=') {
+          this.equalVal = val.value;
+          this.operatorState = GbConceptOperatorState.EQUAL;
+        }
+      }
+    }
+  }
+
+  handleCategoricalAggregate(responseAggregate: Aggregate) {
+    let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    constraint.concept.aggregate = responseAggregate;
+    let values = (<CategoricalAggregate>constraint.concept.aggregate).values;
+    let valueCounts = (<CategoricalAggregate>constraint.concept.aggregate).valueCounts;
+    // if there is existing value constraints
+    // use their values as selected categories
+    if (constraint.valueConstraints.length > 0) {
+      values = [];
+      for (let val of constraint.valueConstraints) {
+        values.push(val.value);
+      }
+    }
+    this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, values);
+    this.selectedCategories = this.suggestedCategories.map((item: SelectItem) => {
+      return item.value;
+    });
+  }
+
+  handleDateAggregate(responseAggregate: Aggregate) {
+    let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    constraint.concept.aggregate = responseAggregate;
+    let date1 = constraint.valDateConstraint.date1;
+    let date2 = constraint.valDateConstraint.date2;
+    if (Math.abs(date1.getTime() - date2.getTime()) < 1000) {
+      this.valDate1 = new Date(responseAggregate['min']);
+      this.valDate2 = new Date(responseAggregate['max']);
+    } else {
+      this.valDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+      this.valDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+    }
+    this.valDateOperatorState = constraint.valDateConstraint.dateOperator;
+  }
+
+  handleTrialVisits(visits) {
+    let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    this.allTrialVisits = visits;
+    this.selectedTrialVisits = visits.slice(0);
+    constraint.trialVisitConstraint.trialVisits = visits.slice(0);
   }
 
   generateCategoricalValueItems(valueCounts: Map<string, number>, targetValues: string[]): SelectItem[] {
@@ -374,68 +395,79 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   updateConceptValues() {
-    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-
-    // if the concept is numeric
-    if (this.isNumeric()) {
-      // if to define a single value
-      if (this.operatorState === GbConceptOperatorState.EQUAL) {
-        if (typeof this.equalVal === 'number') {
-          let newVal: ValueConstraint = new ValueConstraint();
-          newVal.valueType = this.selectedConcept.type;
-          newVal.operator = '=';
-          newVal.value = this.equalVal;
-          conceptConstraint.valueConstraints = [];
-          conceptConstraint.valueConstraints.push(newVal);
-        } // else if to define a value range
-      } else if (this.operatorState === GbConceptOperatorState.BETWEEN) {
-        conceptConstraint.valueConstraints = [];
-        if (typeof this.minVal === 'number') {
-          let newMinVal: ValueConstraint = new ValueConstraint();
-          newMinVal.valueType = this.selectedConcept.type;
-          newMinVal.operator = '>';
-          if (this.isMinEqual) {
-            newMinVal.operator = '>=';
-          }
-          newMinVal.value = this.minVal;
-          conceptConstraint.valueConstraints.push(newMinVal);
-        }
-
-        if (typeof this.maxVal === 'number') {
-          let newMaxVal: ValueConstraint = new ValueConstraint();
-          newMaxVal.valueType = this.selectedConcept.type;
-          newMaxVal.operator = '<';
-          if (this.isMaxEqual) {
-            newMaxVal.operator = '<=';
-          }
-          newMaxVal.value = this.maxVal;
-          conceptConstraint.valueConstraints.push(newMaxVal);
-        }
-      } // else if the concept is categorical
-    } else if (this.isCategorical()) {
-      conceptConstraint.valueConstraints = [];
-      for (let category of this.selectedCategories) {
-        let newVal: ValueConstraint = new ValueConstraint();
-        newVal.valueType = 'STRING';
-        newVal.operator = '=';
-        newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
-        conceptConstraint.valueConstraints.push(newVal);
-      }
+    if (this.isNumeric()) { // if the concept is numeric
+      this.updateNumericConceptValues();
+    } else if (this.isCategorical()) {// else if the concept is categorical
+      this.updateCategoricalConceptValues();
     } else if (this.isDate()) {
-      conceptConstraint.applyValDateConstraint = true;
-      const val1 = this.valDate1;
-      if (val1) {
-        let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
-        conceptConstraint.valDateConstraint.date1 = correctedDate1;
-      }
-      const val2 = this.valDate2;
-      if (val2) {
-        let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
-        conceptConstraint.valDateConstraint.date2 = correctedDate2;
-      }
-
+      this.updateDateConceptValues();
     }
     this.update();
+  }
+
+  updateNumericConceptValues() {
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    // if to define a single value
+    if (this.operatorState === GbConceptOperatorState.EQUAL) {
+      if (typeof this.equalVal === 'number') {
+        let newVal: ValueConstraint = new ValueConstraint();
+        newVal.valueType = this.selectedConcept.type;
+        newVal.operator = '=';
+        newVal.value = this.equalVal;
+        conceptConstraint.valueConstraints = [];
+        conceptConstraint.valueConstraints.push(newVal);
+      } // else if to define a value range
+    } else if (this.operatorState === GbConceptOperatorState.BETWEEN) {
+      conceptConstraint.valueConstraints = [];
+      if (typeof this.minVal === 'number') {
+        let newMinVal: ValueConstraint = new ValueConstraint();
+        newMinVal.valueType = this.selectedConcept.type;
+        newMinVal.operator = '>';
+        if (this.isMinEqual) {
+          newMinVal.operator = '>=';
+        }
+        newMinVal.value = this.minVal;
+        conceptConstraint.valueConstraints.push(newMinVal);
+      }
+
+      if (typeof this.maxVal === 'number') {
+        let newMaxVal: ValueConstraint = new ValueConstraint();
+        newMaxVal.valueType = this.selectedConcept.type;
+        newMaxVal.operator = '<';
+        if (this.isMaxEqual) {
+          newMaxVal.operator = '<=';
+        }
+        newMaxVal.value = this.maxVal;
+        conceptConstraint.valueConstraints.push(newMaxVal);
+      }
+    }
+  }
+
+  updateCategoricalConceptValues() {
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.valueConstraints = [];
+    for (let category of this.selectedCategories) {
+      let newVal: ValueConstraint = new ValueConstraint();
+      newVal.valueType = 'STRING';
+      newVal.operator = '=';
+      newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      conceptConstraint.valueConstraints.push(newVal);
+    }
+  }
+
+  updateDateConceptValues() {
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.applyValDateConstraint = true;
+    const val1 = this.valDate1;
+    if (val1) {
+      let correctedDate1 = new Date(val1.getTime() - 60000 * val1.getTimezoneOffset());
+      conceptConstraint.valDateConstraint.date1 = correctedDate1;
+    }
+    const val2 = this.valDate2;
+    if (val2) {
+      let correctedDate2 = new Date(val2.getTime() - 60000 * val2.getTimezoneOffset());
+      conceptConstraint.valDateConstraint.date2 = correctedDate2;
+    }
   }
 
   /*
