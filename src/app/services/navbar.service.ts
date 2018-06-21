@@ -12,6 +12,7 @@ import {AuthenticationService} from './authentication/authentication.service';
 import {AccessLevel} from './authentication/access-level';
 import {QueryService} from './query.service';
 import {MessageHelper} from '../utilities/message-helper';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class NavbarService {
@@ -24,13 +25,18 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor(private authService: AuthenticationService,
+  constructor(private config: AppConfig,
+              private authService: AuthenticationService,
               private queryService: QueryService) {
     this.items = [
-      {label: 'Data Selection', routerLink: '/data-selection'},
-      {label: 'Analysis', routerLink: '/analysis'}
+      {label: 'Data Selection', routerLink: '/data-selection'}
     ];
-    if (authService.accessLevel === AccessLevel.Full) {
+
+    if (config.getConfig('enable-analysis')) {
+      this.items.push({label: 'Analysis', routerLink: '/analysis'});
+    }
+
+    if (config.getConfig('enable-export') && authService.accessLevel === AccessLevel.Full) {
       this.items.push({label: 'Export', routerLink: '/export'})
     }
   }

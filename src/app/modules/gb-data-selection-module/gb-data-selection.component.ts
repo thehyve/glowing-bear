@@ -9,6 +9,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormatHelper} from '../../utilities/format-helper';
 import {QueryService} from '../../services/query.service';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-data-selection',
@@ -81,6 +82,10 @@ export class GbDataSelectionComponent implements OnInit {
 
   get isDataTableUsed(): boolean {
     return this.queryService.isDataTableUsed;
+  }
+
+  get isVariableSelectionUsed(): boolean {
+    return this.queryService.isVariableSelectionUsed;
   }
 
   update_1(event) {

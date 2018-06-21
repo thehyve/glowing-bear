@@ -9,11 +9,12 @@
 import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {QueryService} from '../../../../services/query.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {TreeNode} from 'primeng/api';
+import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {DropMode} from '../../../../models/drop-mode';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {CrossTableService} from '../../../../services/cross-table.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
 
 @Component({
   selector: 'gb-summary',
@@ -57,7 +58,6 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodes[index];
-      let dataObjectType = dataObject['type'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
 
       let handleDragstart = (function (event) {
@@ -66,8 +66,8 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
-      // if the data object type belongs to the listed types
-      if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)
+      // if the data object type is known, it is considered queryable
+      if (dataObject.nodeType !== TreeNodeType.UNKNOWN
         && !treeNodeElm.hasAttribute('hasEventListener')) {
         treeNodeElm.setAttribute('hasEventListener', true);
         treeNodeElm.addEventListener('dragstart', handleDragstart);

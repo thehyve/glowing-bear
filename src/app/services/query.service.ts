@@ -99,12 +99,15 @@ export class QueryService {
   // _subjectCount_2 < or = _subjectCount_1
   // _observationCount_2 could be <, > or = _observationCount_1
   private _counts_2: CountItem;
+  private _isVariableSelectionUsed = true;
+
   /*
    *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
    */
   private _instantCountsUpdate_3: boolean;
   private _isUpdating_3 = false;
   private _isDataTableUsed = true;
+
   /*
    * ------ other variables ------
    */
@@ -126,6 +129,7 @@ export class QueryService {
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts', true);
+    this.isVariableSelectionUsed = this.appConfig.getConfig('include-variable-selection', true);
     this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
     this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
 
@@ -715,6 +719,14 @@ export class QueryService {
 
   set isDataTableUsed(value: boolean) {
     this._isDataTableUsed = value;
+  }
+
+  get isVariableSelectionUsed(): boolean {
+    return this._isVariableSelectionUsed;
+  }
+
+  set isVariableSelectionUsed(value: boolean) {
+    this._isVariableSelectionUsed = value;
   }
 
   get isQuerySubscriptionIncluded(): boolean {

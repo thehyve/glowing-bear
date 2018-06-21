@@ -2,7 +2,7 @@
   <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
 
   <!-- The data selection control panel -->
-  <div *ngIf="isDataSelection" class="container form-inline gb-data-selection-overview-panel">
+  <div *ngIf="isDataSelection && querySavingEnabled" class="container form-inline gb-data-selection-overview-panel">
     <!-- Saving query -->
     <div>
       <input id="queryName" type="text"

@@ -12,6 +12,7 @@ import {MenuItem} from 'primeng/components/common/api';
 import {QueryService} from '../../services/query.service';
 import {NavbarService} from '../../services/navbar.service';
 import {MessageHelper} from '../../utilities/message-helper';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -24,7 +25,8 @@ export class GbNavbarComponent implements OnInit {
 
   constructor(private router: Router,
               private navbarService: NavbarService,
-              private queryService: QueryService) {
+              private queryService: QueryService,
+              private config: AppConfig) {
     this.queryName = '';
   }
 
@@ -55,6 +57,10 @@ export class GbNavbarComponent implements OnInit {
 
   get isDataSelection(): boolean {
     return this.navbarService.isDataSelection;
+  }
+
+  get querySavingEnabled(): boolean {
+    return this.config.getConfig('enable-query-saving', true);
   }
 
   /**

@@ -13,7 +13,7 @@
       </p-accordionTab>
     </div>
 
-    <div *ngIf="isDataSelection">
+    <div *ngIf="isDataSelection && enableQuerySaving">
       <p-accordionTab header="Queries" [selected]="true">
         <gb-queries></gb-queries>
       </p-accordionTab>
