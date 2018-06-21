@@ -9,6 +9,7 @@ import {CrossTable} from '../../models/table-models/cross-table';
 import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
+import {TrialVisit} from '../../models/constraint-models/trial-visit';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -75,6 +76,10 @@ export class ResourceServiceMock {
 
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
     return Observable.of(this.aggregate);
+  }
+
+  getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
+    return Observable.of([]);
   }
 
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {

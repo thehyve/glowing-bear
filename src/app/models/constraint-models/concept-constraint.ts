@@ -3,6 +3,7 @@ import {Concept} from './concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class ConceptConstraint extends Constraint {
 
@@ -39,7 +40,7 @@ export class ConceptConstraint extends Constraint {
 
   set concept(concept: Concept) {
     this._concept = concept;
-    this.textRepresentation = `Concept: ${concept.label}`;
+    this.textRepresentation = concept ? `Concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
   }
 
   get valueConstraints(): ValueConstraint[] {

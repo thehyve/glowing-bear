@@ -13,10 +13,22 @@ import {ConceptConstraint} from '../../../../models/constraint-models/concept-co
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {Observable} from 'rxjs/Observable';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {ErrorHelper} from '../../../../utilities/error-helper';
+import {Error} from 'tslint/lib/error';
+import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
+import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
+import {GbConceptOperatorState} from './gb-concept-operator-state';
+import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
+import {TimeConstraint} from '../../../../models/constraint-models/time-constraint';
+import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
   let fixture: ComponentFixture<GbConceptConstraintComponent>;
+  let resourceService: ResourceService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -58,10 +70,172 @@ describe('GbConceptConstraintComponent', () => {
     fixture = TestBed.createComponent(GbConceptConstraintComponent);
     component = fixture.componentInstance;
     component.constraint = new ConceptConstraint();
+    resourceService = TestBed.get(ResourceService);
     fixture.detectChanges();
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should initialize the numeric concept constraint', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = null;
+    component.constraint = constraint;
+    let dummyAggregate = {};
+    let dummyTrialVistis = [];
+    let dummyConcept = new Concept();
+    let spy1 = spyOn(resourceService, 'getAggregate').and.returnValue(Observable.of(dummyAggregate));
+    let spy2 = spyOn(resourceService, 'getTrialVisits').and.returnValue(Observable.of(dummyTrialVistis));
+    component.initializeConstraints();
+    expect(spy1).not.toHaveBeenCalled();
+    expect(spy2).not.toHaveBeenCalled();
+
+    let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
+    let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
+    let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
+    dummyConcept.type = ConceptType.NUMERICAL;
+    constraint.concept = dummyConcept;
+    component.initializeConstraints();
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
+    expect(spy4).not.toHaveBeenCalled();
+    expect(spy5).not.toHaveBeenCalled();
+  })
+
+
+  it('should initialize the categorical concept constraint', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    constraint.concept.type = ConceptType.CATEGORICAL;
+    component.constraint = constraint;
+    let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
+    let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
+    let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
+
+    component.initializeConstraints();
+    expect(spy3).not.toHaveBeenCalled();
+    expect(spy4).toHaveBeenCalled();
+    expect(spy5).not.toHaveBeenCalled();
+  })
+
+  it('should initialize the date concept constraint', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    constraint.concept.type = ConceptType.DATE;
+    component.constraint = constraint;
+    let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
+    let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
+    let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
+
+    component.initializeConstraints();
+    expect(spy3).not.toHaveBeenCalled();
+    expect(spy4).not.toHaveBeenCalled();
+    expect(spy5).toHaveBeenCalled();
+  })
+
+  it('should not initialize the constraint when it not numerical, categorical or date', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    constraint.concept.type = null;
+    component.constraint = constraint;
+    let spy3 = spyOn(component, 'handleNumericAggregate').and.stub();
+    let spy4 = spyOn(component, 'handleCategoricalAggregate').and.stub();
+    let spy5 = spyOn(component, 'handleDateAggregate').and.stub();
+
+    component.initializeConstraints();
+    expect(spy3).not.toHaveBeenCalled();
+    expect(spy4).not.toHaveBeenCalled();
+    expect(spy5).not.toHaveBeenCalled();
+  })
+
+  it('should handle resource service errors during initialization', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    let spy = spyOn(ErrorHelper, 'handleError').and.stub();
+    spyOn(resourceService, 'getAggregate').and.callFake(() => {
+      return Observable.throw('error');
+    });
+    spyOn(resourceService, 'getTrialVisits').and.callFake(() => {
+      return Observable.throw('error');
+    });
+    component.initializeConstraints();
+    expect(spy).toHaveBeenCalledTimes(2);
+  })
+
+  it('should handle numeric aggregate response', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    let response = new NumericalAggregate();
+    response.min = 10;
+    response.max = 20;
+    component.handleNumericAggregate(response);
+    expect(component.minLimit).toEqual(10);
+    expect(component.maxLimit).toEqual(20);
+
+
+    let val1 = new ValueConstraint();
+    val1.operator = '>';
+    val1.value = 11;
+    let val2 = new ValueConstraint();
+    val2.operator = '<';
+    val2.value = 100;
+    let val3 = new ValueConstraint();
+    val3.operator = '=';
+    val3.value = 15;
+    let val4 = new ValueConstraint();
+    val4.operator = 'other';
+    val4.value = 16;
+    constraint.valueConstraints = [
+      val1, val2, val3, val4
+    ];
+    component.handleNumericAggregate(response);
+    expect(component.minVal).toEqual(11);
+    expect(component.maxVal).toEqual(100);
+    expect(component.equalVal).toEqual(15);
+    expect(component.operatorState).toEqual(GbConceptOperatorState.EQUAL);
+  })
+
+  it('should handle categorical aggregate response', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    let response = new CategoricalAggregate();
+    response.valueCounts.set('foo', 10);
+    response.valueCounts.set('bar', 20);
+
+    component.handleCategoricalAggregate(response);
+    expect(component.suggestedCategories.length).toBe(2);
+    expect(component.selectedCategories[0]).toEqual('foo');
+
+    let val = new ValueConstraint();
+    val.value = 'bar';
+    constraint.valueConstraints = [val];
+    component.handleCategoricalAggregate(response);
+    expect(component.selectedCategories[0]).toEqual('bar');
+  })
+
+  it('should handle date aggregate response', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    constraint.valDateConstraint = new TimeConstraint();
+    constraint.valDateConstraint.dateOperator = DateOperatorState.NOT_BETWEEN;
+    let response = new NumericalAggregate();
+    response.min = 20000;
+    response.max = 60000;
+    component.handleDateAggregate(response);
+    expect(component.valDate1.getTime()).toEqual(20000);
+    expect(component.valDate2.getTime()).toEqual(60000);
+    expect(component.valDateOperatorState).toEqual(DateOperatorState.NOT_BETWEEN);
+
+    constraint.valDateConstraint.date1 = new Date(1434672000000);
+    constraint.valDateConstraint.date2 = new Date(1529592161623);
+    component.handleDateAggregate(response);
+    expect(component.valDate1.getTime()).toEqual(1434664800000);
+    expect(component.valDate2.getTime()).toEqual(1529584961623);
+  })
 });
