@@ -42,6 +42,7 @@ import {TransmartResourceService} from './services/transmart-services/transmart-
 import {AuthorizationResult} from './services/authentication/authorization-result';
 import * as jwt_decode from 'jwt-decode';
 import {AccessLevel} from './services/authentication/access-level';
+import {ApiEndpointService} from './services/api-endpoint.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load()
@@ -102,6 +103,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     GbExportModule
   ],
   providers: [
+    ApiEndpointService,
     ResourceService,
     TransmartResourceService,
     TreeNodeService,
