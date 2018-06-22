@@ -25,6 +25,7 @@ import {CategoricalAggregate} from '../../../../models/aggregate-models/categori
 import {TimeConstraint} from '../../../../models/constraint-models/time-constraint';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {UIHelper} from '../../../../utilities/ui-helper';
+import {FormatHelper} from '../../../../utilities/format-helper';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -338,6 +339,82 @@ describe('GbConceptConstraintComponent', () => {
   })
 
   it('should update numeric concept values', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    constraint.valueConstraints = null;
+    component.constraint = constraint;
+
+    component.operatorState = null;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints).toBe(null);
+
+    component.operatorState = GbConceptOperatorState.EQUAL;
+    component.equalVal = null;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints).toBe(null);
+
+    component.operatorState = GbConceptOperatorState.EQUAL;
+    component.equalVal = 100;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints.length).toEqual(1);
+    expect(constraint.valueConstraints[0].value).toEqual(100);
+
+    component.operatorState = GbConceptOperatorState.BETWEEN;
+    component.minVal = null;
+    component.maxVal = null;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints.length).toEqual(0);
+
+    component.operatorState = GbConceptOperatorState.BETWEEN;
+    component.minVal = 200;
+    component.isMinEqual = false;
+    component.maxVal = null;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints.length).toEqual(1);
+    expect(constraint.valueConstraints[0].value).toEqual(200);
+    expect(constraint.valueConstraints[0].operator).toEqual('>');
+
+    component.minVal = null;
+    component.maxVal = 300;
+    component.isMaxEqual = false;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints.length).toEqual(1);
+    expect(constraint.valueConstraints[0].value).toEqual(300);
+    expect(constraint.valueConstraints[0].operator).toEqual('<');
+
+    component.minVal = 200;
+    component.isMinEqual = true;
+    component.maxVal = 300;
+    component.isMaxEqual = true;
+    component.updateNumericConceptValues();
+    expect(constraint.valueConstraints.length).toEqual(2);
+    expect(constraint.valueConstraints[0].operator).toEqual('>=');
+    expect(constraint.valueConstraints[1].operator).toEqual('<=');
+  })
+
+  it('should update categorical concept values', () => {
+    component.selectedCategories = ['a', 'b', FormatHelper.nullValuePlaceholder];
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    component.updateCategoricalConceptValues();
+    expect(constraint.valueConstraints.length).toBe(3);
+  })
+
+  it('should update date concept values', () => {
+    let constraint = new ConceptConstraint();
+    constraint.concept = new Concept();
+    component.constraint = constraint;
+    component.updateDateConceptValues();
+    expect(constraint.applyValDateConstraint).toBe(true);
+
+    component.valDate1 = new Date('2016-06-06');
+    component.updateDateConceptValues();
+    expect(constraint.valDateConstraint.date1.getTime()).toEqual(1465178400000);
+
+    component.valDate2 = new Date('2018-06-06');
+    component.updateDateConceptValues();
+    expect(constraint.valDateConstraint.date2.getTime()).toEqual(1528250400000);
 
   })
 

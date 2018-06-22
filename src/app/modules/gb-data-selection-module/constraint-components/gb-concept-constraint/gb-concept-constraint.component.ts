@@ -439,7 +439,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       let newVal: ValueConstraint = new ValueConstraint();
       newVal.valueType = 'STRING';
       newVal.operator = '=';
-      newVal.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
+      newVal.value = category;
       conceptConstraint.valueConstraints.push(newVal);
     }
   }
