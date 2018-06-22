@@ -1,4 +1,5 @@
 import {Constraint} from './constraint';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class ValueConstraint extends Constraint {
 
@@ -33,7 +34,7 @@ export class ValueConstraint extends Constraint {
 
   set value(value: any) {
     this._value = value;
-    this.textRepresentation = value.toString();
+    this.textRepresentation = value ? FormatHelper.nullValuePlaceholder : value.toString();
   }
 
   get className(): string {

@@ -3,12 +3,13 @@ import {Concept} from './concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class ConceptConstraint extends Constraint {
 
   private _concept: Concept;
   // the value constraints used for numeric or categorical values of this concept
-  private _values: ValueConstraint[];
+  private _valueConstraints: ValueConstraint[];
   // the time constraint used for date type constraint of this concept
   private _valDateConstraint: TimeConstraint;
   private _applyValDateConstraint = false;
@@ -24,7 +25,7 @@ export class ConceptConstraint extends Constraint {
 
   constructor() {
     super();
-    this.values = [];
+    this.valueConstraints = [];
     this.valDateConstraint = new TimeConstraint();
     this.valDateConstraint.isObservationDate = false;
     this.obsDateConstraint = new TimeConstraint();
@@ -39,15 +40,15 @@ export class ConceptConstraint extends Constraint {
 
   set concept(concept: Concept) {
     this._concept = concept;
-    this.textRepresentation = `Concept: ${concept.label}`;
+    this.textRepresentation = concept ? `Concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
   }
 
-  get values(): ValueConstraint[] {
-    return this._values;
+  get valueConstraints(): ValueConstraint[] {
+    return this._valueConstraints;
   }
 
-  set values(value: ValueConstraint[]) {
-    this._values = value;
+  set valueConstraints(value: ValueConstraint[]) {
+    this._valueConstraints = value;
   }
 
   get className(): string {

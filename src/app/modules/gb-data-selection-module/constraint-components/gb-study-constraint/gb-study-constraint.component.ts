@@ -4,6 +4,7 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {UIHelper} from '../../../../utilities/ui-helper';
+import {TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'gb-study-constraint',
@@ -63,6 +64,23 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
 
   updateStudies(studyObject) {
     this.update();
+  }
+
+  onDrop(event: DragEvent) {
+    event.stopPropagation();
+    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
+    this.droppedConstraint =
+      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
+    this.treeNodeService.selectedTreeNode = null;
+    if (this.droppedConstraint) {
+      let study = (<StudyConstraint>this.droppedConstraint).studies[0];
+      let studies = (<StudyConstraint>this.constraint).studies;
+      studies = studies.filter(item => item.studyId === study.studyId);
+      if (studies.length === 0) {
+        (<StudyConstraint>this.constraint).studies.push(study);
+        this.update();
+      }
+    }
   }
 
 }

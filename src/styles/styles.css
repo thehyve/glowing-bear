@@ -197,6 +197,11 @@ gb-data-selection .v-align-center {
   align-items: center;
 }
 
+gb-data-selection .ui-multiselect {
+  padding: 1px;
+  color: dimgrey;
+}
+
 /*
  * Style for buttons such as update, clear criteria, expand all/none, check all/none
  * in Data Selection

@@ -19,6 +19,7 @@ export class GbConstraintComponent implements OnInit {
   @Input() constraint: Constraint;
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
+  droppedConstraint: Constraint = null;
 
   constructor(protected treeNodeService: TreeNodeService,
               protected resourceService: ResourceService,
@@ -44,7 +45,9 @@ export class GbConstraintComponent implements OnInit {
     elm.addEventListener('dragenter', this.onDragEnter.bind(this), false);
     elm.addEventListener('dragover', this.onDragOver.bind(this), false);
     elm.addEventListener('dragleave', this.onDragLeave.bind(this), false);
-    elm.addEventListener('drop', this.onDrop.bind(this), false);
+    // capture the event in its capturing phase, instead of the bubbling phase
+    // so that parent constraint component handles the event first
+    elm.addEventListener('drop', this.onDrop.bind(this), true);
   }
 
   onDragEnter(event) {
@@ -63,40 +66,12 @@ export class GbConstraintComponent implements OnInit {
     this.element.nativeElement.firstChild.classList.remove('dropzone');
   }
 
-  onDrop(event) {
-    event.stopPropagation();
+  onDrop(event: DragEvent) {
     event.preventDefault();
     this.element.nativeElement.firstChild.classList.remove('dropzone');
-    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    let droppedConstraint: Constraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
-    this.treeNodeService.selectedTreeNode = null;
-
-    if (droppedConstraint) {
-      if (this.constraint instanceof CombinationConstraint) {
-        let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-        combinationConstraint.addChild(droppedConstraint);
-        this.update();
-      } else if (this.constraint.className === droppedConstraint.className) {
-        if (this.constraint instanceof StudyConstraint) {
-          let study = (<StudyConstraint>droppedConstraint).studies[0];
-          let studies = (<StudyConstraint>this.constraint).studies;
-          studies = studies.filter(item => item.studyId === study.studyId);
-          if (studies.length === 0) {
-            (<StudyConstraint>this.constraint).studies.push(study);
-            this.update();
-          }
-        } else if (this.constraint instanceof ConceptConstraint) {
-          this.constraint = droppedConstraint;
-          // TODO: still needs to find a way to update the aggregates fo the ConceptConstraintComponent
-          this.update();
-        }
-      }
-
-    }// if dropped constraint exists
   }
 
-  protected update() {
+  update() {
     this.queryService.step = Step.I;
     if (this.queryService.instantCountsUpdate_1) {
       this.queryService.update_1();

@@ -7,6 +7,7 @@ import {
 } from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
+import {TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -85,6 +86,20 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // to null doesn't work)
       this.autoComplete.selectItem(null);
       this.update();
+    }
+  }
+
+  onDrop(event) {
+    event.stopPropagation();
+    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
+    this.droppedConstraint =
+      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
+    this.treeNodeService.selectedTreeNode = null;
+    if (this.droppedConstraint) {
+      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+      combinationConstraint.addChild(this.droppedConstraint);
+      this.update();
+      this.droppedConstraint = null;
     }
   }
 
