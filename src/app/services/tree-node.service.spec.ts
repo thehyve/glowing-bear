@@ -19,6 +19,7 @@ describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
+  let navbarService: NavbarService;
   let httpErrorResponse: HttpErrorResponse;
 
   beforeEach(() => {
@@ -42,6 +43,7 @@ describe('TreeNodeService', () => {
     treeNodeService = TestBed.get(TreeNodeService);
     resourceService = TestBed.get(ResourceService);
     constraintService = TestBed.get(ConstraintService);
+    navbarService = TestBed.get(NavbarService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -577,4 +579,214 @@ describe('TreeNodeService', () => {
     expect(treeNodeContent.children.length).toBe(1);
   })
 
+  it('should update tree node counts iteratively', () => {
+    let elm1 = document.createElement('div');
+    let elm2 = document.createElement('div');
+    let elm2_1 = document.createElement('div');
+    elm2_1.appendChild(document.createElement('span'));
+    let elm3 = document.createElement('div');
+    let treeNodeElements = [elm1, elm2, elm3];
+    let node1 = {
+      type: 'STUDY'
+    };
+    let node2 = {
+      type: 'NUMERIC',
+      expanded: true,
+      children: [{}]
+    };
+    let node3 = {
+      type: 'other'
+    };
+    let treeNodeData = [node1, node2, node3];
+    let studyCountMap = {};
+    let conceptCountMap = {};
+    let spy1 = spyOn(treeNodeService, 'appendCountElement').and.stub();
+    let spy2 = spyOn(elm2, 'querySelector').and.callFake((query) => {
+      return elm2_1;
+    })
+    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.callThrough();
+    treeNodeService.updateTreeNodeCountsIterative(treeNodeElements, treeNodeData, studyCountMap, conceptCountMap);
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalledTimes(2);
+  })
+
+  it('should update tree node counts iteratively once if there is no children', () => {
+    let elm1 = document.createElement('div');
+    let elm2 = document.createElement('div');
+    let elm2_1 = document.createElement('div');
+    elm2_1.appendChild(document.createElement('span'));
+    let elm3 = document.createElement('div');
+    let treeNodeElements = [elm1, elm2, elm3];
+    let node1 = {
+      type: 'STUDY'
+    };
+    let node2 = {
+      type: 'NUMERIC',
+      expanded: true,
+      children: [{}]
+    };
+    let node3 = {
+      type: 'other'
+    };
+    let treeNodeData = [node1, node2, node3];
+    let studyCountMap = {};
+    let conceptCountMap = {};
+    let spy1 = spyOn(treeNodeService, 'appendCountElement').and.stub();
+    let spy2 = spyOn(elm2, 'querySelector').and.callFake((query) => {
+      return null;
+    })
+    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.callThrough();
+    treeNodeService.updateTreeNodeCountsIterative(treeNodeElements, treeNodeData, studyCountMap, conceptCountMap);
+    expect(spy1).toHaveBeenCalledTimes(2);
+    expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalledTimes(1);
+  })
+
+  it('should update tree node counts', () => {
+    let elm = document.createElement('div');
+    let spy1 = spyOn(document, 'getElementById').and.callFake(() => {
+      return elm;
+    })
+    let spy2 = spyOn(elm, 'querySelector').and.callFake(() => {
+      return [];
+    })
+    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.stub();
+    navbarService.isDataSelection = true;
+    treeNodeService.updateTreeNodeCounts({}, {});
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
+  })
+
+  it('should not update tree node counts when not in data selection tab', () => {
+    let elm = document.createElement('div');
+    let spy1 = spyOn(document, 'getElementById').and.callFake(() => {
+      return elm;
+    })
+    let spy2 = spyOn(elm, 'querySelector').and.callFake(() => {
+      return [];
+    })
+    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.stub();
+    navbarService.isDataSelection = false;
+    treeNodeService.updateTreeNodeCounts({}, {});
+    expect(spy1).not.toHaveBeenCalled();
+    expect(spy2).not.toHaveBeenCalled();
+    expect(spy3).not.toHaveBeenCalled();
+  })
+
+  it('should get parent tree node paths', () => {
+    let path = '\\a\\test\\path\\';
+    let result = treeNodeService.getParentTreeNodePaths(path);
+    expect(result.length).toBe(2);
+    expect(result[0]).toEqual('\\a\\');
+    expect(result[1]).toEqual('\\a\\test\\');
+
+    path = '\\a\\';
+    result = treeNodeService.getParentTreeNodePaths(path);
+    expect(result.length).toBe(0);
+  })
+
+  it('should expand or collapse tree nodes iteratively', () => {
+    let node_1: TreeNode = {};
+    let node: TreeNode = {};
+    node.children = [node_1];
+    treeNodeService.expandProjectionTreeDataIterative([node], true);
+    expect(node['expanded']).toBe(true);
+    window.setTimeout(() => {
+      expect(node_1['expanded']).toBe(true);
+    }, 110)
+    treeNodeService.expandProjectionTreeDataIterative([node], false);
+    expect(node['expanded']).toBe(false);
+    expect(node_1['expanded']).toBe(false);
+  })
+
+  it('should get top tree nodes', () => {
+    let nodeABC: TreeNode = {};
+    nodeABC['fullName'] = 'A\\B\\C';
+    let nodeAB: TreeNode = {};
+    nodeAB['fullName'] = 'A\\B';
+    let nodeADE: TreeNode = {};
+    nodeADE['fullName'] = 'A\\D\\E';
+    let nodeADEF: TreeNode = {};
+    nodeADEF['fullName'] = 'A\\D\\E\\F';
+    let nodeAE: TreeNode = {};
+    nodeAE['fullName'] = 'A\\E';
+    let nodes = [nodeABC, nodeAB, nodeADE, nodeADEF, nodeAE];
+    let result = treeNodeService.getTopTreeNodes(nodes);
+    expect(result.length).toBe(3);
+    expect(result.includes(nodeAB)).toBe(true);
+    expect(result.includes(nodeADE)).toBe(true);
+    expect(result.includes(nodeAE)).toBe(true);
+  })
+
+  it('should find tree nodes by paths', () => {
+    let nodeABC: TreeNode = {};
+    nodeABC['fullName'] = 'A\\B\\C';
+    let nodeAB: TreeNode = {};
+    nodeAB['fullName'] = 'A\\B';
+    let nodeADE: TreeNode = {};
+    nodeADE['fullName'] = 'A\\D\\E';
+    let nodeADEF: TreeNode = {};
+    nodeADEF['fullName'] = 'A\\D\\E\\F';
+    nodeADE.children = [nodeADEF];
+    let nodeAE: TreeNode = {};
+    nodeAE['fullName'] = 'A\\E';
+    let nodes = [nodeABC, nodeAB, nodeADE, nodeADEF, nodeAE];
+    let paths = ['A\\B', 'A\\D\\E'];
+    let found = [];
+    treeNodeService.findTreeNodesByPaths(nodes, paths, found)
+    expect(found.length).toBe(2);
+    expect(found.includes(nodeAB)).toBe(true);
+    expect(found.includes(nodeADE)).toBe(true);
+  })
+
+  it('should find tree node ancestors', () => {
+    let nodeABC: TreeNode = {};
+    nodeABC['fullName'] = '\\A\\B\\C\\';
+    let nodeAB: TreeNode = {};
+    nodeAB['fullName'] = '\\A\\B\\';
+    nodeAB.children = [nodeABC];
+    let nodeADE: TreeNode = {};
+    nodeADE['fullName'] = '\\A\\D\\E\\';
+    let nodeADEF: TreeNode = {};
+    nodeADEF['fullName'] = '\\A\\D\\E\\F\\';
+    nodeADE.children = [nodeADEF];
+    let nodeAD: TreeNode = {};
+    nodeAD['fullName'] = '\\A\\D\\';
+    nodeAD.children = [nodeADE];
+    let nodeA: TreeNode = {};
+    nodeA['fullName'] = '\\A\\';
+    nodeA.children = [nodeAB, nodeAD];
+    treeNodeService.treeNodes = [nodeA];
+    let found = treeNodeService.findTreeNodeAncestors(nodeABC);
+    expect(found.length).toBe(2);
+  })
+
+  it('should convert tree nodes to paths', () => {
+    let nodeABC: TreeNode = {};
+    nodeABC['fullName'] = '\\A\\B\\C\\';
+    nodeABC['metadata'] = {};
+    nodeABC['metadata']['item_name'] = 'name3';
+    let nodeAB: TreeNode = {};
+    nodeAB['fullName'] = '\\A\\B\\';
+    nodeAB.children = [nodeABC];
+    let nodeADE: TreeNode = {};
+    nodeADE['fullName'] = '\\A\\D\\E\\';
+    nodeADE['metadata'] = {};
+    nodeADE['metadata']['item_name'] = 'name1';
+    let nodeADEF: TreeNode = {};
+    nodeADEF['fullName'] = '\\A\\D\\E\\F\\';
+    nodeADE.children = [nodeADEF];
+    let nodeAD: TreeNode = {};
+    nodeAD['fullName'] = '\\A\\D\\';
+    nodeAD.children = [nodeADE];
+    let nodeA: TreeNode = {};
+    nodeA['fullName'] = '\\A\\';
+    nodeA.children = [nodeAB, nodeAD];
+    let paths = [];
+    treeNodeService.convertItemsToPaths([nodeA, null], ['name1'], paths);
+    expect(paths.length).toBe(1);
+    expect(paths[0]).toBe('\\A\\D\\E\\');
+  })
 });
