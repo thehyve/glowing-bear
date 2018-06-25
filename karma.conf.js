@@ -42,7 +42,7 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome'],
     browserDisconnectTolerance: 2,
-    browserNoActivityTimeout: 50000,
+    browserNoActivityTimeout: 100000,
     singleRun: false
   });
 };

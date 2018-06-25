@@ -36,7 +36,34 @@ describe('CrossTableService', () => {
   it('should be created',
     inject([CrossTableService], (service: CrossTableService) => {
       expect(service).toBeTruthy();
-  }));
+    }));
+
+  it('should check if value constraints are mapped', function () {
+    let spy1 = spyOnProperty(crossTableService, 'areValueConstraintsMapped', 'get').and.callThrough();
+    let result = crossTableService.areValueConstraintsMapped;
+    expect(spy1).toHaveBeenCalled();
+    expect(result).toBe(true);
+
+    let dummy = new TrueConstraint();
+    crossTableService.rowConstraints.length = 0;
+    crossTableService.rowConstraints.push(dummy);
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(false);
+
+    crossTableService.valueConstraints.set(dummy, []);
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(true);
+
+    crossTableService.rowConstraints.length = 0;
+    crossTableService.columnConstraints.length = 0;
+    crossTableService.columnConstraints.push(dummy);
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(true);
+
+    crossTableService.valueConstraints.clear();
+    result = crossTableService.areValueConstraintsMapped;
+    expect(result).toBe(false);
+  });
 
   it('should verify updateValueConstraints for categorical concept constraint', () => {
     let spy1 = spyOn(crossTableService.valueConstraints, 'get').and.callFake(() => {
@@ -160,33 +187,6 @@ describe('CrossTableService', () => {
     expect(result).toBe(false);
   });
 
-  it('should check if value constraints are mapped', function () {
-    let spy1 = spyOnProperty(crossTableService, 'areValueConstraintsMapped', 'get').and.callThrough();
-    let result = crossTableService.areValueConstraintsMapped;
-    expect(spy1).toHaveBeenCalled();
-    expect(result).toBe(true);
-
-    let dummy = new TrueConstraint();
-    crossTableService.rowConstraints.length = 0;
-    crossTableService.rowConstraints.push(dummy);
-    result = crossTableService.areValueConstraintsMapped;
-    expect(result).toBe(false);
-
-    crossTableService.valueConstraints.set(dummy, []);
-    result = crossTableService.areValueConstraintsMapped;
-    expect(result).toBe(true);
-
-    crossTableService.rowConstraints.length = 0;
-    crossTableService.columnConstraints.length = 0;
-    crossTableService.columnConstraints.push(dummy);
-    result = crossTableService.areValueConstraintsMapped;
-    expect(result).toBe(true);
-
-    crossTableService.valueConstraints.clear();
-    result = crossTableService.areValueConstraintsMapped;
-    expect(result).toBe(false);
-  });
-
   it('should get and set selectedConstraintCell', () => {
     let spyGet =
       spyOnProperty(crossTableService, 'selectedConstraintCell', 'get').and.callThrough();
@@ -224,7 +224,7 @@ describe('CrossTableService', () => {
 
     // FIXME: Set a timeout to wait until aggregates have been fetched,
     // because the requests are returned as a chain of promises.
-    setTimeout(function() {
+    setTimeout(function () {
 
       let crossConstraints = crossTableService.crossConstraints(crossTableService.rowConstraints);
 
@@ -285,7 +285,7 @@ describe('CrossTableService', () => {
 
     // FIXME: Set a timeout to wait until aggregates have been fetched,
     // because the requests are returned as a chain of promises.
-    setTimeout(function() {
+    setTimeout(function () {
 
       let crossConstraints = crossTableService.crossConstraints(crossTableService.rowConstraints);
 
