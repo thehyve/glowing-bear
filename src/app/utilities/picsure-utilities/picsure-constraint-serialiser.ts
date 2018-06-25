@@ -316,7 +316,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     }
 
     let whereClauses: WhereClause[] = [];
-    if (constraint.values.length === 0) {
+    if (constraint.valueConstraints.length === 0) {
       whereClauses.push({
         predicate: 'CONTAINS',
         field: {
@@ -325,7 +325,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
         }
       });
     } else {
-      for (let val of constraint.values) {
+      for (let val of constraint.valueConstraints) {
         let valWhereClauses: WhereClause[] = this.visit(val)
           .map((valWhereClause) => {
             valWhereClause.predicate = 'CONCEPTTODO'; // todo this
