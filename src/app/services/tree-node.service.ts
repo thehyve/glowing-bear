@@ -6,6 +6,8 @@ import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
 import {NavbarService} from './navbar.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
+import {ErrorHelper} from '../utilities/error-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -75,7 +77,9 @@ export class TreeNodeService {
             this.loadTreeNext(node, constraintService);
           }).bind(this));
         },
-        err => console.error(err)
+        err => {
+          ErrorHelper.handleError(err);
+        }
       );
   }
 
@@ -83,7 +87,7 @@ export class TreeNodeService {
    * Iteratively load the descendants of the given tree node
    * @param parentNode
    */
-  private loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService) {
+  loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService) {
     this.treeNodeCallsSent++;
     let depth = 20;
     this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
@@ -105,7 +109,9 @@ export class TreeNodeService {
             }
           }
         },
-        err => console.error(err)
+        err => {
+          ErrorHelper.handleError(err)
+        }
       );
   }
 
@@ -115,7 +121,7 @@ export class TreeNodeService {
    *  And augment tree nodes with PrimeNG tree-ui specifications
    * @param treeNodes
    */
-  private processTreeNodes(treeNodes: object[], constraintService: ConstraintService) {
+  processTreeNodes(treeNodes: object[], constraintService: ConstraintService) {
     if (!treeNodes) {
       return;
     }
@@ -127,7 +133,7 @@ export class TreeNodeService {
     }
   }
 
-  private processTreeNode(node: Object, constraintService: ConstraintService) {
+  processTreeNode(node: Object, constraintService: ConstraintService) {
     // Extract concept
     if (node['visualAttributes'].includes('LEAF')) {
       let concept = this.getConceptFromTreeNode(node);
@@ -185,17 +191,27 @@ export class TreeNodeService {
    * @returns {Concept}
    */
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
-    let concept = new Concept();
-    const tail = '\\' + treeNode['name'] + '\\';
-    const fullName = treeNode['fullName'];
-    let head = fullName.substring(0, fullName.length - tail.length);
-    concept.label = treeNode['name'] + ' (' + head + ')';
-    concept.path = treeNode['conceptPath'];
-    concept.type = <ConceptType> treeNode['type'];
-    concept.code = treeNode['conceptCode'];
-    concept.fullName = treeNode['fullName'];
-    concept.name = treeNode['name'];
-    return concept;
+    if (treeNode['name'] &&
+      treeNode['fullName'] &&
+      treeNode['conceptPath'] &&
+      treeNode['conceptCode'] &&
+      treeNode['type']) {
+      let concept = new Concept();
+      const tail = '\\' + treeNode['name'] + '\\';
+      const fullName = treeNode['fullName'];
+      let head = fullName.substring(0, fullName.length - tail.length);
+      concept.label = treeNode['name'] + ' (' + head + ')';
+      concept.path = treeNode['conceptPath'];
+      concept.type = <ConceptType> treeNode['type'];
+      concept.code = treeNode['conceptCode'];
+      concept.fullName = treeNode['fullName'];
+      concept.name = treeNode['name'];
+      return concept;
+    } else {
+      const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';
+      MessageHelper.alert('error', summary);
+      return null;
+    }
   }
 
   /**
@@ -273,7 +289,7 @@ export class TreeNodeService {
     this.finalTreeNodes = this.copySelectedTreeNodes(this.projectionTreeData);
   }
 
-  private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+  copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node['parent'];
@@ -292,7 +308,7 @@ export class TreeNodeService {
     return nodesCopy;
   }
 
-  private copySelectedTreeNodes(nodes: TreeNode[]): TreeNode[] {
+  copySelectedTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       // if the node has been partially selected
@@ -322,7 +338,7 @@ export class TreeNodeService {
    * @param {TreeNode} node
    * @returns {TreeNode}
    */
-  private copyTreeNodeUpward(node: TreeNode): TreeNode {
+  copyTreeNodeUpward(node: TreeNode): TreeNode {
     let nodeCopy = {};
     let parentCopy = null;
     for (let key in node) {
@@ -338,9 +354,9 @@ export class TreeNodeService {
     return nodeCopy;
   }
 
-  private updateProjectionTreeDataIterative(nodes: TreeNode[],
-                                            conceptCodes: string[],
-                                            conceptCountMap: object) {
+  updateProjectionTreeDataIterative(nodes: TreeNode[],
+                                    conceptCodes: string[],
+                                    conceptCountMap: object) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
@@ -366,7 +382,7 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  private checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
+  checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
       if (checklist && checklist.includes(node['fullName'])) {
         this.selectedProjectionTreeData.push(node);
@@ -392,7 +408,7 @@ export class TreeNodeService {
    * @param {number} count
    * @param {boolean} updated - true: add animation to indicate updated count
    */
-  private appendCountElement(treeNodeContent, count: number, updated: boolean) {
+  appendCountElement(treeNodeContent, count: number, updated: boolean) {
     const countString = count < 0 ? '...' : '(' + count + ')';
     let countElm = treeNodeContent.querySelector('.gb-count-element');
     if (!countElm) {
@@ -407,10 +423,13 @@ export class TreeNodeService {
       const oldCountString = countElm.textContent;
       if (countString !== oldCountString) {
         treeNodeContent.removeChild(countElm);
-        countElm = document.createElement('span');
-        countElm.classList.add('gb-count-element');
-        if (updated) {
+        if (!countElm.classList.contains('gb-count-element')) {
+          countElm.classList.add('gb-count-element');
+        }
+        if (updated && !countElm.classList.contains('gb-count-element-updated')) {
           countElm.classList.add('gb-count-element-updated');
+        } else if (countElm.classList.contains('gb-count-element-updated')) {
+          countElm.classList.remove('gb-count-element-updated');
         }
         countElm.textContent = countString;
         treeNodeContent.appendChild(countElm);
@@ -426,10 +445,10 @@ export class TreeNodeService {
    * @param {object} studyCountMap
    * @param {object} conceptCountMap
    */
-  private updateTreeNodeCountsIterative(treeNodeElements: any,
-                                        treeNodeData: TreeNode[],
-                                        studyCountMap: object,
-                                        conceptCountMap: object) {
+  updateTreeNodeCountsIterative(treeNodeElements: any,
+                                treeNodeData: TreeNode[],
+                                studyCountMap: object,
+                                conceptCountMap: object) {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodeData[index];
