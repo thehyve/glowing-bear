@@ -281,24 +281,24 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   }
 
   visitNegationConstraint(constraint: NegationConstraint): WhereClause[] {
-    // let result = null;
-    // if (constraint.mark === ConstraintMark.OBSERVATION) {
-    //   result = {
-    //     type: 'negation',
-    //     arg: this.visit(constraint.constraint)
-    //   }
-    // } else if (constraint.mark === ConstraintMark.SUBJECT) {
-    //   result = {
-    //     'type': 'negation',
-    //     'arg': {
-    //       'type': 'subselection',
-    //       'dimension': 'patient',
-    //       'constraint': this.visit(constraint.constraint)
-    //     }
-    //   }
-    // }
-    // return result;
-    return []; // todo
+    // todo: somehow this is never called to generate the exclusion constraint
+    if (!constraint.constraint) {
+      return [];
+    }
+
+    // negated constraint must be a combination constraint
+    if (constraint.constraint.className !== 'CombinationConstraint') {
+      throw new Error('Non-combination constraint in negation not supported.');
+    }
+
+    let negConstraint = this.visitCombinationConstraint(constraint.constraint as CombinationConstraint);
+    negConstraint.forEach((clause) => {
+      if (clause.logicalOperator === 'AND') {
+        clause.logicalOperator = 'NOT';
+      }
+    });
+    negConstraint[0].logicalOperator = 'NOT';
+    return negConstraint;
   }
 
   /**
@@ -361,35 +361,25 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   visitCombinationConstraint(constraint: CombinationConstraint): WhereClause[] {
     if (constraint.children.length === 0) {
       return [];
-    } else if (constraint.children.length === 1) {
-      return this.visit(constraint.children[0]);
     } else {
       let queryObj: WhereClause[] = [];
-      if (!constraint.isRoot) {
-        queryObj.push({
-          predicate: 'NESTING',
-          fields: {
-            type: '('
-          }
-        });
-      }
-// todo: does nesting predicate makes sense with potential new plan??? -> NO remove it
+
       for (let child of constraint.children) {
-        queryObj.push(...this.visit(child));
-        queryObj[queryObj.length - 1].logicalOperator = constraint.combinationState === CombinationState.And ? 'AND' : 'OR';
+        let childClauses: WhereClause[] = this.visit(child);
+
+        if (constraint.combinationState === CombinationState.And &&
+            child.className !== 'CombinationConstraint' &&
+            queryObj.length > 0) {
+          childClauses.forEach((clause) => clause.logicalOperator = 'AND');
+        }
+        queryObj.push(...childClauses);
       }
 
-      if (!constraint.isRoot) {
-        queryObj.push({
-          predicate: 'NESTING',
-          fields: {
-            type: ')'
-          }
-        });
-      }
-      if (queryObj[0].predicate === 'NESTING') {
-        delete queryObj[1].logicalOperator;
-      } else if (queryObj.length > 1) {
+      if (constraint.combinationState === CombinationState.Or) {
+        queryObj.forEach((clause) => clause.logicalOperator = 'OR');
+        queryObj[0].logicalOperator = 'AND';
+
+      } else if (constraint.combinationState === CombinationState.And) {
         delete queryObj[0].logicalOperator;
       }
       return queryObj;
