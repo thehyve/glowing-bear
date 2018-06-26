@@ -151,21 +151,29 @@ export class QueryService {
     return new Promise<any>((resolve, reject) => {
       this.update_1(initialUpdate)
         .then(() => {
-          this.update_2()
-            .then(() => {
-              this.update_3()
-                .then(() => {
+          if (this.appConfig.getConfig('include-variable-selection', true)) {
+            this.update_2()
+              .then(() => {
+                if (this.appConfig.getConfig('include-data-table', true)) {
+                  this.update_3()
+                    .then(() => {
+                      resolve(true);
+                    })
+                    .catch(err => {
+                      console.error(err);
+                      reject(err);
+                    })
+                } else {
                   resolve(true);
-                })
-                .catch(err => {
-                  console.error(err);
-                  reject(err);
-                })
-            })
-            .catch(err => {
-              console.error(err);
-              reject(err);
-            })
+                }
+              })
+              .catch(err => {
+                console.error(err);
+                reject(err);
+              })
+          } else {
+            resolve(true);
+          }
         })
         .catch(err => {
           console.error(err);
