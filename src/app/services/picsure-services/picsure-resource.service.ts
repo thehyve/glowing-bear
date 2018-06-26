@@ -19,7 +19,7 @@ import {CountItem} from '../../models/aggregate-models/count-item';
 export class PicSureResourceService {
 
   /**
-   * Contains the IRCT resource currently used by Glowing Bear.
+   * Contains the PICSURE resource currently used by Glowing Bear.
    */
   private _currentResource: PicsureResource;
 
@@ -44,7 +44,7 @@ export class PicSureResourceService {
   // ------------------- private helpers ----------------------
 
   private loadResource(resourceName: string) {
-    return this.getIRCTResources().switchMap(
+    return this.getPicsureResources().switchMap(
       (resources: PicsureResource[]) => {
 
         // get all resources
@@ -88,10 +88,10 @@ export class PicSureResourceService {
 
 
   /**
-   * Returns the available IRCT resources.
+   * Returns the available PICSURE resources.
    * @returns {Observable<PicsureResource[]>}
    */
-  getIRCTResources(): Observable<PicsureResource[]> {
+  getPicsureResources(): Observable<PicsureResource[]> {
     const urlPart = 'resourceService/resources';
     return this.apiEndpointService.getCall(urlPart, false);
   }
@@ -230,15 +230,15 @@ export class PicSureResourceService {
 
   // todo: the way aggregate objects are returned might be suboptimal
   getAggregate(concept: Concept): Observable<Aggregate> {
-    return this.getTreeNodes(concept.path, 'AGGREGATE').map((irctTreeNodes) => {
+    return this.getTreeNodes(concept.path, 'AGGREGATE').map((picsureTreeNodes) => {
 
-      let attributeKeys: string[] = Object.keys(irctTreeNodes[0].metadata);
+      let attributeKeys: string[] = Object.keys(picsureTreeNodes[0].metadata);
       switch (concept.type) {
         case ConceptType.CATEGORICAL:
           let agg = new CategoricalAggregate();
           attributeKeys
             .filter((attrKey) => attrKey.startsWith('aggregate.categorical'))
-            .forEach((catAggKey) => agg.valueCounts.set(irctTreeNodes[0].metadata[catAggKey], -1));
+            .forEach((catAggKey) => agg.valueCounts.set(picsureTreeNodes[0].metadata[catAggKey], -1));
           return agg;
 
         case ConceptType.DATE:
