@@ -1,6 +1,6 @@
-import {TransmartInRowDimension} from './transmart-in-row-dimension';
+import {TransmartRowHeader} from './transmart-row-header';
 
 export class TransmartRow {
-  dimensions: Array<TransmartInRowDimension>;
-  row: Array<object>;
+  rowHeaders: Array<TransmartRowHeader>;
+  cells: Array<object>;
 }

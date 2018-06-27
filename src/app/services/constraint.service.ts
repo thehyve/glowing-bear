@@ -107,6 +107,7 @@ export class ConstraintService {
     this.resourceService.getStudies()
       .subscribe(
         (studies: Study[]) => {
+          console.log(`Studies loaded.`);
           // reset studies and study constraints
           this.studies = studies;
           this.studyConstraints = [];

@@ -1,18 +1,7 @@
 <div class="gb-data-table-container">
   <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
-    <!-- header option 1: using merged cell headers -->
-    <ng-template *ngIf="isUsingHeaders" pTemplate="header">
-      <tr *ngFor="let headerRow of headerRows">
-        <th *ngFor="let col of headerRow.cols" class="gb-data-table-header" pResizableColumn
-            [attr.colspan]="col.colspan">
-          <span pTooltip="{{col.metadataText}}" appendTo="body" style="position: relative">
-                {{col.header}}
-          </span>
-        </th>
-      </tr>
-    </ng-template>
-    <!-- header option 2: using individual cell headers -->
-    <ng-template *ngIf="!isUsingHeaders" pTemplate="header" let-columns>
+    <!-- header using individual cell headers -->
+    <ng-template pTemplate="header" let-columns>
       <tr>
         <th *ngFor="let col of columns" class="gb-data-table-header" pResizableColumn
             style="color: transparent">

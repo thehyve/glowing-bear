@@ -15,6 +15,8 @@ import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/tr
 import {Study} from '../app/models/constraint-models/study';
 import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {TransmartStudiesServiceMock} from '../app/services/mocks/transmart-studies.service.mock';
+import {TransmartStudiesService} from '../app/services/transmart-services/transmart-studies.service';
 
 
 const mapConstraint = TransmartConstraintMapper.mapConstraint;
@@ -45,7 +47,7 @@ function combineCategoricalValueConstraints(conceptCode1: string, value1: string
 
 
 /**
- * Test suite that tests the cross cross table functionality, by calling
+ * Test suite that tests the cross table functionality, by calling
  * functions on the cross table service (which holds the cross table data structure),
  * and checking if the expected calls are being made to the tranSMART resource service.
  */
@@ -61,6 +63,10 @@ describe('Test cross table retrieval calls for TranSMART', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: TransmartStudiesService,
+          useClass: TransmartStudiesServiceMock
         },
         ResourceService,
         CrossTableService
