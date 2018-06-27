@@ -75,32 +75,6 @@ export class QueryService {
   private _subjectCount_1 = 0;
   // the number of observations from the selected subjects in the first step
   private _observationCount_1 = 0;
-  /*
-   * the map from concept codes to counts in the first step
-   * (note that _conceptCountMap_1 is a super set of _conceptCountMap_2,
-   * so there is no need to maintain _conceptCountMap_2)
-   * e.g.
-   * "EHR:DEM:AGE": {
-   *  "observationCount": 3,
-   *   "patientCount": 3
-   *  },
-   * "EHR:VSIGN:HR": {
-   *  "observationCount": 9,
-   *  "patientCount": 3
-   * }
-   */
-  private _conceptCountMap_1 = {};
-  /*
-   * the map from study codes to counts in the first step
-   * (note that _studyCountMap_1 is a super set of _studyCountMap_2,
-   * so there is no need to maintain _studyCountMap_2)
-   * e.g.
-   * "MIX_HD": {
-   *   "observationCount": 12,
-   *   "patientCount": 3
-   * }
-   */
-  private _studyCountMap_1 = {};
   loadingStateInclusion: LoadingState = 'complete';
   loadingStateExclusion: LoadingState = 'complete';
   loadingStateTotal_1: LoadingState = 'complete';
@@ -139,8 +113,6 @@ export class QueryService {
   /*
    * ------ other variables ------
    */
-  // flag indicating if update the count labels on tree nodes when step 1 constraint is changed
-  private _treeNodeCountsUpdate: boolean;
   /*
    * Flag indicating if to relay the counts in the current step to the next
    */
@@ -166,7 +138,6 @@ export class QueryService {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
-    this.treeNodeCountsUpdate = appConfig.getConfig('tree-node-counts-update', true);
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
@@ -364,10 +335,8 @@ export class QueryService {
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
             // construct concept count map in the 1st step
             let observationCount = 0;
-            this.conceptCountMap_1 = {};
             for (let studyKey in conceptCountObj) {
               for (let _concept_ in conceptCountObj[studyKey]) {
-                this.conceptCountMap_1[_concept_] = conceptCountObj[studyKey][_concept_];
                 observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
               }
             }
@@ -376,18 +345,6 @@ export class QueryService {
               this.updateObservationCount_1(observationCount, initialUpdate);
               // Update inclusion counts
               this.updateInclusionCounts(timeStamp, initialUpdate);
-            }
-
-            // construct study count map in the 1st step if flag is true
-            if (this.treeNodeCountsUpdate) {
-              this.resourceService.getCountsPerStudy(constraint)
-                .subscribe(
-                  (studyCountObj) => {
-                    this.studyCountMap_1 = studyCountObj;
-                    this.treeNodeService.updateTreeNodeCounts(this.studyCountMap_1, this.conceptCountMap_1);
-                  },
-                  err => ErrorHelper.handleError(err)
-                );
             }
           }
         },
@@ -480,7 +437,7 @@ export class QueryService {
             checklist.push(selectedNode['fullName']);
           }
         }
-        this.treeNodeService.updateProjectionTreeData(this.conceptCountMap_1, checklist);
+        this.treeNodeService.updateProjectionTreeData(checklist);
       }
 
       this.query = null;
@@ -612,9 +569,9 @@ export class QueryService {
   public restoreQuery(query: Query) {
     this.query = query;
     this.step = Step.I;
-    if (query['patientsQuery']) {
+    if (query['subjectQuery']) {
       this.constraintService.clearSelectionConstraint();
-      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['patientsQuery']);
+      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['subjectQuery']);
       this.constraintService.restoreSelectionConstraint(selectionConstraint);
       this.update_1();
     }
@@ -786,22 +743,6 @@ export class QueryService {
     this._observationCount_1 = value;
   }
 
-  get conceptCountMap_1(): {} {
-    return this._conceptCountMap_1;
-  }
-
-  set conceptCountMap_1(value: {}) {
-    this._conceptCountMap_1 = value;
-  }
-
-  get studyCountMap_1(): {} {
-    return this._studyCountMap_1;
-  }
-
-  set studyCountMap_1(value: {}) {
-    this._studyCountMap_1 = value;
-  }
-
   get subjectCount_2(): number {
     return this._subjectCount_2;
   }
@@ -968,14 +909,6 @@ export class QueryService {
 
   set isDirty_3(value: boolean) {
     this.dataTableService.dataTable.isDirty = value;
-  }
-
-  get treeNodeCountsUpdate(): boolean {
-    return this._treeNodeCountsUpdate;
-  }
-
-  set treeNodeCountsUpdate(value: boolean) {
-    this._treeNodeCountsUpdate = value;
   }
 
   get showObservationCounts(): boolean {

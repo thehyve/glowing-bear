@@ -154,10 +154,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
   update() {
     if (this.expansionStatus['expanded']) {
-      if (this.queryService.treeNodeCountsUpdate) {
-        this.treeNodeService
-          .updateTreeNodeCounts(this.queryService.studyCountMap_1, this.queryService.conceptCountMap_1);
-      }
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;

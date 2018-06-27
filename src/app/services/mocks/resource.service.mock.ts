@@ -10,6 +10,8 @@ import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
+import {CountItem} from '../../models/aggregate-models/count-item';
+import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -74,16 +76,47 @@ export class ResourceServiceMock {
     return Observable.of({});
   }
 
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>>> {
+    let map1 = new Map<string, CountItem>();
+    let item1 = new CountItem(10, 20);
+    map1.set('concept1', item1);
+    let map2 = new Map<string, CountItem>();
+    let item2 = new CountItem(30, 110);
+    let item3 = new CountItem(70, 90);
+    map2.set('concept2', item2);
+    map2.set('concept3', item3);
+    let map = new Map<string, Map<string, CountItem>>();
+    map.set('study1', map1);
+    map.set('study2', map2);
+    return Observable.of(map);
+  }
+
+  getCountsPerStudy(constraint: Constraint): Observable<Map<string, CountItem>> {
+    let map = new Map<string, CountItem>();
+    let item1 = new CountItem(10, 20);
+    let item2 = new CountItem(100, 200);
+    map.set('study1', item1);
+    map.set('study2', item2);
+    return Observable.of(map);
+  }
+
+  getCountsPerConcept(constraint: Constraint): Observable<Map<string, CountItem>> {
+    let map = new Map<string, CountItem>();
+    let item1 = new CountItem(10, 20);
+    let item2 = new CountItem(30, 110);
+    let item3 = new CountItem(70, 90);
+    map.set('concept1', item1);
+    map.set('concept2', item2);
+    map.set('concept3', item3);
+    return Observable.of(map);
+  }
+
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
     return Observable.of(this.aggregate);
   }
 
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
     return Observable.of([]);
-  }
-
-  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
-    return Observable.of({});
   }
 
   logout() {

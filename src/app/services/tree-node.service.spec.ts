@@ -14,6 +14,7 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {TreeNode} from 'primeng/api';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
+import {CountItem} from '../models/aggregate-models/count-item';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
@@ -187,12 +188,34 @@ describe('TreeNodeService', () => {
   })
 
   it('should process a single tree node', () => {
+    // construct the maps
+    treeNodeService.conceptCountMap = new Map<string, CountItem>();
+    treeNodeService.conceptCountMap.set('concept1', new CountItem(10, 20));
+    treeNodeService.conceptCountMap.set('concept2', new CountItem(30, 110));
+    treeNodeService.conceptCountMap.set('concept3', new CountItem(70, 90));
+
+    let map1 = new Map<string, CountItem>();
+    let item1 = new CountItem(10, 20);
+    map1.set('concept1', item1);
+    let map2 = new Map<string, CountItem>();
+    let item2 = new CountItem(30, 110);
+    let item3 = new CountItem(70, 90);
+    map2.set('concept2', item2);
+    map2.set('concept3', item3);
+    treeNodeService.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    treeNodeService.studyConceptCountMap.set('study1', map1);
+    treeNodeService.studyConceptCountMap.set('study2', map2);
+
+    treeNodeService.studyCountMap = new Map<string, CountItem>();
+    treeNodeService.studyCountMap.set('study1', new CountItem(10, 20));
+    treeNodeService.studyCountMap.set('study2', new CountItem(100, 200));
+
     let node = {
       label: 'label',
       fullName: 'full name',
       name: 'name',
       conceptPath: 'concept path',
-      conceptCode: 'concept code',
+      conceptCode: 'concept2',
       type: 'type',
       constraint: {},
       visualAttributes: [
@@ -206,55 +229,13 @@ describe('TreeNodeService', () => {
     expect(node['constraint']['fullName']).toEqual('full name');
     expect(node['constraint']['name']).toEqual('name');
     expect(node['constraint']['conceptPath']).toEqual('concept path');
-    expect(node['constraint']['conceptCode']).toEqual('concept code');
+    expect(node['constraint']['conceptCode']).toEqual('concept2');
     expect(node['constraint']['valueType']).toEqual('type');
     expect(constraintService.concepts.length).toBe(1);
     expect(constraintService.conceptConstraints.length).toBe(1);
     expect(constraintService.conceptLabels.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(1);
 
-
-    constraintService.conceptLabels = ['label'];
-    constraintService.concepts.length = 0;
-    constraintService.conceptConstraints.length = 0;
-    constraintService.allConstraints.length = 0;
-    node.constraint = undefined;
-    let spy1 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.returnValue({label: 'label'});
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(spy1).toHaveBeenCalled();
-    expect(node.constraint).not.toBeDefined();
-    expect(constraintService.concepts.length).toBe(0);
-    expect(constraintService.conceptConstraints.length).toBe(0);
-    expect(constraintService.conceptLabels.length).toBe(1);
-    expect(constraintService.allConstraints.length).toBe(0);
-
-    node.visualAttributes = ['FOLDER'];
-    node.metadata = undefined;
-    node['children'] = [{}];
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(node.constraint).not.toBeDefined();
-    expect(constraintService.concepts.length).toBe(0);
-    expect(constraintService.conceptConstraints.length).toBe(0);
-    expect(constraintService.conceptLabels.length).toBe(1);
-    expect(constraintService.allConstraints.length).toBe(0);
-    expect(node['label']).not.toContain('ⓘ');
-
-    node['children'] = [{}];
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(node['expandedIcon']).not.toBeDefined();
-    expect(node['collapsedIcon']).not.toBeDefined();
-    node.type = 'UNKNOWN';
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(node['expandedIcon']).toBeDefined();
-    expect(node['collapsedIcon']).toBeDefined();
-    node.type = 'STUDY';
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(node['expandedIcon']).toBeDefined();
-    expect(node['collapsedIcon']).toBeDefined();
-
-    node['children'] = null;
-    treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toContain('folder');
     node.type = 'NUMERIC';
     treeNodeService.processTreeNode(node, constraintService);
     expect(node['icon']).toBeDefined();
@@ -270,6 +251,46 @@ describe('TreeNodeService', () => {
     node.type = 'TEXT';
     treeNodeService.processTreeNode(node, constraintService);
     expect(node['icon']).toBeDefined();
+
+    constraintService.conceptLabels = ['label'];
+    constraintService.concepts.length = 0;
+    constraintService.conceptConstraints.length = 0;
+    constraintService.allConstraints.length = 0;
+    node.constraint = undefined;
+    let spy1 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.returnValue({label: 'label'});
+    treeNodeService.processTreeNode(node, constraintService);
+    expect(spy1).toHaveBeenCalled();
+    expect(node.constraint).not.toBeDefined();
+    expect(constraintService.concepts.length).toBe(0);
+    expect(constraintService.conceptConstraints.length).toBe(0);
+    expect(constraintService.conceptLabels.length).toBe(1);
+    expect(constraintService.allConstraints.length).toBe(0);
+
+    node['studyId'] = 'study2';
+    treeNodeService.processTreeNode(node, constraintService);
+    expect(node['label']).toContain('30');
+
+    node.visualAttributes = ['FOLDER'];
+    node.metadata = undefined;
+    node['children'] = [{}];
+    treeNodeService.processTreeNode(node, constraintService);
+    expect(node.constraint).not.toBeDefined();
+    expect(constraintService.concepts.length).toBe(0);
+    expect(constraintService.conceptConstraints.length).toBe(0);
+    expect(constraintService.conceptLabels.length).toBe(1);
+    expect(constraintService.allConstraints.length).toBe(0);
+    expect(node['label']).not.toContain('ⓘ');
+
+    node['visualAttributes'] = ['FOLDER'];
+    node['type'] = 'UNKNOWN';
+    treeNodeService.processTreeNode(node, constraintService);
+    expect(node['expandedIcon']).toBeDefined();
+    expect(node['collapsedIcon']).toBeDefined();
+    node['type'] = 'STUDY';
+    treeNodeService.processTreeNode(node, constraintService);
+    expect(node['expandedIcon']).toBeDefined();
+    expect(node['collapsedIcon']).toBeDefined();
+    expect(node['label']).toContain('100');
   })
 
   it('should get concept from a tree node', () => {
@@ -355,10 +376,6 @@ describe('TreeNodeService', () => {
 
   it('should update projection tree data', () => {
     let dummyTreeNodes = [{}];
-    let conceptCountMap = {
-      code1: 10,
-      code2: 20
-    };
     let checklist = [
       'code1'
     ];
@@ -366,13 +383,13 @@ describe('TreeNodeService', () => {
     let spy2 = spyOn(treeNodeService, 'updateProjectionTreeDataIterative').and.stub();
     let spy3 = spyOn(treeNodeService, 'checkProjectionTreeDataIterative').and.stub();
     treeNodeService.treeNodesCopy = dummyTreeNodes;
-    treeNodeService.updateProjectionTreeData(conceptCountMap, checklist);
+    treeNodeService.updateProjectionTreeData(checklist);
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
 
     treeNodeService.treeNodesCopy = [];
-    treeNodeService.updateProjectionTreeData(conceptCountMap, checklist);
+    treeNodeService.updateProjectionTreeData(checklist);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
@@ -440,40 +457,6 @@ describe('TreeNodeService', () => {
     expect(result.parent.type).toBe('node_type');
   })
 
-  it('should iteratively update projection tree data', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_2: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_1_3: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
-    node_1_1['conceptCode'] = 'bcode';
-    node_1_2.parent = node_1;
-    node_1_2['type'] = 'node_1_2_type';
-    node_1_2['conceptCode'] = 'acode';
-    node_1_3.parent = node_1;
-    node_1_3['type'] = 'node_1_3_type';
-    node_1_3['conceptCode'] = 'ccode';
-    node_1.children = [node_1_1, node_1_2, node_1_3];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node_2.parent = node;
-    node_2.children = [{}];
-    node.children = [node_1, node_2];
-    node.type = 'node_type';
-    let conceptCountMap = {
-      acode: {
-        patientCount: 10,
-        observationCount: 20
-      }
-    };
-    let result = treeNodeService
-      .updateProjectionTreeDataIterative([node], ['acode', 'ccode'], conceptCountMap);
-    expect(result[0].children[0].children[0].type).toEqual('node_1_2_type');
-  })
-
   it('should iteratively check the projection tree data', () => {
     let node: TreeNode = {};
     let node_1: TreeNode = {};
@@ -512,167 +495,6 @@ describe('TreeNodeService', () => {
     treeNodeService.selectedProjectionTreeData = [];
     treeNodeService.checkAllProjectionTreeDataIterative([node]);
     expect(treeNodeService.selectedProjectionTreeData.length).toBe(5);
-  })
-
-  it('should update count element when there is an existing one', () => {
-    let treeNodeContent = document.createElement('div');
-    let countElm = document.createElement('span');
-    treeNodeContent.appendChild(countElm);
-    let count = 11;
-    let updated = true;
-    let spy1 = spyOn(treeNodeContent, 'querySelector').and.returnValue(countElm);
-    treeNodeService.appendCountElement(treeNodeContent, count, updated);
-    expect(spy1).toHaveBeenCalled();
-    expect(treeNodeContent.children.length).toBe(1);
-    expect(countElm.classList.contains('gb-count-element')).toBe(true);
-    expect(countElm.classList.contains('gb-count-element-updated')).toBe(true);
-
-    countElm.textContent = '(11)';
-    let spy2 = spyOn(treeNodeContent, 'appendChild').and.stub();
-    treeNodeService.appendCountElement(treeNodeContent, count, updated);
-    expect(spy2).not.toHaveBeenCalled();
-  })
-
-  it('should append count element when there is none', () => {
-    let treeNodeContent = document.createElement('div');
-    let countElm = null;
-    let count = 11;
-    spyOn(treeNodeContent, 'querySelector').and.returnValue(countElm);
-    treeNodeService.appendCountElement(treeNodeContent, count, true);
-    expect(treeNodeContent.children.length).toBe(1);
-    expect(treeNodeContent.children[0].classList.contains('gb-count-element-updated')).toBe(true);
-  })
-
-  it('should not include gb-count-element-updated when the updated flag is false', () => {
-    let treeNodeContent = document.createElement('div');
-    let countElm = null;
-    let count = 11;
-    let updated = false;
-    spyOn(treeNodeContent, 'querySelector').and.returnValue(countElm);
-    treeNodeService.appendCountElement(treeNodeContent, count, updated);
-    expect(treeNodeContent.children.length).toBe(1);
-    expect(treeNodeContent.children[0].classList.contains('gb-count-element-updated')).toBe(false);
-  })
-
-  it('should not add existing classes when updating count element', () => {
-    let treeNodeContent = document.createElement('div');
-    let countElm = document.createElement('span');
-    countElm.classList.add('gb-count-element-updated');
-    countElm.classList.add('gb-count-element');
-    treeNodeContent.appendChild(countElm);
-    let count = 11;
-    let updated = false;
-    spyOn(treeNodeContent, 'querySelector').and.returnValue(countElm);
-    treeNodeService.appendCountElement(treeNodeContent, count, updated);
-    expect(treeNodeContent.children[0].classList.contains('gb-count-element-updated')).toBe(false);
-  })
-
-  it('should test the edge case for adding classes when updating count element', () => {
-    let treeNodeContent = document.createElement('div');
-    let countElm = document.createElement('span');
-    treeNodeContent.appendChild(countElm);
-    let count = -1;
-    let updated = false;
-    spyOn(treeNodeContent, 'querySelector').and.returnValue(countElm);
-    treeNodeService.appendCountElement(treeNodeContent, count, updated);
-    expect(treeNodeContent.children[0].classList.contains('gb-count-element-updated')).toBe(false);
-    expect(treeNodeContent.children.length).toBe(1);
-  })
-
-  it('should update tree node counts iteratively', () => {
-    let elm1 = document.createElement('div');
-    let elm2 = document.createElement('div');
-    let elm2_1 = document.createElement('div');
-    elm2_1.appendChild(document.createElement('span'));
-    let elm3 = document.createElement('div');
-    let treeNodeElements = [elm1, elm2, elm3];
-    let node1 = {
-      type: 'STUDY'
-    };
-    let node2 = {
-      type: 'NUMERIC',
-      expanded: true,
-      children: [{}]
-    };
-    let node3 = {
-      type: 'other'
-    };
-    let treeNodeData = [node1, node2, node3];
-    let studyCountMap = {};
-    let conceptCountMap = {};
-    let spy1 = spyOn(treeNodeService, 'appendCountElement').and.stub();
-    let spy2 = spyOn(elm2, 'querySelector').and.callFake((query) => {
-      return elm2_1;
-    })
-    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.callThrough();
-    treeNodeService.updateTreeNodeCountsIterative(treeNodeElements, treeNodeData, studyCountMap, conceptCountMap);
-    expect(spy1).toHaveBeenCalledTimes(2);
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalledTimes(2);
-  })
-
-  it('should update tree node counts iteratively once if there is no children', () => {
-    let elm1 = document.createElement('div');
-    let elm2 = document.createElement('div');
-    let elm2_1 = document.createElement('div');
-    elm2_1.appendChild(document.createElement('span'));
-    let elm3 = document.createElement('div');
-    let treeNodeElements = [elm1, elm2, elm3];
-    let node1 = {
-      type: 'STUDY'
-    };
-    let node2 = {
-      type: 'NUMERIC',
-      expanded: true,
-      children: [{}]
-    };
-    let node3 = {
-      type: 'other'
-    };
-    let treeNodeData = [node1, node2, node3];
-    let studyCountMap = {};
-    let conceptCountMap = {};
-    let spy1 = spyOn(treeNodeService, 'appendCountElement').and.stub();
-    let spy2 = spyOn(elm2, 'querySelector').and.callFake((query) => {
-      return null;
-    })
-    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.callThrough();
-    treeNodeService.updateTreeNodeCountsIterative(treeNodeElements, treeNodeData, studyCountMap, conceptCountMap);
-    expect(spy1).toHaveBeenCalledTimes(2);
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalledTimes(1);
-  })
-
-  it('should update tree node counts', () => {
-    let elm = document.createElement('div');
-    let spy1 = spyOn(document, 'getElementById').and.callFake(() => {
-      return elm;
-    })
-    let spy2 = spyOn(elm, 'querySelector').and.callFake(() => {
-      return [];
-    })
-    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.stub();
-    navbarService.isDataSelection = true;
-    treeNodeService.updateTreeNodeCounts({}, {});
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalled();
-  })
-
-  it('should not update tree node counts when not in data selection tab', () => {
-    let elm = document.createElement('div');
-    let spy1 = spyOn(document, 'getElementById').and.callFake(() => {
-      return elm;
-    })
-    let spy2 = spyOn(elm, 'querySelector').and.callFake(() => {
-      return [];
-    })
-    let spy3 = spyOn(treeNodeService, 'updateTreeNodeCountsIterative').and.stub();
-    navbarService.isDataSelection = false;
-    treeNodeService.updateTreeNodeCounts({}, {});
-    expect(spy1).not.toHaveBeenCalled();
-    expect(spy2).not.toHaveBeenCalled();
-    expect(spy3).not.toHaveBeenCalled();
   })
 
   it('should get parent tree node paths', () => {

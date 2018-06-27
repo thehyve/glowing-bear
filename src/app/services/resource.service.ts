@@ -25,6 +25,7 @@ import {CrossTable} from '../models/table-models/cross-table';
 import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
+import {CountItem} from '../models/aggregate-models/count-item';
 
 
 @Injectable()
@@ -61,18 +62,36 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
-  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
-    return this.transmartResourceService.getCountsPerStudyAndConcept(constraint);
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>> > {
+    return this.transmartResourceService.getCountsPerStudyAndConcept(constraint)
+      .map((response: object) => {
+        return TransmartMapper.mapStudyConceptCountObject(response);
+      })
   }
 
   /**
    * Give a constraint, get the patient counts and observation counts
    * organized per study
    * @param {Constraint} constraint
-   * @returns {Observable<Object>}
+   * @returns {Observable<Map<string, CountItem>>}
    */
-  getCountsPerStudy(constraint: Constraint): Observable<object> {
-    return this.transmartResourceService.getCountsPerStudy(constraint);
+  getCountsPerStudy(constraint: Constraint): Observable<Map<string, CountItem>> {
+    return this.transmartResourceService.getCountsPerStudy(constraint)
+      .map((response: object) => {
+        return TransmartMapper.mapStudyCountObject(response);
+      })
+  }
+
+  /**
+   * Give a constraint, get the map from concept code to subject+observation counts
+   * @param {Constraint} constraint
+   * @returns {Observable<Map<string, CountItem>>}
+   */
+  getCountsPerConcept(constraint: Constraint): Observable<Map<string, CountItem>> {
+    return this.transmartResourceService.getCountsPerConcept(constraint)
+      .map((response: object) => {
+        return TransmartMapper.mapConceptCountObject(response);
+      })
   }
 
   // -------------------------------------- observation calls --------------------------------------
