@@ -5,6 +5,9 @@ language: node_js
 node_js:
   - '8'
 
+addons:
+  chrome: stable # have Travis install chrome stable.
+
 before_cache:
   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
@@ -25,7 +28,7 @@ before_install:
   - sudo chmod 4755 /opt/google/chrome/chrome-sandbox
   - export TZ=Europe/Amsterdam
   - date
-  - export CHROME_BIN=chromium-browser
+  - export CHROME_BIN=google-chrome-stable
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - gradle wrapper
@@ -35,7 +38,7 @@ install:
   - ${GRADLE_SCRIPT} assemble
   - ${GRADLE_SCRIPT} publishToMavenLocal
 script:
-  - travis_retry ${GRADLE_SCRIPT} check
+  - ${GRADLE_SCRIPT} check
 after_success:
   - ${GRADLE_SCRIPT} yarnCodecov
 

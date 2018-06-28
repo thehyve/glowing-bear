@@ -345,31 +345,6 @@ gb-tree-nodes .gb-tree-container {
   border: none;
 }
 
-/*
- * Style for the count element in a tree node on the left side
- * padding: top, right, bottom, left
- */
-@keyframes gb-count-element-animation {
-  from {
-    background-color: var(--gb-orange-light);
-  }
-  to {
-    background-color: transparent;
-  }
-}
-
-gb-tree-nodes .gb-count-element {
-  background-color: transparent;
-  padding: 1px 1px 1px 2px;
-  border-radius: 6px;
-  vertical-align: middle;
-}
-
-gb-tree-nodes .gb-count-element-updated {
-  animation-name: gb-count-element-animation;
-  animation-duration: 2s;
-}
-
 /*tree node styles for filtering*/
 gb-tree-nodes .gb-highlight-treenode {
   background-color: var(--gb-orange-light) !important;

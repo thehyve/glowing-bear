@@ -24,6 +24,7 @@ import {FormatHelper} from '../format-helper';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {TransmartConstraintMapper} from './transmart-constraint-mapper';
+import {CountItem} from '../../models/aggregate-models/count-item';
 
 export class TransmartMapper {
 
@@ -45,7 +46,7 @@ export class TransmartMapper {
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.subjectQuery =  TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.patientsQuery);
+    query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.patientsQuery);
     query.observationQuery = transmartQuery.observationsQuery;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
@@ -498,6 +499,40 @@ export class TransmartMapper {
   private static areAllDimensionsAvailable(dimensions: Array<Dimension>, availableDimensions: Array<Dimension>): boolean {
     return dimensions.every((dim: Dimension) =>
       availableDimensions.map(ad => ad.name).indexOf(dim.name) !== -1);
+  }
+
+  public static mapConceptCountObject(obj: object): Map<string, CountItem> {
+    let map = new Map<string, CountItem>();
+    for (let conceptCode in obj) {
+      const counts = obj[conceptCode];
+      let item = new CountItem(counts['patientCount'], counts['observationCount']);
+      map.set(conceptCode, item);
+    }
+    return map;
+  }
+
+  public static mapStudyCountObject(obj: object): Map<string, CountItem> {
+    let map = new Map<string, CountItem>();
+    for (let studyId in obj) {
+      const counts = obj[studyId];
+      let item = new CountItem(counts['patientCount'], counts['observationCount']);
+      map.set(studyId, item);
+    }
+    return map;
+  }
+
+  public static mapStudyConceptCountObject(obj: object): Map<string, Map<string, CountItem>> {
+    let map = new Map<string, Map<string, CountItem>>();
+    for (let studyId in obj) {
+      let conceptObj = obj[studyId];
+      map.set(studyId, new Map<string, CountItem>());
+      for (let conceptCode in conceptObj) {
+        const counts = conceptObj[conceptCode];
+        let item = new CountItem(counts['patientCount'], counts['observationCount']);
+        map.get(studyId).set(conceptCode, item);
+      }
+    }
+    return map;
   }
 
 }

@@ -2,14 +2,18 @@ import {CombinationConstraint} from '../../models/constraint-models/combination-
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../models/drop-mode';
+import {Concept} from '../../models/constraint-models/concept';
 
 export class ConstraintServiceMock {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  concepts = [];
   _constraint: Constraint = new CombinationConstraint();
   validPedigreeTypes = [];
+  concepts: Concept[] = [];
+  conceptConstraints: Constraint[] = [];
+  conceptLabels: string[] = [];
+  allConstraints: Constraint[] = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();

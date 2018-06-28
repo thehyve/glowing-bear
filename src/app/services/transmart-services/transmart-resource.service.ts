@@ -176,6 +176,18 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
+  /**
+   * Give a constraint, get the patient and observation counts per concept
+   * @param {Constraint} constraint
+   * @returns {Observable<any>}
+   */
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/counts_per_concept';
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const responseField = 'countsPerConcept';
+    return this.postCall(urlPart, body, responseField);
+  }
+
   // -------------------------------------- observation calls --------------------------------------
   /**
    * Give a constraint, get the corresponding patient count and observation count.
