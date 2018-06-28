@@ -24,14 +24,12 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TransmartCrossTableMapper} from '../utilities/transmart-utilities/transmart-cross-table-mapper';
 import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
-import {TransmartStudiesService} from './transmart-services/transmart-studies.service';
 
 
 @Injectable()
 export class ResourceService {
 
-  constructor(private transmartResourceService: TransmartResourceService,
-              private transmartStudiesService: TransmartStudiesService) {
+  constructor(private transmartResourceService: TransmartResourceService) {
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -40,7 +38,7 @@ export class ResourceService {
    * @returns {Observable<Study[]>}
    */
   getStudies(): Observable<Study[]> {
-    return Observable.fromPromise(this.transmartStudiesService.studies);
+    return Observable.fromPromise(this.transmartResourceService.studies);
   }
 
   /**
@@ -320,7 +318,7 @@ export class ResourceService {
     return this.transmartResourceService.getStudyIds(constraint)
       .switchMap(() => {
         // Fetch study details, including dimensions, for these studies
-        return this.transmartStudiesService.studies;
+        return this.transmartResourceService.studies;
       }, (studyIds: string[], studies: Study[]) => {
         if (studyIds && studies) {
           let selectedStudies = studies.filter(study => studyIds.includes(study.studyId));

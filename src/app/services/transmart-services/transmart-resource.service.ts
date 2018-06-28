@@ -18,6 +18,7 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ErrorHelper} from '../../utilities/error-helper';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class TransmartResourceService {
@@ -30,6 +31,10 @@ export class TransmartResourceService {
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
   private _endpointUrl: string;
+
+  private _studiesLock: boolean;
+  private _studies: Study[] = null;
+  private _studiesSubject: AsyncSubject<Study[]>;
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
@@ -130,6 +135,45 @@ export class TransmartResourceService {
     const urlPart = 'studies';
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
+  }
+
+  /**
+   * Returns the list of all studies (and related dimensions) that
+   * the user has access to.
+   *
+   * Fetch the studies once and caches them. Subsequent calls will
+   * get the list of studies from the cache.
+   *
+   * @return {Promise<Study[]>}
+   */
+  get studies(): Promise<Study[]> {
+    if (this._studies != null) {
+      return Observable.of(this._studies).toPromise();
+    }
+    if (this._studiesLock) {
+      return this._studiesSubject.toPromise();
+    }
+    this._studiesLock = true;
+    this._studiesSubject = new AsyncSubject<Study[]>();
+
+    return new Promise((resolve, reject) => {
+      this.getStudies()
+        .subscribe((studies: Study[]) => {
+          resolve(studies);
+          this._studies = studies;
+          this._studiesSubject.next(this._studies);
+          this._studiesSubject.complete();
+          this._studiesLock = false;
+        }, (error: any) => {
+          ErrorHelper.handleError(error);
+          console.error(`Error retrieving studies: ${error}`);
+          reject(error);
+          this._studies = [];
+          this._studiesSubject.next(this._studies);
+          this._studiesSubject.complete();
+          this._studiesLock = false;
+        });
+    });
   }
 
   /**

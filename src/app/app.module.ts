@@ -31,7 +31,6 @@ import {Oauth2Authentication} from './services/authentication/oauth2-authenticat
 import {OidcAuthentication} from './services/authentication/oidc-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {TransmartStudiesService} from './services/transmart-services/transmart-studies.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -59,7 +58,6 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   providers: [
     ResourceService,
     TransmartResourceService,
-    TransmartStudiesService,
     TreeNodeService,
     ConstraintService,
     QueryService,

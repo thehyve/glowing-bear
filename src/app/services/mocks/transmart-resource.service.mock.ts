@@ -8,14 +8,14 @@ import {TransmartTableState} from '../../models/transmart-models/transmart-table
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 
 export class TransmartResourceServiceMock {
-  private studies: Study[];
+  private _studies: Study[];
   private pedigreeRelationTypes: object[];
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
 
   constructor() {
-    this.studies = [];
+    this._studies = [];
     this.pedigreeRelationTypes = [];
     this.queries = [];
     this.treeNodes = [];
@@ -23,7 +23,11 @@ export class TransmartResourceServiceMock {
   }
 
   getStudies(): Observable<Study[]> {
-    return Observable.of(this.studies);
+    return Observable.of(this._studies);
+  }
+
+  get studies(): Promise<Study[]> {
+    return Observable.of(this._studies).toPromise();
   }
 
   getPedigreeRelationTypes(): Observable<object[]> {

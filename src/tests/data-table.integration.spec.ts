@@ -9,8 +9,6 @@ import {Constraint} from '../app/models/constraint-models/constraint';
 import {DataTableService} from '../app/services/data-table.service';
 import {ConstraintServiceMock} from '../app/services/mocks/constraint.service.mock';
 import {ConstraintService} from '../app/services/constraint.service';
-import {TransmartStudiesService} from '../app/services/transmart-services/transmart-studies.service';
-import {TransmartStudiesServiceMock} from '../app/services/mocks/transmart-studies.service.mock';
 
 const mockResponseData = {
   'columnDimensions' : [ {
@@ -155,10 +153,6 @@ describe('Test data table retrieval calls for TranSMART', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
-        },
-        {
-          provide: TransmartStudiesService,
-          useClass: TransmartStudiesServiceMock
         },
         {
           provide: ConstraintService,
