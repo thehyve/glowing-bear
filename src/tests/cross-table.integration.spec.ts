@@ -45,7 +45,7 @@ function combineCategoricalValueConstraints(conceptCode1: string, value1: string
 
 
 /**
- * Test suite that tests the cross cross table functionality, by calling
+ * Test suite that tests the cross table functionality, by calling
  * functions on the cross table service (which holds the cross table data structure),
  * and checking if the expected calls are being made to the tranSMART resource service.
  */

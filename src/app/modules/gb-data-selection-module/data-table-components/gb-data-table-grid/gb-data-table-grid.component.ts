@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DataTableService} from '../../../../services/data-table.service';
 import {Row} from '../../../../models/table-models/row';
-import {HeaderRow} from '../../../../models/table-models/header-row';
 import {Col} from '../../../../models/table-models/col';
 
 @Component({
@@ -23,23 +22,7 @@ export class GbDataTableGridComponent implements OnInit {
   }
 
   get cols(): Col[] {
-    if (this.dataTableService.isUsingHeaders) {
-      if (this.dataTableService.headerRows.length > 0) {
-        return this.dataTableService.headerRows[this.dataTableService.headerRows.length - 1].cols;
-      } else {
-        return [];
-      }
-    } else {
-      return this.dataTableService.cols;
-    }
-  }
-
-  get isUsingHeaders(): boolean {
-    return this.dataTableService.isUsingHeaders;
-  }
-
-  get headerRows(): HeaderRow[] {
-    return this.dataTableService.headerRows;
+    return this.dataTableService.cols;
   }
 
   get currentPage(): number {

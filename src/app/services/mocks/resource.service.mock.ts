@@ -3,7 +3,6 @@ import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {Dimension} from '../../models/table-models/dimension';
 import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {Aggregate} from '../../models/aggregate-models/aggregate';
@@ -11,7 +10,7 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {HttpErrorResponse} from '@angular/common/http';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
-import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
+import {TransmartResourceService} from '../transmart-services/transmart-resource.service';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -19,7 +18,6 @@ export class ResourceServiceMock {
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
-  private dimensions: Dimension[];
   private dataTable: DataTable;
   private crossTable: CrossTable;
   private aggregate: Aggregate;
@@ -30,7 +28,6 @@ export class ResourceServiceMock {
     this.queries = [];
     this.treeNodes = [];
     this.exportJobs = [];
-    this.dimensions = [];
     this.dataTable = new DataTable();
     this.crossTable = new CrossTable();
     this.aggregate = new Aggregate();
@@ -59,13 +56,13 @@ export class ResourceServiceMock {
     return Observable.of(this.exportJobs);
   }
 
-  getDimensions(studyNames: string[]): Observable<Dimension[]> {
-    return Observable.of(this.dimensions);
-  }
-
   getDataTable(dataTable: DataTable,
                offset: number, limit: number): Observable<DataTable> {
     return Observable.of(this.dataTable);
+  }
+
+  get sortableDimensions(): Set<string> {
+    return TransmartResourceService.sortableDimensions;
   }
 
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {

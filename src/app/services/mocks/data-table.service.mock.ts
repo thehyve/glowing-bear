@@ -3,7 +3,6 @@ import {DataTable} from '../../models/table-models/data-table';
 import {Row} from '../../models/table-models/row';
 import {Col} from '../../models/table-models/col';
 import {DimensionValue} from '../../models/table-models/dimension-value';
-import {HeaderRow} from '../../models/table-models/header-row';
 
 export class DataTableServiceMock {
 
@@ -67,17 +66,14 @@ export class DataTableServiceMock {
     this.dataTable.clearCells();
 
     // generate the column-header rows
-    let headerRows: Array<HeaderRow> = [];
     let numColDimColumns = this.columnDimensions.length > 0 ? 1 : 0;
     for (let colIndex = 0; colIndex < this.columnDimensions.length; colIndex++) {
       let colDim = this.columnDimensions[colIndex];
       numColDimColumns = numColDimColumns * colDim.values.length;
       let row = new Row();
-      let headerRow = new HeaderRow();
 
       // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < this.rowDimensions.length; rowIndex++) {
-        headerRow.cols.push(new Col('', Col.COLUMN_FIELD_PREFIX + (rowIndex + 1).toString()));
         row.addDatum('');
       }
 
@@ -96,17 +92,11 @@ export class DataTableServiceMock {
       for (let i = 0; i < selfRepetition; i++) {
         for (let val of colDim.values) {
           for (let j = 0; j < valueRepetition; j++) {
-            headerRow.cols.push(new Col(val.name, Col.COLUMN_FIELD_PREFIX + (headerRow.cols.length + 1).toString(),
-              val.metadata));
             row.addDatum(val.name, val.metadata);
           }
         }
       }
-      if (this.isUsingHeaders) {
-        headerRows.push(headerRow);
-      } else {
-        this.rows.push(row);
-      }
+      this.rows.push(row);
     }
     // generate the data rows
     let dataRows = [];
@@ -162,27 +152,9 @@ export class DataTableServiceMock {
       this.rows.push(dataRow);
     }
     // generate column headers
-    if (this.isUsingHeaders) {
-      headerRows.forEach((headerRow: HeaderRow) => {
-        let newColRow = new HeaderRow();
-        headerRow.cols.forEach((col: Col) => {
-          if (newColRow.cols.length > 0) {
-            if (newColRow.cols[newColRow.cols.length - 1].header === col.header && col.header !== '') {
-              newColRow.cols[newColRow.cols.length - 1].colspan += 1;
-            } else {
-              newColRow.cols.push(col)
-            }
-          } else {
-            newColRow.cols.push(col)
-          }
-        });
-        this.dataTable.headerRows.push(newColRow);
-      });
-    } else {
-      for (let field in this.rows[0].data) {
-        let col = new Col(' - ', field, this.rows[0].metadata[field]);
-        this.dataTable.cols.push(col);
-      }
+    for (let field in this.rows[0].data) {
+      let col = new Col(' - ', field, this.rows[0].metadata[field]);
+      this.dataTable.cols.push(col);
     }
   }
 
@@ -238,10 +210,6 @@ export class DataTableServiceMock {
 
   set currentPage(value: number) {
     this._currentPage = value;
-  }
-
-  get isUsingHeaders(): boolean {
-    return this.dataTable.isUsingHeaders;
   }
 
   get rows(): Row[] {

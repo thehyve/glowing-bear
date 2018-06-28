@@ -13,20 +13,28 @@ import {TransmartTableState} from '../../models/transmart-models/transmart-table
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
-import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ErrorHelper} from '../../utilities/error-helper';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class TransmartResourceService {
+
+  static sortableDimensions = new Set<string>([
+    'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
+  ]);
 
   // the export data view has an alternative 'surveyTable', specifically for NTR project
   private _exportDataView = 'default';
   private _dateColumnsIncluded = true;
   private _endpointUrl: string;
+
+  private _studiesLock: boolean;
+  private _studies: Study[] = null;
+  private _studiesSubject: AsyncSubject<Study[]>;
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
@@ -127,6 +135,45 @@ export class TransmartResourceService {
     const urlPart = 'studies';
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
+  }
+
+  /**
+   * Returns the list of all studies (and related dimensions) that
+   * the user has access to.
+   *
+   * Fetch the studies once and caches them. Subsequent calls will
+   * get the list of studies from the cache.
+   *
+   * @return {Promise<Study[]>}
+   */
+  get studies(): Promise<Study[]> {
+    if (this._studies != null) {
+      return Observable.of(this._studies).toPromise();
+    }
+    if (this._studiesLock) {
+      return this._studiesSubject.toPromise();
+    }
+    this._studiesLock = true;
+    this._studiesSubject = new AsyncSubject<Study[]>();
+
+    return new Promise((resolve, reject) => {
+      this.getStudies()
+        .subscribe((studies: Study[]) => {
+          resolve(studies);
+          this._studies = studies;
+          this._studiesSubject.next(this._studies);
+          this._studiesSubject.complete();
+          this._studiesLock = false;
+        }, (error: any) => {
+          ErrorHelper.handleError(error);
+          console.error(`Error retrieving studies: ${error}`);
+          reject(error);
+          this._studies = [];
+          this._studiesSubject.next(this._studies);
+          this._studiesSubject.complete();
+          this._studiesLock = false;
+        });
+    });
   }
 
   /**
@@ -426,18 +473,11 @@ export class TransmartResourceService {
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     const urlPart = `observations/table`;
-    const highDims = ['assay', 'projection', 'biomarker', 'missing_value', 'sample_type'];
-    const rowDims = tableState.rowDimensions.filter((dim: string) => {
-      return !highDims.includes(dim);
-    });
-    const colDims = tableState.columnDimensions.filter((dim: string) => {
-      return !highDims.includes(dim);
-    });
     let body = {
       type: 'clinical',
       constraint: TransmartConstraintMapper.mapConstraint(constraint),
-      rowDimensions: rowDims,
-      columnDimensions: colDims,
+      rowDimensions: tableState.rowDimensions,
+      columnDimensions: tableState.columnDimensions,
       offset: offset,
       limit: limit,
       rowSort: tableState.rowSort,
@@ -446,22 +486,17 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, null);
   }
 
-  getStudyNames(constraint: Constraint): Observable<TransmartStudyDimensionElement[]> {
+  getStudyIds(constraint: Constraint): Observable<string[]> {
     const urlPart = `dimensions/study/elements`;
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
-    return this.postCall(urlPart, body, responseField);
+    return this.postCall(urlPart, body, responseField).map(
+      (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
+    );
   }
 
-  getAvailableDimensions(studyNames: string[]): Observable<TransmartStudy[]> {
-    if (studyNames && studyNames.length > 0) {
-      let params = JSON.stringify(studyNames);
-      const urlPart = `studies/studyIds?studyIds=${params}`;
-      const responseField = 'studies';
-      return this.getCall(urlPart, responseField);
-    } else {
-      return Observable.of([]);
-    }
+  get sortableDimensions(): Set<string> {
+    return TransmartResourceService.sortableDimensions;
   }
 
   getCrossTable(baseConstraint: Constraint,

@@ -18,6 +18,7 @@ export class GbDataTableDimensionsComponent implements OnInit {
   }
 
   onChange() {
+    this.dataTableService.validateDimensions();
     this.queryService.isDirty_3 = true;
     if (this.queryService.instantCountsUpdate_3) {
       this.queryService.update_3();

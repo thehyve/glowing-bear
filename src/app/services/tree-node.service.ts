@@ -9,7 +9,6 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {ErrorHelper} from '../utilities/error-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
-import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 
 type LoadingState = 'loading' | 'complete';
@@ -460,7 +459,7 @@ export class TreeNodeService {
         let item: CountItem = node['studyId'] ?
           this.studyConceptCountMap.get(node['studyId']).get(node['conceptCode']) :
           this.conceptCountMap.get(node['conceptCode']);
-        nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
+        nodeCopy['label'] = nodeCopy['name'] + (item ? ` (sub: ${item.subjectCount}, obs: ${item.observationCount})` : '');
         nodesWithCodes.push(nodeCopy);
       }
     }

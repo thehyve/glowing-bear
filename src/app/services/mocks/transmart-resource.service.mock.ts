@@ -4,16 +4,18 @@ import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 
 export class TransmartResourceServiceMock {
-  private studies: Study[];
+  private _studies: Study[];
   private pedigreeRelationTypes: object[];
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
 
   constructor() {
-    this.studies = [];
+    this._studies = [];
     this.pedigreeRelationTypes = [];
     this.queries = [];
     this.treeNodes = [];
@@ -21,7 +23,11 @@ export class TransmartResourceServiceMock {
   }
 
   getStudies(): Observable<Study[]> {
-    return Observable.of(this.studies);
+    return Observable.of(this._studies);
+  }
+
+  get studies(): Promise<Study[]> {
+    return Observable.of(this._studies).toPromise();
   }
 
   getPedigreeRelationTypes(): Observable<object[]> {
@@ -42,6 +48,17 @@ export class TransmartResourceServiceMock {
 
   logout() {
     return Observable.of({});
+  }
+
+  getStudyIds(constraint: Constraint): Observable<string[]> {
+    return Observable.of([]);
+  }
+
+  getDataTable(tableState: TransmartTableState,
+               constraint: Constraint,
+               offset: number, limit: number): Observable<TransmartDataTable> {
+    let dataTableResult = new TransmartDataTable();
+    return Observable.of(dataTableResult);
   }
 
   getCrossTable(baseConstraint: Constraint,

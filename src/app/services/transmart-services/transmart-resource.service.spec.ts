@@ -1,11 +1,17 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {TransmartResourceService} from './transmart-resource.service';
-import {HttpClientModule} from '@angular/common/http';
+import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {MessageHelper} from '../../utilities/message-helper';
+import {Study} from '../../models/constraint-models/study';
+import {Observable} from 'rxjs/Observable';
 
 describe('TransmartResourceService', () => {
+
+  let transmartResourceService: TransmartResourceService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -19,10 +25,56 @@ describe('TransmartResourceService', () => {
         }
       ]
     });
+    transmartResourceService = TestBed.get(TransmartResourceService);
   });
 
   it('TransmartResourceService should be injected',
     inject([TransmartResourceService], (service: TransmartResourceService) => {
       expect(service).toBeTruthy();
     }));
+
+  it('should fetch studies from the TranSMART resource service', function () {
+    let study1 = new Study();
+    study1.studyId = 'TestStudy1';
+    study1.dimensions = ['patient', 'concept', 'start time'];
+    let study2 = new Study();
+    study2.studyId = 'TestStudy2';
+    study2.dimensions = ['patient', 'concept', 'trial visit', 'sample_type'];
+    let testStudies: Study[] = [study1, study2];
+
+    let resourceCall = spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
+      Observable.of(testStudies)
+    );
+
+    // The first time, the studies should be fetched from the resource
+    transmartResourceService.studies.then(studies1 => {
+      expect(studies1).toEqual(testStudies);
+      expect(resourceCall).toHaveBeenCalledTimes(1);
+      // The second time, the studies should already be available
+      transmartResourceService.studies.then(studies2 => {
+        expect(studies2).toEqual(testStudies);
+        expect(resourceCall).toHaveBeenCalledTimes(1);
+      });
+    }).catch(() =>
+      fail()
+    );
+  });
+
+  it('should notify the user when studies cannot be fetched', function () {
+    spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
+      Observable.fromPromise(new Promise(() => {
+        throw new HttpErrorResponse({status: 500});
+      }))
+    );
+
+    let messageCount = MessageHelper.messages.length;
+    // The first time, the studies should be fetched from the resource
+    transmartResourceService.studies.then(() =>
+      fail()
+    ).catch(() => {
+      expect(MessageHelper.messages.length).toEqual(messageCount + 1);
+      expect(MessageHelper.messages[messageCount].summary).toContain('A server-side error occurred');
+    });
+  });
+
 });
