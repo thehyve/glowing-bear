@@ -2,7 +2,6 @@ import {Injectable, Injector, OnDestroy} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
 import {Observable} from 'rxjs/Observable';
 import {AuthenticationMethod} from './authentication-method';
-import {OidcAuthentication} from './oidc-authentication';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorisationResult} from './authorisation-result';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
@@ -17,17 +16,7 @@ export class AuthenticationService implements OnDestroy {
 
   public load(): Promise<AuthorisationResult> {
     this.config = this.injector.get(AppConfig);
-    let method = this.config.getConfig('authentication-method', 'oidc');
-    switch (method) {
-      case 'oidc':
-        this.authenticationMethod = this.injector.get(OidcAuthentication);
-        break;
-      case 'oauth2':
-        this.authenticationMethod = this.injector.get(Oauth2Authentication);
-        break;
-      default:
-        throw new Error(`Unsupported authentication method: ${method}`);
-    }
+    this.authenticationMethod = this.injector.get(Oauth2Authentication);
     return this.authenticationMethod.load();
   }
 

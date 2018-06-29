@@ -9,12 +9,8 @@ import {GbMainModule} from '../../modules/gb-main-module/gb-main.module';
 import {APP_BASE_HREF} from '@angular/common';
 import {AuthorisationResult} from './authorisation-result';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {OidcAuthentication} from './oidc-authentication';
-import {OidcConfigService, OidcSecurityService} from 'angular-auth-oidc-client';
-import {OidcConfigServiceMock} from './oidc-config-service.mock';
-import {OidcSecurityServiceMock} from './oidc-security-service.mock';
 
-describe('Oauth2Authentication', () => {
+describe('Oauth2Authentication with Transmart service type', () => {
   let config: AppConfig;
   let authenticationService: AuthenticationService;
   let httpMock: HttpTestingController;
@@ -42,6 +38,8 @@ describe('Oauth2Authentication', () => {
     config = TestBed.get(AppConfig);
     authenticationService = TestBed.get(AuthenticationService);
     httpMock = TestBed.get(HttpTestingController);
+    spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
+    localStorage.removeItem('token');
   });
 
   afterEach(() => {
@@ -80,40 +78,13 @@ describe('Oauth2Authentication', () => {
       access_token: 'XYZ',
       expires_in: 10
     });
-    const validationRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/inspectToken`);
-    expect(validationRequest.request.method).toBe('GET');
-    validationRequest.flush({});
-  });
-
-  it('should fail when token is rejected by the server', (done) => {
-    spyOn(Oauth2Authentication, 'getAuthorisationCode').and.callFake(() =>
-      'abc123'
-    );
-    authenticationService.load().then((result: AuthorisationResult) => {
-      expect(result).toEqual('unauthorized');
-      expect(authenticationService.validToken).toEqual(false);
-      authenticationService.authorised.subscribe((value) => {
-        expect(value).toEqual(false);
-        done();
-      });
-    });
-    const tokenRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/token`);
-    expect(tokenRequest.request.method).toBe('POST');
-    tokenRequest.flush({
-      access_token: 'XYZ',
-      expires_in: 10
-    });
-    const validationRequest = httpMock.expectOne(`${config.getConfig('api-url')}/oauth/inspectToken`);
-    expect(validationRequest.request.method).toBe('GET');
-    validationRequest.error(new ErrorEvent('Invalid token'));
   });
 
 });
 
-describe('OidcAuthentication', () => {
+describe('Oauth2Authentication with OpenID Connect service type', () => {
   let config: AppConfig;
   let authenticationService: AuthenticationService;
-  let oidcSecurityService: OidcSecurityService;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
@@ -125,18 +96,10 @@ describe('OidcAuthentication', () => {
       ],
       providers: [
         AuthenticationService,
-        OidcAuthentication,
+        Oauth2Authentication,
         {
           provide: AppConfig,
           useClass: OidcConfigMock
-        },
-        {
-          provide: OidcConfigService,
-          useClass: OidcConfigServiceMock
-        },
-        {
-          provide: OidcSecurityService,
-          useClass: OidcSecurityServiceMock
         },
         {
           provide: APP_BASE_HREF,
@@ -146,8 +109,9 @@ describe('OidcAuthentication', () => {
     });
     config = TestBed.get(AppConfig);
     authenticationService = TestBed.get(AuthenticationService);
-    oidcSecurityService = TestBed.get(OidcSecurityService);
     httpMock = TestBed.get(HttpTestingController);
+    spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
+    localStorage.removeItem('token');
   });
 
   afterEach(() => {
@@ -158,20 +122,19 @@ describe('OidcAuthentication', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should be loaded with status unauthorised for OIDC', (done) => {
-    // let authorize = spyOn(oidcSecurityService, 'authorize').and.callThrough();
+  it('should be loaded with status unauthorised for OAuth2', (done) => {
     authenticationService.load().then((result: AuthorisationResult) => {
       expect(result).toEqual('unauthorized');
       expect(authenticationService.validToken).toEqual(false);
       expect(authenticationService.token).toBeNull();
-
-      // expect(authorize).toHaveBeenCalled();
       done();
     });
   });
 
-  it('should have token when loaded with token in url', (done) => {
-    spyOn(OidcAuthentication, 'isTokenRedirect').and.callFake(() => true);
+  it('should fetch token when loaded with authorisation code', (done) => {
+    spyOn(Oauth2Authentication, 'getAuthorisationCode').and.callFake(() =>
+      'abc123'
+    );
     authenticationService.load().then((result: AuthorisationResult) => {
       expect(result).toEqual('authorized');
       expect(authenticationService.validToken).toEqual(true);
@@ -181,18 +144,11 @@ describe('OidcAuthentication', () => {
         done();
       });
     });
-  });
-
-  it('should log off', (done) => {
-    spyOn(OidcAuthentication, 'isTokenRedirect').and.callFake(() => true);
-    let logoff = spyOn(oidcSecurityService, 'logoff').and.callThrough();
-    authenticationService.load().then((result: AuthorisationResult) => {
-      expect(result).toEqual('authorized');
-
-      // logout
-      authenticationService.logout();
-      expect(logoff).toHaveBeenCalled();
-      done();
+    const tokenRequest = httpMock.expectOne(`${config.getConfig('oidc-server-url')}/token`);
+    expect(tokenRequest.request.method).toBe('POST');
+    tokenRequest.flush({
+      access_token: 'XYZ',
+      expires_in: 10
     });
   });
 

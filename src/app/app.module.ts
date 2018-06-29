@@ -24,11 +24,9 @@ import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 
-import {AuthModule} from 'angular-auth-oidc-client';
 import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
-import {OidcAuthentication} from './services/authentication/oidc-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 
@@ -52,8 +50,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     GbDataSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
-    GbExportModule,
-    AuthModule.forRoot()
+    GbExportModule
   ],
   providers: [
     ResourceService,
@@ -69,11 +66,10 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     AppConfig,
     AuthenticationService,
     Oauth2Authentication,
-    OidcAuthentication,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,
-      deps: [AppConfig, AuthenticationService, Oauth2Authentication, OidcAuthentication],
+      deps: [AppConfig, AuthenticationService, Oauth2Authentication],
       multi: true
     }, {
       provide: HTTP_INTERCEPTORS,

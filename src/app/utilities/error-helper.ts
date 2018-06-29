@@ -22,7 +22,11 @@ export class ErrorHelper {
         const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
         console.error(summary);
         console.error(error.error);
-        MessageHelper.alert('error', 'A server-side error occurred');
+        if (status === 401) {
+          MessageHelper.alert('error', 'Unauthorised');
+        } else {
+          MessageHelper.alert('error', 'A server-side error occurred');
+        }
       }
     } else {
       console.error(`Error: ${error}`, error);
