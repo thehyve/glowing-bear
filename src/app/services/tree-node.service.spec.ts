@@ -16,7 +16,7 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 
-fdescribe('TreeNodeService', () => {
+describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
