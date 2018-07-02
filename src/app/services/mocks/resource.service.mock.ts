@@ -123,4 +123,8 @@ export class ResourceServiceMock {
   diffQuery(queryId: string): Observable<object[]> {
     return Observable.of([{}]);
   }
+
+  deleteQuery(queryId: string): Observable<{}> {
+    return Observable.of({});
+  }
 }

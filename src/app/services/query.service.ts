@@ -22,6 +22,7 @@ import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transm
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
+import {CountItem} from '../models/aggregate-models/count-item';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -330,17 +331,19 @@ export class QueryService {
     }
     this.resourceService.getCountsPerStudyAndConcept(constraint)
       .subscribe(
-        (conceptCountObj) => {
+        (map) => {
+          this.treeNodeService.selectedStudyConceptCountMap = map;
+          // if this call is the latest call
           const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
           if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            // construct concept count map in the 1st step
-            let observationCount = 0;
-            for (let studyKey in conceptCountObj) {
-              for (let _concept_ in conceptCountObj[studyKey]) {
-                observationCount += conceptCountObj[studyKey][_concept_]['observationCount'];
-              }
-            }
+            // if in the mode of auto saving subject set
             if (this.autosaveSubjectSets) {
+              let observationCount = 0;
+              map.forEach((cMap: Map<string, CountItem>, studyId: string) => {
+                cMap.forEach((countItem: CountItem, conceptCode: string) => {
+                  observationCount += countItem.observationCount;
+                });
+              });
               // Update observation count based on the sum of the tree observation counts
               this.updateObservationCount_1(observationCount, initialUpdate);
               // Update inclusion counts
@@ -926,4 +929,5 @@ export class QueryService {
   set subjectSetConstraint_1(value: SubjectSetConstraint) {
     this.constraintService.subjectSetConstraint = value;
   }
+
 }
