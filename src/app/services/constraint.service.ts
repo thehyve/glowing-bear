@@ -251,12 +251,12 @@ export class ConstraintService {
   /**
    * Clear the patient constraints
    */
-  public clearSelectionConstraint() {
+  public clearConstraint_1() {
     this.rootInclusionConstraint.children.length = 0;
     this.rootExclusionConstraint.children.length = 0;
   }
 
-  public restoreSelectionConstraint(constraint: Constraint) {
+  public restoreConstraint_1(constraint: Constraint) {
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
@@ -267,7 +267,7 @@ export class ConstraintService {
         this.rootExclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreSelectionConstraint(remainingConstraint);
+        this.restoreConstraint_1(remainingConstraint);
       } else {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);

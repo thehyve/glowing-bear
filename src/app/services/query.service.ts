@@ -572,10 +572,9 @@ export class QueryService {
   public restoreQuery(query: Query) {
     this.query = query;
     this.step = Step.I;
-    if (query['subjectQuery']) {
-      this.constraintService.clearSelectionConstraint();
-      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['subjectQuery']);
-      this.constraintService.restoreSelectionConstraint(selectionConstraint);
+    if (query.subjectQuery) {
+      this.constraintService.clearConstraint_1();
+      this.constraintService.restoreConstraint_1(query.subjectQuery);
       this.update_1();
     }
     this.update_2();

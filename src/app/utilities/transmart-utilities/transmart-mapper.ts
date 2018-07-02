@@ -71,7 +71,7 @@ export class TransmartMapper {
 
   public static mapQuery(query: Query): TransmartQuery {
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery);
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery, true);
     transmartQuery.observationsQuery = query.observationQuery;
     if (query.dataTable) {
       let transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(query.dataTable);

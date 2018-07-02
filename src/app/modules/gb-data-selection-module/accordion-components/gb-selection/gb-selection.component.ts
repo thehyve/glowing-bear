@@ -90,7 +90,7 @@ export class GbSelectionComponent implements OnInit {
 
   clearCriteria() {
     this.queryService.step = Step.I;
-    this.constraintService.clearSelectionConstraint();
+    this.constraintService.clearConstraint_1();
     this.queryService.update_1();
   }
 
