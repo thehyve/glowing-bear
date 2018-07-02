@@ -3,14 +3,17 @@ export class AppConfigMock {
   private env: Object = null;
   constructor() {
     this.config = {
-      'api-url': '',
-      'api-version': '',
-      'app-url': '',
-      'authentication-method': 'oauth2'
+      'api-url': 'https://transmart.example.com',
+      'app-url': 'https://glowingbear.example.com',
+      'authentication-service-type': 'transmart'
     };
   }
-  public getConfig(key: any) {
-    return this.config[key];
+  public getConfig(key: any, defaultValue?: any) {
+    if (key in this.config) {
+      return this.config[key];
+    } else {
+      return defaultValue;
+    }
   }
   public getEnv(key: any) {
     return this.env[key];
@@ -24,14 +27,19 @@ export class OidcConfigMock {
   private env: Object = {};
   constructor() {
     this.config = {
-      'api-url': '',
-      'api-version': '',
-      'app-url': '',
-      'authentication-method': 'oidc'
+      'api-url': 'https://transmart.example.com',
+      'app-url': 'https://glowingbear.example.com',
+      'authentication-service-type': 'oidc',
+      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
+      'oidc-client-id': 'glowingbear-js'
     };
   }
-  public getConfig(key: any) {
-    return this.config[key];
+  public getConfig(key: any, defaultValue?: any) {
+    if (key in this.config) {
+      return this.config[key];
+    } else {
+      return defaultValue;
+    }
   }
   public getEnv(key: any) {
     return this.env[key];

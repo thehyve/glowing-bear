@@ -93,9 +93,8 @@ Supported properties in the `config.*.json` files:
 | `instant-counts-update-1` | `false`   | |
 | `instant-counts-update-2` | `false`   | |
 | `instant-counts-update-3` | `false`   | |
-| `authentication-method`   | `oauth2`  | Authentication method (`oauth2`, `oidc`) |
-| `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}` |
-| `oidc-scopes`             | `openid`  | |
+| `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
+| `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
 
 

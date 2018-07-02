@@ -1,5 +1,5 @@
 import {Injectable, Injector} from '@angular/core';
-import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {AppConfig} from '../config/app.config';
 import {AuthenticationService} from './authentication/authentication.service';
@@ -27,8 +27,7 @@ export class ApiHttpInterceptor implements HttpInterceptor {
     // skip if request is for config, or if not for API
     if (  req.url.includes(AppConfig.path) ||
           !req.url.includes(this.appConfig.getConfig('api-url')) ||
-          req.url.endsWith('/oauth/token') ||
-          req.url.endsWith('/oauth/inspectToken')
+          req.url.endsWith('/oauth/token')
     ) {
       return next.handle(req);
     }
@@ -42,7 +41,13 @@ export class ApiHttpInterceptor implements HttpInterceptor {
           if (authResult !== 'authorized') {
             throw new Error('Not authorized');
           }
-          return next.handle(this.addAPIHeaders(req));
+          return next.handle(this.addAPIHeaders(req)).do(() => {}, (err: any) => {
+            if (err instanceof HttpErrorResponse) {
+              if (err.status === 401) {
+                this.authenticationService.logout();
+              }
+            }
+          });
         });
       }
     });

@@ -26,8 +26,12 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private activatedRoute: ActivatedRoute;
   private http: HttpClient;
 
+  private authUrl: string;
   private apiUrl: string;
   private appUrl: string;
+  private clientId: string;
+
+  private serviceType: 'oidc' | 'transmart';
 
   private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _token: Oauth2Token = null;
@@ -41,8 +45,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
   static getAuthorisationCode(): string {
     let authorisationCode: string = null;
     let search: string = window.location.search;
-    if (search.startsWith('?code=')) {
-      authorisationCode = search.substring('?code='.length);
+    if (search.includes('code=')) {
+      authorisationCode = search.substring(search.indexOf('code=') + 'code='.length);
       console.log(`Authorisation code: ${authorisationCode}`);
     }
     return authorisationCode;
@@ -69,10 +73,10 @@ export class Oauth2Authentication implements AuthenticationMethod {
     this._tokenResult = new BehaviorSubject<AuthorisationResult>('unauthorized');
 
     return new Promise((resolve) => {
-      const url = `${this.apiUrl}/oauth/token`;
+      const url = `${this.authUrl}/token`;
       let body = new HttpParams()
         .set('grant_type', grantType)
-        .set('client_id', 'glowingbear-js')
+        .set('client_id', this.clientId)
         .set('client_secret', '')
         .set('redirect_uri', encodeURI(this.appUrl));
       if (grantType === 'authorization_code') {
@@ -80,7 +84,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       } else {
         body = body.set('refresh_token', code);
       }
-      let authorisationHeader = btoa(`glowingbear-js:`);
+      let authorisationHeader = btoa(`${this.clientId}:`);
       let headers = new HttpHeaders()
         .set('Authorization', `Basic ${authorisationHeader}`)
         .set('Content-type', 'application/x-www-form-urlencoded; charset=utf-8');
@@ -119,8 +123,24 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.router = this.injector.get(Router);
       this.activatedRoute = this.injector.get(ActivatedRoute);
       this.http = this.injector.get(HttpClient);
-      this.apiUrl = this.config.getConfig('api-url');
       this.appUrl = this.config.getConfig('app-url');
+      this.apiUrl = this.config.getConfig('api-url');
+
+      let serviceType = this.config.getConfig('authentication-service-type', 'oidc');
+      switch (serviceType) {
+        case 'oidc':
+          this.authUrl = this.config.getConfig('oidc-server-url');
+          this.clientId = this.config.getConfig('oidc-client-id');
+          break;
+        case 'transmart':
+          this.authUrl = this.config.getConfig('api-url') + '/oauth';
+          this.clientId = 'glowingbear-js';
+          break;
+        default:
+          throw new Error(`Unsupported authentication service type: ${serviceType}`);
+      }
+      this.serviceType = serviceType;
+      console.log(`Authentication service type: ${this.serviceType}`);
 
       let authorisationCode = Oauth2Authentication.getAuthorisationCode();
       if (authorisationCode) {
@@ -151,11 +171,11 @@ export class Oauth2Authentication implements AuthenticationMethod {
     // Set redirect target for when we return after authentication
     localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
     // Redirect to authentication
-    let clientId = 'glowingbear-js';
     let clientSecret = '';
     let redirectUri = encodeURI(this.appUrl);
-    let params = `client_id=${clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
-    let target = `${this.apiUrl}/oauth/authorize?response_type=code&${params}`;
+    let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
+    let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
+    let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
     return Observable.fromPromise(new Promise((resolve) => {
       resolve('unauthorized');
       console.log(`Redirecting to ${target} ...`);
@@ -165,25 +185,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
         }, 2000
       );
     }));
-  }
-
-  private checkValidity(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
-      const url = `${this.apiUrl}/oauth/inspectToken`;
-      let headers = new HttpHeaders()
-        .set('Authorization', `Bearer ${this._token.accessToken}`)
-        .set('Accept', 'application/json; charset=utf-8');
-      console.log(`Checking access token ...`);
-      this.http.get(url, {headers: headers})
-        .subscribe((result: any) => {
-          console.log(`Token valid.`, result);
-          resolve(true);
-        }, (error: any) => {
-          ErrorHelper.handleError(error);
-          console.error('Token is invalid', error);
-          resolve(false);
-        });
-    });
   }
 
   get authorisation(): Observable<AuthorisationResult> {
@@ -198,21 +199,11 @@ export class Oauth2Authentication implements AuthenticationMethod {
       return Observable.from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
     }
     return Observable.from(new Promise<AuthorisationResult>(resolve => {
-      this.checkValidity().then(valid => {
-        if (valid) {
-          console.log(`Valid token available.`);
-          console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
-          this._authorised.next(true);
-          this._authorised.complete();
-          resolve('authorized');
-        } else {
-          console.warn(`No valid token found.`);
-          this._token = null;
-          this._authorised.next(false);
-          this._authorised.complete();
-          this.requestToken().subscribe(result => resolve(result));
-        }
-      });
+      console.log(`Valid token available.`);
+      console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
+      this._authorised.next(true);
+      this._authorised.complete();
+      resolve('authorized');
     }));
   }
 
@@ -241,7 +232,13 @@ export class Oauth2Authentication implements AuthenticationMethod {
 
   logout(): void {
     localStorage.removeItem('token');
-    let target = `${this.apiUrl}/logout`;
+    let target: string;
+    if (this.serviceType === 'oidc') {
+      let redirectUri = encodeURI(this.appUrl);
+      target = `${this.authUrl}/logout?redirect_uri=${redirectUri}`;
+    } else {
+      target = `${this.apiUrl}/logout`;
+    }
     MessageHelper.alert('info', 'Redirect to logout page ...');
     console.log(`Redirecting to ${target} ...`);
     setTimeout(() => {
