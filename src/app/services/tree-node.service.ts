@@ -643,11 +643,11 @@ export class TreeNodeService {
    * @returns {boolean}
    */
   public isTreeNodeStudy(node: TreeNode): boolean {
-    return node['type'] === 'STUDY';
+    return node['type'] ? node['type'] === 'STUDY' : false;
   }
 
   public isTreeNodeLeaf(node: TreeNode): boolean {
-    return node['visualAttributes'].includes('LEAF');
+    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
   }
 
   /**
