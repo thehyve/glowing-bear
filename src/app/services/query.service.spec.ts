@@ -118,4 +118,31 @@ describe('QueryService', () => {
     expect(queryService.queries[2].id).toBe(q1.id);
   });
 
+  it('should delete a query', () => {
+    let spy = spyOn(resourceService, 'deleteQuery').and.callThrough();
+    let query = new Query('test-id', 'test-name');
+    queryService.queries = [query];
+    queryService.deleteQuery(query);
+    expect(spy).toHaveBeenCalledWith(query.id);
+    expect(queryService.queries.length).toEqual(0);
+
+    let query1 = new Query('test-id-1', 'test-name-1');
+    queryService.queries = [query1];
+    queryService.deleteQuery(query);
+    expect(queryService.queries.length).toEqual(1);
+  })
+
+  it('should handle query deletion error', () => {
+    let spy = spyOn(resourceService, 'deleteQuery').and.callFake(() => {
+      return Observable.throw(null);
+    })
+    let spy1 = spyOn(ErrorHelper, 'handleError').and.stub();
+    let query = new Query('test-id', 'test-name');
+    queryService.queries = [query];
+    queryService.deleteQuery(query);
+    expect(spy).toHaveBeenCalledWith(query.id);
+    expect(queryService.queries.length).toEqual(1);
+    expect(spy1).toHaveBeenCalled();
+  })
+
 });
