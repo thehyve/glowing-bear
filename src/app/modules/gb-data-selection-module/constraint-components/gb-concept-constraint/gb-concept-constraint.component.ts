@@ -174,20 +174,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   handleCategoricalAggregate(responseAggregate: Aggregate) {
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     constraint.concept.aggregate = responseAggregate;
-    let values = (<CategoricalAggregate>constraint.concept.aggregate).values;
+    let suggestedValues: string[] = (<CategoricalAggregate>constraint.concept.aggregate).values;
+    let selectedValues: string[] = suggestedValues;
     let valueCounts = (<CategoricalAggregate>constraint.concept.aggregate).valueCounts;
     // if there is existing value constraints
     // use their values as selected categories
     if (constraint.valueConstraints.length > 0) {
-      values = [];
+      selectedValues = [];
       for (let val of constraint.valueConstraints) {
-        values.push(val.value);
+        selectedValues.push(val.value);
       }
     }
-    this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, values);
-    this.selectedCategories = this.suggestedCategories.map((item: SelectItem) => {
-      return item.value;
-    });
+    this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, suggestedValues);
+    this.selectedCategories = selectedValues;
   }
 
   handleDateAggregate(responseAggregate: Aggregate) {
