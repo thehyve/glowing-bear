@@ -175,6 +175,8 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         return Observable.of(mockResponseData);
       });
 
+    dataTableService.updateDataTable();
+
     // After the studies have been loaded, and the data table service has been initialised ...
     resourceService.getStudies().subscribe(() => {
 
