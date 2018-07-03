@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
