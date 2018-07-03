@@ -9,6 +9,8 @@ import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constr
 import {Query} from '../../models/query-models/query';
 import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
 import {MessageHelper} from '../message-helper';
+import {DataTable} from '../../models/table-models/data-table';
+import {Dimension} from '../../models/table-models/dimension';
 
 export class ConstraintHelper {
 
@@ -136,6 +138,7 @@ export class ConstraintHelper {
   }
 
   static mapQueryToObject(query: Query): object {
+    console.log('map query to obj', query)
     let obj = {};
     obj['id'] = query.id;
     obj['name'] = query.name;
@@ -159,10 +162,9 @@ export class ConstraintHelper {
     if (query.observationQuery) {
       obj['observationQuery'] = query.observationQuery;
     }
-    // TODO: create function for mappding dataTable to object
-    // if (this.dataTable) {
-    //   obj['dataTable'] = this.dataTable;
-    // }
+    if (query.dataTable) {
+      obj['dataTable'] = ConstraintHelper.mapDataTabletoObject(query.dataTable);
+    }
     return obj;
   }
 
@@ -188,4 +190,15 @@ export class ConstraintHelper {
     return null;
   }
 
+  static mapDataTabletoObject(dataTable: DataTable): object {
+    console.log('map data table to obj', dataTable)
+    let obj = {};
+    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
+      return dim.name;
+    });
+    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: Dimension) => {
+      return dim.name;
+    });
+    return obj;
+  }
 }

@@ -46,7 +46,7 @@ export class TransmartMapper {
     return query;
   }
 
-  private static parseTransmartQueryBlob(queryBlob: object) {
+  private static parseTransmartQueryBlob(queryBlob: object): DataTable {
     let dataTable: DataTable = null;
 
     if (queryBlob && queryBlob['dataTableState']) {
@@ -64,7 +64,6 @@ export class TransmartMapper {
           dataTable.rowDimensions.push(dimension);
         });
       }
-
     }
     return dataTable;
   }

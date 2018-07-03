@@ -34,9 +34,11 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
   }
 
   private update() {
-    let treeNodeElements =
-      this.element.nativeElement.querySelector('.ui-tree-container').children;
-    this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
+    let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
+    if (treeNodeContainer) {
+      let treeNodeElements = treeNodeContainer.children;
+      this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
+    }
   }
 
   private updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {

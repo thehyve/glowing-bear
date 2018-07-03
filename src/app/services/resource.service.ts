@@ -297,7 +297,9 @@ export class ResourceService {
         const constraint: Constraint = dataTable.constraint;
         return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
       }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-        return TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit)
+        let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
+        newDataTable.constraint = dataTable.constraint;
+        return newDataTable;
       });
   }
 

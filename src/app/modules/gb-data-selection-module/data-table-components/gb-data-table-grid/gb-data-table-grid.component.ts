@@ -14,7 +14,6 @@ export class GbDataTableGridComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataTableService.init();
   }
 
   get rows(): Row[] {
