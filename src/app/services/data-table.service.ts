@@ -52,16 +52,15 @@ export class DataTableService {
     const constraint_1_2 = this.constraintService.constraint_1_2();
     this.dataTable.constraint = constraint_1_2;
 
-    // TODO: refactor data table resource call due to backend change
-    // this.resourceService.getDataTable(this.dataTable)
-    //   .subscribe(
-    //     (newDataTable: DataTable) => {
-    //       this.dataTable = newDataTable;
-    //       this.dataTable.isDirty = false;
-    //       this.dataTable.isUpdating = false;
-    //       this.updatePrevDimensions();
-    //     }
-    //   );
+    this.resourceService.getDataTable(this.dataTable)
+      .subscribe(
+        (newDataTable: DataTable) => {
+          this.dataTable = newDataTable;
+          this.dataTable.isDirty = false;
+          this.dataTable.isUpdating = false;
+          this.updatePrevDimensions();
+        }
+      );
   }
 
   public nextPage() {

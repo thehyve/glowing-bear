@@ -172,7 +172,8 @@ export class ConstraintHelper {
       query.bookmarked = obj['bookmarked'] ? true : false;
       query.subscribed = obj['subscribed'] ? true : false;
       if (query.subscribed) {
-        query.subscriptionFreq = obj['subscriptionFreq'] ? obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
+        query.subscriptionFreq = obj['subscriptionFreq'] ?
+          obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
       }
       query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
       query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();

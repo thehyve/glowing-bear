@@ -625,7 +625,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       this.constraint = this.droppedConstraint;
-      // TODO: still needs to update the aggregates fo the ConceptConstraintComponent?
       this.update();
     }
   }
