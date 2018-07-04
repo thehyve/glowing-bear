@@ -14,6 +14,8 @@ import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
 import {ConstraintService} from './constraint.service';
 import {MessageHelper} from '../utilities/message-helper';
+import {ErrorHelper} from '../utilities/error-helper';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class DataTableService {
@@ -27,14 +29,10 @@ export class DataTableService {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-  }
-
-  init() {
     console.log('Initialise data table service ...');
-    this.updateDataTable();
   }
 
-  validateDimensions() {
+  public validateDimensions() {
     let sortableDimensions = this.resourceService.sortableDimensions;
     let invalidRowDimensions = this.rowDimensions.filter(dimension =>
       !sortableDimensions.has(dimension.name)
@@ -53,22 +51,30 @@ export class DataTableService {
     }
   }
 
-  updateDataTable(targetDataTable?: DataTable) {
-    this.dataTable.isDirty = true;
-    this.dataTable.isUpdating = true;
-    this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
-    const constraint_1_2 = this.constraintService.constraint_1_2();
-    this.dataTable.constraint = constraint_1_2;
+  updateDataTable(targetDataTable?: DataTable): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.dataTable.isDirty = true;
+      this.dataTable.isUpdating = true;
+      this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
+      const constraint_1_2 = this.constraintService.constraint_1_2();
+      this.dataTable.constraint = constraint_1_2;
 
-    this.resourceService.getDataTable(this.dataTable)
-      .subscribe(
-        (newDataTable: DataTable) => {
-          this.dataTable = newDataTable;
-          this.dataTable.isDirty = false;
-          this.dataTable.isUpdating = false;
-          this.updatePrevDimensions();
-        }
-      );
+      this.resourceService.getDataTable(this.dataTable)
+        .subscribe(
+          (newDataTable: DataTable) => {
+            // the new data table contains cell values that the old one does not have
+            this.dataTable = newDataTable;
+            this.dataTable.isDirty = false;
+            this.dataTable.isUpdating = false;
+            this.updatePrevDimensions();
+            resolve(true);
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message);
+          }
+        );
+    });
   }
 
   public nextPage() {
@@ -125,7 +131,9 @@ export class DataTableService {
   }
 
   set dataTable(value: DataTable) {
-    this._dataTable = value;
+    if (value instanceof DataTable) {
+      this._dataTable = value;
+    }
   }
 
   get prevRowDimensions(): Array<Dimension> {

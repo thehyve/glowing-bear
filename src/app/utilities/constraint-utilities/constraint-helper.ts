@@ -17,6 +17,8 @@ import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constr
 import {Query} from '../../models/query-models/query';
 import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
 import {MessageHelper} from '../message-helper';
+import {DataTable} from '../../models/table-models/data-table';
+import {Dimension} from '../../models/table-models/dimension';
 
 export class ConstraintHelper {
 
@@ -167,10 +169,9 @@ export class ConstraintHelper {
     if (query.observationQuery) {
       obj['observationQuery'] = query.observationQuery;
     }
-    // TODO: create function for mappding dataTable to object
-    // if (this.dataTable) {
-    //   obj['dataTable'] = this.dataTable;
-    // }
+    if (query.dataTable) {
+      obj['dataTable'] = ConstraintHelper.mapDataTabletoObject(query.dataTable);
+    }
     return obj;
   }
 
@@ -180,12 +181,26 @@ export class ConstraintHelper {
       query.bookmarked = obj['bookmarked'] ? true : false;
       query.subscribed = obj['subscribed'] ? true : false;
       if (query.subscribed) {
-        query.subscriptionFreq = obj['subscriptionFreq'] ? obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
+        query.subscriptionFreq = obj['subscriptionFreq'] ?
+          obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
       }
       query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
       query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
       query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
       query.observationQuery = obj['observationQuery'];
+      if (obj['dataTable']) {
+        query.dataTable = new DataTable();
+        if (obj['dataTable']['rowDimensions']) {
+          obj['dataTable']['rowDimensions'].forEach((name: string) => {
+            query.dataTable.rowDimensions.push(new Dimension(name));
+          });
+        }
+        if (obj['dataTable']['columnDimensions']) {
+          obj['dataTable']['columnDimensions'].forEach((name: string) => {
+            query.dataTable.columnDimensions.push(new Dimension(name));
+          });
+        }
+      }
       return query;
     } catch (e) {
       const message = 'Failed to convert to query.';
@@ -195,4 +210,14 @@ export class ConstraintHelper {
     return null;
   }
 
+  static mapDataTabletoObject(dataTable: DataTable): object {
+    let obj = {};
+    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
+      return dim.name;
+    });
+    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: Dimension) => {
+      return dim.name;
+    });
+    return obj;
+  }
 }

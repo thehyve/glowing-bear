@@ -76,5 +76,9 @@ export class GbNavbarComponent implements OnInit {
       MessageHelper.alert('error', 'Please specify the query name.', '');
     }
   }
+
+  get isSavingQueryCompleted(): boolean {
+    return this.queryService.isSavingQueryCompleted;
+  }
 }
 

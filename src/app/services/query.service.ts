@@ -26,11 +26,11 @@ import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
 import {CrossTableService} from './cross-table.service';
-import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {HttpErrorResponse} from '@angular/common/http';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -136,6 +136,10 @@ export class QueryService {
    * Flag indicating if the observation counts are calculated and shown
    */
   private _showObservationCounts: boolean;
+  /*
+   * Flag indicating if saving a query is finished
+   */
+  private _isSavingQueryCompleted = true;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -157,13 +161,13 @@ export class QueryService {
     this.loadQueries();
 
     // initial updates
-    this.update_1(true);
-    this.update_2();
-    this.update_3();
+    this.update_1(true)
+      .then(this.update_2.bind(this))
+      .then(this.update_3.bind(this));
   }
 
   /**
-   * Update the queries on the left-side panel
+   * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
   private loadQueries() {
     this.resourceService.getQueries()
@@ -212,6 +216,9 @@ export class QueryService {
     this.queries = bookmarkedQueries.concat(this.queries);
   }
 
+  /**
+   * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
+   */
   private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
     this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
     this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
@@ -223,9 +230,6 @@ export class QueryService {
     this.loadingStateTotal_1 = 'complete';
   }
 
-  /**
-   * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
-   */
   // Relay counts from step 1 to step 2
   private relayCounts_1_2() {
     if (this.countsRelay) {
@@ -327,89 +331,109 @@ export class QueryService {
   private updateConceptsAndStudiesForSubjectSet(response: SubjectSet,
                                                 selectionConstraint: Constraint,
                                                 timeStamp: Date,
-                                                initialUpdate: boolean) {
-    let constraint: Constraint;
-    if (response) {
-      this.subjectSetConstraint_1 = new SubjectSetConstraint();
-      this.subjectSetConstraint_1.id = response.id;
-      this.updateSubjectCount_1(response.setSize, initialUpdate);
-      constraint = this.subjectSetConstraint_1;
-    } else {
-      constraint = selectionConstraint;
-    }
-    this.resourceService.getCountsPerStudyAndConcept(constraint)
-      .subscribe(
-        (map) => {
-          this.treeNodeService.selectedStudyConceptCountMap = map;
-          // if this call is the latest call
-          const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
-          if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-            // if in the mode of auto saving subject set
-            if (this.autosaveSubjectSets) {
-              let observationCount = 0;
-              map.forEach((cMap: Map<string, CountItem>, studyId: string) => {
-                cMap.forEach((countItem: CountItem, conceptCode: string) => {
-                  observationCount += countItem.observationCount;
+                                                initialUpdate: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let constraint: Constraint;
+      if (response) {
+        this.subjectSetConstraint_1 = new SubjectSetConstraint();
+        this.subjectSetConstraint_1.id = response.id;
+        this.updateSubjectCount_1(response.setSize, initialUpdate);
+        constraint = this.subjectSetConstraint_1;
+      } else {
+        constraint = selectionConstraint;
+      }
+      this.resourceService.getCountsPerStudyAndConcept(constraint)
+        .subscribe(
+          (map) => {
+            this.treeNodeService.selectedStudyConceptCountMap = map;
+            // if this call is the latest call
+            const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
+            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
+              // if in the mode of auto saving subject set
+              if (this.autosaveSubjectSets) {
+                let observationCount = 0;
+                map.forEach((cMap: Map<string, CountItem>, studyId: string) => {
+                  cMap.forEach((countItem: CountItem, conceptCode: string) => {
+                    observationCount += countItem.observationCount;
+                  });
                 });
-              });
-              // Update observation count based on the sum of the tree observation counts
-              this.updateObservationCount_1(observationCount, initialUpdate);
-              // Update inclusion counts
-              this.updateInclusionCounts(timeStamp, initialUpdate);
+                // Update observation count based on the sum of the tree observation counts
+                this.updateObservationCount_1(observationCount, initialUpdate);
+              }
             }
+            resolve(true);
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message);
           }
-        },
-        err => ErrorHelper.handleError(err)
-      );
+        );
+    });
   }
 
-  private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean) {
-    const selectionConstraint = this.constraintService.constraint_1();
-    if (this.autosaveSubjectSets) {
-      // save a subject set for the subject selection, compute tree counts using that subject set
-      this.resourceService.saveSubjectSet('temp', selectionConstraint)
-        .subscribe((response) => {
-            this.updateConceptsAndStudiesForSubjectSet(response, selectionConstraint, timeStamp, initialUpdate);
-          },
-          err => ErrorHelper.handleError(err)
-        );
-    } else {
-      // compute tree counts without saving a subject set
-      this.updateConceptsAndStudiesForSubjectSet(null, selectionConstraint, timeStamp, initialUpdate);
-    }
+  private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const selectionConstraint = this.constraintService.constraint_1();
+      if (this.autosaveSubjectSets) {
+        // save a subject set for the subject selection, compute tree counts using that subject set
+        this.resourceService.saveSubjectSet('temp', selectionConstraint)
+          .subscribe((response) => {
+              this.updateConceptsAndStudiesForSubjectSet(response,
+                selectionConstraint,
+                timeStamp,
+                initialUpdate)
+                .then(() => resolve(true))
+                .catch(err => reject(err))
+            },
+            err => ErrorHelper.handleError(err)
+          );
+      } else {
+        // compute tree counts without saving a subject set
+        this.updateConceptsAndStudiesForSubjectSet(null,
+          selectionConstraint,
+          timeStamp,
+          initialUpdate)
+          .then(() => resolve(true))
+          .catch(err => reject(err))
+      }
+    });
   }
 
   /**
    * update the subject, observation, concept and study counts in the first step
    */
-  public update_1(initialUpdate?: boolean) {
-    this.isUpdating_1 = true;
-    this.subjectSetConstraint_1 = null;
-    // add time stamp to the queue,
-    // only when the time stamp is at the end of the queue, the count is updated
-    this.clearQueueOfCalls(this.queueOfCalls_1);
-    let timeStamp = new Date();
-    this.queueOfCalls_1.push(timeStamp.getMilliseconds());
-    // set the flags
-    this.loadingStateInclusion = 'loading';
-    this.loadingStateExclusion = 'loading';
-    this.loadingStateTotal_1 = 'loading';
-    // also update the flags for the counts in the 2nd step
-    this.isLoadingSubjectCount_2 = true;
-    this.isLoadingObservationCount_2 = true;
-    /*
-     * Update the inclusion counts
-     */
-    this.updateInclusionCounts(timeStamp, initialUpdate);
-    /*
-     * Update exclusion constraint counts
-     * (Only execute the exclusion constraint if it has non-empty children)
-     */
-    this.updateExclusionCounts(timeStamp, initialUpdate);
-    /*
-     * update concept and study counts in the first step
-     */
-    this.updateConceptsAndStudies(timeStamp, initialUpdate);
+  public update_1(initialUpdate?: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.isUpdating_1 = true;
+      this.subjectSetConstraint_1 = null;
+      // add time stamp to the queue,
+      // only when the time stamp is at the end of the queue, the count is updated
+      this.clearQueueOfCalls(this.queueOfCalls_1);
+      let timeStamp = new Date();
+      this.queueOfCalls_1.push(timeStamp.getMilliseconds());
+      // set the flags
+      this.loadingStateInclusion = 'loading';
+      this.loadingStateExclusion = 'loading';
+      this.loadingStateTotal_1 = 'loading';
+      // also update the flags for the counts in the 2nd step
+      this.isLoadingSubjectCount_2 = true;
+      this.isLoadingObservationCount_2 = true;
+      /*
+       * Update the inclusion counts
+       */
+      this.updateInclusionCounts(timeStamp, initialUpdate);
+      /*
+       * Update exclusion constraint counts
+       * (Only execute the exclusion constraint if it has non-empty children)
+       */
+      this.updateExclusionCounts(timeStamp, initialUpdate);
+      /*
+       * update concept and study counts in the first step
+       */
+      this.updateConceptsAndStudies(timeStamp, initialUpdate)
+        .then(() => resolve(true))
+        .catch(err => reject(err));
+    });
   }
 
   /**
@@ -420,14 +444,19 @@ export class QueryService {
    * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
    */
   /**
-   * This function handles the asynchronicity
+   * This following functions handle the asynchronicity
    * between updating the 2nd-step counts and the loading of tree nodes:
    * only when the tree nodes are completely loaded can we start updating
    * the counts in the 2nd step
    */
-  private prepareStep2() {
-    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
+  update_2a(): Promise<any> {
+    return new Promise(resolve => {
+      this.prepare_2(resolve);
+    });
+  }
 
+  prepare_2(resolve) {
+    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
         let checklist = this.query ? this.query.observationQuery['data'] : null;
@@ -453,72 +482,94 @@ export class QueryService {
 
       this.query = null;
       this.isPreparing_2 = false;
+      resolve(true);
     } else {
       window.setTimeout((function () {
-        this.prepareStep2();
+        this.prepare_2(resolve);
       }).bind(this), 500);
     }
+  }
+
+  update_2b(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.isUpdating_1 && !this.isPreparing_2) {
+        this.isUpdating_2 = true;
+        // add time stamp to the queue,
+        // only when the time stamp is at the end of the queue, the count is updated
+        this.clearQueueOfCalls(this.queueOfCalls_2);
+        let timeStamp = new Date();
+        this.queueOfCalls_2.push(timeStamp.getMilliseconds());
+        // set flags to true indicating the counts are being loaded
+        this.isLoadingSubjectCount_2 = true;
+        this.isLoadingObservationCount_2 = true;
+
+        this.query = null; // clear query
+        // update the subject count and observation count in the 2nd step
+        const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
+        this.resourceService.getCounts(constraint_1_2)
+          .subscribe(
+            (countResponse) => {
+              const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
+              if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
+                // update counts and flags
+                this.subjectCount_2 = countResponse['patientCount'];
+                this.isLoadingSubjectCount_2 = false;
+                this.observationCount_2 = countResponse['observationCount'];
+                this.isLoadingObservationCount_2 = false;
+                this.isUpdating_2 = false;
+                this.isDirty_2 = false;
+                this.isDirty_3 = true;
+                // update the export variables
+                this.exportService.updateExports();
+                // update the final tree nodes in the summary panel
+                if (this.subjectCount_2 > 0) {
+                  this.treeNodeService.updateFinalTreeNodes();
+                } else {
+                  this.treeNodeService.finalTreeNodes = [];
+                }
+                // update the cross table baseline constraint
+                this.crossTableService.constraint = this.constraintService.constraint_1();
+              }
+              resolve(true);
+            },
+            (err: HttpErrorResponse) => {
+              ErrorHelper.handleError(err);
+              reject(err.message);
+            }
+          );
+      } else {
+        resolve(true);
+      }
+    });
   }
 
   /**
    * update the subject, observation, concept and study counts in the second step
    */
-  public update_2() {
-    this.prepareStep2();
-    if (!this.isUpdating_1 && !this.isPreparing_2) {
-      this.isUpdating_2 = true;
-      // add time stamp to the queue,
-      // only when the time stamp is at the end of the queue, the count is updated
-      this.clearQueueOfCalls(this.queueOfCalls_2);
-      let timeStamp = new Date();
-      this.queueOfCalls_2.push(timeStamp.getMilliseconds());
-      // set flags to true indicating the counts are being loaded
-      this.isLoadingSubjectCount_2 = true;
-      this.isLoadingObservationCount_2 = true;
-
-      this.query = null; // clear query
-      // update the subject count and observation count in the 2nd step
-      const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
-      this.resourceService.getCounts(constraint_1_2)
-        .subscribe(
-          (countResponse) => {
-            const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-              // update counts and flags
-              this.subjectCount_2 = countResponse['patientCount'];
-              this.isLoadingSubjectCount_2 = false;
-              this.observationCount_2 = countResponse['observationCount'];
-              this.isLoadingObservationCount_2 = false;
-              this.isUpdating_2 = false;
-              this.isDirty_2 = false;
-              this.isDirty_3 = true;
-              // update the export variables
-              this.exportService.updateExports();
-              // update the final tree nodes in the summary panel
-              if (this.subjectCount_2 > 0) {
-                this.treeNodeService.updateFinalTreeNodes();
-              } else {
-                this.treeNodeService.finalTreeNodes = [];
-              }
-              // update the cross table baseline constraint
-              this.crossTableService.constraint = this.constraintService.constraint_1();
-            }
-          },
-          err => ErrorHelper.handleError(err)
-        );
-    } else {
-      window.setTimeout((function () {
-        this.update_2();
-      }).bind(this), 500);
-    }
+  public update_2(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.update_2a()
+        .then(this.update_2b.bind(this))
+        .then(() => resolve(true))
+        .catch(err => reject(err));
+    });
   }
 
   /**
    * update the table
    */
-  public update_3(targetDataTable?: DataTable) {
-    this.dataTableService.dataTable.currentPage = 1;
-    this.dataTableService.updateDataTable(targetDataTable);
+  public update_3(targetDataTable?: DataTable): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.isDirty_3 = true;
+      this.dataTableService.dataTable.currentPage = 1;
+      this.dataTableService.updateDataTable(targetDataTable)
+        .then(() => {
+          this.isDirty_3 = false;
+          resolve(true);
+        })
+        .catch(err => reject(err))
+    });
+
   }
 
   /**
@@ -555,6 +606,7 @@ export class QueryService {
   }
 
   saveQuery(newQuery: Query) {
+    this.isSavingQueryCompleted = false;
     this.resourceService.saveQuery(newQuery)
       .subscribe(
         (newlySavedQuery: Query) => {
@@ -562,11 +614,13 @@ export class QueryService {
           newlySavedQuery.visible = true;
 
           this.queries.push(newlySavedQuery);
+          this.isSavingQueryCompleted = true;
           const summary = 'Query "' + newlySavedQuery.name + '" is added.';
           MessageHelper.alert('success', summary);
         },
         (err) => {
           console.error(err);
+          this.isSavingQueryCompleted = true;
           const summary = 'Could not add the query "' + newQuery.name + '".';
           MessageHelper.alert('error', summary);
         }
@@ -580,19 +634,14 @@ export class QueryService {
   public restoreQuery(query: Query) {
     this.query = query;
     this.step = Step.I;
-    if (query['subjectQuery']) {
-      this.constraintService.clearSelectionConstraint();
-      let selectionConstraint = TransmartConstraintMapper.generateConstraintFromObject(query['subjectQuery']);
-      this.constraintService.restoreSelectionConstraint(selectionConstraint);
-      this.update_1();
+    if (query.subjectQuery) {
+      this.constraintService.clearConstraint_1();
+      this.constraintService.restoreConstraint_1(query.subjectQuery);
     }
-    this.update_2();
-    this.update_3(query.dataTable);
+    this.update_1(false)
+      .then(this.update_2.bind(this))
+      .then(this.update_3.bind(this, query.dataTable));
 
-    // TODO: To display more information in the alertDetails:
-    // - total number of imported nodes/items
-    // - total number of items not found in tree
-    // - total number of matched/selected tree-nodes
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
     MessageHelper.alert('info', 'Success', alertDetails);
   }
@@ -938,4 +987,11 @@ export class QueryService {
     this.constraintService.subjectSetConstraint = value;
   }
 
+  get isSavingQueryCompleted(): boolean {
+    return this._isSavingQueryCompleted;
+  }
+
+  set isSavingQueryCompleted(value: boolean) {
+    this._isSavingQueryCompleted = value;
+  }
 }

@@ -24,7 +24,7 @@ export class DownloadHelper {
     let data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(dataObject));
     let el = document.createElement('a');
     el.setAttribute('href', data);
-    el.setAttribute('download', fileName.trim + '.json');
+    el.setAttribute('download', fileName + '.json');
     el.style.display = 'none';
     document.body.appendChild(el);
     el.click();

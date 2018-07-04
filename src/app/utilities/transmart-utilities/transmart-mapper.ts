@@ -54,7 +54,7 @@ export class TransmartMapper {
     return query;
   }
 
-  private static parseTransmartQueryBlob(queryBlob: object) {
+  private static parseTransmartQueryBlob(queryBlob: object): DataTable {
     let dataTable: DataTable = null;
 
     if (queryBlob && queryBlob['dataTableState']) {
@@ -72,14 +72,13 @@ export class TransmartMapper {
           dataTable.rowDimensions.push(dimension);
         });
       }
-
     }
     return dataTable;
   }
 
   public static mapQuery(query: Query): TransmartQuery {
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery);
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery, true);
     transmartQuery.observationsQuery = query.observationQuery;
     if (query.dataTable) {
       let transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(query.dataTable);

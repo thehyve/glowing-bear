@@ -619,4 +619,79 @@ describe('TreeNodeService', () => {
     expect(paths.length).toBe(1);
     expect(paths[0]).toBe('\\A\\D\\E\\');
   })
+
+  it('should verify if a tree node is concept node', () => {
+    let node: TreeNode = {};
+    node['type'] = 'NUMERIC';
+    let isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(true);
+    node['type'] = 'CATEGORICAL';
+    isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(true);
+    node['type'] = 'DATE';
+    isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(true);
+    node['type'] = 'TEXT';
+    isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(true);
+    node['type'] = 'HIGH_DIMENSIONAL';
+    isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(true);
+    node['type'] = undefined;
+    isConcept = treeNodeService.isTreeNodeConcept(node);
+    expect(isConcept).toBe(false);
+  })
+
+  it('should verify if a tree node is study node', () => {
+    let node: TreeNode = {};
+    node['type'] = 'STUDY';
+    let isStudy = treeNodeService.isTreeNodeStudy(node);
+    expect(isStudy).toBe(true);
+    node['type'] = undefined;
+    isStudy = treeNodeService.isTreeNodeStudy(node);
+    expect(isStudy).toBe(false);
+  })
+
+  it('should verify if a tree node is leaf node', () => {
+    let node: TreeNode = {};
+    node['visualAttributes'] = ['bar', 'foo', 'LEAF'];
+    let is = treeNodeService.isTreeNodeLeaf(node);
+    expect(is).toBe(true);
+  })
+
+  it('should update projection tree data iteratively', () => {
+    let studyId = 'an-id';
+    let conceptCode = 'a-code';
+    let studyId1 = 'an-id-1';
+    let conceptCode1 = 'a-code-1';
+    let conceptMap = new Map<string, CountItem>();
+    conceptMap.set(conceptCode, new CountItem(10, 20));
+    treeNodeService.selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    treeNodeService.selectedStudyConceptCountMap.set(studyId, conceptMap);
+    let conceptMap1 = new Map<string, CountItem>();
+    conceptMap1.set(conceptCode1, new CountItem(100, 200));
+    treeNodeService.selectedStudyConceptCountMap.set(studyId1, conceptMap1);
+    let node1: TreeNode = {};
+    let node2: TreeNode = {};
+    let node2a: TreeNode = {};
+    let node3: TreeNode = {};
+    let node4: TreeNode = {};
+    let node5: TreeNode = {};
+    node1['visualAttributes'] = ['bar', 'foo', 'LEAF'];
+    node2['children'] = [node2a];
+    node4['visualAttributes'] = ['LEAF'];
+    node4['studyId'] = studyId;
+    node4['conceptCode'] = conceptCode;
+    node4['name'] = 'a-name';
+    node2a['visualAttributes'] = ['LEAF'];
+    node2a['studyId'] = studyId1;
+    node2a['conceptCode'] = conceptCode1;
+    node5['children'] = [{}];
+    let nodes = [node1, node2, node3, node4, node5];
+    let resultNodes = treeNodeService.updateProjectionTreeDataIterative(nodes);
+    expect(node4['expanded']).toBe(false);
+    expect(resultNodes.length).toEqual(2);
+    expect(resultNodes[0]['label']).toBeUndefined();
+    expect(resultNodes[1]['label']).toBeDefined();
+  })
 });

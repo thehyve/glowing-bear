@@ -257,11 +257,8 @@ export class ResourceService {
   saveQuery(query: Query): Observable<Query> {
     let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
     return this.transmartResourceService.saveQuery(transmartQuery)
-      .map((newlySavedQuery: TransmartQuery) => {
-        // since we already know what query we want to save, i.e. the one in the input argument
-        // there is no need to use the returned transmart query and map it to Query,
-        // it is fine just returning the existing query
-        return query;
+      .map((savedTransmartQuery: TransmartQuery) => {
+        return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
       });
   }
 
@@ -308,7 +305,9 @@ export class ResourceService {
         const constraint: Constraint = dataTable.constraint;
         return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
       }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-        return TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit)
+        let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
+        newDataTable.constraint = dataTable.constraint;
+        return newDataTable;
       });
   }
 

@@ -149,7 +149,7 @@ const mockResponseData = {
  * functions on the data table service (which holds the data table data structure),
  * and checking if the expected calls are being made to the tranSMART resource service.
  */
-describe('Test data table retrieval calls for TranSMART', () => {
+describe('Integration test data table retrieval calls for TranSMART', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
@@ -183,7 +183,7 @@ describe('Test data table retrieval calls for TranSMART', () => {
         return Observable.of(mockResponseData);
       });
 
-    dataTableService.init();
+    dataTableService.updateDataTable();
 
     // After the studies have been loaded, and the data table service has been initialised ...
     resourceService.getStudies().subscribe(() => {
@@ -192,7 +192,6 @@ describe('Test data table retrieval calls for TranSMART', () => {
       expect(dataTableCall).toHaveBeenCalled();
       expect(dataTableService.rows.length).toEqual(5);
     });
-
   });
 
 });

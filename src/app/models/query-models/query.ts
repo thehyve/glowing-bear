@@ -143,7 +143,9 @@ export class Query {
   }
 
   set dataTable(value: DataTable) {
-    this._dataTable = value;
+    if (value instanceof DataTable) {
+      this._dataTable = value;
+    }
   }
 
   get createDate(): string {
