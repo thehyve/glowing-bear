@@ -8,7 +8,6 @@ import {ConstraintService} from './constraint.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class DataTableService {

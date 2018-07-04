@@ -629,10 +629,10 @@ export class QueryService {
     if (query.subjectQuery) {
       this.constraintService.clearConstraint_1();
       this.constraintService.restoreConstraint_1(query.subjectQuery);
-      this.update_1();
     }
-    this.update_2();
-    this.update_3(query.dataTable);
+    this.update_1(false)
+      .then(this.update_2.bind(this))
+      .then(this.update_3.bind(this, query.dataTable));
 
     const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
     MessageHelper.alert('info', 'Success', alertDetails);

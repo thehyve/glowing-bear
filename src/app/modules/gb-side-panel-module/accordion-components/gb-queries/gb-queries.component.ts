@@ -99,7 +99,7 @@ export class GbQueriesComponent implements OnInit {
     for (let query of this.queryService.queries) {
       query.selected = false;
     }
-    selectedQuery.selected = true; console.log('restore query: ', selectedQuery)
+    selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
   }
 

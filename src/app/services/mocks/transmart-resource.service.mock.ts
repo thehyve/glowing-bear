@@ -6,6 +6,7 @@ import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 export class TransmartResourceServiceMock {
   private _studies: Study[];
@@ -69,4 +70,27 @@ export class TransmartResourceServiceMock {
     return Observable.of(crossTableResult);
   }
 
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  getCounts(constraint: Constraint): Observable<object> {
+    return Observable.of({});
+  }
+
+  getExportFileFormats(): Observable<string[]> {
+    return Observable.of(['tsv', 'csv']);
+  }
+
+  getExportDataFormats(constraint: Constraint): Observable<string[]> {
+    return Observable.of([]);
+  }
 }

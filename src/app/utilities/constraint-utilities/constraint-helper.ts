@@ -138,7 +138,6 @@ export class ConstraintHelper {
   }
 
   static mapQueryToObject(query: Query): object {
-    console.log('map query to obj', query)
     let obj = {};
     obj['id'] = query.id;
     obj['name'] = query.name;
@@ -181,6 +180,19 @@ export class ConstraintHelper {
       query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
       query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
       query.observationQuery = obj['observationQuery'];
+      if (obj['dataTable']) {
+        query.dataTable = new DataTable();
+        if (obj['dataTable']['rowDimensions']) {
+          obj['dataTable']['rowDimensions'].forEach((name: string) => {
+            query.dataTable.rowDimensions.push(new Dimension(name));
+          });
+        }
+        if (obj['dataTable']['columnDimensions']) {
+          obj['dataTable']['columnDimensions'].forEach((name: string) => {
+            query.dataTable.columnDimensions.push(new Dimension(name));
+          });
+        }
+      }
       return query;
     } catch (e) {
       const message = 'Failed to convert to query.';
@@ -191,7 +203,6 @@ export class ConstraintHelper {
   }
 
   static mapDataTabletoObject(dataTable: DataTable): object {
-    console.log('map data table to obj', dataTable)
     let obj = {};
     obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
       return dim.name;
