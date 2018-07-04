@@ -40,10 +40,13 @@ export class CrossTable {
   private _rows: Array<Row> = [];
   // The index top row
   private _cols: Array<Col> = [];
+  // Flag indicating is the cross table is updating
+  private _isUpdating: boolean;
 
   constructor() {
     this.constraint = new TrueConstraint();
     this.valueConstraints = new Map<Constraint, Array<Constraint>>();
+    this.isUpdating = false;
   }
 
   public setValueConstraints(keyConstraint: Constraint, valueConstraints: Constraint[]) {
@@ -115,5 +118,13 @@ export class CrossTable {
 
   set constraint(value: Constraint) {
     this._constraint = value;
+  }
+
+  get isUpdating(): boolean {
+    return this._isUpdating;
+  }
+
+  set isUpdating(value: boolean) {
+    this._isUpdating = value;
   }
 }

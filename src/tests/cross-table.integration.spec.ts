@@ -6,264 +6,104 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed} from '@angular/core/testing';
-import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
-import {ConceptType} from '../app/models/constraint-models/concept-type';
-import {TransmartResourceServiceMock} from '../app/services/mocks/transmart-resource.service.mock';
-import {CrossTableService} from '../app/services/cross-table.service';
-import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
-import {TransmartCrossTable} from '../app/models/transmart-models/transmart-cross-table';
-import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
-import {Observable} from 'rxjs/Observable';
-import {Concept} from '../app/models/constraint-models/concept';
 import {ResourceService} from '../app/services/resource.service';
+import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
+import {TestBed} from '@angular/core/testing';
+import {DropMode} from '../app/models/drop-mode';
+import {CrossTableService} from '../app/services/cross-table.service';
+import {ConstraintService} from '../app/services/constraint.service';
+import {TreeNode} from 'primeng/api';
 import {Constraint} from '../app/models/constraint-models/constraint';
-import Spy = jasmine.Spy;
-import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/transmart-constraint-mapper';
-import {Study} from '../app/models/constraint-models/study';
-import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
-import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {TreeNodeService} from '../app/services/tree-node.service';
+import {NavbarService} from '../app/services/navbar.service';
+import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
+import {Observable} from 'rxjs/Observable';
 
+describe('Integration tests for cross table ', () => {
 
-const mapConstraint = TransmartConstraintMapper.mapConstraint;
-
-
-function combineCategoricalValueConstraints(conceptCode1: string, value1: string, conceptCode2, value2: string): any {
-  return {
-    type: 'and', args: [
-      {
-        type: 'subselection', dimension: 'patient', constraint: {
-          type: 'and', args: [
-            {type: 'concept', conceptCode: conceptCode1},
-            {type: 'value', valueType: 'STRING', operator: '=', value: value1}
-          ]
-        }
-      },
-      {
-        type: 'subselection', dimension: 'patient', constraint: {
-          type: 'and', args: [
-            {type: 'concept', conceptCode: conceptCode2},
-            {type: 'value', valueType: 'STRING', operator: '=', value: value2}
-          ]
-        }
-      },
-    ]
-  };
-}
-
-
-/**
- * Test suite that tests the cross table functionality, by calling
- * functions on the cross table service (which holds the cross table data structure),
- * and checking if the expected calls are being made to the tranSMART resource service.
- */
-describe('Test cross table retrieval calls for TranSMART', () => {
-  let crossTableService: CrossTableService;
   let resourceService: ResourceService;
-  let transmartResourceService: TransmartResourceService;
-  let aggregateCall: Spy, crossTableCall: Spy;
+  let constraintService: ConstraintService;
+  let crossTableService: CrossTableService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         },
-        ResourceService,
-        CrossTableService
+        ConstraintService,
+        CrossTableService,
+        TreeNodeService,
+        NavbarService
       ]
     });
-    transmartResourceService = TestBed.get(TransmartResourceService);
     resourceService = TestBed.get(ResourceService);
+    constraintService = TestBed.get(ConstraintService);
     crossTableService = TestBed.get(CrossTableService);
+  });
 
-    aggregateCall = spyOn(resourceService, 'getAggregate')
-      .and.callFake((constraint: ConceptConstraint) => {
-        let aggregate: CategoricalAggregate = new CategoricalAggregate();
-        switch (constraint.concept.code) {
-          case 'foo':
-            aggregate.valueCounts.set('one', 1);
-            aggregate.valueCounts.set('two', 2);
-            return Observable.of(aggregate);
-          case 'bar':
-            aggregate.valueCounts.set('A', 3);
-            aggregate.valueCounts.set('B', 4);
-            return Observable.of(aggregate);
-          default:
-            throw new Error('No mock data for the concept');
+  it('should update the cross table based on tree node drop', () => {
+    let selectedTreeNode: TreeNode = {};
+    selectedTreeNode['conceptCode'] = 'O1KP:CAT1';
+    selectedTreeNode['conceptPath'] = '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\';
+    let constraintObj = {
+      args: [
+        {
+          conceptCode: 'O1KP:CAT1',
+          type: 'concept'
+        },
+        {
+          studyId: 'ORACLE_1000_PATIENT',
+          type: 'study_name'
         }
-      });
+      ],
+      type: 'and',
+      conceptCode: 'O1KP:CAT1',
+      conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\',
+      fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\',
+      name: 'categorical_1',
+      valueType: 'CATEGORICAL'
+    };
+    selectedTreeNode['constraint'] = constraintObj;
+    selectedTreeNode['dropMode'] = DropMode.TreeNode;
+    selectedTreeNode['fullName'] = '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\';
+    selectedTreeNode['icon'] = 'icon-abc';
+    selectedTreeNode['label'] = 'categorical_1 (sub: 1200, obs: 1200)';
+    selectedTreeNode['name'] = 'categorical_1';
+    selectedTreeNode['studyId'] = 'ORACLE_1000_PATIENT';
+    selectedTreeNode['type'] = 'CATEGORICAL';
+    selectedTreeNode['visualAttributes'] = ['LEAF', 'ACTIVE', 'CATEGORICAL'];
+
+    let spy1 = spyOn(resourceService, 'getAggregate').and.callFake(() => {
+      let agg = new CategoricalAggregate();
+      agg.valueCounts.set('heart', 10);
+      agg.valueCounts.set('liver', 20);
+      return Observable.of(agg);
+    });
+    let spy2 = spyOn(crossTableService, 'updateCells').and.callThrough();
+    let spy3 = spyOn(resourceService, 'getCrossTable').and.callFake(() => {
+      return Observable.of(crossTableService.crossTable);
+    });
+    let constraint = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
+    crossTableService.crossTable.rowConstraints.push(constraint);
+    let isValid = crossTableService.isValidConstraint(constraint);
+    constraint.textRepresentation = CrossTableService.brief(constraint);
+    let constraints: Constraint[] = [];
+    constraints.push(constraint);
+    let promise = crossTableService.update(constraints);
+    expect(isValid).toBe(true);
+    expect(spy1).toHaveBeenCalled();
+    promise.then(() => {
+      expect(spy2).toHaveBeenCalled();
+      expect(spy3).toHaveBeenCalled();
+      expect(crossTableService.crossTable.rowConstraints.length).toBe(1);
+      expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(2);
+    });
   });
 
-  it('should retrieve the cross table when adding a concept to the row constraints', () => {
-    // Prepare input
-    let concept = new Concept();
-    concept.type = ConceptType.CATEGORICAL;
-    concept.code = 'foo';
-    let fooConstraint = new ConceptConstraint();
-    fooConstraint.concept = concept;
+  it('should update the cells of the cross table when a constraint is removed', () => {
 
-    // Expected row constraints, to be generated by the service
-    let expectedRowConstraints = [
-      {type: 'and', args: [
-          {type: 'concept', conceptCode: 'foo'},
-          {type: 'value', valueType: 'STRING', operator: '=', value: 'one'},
-        ]},
-      {type: 'and', args: [
-          {type: 'concept', conceptCode: 'foo'},
-          {type: 'value', valueType: 'STRING', operator: '=', value: 'two'},
-        ]}
-    ];
-
-    // Prepare checks
-    crossTableCall = spyOn(transmartResourceService, 'getCrossTable').and.callFake(
-      (baseConstraint: Constraint, rowConstraints: Constraint[], columnConstraints: Constraint[]) => {
-        expect(mapConstraint(baseConstraint)).toEqual({type: 'true'});
-        expect(rowConstraints.map(constraint => mapConstraint(constraint))).toEqual(expectedRowConstraints);
-        expect(columnConstraints.map(constraint => mapConstraint(constraint))).toEqual([{type: 'true'}]);
-        let result = new TransmartCrossTable();
-        result.rows = [[1], [2]];
-        return Observable.of(result);
-      });
-
-    // Call the service
-    crossTableService.rowConstraints.push(fooConstraint);
-    crossTableService.updateValueConstraints([fooConstraint]);
-
-    expect(aggregateCall).toHaveBeenCalled();
-    expect(crossTableCall).toHaveBeenCalled();
-  });
-
-  /**
-   * Test that the proper combination of observation-level and subject-level constraints
-   * are being generated when selecting multiple concepts in a cross table dimension.
-   */
-  it('should retrieve the cross table when adding multiple concepts to the row constraints', () => {
-    // Prepare input
-    let fooConcept = new Concept();
-    fooConcept.type = ConceptType.CATEGORICAL;
-    fooConcept.code = 'foo';
-    let fooConstraint = new ConceptConstraint();
-    fooConstraint.concept = fooConcept;
-    let barConcept = new Concept();
-    barConcept.type = ConceptType.CATEGORICAL;
-    barConcept.code = 'bar';
-    let barConstraint = new ConceptConstraint();
-    barConstraint.concept = barConcept;
-
-    // Expected row constraints for one concept, to be generated by the service
-    let expectedRowConstraints = [
-      {type: 'and', args: [
-          {type: 'concept', conceptCode: 'foo'},
-          {type: 'value', valueType: 'STRING', operator: '=', value: 'one'},
-        ]},
-      {type: 'and', args: [
-          {type: 'concept', conceptCode: 'foo'},
-          {type: 'value', valueType: 'STRING', operator: '=', value: 'two'},
-        ]}
-    ];
-    // Dummy result for two rows
-    let testRows = [[1], [2]];
-
-    // Prepare checks for the first call
-    crossTableCall = spyOn(transmartResourceService, 'getCrossTable').and.callFake(
-      (baseConstraint: Constraint, rowConstraints: Constraint[], columnConstraints: Constraint[]) => {
-        expect(mapConstraint(baseConstraint)).toEqual({type: 'true'});
-        expect(rowConstraints.map(constraint => mapConstraint(constraint))).toEqual(expectedRowConstraints);
-        expect(columnConstraints.map(constraint => mapConstraint(constraint))).toEqual([{type: 'true'}]);
-        let result = new TransmartCrossTable();
-        result.rows = testRows;
-        return Observable.of(result);
-      });
-
-    // Call the service
-    crossTableService.rowConstraints.push(fooConstraint);
-    crossTableService.updateValueConstraints([fooConstraint]);
-
-    expect(aggregateCall).toHaveBeenCalled();
-    expect(crossTableCall).toHaveBeenCalled();
-
-    // Expected row constraints for two concepts, to be generated by the service
-    expectedRowConstraints = [
-      combineCategoricalValueConstraints('foo', 'one', 'bar', 'A'),
-      combineCategoricalValueConstraints('foo', 'one', 'bar', 'B'),
-      combineCategoricalValueConstraints('foo', 'two', 'bar', 'A'),
-      combineCategoricalValueConstraints('foo', 'two', 'bar', 'B'),
-    ];
-    // Dummy result for four rows
-    testRows = [[1], [2], [3], [4]];
-
-    crossTableService.rowConstraints.push(barConstraint);
-    crossTableService.updateValueConstraints([barConstraint]);
-
-    expect(aggregateCall).toHaveBeenCalled();
-    expect(crossTableCall).toHaveBeenCalled()
-  });
-
-  it('should return a cross table when adding concepts to row and column constraints', () => {
-    // Prepare input
-    let fooConcept = new Concept();
-    fooConcept.type = ConceptType.CATEGORICAL;
-    fooConcept.code = 'foo';
-    fooConcept.name = 'Foo';
-    let fooConstraint = new ConceptConstraint();
-    fooConstraint.concept = fooConcept;
-    let studyA = new Study();
-    studyA.studyId = 'A Study';
-    let studyAConstraint = new StudyConstraint();
-    studyAConstraint.studies.push(studyA);
-    let fooAConstraint = new CombinationConstraint();
-    fooAConstraint.addChild(studyAConstraint);
-    fooAConstraint.addChild(fooConstraint);
-    fooAConstraint.textRepresentation = CrossTableService.brief(fooAConstraint);
-
-    let barConcept = new Concept();
-    barConcept.type = ConceptType.CATEGORICAL;
-    barConcept.code = 'bar';
-    barConcept.name = 'Bar';
-    let barConstraint = new ConceptConstraint();
-    barConstraint.concept = barConcept;
-    barConstraint.textRepresentation = CrossTableService.brief(barConstraint);
-
-    // Dummy result for two rows
-    let testRows = [[5], [6]];
-
-    // Prepare checks for the first call
-    crossTableCall = spyOn(transmartResourceService, 'getCrossTable').and.callFake(
-      (baseConstraint: Constraint, rowConstraints: Constraint[], columnConstraints: Constraint[]) => {
-        let result = new TransmartCrossTable();
-        result.rows = testRows;
-        return Observable.of(result);
-      });
-
-    // Call the service
-    crossTableService.rowConstraints.push(fooAConstraint);
-    crossTableService.updateValueConstraints([fooAConstraint]);
-
-    testRows = [[1, 2], [3, 4]];
-
-    crossTableService.columnConstraints.push(barConstraint);
-    crossTableService.updateValueConstraints([barConstraint]);
-
-    let columnHeaders = crossTableService.cols.map(col => col.header);
-    expect(columnHeaders).toEqual([' - ', ' - ', ' - ']);
-
-    let rows = crossTableService.rows.map(row =>
-      crossTableService.cols.map(col => row.data[col.field].value));
-    expect(rows).toEqual([
-      ['', 'A', 'B'],
-      ['one', 1, 2],
-      ['two', 3, 4]
-    ]);
-
-    expect(crossTableService.rowConstraints.map(constraint => constraint.textRepresentation)).toEqual(
-      ['Foo']
-    );
-
-    expect(crossTableService.columnConstraints.map(constraint => constraint.textRepresentation)).toEqual(
-      ['Bar']
-    );
   });
 
 });

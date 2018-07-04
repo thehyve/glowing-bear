@@ -127,7 +127,6 @@ describe('Integration test for query saving and restoring', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
 
-
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [

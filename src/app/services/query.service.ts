@@ -561,10 +561,12 @@ export class QueryService {
   public update_3(targetDataTable?: DataTable): Promise<any> {
     return new Promise((resolve, reject) => {
       this.isDirty_3 = true;
+      this.isUpdating_3 = true;
       this.dataTableService.dataTable.currentPage = 1;
       this.dataTableService.updateDataTable(targetDataTable)
         .then(() => {
           this.isDirty_3 = false;
+          this.isUpdating_3 = false;
           resolve(true);
         })
         .catch(err => reject(err))
