@@ -736,7 +736,7 @@ export class QueryService {
   public toggleQueryBookmark(query: Query) {
     query.bookmarked = !query.bookmarked;
     let queryObj = {
-      subscribed: query.subscribed
+      bookmarked: query.bookmarked
     };
     this.updateQuery(query, queryObj);
   }
