@@ -18,12 +18,16 @@ import {TreeNodeService} from '../app/services/tree-node.service';
 import {NavbarService} from '../app/services/navbar.service';
 import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
 import {Observable} from 'rxjs/Observable';
+import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
+import {Concept} from '../app/models/constraint-models/concept';
+import {ConceptType} from '../app/models/constraint-models/concept-type';
 
-describe('Integration tests for cross table ', () => {
+fdescribe('Integration tests for cross table ', () => {
 
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
   let crossTableService: CrossTableService;
+  let selectedTreeNode: TreeNode;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -41,10 +45,8 @@ describe('Integration tests for cross table ', () => {
     resourceService = TestBed.get(ResourceService);
     constraintService = TestBed.get(ConstraintService);
     crossTableService = TestBed.get(CrossTableService);
-  });
 
-  it('should update the cross table based on tree node drop', () => {
-    let selectedTreeNode: TreeNode = {};
+    selectedTreeNode = {};
     selectedTreeNode['conceptCode'] = 'O1KP:CAT1';
     selectedTreeNode['conceptPath'] = '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\';
     let constraintObj = {
@@ -74,7 +76,10 @@ describe('Integration tests for cross table ', () => {
     selectedTreeNode['studyId'] = 'ORACLE_1000_PATIENT';
     selectedTreeNode['type'] = 'CATEGORICAL';
     selectedTreeNode['visualAttributes'] = ['LEAF', 'ACTIVE', 'CATEGORICAL'];
+  });
 
+  it('should update the cross table on tree node drop', () => {
+    // tree node drop to row zone
     let spy1 = spyOn(resourceService, 'getAggregate').and.callFake(() => {
       let agg = new CategoricalAggregate();
       agg.valueCounts.set('heart', 10);
@@ -85,12 +90,12 @@ describe('Integration tests for cross table ', () => {
     let spy3 = spyOn(resourceService, 'getCrossTable').and.callFake(() => {
       return Observable.of(crossTableService.crossTable);
     });
-    let constraint = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
-    crossTableService.crossTable.rowConstraints.push(constraint);
-    let isValid = crossTableService.isValidConstraint(constraint);
-    constraint.textRepresentation = CrossTableService.brief(constraint);
+    let conjunctiveCategorical = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
+    crossTableService.crossTable.rowConstraints.push(conjunctiveCategorical);
+    let isValid = crossTableService.isValidConstraint(conjunctiveCategorical);
+    conjunctiveCategorical.textRepresentation = CrossTableService.brief(conjunctiveCategorical);
     let constraints: Constraint[] = [];
-    constraints.push(constraint);
+    constraints.push(conjunctiveCategorical);
     let promise = crossTableService.update(constraints);
     expect(isValid).toBe(true);
     expect(spy1).toHaveBeenCalled();
@@ -102,8 +107,30 @@ describe('Integration tests for cross table ', () => {
     });
   });
 
-  it('should update the cells of the cross table when a constraint is removed', () => {
-
+  it('should update the cells of the cross table when an existing constraint is moved', () => {
+    let categorical: ConceptConstraint = new ConceptConstraint();
+    categorical.concept = new Concept();
+    categorical.concept.name = 'categorical_2';
+    categorical.concept.fullName = '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_2\\';
+    categorical.concept.code = 'ORACLE_1000_PATIENT_2';
+    categorical.concept.label = 'categorical_2 (sub: 1200, obs: 1200)';
+    categorical.concept.type = ConceptType.CATEGORICAL;
+    let conjunctiveCategorical: Constraint = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
+    crossTableService.crossTable.rowConstraints.push(categorical);
+    crossTableService.crossTable.columnConstraints.push(conjunctiveCategorical);
+    expect(crossTableService.crossTable.rowHeaderConstraints).toBeUndefined();
+    expect(crossTableService.crossTable.columnHeaderConstraints).toBeUndefined();
+    crossTableService.updateCells().catch((err) => {
+      expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
+      expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
+    });
+    crossTableService.crossTable.columnConstraints.splice(0, 1);
+    crossTableService.update([categorical, conjunctiveCategorical]);
+    crossTableService.updateCells()
+      .then(() => {
+        expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
+        expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
+      });
   });
 
 });

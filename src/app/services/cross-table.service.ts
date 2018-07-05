@@ -189,9 +189,12 @@ export class CrossTableService {
   public updateCells(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.crossTable.isUpdating = true;
-      this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
-      console.log('this.crossTable.rowHeaderConstraints ', this.crossTable.rowHeaderConstraints)
-      this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+      try {
+        this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
+        this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+      } catch (e) {
+        reject(e.message);
+      }
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
           this.crossTable = crossTable;
