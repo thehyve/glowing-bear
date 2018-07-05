@@ -6,18 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
-import {NavbarService} from './navbar.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {ErrorHelper} from '../utilities/error-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {HttpErrorResponse} from '@angular/common/http';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -98,7 +98,7 @@ export class TreeNodeService {
   private _validTreeNodeTypes: string[] = [];
 
 
-  constructor(private resourceService: ResourceService, private navbarService: NavbarService) {
+  constructor(private resourceService: ResourceService, private injector: Injector) {
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
@@ -108,42 +108,88 @@ export class TreeNodeService {
       'HIGH_DIMENSIONAL',
       'UNKNOWN'
     ];
-    this.initCountMaps();
   }
 
-  initCountMaps() {
-    const constraint = new TrueConstraint();
-
-    this.resourceService.getCountsPerConcept(constraint)
-      .subscribe((map: Map<string, CountItem>) => {
-        this.conceptCountMap = map;
-        this.conceptCountMapCompleted = true;
-      });
-    this.resourceService.getCountsPerStudy(constraint)
-      .subscribe((map: Map<string, CountItem>) => {
-        this.studyCountMap = map;
-        this.studyCountMapCompleted = true;
-      });
-    this.resourceService.getCountsPerStudyAndConcept(constraint)
-      .subscribe((map: Map<string, Map<string, CountItem>>) => {
-        this.studyConceptCountMap = map;
-        this.studyConceptCountMapCompleted = true;
-      });
+  public load() {
+    this.loadCountMaps()
+      .then(() => {
+        this.loadTreeNodes()
+          .then(() => {
+            this.updateTreeNodeCounts();
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      })
+      .catch(err => {
+        console.error(err);
+      })
   }
 
-  get countMapsCompleted(): boolean {
-    return this.conceptCountMapCompleted &&
-      this.studyCountMapCompleted &&
-      this.studyConceptCountMapCompleted;
+  updateConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerConcept(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.conceptCountMap = map;
+          this.conceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load concept count map from server.');
+        });
+    });
+  }
+
+  updateStudyCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudy(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.studyCountMap = map;
+          this.studyCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study count map from server.');
+        });
+    });
+  }
+
+  updateStudyConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
+        .subscribe((map: Map<string, Map<string, CountItem>>) => {
+          this.studyConceptCountMap = map;
+          this.studyConceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study-concept count map from server.');
+        });
+    });
+  }
+
+  loadCountMaps(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let promise1 = this.updateConceptCountMap();
+      let promise2 = this.updateStudyCountMap();
+      let promise3 = this.updateStudyConceptCountMap();
+      Promise.all([promise1, promise2, promise3])
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    });
   }
 
   /**
    * Load the tree nodes for rendering the tree on the left side panel;
    * construct concept constraints based on the tree nodes
    */
-  public loadTreeNodes(constraintService: ConstraintService) {
-    if (this.countMapsCompleted) {
-      this.loadingTreeNodes = 'loading';
+  loadTreeNodes(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let constraintService: ConstraintService = this.injector.get(ConstraintService);
       constraintService.conceptLabels = [];
       // Retrieve all tree nodes and extract the concepts iteratively
       this.resourceService.getTreeNodes('\\', 2, false, true)
@@ -154,52 +200,64 @@ export class TreeNodeService {
             constraintService.concepts = [];
             constraintService.conceptConstraints = [];
             this.processTreeNodes(treeNodes, constraintService);
+            let promises = [];
             treeNodes.forEach((function (node) {
               this.treeNodes.push(node); // to ensure the treeNodes pointer remains unchanged
-              this.loadTreeNext(node, constraintService);
+              let promise = this.loadTreeNext(node, constraintService);
+              promises.push(promise);
             }).bind(this));
+            Promise.all(promises)
+              .then(() => resolve(true))
+              .catch(err => reject(err));
           },
-          err => {
+          (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
+            reject(err.message);
           }
         );
-    } else {
-      window.setTimeout((function () {
-        this.loadTreeNodes(constraintService);
-      }).bind(this), 200);
-    }
+    });
   }
 
   /**
    * Iteratively load the descendants of the given tree node
    * @param parentNode
    */
-  loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService) {
-    this.treeNodeCallsSent++;
-    let depth = 20;
-    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          this.treeNodeCallsReceived++;
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-          }
-          this.processTreeNode(parentNode, constraintService);
-          this.processTreeNodes(children, constraintService);
-          let descendants = [];
-          this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
-          if (descendants.length > 0) {
-            for (let descendant of descendants) {
-              this.loadTreeNext(descendant, constraintService);
+  loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.treeNodeCallsSent++;
+      let depth = 20;
+      this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+        .subscribe(
+          (treeNodes: object[]) => {
+            this.treeNodeCallsReceived++;
+            const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+            const children = refNode ? refNode['children'] : undefined;
+            if (children) {
+              parentNode['children'] = children;
             }
+            this.processTreeNode(parentNode, constraintService);
+            this.processTreeNodes(children, constraintService);
+            let descendants = [];
+            this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
+            if (descendants.length > 0) {
+              let promises = [];
+              for (let descendant of descendants) {
+                let promise = this.loadTreeNext(descendant, constraintService);
+                promises.push(promise);
+              }
+              Promise.all(promises)
+                .then(() => resolve(true))
+                .catch(err => reject(err));
+            } else {
+              resolve(true);
+            }
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message)
           }
-        },
-        err => {
-          ErrorHelper.handleError(err)
-        }
-      );
+        );
+    });
   }
 
   /**
@@ -266,12 +324,11 @@ export class TreeNodeService {
       // node count
       if (node['studyId']) {
         const count = this.studyConceptCountMap.get(node['studyId']).get(node['conceptCode']).subjectCount;
-        tail = '(' + count + ')';
+        node['subjectCount'] = count;
       } else {
         const count = this.conceptCountMap.get(node['conceptCode']).subjectCount;
-        tail = '(' + count + ')';
+        node['subjectCount'] = count;
       }
-      node['label'] += tail;
     } else {
       if (node['type'] === 'UNKNOWN') {
         node['expandedIcon'] = 'fa-folder-open';
@@ -279,8 +336,7 @@ export class TreeNodeService {
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
-        tail = '(' + this.studyCountMap.get(node['studyId']).subjectCount + ')';
-        node['label'] += tail;
+        node['subjectCount'] = this.studyCountMap.get(node['studyId']).subjectCount;
       }
       node['icon'] = '';
     }
@@ -662,8 +718,8 @@ export class TreeNodeService {
    * Check if the tree_nodes calls are finished
    * @returns {boolean}
    */
-  public isTreeNodeLoadingComplete(): boolean {
-    return this.treeNodeCallsSent === this.treeNodeCallsReceived;
+  get isTreeNodeLoadingCompleted(): boolean {
+    return this.treeNodeCallsSent > 0 ? (this.treeNodeCallsSent === this.treeNodeCallsReceived) : false;
   }
 
   /**
@@ -682,6 +738,22 @@ export class TreeNodeService {
         if (node['children']) {
           this.convertItemsToPaths(node['children'], items, paths);
         }
+      }
+    });
+  }
+
+  public updateTreeNodeCounts() {
+    this.updateTreeNodeCountsIterative(this.treeNodes);
+  }
+
+  updateTreeNodeCountsIterative(nodes: TreeNode[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node['subjectCount']) {
+        let tail = node['metadata'] ? ' ⓘ' : ' ';
+        node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
+      }
+      if (node['children']) {
+        this.updateTreeNodeCountsIterative(node['children']);
       }
     });
   }

@@ -65,7 +65,7 @@ export class TreeNodeServiceMock {
     this.conceptCountMap.set('concept3', new CountItem(70, 90));
   }
 
-  public loadTreeNodes(constraintService: ConstraintService) {
+  public loadTreeNodes() {
   }
 
   get projectionTreeData(): TreeNode[] {
@@ -92,7 +92,7 @@ export class TreeNodeServiceMock {
     this._validTreeNodeTypes = value;
   }
 
-  public isTreeNodeLoadingComplete(): boolean {
+  get isTreeNodeLoadingCompleted(): boolean {
     return true;
   }
 

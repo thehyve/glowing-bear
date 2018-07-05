@@ -121,7 +121,7 @@ export class GbProjectionComponent implements OnInit {
       .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
   }
 
-  get isTreeNodeLoadingComplete(): boolean {
-    return this.treeNodeService.isTreeNodeLoadingComplete();
+  get isTreeNodeLoadingCompleted(): boolean {
+    return this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 }

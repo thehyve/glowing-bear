@@ -162,8 +162,18 @@ export class QueryService {
 
     // initial updates
     this.update_1(true)
-      .then(this.update_2.bind(this))
-      .then(this.update_3.bind(this));
+      .then(() => {
+        this.update_2()
+          .then(() => {
+            this.update_3();
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      })
+      .catch(err => {
+        console.error(err);
+      })
   }
 
   /**
@@ -456,7 +466,7 @@ export class QueryService {
   }
 
   prepare_2(resolve) {
-    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
+    if (this.treeNodeService.isTreeNodeLoadingCompleted) {
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
         let checklist = this.query ? this.query.observationQuery['data'] : null;
