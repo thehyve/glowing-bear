@@ -276,7 +276,6 @@ describe('TreeNodeService', () => {
 
     node['studyId'] = 'study2';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['label']).toContain('30');
 
     node.visualAttributes = ['FOLDER'];
     node.metadata = undefined;
@@ -298,7 +297,6 @@ describe('TreeNodeService', () => {
     treeNodeService.processTreeNode(node, constraintService);
     expect(node['expandedIcon']).toBeDefined();
     expect(node['collapsedIcon']).toBeDefined();
-    expect(node['label']).toContain('100');
   })
 
   it('should get concept from a tree node', () => {

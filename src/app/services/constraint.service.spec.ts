@@ -39,6 +39,6 @@ describe('ConstraintService', () => {
 
   it('should be injected',
     inject([ConstraintService], (service: ConstraintService) => {
-    expect(service).toBeTruthy();
-  }));
+      expect(service).toBeTruthy();
+    }));
 });

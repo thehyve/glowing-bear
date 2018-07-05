@@ -89,7 +89,7 @@ describe('QueryService', () => {
       return Observable.throw(httpErrorResponse);
     });
     spyOn(ErrorHelper, 'handleError').and.stub();
-    queryService.init();
+    queryService.loadQueries();
     expect(resourceService.getQueries).toHaveBeenCalled();
     expect(ErrorHelper.handleError).toHaveBeenCalled();
   });

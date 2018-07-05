@@ -154,7 +154,7 @@ describe('Integration test for query saving and restoring', () => {
     resourceService = TestBed.get(ResourceService);
   });
 
-  it('should restore and save query in relation to other dependant services', async(() => {
+  it('should restore and save query in relation to other dependant services', () => {
     queryService.restoreQuery(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
     let child0 = constraintService.rootInclusionConstraint.children[0];
@@ -177,6 +177,6 @@ describe('Integration test for query saving and restoring', () => {
     expect(queryService.queries.length).toBe(1);
     expect(queryService.isSavingQueryCompleted).toBe(true);
     expect(spy).toHaveBeenCalled();
-  }));
+  });
 
 });

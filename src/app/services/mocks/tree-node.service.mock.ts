@@ -65,6 +65,9 @@ export class TreeNodeServiceMock {
     this.conceptCountMap.set('concept3', new CountItem(70, 90));
   }
 
+  public load() {
+  }
+
   public loadTreeNodes() {
   }
 

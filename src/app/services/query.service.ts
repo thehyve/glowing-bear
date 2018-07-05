@@ -175,7 +175,7 @@ export class QueryService {
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
-  private loadQueries() {
+  loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
