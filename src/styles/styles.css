@@ -328,14 +328,6 @@ gb-tree-nodes .gb-tree-filter-input > input {
 }
 
 /*
- * Fix the style of the PrimeNg overlay panel so that it always stays on top
- * (overlay panel is used in the tree section on the left side)
- */
-gb-tree-nodes .ui-overlaypanel {
-  position: fixed !important;
-}
-
-/*
  * style class for loading tree nodes and patient counts
  */
 /*style fix for the primeng tree-container in the side-panel*/
