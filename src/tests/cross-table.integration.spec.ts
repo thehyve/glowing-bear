@@ -22,7 +22,7 @@ import {ConceptConstraint} from '../app/models/constraint-models/concept-constra
 import {Concept} from '../app/models/constraint-models/concept';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
 
-fdescribe('Integration tests for cross table ', () => {
+describe('Integration tests for cross table ', () => {
 
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
