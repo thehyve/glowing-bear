@@ -49,10 +49,6 @@ export class GbMainComponent implements OnInit {
     parentContainerElm.addEventListener('mousemove', this.onMouseMove.bind(this));
     parentContainerElm.addEventListener('mouseup', this.onMouseUp.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
-
-    console.log(`Initialise services ...`);
-    this.queryService.init();
-    this.constraintService.init();
   }
 
   onMouseDown = function (event) {

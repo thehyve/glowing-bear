@@ -92,10 +92,7 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
-  }
 
-  init() {
-    console.log('Initialise constraint service ...');
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
@@ -115,7 +112,6 @@ export class ConstraintService {
     this.resourceService.getStudies()
       .subscribe(
         (studies: Study[]) => {
-          console.log(`Studies loaded.`);
           // reset studies and study constraints
           this.studies = studies;
           this.studyConstraints = [];

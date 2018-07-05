@@ -29,7 +29,6 @@ export class DataTableService {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-    console.log('Initialise data table service ...');
   }
 
   public validateDimensions() {
