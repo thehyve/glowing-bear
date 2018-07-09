@@ -207,7 +207,6 @@ export class ResourceService {
     } else {
       return Observable.of(null);
     }
-
   }
 
   /**

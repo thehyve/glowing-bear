@@ -639,19 +639,43 @@ export class QueryService {
    * Restore query
    * @param {Query} query
    */
-  public restoreQuery(query: Query) {
-    this.query = query;
-    this.step = Step.I;
-    if (query.subjectQuery) {
-      this.constraintService.clearConstraint_1();
-      this.constraintService.restoreConstraint_1(query.subjectQuery);
-    }
-    this.update_1(false)
-      .then(this.update_2.bind(this))
-      .then(this.update_3.bind(this, query.dataTable));
-
-    const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-    MessageHelper.alert('info', 'Success', alertDetails);
+  public restoreQuery(query: Query): Promise<any> {
+    return new Promise((resolve, reject) => {
+      MessageHelper.alert('info', `Start importing query ${query.name}.`);
+      this.query = query;
+      this.step = Step.I;
+      if (query.subjectQuery) {
+        this.constraintService.clearConstraint_1();
+        this.constraintService.restoreConstraint_1(query.subjectQuery);
+      }
+      this.update_1(false)
+        .then(() => {
+          this.update_2()
+            .then(() => {
+              this.update_3(query.dataTable)
+                .then(() => {
+                  MessageHelper
+                    .alert('info', 'Success', `Query ${query.name} is successfully imported.`);
+                  resolve(true);
+                })
+                .catch(err => {
+                  const msg = 'Fail to update step 3.';
+                  MessageHelper.alert('error', msg);
+                  reject(msg);
+                })
+            })
+            .catch(err => {
+              const msg = 'Fail to update step 2.';
+              MessageHelper.alert('error', msg);
+              reject(msg);
+            });
+        })
+        .catch(err => {
+          const msg = 'Fail to update step 1.';
+          MessageHelper.alert('error', msg);
+          reject(msg);
+        });
+    });
   }
 
   public updateQuery(query: Query, queryObj: object) {
