@@ -255,6 +255,32 @@ export class ConstraintService {
   }
 
   /**
+   * Generate a new constraint based on a current selection in the 1st step
+   * only if subjectSetConstraint is not up to date with the selection
+   * @returns {Constraint}
+   */
+  public subjectSetConstraintIfDifferentInCurrentSelection(): Constraint {
+    let currentSelectionConstraint = this.generateSelectionConstraint();
+    if (this.subjectSetConstraint.requestConstraints !== currentSelectionConstraint) {
+      return currentSelectionConstraint;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Update the subjectSetConstraint when a new subject set is created
+   * @param {number} id
+   * @param {Constraint} updatedConstraint
+   */
+  public updateSubjectSetConstraint(id: number, updatedConstraint: Constraint) {
+    let newSubjectSetConstraint = new SubjectSetConstraint();
+    newSubjectSetConstraint.id = id;
+    newSubjectSetConstraint.requestConstraints = updatedConstraint;
+    this.subjectSetConstraint = newSubjectSetConstraint;
+  }
+
+  /**
    * Clear the patient constraints
    */
   public clearConstraint_1() {

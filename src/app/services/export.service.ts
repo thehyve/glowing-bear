@@ -60,13 +60,23 @@ export class ExportService {
               summary = 'Export job "' + name + '" is created.';
               MessageHelper.alert('success', summary);
               this.exportJobName = '';
-              this.runExportJob(newJob)
-                .then(() => {
-                  resolve(true);
-                })
-                .catch(err => {
-                  reject(err)
-                });
+              if (this.constraintService.subjectSetConstraint) {
+                this.runExportJobWithSubjectSetConstraint(newJob)
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch(err => {
+                    reject(err)
+                  });
+              } else {
+                this.runExportJob(newJob)
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch(err => {
+                    reject(err)
+                  });
+              }
             },
             (err: HttpErrorResponse) => {
               ErrorHelper.handleError(err);
@@ -80,10 +90,28 @@ export class ExportService {
   }
 
   /**
+   * First check if the subjectSet in the 1st step is up to date with a current selection criteria
+   * then create the export
+   * @param {ExportJob} newJob
+   */
+  runExportJobWithSubjectSetConstraint(newJob: ExportJob): Promise<any> {
+      let updatedSelectionConstraint = this.constraintService.subjectSetConstraintIfDifferentInCurrentSelection();
+      if (updatedSelectionConstraint) {
+        this.resourceService.saveSubjectSet('temp', updatedSelectionConstraint).subscribe(newSubjectSet => {
+          this.constraintService.updateSubjectSetConstraint(newSubjectSet.id, updatedSelectionConstraint);
+          return this.runExportJob(newJob)
+        });
+      }
+      else {
+        return this.runExportJob(newJob);
+      }
+  }
+
+  /**
    * Run the just created export job
    * @param job
    */
-  public runExportJob(job: ExportJob): Promise<any> {
+  runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
       let constraint = this.constraintService.constraint_1_2();
       this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
