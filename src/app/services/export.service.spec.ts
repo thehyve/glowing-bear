@@ -16,8 +16,13 @@ import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {DatePipe} from '@angular/common';
+import {ExportJob} from '../models/export-models/export-job';
+import {ExportDataType} from '../models/export-models/export-data-type';
+import {ExportFileFormat} from '../models/export-models/export-file-format';
 
 describe('ExportService', () => {
+  let exportService: ExportService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -37,9 +42,32 @@ describe('ExportService', () => {
         DatePipe
       ]
     });
+    exportService = TestBed.get(ExportService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('should validate export job name', () => {
+    let newExportJob = new ExportJob();
+    newExportJob.id = 'id';
+    newExportJob.jobName = 'test job name';
+    exportService.exportJobs = [newExportJob];
+    let result = exportService.validateExportJob('');
+    expect(result).toBe(false);
+    result = exportService.validateExportJob('test job name');
+    expect(result).toBe(false);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    let exportDataType = new ExportDataType('test data type', true);
+    exportService.exportDataTypes = [exportDataType];
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    let fileFormat = new ExportFileFormat('tsv', true);
+    exportDataType.fileFormats.push(fileFormat);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(true);
+  })
+
 });

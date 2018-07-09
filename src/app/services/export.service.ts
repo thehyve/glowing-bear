@@ -181,7 +181,7 @@ export class ExportService {
    * @param {string} name
    * @returns {boolean}
    */
-  private validateExportJob(name: string): boolean {
+  validateExportJob(name: string): boolean {
     let validName = name !== '';
 
     // 1. Validate if job name is specified
