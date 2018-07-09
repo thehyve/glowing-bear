@@ -7,11 +7,11 @@
  */
 
 export enum PedigreeState {
-    Parent, // PAR
-    Child, //
-    Spouse, // SPO
-    Sibling, // SIB
-    MonozygoticTwin, // MZ
-    DizygoticTwin, // DZ
-    UnknownTwin // COT
+    Parent = 'Parent', // PAR
+    Child = 'Child', //
+    Spouse = 'Spouse', // SPO
+    Sibling = 'Sibling', // SIB
+    MonozygoticTwin = 'MonozygoticTwin', // MZ
+    DizygoticTwin = 'DizygoticTwin', // DZ
+    UnknownTwin = 'UnknownTwin' // COT
 }

@@ -60,9 +60,9 @@ export class ConstraintService {
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
-    if (constraint.parent !== null) {
+    if (constraint.parentConstraint !== null) {
       depth++;
-      depth += this.depthOfConstraint(constraint.parent);
+      depth += this.depthOfConstraint(constraint.parentConstraint);
     }
     return depth;
   }
@@ -131,7 +131,7 @@ export class ConstraintService {
       .subscribe(
         relationTypeObjects => {
           for (let obj of relationTypeObjects) {
-            let pedigreeConstraint = new PedigreeConstraint(obj.label);
+            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(obj.label);
             pedigreeConstraint.description = obj.description;
             pedigreeConstraint.biological = obj.biological;
             pedigreeConstraint.symmetrical = obj.symmetrical;

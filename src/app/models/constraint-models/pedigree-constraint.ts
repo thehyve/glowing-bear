@@ -64,7 +64,7 @@ export class PedigreeConstraint extends Constraint {
       }
     }
     this.rightHandSideConstraint = new CombinationConstraint();
-    this.rightHandSideConstraint.parent = this;
+    this.rightHandSideConstraint.parentConstraint = this;
     this.biological = undefined;
     this.shareHousehold = undefined;
     this.textRepresentation = `Pedigree: ${relation}`;
@@ -80,7 +80,7 @@ export class PedigreeConstraint extends Constraint {
 
   set rightHandSideConstraint(value: CombinationConstraint) {
     this._rightHandSideConstraint = value;
-    this._rightHandSideConstraint.parent = this;
+    this._rightHandSideConstraint.parentConstraint = this;
   }
 
   get relationType(): PedigreeState {
@@ -161,11 +161,17 @@ export class PedigreeConstraint extends Constraint {
     this._symmetrical = value;
   }
 
-  set parent(value: Constraint) {
-    this._parent = value;
+  set parentConstraint(value: Constraint) {
+    this._parentConstraint = value;
     if (this.rightHandSideConstraint &&
-      this.rightHandSideConstraint.parent !== this) {
-      this.rightHandSideConstraint.parent = this;
+      this.rightHandSideConstraint.parentConstraint !== this) {
+      this.rightHandSideConstraint.parentConstraint = this;
     }
+  }
+
+  // for some reason, defining only the setter makes the super's getter ignored
+  // need to re-define it here
+  get parentConstraint(): Constraint {
+    return this._parentConstraint;
   }
 }
