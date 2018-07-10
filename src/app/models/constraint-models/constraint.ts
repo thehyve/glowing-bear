@@ -15,12 +15,12 @@ export class Constraint {
   // The enum indicating the purpose of the constraint: is it for querying subjects? Or observations?
   protected _mark: ConstraintMark;
   // The parent constraint
-  protected _parent: Constraint;
+  protected _parentConstraint: Constraint;
 
   constructor() {
     this.textRepresentation = '';
     this.mark = ConstraintMark.OBSERVATION;
-    this.parent = null;
+    this.parentConstraint = null;
   }
 
   get textRepresentation(): string {
@@ -39,12 +39,12 @@ export class Constraint {
     this._mark = value;
   }
 
-  get parent(): Constraint {
-    return this._parent;
+  get parentConstraint(): Constraint {
+    return this._parentConstraint;
   }
 
-  set parent(value: Constraint) {
-    this._parent = value;
+  set parentConstraint(value: Constraint) {
+    this._parentConstraint = value;
   }
 
   get className(): string {

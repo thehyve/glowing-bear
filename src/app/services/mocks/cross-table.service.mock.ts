@@ -93,7 +93,10 @@ export class CrossTableServiceMock {
     this.updateValueConstraints(this.columnConstraints);
   }
 
-  public updateValueConstraints(constraints: Array<Constraint>) {
+  public update(constraints: Array<Constraint>) {
+  }
+
+  private updateValueConstraints(constraints: Array<Constraint>) {
     // clear existing value constraints
     this.clearValueConstraints(constraints);
     for (let constraint of constraints) {

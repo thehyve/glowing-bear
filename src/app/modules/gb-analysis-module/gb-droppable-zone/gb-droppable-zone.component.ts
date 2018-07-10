@@ -56,7 +56,8 @@ export class GbDroppableZoneComponent implements OnInit {
   onDrop() {
     const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
-    // if no existing constraint is used, try to create a new one based on tree node drop
+    // if no existing constraint (from one of the already created draggable cells) is used,
+    // try to create a new one based on the (possible) tree node drop
     if (!constraint) {
       if (this.treeNodeService.selectedTreeNode) {
         constraint = this.constraintService
@@ -65,9 +66,9 @@ export class GbDroppableZoneComponent implements OnInit {
           constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);
           // new constraint is introduced, creating new header constraints as well as cells
-          this.crossTableService.updateValueConstraints(this.constraints);
+          this.crossTableService.update(this.constraints);
         } else {
-          const summary = 'Not a valid constraint';
+          const summary = 'Not a valid constraint, please choose a categorical concept!';
           MessageHelper.alert('error', summary);
           console.error(summary, constraint);
         }

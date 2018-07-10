@@ -207,7 +207,6 @@ export class ResourceService {
     } else {
       return Observable.of(null);
     }
-
   }
 
   /**
@@ -349,7 +348,7 @@ export class ResourceService {
   }
 
   // -------------------------------------- cross table ---------------------------------------------
-  getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
+  public getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
     return this.transmartResourceService
       .getCrossTable(
         crossTable.constraint,

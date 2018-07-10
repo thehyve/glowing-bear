@@ -16,12 +16,13 @@ import {saveAs} from 'file-saver';
 import {DatePipe} from '@angular/common';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class ExportService {
 
   private _exportDataTypes: ExportDataType[] = [];
-  private _exportJobs: ExportJob[];
+  private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
   private _isLoadingExportDataTypes = false;
 
@@ -45,41 +46,67 @@ export class ExportService {
   /**
    * Create the export job when the user clicks the 'Export selected sets' button
    */
-  createExportJob() {
-    let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
-    let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
+  createExportJob(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
+      let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
 
-    if (this.validateExportJob(name)) {
-      let summary = 'Running export job "' + name + '".';
-      MessageHelper.alert('info', summary);
-      this.resourceService.createExportJob(name)
-        .subscribe(
-          newJob => {
-            summary = 'Export job "' + name + '" is created.';
-            MessageHelper.alert('success', summary);
-            this.exportJobName = '';
-            this.runExportJob(newJob);
-          },
-          err => console.error(err)
-        );
-    }
+      if (this.validateExportJob(name)) {
+        let summary = 'Running export job "' + name + '".';
+        MessageHelper.alert('info', summary);
+        this.resourceService.createExportJob(name)
+          .subscribe(
+            (newJob: ExportJob) => {
+              summary = 'Export job "' + name + '" is created.';
+              MessageHelper.alert('success', summary);
+              this.exportJobName = '';
+              this.runExportJob(newJob)
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject(err)
+                });
+            },
+            (err: HttpErrorResponse) => {
+              ErrorHelper.handleError(err);
+              reject(`Fail to create export job ${name}.`);
+            }
+          );
+      } else {
+        reject(`Invalid export job ${name}`);
+      }
+    });
   }
 
   /**
    * Run the just created export job
    * @param job
    */
-  public runExportJob(job: ExportJob) {
-    let constraint = this.constraintService.constraint_1_2();
-    this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
-      .subscribe(
-        returnedExportJob => {
-          if (returnedExportJob) {
-            this.updateExportJobs();
+  public runExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let constraint = this.constraintService.constraint_1_2();
+      this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
+        .subscribe(
+          returnedExportJob => {
+            if (returnedExportJob) {
+              this.updateExportJobs()
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject(err);
+                });
+            } else {
+              reject(`Fail to run export job ${job.jobName}, server returns undefined job.`);
+            }
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(`Fail to run export job ${job.jobName}.`);
           }
-        },
-        err => ErrorHelper.handleError(err)
-      );
+        );
+    });
   }
 
   /**
@@ -87,7 +114,7 @@ export class ExportService {
    * then the files of that job can be downloaded
    * @param job
    */
-  downloadExportJob(job) {
+  downloadExportJob(job: ExportJob) {
     job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
@@ -95,8 +122,11 @@ export class ExportService {
           let blob = new Blob([data], {type: 'application/zip'});
           saveAs(blob, `${job.jobName}.zip`, true);
         },
-        err => console.error(err),
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        },
         () => {
+          MessageHelper.alert('success', `Export ${job.jobName} download completed`);
         }
       );
   }
@@ -108,7 +138,9 @@ export class ExportService {
         response => {
           this.updateExportJobs();
         },
-        err => console.error(err)
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        }
       );
   }
 
@@ -119,21 +151,29 @@ export class ExportService {
         response => {
           this.updateExportJobs();
         },
-        err => console.error(err)
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        }
       );
   }
 
-  updateExportJobs() {
-    this.resourceService.getExportJobs()
-      .subscribe(
-        jobs => {
-          jobs.forEach(job => {
-            job.isInDisabledState = false
-          });
-          this.exportJobs = jobs;
-        },
-        err => console.error(err)
-      );
+  updateExportJobs(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getExportJobs()
+        .subscribe(
+          jobs => {
+            jobs.forEach(job => {
+              job.isInDisabledState = false
+            });
+            this.exportJobs = jobs;
+            resolve(true);
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject('Fail to update export jobs.');
+          }
+        );
+    });
   }
 
   /**
@@ -141,7 +181,7 @@ export class ExportService {
    * @param {string} name
    * @returns {boolean}
    */
-  private validateExportJob(name: string): boolean {
+  validateExportJob(name: string): boolean {
     let validName = name !== '';
 
     // 1. Validate if job name is specified

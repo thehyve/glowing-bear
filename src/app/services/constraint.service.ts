@@ -60,9 +60,9 @@ export class ConstraintService {
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
-    if (constraint.parent !== null) {
+    if (constraint.parentConstraint !== null) {
       depth++;
-      depth += this.depthOfConstraint(constraint.parent);
+      depth += this.depthOfConstraint(constraint.parentConstraint);
     }
     return depth;
   }
@@ -92,17 +92,14 @@ export class ConstraintService {
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
     this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
-  }
 
-  init() {
-    console.log('Initialise constraint service ...');
     // Construct constraints
     this.loadEmptyConstraints();
     this.loadStudies();
     // create the pedigree-related constraints
     this.loadPedigrees();
-    // also construct concepts while loading the tree nodes
-    this.treeNodeService.loadTreeNodes(this);
+    // construct concepts while loading the tree nodes
+    this.treeNodeService.load();
   }
 
   private loadEmptyConstraints() {
@@ -115,7 +112,6 @@ export class ConstraintService {
     this.resourceService.getStudies()
       .subscribe(
         (studies: Study[]) => {
-          console.log(`Studies loaded.`);
           // reset studies and study constraints
           this.studies = studies;
           this.studyConstraints = [];
@@ -135,7 +131,7 @@ export class ConstraintService {
       .subscribe(
         relationTypeObjects => {
           for (let obj of relationTypeObjects) {
-            let pedigreeConstraint = new PedigreeConstraint(obj.label);
+            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(obj.label);
             pedigreeConstraint.description = obj.description;
             pedigreeConstraint.biological = obj.biological;
             pedigreeConstraint.symmetrical = obj.symmetrical;

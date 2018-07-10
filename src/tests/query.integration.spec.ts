@@ -1,4 +1,4 @@
-import {async, TestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {ResourceService} from '../app/services/resource.service';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
 import {Query} from '../app/models/query-models/query';
@@ -126,7 +126,7 @@ describe('Integration test for query saving and restoring', () => {
   let constraintService: ConstraintService;
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
-
+  let treeNodeService: TreeNodeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -153,10 +153,13 @@ describe('Integration test for query saving and restoring', () => {
     constraintService = TestBed.get(ConstraintService);
     dataTableService = TestBed.get(DataTableService);
     resourceService = TestBed.get(ResourceService);
+    treeNodeService = TestBed.get(TreeNodeService);
   });
 
-  it('should restore and save query in relation to other dependant services', async(() => {
-    queryService.restoreQuery(q0);
+  it('should restore and save query in relation to other dependant services', () => {
+    treeNodeService.treeNodeCallsSent = 10;
+    treeNodeService.treeNodeCallsReceived = 10;
+    let promise = queryService.restoreQuery(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
     let child0 = constraintService.rootInclusionConstraint.children[0];
     expect(child0.className).toEqual('ConceptConstraint');
@@ -172,12 +175,18 @@ describe('Integration test for query saving and restoring', () => {
     expect(child3['concept']['code']).toEqual('VSIGN:HR');
     expect(queryService.query.observationQuery).toBeDefined();
     expect(queryService.query.observationQuery.data.length).toBe(3);
+    promise.then(() => {
+      expect(queryService.isDirty_1).toBe(false);
+      expect(queryService.isDirty_2).toBe(false);
+      expect(queryService.isDirty_3).toBe(false);
+    });
 
-    let spy = spyOn(resourceService, 'saveQuery').and.callThrough();
+
+    let spySaveQuery = spyOn(resourceService, 'saveQuery').and.callThrough();
     queryService.saveQueryByName('test-name');
     expect(queryService.queries.length).toBe(1);
     expect(queryService.isSavingQueryCompleted).toBe(true);
-    expect(spy).toHaveBeenCalled();
-  }));
+    expect(spySaveQuery).toHaveBeenCalled();
+  });
 
 });

@@ -154,22 +154,28 @@ export class QueryService {
     this.countsRelay = false;
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
-  }
 
-  init() {
-    console.log('Query service initialised.');
     this.loadQueries();
-
     // initial updates
     this.update_1(true)
-      .then(this.update_2.bind(this))
-      .then(this.update_3.bind(this));
+      .then(() => {
+        this.update_2()
+          .then(() => {
+            this.update_3();
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      })
+      .catch(err => {
+        console.error(err);
+      })
   }
 
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
-  private loadQueries() {
+  loadQueries() {
     this.resourceService.getQueries()
       .subscribe(
         (queries: Query[]) => {
@@ -456,7 +462,7 @@ export class QueryService {
   }
 
   prepare_2(resolve) {
-    if (this.treeNodeService.isTreeNodeLoadingComplete()) {
+    if (this.treeNodeService.isTreeNodeLoadingCompleted) {
       // Only update the tree in the 2nd step when the user changes sth. in the 1st step
       if (this.step !== Step.II) {
         let checklist = this.query ? this.query.observationQuery['data'] : null;
@@ -561,10 +567,12 @@ export class QueryService {
   public update_3(targetDataTable?: DataTable): Promise<any> {
     return new Promise((resolve, reject) => {
       this.isDirty_3 = true;
+      this.isUpdating_3 = true;
       this.dataTableService.dataTable.currentPage = 1;
       this.dataTableService.updateDataTable(targetDataTable)
         .then(() => {
           this.isDirty_3 = false;
+          this.isUpdating_3 = false;
           resolve(true);
         })
         .catch(err => reject(err))
@@ -631,19 +639,43 @@ export class QueryService {
    * Restore query
    * @param {Query} query
    */
-  public restoreQuery(query: Query) {
-    this.query = query;
-    this.step = Step.I;
-    if (query.subjectQuery) {
-      this.constraintService.clearConstraint_1();
-      this.constraintService.restoreConstraint_1(query.subjectQuery);
-    }
-    this.update_1(false)
-      .then(this.update_2.bind(this))
-      .then(this.update_3.bind(this, query.dataTable));
-
-    const alertDetails = 'Query "' + query['name'] + '" is successfully imported.';
-    MessageHelper.alert('info', 'Success', alertDetails);
+  public restoreQuery(query: Query): Promise<any> {
+    return new Promise((resolve, reject) => {
+      MessageHelper.alert('info', `Start importing query ${query.name}.`);
+      this.query = query;
+      this.step = Step.I;
+      if (query.subjectQuery) {
+        this.constraintService.clearConstraint_1();
+        this.constraintService.restoreConstraint_1(query.subjectQuery);
+      }
+      this.update_1(false)
+        .then(() => {
+          this.update_2()
+            .then(() => {
+              this.update_3(query.dataTable)
+                .then(() => {
+                  MessageHelper
+                    .alert('info', 'Success', `Query ${query.name} is successfully imported.`);
+                  resolve(true);
+                })
+                .catch(err => {
+                  const msg = 'Fail to update step 3.';
+                  MessageHelper.alert('error', msg);
+                  reject(msg);
+                })
+            })
+            .catch(err => {
+              const msg = 'Fail to update step 2.';
+              MessageHelper.alert('error', msg);
+              reject(msg);
+            });
+        })
+        .catch(err => {
+          const msg = 'Fail to update step 1.';
+          MessageHelper.alert('error', msg);
+          reject(msg);
+        });
+    });
   }
 
   public updateQuery(query: Query, queryObj: object) {
@@ -734,7 +766,7 @@ export class QueryService {
   public toggleQueryBookmark(query: Query) {
     query.bookmarked = !query.bookmarked;
     let queryObj = {
-      subscribed: query.subscribed
+      bookmarked: query.bookmarked
     };
     this.updateQuery(query, queryObj);
   }

@@ -8,6 +8,7 @@
 
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
+import {PedigreeConstraint} from './pedigree-constraint';
 
 export class CombinationConstraint extends Constraint {
 
@@ -29,8 +30,13 @@ export class CombinationConstraint extends Constraint {
 
   addChild(constraint: Constraint) {
     if (!(constraint.className === 'CombinationConstraint'
-        && (<CombinationConstraint>constraint).isRoot)) {
-      constraint.parent = this;
+      && !(<CombinationConstraint>constraint).isRoot)) {
+      // to enforce polymorphism, otherwise child set method is not called
+      if (constraint.className === 'PedigreeConstraint') {
+        (<PedigreeConstraint>constraint).parentConstraint = this;
+      } else {
+        constraint.parentConstraint = this;
+      }
     }
     this.children.push(constraint);
   }

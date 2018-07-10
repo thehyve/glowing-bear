@@ -77,7 +77,7 @@ describe('TreeNodeService', () => {
     });
     let spy2 = spyOn(treeNodeService, 'processTreeNodes').and.stub();
     let spy3 = spyOn(treeNodeService, 'loadTreeNext').and.stub();
-    treeNodeService.loadTreeNodes(constraintService);
+    treeNodeService.loadTreeNodes();
     expect(spy1).toHaveBeenCalled();
     expect(treeNodeService.loadingTreeNodes).toEqual('complete');
     expect(constraintService.concepts.length).toBe(0);
@@ -92,7 +92,7 @@ describe('TreeNodeService', () => {
       return Observable.throw(httpErrorResponse);
     });
     let spy2 = spyOn(ErrorHelper, 'handleError').and.stub();
-    treeNodeService.loadTreeNodes(constraintService);
+    treeNodeService.loadTreeNodes();
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   })
@@ -276,7 +276,6 @@ describe('TreeNodeService', () => {
 
     node['studyId'] = 'study2';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['label']).toContain('30');
 
     node.visualAttributes = ['FOLDER'];
     node.metadata = undefined;
@@ -298,7 +297,6 @@ describe('TreeNodeService', () => {
     treeNodeService.processTreeNode(node, constraintService);
     expect(node['expandedIcon']).toBeDefined();
     expect(node['collapsedIcon']).toBeDefined();
-    expect(node['label']).toContain('100');
   })
 
   it('should get concept from a tree node', () => {

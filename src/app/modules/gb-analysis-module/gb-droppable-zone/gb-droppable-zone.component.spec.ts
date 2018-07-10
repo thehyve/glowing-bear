@@ -115,12 +115,10 @@ describe('GbDroppableZoneComponent', () => {
     let spy3 = spyOn(crossTableService, 'isValidConstraint').and.returnValue(true);
     let dummyText = 'dummy text';
     let spy4 = spyOn(CrossTableService, 'brief').and.returnValue(dummyText);
-    let spy5 = spyOn(crossTableService, 'updateValueConstraints').and.stub();
     component.onDrop();
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
     expect(dummy.textRepresentation).toBe(dummyText);
-    expect(spy5).toHaveBeenCalled();
     expect(component.constraints).toContain(dummy);
 
     let dummySelectedCell = {

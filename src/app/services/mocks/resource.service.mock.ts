@@ -22,6 +22,8 @@ import {TransmartResourceService} from '../transmart-services/transmart-resource
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -64,6 +66,10 @@ export class ResourceServiceMock {
   }
 
   getExportJobs(): Observable<ExportJob[]> {
+    let newExportJob = new ExportJob();
+    newExportJob.id = 'id';
+    newExportJob.jobName = 'test job name';
+    this.exportJobs = [newExportJob];
     return Observable.of(this.exportJobs);
   }
 
@@ -145,5 +151,22 @@ export class ResourceServiceMock {
 
   saveQuery(query: Query): Observable<Query> {
     return Observable.of(new Query('id', 'name'));
+  }
+
+  createExportJob(name: string): Observable<ExportJob> {
+    let newExportJob = new ExportJob();
+    newExportJob.id = 'id';
+    newExportJob.jobName = 'test job name';
+    return Observable.of(newExportJob);
+  }
+
+  runExportJob(job: ExportJob,
+               dataTypes: ExportDataType[],
+               constraint: Constraint,
+               dataTable: DataTable): Observable<ExportJob> {
+    let newExportJob = new ExportJob();
+    newExportJob.id = 'id';
+    newExportJob.jobName = 'test job name';
+    return Observable.of(newExportJob);
   }
 }

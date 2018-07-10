@@ -42,4 +42,7 @@ export class GbCrossTableComponent implements OnInit {
     return this.crossTableService.cols;
   }
 
+  get isUpdating(): boolean {
+    return this.crossTableService.crossTable.isUpdating;
+  }
 }

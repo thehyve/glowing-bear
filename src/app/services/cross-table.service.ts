@@ -20,6 +20,9 @@ import {ConceptConstraint} from '../models/constraint-models/concept-constraint'
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {Col} from '../models/table-models/col';
 import {Row} from '../models/table-models/row';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorHelper} from '../utilities/error-helper';
+import {Promise} from 'es6-promise';
 
 @Injectable()
 export class CrossTableService {
@@ -35,7 +38,7 @@ export class CrossTableService {
   // the drag and drop context used by primeng library to associate draggable and droppable items
   // this constant is used by gb-draggable-cell and gb-droppable-zone
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
-  private crossTable: CrossTable;
+  private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
   /**
@@ -66,6 +69,23 @@ export class CrossTableService {
   }
 
   /**
+   * Update the cross table given row/column constraints
+   * @param {Array<Constraint>} constraints
+   */
+  public update(constraints: Array<Constraint>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.updateValueConstraints(constraints)
+        .then(this.updateCells.bind(this))
+        .then(() => {
+          resolve(true)
+        })
+        .catch(err => {
+          reject()
+        });
+    });
+  }
+
+  /**
    * This function is used to generate the value constraint(s) for the cross table:
    * Given a constraint, check if it is a categorical concept constraint,
    * if yes, fetch its aggregate, assign the target with a list of aggregate-value constraints
@@ -82,40 +102,46 @@ export class CrossTableService {
    *
    * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
    */
-  public updateValueConstraints(constraints: Array<Constraint>) {
-    // clear existing value constraints
-    this.clearValueConstraints(constraints);
-    for (let constraint of constraints) {
-      constraint.textRepresentation = CrossTableService.brief(constraint);
-      let needsAggregateCall = false;
-      // If the constraint has categorical concept, break it down to value constraints and add those respectively
-      if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
-        needsAggregateCall = true;
-        let categoricalConceptConstraint = <ConceptConstraint>constraint;
-        this.retrieveAggregate(categoricalConceptConstraint, constraint);
-      } else if (constraint.className === 'CombinationConstraint') {
-        let combiConstraint = <CombinationConstraint>constraint;
-        if (combiConstraint.isAnd()) {
-          let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
-            ConstraintHelper.isCategoricalConceptConstraint(child)
-          );
-          if (categoricalConceptConstraints.length === 1) {
-            needsAggregateCall = true;
-            this.retrieveAggregate(<ConceptConstraint>categoricalConceptConstraints[0], constraint);
-          }
+  private updateValueConstraints(constraints: Array<Constraint>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.crossTable.isUpdating = true;
+      // clear existing value constraints
+      this.clearValueConstraints(constraints);
+      let promises: Promise<any>[] = [];
+      for (let constraint of constraints) {
+        constraint.textRepresentation = CrossTableService.brief(constraint);
+        let needsAggregateCall = false;
+        // If the constraint has categorical concept, break it down to value constraints and add those respectively
+        if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
+          needsAggregateCall = true;
+          let categoricalConceptConstraint = <ConceptConstraint>constraint;
+          let promise: Promise<any> = this.retrieveAggregate(categoricalConceptConstraint, constraint);
+          promises.push(promise);
+        } else if (constraint.className === 'CombinationConstraint') {
+          let combiConstraint = <CombinationConstraint>constraint;
+          if (combiConstraint.isAnd()) {
+            let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+              ConstraintHelper.isCategoricalConceptConstraint(child)
+            );
+            if (categoricalConceptConstraints.length === 1) {
+              needsAggregateCall = true;
+              let promise: Promise<any> = this.retrieveAggregate(<ConceptConstraint>categoricalConceptConstraints[0], constraint);
+              promises.push(promise);
+            }
+          }// <-if constraint is combination with 'and' state
+        }
+        // If the constraint has no categorical concept, add the constraint directly to value constraint list
+        if (!needsAggregateCall) {
+          this.crossTable.setValueConstraints(constraint, [constraint]);
         }
       }
-      // If the constraint has no categorical concept, add the constraint directly to value constraint list
-      if (!needsAggregateCall) {
-        this.crossTable.setValueConstraints(constraint, [constraint]);
-      }
-    }
-    this.updateCells();
-  }
-
-  public updateHeaderConstraints() {
-    this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
-    this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+      Promise.all(promises)
+        .then(() => {
+          resolve(true);
+        }).catch(err => {
+        reject('Fail to update cross table constraints.')
+      })
+    });
   }
 
   /**
@@ -160,18 +186,25 @@ export class CrossTableService {
    * b. replace the old cells with the new cells
    * c. construct rows and cols based on the new cells
    */
-  public updateCells() {
-    if (this.areValueConstraintsMapped) {
-      this.updateHeaderConstraints();
+  public updateCells(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.crossTable.isUpdating = true;
+      try {
+        this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
+        this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+      } catch (e) {
+        reject(e.message);
+      }
       this.resourceService.getCrossTable(this.crossTable)
         .subscribe((crossTable: CrossTable) => {
           this.crossTable = crossTable;
+          this.crossTable.isUpdating = false;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to get table cells from server.');
         });
-    } else {
-      window.setTimeout((function () {
-        this.updateCells();
-      }).bind(this), 500);
-    }
+    });
   }
 
   /**
@@ -193,17 +226,24 @@ export class CrossTableService {
   }
 
   private retrieveAggregate(categoricalConceptConstraint: ConceptConstraint,
-                            peerConstraint: Constraint) {
-    if (categoricalConceptConstraint.concept.aggregate) {
-      const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
-      this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
-    } else {
-      this.resourceService.getAggregate(categoricalConceptConstraint)
-        .subscribe((responseAggregate: Aggregate) => {
-          const categoricalAggregate = <CategoricalAggregate>responseAggregate;
-          this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
-        });
-    }
+                            peerConstraint: Constraint): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (categoricalConceptConstraint.concept.aggregate) {
+        const categoricalAggregate = <CategoricalAggregate>categoricalConceptConstraint.concept.aggregate;
+        this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+        resolve(true);
+      } else {
+        this.resourceService.getAggregate(categoricalConceptConstraint)
+          .subscribe((responseAggregate: Aggregate) => {
+            const categoricalAggregate = <CategoricalAggregate>responseAggregate;
+            this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
+            resolve(true);
+          }, (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(`Fail to retrieve aggregate of constraint ${categoricalConceptConstraint.textRepresentation}`);
+          });
+      }
+    });
   }
 
   private setCategoricalValueConstraints(categoricalAggregate: CategoricalAggregate,
@@ -217,15 +257,6 @@ export class CrossTableService {
       return val;
     });
     this.crossTable.setValueConstraints(peerConstraint, valueConstraints);
-  }
-
-  get areValueConstraintsMapped(): boolean {
-    return this.rowConstraints.every((constraint: Constraint) => {
-        return this.valueConstraints.has(constraint);
-      }) &&
-      this.columnConstraints.every((constraint: Constraint) => {
-        return this.valueConstraints.has(constraint);
-      });
   }
 
   get selectedConstraintCell(): GbDraggableCellComponent {
@@ -268,4 +299,12 @@ export class CrossTableService {
     return this.crossTable.rowHeaderConstraints;
   }
 
+
+  get crossTable(): CrossTable {
+    return this._crossTable;
+  }
+
+  set crossTable(value: CrossTable) {
+    this._crossTable = value;
+  }
 }
