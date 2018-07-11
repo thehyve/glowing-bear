@@ -198,14 +198,18 @@ export class ConstraintService {
    * @returns {CombinationConstraint}
    */
   public generateExclusionConstraint(): Constraint {
-    // Inclusion part, which is what the exclusion count is calculated from
-    let inclusionConstraint = this.generateInclusionConstraint();
-    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
+    if (this.hasExclusionConstraint()) {
+      // Inclusion part, which is what the exclusion count is calculated from
+      let inclusionConstraint = this.generateInclusionConstraint();
+      let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
 
-    let combination = new CombinationConstraint();
-    combination.addChild(inclusionConstraint);
-    combination.addChild(exclusionConstraint);
-    return combination;
+      let combination = new CombinationConstraint();
+      combination.addChild(inclusionConstraint);
+      combination.addChild(exclusionConstraint);
+      return combination;
+    } else {
+      return undefined;
+    }
   }
 
   public constraint_1() {

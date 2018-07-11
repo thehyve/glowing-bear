@@ -32,10 +32,20 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TransmartCrossTableMapper} from '../utilities/transmart-utilities/transmart-cross-table-mapper';
 import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
+import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
+import {C} from '@angular/core/src/render3';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorHelper} from '../utilities/error-helper';
+import {promise} from 'selenium-webdriver';
 
 
 @Injectable()
 export class ResourceService {
+
+  private _inclusionCounts: CountItem;
+  private _exclusionCounts: CountItem;
+  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
   }
@@ -61,18 +71,38 @@ export class ResourceService {
     return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
   }
 
-  // -------------------------------------- observations calls --------------------------------------
+  // -------------------------------------- count calls --------------------------------------
+  updateInclusionExclusionCounts(constraint: Constraint,
+                                 inclusionConstraint: Constraint,
+                                 exclusionConstraint?: Constraint): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+        .then(() => {
+          this.inclusionCounts =
+            TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
+          this.exclusionCounts =
+            TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
+          this.selectedStudyConceptCountMap =
+            TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
+          resolve(true);
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
+  }
+
   /**
    * Given a constraint, get the patient counts and observation counts
    * organized per study, then per concept
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
-  getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>> > {
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>>> {
     return this.transmartResourceService.getCountsPerStudyAndConcept(constraint)
       .map((response: object) => {
         return TransmartMapper.mapStudyConceptCountObject(response);
-      })
+      });
   }
 
   /**
@@ -100,14 +130,16 @@ export class ResourceService {
       })
   }
 
-  // -------------------------------------- observation calls --------------------------------------
   /**
    * Give a constraint, get the corresponding patient count and observation count.
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
-  getCounts(constraint: Constraint): Observable<object> {
-    return this.transmartResourceService.getCounts(constraint);
+  getCounts(constraint: Constraint): Observable<CountItem> {
+    return this.transmartResourceService.getCounts(constraint)
+      .map((tmCountItem: TransmartCountItem) => {
+        return TransmartMapper.mapTransmartCountItem(tmCountItem);
+      });
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -357,6 +389,31 @@ export class ResourceService {
       .map((tmCrossTable: TransmartCrossTable) => {
         return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
       });
+  }
+
+
+  get inclusionCounts(): CountItem {
+    return this._inclusionCounts;
+  }
+
+  set inclusionCounts(value: CountItem) {
+    this._inclusionCounts = value;
+  }
+
+  get exclusionCounts(): CountItem {
+    return this._exclusionCounts;
+  }
+
+  set exclusionCounts(value: CountItem) {
+    this._exclusionCounts = value;
+  }
+
+  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._selectedStudyConceptCountMap;
+  }
+
+  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._selectedStudyConceptCountMap = value;
   }
 
 }

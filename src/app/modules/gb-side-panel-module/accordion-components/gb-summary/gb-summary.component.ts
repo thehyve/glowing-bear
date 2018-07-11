@@ -78,13 +78,11 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
   }
 
   get subjectCount(): number {
-    return this.queryService.subjectCount_2 >= 0 ?
-      this.queryService.subjectCount_2 : this.queryService.subjectCount_1;
+    return this.queryService.counts_2.subjectCount >= 0 ? this.queryService.counts_2.subjectCount : 0;
   }
 
   get observationCount(): number {
-    return this.queryService.observationCount_2 >= 0 ?
-      this.queryService.observationCount_2 : this.queryService.observationCount_1;
+    return this.queryService.counts_2.observationCount >= 0 ? this.queryService.counts_2.observationCount : 0;
   }
 
   get finalTreeNodes(): TreeNode[] {

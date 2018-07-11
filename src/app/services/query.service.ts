@@ -62,15 +62,12 @@ export class QueryService {
   /*
    * ------ variables used in the 0th step, i.e. the total numbers of things ------
    */
-  private _subjectCount_0 = 0;
-  private _observationCount_0 = 0;
+  private _counts_0: CountItem;
   /*
    * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
    */
-  private _inclusionSubjectCount = 0;
-  private _exclusionSubjectCount = 0;
-  private _inclusionObservationCount = 0;
-  private _exclusionObservationCount = 0;
+  private _inclusionCounts: CountItem;
+  private _exclusionCounts: CountItem;
   /*
    * when step 1 constraints are changed, whether to call update_1 immediately,
    * used in gb-constraint-component
@@ -80,15 +77,11 @@ export class QueryService {
   private _isUpdating_1 = false;
   // flag indicating if the query in the 1st step has been changed
   private _isDirty_1 = false;
-  // the number of subjects selected in the first step
-  private _subjectCount_1 = 0;
-  // the number of observations from the selected subjects in the first step
-  private _observationCount_1 = 0;
+  // the counts in the first step
+  private _counts_1: CountItem;
   loadingStateInclusion: LoadingState = 'complete';
   loadingStateExclusion: LoadingState = 'complete';
   loadingStateTotal_1: LoadingState = 'complete';
-  // the queue that holds the time stamps of the calls made in the 1st step
-  private _queueOfCalls_1 = [];
 
   /*
    * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
@@ -106,14 +99,8 @@ export class QueryService {
   private _isDirty_2 = false;
   // the number of subjects further refined in the second step
   // _subjectCount_2 < or = _subjectCount_1
-  private _subjectCount_2 = 0;
-  private _isLoadingSubjectCount_2 = true; // the flag indicating if the count is being loaded
-  // the number of observations further refined in the second step
   // _observationCount_2 could be <, > or = _observationCount_1
-  private _observationCount_2 = 0;
-  private _isLoadingObservationCount_2 = true; // the flag indicating if the count is being loaded
-  // the queue that holds the time stamps of the calls made in the 2nd step
-  private _queueOfCalls_2 = [];
+  private _counts_2: CountItem;
   /*
    *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
    */
@@ -122,16 +109,6 @@ export class QueryService {
   /*
    * ------ other variables ------
    */
-  /*
-   * Flag indicating if to relay the counts in the current step to the next
-   */
-  private _countsRelay: boolean;
-  /*
-   * Flag indicating if the subject selection of step 1 should be automatically
-   * saved as subject set in the backend. If true, that subject set is used as the subject constraint
-   * for step 2.
-   */
-  private _autosaveSubjectSets: boolean;
   /*
    * Flag indicating if the observation counts are calculated and shown
    */
@@ -151,10 +128,9 @@ export class QueryService {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
-    this.countsRelay = false;
-    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
     this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
 
+    this.initializeCounts();
     this.loadQueries();
     // initial updates
     this.update_1(true)
@@ -172,6 +148,14 @@ export class QueryService {
       })
   }
 
+  initializeCounts() {
+    this.counts_0 = new CountItem(0, 0);
+    this.inclusionCounts = new CountItem(0, 0);
+    this.exclusionCounts = new CountItem(0, 0);
+    this.counts_1 = new CountItem(0, 0);
+    this.counts_2 = new CountItem(0, 0);
+  }
+
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
@@ -180,8 +164,7 @@ export class QueryService {
       .subscribe(
         (queries: Query[]) => {
           this.handleLoadedQueries(queries);
-        },
-        err => ErrorHelper.handleError(err)
+        }
       );
   }
 
@@ -225,223 +208,48 @@ export class QueryService {
   /**
    * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
    */
-  private mergeInclusionAndExclusionCounts(initialUpdate?: boolean) {
-    this.subjectCount_1 = this.inclusionSubjectCount - this.exclusionSubjectCount;
-    this.observationCount_1 = this.inclusionObservationCount - this.exclusionObservationCount;
-    if (initialUpdate) {
-      this.subjectCount_0 = this.subjectCount_1;
-      this.observationCount_0 = this.observationCount_1;
-    }
-    this.isUpdating_1 = false;
-    this.loadingStateTotal_1 = 'complete';
-  }
-
-  // Relay counts from step 1 to step 2
-  private relayCounts_1_2() {
-    if (this.countsRelay) {
-      this.subjectCount_2 = this.subjectCount_1;
-      this.observationCount_2 = this.observationCount_1;
-      this.isLoadingSubjectCount_2 = false;
-      this.isLoadingObservationCount_2 = false;
-    } else {
-      this.subjectCount_2 = -1;
-      this.observationCount_2 = -1;
-    }
-    // step 1 is no longer dirty
-    this.isDirty_1 = false;
-    // step 2 becomes dirty and needs to be updated
-    this.isDirty_2 = true;
-  }
-
-  private updateInclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    // No need to compute the inclusion count if subject sets are auto saved,
-    // the saved subject sets will be used in updateConceptsAndStudies to calculate the inclusion counts
-    if (!this.autosaveSubjectSets) {
-      let inclusionConstraint = this.constraintService.generateInclusionConstraint();
-      this.resourceService.getCounts(inclusionConstraint)
-        .subscribe(
-          countResponse => {
-            const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-              this.inclusionSubjectCount = countResponse['patientCount'];
-              this.inclusionObservationCount = countResponse['observationCount'];
-              this.loadingStateInclusion = 'complete';
-              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateExclusion === 'complete') {
-                this.mergeInclusionAndExclusionCounts(initialUpdate);
-                // relay the current counts to the next step: subjects and observations
-                this.relayCounts_1_2();
-              }
-            }
-          },
-          err => {
-            ErrorHelper.handleError(err);
-            this.loadingStateInclusion = 'complete';
-          }
-        );
-    } else {
-      if (this.loadingStateTotal_1 === 'complete' && this.loadingStateExclusion === 'complete') {
-        this.inclusionSubjectCount = this.subjectCount_1 + this.exclusionSubjectCount;
-        this.inclusionObservationCount = this.observationCount_1 + this.exclusionObservationCount;
-        this.loadingStateInclusion = 'complete';
-        this.relayCounts_1_2();
-      }
-    }
-  }
-
-  private updateExclusionCounts(timeStamp: Date, initialUpdate: boolean) {
-    if (this.constraintService.hasExclusionConstraint()) {
-      let exclusionConstraint = this.constraintService.generateExclusionConstraint();
-      this.resourceService.getCounts(exclusionConstraint)
-        .subscribe(
-          countResponse => {
-            const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-              this.exclusionSubjectCount = countResponse['patientCount'];
-              this.exclusionObservationCount = countResponse['observationCount'];
-              this.loadingStateExclusion = 'complete';
-              if (this.loadingStateTotal_1 !== 'complete' && this.loadingStateInclusion === 'complete') {
-                this.mergeInclusionAndExclusionCounts(initialUpdate);
-                // relay the current counts to the next step: subjects and observations
-                this.relayCounts_1_2();
-              }
-            }
-          },
-          err => {
-            ErrorHelper.handleError(err);
-            this.loadingStateExclusion = 'complete';
-          }
-        );
-    } else {
-      this.exclusionSubjectCount = 0;
-      this.exclusionObservationCount = 0;
-      this.loadingStateExclusion = 'complete';
-    }
-  }
-
-  private updateSubjectCount_1(subjectCount: number, initialUpdate?: boolean) {
-    this.subjectCount_1 = subjectCount;
-    if (initialUpdate) {
-      this.subjectCount_0 = this.subjectCount_1;
-    }
-  }
-
-  private updateObservationCount_1(observationCount: number, initialUpdate?: boolean) {
-    this.observationCount_1 = observationCount;
-    if (initialUpdate) {
-      this.observationCount_0 = this.observationCount_1;
-    }
-    this.isUpdating_1 = false;
-    this.loadingStateTotal_1 = 'complete';
-  }
-
-  private updateConceptsAndStudiesForSubjectSet(response: SubjectSet,
-                                                selectionConstraint: Constraint,
-                                                timeStamp: Date,
-                                                initialUpdate: boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let constraint: Constraint;
-      if (response) {
-        this.subjectSetConstraint_1 = new SubjectSetConstraint();
-        this.subjectSetConstraint_1.id = response.id;
-        this.updateSubjectCount_1(response.setSize, initialUpdate);
-        constraint = this.subjectSetConstraint_1;
-      } else {
-        constraint = selectionConstraint;
-      }
-      this.resourceService.getCountsPerStudyAndConcept(constraint)
-        .subscribe(
-          (map) => {
-            this.treeNodeService.selectedStudyConceptCountMap = map;
-            // if this call is the latest call
-            const index = this.queueOfCalls_1.indexOf(timeStamp.getMilliseconds());
-            if (index !== -1 && index === (this.queueOfCalls_1.length - 1)) {
-              // if in the mode of auto saving subject set
-              if (this.autosaveSubjectSets) {
-                let observationCount = 0;
-                map.forEach((cMap: Map<string, CountItem>, studyId: string) => {
-                  cMap.forEach((countItem: CountItem, conceptCode: string) => {
-                    observationCount += countItem.observationCount;
-                  });
-                });
-                // Update observation count based on the sum of the tree observation counts
-                this.updateObservationCount_1(observationCount, initialUpdate);
-              }
-            }
-            resolve(true);
-          },
-          (err: HttpErrorResponse) => {
-            ErrorHelper.handleError(err);
-            reject(err.message);
-          }
-        );
-    });
-  }
-
-  private updateConceptsAndStudies(timeStamp: Date, initialUpdate: boolean): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const selectionConstraint = this.constraintService.constraint_1();
-      if (this.autosaveSubjectSets) {
-        // save a subject set for the subject selection, compute tree counts using that subject set
-        this.resourceService.saveSubjectSet('temp', selectionConstraint)
-          .subscribe((response) => {
-              this.updateConceptsAndStudiesForSubjectSet(response,
-                selectionConstraint,
-                timeStamp,
-                initialUpdate)
-                .then(() => resolve(true))
-                .catch(err => reject(err))
-            },
-            err => ErrorHelper.handleError(err)
-          );
-      } else {
-        // compute tree counts without saving a subject set
-        this.updateConceptsAndStudiesForSubjectSet(null,
-          selectionConstraint,
-          timeStamp,
-          initialUpdate)
-          .then(() => resolve(true))
-          .catch(err => reject(err))
-      }
-    });
-  }
-
-  /**
-   * update the subject, observation, concept and study counts in the first step
-   */
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.isUpdating_1 = true;
       this.subjectSetConstraint_1 = null;
-      // add time stamp to the queue,
-      // only when the time stamp is at the end of the queue, the count is updated
-      this.clearQueueOfCalls(this.queueOfCalls_1);
-      let timeStamp = new Date();
-      this.queueOfCalls_1.push(timeStamp.getMilliseconds());
       // set the flags
       this.loadingStateInclusion = 'loading';
       this.loadingStateExclusion = 'loading';
       this.loadingStateTotal_1 = 'loading';
-      // also update the flags for the counts in the 2nd step
-      this.isLoadingSubjectCount_2 = true;
-      this.isLoadingObservationCount_2 = true;
-      /*
-       * Update the inclusion counts
-       */
-      this.updateInclusionCounts(timeStamp, initialUpdate);
-      /*
-       * Update exclusion constraint counts
-       * (Only execute the exclusion constraint if it has non-empty children)
-       */
-      this.updateExclusionCounts(timeStamp, initialUpdate);
-      /*
-       * update concept and study counts in the first step
-       */
-      this.updateConceptsAndStudies(timeStamp, initialUpdate)
-        .then(() => resolve(true))
-        .catch(err => reject(err));
+      let constraint_1 = this.constraintService.constraint_1();
+      let inclusionConstraint = this.constraintService.generateInclusionConstraint();
+      let exclusionConstraint = this.constraintService.generateExclusionConstraint();
+      this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
+        .then(() => {
+          let inCounts = this.resourceService.inclusionCounts;
+          let exCounts = this.resourceService.exclusionCounts;
+          this.inclusionCounts = inCounts;
+          this.exclusionCounts = exCounts;
+          this.counts_1.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
+          this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
+          if (initialUpdate) {
+            this.counts_0.subjectCount = this.counts_1.subjectCount;
+            this.counts_0.observationCount = this.counts_1.observationCount;
+          }
+          this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
+          this.isUpdating_1 = false;
+          this.loadingStateInclusion = 'complete';
+          this.loadingStateExclusion = 'complete';
+          this.loadingStateTotal_1 = 'complete';
+
+          this.counts_2.subjectCount = -1;
+          this.counts_2.observationCount = -1;
+          // step 1 is no longer dirty
+          this.isDirty_1 = false;
+          // step 2 becomes dirty and needs to be updated
+          this.isDirty_2 = true;
+          resolve(true);
+        })
+        .catch(err => {
+          reject(err);
+        })
     });
   }
-
   /**
    * ------------------------------------------------- END: step 1 ---------------------------------------------------
    */
@@ -500,42 +308,27 @@ export class QueryService {
     return new Promise((resolve, reject) => {
       if (!this.isUpdating_1 && !this.isPreparing_2) {
         this.isUpdating_2 = true;
-        // add time stamp to the queue,
-        // only when the time stamp is at the end of the queue, the count is updated
-        this.clearQueueOfCalls(this.queueOfCalls_2);
-        let timeStamp = new Date();
-        this.queueOfCalls_2.push(timeStamp.getMilliseconds());
-        // set flags to true indicating the counts are being loaded
-        this.isLoadingSubjectCount_2 = true;
-        this.isLoadingObservationCount_2 = true;
-
         this.query = null; // clear query
         // update the subject count and observation count in the 2nd step
         const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
         this.resourceService.getCounts(constraint_1_2)
           .subscribe(
-            (countResponse) => {
-              const index = this.queueOfCalls_2.indexOf(timeStamp.getMilliseconds());
-              if (index !== -1 && index === (this.queueOfCalls_2.length - 1)) {
-                // update counts and flags
-                this.subjectCount_2 = countResponse['patientCount'];
-                this.isLoadingSubjectCount_2 = false;
-                this.observationCount_2 = countResponse['observationCount'];
-                this.isLoadingObservationCount_2 = false;
-                this.isUpdating_2 = false;
-                this.isDirty_2 = false;
-                this.isDirty_3 = true;
-                // update the export variables
-                this.exportService.updateExports();
-                // update the final tree nodes in the summary panel
-                if (this.subjectCount_2 > 0) {
-                  this.treeNodeService.updateFinalTreeNodes();
-                } else {
-                  this.treeNodeService.finalTreeNodes = [];
-                }
-                // update the cross table baseline constraint
-                this.crossTableService.constraint = this.constraintService.constraint_1();
+            (countItem: CountItem) => {
+              // update counts and flags
+              this.counts_2 = countItem;
+              this.isUpdating_2 = false;
+              this.isDirty_2 = false;
+              this.isDirty_3 = true;
+              // update the export variables
+              this.exportService.updateExports();
+              // update the final tree nodes in the summary panel
+              if (this.counts_2.subjectCount > 0) {
+                this.treeNodeService.updateFinalTreeNodes();
+              } else {
+                this.treeNodeService.finalTreeNodes = [];
               }
+              // update the cross table baseline constraint
+              this.crossTableService.constraint = this.constraintService.constraint_1();
               resolve(true);
             },
             (err: HttpErrorResponse) => {
@@ -583,19 +376,6 @@ export class QueryService {
   /**
    * ------------------------------------------------- END: step 2 --------------------------------------------------
    */
-
-  /**
-   * Clear the elements before the last element
-   * @param {Array<number>} queue
-   */
-  private clearQueueOfCalls(queue: Array<number>) {
-    if (queue && queue.length > 1) {
-      const lastElement = queue[queue.length - 1];
-      queue.length = 0;
-      queue.push(lastElement);
-    }
-  }
-
   public saveQueryByName(queryName: string) {
     let newQuery = new Query('', queryName);
     newQuery.subjectQuery = this.constraintService.constraint_1();
@@ -771,84 +551,44 @@ export class QueryService {
     this.updateQuery(query, queryObj);
   }
 
-  get inclusionSubjectCount(): number {
-    return this._inclusionSubjectCount;
+  get inclusionCounts(): CountItem {
+    return this._inclusionCounts;
   }
 
-  set inclusionSubjectCount(value: number) {
-    this._inclusionSubjectCount = value;
+  set inclusionCounts(value: CountItem) {
+    this._inclusionCounts = value;
   }
 
-  get exclusionSubjectCount(): number {
-    return this._exclusionSubjectCount;
+  get exclusionCounts(): CountItem {
+    return this._exclusionCounts;
   }
 
-  set exclusionSubjectCount(value: number) {
-    this._exclusionSubjectCount = value;
+  set exclusionCounts(value: CountItem) {
+    this._exclusionCounts = value;
   }
 
-  get inclusionObservationCount(): number {
-    return this._inclusionObservationCount;
+  get counts_0(): CountItem {
+    return this._counts_0;
   }
 
-  set inclusionObservationCount(value: number) {
-    this._inclusionObservationCount = value;
+  set counts_0(value: CountItem) {
+    this._counts_0 = value;
   }
 
-  get exclusionObservationCount(): number {
-    return this._exclusionObservationCount;
+  get counts_1(): CountItem {
+    return this._counts_1;
   }
 
-  set exclusionObservationCount(value: number) {
-    this._exclusionObservationCount = value;
+  set counts_1(value: CountItem) {
+    this._counts_1 = value;
   }
 
-  get subjectCount_0(): number {
-    return this._subjectCount_0;
+  get counts_2(): CountItem {
+    return this._counts_2;
   }
 
-  set subjectCount_0(value: number) {
-    this._subjectCount_0 = value;
-  }
-
-  get observationCount_0(): number {
-    return this._observationCount_0;
-  }
-
-  set observationCount_0(value: number) {
-    this._observationCount_0 = value;
-  }
-
-  get subjectCount_1(): number {
-    return this._subjectCount_1;
-  }
-
-  set subjectCount_1(value: number) {
-    this._subjectCount_1 = value;
-  }
-
-  get observationCount_1(): number {
-    return this._observationCount_1;
-  }
-
-  set observationCount_1(value: number) {
-    this._observationCount_1 = value;
-  }
-
-  get subjectCount_2(): number {
-    return this._subjectCount_2;
-  }
-
-  set subjectCount_2(value: number) {
-    this._subjectCount_2 = value;
-  }
-
-  get observationCount_2(): number {
-    return this._observationCount_2;
-  }
-
-  set observationCount_2(value: number) {
-    this._observationCount_2 = value;
+  set counts_2(value: CountItem) {
+    this._counts_2 = value;
   }
 
   get query(): Query {
@@ -857,38 +597,6 @@ export class QueryService {
 
   set query(value: Query) {
     this._query = value;
-  }
-
-  get isLoadingSubjectCount_2(): boolean {
-    return this._isLoadingSubjectCount_2;
-  }
-
-  set isLoadingSubjectCount_2(value: boolean) {
-    this._isLoadingSubjectCount_2 = value;
-  }
-
-  get isLoadingObservationCount_2(): boolean {
-    return this._isLoadingObservationCount_2;
-  }
-
-  set isLoadingObservationCount_2(value: boolean) {
-    this._isLoadingObservationCount_2 = value;
-  }
-
-  get queueOfCalls_1(): Array<number> {
-    return this._queueOfCalls_1;
-  }
-
-  set queueOfCalls_1(value: Array<number>) {
-    this._queueOfCalls_1 = value;
-  }
-
-  get queueOfCalls_2(): Array<number> {
-    return this._queueOfCalls_2;
-  }
-
-  set queueOfCalls_2(value: Array<number>) {
-    this._queueOfCalls_2 = value;
   }
 
   get queries(): Query[] {
@@ -921,22 +629,6 @@ export class QueryService {
 
   set instantCountsUpdate_3(value: boolean) {
     this._instantCountsUpdate_3 = value;
-  }
-
-  get countsRelay(): boolean {
-    return this._countsRelay;
-  }
-
-  set countsRelay(value: boolean) {
-    this._countsRelay = value;
-  }
-
-  get autosaveSubjectSets(): boolean {
-    return this._autosaveSubjectSets;
-  }
-
-  set autosaveSubjectSets(value: boolean) {
-    this._autosaveSubjectSets = value;
   }
 
   get step(): Step {

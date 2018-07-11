@@ -23,6 +23,7 @@ import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Study} from '../../models/constraint-models/study';
 import {TransmartDataTableMapper} from './transmart-data-table-mapper';
+import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 
 export class TransmartMapper {
 
@@ -85,6 +86,10 @@ export class TransmartMapper {
       transmartQuery.queryBlob = {dataTableState: transmartTableState};
     }
     return transmartQuery;
+  }
+
+  public static mapTransmartCountItem(tmCountItem: TransmartCountItem): CountItem {
+    return new CountItem(tmCountItem.patientCount, tmCountItem.observationCount);
   }
 
   public static mapTransmartExportFormats(fileFormatNames: string[], dataFormatNames: string[]): ExportDataType[] {
