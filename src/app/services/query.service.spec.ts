@@ -84,16 +84,6 @@ describe('QueryService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should handle error when loading queries', () => {
-    spyOn(resourceService, 'getQueries').and.callFake(() => {
-      return Observable.throw(httpErrorResponse);
-    });
-    spyOn(ErrorHelper, 'handleError').and.stub();
-    queryService.loadQueries();
-    expect(resourceService.getQueries).toHaveBeenCalled();
-    expect(ErrorHelper.handleError).toHaveBeenCalled();
-  });
-
   it('should handle loaded queries', () => {
     let q = new Query('test query id', 'test query name');
     q.createDate = '2015-03-25';
