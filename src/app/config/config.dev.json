@@ -8,6 +8,7 @@
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
   "instant-counts-update-3": false,
+  "include-data-table": true,
   "authentication-service-type": "transmart",
   "oidc-server-url": "http://localhost:8081/auth/realms/master",
   "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",

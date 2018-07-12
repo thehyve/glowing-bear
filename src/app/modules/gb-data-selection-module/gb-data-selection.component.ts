@@ -79,6 +79,10 @@ export class GbDataSelectionComponent implements OnInit {
     return FormatHelper.percentage(this.queryService.counts_2.observationCount, this.queryService.counts_1.observationCount);
   }
 
+  get isDataTableUsed(): boolean {
+    return this.queryService.isDataTableUsed;
+  }
+
   update_1(event) {
     event.stopPropagation();
     this.queryService.update_1();

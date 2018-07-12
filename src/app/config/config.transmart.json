@@ -8,5 +8,6 @@
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
   "instant-counts-update-3": false,
+  "include-data-table": true,
   "authentication-service-type": "transmart"
 }

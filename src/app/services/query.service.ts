@@ -106,6 +106,7 @@ export class QueryService {
    */
   private _instantCountsUpdate_3: boolean;
   private _isUpdating_3 = false;
+  private _isDataTableUsed = true;
   /*
    * ------ other variables ------
    */
@@ -128,7 +129,8 @@ export class QueryService {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
-    this.showObservationCounts = appConfig.getConfig('show-observation-counts', true);
+    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts', true);
+    this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
 
     this.initializeCounts();
     this.loadQueries();
@@ -250,6 +252,7 @@ export class QueryService {
         })
     });
   }
+
   /**
    * ------------------------------------------------- END: step 1 ---------------------------------------------------
    */
@@ -361,14 +364,20 @@ export class QueryService {
     return new Promise((resolve, reject) => {
       this.isDirty_3 = true;
       this.isUpdating_3 = true;
-      this.dataTableService.dataTable.currentPage = 1;
-      this.dataTableService.updateDataTable(targetDataTable)
-        .then(() => {
-          this.isDirty_3 = false;
-          this.isUpdating_3 = false;
-          resolve(true);
-        })
-        .catch(err => reject(err))
+      if (this.isDataTableUsed) {
+        this.dataTableService.dataTable.currentPage = 1;
+        this.dataTableService.updateDataTable(targetDataTable)
+          .then(() => {
+            this.isDirty_3 = false;
+            this.isUpdating_3 = false;
+            resolve(true);
+          })
+          .catch(err => reject(err))
+      } else {
+        this.isDirty_3 = false;
+        this.isUpdating_3 = false;
+        resolve(true);
+      }
     });
 
   }
@@ -717,5 +726,13 @@ export class QueryService {
 
   set isSavingQueryCompleted(value: boolean) {
     this._isSavingQueryCompleted = value;
+  }
+
+  get isDataTableUsed(): boolean {
+    return this._isDataTableUsed;
+  }
+
+  set isDataTableUsed(value: boolean) {
+    this._isDataTableUsed = value;
   }
 }
