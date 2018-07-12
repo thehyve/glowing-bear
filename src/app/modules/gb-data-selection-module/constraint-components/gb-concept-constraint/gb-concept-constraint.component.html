@@ -130,7 +130,7 @@
 
 
       <!-- trial visit constraint -->
-      <div class="form-inline" style="margin-bottom: -1em">
+      <div *ngIf="allTrialVisits.length > 0" class="form-inline" style="margin-bottom: -1em">
         <p-checkbox [(ngModel)]="applyTrialVisitConstraint" binary="true"></p-checkbox>
         <label *ngIf="!applyTrialVisitConstraint" class="gray-text">apply trial-visit constraint</label>
         <div *ngIf="applyTrialVisitConstraint">
