@@ -20,7 +20,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 })
 export class GbProjectionComponent implements OnInit {
 
-  private isUploadListenerNotAdded: boolean;
+  isUploadListenerNotAdded: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
               private queryService: QueryService) {

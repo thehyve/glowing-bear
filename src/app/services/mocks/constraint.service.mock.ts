@@ -68,4 +68,8 @@ export class ConstraintServiceMock {
   set studies(value: Study[]) {
     this._studies = value;
   }
+
+  public searchAllConstraints(query: string): Constraint[] {
+    return [];
+  }
 }
