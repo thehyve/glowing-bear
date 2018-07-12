@@ -11,6 +11,7 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../models/drop-mode';
 import {Concept} from '../../models/constraint-models/concept';
+import {Study} from '../../models/constraint-models/study';
 
 export class ConstraintServiceMock {
 
@@ -22,6 +23,7 @@ export class ConstraintServiceMock {
   conceptConstraints: Constraint[] = [];
   conceptLabels: string[] = [];
   allConstraints: Constraint[] = [];
+  private _studies: Study[] = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -59,4 +61,11 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
+  get studies(): Study[] {
+    return this._studies;
+  }
+
+  set studies(value: Study[]) {
+    this._studies = value;
+  }
 }

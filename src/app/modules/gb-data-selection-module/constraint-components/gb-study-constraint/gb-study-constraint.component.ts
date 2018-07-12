@@ -37,8 +37,8 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onSearch(event) {
-    let query = event.query.toLowerCase();
     let studies = this.constraintService.studies;
+    let query = event.query.toLowerCase();
     if (query) {
       this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
     } else {
@@ -61,17 +61,6 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
       this.autoComplete.show();
     }
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
-  }
-
-  onUnselect(studyObject) {
-    // For some funny reason, the study is still in the list when this handler is invoked
-    let index = this.selectedStudies.indexOf(studyObject);
-    this.selectedStudies.splice(index, 1);
-    this.update();
-  }
-
-  updateStudies(studyObject) {
-    this.update();
   }
 
   onDrop(event: DragEvent) {
