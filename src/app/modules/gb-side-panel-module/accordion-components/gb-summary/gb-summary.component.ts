@@ -11,6 +11,7 @@ import {QueryService} from '../../../../services/query.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../../../models/drop-mode';
+import {FormatHelper} from '../../../../utilities/format-helper';
 
 @Component({
   selector: 'gb-summary',
@@ -77,12 +78,12 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     }
   }
 
-  get subjectCount(): number {
-    return this.queryService.counts_2.subjectCount >= 0 ? this.queryService.counts_2.subjectCount : 0;
+  get subjectCount(): string {
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.subjectCount);
   }
 
-  get observationCount(): number {
-    return this.queryService.counts_2.observationCount >= 0 ? this.queryService.counts_2.observationCount : 0;
+  get observationCount(): string {
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.observationCount);
   }
 
   get finalTreeNodes(): TreeNode[] {

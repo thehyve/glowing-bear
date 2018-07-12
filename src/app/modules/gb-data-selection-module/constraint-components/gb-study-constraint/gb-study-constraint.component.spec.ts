@@ -21,7 +21,7 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 
-describe('GbStudyConstraintComponent', () => {
+fdescribe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
   let fixture: ComponentFixture<GbStudyConstraintComponent>;
 
