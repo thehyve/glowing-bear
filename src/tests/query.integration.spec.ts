@@ -159,6 +159,9 @@ describe('Integration test for query saving and restoring', () => {
   it('should restore and save query in relation to other dependant services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
+    let spy1 = spyOn(queryService, 'update_1').and.callThrough();
+    let spy2 = spyOn(queryService, 'update_2').and.callThrough();
+    let spy3 = spyOn(queryService, 'update_3').and.callThrough();
     let promise = queryService.restoreQuery(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
     let child0 = constraintService.rootInclusionConstraint.children[0];
@@ -176,6 +179,9 @@ describe('Integration test for query saving and restoring', () => {
     expect(queryService.query.observationQuery).toBeDefined();
     expect(queryService.query.observationQuery.data.length).toBe(3);
     promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalled();
+      expect(spy3).toHaveBeenCalled();
       expect(queryService.isDirty_1).toBe(false);
       expect(queryService.isDirty_2).toBe(false);
       expect(queryService.isDirty_3).toBe(false);
