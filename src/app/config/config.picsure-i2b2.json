@@ -14,7 +14,7 @@
 
   "endpoint-mode": "picsure",
   "picsure-resource-name": "i2b2-local",
-  "enable-query-saving": false,
+  "include-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
   "include-variable-selection": false,

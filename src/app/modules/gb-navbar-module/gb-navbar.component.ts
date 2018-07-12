@@ -59,8 +59,8 @@ export class GbNavbarComponent implements OnInit {
     return this.navbarService.isDataSelection;
   }
 
-  get querySavingEnabled(): boolean {
-    return this.config.getConfig('enable-query-saving', true);
+  get isQuerySavingUsed(): boolean {
+    return this.queryService.isQuerySavingUsed;
   }
 
   /**

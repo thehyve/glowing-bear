@@ -117,6 +117,7 @@ export class QueryService {
   private _showObservationCounts: boolean;
   // Flag indicating if saving a query is finished
   private _isSavingQueryCompleted = true;
+  private _isQuerySavingUsed = true;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -132,6 +133,7 @@ export class QueryService {
     this.isVariableSelectionUsed = this.appConfig.getConfig('include-variable-selection', true);
     this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
     this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
+    this.isQuerySavingUsed = this.appConfig.getConfig('include-query-saving', true);
 
     this.initializeCounts();
     this.loadQueries();
@@ -743,5 +745,13 @@ export class QueryService {
 
   set isQuerySubscriptionIncluded(value: boolean) {
     this._isQuerySubscriptionIncluded = value;
+  }
+
+  get isQuerySavingUsed(): boolean {
+    return this._isQuerySavingUsed;
+  }
+
+  set isQuerySavingUsed(value: boolean) {
+    this._isQuerySavingUsed = value;
   }
 }

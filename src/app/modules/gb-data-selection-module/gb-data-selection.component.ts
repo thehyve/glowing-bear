@@ -88,6 +88,10 @@ export class GbDataSelectionComponent implements OnInit {
     return this.queryService.isVariableSelectionUsed;
   }
 
+  get isQuerySavingUsed(): boolean {
+    return this.queryService.isQuerySavingUsed;
+  }
+
   update_1(event) {
     event.stopPropagation();
     this.queryService.update_1();
