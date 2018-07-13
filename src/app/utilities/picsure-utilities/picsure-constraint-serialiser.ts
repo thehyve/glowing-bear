@@ -132,39 +132,16 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   }
 
   visitTrueConstraint(constraint: TrueConstraint): WhereClause[] {
-    throw new Error('Constraint not supported by PIC-SURE');
-    // return [];
+    throw new Error('TrueConstraint not supported by PIC-SURE');
   }
 
   visitStudyConstraint(constraint: StudyConstraint): WhereClause[] {
-    return []; // todo
+    throw new Error('StudyConstraint not supported by PIC-SURE');
   }
 
   visitTrialVisitConstraint(constraint: TrialVisitConstraint): WhereClause[] {
-    return []; // todo
+    throw new Error('TrialVisitConstraint not supported by PIC-SURE');
   }
-
-  // todo: to visitDimensionFieldConstraint
-  // visitTrialVisitConstraint(constraint: TrialVisitConstraint): object {
-  //   let result = null;
-  //   if (constraint.mark === ConstraintMark.OBSERVATION) {
-  //     let values: number[] = [];
-  //     for (let visit of constraint.trialVisits) {
-  //       values.push(Number(visit.id));
-  //     }
-  //     result = {
-  //       'type': 'field',
-  //       'field': {
-  //         'dimension': 'trial visit',
-  //         'fieldName': 'id',
-  //         'type': 'NUMERIC'
-  //       },
-  //       'operator': 'in',
-  //       'value': values
-  //     };
-  //   }
-  //   return result;
-  // }
 
   visitTimeConstraint(constraint: TimeConstraint): WhereClause[] {
     // let result = null;
@@ -237,47 +214,8 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     return []; // todo
   }
 
-  // todo: to visitDimensionFieldConstraint
-  // visitStudyConstraint(constraint: StudyConstraint): object {
-  //   let result = null;
-  //   if (constraint.mark === ConstraintMark.OBSERVATION) {
-  //     if (constraint.studies.length !== 0) {
-  //       // Construct query objects for all studies
-  //       let childQueryObjects: Object[] = [];
-  //       for (let study of constraint.studies) {
-  //         childQueryObjects.push({
-  //           'type': 'study_name',
-  //           'studyId': study.studyId
-  //         });
-  //       }
-  //       if (childQueryObjects.length === 1) {
-  //         // Don't wrap in 'or' if we only have one study
-  //         result = childQueryObjects[0];
-  //       } else {
-  //         // Wrap study query objects in 'or' constraint
-  //         result = {
-  //           'type': 'or',
-  //           'args': childQueryObjects
-  //         };
-  //       }
-  //     }
-  //   }
-  //   return result;
-  // }
-
   visitPedigreeConstraint(constraint: PedigreeConstraint): WhereClause[] {
-    // let result = null;
-    // if (constraint.mark === ConstraintMark.OBSERVATION) {
-    //   result = {
-    //     type: 'relation',
-    //     relatedSubjectsConstraint: this.visit(constraint.rightHandSideConstraint),
-    //     relationTypeLabel: constraint.label,
-    //     biological: constraint.biological,
-    //     shareHousehold: constraint.shareHousehold
-    //   }
-    // }
-    // return result;
-    return []; // todo
+    throw new Error('PedigreeConstraint not supported by PIC-SURE');
   }
 
   visitNegationConstraint(constraint: NegationConstraint): WhereClause[] {
