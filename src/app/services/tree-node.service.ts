@@ -356,7 +356,7 @@ export class TreeNodeService {
    */
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
     let concept = new Concept();
-    concept.label = treeNode.displayName;
+    concept.label = `${treeNode.displayName} (${treeNode.path})`;
     concept.path = treeNode.path;
     concept.type = treeNode.conceptType;
     concept.code = treeNode.conceptCode;
