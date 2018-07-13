@@ -281,7 +281,6 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   }
 
   visitNegationConstraint(constraint: NegationConstraint): WhereClause[] {
-    // todo: somehow this is never called to generate the exclusion constraint
     if (!constraint.constraint) {
       return [];
     }
@@ -302,12 +301,8 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   }
 
   /**
-   * Map a concept constraint to its object form,
-   * the full param is a flag indicating if the four attributes: name, fullName, conceptPath and valueType
-   * should be incldued in the final object.
-   * These four attributes are needed for saving and restoring a query, otherwise not needed.
    * @param {ConceptConstraint} constraint
-   * @returns {object}
+   * @returns {WhereClause[]}
    */
   visitConceptConstraint(constraint: ConceptConstraint): WhereClause[] {
     // todo: condition on mark === observation?
@@ -355,32 +350,35 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     return whereClauses;
   }
 
-  /*
-   * --------------------- combination constraint related methods ---------------------
+  /**
+   * Maps recursively combination constraint, setting appropriately the logical operator.
+   *
+   * Note: the logical operator of the first WhereClause of the list should always be empty for the PIC-SURE API.
+   * However this implementation might in some cases not leave it empty, but this does not seem to be a problem.
+   *
+   * @param {CombinationConstraint} constraint
+   * @returns {WhereClause[]}
    */
   visitCombinationConstraint(constraint: CombinationConstraint): WhereClause[] {
     if (constraint.children.length === 0) {
       return [];
+    } else if (constraint.children.length === 1) {
+      return this.visit(constraint.children[0]);
     } else {
       let queryObj: WhereClause[] = [];
+      let logicalOp = constraint.combinationState === CombinationState.And ? 'AND' : 'OR';
 
-      for (let child of constraint.children) {
-        let childClauses: WhereClause[] = this.visit(child);
+      for (let childIdx in constraint.children) {
+        let childClauses: WhereClause[] = this.visit(constraint.children[childIdx]);
 
-        if (constraint.combinationState === CombinationState.And &&
-            child.className !== 'CombinationConstraint' &&
-            queryObj.length > 0) {
-          childClauses.forEach((clause) => clause.logicalOperator = 'AND');
+        if (Number(childIdx) > 0 && constraint.children[childIdx].className !== 'CombinationConstraint') {
+          childClauses.forEach((clause) => clause.logicalOperator = logicalOp);
+
+        } else if (constraint.children[childIdx].className === 'CombinationConstraint') {
+          childClauses[0].logicalOperator = logicalOp;
+
         }
         queryObj.push(...childClauses);
-      }
-
-      if (constraint.combinationState === CombinationState.Or) {
-        queryObj.forEach((clause) => clause.logicalOperator = 'OR');
-        queryObj[0].logicalOperator = 'AND';
-
-      } else if (constraint.combinationState === CombinationState.And) {
-        delete queryObj[0].logicalOperator;
       }
       return queryObj;
     }
