@@ -32,12 +32,7 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TransmartCrossTableMapper} from '../utilities/transmart-utilities/transmart-cross-table-mapper';
 import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
-import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
-import {C} from '@angular/core/src/render3';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ErrorHelper} from '../utilities/error-helper';
-import {promise} from 'selenium-webdriver';
 
 
 @Injectable()

@@ -110,13 +110,11 @@ export class QueryService {
   /*
    * ------ other variables ------
    */
-  /*
-   * Flag indicating if the observation counts are calculated and shown
-   */
+  // Flag indicating if the query subscription optioin for each query in the query panel should be incldued
+  private _isQuerySubscriptionIncluded = false;
+  // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
-  /*
-   * Flag indicating if saving a query is finished
-   */
+  // Flag indicating if saving a query is finished
   private _isSavingQueryCompleted = true;
 
   constructor(private appConfig: AppConfig,
@@ -131,6 +129,7 @@ export class QueryService {
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts', true);
     this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
+    this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
 
     this.initializeCounts();
     this.loadQueries();
@@ -734,5 +733,13 @@ export class QueryService {
 
   set isDataTableUsed(value: boolean) {
     this._isDataTableUsed = value;
+  }
+
+  get isQuerySubscriptionIncluded(): boolean {
+    return this._isQuerySubscriptionIncluded;
+  }
+
+  set isQuerySubscriptionIncluded(value: boolean) {
+    this._isQuerySubscriptionIncluded = value;
   }
 }
