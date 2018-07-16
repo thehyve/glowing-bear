@@ -47,6 +47,8 @@ export class GbProjectionComponent implements OnInit {
     if (this.queryService.instantCountsUpdate_2) {
       this.queryService.update_2();
     } else {
+      this.queryService.counts_2.subjectCount = -1;
+      this.queryService.counts_2.observationCount = -1;
       this.queryService.isDirty_2 = true;
     }
   }
