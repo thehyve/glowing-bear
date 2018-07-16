@@ -85,10 +85,10 @@ describe('GbStudyConstraintComponent', () => {
 
   it('should handle the drop of a study constraint', () => {
     let studyConstraint1 = new StudyConstraint();
-    let study1 = new Study(); study1.studyId = 'id1';
+    let study1 = new Study(); study1.id = 'id1';
     studyConstraint1.studies = [study1];
     let studyConstraint2 = new StudyConstraint();
-    let study2 = new Study(); study2.studyId = 'id2';
+    let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];
     let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
     treeNodeService.selectedTreeNode = {}
@@ -110,7 +110,7 @@ describe('GbStudyConstraintComponent', () => {
     treeNodeService.selectedTreeNode = {}
     treeNodeService.selectedTreeNode['dropMode'] = '';
     let studyConstraint2 = new StudyConstraint();
-    let study2 = new Study(); study2.studyId = 'id2';
+    let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];
     component.constraint = studyConstraint2;
     let e = new DragEvent('drag');
@@ -122,9 +122,9 @@ describe('GbStudyConstraintComponent', () => {
     let event = {
       query: 'aBc'
     };
-    let study1 = new Study(); study1.studyId = 'id1';
-    let study2 = new Study(); study2.studyId = 'id2';
-    let study3 = new Study(); study3.studyId = 'abc';
+    let study1 = new Study(); study1.id = 'id1';
+    let study2 = new Study(); study2.id = 'id2';
+    let study3 = new Study(); study3.id = 'abc';
     constraintService.studies =  [study1, study2, study3];
     component.onSearch(event);
     expect(component.searchResults.length).toEqual(1);

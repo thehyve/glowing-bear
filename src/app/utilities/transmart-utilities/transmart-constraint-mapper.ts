@@ -70,7 +70,7 @@ export class TransmartConstraintMapper {
   static generateConstraintFromStudyObject(constraintObject): Constraint {
     let constraint: Constraint = null;
     let study = new Study();
-    study.studyId = constraintObject['studyId'];
+    study.id = constraintObject['studyId'];
     constraint = new StudyConstraint();
     (<StudyConstraint>constraint).studies.push(study);
     return constraint;
@@ -190,7 +190,7 @@ export class TransmartConstraintMapper {
       let studyConstraint = new StudyConstraint();
       for (let sid of allStudyIds) {
         let study = new Study();
-        study.studyId = sid;
+        study.id = sid;
         studyConstraint.studies.push(study);
       }
       (<CombinationConstraint>constraint).children.length = 0;

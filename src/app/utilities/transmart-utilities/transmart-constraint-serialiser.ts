@@ -207,7 +207,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         for (let study of constraint.studies) {
           childQueryObjects.push({
             'type': 'study_name',
-            'studyId': study.studyId
+            'studyId': study.id
           });
         }
         if (childQueryObjects.length === 1) {

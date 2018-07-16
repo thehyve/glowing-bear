@@ -338,7 +338,7 @@ export class ConstraintService {
       let treeNodeType = treeNode['type'];
       if (treeNodeType === 'STUDY') {
         let study: Study = new Study();
-        study.studyId = treeNode['constraint']['studyId'];
+        study.id = treeNode['constraint']['studyId'];
         constraint = new StudyConstraint();
         (<StudyConstraint>constraint).studies.push(study);
       } else if (treeNodeType === 'NUMERIC' ||

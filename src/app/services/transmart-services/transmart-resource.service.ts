@@ -10,7 +10,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
-import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
@@ -29,8 +28,8 @@ import {ErrorHelper} from '../../utilities/error-helper';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {CountItem} from '../../models/aggregate-models/count-item';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+
 
 @Injectable()
 export class TransmartResourceService {
@@ -45,8 +44,8 @@ export class TransmartResourceService {
   private _endpointUrl: string;
 
   private _studiesLock: boolean;
-  private _studies: Study[] = null;
-  private _studiesSubject: AsyncSubject<Study[]>;
+  private _studies: TransmartStudy[] = null;
+  private _studiesSubject: AsyncSubject<TransmartStudy[]>;
 
   /*
    * Flag indicating if the subject selection of step 1 should be automatically
@@ -198,7 +197,7 @@ export class TransmartResourceService {
    * Returns the available studies.
    * @returns {Observable<Study[]>}
    */
-  getStudies(): Observable<Study[]> {
+  getStudies(): Observable<TransmartStudy[]> {
     const urlPart = 'studies';
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
@@ -213,7 +212,7 @@ export class TransmartResourceService {
    *
    * @return {Promise<Study[]>}
    */
-  get studies(): Promise<Study[]> {
+  get studies(): Promise<TransmartStudy[]> {
     if (this._studies != null) {
       return Observable.of(this._studies).toPromise();
     }
@@ -221,11 +220,11 @@ export class TransmartResourceService {
       return this._studiesSubject.toPromise();
     }
     this._studiesLock = true;
-    this._studiesSubject = new AsyncSubject<Study[]>();
+    this._studiesSubject = new AsyncSubject<TransmartStudy[]>();
 
     return new Promise((resolve, reject) => {
       this.getStudies()
-        .subscribe((studies: Study[]) => {
+        .subscribe((studies: TransmartStudy[]) => {
           resolve(studies);
           this._studies = studies;
           this._studiesSubject.next(this._studies);

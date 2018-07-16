@@ -40,7 +40,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     let studies = this.constraintService.studies;
     let query = event.query.toLowerCase();
     if (query) {
-      this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
+      this.searchResults = studies.filter((study: Study) => study.id.toLowerCase().includes(query));
     } else {
       this.searchResults = studies;
     }
@@ -72,7 +72,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     if (this.droppedConstraint) {
       let study = (<StudyConstraint>this.droppedConstraint).studies[0];
       let studies = (<StudyConstraint>this.constraint).studies;
-      studies = studies.filter(item => item.studyId === study.studyId);
+      studies = studies.filter(item => item.id === study.id);
       if (studies.length === 0) {
         (<StudyConstraint>this.constraint).studies.push(study);
         this.update();
