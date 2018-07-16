@@ -311,7 +311,7 @@ export class TransmartResourceService {
       this.getCountsPerStudyAndConcept(constraint)
         .subscribe((countObj: object) => {
           this.studyConceptCountObject = countObj;
-          let totalCountItem: TransmartCountItem;
+          let totalCountItem: TransmartCountItem = new TransmartCountItem();
           // if in autosaveSubjectSets mode, need to calculate total observation count
           if (this.autosaveSubjectSets) {
             let totalObservationCount = 0;
