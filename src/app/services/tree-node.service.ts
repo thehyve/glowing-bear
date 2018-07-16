@@ -515,7 +515,7 @@ export class TreeNodeService {
         if (conceptMap && conceptMap.size > 0) {
           let nodeCopy = node;
           nodeCopy['expanded'] = false;
-          let item: CountItem = this.selectedStudyConceptCountMap.get(node['studyId']).get(node['conceptCode']);
+          let item: CountItem = conceptMap.get(nodeCopy['conceptCode']);
           nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
           nodesWithCodes.push(nodeCopy);
         }
