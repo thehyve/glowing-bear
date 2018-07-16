@@ -49,7 +49,7 @@ export class TreeNodeService {
    * The map that holds the conceptCode -> count item relations
    *  e.g.
    * "EHR:DEM:AGE": {
-   *  "observationCount": 3,
+   *   "observationCount": 3,
    *   "subjectCount": 3
    *  },
    * "EHR:VSIGN:HR": {
