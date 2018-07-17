@@ -14,7 +14,7 @@ import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {SubjectSet} from '../models/constraint-models/subject-set';
-import {PedigreeRelationTypeResponse} from '../models/response-models/pedigree-relation-type-response';
+import {Pedigree} from '../models/constraint-models/pedigree';
 import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
@@ -243,10 +243,10 @@ export class ResourceService {
    * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
    * @returns {Observable<Object[]>}
    */
-  getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
+  getPedigrees(): Observable<Pedigree[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getPedigreeRelationTypes();
+        return this.transmartResourceService.getPedigrees();
       }
       default: {
         return this.handleEndpointModeError();

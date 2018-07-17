@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class PedigreeRelationTypeResponse {
+export class Pedigree {
   private _label: string;
   private _description: string;
   private _biological: boolean;

@@ -25,6 +25,7 @@ import {TreeNode} from 'primeng/api';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
+import {Pedigree} from '../models/constraint-models/pedigree';
 
 /**
  * This service concerns with
@@ -127,14 +128,14 @@ export class ConstraintService {
   }
 
   private loadPedigrees() {
-    this.resourceService.getPedigreeRelationTypes()
+    this.resourceService.getPedigrees()
       .subscribe(
-        relationTypeObjects => {
-          for (let obj of relationTypeObjects) {
-            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(obj.label);
-            pedigreeConstraint.description = obj.description;
-            pedigreeConstraint.biological = obj.biological;
-            pedigreeConstraint.symmetrical = obj.symmetrical;
+        (pedigrees: Pedigree[]) => {
+          for (let p of pedigrees) {
+            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(p.label);
+            pedigreeConstraint.description = p.description;
+            pedigreeConstraint.biological = p.biological;
+            pedigreeConstraint.symmetrical = p.symmetrical;
             this.allConstraints.push(pedigreeConstraint);
             this.validPedigreeTypes.push({
               type: pedigreeConstraint.relationType,
