@@ -49,6 +49,12 @@ export class ResourceService {
     this.endpointMode = EndpointMode.TRANSMART;
   }
 
+  handleEndpointModeError(): Observable<any> {
+    const msg = 'Incorrect Endpoint Mode is used.';
+    console.error(msg);
+    return Observable.throw(new Error(msg));
+  }
+
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
@@ -63,10 +69,7 @@ export class ResourceService {
           });
       }
       default: {
-        return Observable.fromPromise(this.transmartResourceService.studies)
-          .map((tmStudies: TransmartStudy[]) => {
-            return TransmartMapper.mapTransmartStudies(tmStudies);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -85,7 +88,7 @@ export class ResourceService {
         return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
       }
       default: {
-        return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -113,20 +116,7 @@ export class ResourceService {
           break;
         }
         default: {
-          this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
-            .then(() => {
-              this.inclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
-              this.exclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
-              this.selectedStudyConceptCountMap =
-                TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
-              resolve(true);
-            })
-            .catch(err => {
-              reject(err);
-            });
-          break;
+          return this.handleEndpointModeError();
         }
       }
     });
@@ -147,10 +137,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getCountsPerStudyAndConcept(constraint)
-          .map((response: object) => {
-            return TransmartMapper.mapStudyConceptCountObject(response);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -170,10 +157,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getCountsPerStudy(constraint)
-          .map((response: object) => {
-            return TransmartMapper.mapStudyCountObject(response);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -192,10 +176,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getCountsPerConcept(constraint)
-          .map((response: object) => {
-            return TransmartMapper.mapConceptCountObject(response);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -214,10 +195,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getCounts(constraint)
-          .map((tmCountItem: TransmartCountItem) => {
-            return TransmartMapper.mapTransmartCountItem(tmCountItem);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -238,10 +216,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getAggregate(constraint)
-          .map((tmConceptAggregate: object) => {
-            return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -258,7 +233,7 @@ export class ResourceService {
         return this.transmartResourceService.getTrialVisits(constraint);
       }
       default: {
-        return this.transmartResourceService.getTrialVisits(constraint);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -274,7 +249,7 @@ export class ResourceService {
         return this.transmartResourceService.getPedigreeRelationTypes();
       }
       default: {
-        return this.transmartResourceService.getPedigreeRelationTypes();
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -291,12 +266,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getExportFileFormats()
-          .switchMap(fileFormatNames => {
-            return this.transmartResourceService.getExportDataFormats(constraint)
-          }, (fileFormatNames, dataFormatNames) => {
-            return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -311,7 +281,7 @@ export class ResourceService {
         return this.transmartResourceService.getExportJobs();
       }
       default: {
-        return this.transmartResourceService.getExportJobs();
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -327,7 +297,7 @@ export class ResourceService {
         return this.transmartResourceService.createExportJob(name);
       }
       default: {
-        return this.transmartResourceService.createExportJob(name);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -369,12 +339,7 @@ export class ResourceService {
           return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
         }
         default: {
-          let transmartTableState: TransmartTableState = null;
-          if (includeDataTable) {
-            transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
-          }
-          const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
-          return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
+          return this.handleEndpointModeError();
         }
       }
     } else {
@@ -393,7 +358,7 @@ export class ResourceService {
         return this.transmartResourceService.downloadExportJob(jobId);
       }
       default: {
-        return this.transmartResourceService.downloadExportJob(jobId);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -409,7 +374,7 @@ export class ResourceService {
         return this.transmartResourceService.cancelExportJob(jobId);
       }
       default: {
-        return this.transmartResourceService.cancelExportJob(jobId);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -425,7 +390,7 @@ export class ResourceService {
         return this.transmartResourceService.archiveExportJob(jobId);
       }
       default: {
-        return this.transmartResourceService.archiveExportJob(jobId);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -444,10 +409,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService.getQueries()
-          .map((transmartQueries: TransmartQuery[]) => {
-            return TransmartMapper.mapTransmartQueries(transmartQueries);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -467,11 +429,7 @@ export class ResourceService {
           });
       }
       default: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
-        return this.transmartResourceService.saveQuery(transmartQuery)
-          .map((savedTransmartQuery: TransmartQuery) => {
-            return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -488,7 +446,7 @@ export class ResourceService {
         return this.transmartResourceService.updateQuery(queryId, queryBody);
       }
       default: {
-        return this.transmartResourceService.updateQuery(queryId, queryBody);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -504,7 +462,7 @@ export class ResourceService {
         return this.transmartResourceService.deleteQuery(queryId);
       }
       default: {
-        return this.transmartResourceService.deleteQuery(queryId);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -516,7 +474,7 @@ export class ResourceService {
         return this.transmartResourceService.savePatientSet(name, constraint);
       }
       default: {
-        return this.transmartResourceService.savePatientSet(name, constraint);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -528,7 +486,7 @@ export class ResourceService {
         return this.transmartResourceService.diffQuery(queryId);
       }
       default: {
-        return this.transmartResourceService.diffQuery(queryId);
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -555,22 +513,7 @@ export class ResourceService {
           });
       }
       default: {
-        let offset = dataTable.offset;
-        let limit = dataTable.limit;
-
-        // Fetch dimensions for the data matching the constraint
-        return this.getDimensions(dataTable.constraint)
-          .switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-            // Merge available dimensions and current table state
-            let tableState: TransmartTableState =
-              TransmartDataTableMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
-            const constraint: Constraint = dataTable.constraint;
-            return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
-          }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-            let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
-            newDataTable.constraint = dataTable.constraint;
-            return newDataTable;
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
@@ -581,7 +524,7 @@ export class ResourceService {
         return this.transmartResourceService.sortableDimensions;
       }
       default: {
-        return this.transmartResourceService.sortableDimensions;
+        this.handleEndpointModeError();
       }
     }
   }
@@ -607,6 +550,7 @@ export class ResourceService {
       });
   }
 
+  // TODO: refactor transmart speciic variables here, hide them from glowing bear
   get transmartExportDataView(): string {
     return this.transmartResourceService.exportDataView;
   }
@@ -633,14 +577,7 @@ export class ResourceService {
           });
       }
       default: {
-        return this.transmartResourceService
-          .getCrossTable(
-            crossTable.constraint,
-            crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
-          .map((tmCrossTable: TransmartCrossTable) => {
-            return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
-          });
+        return this.handleEndpointModeError();
       }
     }
   }
