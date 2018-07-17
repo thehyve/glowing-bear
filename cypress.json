@@ -4,6 +4,9 @@
   "videoRecording": false,
   "fixturesFolder": "cypress/fixtures/dev",
   "env": {
-    "apiUrl": "https://transmart-dev.thehyve.net"
+    "apiUrl": "https://transmart-dev.thehyve.net",
+    "authentication-service-type": "oidc",
+    "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
+    "oidc-client-id": "transmart-client"
   }
 }

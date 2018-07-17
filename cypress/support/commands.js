@@ -41,3 +41,24 @@ Cypress.Commands.add('removeChip', (chipName, options = {}) => {
   cy.contains(chipName).parent().children('.fa-close').click();
 });
 
+
+Cypress.Commands.add('transmartLogin', (username, password, valid) => {
+    cy.get('#j_username').type(username);
+    cy.get('#j_password').type(password);
+    cy.get('#loginButton').click();
+    if (valid) {
+        cy.get('input[name=authorize]').click();
+    }
+});
+
+Cypress.Commands.add('keycloakLogin', (username, password) => {
+    cy.url().should('eq', Cypress.env('oidc-server-url') + '/auth?response_type=code&client_id='
+        + Cypress.env('oidc-client-id') + '&client_secret=&redirect_uri=' + Cypress.config('baseUrl'))
+    submitLoginForm();
+
+    function submitLoginForm() {
+        cy.get('#username').type(username);
+        cy.get('#password').type(password);
+        cy.get('#kc-login').click();
+    }
+});

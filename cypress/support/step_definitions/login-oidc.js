@@ -1,0 +1,19 @@
+when("I login with user {string} using oidc", (user) => {
+  cy.fixture(user).as("user");
+    cy.get('@user').then((userData) => {
+      cy.keycloakLogin(userData.username, userData.password);
+  });
+});
+
+then("I am logged in using oidc", () => {
+  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
+  cy.contains("Step 1").should('be.visible');
+});
+
+then("I am not logged in using oidc", () => {
+    cy.get('div').should('have.class', 'alert alert-error');
+    cy.get('span').should('have.text', 'Invalid username or password.');
+});
+
+
+
