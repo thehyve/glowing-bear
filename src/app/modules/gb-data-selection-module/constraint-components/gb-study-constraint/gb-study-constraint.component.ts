@@ -37,10 +37,10 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onSearch(event) {
-    let query = event.query.toLowerCase();
     let studies = this.constraintService.studies;
+    let query = event.query.toLowerCase();
     if (query) {
-      this.searchResults = studies.filter((study: Study) => study.studyId.toLowerCase().includes(query));
+      this.searchResults = studies.filter((study: Study) => study.id.toLowerCase().includes(query));
     } else {
       this.searchResults = studies;
     }
@@ -63,17 +63,6 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
-  onUnselect(studyObject) {
-    // For some funny reason, the study is still in the list when this handler is invoked
-    let index = this.selectedStudies.indexOf(studyObject);
-    this.selectedStudies.splice(index, 1);
-    this.update();
-  }
-
-  updateStudies(studyObject) {
-    this.update();
-  }
-
   onDrop(event: DragEvent) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
@@ -83,7 +72,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     if (this.droppedConstraint) {
       let study = (<StudyConstraint>this.droppedConstraint).studies[0];
       let studies = (<StudyConstraint>this.constraint).studies;
-      studies = studies.filter(item => item.studyId === study.studyId);
+      studies = studies.filter(item => item.id === study.id);
       if (studies.length === 0) {
         (<StudyConstraint>this.constraint).studies.push(study);
         this.update();

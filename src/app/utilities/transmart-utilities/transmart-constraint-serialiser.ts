@@ -207,7 +207,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         for (let study of constraint.studies) {
           childQueryObjects.push({
             'type': 'study_name',
-            'studyId': study.studyId
+            'studyId': study.id
           });
         }
         if (childQueryObjects.length === 1) {
@@ -321,6 +321,15 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
           };
         }
       }
+    } else if (constraint.mark === ConstraintMark.SUBJECT) {
+      constraint.mark = ConstraintMark.OBSERVATION;
+      let subObj = this.visitConceptConstraint(constraint);
+      constraint.mark = ConstraintMark.SUBJECT;
+      return {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': subObj
+      };
     }
     return result;
   }
@@ -331,49 +340,55 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
    */
   private getNonEmptyChildObjects(constraint: CombinationConstraint): object[] {
     return constraint.children.reduce((result: Object[], child: Constraint) => {
-        let queryObject: object = this.visit(child);
-        if (queryObject && Object.keys(queryObject).length > 0) {
-          result.push(queryObject);
-        }
-        return result;
-      }, []);
+      let queryObject: object = this.visit(child);
+      if (queryObject && Object.keys(queryObject).length > 0) {
+        result.push(queryObject);
+      }
+      return result;
+    }, []);
   }
 
   /*
    * --------------------- combination constraint related methods ---------------------
    */
   visitCombinationConstraint(constraint: CombinationConstraint): object {
-    let result = null;
-    // Collect children query objects
-    let childQueryObjects: Object[] = this.getNonEmptyChildObjects(constraint);
-    if (childQueryObjects.length > 0) {
-      if (constraint.mark === ConstraintMark.SUBJECT) {
-        if (childQueryObjects.length === 1) {
-          result = TransmartConstraintSerialiser.wrapWithSubselection(childQueryObjects[0]);
-        } else {
-          // Wrap the child query objects in subselections
-          childQueryObjects = childQueryObjects.map(queryObj => {
-            return TransmartConstraintSerialiser.wrapWithSubselection(queryObj);
-          });
-          // Wrap in and/or constraint
-          result = {
-            type: constraint.combinationState === CombinationState.And ? 'and' : 'or',
-            args: childQueryObjects
-          };
-        }
-      } else if (constraint.mark === ConstraintMark.OBSERVATION) {
-        if (childQueryObjects.length === 1) {
-          result = childQueryObjects[0];
-        } else {
-          // Wrap in and/or constraint
-          result = {
-            type: constraint.combinationState === CombinationState.And ? 'and' : 'or',
-            args: childQueryObjects
-          };
+    let optConstraint = constraint.optimize();
+    if (optConstraint.className === 'CombinationConstraint') {
+      let constraint1: CombinationConstraint = <CombinationConstraint>optConstraint;
+      let result = null;
+      // Collect children query objects
+      let childQueryObjects: Object[] = this.getNonEmptyChildObjects(constraint1);
+      if (childQueryObjects.length > 0) {
+        if (constraint1.mark === ConstraintMark.SUBJECT) {
+          if (childQueryObjects.length === 1) {
+            result = TransmartConstraintSerialiser.wrapWithSubselection(childQueryObjects[0]);
+          } else {
+            // Wrap the child query objects in subselections
+            childQueryObjects = childQueryObjects.map(queryObj => {
+              return TransmartConstraintSerialiser.wrapWithSubselection(queryObj);
+            });
+            // Wrap in and/or constraint
+            result = {
+              type: constraint1.combinationState === CombinationState.And ? 'and' : 'or',
+              args: childQueryObjects
+            };
+          }
+        } else if (constraint1.mark === ConstraintMark.OBSERVATION) {
+          if (childQueryObjects.length === 1) {
+            result = childQueryObjects[0];
+          } else {
+            // Wrap in and/or constraint
+            result = {
+              type: constraint1.combinationState === CombinationState.And ? 'and' : 'or',
+              args: childQueryObjects
+            };
+          }
         }
       }
+      return result;
+    } else {
+      return this.visit(optConstraint);
     }
-    return result;
   }
 
 }

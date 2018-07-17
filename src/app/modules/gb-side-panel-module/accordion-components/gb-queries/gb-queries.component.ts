@@ -227,4 +227,8 @@ export class GbQueriesComponent implements OnInit {
       }
     });
   }
+
+  get isQuerySubscriptionIncluded(): boolean {
+    return this.queryService.isQuerySubscriptionIncluded;
+  }
 }

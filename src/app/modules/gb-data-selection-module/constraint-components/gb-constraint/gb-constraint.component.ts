@@ -12,11 +12,8 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
-import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
-import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
-import {TreeNode} from 'primeng/api';
 
 @Component({
   selector: 'gb-constraint',

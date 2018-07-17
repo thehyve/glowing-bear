@@ -7,6 +7,7 @@
  */
 
 import {Constraint} from './constraint';
+import {SubjectSet} from './subject-set';
 
 
 export class SubjectSetConstraint extends Constraint {
@@ -21,9 +22,13 @@ export class SubjectSetConstraint extends Constraint {
   private _errorMessage: string;
   private _requestConstraints: string;
 
-  constructor() {
+  constructor(subjectSet?: SubjectSet) {
     super();
     this.textRepresentation = 'Subject set constraint';
+    if (subjectSet) {
+      this.id = subjectSet.id;
+      this.setSize = subjectSet.setSize;
+    }
   }
 
   get className(): string {

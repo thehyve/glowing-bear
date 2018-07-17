@@ -32,7 +32,7 @@ export class StudyConstraint extends Constraint {
 
   get textRepresentation(): string {
     let result: string = (this.studies) ? 'Study: ' : 'Study';
-    result += this.studies.map(study => study.studyId).join(', ');
+    result += this.studies.map(study => study.id).join(', ');
     this._textRepresentation = result;
     return this._textRepresentation;
   }

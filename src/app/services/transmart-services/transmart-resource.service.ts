@@ -7,10 +7,9 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
-import {Study} from '../../models/constraint-models/study';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
@@ -27,6 +26,10 @@ import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+
 
 @Injectable()
 export class TransmartResourceService {
@@ -41,13 +44,36 @@ export class TransmartResourceService {
   private _endpointUrl: string;
 
   private _studiesLock: boolean;
-  private _studies: Study[] = null;
-  private _studiesSubject: AsyncSubject<Study[]>;
+  private _studies: TransmartStudy[] = null;
+  private _studiesSubject: AsyncSubject<TransmartStudy[]>;
+
+  /*
+   * Flag indicating if the subject selection of step 1 should be automatically
+   * saved as subject set in the backend. If true, that subject set is used as the subject constraint
+   * for step 2.
+   */
+  private _autosaveSubjectSets: boolean;
+  private _subjectSetConstraint: SubjectSetConstraint;
+  private _inclusionCounts: TransmartCountItem;
+  private _exclusionCounts: TransmartCountItem;
+  private _studyConceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
+    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.subjectSetConstraint = new SubjectSetConstraint();
+    this.inclusionCounts = new TransmartCountItem();
+    this.exclusionCounts = new TransmartCountItem();
+  }
+
+  get subjectSetConstraint(): SubjectSetConstraint {
+    return this._subjectSetConstraint;
+  }
+
+  set subjectSetConstraint(value: SubjectSetConstraint) {
+    this._subjectSetConstraint = value;
   }
 
   get exportDataView(): string {
@@ -72,6 +98,38 @@ export class TransmartResourceService {
 
   set endpointUrl(value: string) {
     this._endpointUrl = value;
+  }
+
+  get autosaveSubjectSets(): boolean {
+    return this._autosaveSubjectSets;
+  }
+
+  set autosaveSubjectSets(value: boolean) {
+    this._autosaveSubjectSets = value;
+  }
+
+  get inclusionCounts(): TransmartCountItem {
+    return this._inclusionCounts;
+  }
+
+  set inclusionCounts(value: TransmartCountItem) {
+    this._inclusionCounts = value;
+  }
+
+  get exclusionCounts(): TransmartCountItem {
+    return this._exclusionCounts;
+  }
+
+  set exclusionCounts(value: TransmartCountItem) {
+    this._exclusionCounts = value;
+  }
+
+  get studyConceptCountObject(): object {
+    return this._studyConceptCountObject;
+  }
+
+  set studyConceptCountObject(value: object) {
+    this._studyConceptCountObject = value;
   }
 
   /**
@@ -139,7 +197,7 @@ export class TransmartResourceService {
    * Returns the available studies.
    * @returns {Observable<Study[]>}
    */
-  getStudies(): Observable<Study[]> {
+  getStudies(): Observable<TransmartStudy[]> {
     const urlPart = 'studies';
     const responseField = 'studies';
     return this.getCall(urlPart, responseField);
@@ -154,7 +212,7 @@ export class TransmartResourceService {
    *
    * @return {Promise<Study[]>}
    */
-  get studies(): Promise<Study[]> {
+  get studies(): Promise<TransmartStudy[]> {
     if (this._studies != null) {
       return Observable.of(this._studies).toPromise();
     }
@@ -162,11 +220,11 @@ export class TransmartResourceService {
       return this._studiesSubject.toPromise();
     }
     this._studiesLock = true;
-    this._studiesSubject = new AsyncSubject<Study[]>();
+    this._studiesSubject = new AsyncSubject<TransmartStudy[]>();
 
     return new Promise((resolve, reject) => {
       this.getStudies()
-        .subscribe((studies: Study[]) => {
+        .subscribe((studies: TransmartStudy[]) => {
           resolve(studies);
           this._studies = studies;
           this._studiesSubject.next(this._studies);
@@ -204,10 +262,135 @@ export class TransmartResourceService {
     return this.getCall(urlPart, responseField);
   }
 
-  // -------------------------------------- observations calls --------------------------------------
+  // -------------------------------------- count calls --------------------------------------
+  /**
+   * Update the inclusion and exclusion counts in subject selection
+   * in an economical way.
+   * Order of updates: study-concept-count object update -> exclusion count update -> inclusion count update
+   * @param {Constraint} constraint
+   * @param {Constraint} inclusionConstraint
+   * @param {Constraint} exclusionConstraint
+   * @returns {Promise<any>}
+   */
+  updateInclusionExclusionCounts(constraint: Constraint,
+                                 inclusionConstraint: Constraint,
+                                 exclusionConstraint?: Constraint): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      if (this.autosaveSubjectSets) {
+        this.savePatientSet('temp', constraint)
+          .subscribe((subjectSet: SubjectSet) => {
+            this.subjectSetConstraint.id = subjectSet.id;
+            this.subjectSetConstraint.setSize = subjectSet.setSize;
+            this.updateStudyConceptCountObject(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
+              .then(() => {
+                resolve(true);
+              })
+              .catch(err => {
+                reject(false)
+              });
+          }, err => {
+            reject(err)
+          });
+      } else {
+        this.updateStudyConceptCountObject(constraint, inclusionConstraint, exclusionConstraint)
+          .then(() => {
+            resolve(true);
+          })
+          .catch(err => {
+            reject(err)
+          });
+      }
+    });
+  }
+
+  updateStudyConceptCountObject(constraint: Constraint,
+                                inclusionConstraint: Constraint,
+                                exclusionConstraint?: Constraint): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.getCountsPerStudyAndConcept(constraint)
+        .subscribe((countObj: object) => {
+          this.studyConceptCountObject = countObj;
+          let totalCountItem: TransmartCountItem = new TransmartCountItem();
+          // if in autosaveSubjectSets mode, need to calculate total observation count
+          if (this.autosaveSubjectSets) {
+            let totalObservationCount = 0;
+            for (let studyId in countObj) {
+              let conceptCount: object = countObj[studyId];
+              for (let conceptCode in conceptCount) {
+                let countItem: TransmartCountItem = conceptCount[conceptCode];
+                totalObservationCount += countItem.observationCount;
+              }
+            }
+            totalCountItem.patientCount = this.subjectSetConstraint.setSize;
+            totalCountItem.observationCount = totalObservationCount;
+          }
+          this.updateExclusionCounts(exclusionConstraint)
+            .then(() => {
+              this.updateInclusionCounts(inclusionConstraint, totalCountItem)
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject('Fail to update transmart inclusion counts.');
+                })
+            })
+            .catch(err => {
+              reject('Fail to update transmart exclusion counts.')
+            })
+        }, err => {
+          reject('Fail to retrieve study-concept-count object from transmart.')
+        });
+    });
+  }
+
+  updateExclusionCounts(constraint?: Constraint): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      if (constraint) {
+        this.getCounts(constraint)
+          .subscribe((countItem: TransmartCountItem) => {
+            this.exclusionCounts.patientCount = countItem.patientCount;
+            this.exclusionCounts.observationCount = countItem.observationCount;
+            resolve(true);
+          }, err => {
+            reject(err);
+          });
+      } else {
+        this.exclusionCounts.patientCount = 0;
+        this.exclusionCounts.observationCount = 0;
+        resolve(true);
+      }
+    });
+  }
+
+  updateInclusionCounts(constraint: Constraint, totalCountItem?: TransmartCountItem): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      if (this.autosaveSubjectSets) {
+        if (totalCountItem) {
+          this.inclusionCounts.patientCount = totalCountItem.patientCount + this.exclusionCounts.patientCount;
+          this.inclusionCounts.observationCount = totalCountItem.observationCount + this.exclusionCounts.observationCount;
+          resolve(true);
+        } else {
+          reject('Missing transmart total-count item to calculate inclusion counts.');
+        }
+      } else {
+        this.getCounts(constraint)
+          .subscribe((countItem: TransmartCountItem) => {
+            this.inclusionCounts.patientCount = countItem.patientCount;
+            this.inclusionCounts.observationCount = countItem.observationCount;
+            resolve(true);
+          }, err => {
+            reject(err);
+          })
+      }
+    });
+  }
+
   /**
    * Given a constraint, get the patient counts and observation counts
-   * organized per study, then per concept
+   * organized per study, then per concept.
+   * Side benefit:
+   * - can calculate total number of obervations under the given constraint
+   * - if in autosaveSubjectSets mode, can retrieve the total number of subjects under the given constraint
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
@@ -243,13 +426,12 @@ export class TransmartResourceService {
     return this.postCall(urlPart, body, responseField);
   }
 
-  // -------------------------------------- observation calls --------------------------------------
   /**
    * Give a constraint, get the corresponding patient count and observation count.
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
-  getCounts(constraint: Constraint): Observable<object> {
+  getCounts(constraint: Constraint): Observable<TransmartCountItem> {
     const urlPart = 'observations/counts';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = false;
@@ -409,6 +591,7 @@ export class TransmartResourceService {
     const responseField = 'queries';
     return this.getCall(urlPart, responseField);
   }
+
   /**
    * save a new query
    * @param {TransmartQuery} transmartQuery

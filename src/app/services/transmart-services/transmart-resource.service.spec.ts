@@ -15,6 +15,7 @@ import {AppConfigMock} from '../../config/app.config.mock';
 import {MessageHelper} from '../../utilities/message-helper';
 import {Study} from '../../models/constraint-models/study';
 import {Observable} from 'rxjs/Observable';
+import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 
 describe('TransmartResourceService', () => {
 
@@ -42,13 +43,13 @@ describe('TransmartResourceService', () => {
     }));
 
   it('should fetch studies from the TranSMART resource service', function () {
-    let study1 = new Study();
+    let study1 = new TransmartStudy();
     study1.studyId = 'TestStudy1';
     study1.dimensions = ['patient', 'concept', 'start time'];
-    let study2 = new Study();
+    let study2 = new TransmartStudy();
     study2.studyId = 'TestStudy2';
     study2.dimensions = ['patient', 'concept', 'trial visit', 'sample_type'];
-    let testStudies: Study[] = [study1, study2];
+    let testStudies: TransmartStudy[] = [study1, study2];
 
     let resourceCall = spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
       Observable.of(testStudies)
