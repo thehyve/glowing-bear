@@ -172,6 +172,19 @@ describe('ResourceService', () => {
       });
   });
 
+  it('should handle empty aggregate object', () => {
+    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
+      return Observable.of({});
+    });
+    let dummy = new ConceptConstraint();
+    dummy.concept = new Concept();
+    dummy.concept.code = 'CV:DEM:AGE';
+    resourceService.getAggregate(dummy)
+      .subscribe(res => {
+        expect(res).toBeNull();
+      })
+  });
+
   it('should get pedigrees', () => {
     resourceService.getPedigrees()
       .subscribe((pedigrees: Pedigree[]) => {

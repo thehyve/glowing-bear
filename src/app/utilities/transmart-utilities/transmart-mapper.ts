@@ -145,26 +145,29 @@ export class TransmartMapper {
   public static mapTransmartConceptAggregate(tmConceptAggregate: object, conceptCode: string): Aggregate {
     let aggregate: Aggregate = null;
     let aggObj = tmConceptAggregate[conceptCode];
-    if (aggObj['numericalValueAggregates']) {
-      aggregate = new NumericalAggregate();
-      const numAggObj = aggObj['numericalValueAggregates'];
-      (<NumericalAggregate>aggregate).min = numAggObj['min'];
-      (<NumericalAggregate>aggregate).max = numAggObj['max'];
-      (<NumericalAggregate>aggregate).avg = numAggObj['average'];
-      (<NumericalAggregate>aggregate).count = numAggObj['count'];
-      (<NumericalAggregate>aggregate).stdDev = numAggObj['std_dev'];
-    } else if (aggObj['categoricalValueAggregates']) {
-      aggregate = new CategoricalAggregate();
-      const catAggObj = aggObj['categoricalValueAggregates'];
-      const countObj = catAggObj['valueCounts'];
-      for (let key in countObj) {
-        (<CategoricalAggregate>aggregate).valueCounts.set(key, countObj[key]);
-      }
-      const nullCount = catAggObj['nullValueCounts'];
-      if (nullCount && nullCount > 0) {
-        (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
+    if (aggObj) {
+      if (aggObj['numericalValueAggregates']) {
+        aggregate = new NumericalAggregate();
+        const numAggObj = aggObj['numericalValueAggregates'];
+        (<NumericalAggregate>aggregate).min = numAggObj['min'];
+        (<NumericalAggregate>aggregate).max = numAggObj['max'];
+        (<NumericalAggregate>aggregate).avg = numAggObj['average'];
+        (<NumericalAggregate>aggregate).count = numAggObj['count'];
+        (<NumericalAggregate>aggregate).stdDev = numAggObj['std_dev'];
+      } else if (aggObj['categoricalValueAggregates']) {
+        aggregate = new CategoricalAggregate();
+        const catAggObj = aggObj['categoricalValueAggregates'];
+        const countObj = catAggObj['valueCounts'];
+        for (let key in countObj) {
+          (<CategoricalAggregate>aggregate).valueCounts.set(key, countObj[key]);
+        }
+        const nullCount = catAggObj['nullValueCounts'];
+        if (nullCount && nullCount > 0) {
+          (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
+        }
       }
     }
+
     return aggregate;
   }
 
