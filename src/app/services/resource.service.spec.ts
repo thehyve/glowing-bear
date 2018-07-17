@@ -15,7 +15,7 @@ import {Study} from '../models/constraint-models/study';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
 
-fdescribe('ResourceService', () => {
+describe('ResourceService', () => {
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
 
