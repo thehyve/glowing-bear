@@ -124,7 +124,9 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   addChildCombinationConstraint() {
-    (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+    let childCombinationConstraint = new CombinationConstraint();
+    childCombinationConstraint.isSubselection = true;
+    (<CombinationConstraint>this.constraint).addChild(childCombinationConstraint);
   }
 
 }
