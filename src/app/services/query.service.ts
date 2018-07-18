@@ -14,7 +14,6 @@ import {ConstraintService} from './constraint.service';
 import {Step} from '../models/query-models/step';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {FormatHelper} from '../utilities/format-helper';
-import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
 import {QueryDiffRecord} from '../models/query-models/query-diff-record';

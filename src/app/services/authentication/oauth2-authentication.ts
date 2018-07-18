@@ -11,7 +11,7 @@ import {AppConfig} from '../../config/app.config';
 import {Injectable, Injector} from '@angular/core';
 import {AuthenticationMethod} from './authentication-method';
 import {Observable} from 'rxjs/Observable';
-import {AuthorisationResult} from './authorisation-result';
+import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
@@ -44,7 +44,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _token: Oauth2Token = null;
   private _lock: boolean;
-  private _tokenResult: BehaviorSubject<AuthorisationResult>;
+  private _tokenResult: BehaviorSubject<AuthorizationResult>;
 
   /**
    * Gets the authorisation code from the URL.
@@ -62,8 +62,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
 
   constructor(private injector: Injector) { }
 
-  private redirect(authorisation: AuthorisationResult) {
-    if (authorisation === 'authorized') {
+  private redirect(authorisation: AuthorizationResult) {
+    if (authorisation === AuthorizationResult.Authorized) {
       const path = JSON.parse(localStorage.getItem('redirect'));
       console.log(`Redirect to ${path}`);
       this.router.navigate([path]);
@@ -73,12 +73,12 @@ export class Oauth2Authentication implements AuthenticationMethod {
   }
 
   private fetchAccessToken(grantType: 'authorization_code' | 'refresh_token',
-                           code: string): Promise<AuthorisationResult> {
+                           code: string): Promise<AuthorizationResult> {
     if (this._lock) {
       return this._tokenResult.toPromise();
     }
     this._lock = true;
-    this._tokenResult = new BehaviorSubject<AuthorisationResult>('unauthorized');
+    this._tokenResult = new BehaviorSubject<AuthorizationResult>(AuthorizationResult.Unauthorized);
 
     return new Promise((resolve) => {
       const url = `${this.authUrl}/token`;
@@ -102,7 +102,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
           console.log(`Token retrieved.`);
           this._token = Oauth2Token.from(result);
           localStorage.setItem('token', JSON.stringify(this._token));
-          this.authorisation.subscribe((authorisation: AuthorisationResult) => {
+          this.authorisation.subscribe((authorisation: AuthorizationResult) => {
             resolve(authorisation);
             this._tokenResult.next(authorisation);
             this._lock = false;
@@ -115,7 +115,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
             localStorage.removeItem('token');
             this._token = null;
           }
-          this.authorisation.subscribe((authorisation: AuthorisationResult) => {
+          this.authorisation.subscribe((authorisation: AuthorizationResult) => {
             resolve(authorisation);
             this._tokenResult.next(authorisation);
             this._lock = false;
@@ -124,7 +124,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     });
   }
 
-  load(): Promise<AuthorisationResult> {
+  load(): Promise<AuthorizationResult> {
     return new Promise((resolve) => {
       // inject services (not in constructor to avoid cyclic dependency)
       this.config = this.injector.get(AppConfig);
@@ -155,7 +155,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
         history.replaceState({}, window.document.title, this.appUrl);
         // use access code to retrieve access token
         this.fetchAccessToken('authorization_code', authorisationCode)
-          .then((authorisation: AuthorisationResult) => {
+          .then((authorisation: AuthorizationResult) => {
           console.log(`Authorisation result: ${authorisation}`);
           this.redirect(authorisation);
           resolve(authorisation);
@@ -165,7 +165,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
         localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
 
         this._token = JSON.parse(localStorage.getItem('token'));
-        this.authorisation.subscribe((authorisation: AuthorisationResult) => {
+        this.authorisation.subscribe((authorisation: AuthorizationResult) => {
           console.log(`Authorisation result: ${authorisation}`);
           resolve(authorisation);
         });
@@ -173,7 +173,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     });
   }
 
-  private requestToken(): Observable<AuthorisationResult> {
+  private requestToken(): Observable<AuthorizationResult> {
     // Remove previous token
     localStorage.removeItem('token');
     // Set redirect target for when we return after authentication
@@ -185,7 +185,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
     let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
     return Observable.fromPromise(new Promise((resolve) => {
-      resolve('unauthorized');
+      resolve(AuthorizationResult.Unauthorized);
       console.log(`Redirecting to ${target} ...`);
       setTimeout(() => {
           // Redirect to login page
@@ -195,7 +195,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     }));
   }
 
-  get authorisation(): Observable<AuthorisationResult> {
+  get authorisation(): Observable<AuthorizationResult> {
     if (!this.hasToken) {
       console.warn(`No token found.`);
       this._authorised.next(false);
@@ -206,12 +206,11 @@ export class Oauth2Authentication implements AuthenticationMethod {
       console.warn('Token expired.');
       return Observable.from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
     }
-    return Observable.from(new Promise<AuthorisationResult>(resolve => {
-      console.log(`Valid token available.`);
+    return Observable.from(new Promise<AuthorizationResult>(resolve => {
       console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
       this._authorised.next(true);
       this._authorised.complete();
-      resolve('authorized');
+      resolve(AuthorizationResult.Authorized);
     }));
   }
 
