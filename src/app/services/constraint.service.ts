@@ -37,8 +37,6 @@ export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  // the subject-set constraint used to replace the constraint in step 1 to boost performance
-  private _subjectSetConstraint: SubjectSetConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -84,7 +82,6 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.subjectSetConstraint = null;
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -213,8 +210,9 @@ export class ConstraintService {
     }
   }
 
-  public constraint_1() {
-    return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
+  public constraint_1(): Constraint {
+    // return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
+    return this.generateSelectionConstraint();
   }
 
   /**
@@ -376,14 +374,6 @@ export class ConstraintService {
     }
 
     return constraint;
-  }
-
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
-  }
-
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
