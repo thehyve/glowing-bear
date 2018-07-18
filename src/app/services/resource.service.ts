@@ -313,7 +313,7 @@ export class ResourceService {
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
                constraint: Constraint,
-               dataTable: DataTable): Observable<ExportJob> {
+               dataTable: DataTable): Promise<ExportJob> {
     let includeDataTable = false;
     let hasSelectedFormat = false;
     for (let dataType of dataTypes) {
@@ -336,14 +336,14 @@ export class ResourceService {
             transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
           }
           const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
-          return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
+          return this.transmartResourceService.runExport(job.id, constraint, elements, transmartTableState);
         }
         default: {
-          return this.handleEndpointModeError();
+          return this.handleEndpointModeError().toPromise();
         }
       }
     } else {
-      return Observable.of(null);
+      return Observable.of(null).toPromise();
     }
   }
 
