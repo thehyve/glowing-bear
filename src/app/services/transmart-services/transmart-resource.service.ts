@@ -11,7 +11,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import {Constraint} from '../../models/constraint-models/constraint';
-import {PedigreeRelationTypeResponse} from '../../models/response-models/pedigree-relation-type-response';
+import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
@@ -470,7 +470,7 @@ export class TransmartResourceService {
    * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
    * @returns {Observable<Object[]>}
    */
-  getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
+  getPedigrees(): Observable<Pedigree[]> {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
     return this.getCall(urlPart, responseField);

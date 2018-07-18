@@ -25,6 +25,7 @@ import {TreeNode} from 'primeng/api';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
+import {Pedigree} from '../models/constraint-models/pedigree';
 
 /**
  * This service concerns with
@@ -36,8 +37,6 @@ export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  // the subject-set constraint used to replace the constraint in step 1 to boost performance
-  private _subjectSetConstraint: SubjectSetConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -83,7 +82,6 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.subjectSetConstraint = null;
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -127,14 +125,14 @@ export class ConstraintService {
   }
 
   private loadPedigrees() {
-    this.resourceService.getPedigreeRelationTypes()
+    this.resourceService.getPedigrees()
       .subscribe(
-        relationTypeObjects => {
-          for (let obj of relationTypeObjects) {
-            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(obj.label);
-            pedigreeConstraint.description = obj.description;
-            pedigreeConstraint.biological = obj.biological;
-            pedigreeConstraint.symmetrical = obj.symmetrical;
+        (pedigrees: Pedigree[]) => {
+          for (let p of pedigrees) {
+            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(p.label);
+            pedigreeConstraint.description = p.description;
+            pedigreeConstraint.biological = p.biological;
+            pedigreeConstraint.symmetrical = p.symmetrical;
             this.allConstraints.push(pedigreeConstraint);
             this.validPedigreeTypes.push({
               type: pedigreeConstraint.relationType,
@@ -212,8 +210,8 @@ export class ConstraintService {
     }
   }
 
-  public constraint_1() {
-    return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
+  public constraint_1(): Constraint {
+    return this.generateSelectionConstraint();
   }
 
   /**
@@ -375,14 +373,6 @@ export class ConstraintService {
     }
 
     return constraint;
-  }
-
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
-  }
-
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

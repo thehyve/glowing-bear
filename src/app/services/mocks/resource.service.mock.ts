@@ -27,7 +27,6 @@ import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/tran
 
 export class ResourceServiceMock {
   private studies: Study[];
-  private pedigreeRelationTypes: object[];
   private queries: Query[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
@@ -41,7 +40,6 @@ export class ResourceServiceMock {
 
   constructor() {
     this.studies = [];
-    this.pedigreeRelationTypes = [];
     this.queries = [];
     this.treeNodes = [];
     this.exportJobs = [];
@@ -65,8 +63,8 @@ export class ResourceServiceMock {
     return Observable.of(this.studies);
   }
 
-  getPedigreeRelationTypes(): Observable<object[]> {
-    return Observable.of(this.pedigreeRelationTypes);
+  getPedigrees(): Observable<object[]> {
+    return Observable.of([]);
   }
 
   getQueries(): Observable<Query[]> {

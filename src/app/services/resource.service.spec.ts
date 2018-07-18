@@ -14,6 +14,13 @@ import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.m
 import {Study} from '../models/constraint-models/study';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {NumericalAggregate} from '../models/aggregate-models/numerical-aggregate';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {Concept} from '../models/constraint-models/concept';
+import {Observable} from 'rxjs/Observable';
+import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
+import {Pedigree} from '../models/constraint-models/pedigree';
+import {Query} from '../models/query-models/query';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -124,5 +131,90 @@ describe('ResourceService', () => {
         expect(err).toBeDefined();
       });
   })
+
+  it('should get aggregate', () => {
+    let dummy = new ConceptConstraint();
+    dummy.concept = new Concept();
+    dummy.concept.code = 'CV:DEM:AGE';
+    resourceService.getAggregate(dummy)
+      .subscribe((res: NumericalAggregate) => {
+        expect(res.min).toEqual(20);
+        expect(res.max).toEqual(26);
+        expect(res.count).toEqual(3);
+      });
+
+    let catAgg = {
+      'CV:DEM:RACE': {
+        categoricalValueAggregates: {
+          nullValueCounts: null,
+          valueCounts: {
+            Caucasian: 2,
+            Latino: 1
+          }
+        }
+      }
+    };
+    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
+      return Observable.of(catAgg);
+    });
+    dummy.concept.code = 'CV:DEM:RACE';
+    resourceService.getAggregate(dummy)
+      .subscribe((res: CategoricalAggregate) => {
+        expect(res.values.length).toEqual(2);
+        expect(res.values.includes('Caucasian')).toBe(true);
+        expect(res.values.includes('Latino')).toBe(true);
+      });
+    resourceService.endpointMode = null;
+    resourceService.getAggregate(dummy)
+      .subscribe((res) => {
+      }, err => {
+        expect(err).toBeDefined();
+      });
+  });
+
+  it('should handle empty aggregate object', () => {
+    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
+      return Observable.of({});
+    });
+    let dummy = new ConceptConstraint();
+    dummy.concept = new Concept();
+    dummy.concept.code = 'CV:DEM:AGE';
+    resourceService.getAggregate(dummy)
+      .subscribe(res => {
+        expect(res).toBeNull();
+      })
+  });
+
+  it('should get pedigrees', () => {
+    resourceService.getPedigrees()
+      .subscribe((pedigrees: Pedigree[]) => {
+        expect(pedigrees.length).toBe(2);
+        expect(pedigrees[0].label).toBe('PAR');
+        expect(pedigrees[1].label).toBe('DZ');
+      });
+    resourceService.endpointMode = null;
+    resourceService.getPedigrees()
+      .subscribe(res => {
+      }, err => {
+        expect(err).toBeDefined();
+      });
+  });
+
+  it('should get queries', () => {
+    resourceService.getQueries()
+      .subscribe((queries: Query[]) => {
+        expect(queries.length).toBe(2);
+        expect(queries[0].subjectQuery.className).toBe('TrueConstraint');
+        expect(queries[0].observationQuery.data.length).toBe(1);
+        expect(queries[1].subjectQuery.className).toBe('CombinationConstraint');
+        expect(queries[1].observationQuery.data.length).toBe(3);
+      });
+    resourceService.endpointMode = null;
+    resourceService.getQueries()
+      .subscribe(res => {
+      }, err => {
+        expect(err).toBeDefined();
+      });
+  });
 
 });

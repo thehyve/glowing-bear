@@ -212,7 +212,6 @@ export class QueryService {
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       this.isUpdating_1 = true;
-      this.subjectSetConstraint_1 = null;
       // set the flags
       this.loadingStateInclusion = 'loading';
       this.loadingStateExclusion = 'loading';
@@ -709,14 +708,6 @@ export class QueryService {
 
   set showObservationCounts(value: boolean) {
     this._showObservationCounts = value;
-  }
-
-  get subjectSetConstraint_1(): SubjectSetConstraint {
-    return this.constraintService.subjectSetConstraint;
-  }
-
-  set subjectSetConstraint_1(value: SubjectSetConstraint) {
-    this.constraintService.subjectSetConstraint = value;
   }
 
   get isSavingQueryCompleted(): boolean {
