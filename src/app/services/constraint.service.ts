@@ -211,7 +211,6 @@ export class ConstraintService {
   }
 
   public constraint_1(): Constraint {
-    // return this.subjectSetConstraint ? this.subjectSetConstraint : this.generateSelectionConstraint();
     return this.generateSelectionConstraint();
   }
 
