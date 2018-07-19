@@ -62,3 +62,35 @@ Cypress.Commands.add('keycloakLogin', (username, password) => {
         cy.get('#kc-login').click();
     }
 });
+
+Cypress.Commands.add('getToken', (username, password) => {
+    if(Cypress.env('authentication-service-type') == 'oidc') {
+        return getTokenFromKeycloak();
+    } else {
+        return getTokenFromTransmart();
+    }
+
+    function getTokenFromKeycloak() {
+        cy.request({
+            method: 'POST',
+            url: Cypress.env('oidc-server-url') + '/token',
+            form: true, // indicates the body should be form urlencoded and sets Content-Type: application/x-www-form-urlencoded headers
+            body: {
+                client_id: Cypress.env('oidc-client-id'),
+                grant_type: 'password',
+                username: username,
+                password: password
+            }
+        }).then((authResponce) => {
+            return authResponce.body['access_token'];
+        });
+    }
+
+    function getTokenFromTransmart() {
+        cy.request('POST', Cypress.env('apiUrl') + '/oauth/token?grant_type=password&client_id=glowingbear-js'
+            + '&client_secret=&username=' + username + '&password=' + password).then((authResponce) => {
+            return authResponce.body['access_token'];
+        });
+    }
+});
+

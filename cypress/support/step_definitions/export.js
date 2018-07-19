@@ -4,21 +4,20 @@ given("there are no export jobs pending", () => {
   //login
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
-    cy.request('POST', Cypress.env('apiUrl') + '/oauth/token?grant_type=password&client_id=glowingbear-js&client_secret=&username=' + userData.username + '&password=' + userData.password)
-      .then((authResponce) => {
-
+    cy.getToken(userData.username, userData.password)
+      .then((token) => {
         // get job list
         cy.request({
           'url': Cypress.env('apiUrl') + '/v2/export/jobs',
           'method': 'GET',
-          'auth': {'bearer': authResponce.body['access_token']}
+          'auth': {'bearer': token}
         }).then((queriesResponce) => {
           queriesResponce.body["exportJobs"].map(x => x["id"]).forEach(x => {
             cy.request({
               'url': Cypress.env('apiUrl') + '/v2/export/' + x,
               'method': 'DELETE',
-              'auth': {'bearer': authResponce.body['access_token']}
-            })
+              'auth': {'bearer': token}
+            });
           })
         });
 

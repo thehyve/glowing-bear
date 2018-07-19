@@ -2,20 +2,19 @@ given("Query {string} is saved", (queryName) => {
   cy.server();
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
-    cy.request('POST', Cypress.env('apiUrl') + '/oauth/token?grant_type=password&client_id=glowingbear-js&client_secret=&username=' + userData.username + '&password=' + userData.password)
-      .then((authResponce) => {
-
+    cy.getToken(userData.username, userData.password)
+      .then((token) => {
         // get query list
         cy.request({
           'url': Cypress.env('apiUrl') + '/v2/queries',
           'method': 'GET',
-          'auth': {'bearer': authResponce.body['access_token']}
+          'auth': {'bearer': token}
         }).then((queriesResponce) => {
           queriesResponce.body["queries"].map(x => x["id"]).forEach(x => {
             cy.request({
               'url': Cypress.env('apiUrl') + '/v2/queries/' + x,
               'method': 'DELETE',
-              'auth': {'bearer': authResponce.body['access_token']}
+              'auth': {'bearer': token}
             })
           })
         });
@@ -25,7 +24,7 @@ given("Query {string} is saved", (queryName) => {
           {
             'url': Cypress.env('apiUrl') + '/v2/queries',
             'method': 'POST',
-            'auth': {'bearer': authResponce.body['access_token']},
+            'auth': {'bearer': token},
             'body': {
               "name": queryName,
               "patientsQuery": {
@@ -54,20 +53,19 @@ given("there are no queries saved", () => {
   cy.server();
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
-    cy.request('POST', Cypress.env('apiUrl') + '/oauth/token?grant_type=password&client_id=glowingbear-js&client_secret=&username=' + userData.username + '&password=' + userData.password)
-      .then((authResponce) => {
-
+    cy.getToken(userData.username, userData.password)
+      .then((token) => {
         // get query list
         cy.request({
           'url': Cypress.env('apiUrl') + '/v2/queries',
           'method': 'GET',
-          'auth': {'bearer': authResponce.body['access_token']}
+          'auth': {'bearer': token}
         }).then((queriesResponce) => {
           queriesResponce.body["queries"].map(x => x["id"]).forEach(x => {
             cy.request({
               'url': Cypress.env('apiUrl') + '/v2/queries/' + x,
               'method': 'DELETE',
-              'auth': {'bearer': authResponce.body['access_token']}
+              'auth': {'bearer': token}
             })
           })
         });
