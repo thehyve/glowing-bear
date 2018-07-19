@@ -60,7 +60,7 @@ describe('Oauth2Authentication with Transmart service type', () => {
 
   it('should be loaded with status unauthorised for OAuth2', (done) => {
     authenticationService.load().then((result: AuthorizationResult) => {
-      expect(result).toEqual('unauthorized');
+      expect(result).toEqual(AuthorizationResult.Unauthorized);
       expect(authenticationService.validToken).toEqual(false);
       expect(authenticationService.token).toBeNull();
       done();
@@ -72,7 +72,7 @@ describe('Oauth2Authentication with Transmart service type', () => {
       'abc123'
     );
     authenticationService.load().then((result: AuthorizationResult) => {
-      expect(result).toEqual('authorized');
+      expect(result).toEqual(AuthorizationResult.Authorized);
       expect(authenticationService.validToken).toEqual(true);
       expect(authenticationService.token).toEqual('XYZ');
       authenticationService.authorised.subscribe((value) => {
@@ -132,7 +132,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
 
   it('should be loaded with status unauthorised for OAuth2', (done) => {
     authenticationService.load().then((result: AuthorizationResult) => {
-      expect(result).toEqual('unauthorized');
+      expect(result).toEqual(AuthorizationResult.Unauthorized);
       expect(authenticationService.validToken).toEqual(false);
       expect(authenticationService.token).toBeNull();
       done();
@@ -144,7 +144,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
       'abc123'
     );
     authenticationService.load().then((result: AuthorizationResult) => {
-      expect(result).toEqual('authorized');
+      expect(result).toEqual(AuthorizationResult.Authorized);
       expect(authenticationService.validToken).toEqual(true);
       expect(authenticationService.token).toEqual('XYZ');
       authenticationService.authorised.subscribe((value) => {

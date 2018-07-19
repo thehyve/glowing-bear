@@ -57,13 +57,14 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
              * 2. fetch client id programmatically (i.e. glowingbear-js)
              * 3. possibly create user service and user management
              */
-            let token = jwt_decode(authService.token);
+            const clientId = config.getConfig('oidc-client-id', 'transmart-client');
+            let token = jwt_decode(authService.token); console.log('token: ', token)
             if (token['resource_access']) {
-              let glowingBearJs = token['resource_access']['glowingbear-js'];
+              let glowingBearJs = token['resource_access'][clientId];
               if (glowingBearJs) {
                 let roles = glowingBearJs['roles'];
                 let str = '';
-                if (roles.constructor === Array && roles.length > 0) {
+                if (roles && roles.constructor === Array && roles.length > 0) {
                   roles.forEach((role: string) => {
                     str += role + ' ';
                   });

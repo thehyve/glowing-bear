@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
@@ -29,6 +29,10 @@ import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {QueryService} from '../query.service';
+import {AuthenticationService} from '../authentication/authentication.service';
+import {ConstraintService} from '../constraint.service';
+import {ResourceService} from '../resource.service';
 
 
 @Injectable()
@@ -58,7 +62,7 @@ export class TransmartResourceService {
   private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
 
-  constructor(private appConfig: AppConfig,
+  constructor(private appConfig: AppConfig, private injector: Injector,
               private http: HttpClient) {
     this.exportDataView = appConfig.getConfig('export-data-view', 'default');
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
@@ -67,6 +71,13 @@ export class TransmartResourceService {
     this.inclusionCounts = new TransmartCountItem();
     this.exclusionCounts = new TransmartCountItem();
   }
+
+  // public load(): Promise<any> {
+  //   return new Promise<any>((resolve, reject) => {
+  //     let qs = this.injector.get(QueryService);
+  //     resolve(true);
+  //   });
+  // }
 
   get subjectSetConstraint(): SubjectSetConstraint {
     return this._subjectSetConstraint;

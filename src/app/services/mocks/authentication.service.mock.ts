@@ -9,6 +9,8 @@
 import {Injectable, OnDestroy} from '@angular/core';
 import {AuthenticationMethod} from '../authentication/authentication-method';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {AuthorizationResult} from '../authentication/authorization-result';
+import {Observable} from 'rxjs/Observable';
 
 @Injectable()
 export class AuthenticationServiceMock implements OnDestroy {
@@ -25,6 +27,10 @@ export class AuthenticationServiceMock implements OnDestroy {
   }
 
   logout() {
+  }
+
+  authorise(): Observable<AuthorizationResult> {
+    return Observable.of(AuthorizationResult.Authorized);
   }
 
   get authorised(): AsyncSubject<boolean> {

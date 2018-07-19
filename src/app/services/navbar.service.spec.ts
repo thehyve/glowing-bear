@@ -9,11 +9,19 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
+import {AuthenticationService} from './authentication/authentication.service';
+import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 
 describe('NavbarService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [NavbarService]
+      providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        NavbarService
+      ]
     });
   });
 

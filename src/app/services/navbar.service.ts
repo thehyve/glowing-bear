@@ -8,6 +8,7 @@
 
 import { Injectable } from '@angular/core';
 import {MenuItem} from 'primeng/api';
+import {AuthenticationService} from './authentication/authentication.service';
 
 @Injectable()
 export class NavbarService {
@@ -20,7 +21,7 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor() {
+  constructor(private authService: AuthenticationService) {
     this.items = [
       {label: 'Data Selection', routerLink: '/data-selection'},
       {label: 'Analysis', routerLink: '/analysis'},
