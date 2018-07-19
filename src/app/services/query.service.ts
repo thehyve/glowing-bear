@@ -12,7 +12,6 @@ import {TreeNodeService} from './tree-node.service';
 import {Query} from '../models/query-models/query';
 import {ConstraintService} from './constraint.service';
 import {Step} from '../models/query-models/step';
-import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {FormatHelper} from '../utilities/format-helper';
 import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
@@ -133,19 +132,7 @@ export class QueryService {
     this.initializeCounts();
     this.loadQueries();
     // initial updates
-    this.update_1(true)
-      .then(() => {
-        this.update_2()
-          .then(() => {
-            this.update_3();
-          })
-          .catch(err => {
-            console.error(err);
-          })
-      })
-      .catch(err => {
-        console.error(err);
-      })
+    this.updateAll(true);
   }
 
   initializeCounts() {
@@ -154,6 +141,33 @@ export class QueryService {
     this.exclusionCounts = new CountItem(0, 0);
     this.counts_1 = new CountItem(0, 0);
     this.counts_2 = new CountItem(0, 0);
+  }
+
+  updateAll(initialUpdate?: boolean): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.update_1(initialUpdate)
+        .then(() => {
+          this.update_2()
+            .then(() => {
+              this.update_3()
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  console.error(err);
+                  reject(err);
+                })
+            })
+            .catch(err => {
+              console.error(err);
+              reject(err);
+            })
+        })
+        .catch(err => {
+          console.error(err);
+          reject(err);
+        })
+    });
   }
 
   /**
@@ -210,6 +224,8 @@ export class QueryService {
    */
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
+      // update export flags
+      this.exportService.isLoadingExportDataTypes = true;
       this.isUpdating_1 = true;
       // set the flags
       this.loadingStateInclusion = 'loading';
@@ -434,32 +450,14 @@ export class QueryService {
         this.constraintService.clearConstraint_1();
         this.constraintService.restoreConstraint_1(query.subjectQuery);
       }
-      this.update_1(false)
+      this.updateAll()
         .then(() => {
-          this.update_2()
-            .then(() => {
-              this.update_3(query.dataTable)
-                .then(() => {
-                  MessageHelper
-                    .alert('info', 'Success', `Query ${query.name} is successfully imported.`);
-                  resolve(true);
-                })
-                .catch(err => {
-                  const msg = 'Fail to update step 3.';
-                  MessageHelper.alert('error', msg);
-                  reject(msg);
-                })
-            })
-            .catch(err => {
-              const msg = 'Fail to update step 2.';
-              MessageHelper.alert('error', msg);
-              reject(msg);
-            });
+          MessageHelper.alert('info', 'Success', `Query ${query.name} is successfully imported.`);
+          resolve(true);
         })
         .catch(err => {
-          const msg = 'Fail to update step 1.';
-          MessageHelper.alert('error', msg);
-          reject(msg);
+          MessageHelper.alert('error', 'Fail to restore query ', query.name);
+          reject(err);
         });
     });
   }

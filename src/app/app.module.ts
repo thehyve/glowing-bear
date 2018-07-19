@@ -58,7 +58,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
              * 3. possibly create user service and user management
              */
             const clientId = config.getConfig('oidc-client-id', 'transmart-client');
-            let token = jwt_decode(authService.token); console.log('token: ', token)
+            let token = jwt_decode(authService.token);
             if (token['resource_access']) {
               let glowingBearJs = token['resource_access'][clientId];
               if (glowingBearJs) {
