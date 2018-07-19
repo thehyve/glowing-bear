@@ -35,15 +35,21 @@ describe('NavbarService', () => {
       ]
     });
     authService = TestBed.get(AuthenticationService);
-    authService.accessLevel = AccessLevel.Full;
+    authService.accessLevel = AccessLevel.Restricted;
     queryService = TestBed.get(QueryService);
     navbarService = TestBed.get(NavbarService);
   });
 
   it('should be injected', inject([NavbarService], (service: NavbarService) => {
     expect(service).toBeTruthy();
-    expect(service.items.length).toBe(3);
+    expect(service.items.length).toBe(2);
   }));
+
+  it('should add export item when access level is full', () => {
+    authService.accessLevel = AccessLevel.Full;
+    navbarService = new NavbarService(authService, queryService);
+    expect(navbarService.items.length).toBe(3);
+  })
 
   it('should update navbar', () => {
     let which = 'others random';
