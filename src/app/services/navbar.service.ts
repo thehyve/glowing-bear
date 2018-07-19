@@ -11,7 +11,6 @@ import {MenuItem} from 'primeng/api';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AccessLevel} from './authentication/access-level';
 import {QueryService} from './query.service';
-import {ExportService} from './export.service';
 import {MessageHelper} from '../utilities/message-helper';
 
 @Injectable()

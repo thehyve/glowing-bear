@@ -11,6 +11,8 @@ import {TestBed, inject} from '@angular/core/testing';
 import {NavbarService} from './navbar.service';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
+import {QueryService} from './query.service';
+import {QueryServiceMock} from './mocks/query.service.mock';
 
 describe('NavbarService', () => {
   beforeEach(() => {
@@ -19,6 +21,10 @@ describe('NavbarService', () => {
         {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
         },
         NavbarService
       ]
