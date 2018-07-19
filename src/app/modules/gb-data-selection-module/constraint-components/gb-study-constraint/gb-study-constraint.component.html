@@ -4,7 +4,7 @@
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedStudies"
                   [suggestions]="searchResults"
-                  field="studyId"
+                  field="id"
                   (completeMethod)="onSearch($event)"
                   (onSelect)="update()"
                   (onUnselect)="update()"
