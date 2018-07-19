@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -57,6 +57,11 @@ export class TransmartResourceService {
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
+
+  /**
+   * Constraints that were used to create a recently saved subject set
+   */
+  private _subjectSetConstraintForExport: Constraint;
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
@@ -130,6 +135,14 @@ export class TransmartResourceService {
 
   set studyConceptCountObject(value: object) {
     this._studyConceptCountObject = value;
+  }
+
+  get subjectSetConstraintForExport(): Constraint {
+    return this._subjectSetConstraintForExport;
+  }
+
+  set subjectSetConstraintForExport(value: Constraint) {
+    this._subjectSetConstraintForExport = value;
   }
 
   /**
@@ -279,6 +292,7 @@ export class TransmartResourceService {
       if (this.autosaveSubjectSets) {
         this.savePatientSet('temp', constraint)
           .subscribe((subjectSet: SubjectSet) => {
+            this.subjectSetConstraintForExport = constraint;
             this.subjectSetConstraint.id = subjectSet.id;
             this.subjectSetConstraint.setSize = subjectSet.setSize;
             this.updateStudyConceptCountObject(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
@@ -518,6 +532,47 @@ export class TransmartResourceService {
   }
 
   /**
+   * If in autosaveSubjectSets is set to true
+   * and subjectSetConstraintForExport is up to date with the current constraints from step 1 and step 2
+   * export uses patient set id based constraints ,
+   * otherwise it uses the current constraints from step 1 and step 2
+   * @param {string} jobId
+   * @param {Constraint} constraint - current constraints from step 1 and step 2
+   * @param {TransmartExportElement[]} elements
+   * @param {TransmartTableState} tableState
+   * @returns {Promise<ExportJob>}
+   */
+  runExport(jobId: string,
+            constraint: Constraint,
+            elements: TransmartExportElement[],
+            tableState?: TransmartTableState): Promise<ExportJob> {
+    return new Promise((resolve, reject) => {
+      if (this.autosaveSubjectSets
+        && this.subjectSetConstraintForExport
+        && constraint === this.subjectSetConstraintForExport) {
+        this.runExportJob(jobId, this.subjectSetConstraint, elements, tableState)
+          .subscribe((exportJob: ExportJob) => {
+            resolve(exportJob);
+          }, (error: any) => {
+            ErrorHelper.handleError(error);
+            console.error(`Error running export job: ${error}`);
+            reject(error);
+          });
+      } else {
+        this.runExportJob(jobId, constraint, elements, tableState)
+          .subscribe((exportJob: ExportJob) => {
+            resolve(exportJob);
+          }, (error: any) => {
+            ErrorHelper.handleError(error);
+            console.error(`Error running export job: ${error}`);
+            reject(error);
+          });
+      }
+    });
+  }
+
+
+  /**
    * Run an export job:
    * the elements should be an array of objects like this -
    * [{
@@ -536,6 +591,7 @@ export class TransmartResourceService {
                constraint: Constraint,
                elements: TransmartExportElement[],
                tableState?: TransmartTableState): Observable<ExportJob> {
+
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {

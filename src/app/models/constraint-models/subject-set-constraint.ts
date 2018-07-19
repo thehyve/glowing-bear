@@ -20,7 +20,6 @@ export class SubjectSetConstraint extends Constraint {
   private _id: number;
   private _description: string;
   private _errorMessage: string;
-  private _requestConstraints: string;
 
   constructor(subjectSet?: SubjectSet) {
     super();
@@ -91,11 +90,4 @@ export class SubjectSetConstraint extends Constraint {
     this._errorMessage = value;
   }
 
-  get requestConstraints(): string {
-    return this._requestConstraints;
-  }
-
-  set requestConstraints(value: string) {
-    this._requestConstraints = value;
-  }
 }

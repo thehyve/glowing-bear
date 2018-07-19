@@ -83,11 +83,11 @@ export class ExportService {
    * Run the just created export job
    * @param job
    */
-  public runExportJob(job: ExportJob): Promise<any> {
+  runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
       let constraint = this.constraintService.constraint_1_2();
       this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
-        .subscribe(
+        .then(
           returnedExportJob => {
             if (returnedExportJob) {
               this.updateExportJobs()

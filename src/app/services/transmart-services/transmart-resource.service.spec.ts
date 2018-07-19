@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {TransmartResourceService} from './transmart-resource.service';
 import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
@@ -16,6 +16,11 @@ import {MessageHelper} from '../../utilities/message-helper';
 import {Study} from '../../models/constraint-models/study';
 import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {ExportJob} from '../../models/export-models/export-job';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {StudyConstraint} from '../../models/constraint-models/study-constraint';
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 
 describe('TransmartResourceService', () => {
 
@@ -83,6 +88,35 @@ describe('TransmartResourceService', () => {
     ).catch(() => {
       expect(MessageHelper.messages.length).toEqual(messageCount + 1);
       expect(MessageHelper.messages[messageCount].summary).toContain('A server-side error occurred');
+    });
+  });
+
+
+  it('should use subject set constraints only in auto-save mode, when they are up to date with the current constraints', () => {
+    transmartResourceService.autosaveSubjectSets = true;
+    transmartResourceService.subjectSetConstraintForExport = null;
+    let constraint: Constraint = null;
+    let study = new Study();
+    study.id = 'testStudyId';
+    constraint = new StudyConstraint();
+    (<StudyConstraint>constraint).studies.push(study);
+    let subjectConstraint = new SubjectSetConstraint();
+    transmartResourceService.subjectSetConstraint = subjectConstraint;
+    let elements: TransmartExportElement[] = [new TransmartExportElement()];
+    let tableState = null;
+    let resourceCall = spyOn(transmartResourceService, 'runExportJob').and.callFake(() =>
+      Observable.of(ExportJob)
+    );
+    // if the _savedSubjectSetConstraints is not up to date with constraint
+    // runExportJob should be called with constraint as parameter
+    transmartResourceService.runExport('testJobID', constraint, elements, tableState).then (() => {
+      expect(resourceCall).toHaveBeenCalledWith('testJobID', constraint, elements, tableState);
+    });
+    // if the _savedSubjectSetConstraints is up to date with constraint
+    // runExportJob should be called with subjectSet as parameter
+    transmartResourceService.subjectSetConstraintForExport = constraint;
+    transmartResourceService.runExport('testJobID', constraint, elements, tableState).then (() => {
+      expect(resourceCall).toHaveBeenCalledWith('testJobID', subjectConstraint, elements, tableState);
     });
   });
 
