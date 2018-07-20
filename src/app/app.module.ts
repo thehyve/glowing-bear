@@ -42,6 +42,7 @@ import {AuthorizationResult} from './services/authentication/authorization-resul
 import * as jwt_decode from 'jwt-decode';
 import {AccessLevel} from './services/authentication/access-level';
 import {ApiEndpointService} from './services/api-endpoint.service';
+import {MedcoService} from './services/picsure-services/medco.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load()
@@ -117,6 +118,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     AppConfig,
     AuthenticationService,
     Oauth2Authentication,
+    MedcoService,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,
