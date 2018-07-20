@@ -13,5 +13,6 @@ export enum ConceptType {
   DATE = 'DATE',
   TEXT = 'TEXT',
   HIGH_DIM = 'HIGH_DIMENSIONAL',
-  SIMPLE = 'SIMPLE'
+  SIMPLE = 'SIMPLE',
+  ENCRYPTED = 'ENCRYPTED'
 }

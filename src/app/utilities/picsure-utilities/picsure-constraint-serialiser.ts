@@ -12,6 +12,8 @@ import {ConceptType} from '../../models/constraint-models/concept-type';
 import {WhereClause} from '../../models/picsure-models/request/where-clause';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
+import {ExportService} from '../../services/export.service';
+import {MedcoService} from '../../services/picsure-services/medco.service';
 
 /**
  * Serialisation class for serialising constraint objects for use in the PIC-SURE API.
@@ -25,9 +27,11 @@ import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-c
  * To serialise a constraint, use <code>serialiser.visit(constraint)</code>.
  */
 export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<WhereClause[]> {
+  private medcoService: MedcoService;
 
-  constructor() {
+  constructor(medcoService?: MedcoService) {
     super();
+    this.medcoService = medcoService;
   }
 
 
@@ -249,15 +253,34 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     }
 
     let whereClauses: WhereClause[] = [];
-    if (constraint.valueConstraints.length === 0) {
+    if (constraint.concept.type === ConceptType.SIMPLE) {
+    // if (constraint.valueConstraints.length === 0) {
       whereClauses.push({
         predicate: 'CONTAINS',
         field: {
           pui: constraint.concept.path,
-          dataType: 'STRING' // todo: constraint.concept.type.toString()
+          dataType: 'CONCEPT'
+        }
+      });
+    } else if (constraint.concept.type === ConceptType.ENCRYPTED) {
+      if (!this.medcoService) {
+        throw new Error(`MedCo service should be loader`);
+      }
+
+      // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
+      let encId = this.medcoService.encryptInteger(Number(constraint.concept.code.split(':')[1]));
+      let splitPath = constraint.concept.path.split('/');
+      let encPath = `/${splitPath[0]}/${splitPath[1]}/ENCRYPTED_KEY/${encId}/`;
+
+      whereClauses.push({
+        predicate: 'CONTAINS',
+        field: {
+          pui: encPath,
+          dataType: 'CONCEPT_ENCRYPTED'
         }
       });
     } else {
+      // todo
       for (let val of constraint.valueConstraints) {
         let valWhereClauses: WhereClause[] = this.visit(val)
           .map((valWhereClause) => {

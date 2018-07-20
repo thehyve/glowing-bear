@@ -14,6 +14,8 @@ import {TreeNodeType} from '../../models/tree-models/tree-node-type';
 import {SelectClause} from '../../models/picsure-models/request/select-clause';
 import {Concept} from '../../models/constraint-models/concept';
 import {CountItem} from '../../models/aggregate-models/count-item';
+import {MedcoService} from './medco.service';
+import {PicsureConstraintSerialiser} from '../../utilities/picsure-utilities/picsure-constraint-serialiser';
 
 @Injectable()
 export class PicSureResourceService {
@@ -31,7 +33,8 @@ export class PicSureResourceService {
   initialized: Observable<boolean>;
 
   constructor(private config: AppConfig,
-              private apiEndpointService: ApiEndpointService) {
+              private apiEndpointService: ApiEndpointService,
+              private medcoService: MedcoService) {
     this.initialized = this.loadResource(this.config.getConfig('picsure-resource-name')).shareReplay(1);
   }
 
@@ -259,14 +262,30 @@ export class PicSureResourceService {
 
     return this.runQuery(
       [],
-      PicsureConstraintMapper.mapConstraint(constraint),
+      PicsureConstraintMapper.mapConstraint(constraint, this.medcoService),
       'only_count=true'
     )
       .switchMap((res) => this.waitOnResult(res['resultId']))
-      .map((result) => new CountItem(
-        Number(result['data'][0][0]['patient_set_counts']),
-        0
-      ));
+      .map((result) => {
+        let data = result['data'][0][0];
+        if (data['patient_set_counts']) {
+          return new CountItem(
+            Number(data['patient_set_counts']),
+            -1
+          );
+        } else if (data['medco_results_0']) {
+          return new CountItem(
+            this.medcoService.parseMedCoResults(data),
+            -1
+          );
+        } else {
+          console.error('No result detected.');
+          return new CountItem(
+            -1,
+            -1
+          );
+        }
+      });
   }
 
   /**

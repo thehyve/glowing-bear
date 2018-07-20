@@ -1,13 +1,20 @@
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PicsureConstraintSerialiser} from './picsure-constraint-serialiser';
 import {WhereClause} from '../../models/picsure-models/request/where-clause';
+import {MedcoService} from '../../services/picsure-services/medco.service';
 
 export class PicsureConstraintMapper {
 
-  static serialiser = new PicsureConstraintSerialiser();
+  private static serialiser: PicsureConstraintSerialiser;
+  static getSerialiser(medcoService?: MedcoService): PicsureConstraintSerialiser {
+    if (!PicsureConstraintMapper.serialiser) {
+      PicsureConstraintMapper.serialiser = new PicsureConstraintSerialiser(medcoService);
+    }
+    return PicsureConstraintMapper.serialiser;
+  }
 
-  public static mapConstraint(constraint: Constraint): WhereClause[] {
-    let result = PicsureConstraintMapper.serialiser.visit(constraint);
+  public static mapConstraint(constraint: Constraint, medcoService?: MedcoService): WhereClause[] {
+    let result = PicsureConstraintMapper.getSerialiser(medcoService).visit(constraint);
     console.log(result); // todo: remove
     return PicsureConstraintMapper.verifyConstraintObject(constraint, result);
   }
