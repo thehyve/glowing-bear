@@ -22,7 +22,7 @@ export class AppConfig {
 
   // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
   constructor(public http: HttpClient) {
-    this.envs = ['default', 'dev', 'transmart', 'picsure-i2b2'];
+    this.envs = ['default', 'dev', 'transmart', 'picsure-i2b2', 'picsure-medco'];
   }
 
   /**

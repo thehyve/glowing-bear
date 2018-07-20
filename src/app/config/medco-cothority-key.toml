@@ -1,0 +1,15 @@
+[[servers]]
+  Address = "tcp://172.16.205.10:2002"
+  Suite = "Ed25519"
+  Public = "5loqdN2/oXEhkrIEhwc0WCKYm9+c9zs10Y4TZgF6490="
+  Description = "Unlynx Server 0"
+[[servers]]
+  Address = "tcp://172.16.205.11:2004"
+  Suite = "Ed25519"
+  Public = "UE9/SKV6zw3PezdxzDiFXzG776pQRXT2+SyXog7k6Dc="
+  Description = "Unlynx Server 1"
+[[servers]]
+  Address = "tcp://172.16.205.12:2006"
+  Suite = "Ed25519"
+  Public = "LFGVRk/ghvIeGwIFv/ZAFKtM2UWcjSypaVx0YAOdkMU="
+  Description = "Unlynx Server 2"
