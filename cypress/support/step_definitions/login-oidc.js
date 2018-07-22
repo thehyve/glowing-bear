@@ -15,5 +15,13 @@ then("I am not logged in using oidc", () => {
     cy.get('span').should('have.text', 'Invalid username or password.');
 });
 
+when("I log out", () => {
+    cy.get('.gb-top-panel').find('button[id=logout]').click();
+});
+
+then("I am redirected to the login page", () => {
+    cy.url().should('eq', Cypress.env('oidc-server-url') + '/auth?response_type=code&client_id='
+    + Cypress.env('oidc-client-id') + '&client_secret=&redirect_uri=' + Cypress.config('baseUrl'));
+});
 
 

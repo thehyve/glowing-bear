@@ -13,3 +13,8 @@ Feature: Login with external oidc provider
 
   Scenario: single oidc login step
     Given I am logged in as 'admin'
+
+  Scenario: oidc logout
+    Given I am logged in as 'admin'
+    When I log out
+    Then I am redirected to the login page
