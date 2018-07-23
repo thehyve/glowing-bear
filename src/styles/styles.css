@@ -100,13 +100,13 @@ body .hline {
   }
 }
 
-.loading {
+.loading-blink {
   text-align: center;
   font-size: 3em;
   padding-right: 3em;
 }
 
-.loading span {
+.loading-blink span {
   /**
    * Use the blink animation, which is defined above
    */
@@ -129,7 +129,7 @@ body .hline {
   animation-fill-mode: both;
 }
 
-.loading span:nth-child(2) {
+.loading-blink span:nth-child(2) {
   /**
    * Starts the animation of the third dot
    * with a delay of .2s, otherwise all dots
@@ -138,7 +138,7 @@ body .hline {
   animation-delay: .2s;
 }
 
-.loading span:nth-child(3) {
+.loading-blink span:nth-child(3) {
   /**
    * Starts the animation of the third dot
    * with a delay of .4s, otherwise all dots

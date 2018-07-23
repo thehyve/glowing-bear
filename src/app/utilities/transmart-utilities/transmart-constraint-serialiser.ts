@@ -221,6 +221,15 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
           };
         }
       }
+    } else if (constraint.mark === ConstraintMark.SUBJECT) {
+      constraint.mark = ConstraintMark.OBSERVATION;
+      let subObj = this.visitStudyConstraint(constraint);
+      constraint.mark = ConstraintMark.SUBJECT;
+      result = {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': subObj
+      };
     }
     return result;
   }
@@ -325,7 +334,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       constraint.mark = ConstraintMark.OBSERVATION;
       let subObj = this.visitConceptConstraint(constraint);
       constraint.mark = ConstraintMark.SUBJECT;
-      return {
+      result = {
         'type': 'subselection',
         'dimension': 'patient',
         'constraint': subObj

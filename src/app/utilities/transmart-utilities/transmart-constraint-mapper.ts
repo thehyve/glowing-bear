@@ -47,7 +47,7 @@ export class TransmartConstraintMapper {
   }
 
   static throwMappingError(constraint: Constraint) {
-    throw new Error(`Unable to map constraint ${constraint.textRepresentation} of class ${constraint.className} to object.`);
+    throw new Error(`Unable to map constraint ${constraint.className} to object.`);
   }
 
   static generateConstraintFromConceptObject(constraintObject: object): Constraint {
