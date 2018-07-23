@@ -19,8 +19,6 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 
-type LoadingState = 'loading' | 'complete';
-
 @Injectable()
 export class TreeNodeService {
 
@@ -94,7 +92,6 @@ export class TreeNodeService {
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
 
   // the status indicating the when the tree is being loaded or finished loading
-  public loadingTreeNodes: LoadingState = 'complete';
   private _validTreeNodeTypes: string[] = [];
 
 
@@ -195,7 +192,6 @@ export class TreeNodeService {
       this.resourceService.getTreeNodes('\\', 2, false, true)
         .subscribe(
           (treeNodes: object[]) => {
-            this.loadingTreeNodes = 'complete';
             // reset concepts and concept constraints
             constraintService.concepts = [];
             constraintService.conceptConstraints = [];
@@ -715,7 +711,8 @@ export class TreeNodeService {
   }
 
   /**
-   * Check if the tree_nodes calls are finished
+   * Check if the tree_nodes calls are finished,
+   * excluding the case where sent calls and received calls are both 0
    * @returns {boolean}
    */
   get isTreeNodeLoadingCompleted(): boolean {

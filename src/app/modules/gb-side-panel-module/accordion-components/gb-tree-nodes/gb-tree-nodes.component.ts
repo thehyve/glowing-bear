@@ -306,4 +306,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     }
   }
 
+  get isLoading(): boolean {
+    return !this.treeNodeService.isTreeNodeLoadingCompleted;
+  }
+
 }

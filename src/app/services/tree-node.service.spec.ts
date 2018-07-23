@@ -79,7 +79,6 @@ describe('TreeNodeService', () => {
     let spy3 = spyOn(treeNodeService, 'loadTreeNext').and.stub();
     treeNodeService.loadTreeNodes();
     expect(spy1).toHaveBeenCalled();
-    expect(treeNodeService.loadingTreeNodes).toEqual('complete');
     expect(constraintService.concepts.length).toBe(0);
     expect(constraintService.conceptConstraints.length).toBe(0);
     expect(spy2).toHaveBeenCalled();
