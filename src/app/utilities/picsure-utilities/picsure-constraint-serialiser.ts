@@ -270,7 +270,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
       // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
       let encId = this.medcoService.encryptInteger(Number(constraint.concept.code.split(':')[1]));
       let splitPath = constraint.concept.path.split('/');
-      let encPath = `/${splitPath[0]}/${splitPath[1]}/ENCRYPTED_KEY/${encId}/`;
+      let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/`;
 
       whereClauses.push({
         predicate: 'CONTAINS',
