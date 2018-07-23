@@ -174,7 +174,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
 
   visitSubjectSetConstraint(constraint: SubjectSetConstraint): object {
     let result = null;
-    if (constraint.mark = ConstraintMark.OBSERVATION) {
+    if (constraint.mark === ConstraintMark.OBSERVATION) {
       const type = 'patient_set';
       if (constraint.subjectIds.length > 0) {
         result = {

@@ -341,6 +341,7 @@ export class ConstraintService {
         (<StudyConstraint>constraint).studies.push(study);
       } else if (treeNodeType === 'NUMERIC' ||
         treeNodeType === 'CATEGORICAL' ||
+        treeNodeType === 'CATEGORICAL_OPTION' ||
         treeNodeType === 'DATE' ||
         treeNodeType === 'HIGH_DIMENSIONAL' ||
         treeNodeType === 'TEXT') {

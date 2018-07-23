@@ -99,6 +99,7 @@ export class TreeNodeService {
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
+      'CATEGORICAL_OPTION',
       'DATE',
       'STUDY',
       'TEXT',
