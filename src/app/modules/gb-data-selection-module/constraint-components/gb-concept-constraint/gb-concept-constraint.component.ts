@@ -23,6 +23,9 @@ import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {SelectItem, TreeNode} from 'primeng/api';
 import {ErrorHelper} from '../../../../utilities/error-helper';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -99,63 +102,69 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.initializeConstraints();
   }
 
-  initializeConstraints() {
-    // Initialize aggregate values
-    this.isMinEqual = true;
-    this.isMaxEqual = true;
-    this.operatorState = GbConceptOperatorState.BETWEEN;
+  initializeConstraints(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      // Initialize aggregate values
+      this.isMinEqual = true;
+      this.isMaxEqual = true;
+      this.operatorState = GbConceptOperatorState.BETWEEN;
 
-    this.selectedCategories = [];
-    this.suggestedCategories = [];
+      this.selectedCategories = [];
+      this.suggestedCategories = [];
 
-    this._obsDateOperatorState = DateOperatorState.BETWEEN;
+      this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
-    let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    if (constraint.concept) {
-      // Construct a new constraint that only has the concept as sub constraint
-      // (We don't want to apply value and date constraints when getting aggregates)
-      let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
-      conceptOnlyConstraint.concept = constraint.concept;
-      this.resourceService.getAggregate(conceptOnlyConstraint)
-        .subscribe(
-          (responseAggregate: Aggregate) => {
-            if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-              this.handleNumericAggregate(responseAggregate);
-            } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
-              this.handleCategoricalAggregate(responseAggregate);
-            } else if (this.isDate()) { // -------------------------------------> If it's DATE
-              this.handleDateAggregate(responseAggregate);
+      let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+      if (constraint.concept) {
+        // Construct a new constraint that only has the concept as sub constraint
+        // (We don't want to apply value and date constraints when getting aggregates)
+        let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
+        conceptOnlyConstraint.concept = constraint.concept;
+        this.resourceService.getAggregate(conceptOnlyConstraint)
+          .subscribe(
+            (responseAggregate: Aggregate) => {
+              if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
+                this.handleNumericAggregate(responseAggregate);
+              } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
+                this.handleCategoricalAggregate(responseAggregate);
+              } else if (this.isDate()) { // -------------------------------------> If it's DATE
+                this.handleDateAggregate(responseAggregate);
+              }
+              resolve(true);
+            },
+            (err: HttpErrorResponse) => {
+              ErrorHelper.handleError(err);
+              reject(err.message);
             }
-          },
-          err => ErrorHelper.handleError(err)
-        );
+          );
 
-      // Initialize the dates from the time constraint
-      // Because the date picker represents the date/time in the local timezone,
-      // we need to correct the date that is actually used in the constraint.
-      this.applyObsDateConstraint = constraint.applyObsDateConstraint;
-      let date1 = constraint.obsDateConstraint.date1;
-      this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
-      let date2 = constraint.obsDateConstraint.date2;
-      this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
-      this.obsDateOperatorState = constraint.obsDateConstraint.dateOperator;
+        // Initialize the dates from the time constraint
+        // Because the date picker represents the date/time in the local timezone,
+        // we need to correct the date that is actually used in the constraint.
+        this.applyObsDateConstraint = constraint.applyObsDateConstraint;
+        let date1 = constraint.obsDateConstraint.date1;
+        this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+        let date2 = constraint.obsDateConstraint.date2;
+        this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+        this.obsDateOperatorState = constraint.obsDateConstraint.dateOperator;
 
-      // Initialize the available trial visits of the trial visit constraint
-      this.applyTrialVisitConstraint = constraint.applyTrialVisitConstraint;
-      this.allTrialVisits = [];
-      this.selectedTrialVisits = [];
-      this.suggestedTrialVisits = [];
-      this.resourceService.getTrialVisits(conceptOnlyConstraint)
-        .subscribe(
-          visits => {
-            this.handleTrialVisits(visits);
-          },
-          err => ErrorHelper.handleError(err)
-        );
+        // Initialize the available trial visits of the trial visit constraint
+        this.applyTrialVisitConstraint = constraint.applyTrialVisitConstraint;
+        this.allTrialVisits = [];
+        this.selectedTrialVisits = [];
+        this.suggestedTrialVisits = [];
+        this.resourceService.getTrialVisits(conceptOnlyConstraint)
+          .subscribe(
+            visits => {
+              this.handleTrialVisits(visits);
+            },
+            err => ErrorHelper.handleError(err)
+          );
 
-      // Initialize flags
-      this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
-    }
+        // Initialize flags
+        this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
+      }
+    });
   }
 
   handleNumericAggregate(responseAggregate: Aggregate) {
@@ -630,11 +639,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     this.droppedConstraint =
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
-    this.treeNodeService.selectedTreeNode = null;
-    if (this.droppedConstraint) {
-      this.constraint = this.droppedConstraint;
-      this.update();
+
+    if (this.droppedConstraint && this.droppedConstraint.className === 'ConceptConstraint') {
+      (<ConceptConstraint>this.constraint).concept = (<ConceptConstraint>this.droppedConstraint).concept;
+      this.initializeConstraints()
+        .then(() => {
+          this.update();
+        });
+    } else {
+      const summary = `Dropped a ${this.droppedConstraint.className}, incompatible with ConceptConstraint.`;
+      MessageHelper.alert('error', summary);
     }
+    this.treeNodeService.selectedTreeNode = null;
+    this.droppedConstraint = null;
   }
 
   get operatorState(): GbConceptOperatorState {
