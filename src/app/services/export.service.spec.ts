@@ -19,9 +19,13 @@ import {DatePipe} from '@angular/common';
 import {ExportJob} from '../models/export-models/export-job';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
+import {QueryService} from './query.service';
+import {QueryServiceMock} from './mocks/query.service.mock';
+import {CountItem} from '../models/aggregate-models/count-item';
 
 describe('ExportService', () => {
   let exportService: ExportService;
+  let queryService: QueryService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,11 +42,16 @@ describe('ExportService', () => {
           provide: DataTableService,
           useClass: DataTableServiceMock
         },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
+        },
         ExportService,
         DatePipe
       ]
     });
     exportService = TestBed.get(ExportService);
+    queryService = TestBed.get(QueryService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {
@@ -67,7 +76,10 @@ describe('ExportService', () => {
     let fileFormat = new ExportFileFormat('tsv', true);
     exportDataType.fileFormats.push(fileFormat);
     result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    queryService.counts_2 = new CountItem(1, 1);
+    result = exportService.validateExportJob('test job name 1');
     expect(result).toBe(true);
-  })
+  });
 
 });
