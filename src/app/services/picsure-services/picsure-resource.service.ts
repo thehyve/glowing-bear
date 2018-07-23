@@ -130,8 +130,29 @@ export class PicSureResourceService {
         // extract concept type
         if (treeNodeObj['dataType']) {
           treeNode.nodeType = TreeNodeType.CONCEPT;
-          let type: ConceptType = ConceptType[String(treeNodeObj['dataType'])];
-          treeNode.conceptType = type ? type : ConceptType.SIMPLE;
+          switch (String(treeNodeObj['dataType']).toLowerCase()) {
+            case 'enc_concept':
+              treeNode.conceptType = ConceptType.ENCRYPTED;
+              break;
+
+            case 'concept_numeric':
+              treeNode.conceptType = ConceptType.NUMERICAL;
+              break;
+
+            case 'concept_enum':
+              treeNode.conceptType = ConceptType.CATEGORICAL;
+              break;
+
+            case 'concept_string':
+              treeNode.conceptType = ConceptType.TEXT;
+              break;
+
+            case 'concept':
+            default:
+              treeNode.conceptType = ConceptType.SIMPLE;
+              break;
+
+          }
         } else {
           treeNode.nodeType = TreeNodeType.UNKNOWN;
           treeNode.conceptType = undefined;
