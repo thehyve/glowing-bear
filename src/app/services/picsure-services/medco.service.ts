@@ -89,8 +89,9 @@ export class MedcoService {
 
       this.countResults.push(this.decryptInteger(resultObject['enc_count_result']));
       this.timesResult.push(resultObject['times']);
-      console.log(`${k}: ${this.countResults[this.countResults.length - 1]}, times: ${JSON.stringify(this.timesResult[this.timesResult.length - 1])}`)
+      console.log(`${k}: ${this.countResults[this.countResults.length - 1]},` +
+        `times: ${JSON.stringify(this.timesResult[this.timesResult.length - 1])}`)
     }
-    return this.countResults.reduce((a, b) => a + b);
+    return this.countResults.reduce((a, b) => Number(a) + Number(b));
   }
 }
