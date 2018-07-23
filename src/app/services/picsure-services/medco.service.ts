@@ -7,8 +7,8 @@ import {ErrorHelper} from '../../utilities/error-helper';
 @Injectable()
 export class MedcoService {
 
-  private countResults: number[];
-  private timesResult: object[];
+  private countResults: number[] = [];
+  private timesResult: object[] = [];
 
   private publicKey: string;
   private privateKey: string;
@@ -25,23 +25,22 @@ export class MedcoService {
 
     // fetch and load the cothority key
     if (cothorityKeyUrl) {
-      const options = {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json'
-        })
-      };
-
       this.http
-        .get(cothorityKeyUrl, options)
+        .get(cothorityKeyUrl, {responseType: 'text'})
         .subscribe((keyResp) => {
           this.cothorityKey = AggKeys(String(keyResp));
-          console.log(`Loaded the MedCo cothority key ${cothorityKeyUrl}`);
+          console.log(this.cothorityKey);
+          if (this.cothorityKey) {
+            console.log(`Loaded the MedCo cothority key ${cothorityKeyUrl}`);
+          } else {
+            throw new Error(`Failed to load the MedCo cothority key ${cothorityKeyUrl}`);
+          }
         },
         (err) => ErrorHelper.handleError(err)
         );
-    }
 
-    this.loadUserKeyPair();
+      this.loadUserKeyPair();
+    }
   }
 
   loadUserKeyPair() {
@@ -79,15 +78,18 @@ export class MedcoService {
    * @returns {number} the total number of matching patients.
    */
   parseMedCoResults(data: object): number {
+    // k is 0, 1, 2, ....
     for (let k in data) {
-      console.log(`Parsing ${k}`);
-      if (this.publicKey !== data[k]['pub_key']) {
-        console.warn(`Returned public key is different from public key, expect problems (${data[k]['pub_key']})`);
+      let b64EncodedResultObject = data[k][`medco_results_${k}`];
+      let resultObject = JSON.parse(atob(b64EncodedResultObject));
+
+      if (this.publicKey !== resultObject['pub_key']) {
+        console.warn(`Returned public key is different from public key, expect problems (${resultObject['pub_key']})`);
       }
 
-      this.countResults.push(this.decryptInteger(data[k]['enc_count_result']));
-      this.timesResult.push(data[k]['times']);
-      console.log(`${k}: ${this.countResults[this.countResults.length - 1]}, times: ${this.timesResult[this.timesResult.length - 1]}`)
+      this.countResults.push(this.decryptInteger(resultObject['enc_count_result']));
+      this.timesResult.push(resultObject['times']);
+      console.log(`${k}: ${this.countResults[this.countResults.length - 1]}, times: ${JSON.stringify(this.timesResult[this.timesResult.length - 1])}`)
     }
     return this.countResults.reduce((a, b) => a + b);
   }

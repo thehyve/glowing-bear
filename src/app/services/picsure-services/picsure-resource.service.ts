@@ -267,13 +267,13 @@ export class PicSureResourceService {
     )
       .switchMap((res) => this.waitOnResult(res['resultId']))
       .map((result) => {
-        let data = result['data'][0][0];
-        if (data['patient_set_counts']) {
+        let data = result['data'][0];
+        if (data[0]['patient_set_counts']) {
           return new CountItem(
-            Number(data['patient_set_counts']),
+            Number(data[0]['patient_set_counts']),
             -1
           );
-        } else if (data['medco_results_0']) {
+        } else if (data[0]['medco_results_0']) {
           return new CountItem(
             this.medcoService.parseMedCoResults(data),
             -1

@@ -1,5 +1,5 @@
 {
-  "api-url": "http://localhost:8082/IRCT-CL/rest",
+  "api-url": "https://glowingbear-on-i2b2.thehyve.net:8082/IRCT-CL/rest",
   "app-url": "http://localhost:4200",
   "tree-node-counts-update": false,
   "autosave-subject-sets": false,
@@ -10,9 +10,9 @@
   "instant-counts-update-3": false,
 
   "authentication-method": "oidc",
-  "oidc-server-url": "http://localhost:8081/auth/realms/master",
+  "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev",
   "oidc-scopes": "openid",
-  "oidc-client-id": "i2b2-local",
+  "oidc-client-id": "i2b2",
 
   "api-type": "picsure",
   "picsure-resource-name": "i2b2-medco-local",
