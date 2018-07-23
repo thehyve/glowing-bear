@@ -244,7 +244,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         biological: constraint.biological,
         shareHousehold: constraint.shareHousehold
       }
-    } else if(constraint.mark === ConstraintMark.SUBJECT) {
+    } else if (constraint.mark === ConstraintMark.SUBJECT) {
       constraint.mark = ConstraintMark.OBSERVATION;
       let subObj = this.visitPedigreeConstraint(constraint);
       constraint.mark = ConstraintMark.SUBJECT;
