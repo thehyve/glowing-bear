@@ -14,6 +14,7 @@ import {CrossTableService} from '../../../services/cross-table.service';
 import {TableModule} from 'primeng/table';
 import {ResourceService} from '../../../services/resource.service';
 import {ResourceServiceMock} from '../../../services/mocks/resource.service.mock';
+import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
@@ -21,22 +22,18 @@ describe('GbCrossTableComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [
-        GbCrossTableComponent,
-        MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints']})
-      ],
       imports: [
         TableModule
       ],
       providers: [
         {
           provide: CrossTableService,
-          useClass: CrossTableService
-        },
-        {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
+          useClass: CrossTableServiceMock
         }
+      ],
+      declarations: [
+        GbCrossTableComponent,
+        MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints']})
       ]
     })
       .compileComponents();

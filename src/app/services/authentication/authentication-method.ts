@@ -7,7 +7,7 @@
  */
 
 import {Observable} from 'rxjs/Observable';
-import {AuthorisationResult} from './authorisation-result';
+import {AuthorizationResult} from './authorization-result';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 export interface AuthenticationMethod {
@@ -21,7 +21,7 @@ export interface AuthenticationMethod {
    * Tries to authorise the current user and returns 'authorized' if successful.
    * Success means that a valid token is available.
    */
-  authorisation: Observable<AuthorisationResult>;
+  authorisation: Observable<AuthorizationResult>;
 
   /**
    * Returns true if there is a valid token.
@@ -35,10 +35,10 @@ export interface AuthenticationMethod {
 
   /**
    * Initialise the authentication provider.
-   * @return {Promise<AuthorisationResult>} 'authorized' if the user is succesfully
+   * @return {Promise<AuthorizationResult>} 'authorized' if the user is succesfully
    * authorised after initialisation.
    */
-  load(): Promise<AuthorisationResult>;
+  load(): Promise<AuthorizationResult>;
 
   /**
    * Clean up the provider state before shutdown.

@@ -30,13 +30,22 @@ export class QueryServiceMock {
     this.counts_2 = new CountItem(0, 0);
   }
 
-  public update_1() {
+  public update_1(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
   }
 
-  public update_2() {
+  public update_2(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
   }
 
-  public update_3() {
+  public update_3(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
   }
 
   get queries(): Query[] {

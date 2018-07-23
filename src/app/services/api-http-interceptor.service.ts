@@ -11,7 +11,7 @@ import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest}
 import {Observable} from 'rxjs/Observable';
 import {AppConfig} from '../config/app.config';
 import {AuthenticationService} from './authentication/authentication.service';
-import {AuthorisationResult} from './authentication/authorisation-result';
+import {AuthorizationResult} from './authentication/authorization-result';
 
 @Injectable()
 export class ApiHttpInterceptor implements HttpInterceptor {
@@ -45,8 +45,8 @@ export class ApiHttpInterceptor implements HttpInterceptor {
       if (isAuthorized && this.authenticationService.validToken) {
         return next.handle(this.addAPIHeaders(req));
       } else {
-        return this.authenticationService.authorise().switchMap((authResult: AuthorisationResult) => {
-          if (authResult !== 'authorized') {
+        return this.authenticationService.authorise().switchMap((authResult: AuthorizationResult) => {
+          if (authResult !== AuthorizationResult.Authorized) {
             throw new Error('Not authorized');
           }
           return next.handle(this.addAPIHeaders(req)).do(() => {}, (err: any) => {

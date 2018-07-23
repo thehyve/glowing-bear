@@ -13,9 +13,10 @@ import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {MessageHelper} from '../../utilities/message-helper';
-import {Study} from '../../models/constraint-models/study';
 import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {QueryService} from '../query.service';
+import {QueryServiceMock} from '../mocks/query.service.mock';
 
 describe('TransmartResourceService', () => {
 

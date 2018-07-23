@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -29,6 +29,8 @@ import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 
 
 @Injectable()
@@ -538,8 +540,18 @@ export class TransmartResourceService {
                tableState?: TransmartTableState): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
+    let targetConstraint = constraint;
+    if (this.autosaveSubjectSets &&
+      constraint.className === 'CombinationConstraint' &&
+      (<CombinationConstraint>constraint).children[1].mark === ConstraintMark.OBSERVATION) {
+      let combo = new CombinationConstraint();
+      combo.addChild(this.subjectSetConstraint);
+      combo.addChild((<CombinationConstraint>constraint).children[1]);
+      targetConstraint = combo;
+    }
+
     let body = {
-      constraint: TransmartConstraintMapper.mapConstraint(constraint),
+      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
       elements: elements,
       includeMeasurementDateColumns: this.dateColumnsIncluded
     };

@@ -21,10 +21,6 @@ describe('ConstraintService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: AuthenticationService,
-          useClass: AuthenticationServiceMock
-        },
-        {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
         },

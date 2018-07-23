@@ -11,18 +11,20 @@ import {AppConfig} from '../../config/app.config';
 import {Observable} from 'rxjs/Observable';
 import {AuthenticationMethod} from './authentication-method';
 import {Oauth2Authentication} from './oauth2-authentication';
-import {AuthorisationResult} from './authorisation-result';
+import {AuthorizationResult} from './authorization-result';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {AccessLevel} from './access-level';
 
 @Injectable()
 export class AuthenticationService implements OnDestroy {
 
   private config: AppConfig;
   private authenticationMethod: AuthenticationMethod;
+  private _accessLevel: AccessLevel = AccessLevel.Restricted;
 
   constructor(private injector: Injector) { }
 
-  public load(): Promise<AuthorisationResult> {
+  public load(): Promise<AuthorizationResult> {
     this.config = this.injector.get(AppConfig);
     this.authenticationMethod = this.injector.get(Oauth2Authentication);
     return this.authenticationMethod.load();
@@ -32,7 +34,7 @@ export class AuthenticationService implements OnDestroy {
     this.authenticationMethod.onDestroy();
   }
 
-  authorise(): Observable<AuthorisationResult> {
+  authorise(): Observable<AuthorizationResult> {
     return this.authenticationMethod.authorisation;
   }
 
@@ -52,4 +54,11 @@ export class AuthenticationService implements OnDestroy {
     return this.authenticationMethod.token;
   }
 
+  get accessLevel(): AccessLevel {
+    return this._accessLevel;
+  }
+
+  set accessLevel(value: AccessLevel) {
+    this._accessLevel = value;
+  }
 }
