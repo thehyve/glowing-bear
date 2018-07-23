@@ -264,7 +264,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
       });
     } else if (constraint.concept.type === ConceptType.ENCRYPTED) {
       if (!this.medcoService) {
-        throw new Error(`MedCo service should be loader`);
+        throw new Error(`MedCo service should be loaded`);
       }
 
       // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
@@ -276,7 +276,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
         predicate: 'CONTAINS',
         field: {
           pui: encPath,
-          dataType: 'CONCEPT_ENCRYPTED'
+          dataType: 'ENC_CONCEPT'
         }
       });
     } else {
