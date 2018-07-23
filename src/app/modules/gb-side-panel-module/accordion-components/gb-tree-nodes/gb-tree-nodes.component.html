@@ -1,6 +1,6 @@
-<div id="tree-nodes-component" [@notifyState]="treeNodeService.loadingTreeNodes">
+<div id="tree-nodes-component">
 
-  <!-- the search/filter input -->
+  <!--the search/filter input-->
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-tree-filter-input"
@@ -36,10 +36,10 @@
   </p-overlayPanel>
 
 
-  <!-- the spinning icon -->
-  <br>
-  <i class="fa fa-spin fa-refresh fa-fw gb-spinner"
-     [class.loading]="treeNodeService.loadingTreeNodes == 'loading'"></i>
+  <!-- the loading indicator -->
+  <div *ngIf="isLoading" style="margin: auto;">
+    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+  </div>
 
 </div>
 

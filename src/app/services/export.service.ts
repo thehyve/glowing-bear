@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ConstraintService} from './constraint.service';
 import {ResourceService} from './resource.service';
@@ -17,6 +17,7 @@ import {DatePipe} from '@angular/common';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
+import {QueryService} from './query.service';
 
 @Injectable()
 export class ExportService {
@@ -29,6 +30,7 @@ export class ExportService {
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private dataTableService: DataTableService,
+              private injector: Injector,
               private datePipe: DatePipe) {
   }
 
@@ -219,12 +221,12 @@ export class ExportService {
     }
 
     // 5. Validate if at least one observation is included
-    // TODO: refactor this, while avoiding cyclic dependencies between expoert service and query service
-    // if (this.queryService.observationCount_2 < 1) {
-    //   const summary = 'No observation included to be exported.';
-    //   MessageHelper.alert('warn', summary);
-    //   return false;
-    // }
+    let queryService = this.injector.get(QueryService);
+    if (queryService.counts_2.observationCount < 1) {
+      const summary = 'No observation included to be exported.';
+      MessageHelper.alert('warn', summary);
+      return false;
+    }
 
     return true;
   }

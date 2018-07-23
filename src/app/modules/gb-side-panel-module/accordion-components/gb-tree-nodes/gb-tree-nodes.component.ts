@@ -119,12 +119,12 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
-      let showInfo = (function (event) {
+      let showInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
 
-      let hideInfo = (function (event) {
+      let hideInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.hide(event);
       }).bind(this);
@@ -304,6 +304,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';
     }
+  }
+
+  get isLoading(): boolean {
+    return !this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 
 }

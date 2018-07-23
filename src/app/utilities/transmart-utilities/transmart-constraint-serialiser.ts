@@ -174,7 +174,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
 
   visitSubjectSetConstraint(constraint: SubjectSetConstraint): object {
     let result = null;
-    if (constraint.mark = ConstraintMark.OBSERVATION) {
+    if (constraint.mark === ConstraintMark.OBSERVATION) {
       const type = 'patient_set';
       if (constraint.subjectIds.length > 0) {
         result = {
@@ -221,6 +221,15 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
           };
         }
       }
+    } else if (constraint.mark === ConstraintMark.SUBJECT) {
+      constraint.mark = ConstraintMark.OBSERVATION;
+      let subObj = this.visitStudyConstraint(constraint);
+      constraint.mark = ConstraintMark.SUBJECT;
+      result = {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': subObj
+      };
     }
     return result;
   }
@@ -235,6 +244,15 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         biological: constraint.biological,
         shareHousehold: constraint.shareHousehold
       }
+    } else if (constraint.mark === ConstraintMark.SUBJECT) {
+      constraint.mark = ConstraintMark.OBSERVATION;
+      let subObj = this.visitPedigreeConstraint(constraint);
+      constraint.mark = ConstraintMark.SUBJECT;
+      result = {
+        'type': 'subselection',
+        'dimension': 'patient',
+        'constraint': subObj
+      };
     }
     return result;
   }
@@ -325,7 +343,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       constraint.mark = ConstraintMark.OBSERVATION;
       let subObj = this.visitConceptConstraint(constraint);
       constraint.mark = ConstraintMark.SUBJECT;
-      return {
+      result = {
         'type': 'subselection',
         'dimension': 'patient',
         'constraint': subObj
