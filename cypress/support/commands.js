@@ -38,7 +38,7 @@ Cypress.Commands.add('drop', (inputNum, options = {}) => {
 });
 
 Cypress.Commands.add('removeChip', (chipName, options = {}) => {
-  cy.contains(chipName).parent().children('.fa-close').click();
+  cy.get('li').contains(chipName).click();
 });
 
 
