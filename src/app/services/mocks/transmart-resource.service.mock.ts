@@ -88,7 +88,7 @@ export class TransmartResourceServiceMock {
       }
     };
     q1.queryBlob = {
-      patientsQueryFull: {type: 'true'}
+      patientsQueryFull: q1.patientsQuery
     };
     let q2: TransmartQuery = new TransmartQuery('test');
     q2.bookmarked = false;
