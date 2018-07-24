@@ -29,7 +29,6 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
-import {reject} from 'q';
 
 type LoadingState = 'loading' | 'complete';
 
