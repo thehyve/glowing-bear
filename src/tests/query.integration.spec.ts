@@ -156,7 +156,7 @@ describe('Integration test for query saving and restoring', () => {
     treeNodeService = TestBed.get(TreeNodeService);
   });
 
-  it('should restore and save query in relation to other dependant services', () => {
+  it('should restore and save query in relation to other dependent services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(queryService, 'update_1').and.callThrough();
@@ -193,6 +193,20 @@ describe('Integration test for query saving and restoring', () => {
     expect(queryService.queries.length).toBe(1);
     expect(queryService.isSavingQueryCompleted).toBe(true);
     expect(spySaveQuery).toHaveBeenCalled();
+  });
+
+  it('should clear queries in relation to other dependent services', () => {
+    treeNodeService.treeNodeCallsSent = 10;
+    treeNodeService.treeNodeCallsReceived = 10;
+    queryService.restoreQuery(q0)
+      .then(() => {
+        queryService.clearAll()
+          .then(() => {
+            expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
+            expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
+            expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
+          });
+      });
   });
 
 });

@@ -29,6 +29,7 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
+import {reject} from 'q';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -170,10 +171,22 @@ export class QueryService {
     });
   }
 
-  clearAll() {
-    this.clear_1().then(() => {
-      this.clear_2();
-      this.step = Step.I;
+  clearAll(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.clear_1()
+        .then(() => {
+          this.clear_2()
+            .then(() => {
+              this.step = Step.I;
+              resolve(true);
+            })
+            .catch(err => {
+            reject(err);
+          });
+        })
+        .catch(err => {
+        reject(err);
+      })
     });
   }
 
