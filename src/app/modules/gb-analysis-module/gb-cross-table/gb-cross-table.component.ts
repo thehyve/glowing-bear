@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {CrossTable} from '../../../models/table-models/cross-table';
 import {Constraint} from '../../../models/constraint-models/constraint';
@@ -24,6 +24,10 @@ export class GbCrossTableComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  clear() {
+    this.crossTableService.clear();
   }
 
   get rowConstraints(): Array<Constraint> {

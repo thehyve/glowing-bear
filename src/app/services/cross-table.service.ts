@@ -65,6 +65,10 @@ export class CrossTableService {
   }
 
   constructor(private resourceService: ResourceService) {
+    this.clear();
+  }
+
+  clear() {
     this.crossTable = new CrossTable();
   }
 
