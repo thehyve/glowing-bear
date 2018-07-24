@@ -202,7 +202,7 @@ describe('ResourceService', () => {
 
   it('should get queries', () => {
     resourceService.getQueries()
-      .subscribe((queries: Query[]) => {
+      .subscribe((queries: Query[]) => { console.log('queries', queries)
         expect(queries.length).toBe(2);
         expect(queries[0].subjectQuery.className).toBe('TrueConstraint');
         expect(queries[0].observationQuery.data.length).toBe(1);

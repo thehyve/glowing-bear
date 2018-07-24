@@ -87,6 +87,9 @@ export class TransmartResourceServiceMock {
         rowSort: []
       }
     };
+    q1.queryBlob = {
+      patientsQueryFull: {type: 'true'}
+    };
     let q2: TransmartQuery = new TransmartQuery('test');
     q2.bookmarked = false;
     q2.createDate = '2018-07-04T10:08:33Z';
@@ -191,7 +194,8 @@ export class TransmartResourceServiceMock {
         columnSort: [],
         rowDimensions: ['patient', 'study', 'concept'],
         rowSort: []
-      }
+      },
+      patientsQueryFull: q2.patientsQuery
     };
     let queries: TransmartQuery[] = [q1, q2];
     return Observable.of(queries);
