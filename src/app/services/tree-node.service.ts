@@ -513,8 +513,10 @@ export class TreeNodeService {
           let nodeCopy = node;
           nodeCopy['expanded'] = false;
           let item: CountItem = conceptMap.get(nodeCopy['conceptCode']);
-          nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
-          nodesWithCodes.push(nodeCopy);
+          if (item) {
+            nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
+            nodesWithCodes.push(nodeCopy);
+          }
         }
       } else if (node['children']) {
         let newNodeChildren =
