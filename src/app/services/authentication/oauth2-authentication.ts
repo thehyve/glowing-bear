@@ -63,7 +63,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
   constructor(private injector: Injector) { }
 
   private redirect(authorisation: AuthorizationResult) {
-    if (authorisation === AuthorizationResult.Authorized) {
+    if (authorisation === AuthorizationResult.Authorized && localStorage.getItem('redirect')) {
       const path = JSON.parse(localStorage.getItem('redirect'));
       console.log(`Redirect to ${path}`);
       this.router.navigate([path]);
