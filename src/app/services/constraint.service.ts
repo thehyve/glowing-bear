@@ -294,6 +294,10 @@ export class ConstraintService {
     return this.generateProjectionConstraint();
   }
 
+  public clearConstraint_2() {
+    this.treeNodeService.selectedProjectionTreeData.length = 0;
+  }
+
   /**
    * Get the constraint of selected concept variables in the 2nd step
    * @returns {any}

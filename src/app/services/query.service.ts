@@ -170,6 +170,13 @@ export class QueryService {
     });
   }
 
+  clearAll() {
+    this.clear_1().then(() => {
+      this.clear_2();
+      this.step = Step.I;
+    });
+  }
+
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
@@ -219,9 +226,6 @@ export class QueryService {
     this.queries = bookmarkedQueries.concat(this.queries);
   }
 
-  /**
-   * ------------------------------------------------- BEGIN: step 1 -------------------------------------------------
-   */
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       // update export flags
@@ -266,13 +270,12 @@ export class QueryService {
     });
   }
 
-  /**
-   * ------------------------------------------------- END: step 1 ---------------------------------------------------
-   */
+  public clear_1(): Promise<any> {
+    this.step = Step.I;
+    this.constraintService.clearConstraint_1();
+    return this.update_1();
+  }
 
-  /**
-   * ------------------------------------------------- BEGIN: step 2 -------------------------------------------------
-   */
   /**
    * This following functions handle the asynchronicity
    * between updating the 2nd-step counts and the loading of tree nodes:
@@ -370,6 +373,12 @@ export class QueryService {
     });
   }
 
+  public clear_2(): Promise<any> {
+    this.step = Step.II;
+    this.constraintService.clearConstraint_2();
+    return this.update_2();
+  }
+
   /**
    * update the table
    */
@@ -395,9 +404,6 @@ export class QueryService {
 
   }
 
-  /**
-   * ------------------------------------------------- END: step 2 --------------------------------------------------
-   */
   public saveQueryByName(queryName: string) {
     let newQuery = new Query('', queryName);
     newQuery.subjectQuery = this.constraintService.constraint_1();
