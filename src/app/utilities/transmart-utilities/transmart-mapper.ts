@@ -25,6 +25,8 @@ import {TransmartDataTableMapper} from './transmart-data-table-mapper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {Study} from '../../models/constraint-models/study';
+import {Concept} from '../../models/constraint-models/concept';
+import {Constraint} from '../../models/constraint-models/constraint';
 
 export class TransmartMapper {
 
@@ -61,17 +63,17 @@ export class TransmartMapper {
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.patientsQuery);
+    query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
     query.observationQuery = transmartQuery.observationsQuery;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
-    query.dataTable = this.parseTransmartQueryBlob(transmartQuery.queryBlob);
+    query.dataTable = this.parseTransmartQueryBlobDataTable(transmartQuery.queryBlob);
 
     return query;
   }
 
-  private static parseTransmartQueryBlob(queryBlob: object): DataTable {
+  private static parseTransmartQueryBlobDataTable(queryBlob: object): DataTable {
     let dataTable: DataTable = null;
 
     if (queryBlob && queryBlob['dataTableState']) {
@@ -95,11 +97,13 @@ export class TransmartMapper {
 
   public static mapQuery(query: Query): TransmartQuery {
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery, true);
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery, false);
     transmartQuery.observationsQuery = query.observationQuery;
+    transmartQuery.queryBlob = {};
+    transmartQuery.queryBlob['patientsQueryFull'] = TransmartConstraintMapper.mapConstraint(query.subjectQuery, true);
     if (query.dataTable) {
       let transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(query.dataTable);
-      transmartQuery.queryBlob = {dataTableState: transmartTableState};
+      transmartQuery.queryBlob['dataTableState'] = transmartTableState;
     }
     return transmartQuery;
   }
