@@ -77,6 +77,10 @@ export class GbNavbarComponent implements OnInit {
     }
   }
 
+  clearAllCriteria() {
+    this.queryService.clearAll();
+  }
+
   get isSavingQueryCompleted(): boolean {
     return this.queryService.isSavingQueryCompleted;
   }

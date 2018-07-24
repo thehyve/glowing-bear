@@ -38,14 +38,14 @@
 }
 
 /* save btn */
-.gb-data-selection-overview-panel-save-btn {
+.gb-data-selection-overview-panel-btn {
   margin: .1em;
 }
-.gb-data-selection-overview-panel-save-btn:hover {
+.gb-data-selection-overview-panel-btn:hover {
   background-color: var(--gb-clinical-green);
   opacity: 0.7;
 }
-.gb-data-selection-overview-panel-save-btn:active {
+.gb-data-selection-overview-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
 }
