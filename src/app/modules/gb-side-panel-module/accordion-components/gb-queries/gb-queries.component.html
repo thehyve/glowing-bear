@@ -4,7 +4,7 @@
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-query-filter-input"
-                    placeholder="Search queries"
+                    placeholder="Filter queries"
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <button class="btn btn-secondary btn-sm gb-query-panel-clear-btn"
@@ -14,10 +14,12 @@
     <input id="queryFileUpload"
            type="file"
            style="display: none"/>
+    <hr>
     <button class="btn btn-outline-primary gb-query-panel-import-btn"
             (click)="importQuery()"
             type="button">import query
     </button>
+
   </div>
 
 

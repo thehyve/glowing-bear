@@ -26,10 +26,6 @@ export class GbCrossTableComponent implements OnInit {
   ngOnInit() {
   }
 
-  clear() {
-    this.crossTableService.clear();
-  }
-
   get rowConstraints(): Array<Constraint> {
     return this.crossTableService.rowConstraints;
   }

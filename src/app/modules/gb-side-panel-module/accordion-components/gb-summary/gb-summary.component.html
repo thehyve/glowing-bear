@@ -1,4 +1,11 @@
 <div>
+  <div class="pull-right">
+    <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
+            (click)="clearAll()"
+            type="button">
+      <span>Clear all</span>
+    </button>
+  </div>
   <div>{{subjectCount}} subjects</div>
   <div *ngIf="showObservationCounts">{{observationCount}} observations</div>
 

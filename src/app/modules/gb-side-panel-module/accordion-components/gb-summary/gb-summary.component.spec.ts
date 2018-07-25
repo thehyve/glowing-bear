@@ -16,6 +16,8 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {TreeModule} from 'primeng/tree';
 import {DragDropModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
 
 describe('GbSummaryComponent', () => {
   let component: GbSummaryComponent;
@@ -39,6 +41,10 @@ describe('GbSummaryComponent', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
         }
       ]
     })
