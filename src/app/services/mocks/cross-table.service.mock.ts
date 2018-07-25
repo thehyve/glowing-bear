@@ -385,4 +385,6 @@ export class CrossTableServiceMock {
     return false;
   }
 
+  clear() {}
+
 }

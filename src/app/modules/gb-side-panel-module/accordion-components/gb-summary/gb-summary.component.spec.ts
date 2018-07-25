@@ -16,10 +16,14 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {TreeModule} from 'primeng/tree';
 import {DragDropModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
 
 describe('GbSummaryComponent', () => {
   let component: GbSummaryComponent;
   let fixture: ComponentFixture<GbSummaryComponent>;
+  let queryService: QueryService;
+  let crossTableService: CrossTableService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -39,6 +43,10 @@ describe('GbSummaryComponent', () => {
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
         }
       ]
     })
@@ -49,9 +57,24 @@ describe('GbSummaryComponent', () => {
     fixture = TestBed.createComponent(GbSummaryComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    queryService = TestBed.get(QueryService);
+    crossTableService = TestBed.get(CrossTableService);
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should invoke clear functions in query and crossTable services', () => {
+    let promise = new Promise<any>(resolve => {
+      resolve(true);
+    });
+    let spy1 = spyOn(queryService, 'clearAll').and.returnValue(promise);
+    let spy2 = spyOn(crossTableService, 'clear').and.callThrough();
+    component.clearAll();
+    promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalled();
+    });
+  })
 });

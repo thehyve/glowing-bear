@@ -12,6 +12,8 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../../../models/drop-mode';
 import {FormatHelper} from '../../../../utilities/format-helper';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-summary',
@@ -25,6 +27,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
 
   constructor(private queryService: QueryService,
               private treeNodeService: TreeNodeService,
+              private crossTableService: CrossTableService,
               private element: ElementRef) {
   }
 
@@ -76,6 +79,14 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
       }
       index++;
     }
+  }
+
+  clearAll() {
+    this.queryService.clearAll()
+      .then(() => {
+        this.crossTableService.clear();
+        MessageHelper.alert('success', 'All selections are cleared.');
+      });
   }
 
   get subjectCount(): string {

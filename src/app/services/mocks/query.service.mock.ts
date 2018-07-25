@@ -48,6 +48,10 @@ export class QueryServiceMock {
     });
   }
 
+  clearAll(): Promise<any> {
+    return new Promise<any>(resolve => resolve(true));
+  }
+
   get queries(): Query[] {
     return this._queries;
   }
