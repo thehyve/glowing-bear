@@ -19,7 +19,7 @@ import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 
-fdescribe('GbSelectionComponent', () => {
+describe('GbSelectionComponent', () => {
   let component: GbSelectionComponent;
   let fixture: ComponentFixture<GbSelectionComponent>;
 
