@@ -333,7 +333,8 @@ export class TreeNodeService {
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
-        node['subjectCount'] = this.studyCountMap.get(node['studyId']).subjectCount;
+        let countItem = this.studyCountMap.get(node['studyId']);
+        node['subjectCount'] = countItem ? countItem.subjectCount : 0;
       }
       node['icon'] = '';
     }
