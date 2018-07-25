@@ -363,6 +363,11 @@ gb-projection p-treenode {
   font-size: small;
 }
 
+gb-projection p-checkbox label {
+  margin: auto;
+  font-size: small;
+}
+
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */

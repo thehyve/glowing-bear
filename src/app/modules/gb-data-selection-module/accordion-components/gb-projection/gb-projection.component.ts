@@ -118,6 +118,10 @@ export class GbProjectionComponent implements OnInit {
     this.updateCounts();
   }
 
+  onCheckChange(val) {
+    this.checkAll(val);
+  }
+
   expandAll(value: boolean) {
     this.treeNodeService
       .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);

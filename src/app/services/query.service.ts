@@ -171,22 +171,10 @@ export class QueryService {
   }
 
   clearAll(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.clear_1()
-        .then(() => {
-          this.clear_2()
-            .then(() => {
-              this.step = Step.I;
-              resolve(true);
-            })
-            .catch(err => {
-            reject(err);
-          });
-        })
-        .catch(err => {
-        reject(err);
-      })
-    });
+    this.constraintService.clearConstraint_1();
+    this.constraintService.clearConstraint_2();
+    this.step = Step.I;
+    return this.updateAll(true);
   }
 
   /**
@@ -280,12 +268,6 @@ export class QueryService {
           reject(err);
         })
     });
-  }
-
-  public clear_1(): Promise<any> {
-    this.step = Step.I;
-    this.constraintService.clearConstraint_1();
-    return this.update_1();
   }
 
   /**
@@ -383,12 +365,6 @@ export class QueryService {
         .then(() => resolve(true))
         .catch(err => reject(err));
     });
-  }
-
-  public clear_2(): Promise<any> {
-    this.step = Step.II;
-    this.constraintService.clearConstraint_2();
-    return this.update_2();
   }
 
   /**

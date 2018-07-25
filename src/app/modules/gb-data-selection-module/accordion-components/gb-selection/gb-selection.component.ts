@@ -96,10 +96,6 @@ export class GbSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  clearCriteria() {
-    this.queryService.clear_1();
-  }
-
   importCriteria() {
     let uploadElm = document.getElementById('step1CriteriaFileUpload');
     if (this.isUploadListenerNotAdded) {
