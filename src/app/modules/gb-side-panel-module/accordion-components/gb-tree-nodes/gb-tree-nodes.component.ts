@@ -298,12 +298,11 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * Clear filtering words
    */
   clearFilter() {
-    if (this.searchTerm !== '') {
-      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
-      this.removeFalsePrimeNgClasses(this.delay);
-      const input = this.element.nativeElement.querySelector('.ui-inputtext');
-      input.value = '';
-    }
+    this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
+    this.removeFalsePrimeNgClasses(this.delay);
+    const input = this.element.nativeElement.querySelector('.ui-inputtext');
+    input.value = '';
+    this.hits = 0;
   }
 
   get isLoading(): boolean {
