@@ -285,6 +285,7 @@ export class TreeNodeService {
   processTreeNode(node: Object, constraintService: ConstraintService) {
     let tail = node['metadata'] ? ' ⓘ' : ' ';
     node['label'] = node['name'] + tail;
+    let nodeCountItem: CountItem = undefined;
     // Extract concept
     if (node['visualAttributes'].includes('LEAF')) {
       let concept = this.getConceptFromTreeNode(node);
@@ -320,11 +321,12 @@ export class TreeNodeService {
       }
       // node count
       if (node['studyId']) {
-        const count = this.studyConceptCountMap.get(node['studyId']).get(node['conceptCode']).subjectCount;
-        node['subjectCount'] = count;
+        let cmap = this.studyConceptCountMap.get(node['studyId']);
+        if (cmap) {
+          nodeCountItem = cmap.get(node['conceptCode']);
+        }
       } else {
-        const count = this.conceptCountMap.get(node['conceptCode']).subjectCount;
-        node['subjectCount'] = count;
+        nodeCountItem = this.conceptCountMap.get(node['conceptCode']);
       }
     } else {
       if (node['type'] === 'UNKNOWN') {
@@ -333,11 +335,11 @@ export class TreeNodeService {
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
-        let countItem = this.studyCountMap.get(node['studyId']);
-        node['subjectCount'] = countItem ? countItem.subjectCount : 0;
+        nodeCountItem = this.studyCountMap.get(node['studyId']);
       }
       node['icon'] = '';
     }
+    node['subjectCount'] = nodeCountItem ? nodeCountItem.subjectCount : undefined;
   }
 
   /**
