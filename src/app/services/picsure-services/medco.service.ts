@@ -78,6 +78,9 @@ export class MedcoService {
    * @returns {number} the total number of matching patients.
    */
   parseMedCoResults(data: object): number {
+    this.countResults = [];
+    this.timesResult = [];
+
     // k is 0, 1, 2, ....
     for (let k in data) {
       let b64EncodedResultObject = data[k][`medco_results_${k}`];

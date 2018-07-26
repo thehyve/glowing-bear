@@ -252,8 +252,17 @@ export class PicSureResourceService {
   //     });
   // }
 
-  // todo: the way aggregate objects are returned might be suboptimal
+  /**
+   * Get aggregate (i.e. metadata) about a concept.
+   * Is set to support from PIC-SURE only NUMERICAL and CATEGORICAL aggregates.
+   * @param {Concept} concept
+   * @returns {Observable<Aggregate>}
+   */
   getAggregate(concept: Concept): Observable<Aggregate> {
+    if (concept.type !== ConceptType.NUMERICAL && concept.type !== ConceptType.CATEGORICAL) {
+      return Observable.of(new Aggregate());
+    }
+
     return this.getTreeNodes(concept.path, 'AGGREGATE').map((picsureTreeNodes) => {
 
       let attributeKeys: string[] = Object.keys(picsureTreeNodes[0].metadata);
@@ -265,12 +274,12 @@ export class PicSureResourceService {
             .forEach((catAggKey) => agg.valueCounts.set(picsureTreeNodes[0].metadata[catAggKey], -1));
           return agg;
 
-        case ConceptType.DATE:
         case ConceptType.NUMERICAL:
-          console.error('TBD'); // todo + other types??
+          console.error('TBD'); // todo
           break;
 
         default:
+          console.warn(`Returning empty aggregate for ${concept.path}, problem?`);
           return new Aggregate();
       }
     });
