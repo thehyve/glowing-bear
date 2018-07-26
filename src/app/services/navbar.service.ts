@@ -57,7 +57,17 @@ export class NavbarService {
         this.queryService.update_1()
           .then(() => {
             this.queryService.update_2()
-              .then(() => resolve(true))
+              .then(() => {
+                this.queryService.update_3()
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch(err => {
+                    console.error(errorMessage);
+                    MessageHelper.alert('error', errorMessage);
+                    reject(err);
+                  })
+              })
               .catch(err => {
                 console.error(errorMessage);
                 MessageHelper.alert('error', errorMessage);
@@ -71,14 +81,32 @@ export class NavbarService {
           });
       } else if (this.queryService.isDirty_2) {
         this.queryService.update_2()
-          .then(() => resolve(true))
+          .then(() => {
+            this.queryService.update_3()
+              .then(() => {
+                resolve(true);
+              })
+              .catch(err => {
+                console.error(errorMessage);
+                MessageHelper.alert('error', errorMessage);
+                reject(err);
+              })
+          })
           .catch(err => {
             console.error(errorMessage);
             MessageHelper.alert('error', errorMessage);
             reject(err);
           });
-      } else {
-        resolve(true);
+      } else if (this.queryService.isDirty_3) {
+        this.queryService.update_3()
+          .then(() => {
+            resolve(true);
+          })
+          .catch(err => {
+            console.error(errorMessage);
+            MessageHelper.alert('error', errorMessage);
+            reject(err);
+          })
       }
     });
   }
