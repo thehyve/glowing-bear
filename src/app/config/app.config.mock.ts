@@ -39,7 +39,7 @@ export class OidcConfigMock {
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'oidc',
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
-      'oidc-client-id': 'glowingbear-js'
+      'oidc-client-id': 'transmart-client'
     };
   }
   public getConfig(key: any, defaultValue?: any) {

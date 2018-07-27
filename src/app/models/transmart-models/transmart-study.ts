@@ -8,5 +8,6 @@
 
 export class TransmartStudy {
   studyId: string;
+  secureObjectToken: string;
   dimensions: string[];
 }

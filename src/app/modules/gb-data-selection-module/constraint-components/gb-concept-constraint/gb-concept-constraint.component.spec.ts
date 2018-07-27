@@ -34,6 +34,8 @@ import {TimeConstraint} from '../../../../models/constraint-models/time-constrai
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
+import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
+import {StudiesService} from '../../../../services/studies.service';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -71,6 +73,10 @@ describe('GbConceptConstraintComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: StudiesService,
+          useClass: StudiesServiceMock
         }
       ]
     })

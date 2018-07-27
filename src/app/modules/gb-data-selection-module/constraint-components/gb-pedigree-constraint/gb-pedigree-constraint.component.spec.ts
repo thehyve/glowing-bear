@@ -22,6 +22,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 import {MockComponent} from 'ng2-mock-component';
+import {StudiesService} from '../../../../services/studies.service';
+import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
 
 describe('GbPedigreeConstraintComponent', () => {
   let component: GbPedigreeConstraintComponent;
@@ -55,6 +57,10 @@ describe('GbPedigreeConstraintComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: StudiesService,
+          useClass: StudiesServiceMock
         }
       ]
     })

@@ -153,13 +153,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         this.allTrialVisits = [];
         this.selectedTrialVisits = [];
         this.suggestedTrialVisits = [];
-        this.resourceService.getTrialVisits(conceptOnlyConstraint)
-          .subscribe(
-            visits => {
-              this.handleTrialVisits(visits);
-            },
-            err => ErrorHelper.handleError(err)
-          );
+        this.studiesService.existsTrialVisitDimension.subscribe(existsTrialVisitDimension => {
+          if (existsTrialVisitDimension) {
+            this.resourceService.getTrialVisits(conceptOnlyConstraint)
+              .subscribe(
+                visits => {
+                  this.handleTrialVisits(visits);
+                },
+                err => ErrorHelper.handleError(err)
+              );
+          }
+        });
 
         // Initialize flags
         this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
@@ -250,9 +254,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   set selectedConcept(value: Concept) {
-    (<ConceptConstraint>this.constraint).concept = value;
-    this.initializeConstraints();
-    this.update();
+    if (value instanceof Concept) {
+      (<ConceptConstraint>this.constraint).concept = value;
+      this.initializeConstraints();
+      this.update();
+    }
   }
 
   get applyObsDateConstraint(): boolean {

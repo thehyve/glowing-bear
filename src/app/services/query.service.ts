@@ -126,7 +126,14 @@ export class QueryService {
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts', true);
-    this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
+    let includeDataTable = this.appConfig.getConfig('include-data-table', true);
+    if (!includeDataTable) {
+      this.isDataTableUsed = false;
+    } else {
+      this.exportService.isExportEnabled().subscribe((exportEnabled) =>
+        this.isDataTableUsed = exportEnabled
+      );
+    }
     this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
 
     this.initializeCounts();

@@ -23,7 +23,6 @@ export class ConstraintServiceMock {
   conceptConstraints: Constraint[] = [];
   conceptLabels: string[] = [];
   allConstraints: Constraint[] = [];
-  private _studies: Study[] = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -59,14 +58,6 @@ export class ConstraintServiceMock {
 
   public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
     return this._constraint;
-  }
-
-  get studies(): Study[] {
-    return this._studies;
-  }
-
-  set studies(value: Study[]) {
-    this._studies = value;
   }
 
   public searchAllConstraints(query: string): Constraint[] {

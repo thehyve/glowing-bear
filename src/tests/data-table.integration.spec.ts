@@ -17,6 +17,7 @@ import {Constraint} from '../app/models/constraint-models/constraint';
 import {DataTableService} from '../app/services/data-table.service';
 import {ConstraintServiceMock} from '../app/services/mocks/constraint.service.mock';
 import {ConstraintService} from '../app/services/constraint.service';
+import {StudiesService} from '../app/services/studies.service';
 
 const mockResponseData = {
   'columnDimensions' : [ {
@@ -167,6 +168,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
           useClass: ConstraintServiceMock
         },
         ResourceService,
+        StudiesService,
         DataTableService
       ]
     });

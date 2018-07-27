@@ -8,10 +8,9 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {AuthenticationService} from './authentication/authentication.service';
-import {AccessLevel} from './authentication/access-level';
 import {QueryService} from './query.service';
 import {MessageHelper} from '../utilities/message-helper';
+import {ExportService} from './export.service';
 
 @Injectable()
 export class NavbarService {
@@ -24,15 +23,17 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor(private authService: AuthenticationService,
+  constructor(private exportService: ExportService,
               private queryService: QueryService) {
     this.items = [
       {label: 'Data Selection', routerLink: '/data-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
-    if (authService.accessLevel === AccessLevel.Full) {
-      this.items.push({label: 'Export', routerLink: '/export'})
-    }
+    this.exportService.isExportEnabled().subscribe((exportEnabled) => {
+      if (exportEnabled) {
+        this.items.push({label: 'Export', routerLink: '/export'});
+      }
+    });
   }
 
   updateNavbar(whichStep: string) {
