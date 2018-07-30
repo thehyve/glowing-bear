@@ -98,9 +98,10 @@ describe('GbDroppableZoneComponent', () => {
   })
 
   it('should conditionally update cross table when a constraint cell is dropped', () => {
+    let mockEvent = new DragEvent('drop');
     crossTableService.selectedConstraintCell = null;
     treeNodeService.selectedTreeNode = null;
-    component.onDrop();
+    component.onDrop(mockEvent);
     expect(component.dragCounter).toEqual(0);
     expect(crossTableService.selectedConstraintCell).toBe(null);
 
@@ -108,14 +109,14 @@ describe('GbDroppableZoneComponent', () => {
     let dummy = new TrueConstraint();
     let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(dummy);
     let spy2 = spyOn(MessageHelper, 'alert').and.stub();
-    component.onDrop();
+    component.onDrop(mockEvent);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalledTimes(1);
 
     let spy3 = spyOn(crossTableService, 'isValidConstraint').and.returnValue(true);
     let dummyText = 'dummy text';
     let spy4 = spyOn(CrossTableService, 'brief').and.returnValue(dummyText);
-    component.onDrop();
+    component.onDrop(mockEvent);
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
     expect(dummy.textRepresentation).toBe(dummyText);
@@ -129,11 +130,11 @@ describe('GbDroppableZoneComponent', () => {
     let spy6 = spyOnProperty(crossTableService, 'selectedConstraintCell', 'get')
       .and.returnValue(dummySelectedCell);
     let spy7 = spyOn(dummySelectedCell, 'remove').and.stub();
-    component.onDrop();
+    component.onDrop(mockEvent);
     expect(spy6).toHaveBeenCalled();
 
     component.constraints = [];
-    component.onDrop();
+    component.onDrop(mockEvent);
     expect(component.constraints.length).toEqual(1);
     expect(component.constraints).toContain(dummy);
     expect(spy7).toHaveBeenCalled();

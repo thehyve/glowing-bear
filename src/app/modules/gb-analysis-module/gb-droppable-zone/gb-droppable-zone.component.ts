@@ -53,7 +53,8 @@ export class GbDroppableZoneComponent implements OnInit {
     this.dragCounter--;
   }
 
-  onDrop() {
+  onDrop(e) {
+    e.preventDefault();
     const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
     // if no existing constraint (from one of the already created draggable cells) is used,
