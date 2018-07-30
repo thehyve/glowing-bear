@@ -37,7 +37,8 @@ export class GbDataTableDimensionsComponent implements OnInit {
    * This function handles the drop event when the user is reordering dimensions within
    * the same row-dimension container or the same column-dimension container
    */
-  onDrop() {
+  onDrop(e) {
+    e.preventDefault();
     let changed = false;
     if (this.dataTableService.prevRowDimensions.length === this.dataTableService.rowDimensions.length) {
       for (let i = 0; i < this.dataTableService.rowDimensions.length; i++) {

@@ -13,7 +13,7 @@
               (onMoveAllToSource)="onChange()"
               (onSourceReorder)="onChange()"
               (onTargetReorder)="onChange()"
-              (drop)="onDrop()"
+              (drop)="onDrop($event)"
               [sourceStyle]="{'min-height':'130px','height': '100%'}"
               [targetStyle]="{'min-height':'130px','height': '100%'}">
     <ng-template let-dimension pTemplate="item">
