@@ -19,6 +19,7 @@ import {AuthorizationResult} from './authorization-result';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {AccessLevel} from './access-level';
 import * as jwt_decode from 'jwt-decode';
+import {RedirectHelper} from '../../utilities/redirect-helper';
 
 describe('Oauth2Authentication with Transmart service type', () => {
   let config: AppConfig;
@@ -49,6 +50,7 @@ describe('Oauth2Authentication with Transmart service type', () => {
     authenticationService = TestBed.get(AuthenticationService);
     httpMock = TestBed.get(HttpTestingController);
     spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
+    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => { console.log(`Stub redirect to ${target}`)});
     localStorage.removeItem('token');
   });
 
@@ -121,6 +123,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     authenticationService = TestBed.get(AuthenticationService);
     httpMock = TestBed.get(HttpTestingController);
     spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
+    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => { console.log(`Stub redirect to ${target}`)});
     localStorage.removeItem('token');
   });
 

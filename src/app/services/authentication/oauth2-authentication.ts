@@ -19,6 +19,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {RedirectHelper} from '../../utilities/redirect-helper';
 
 /**
  * Implementation of the OAuth2 authorisation flow:
@@ -186,12 +187,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
     return Observable.fromPromise(new Promise((resolve) => {
       resolve(AuthorizationResult.Unauthorized);
-      console.log(`Redirecting to ${target} ...`);
-      setTimeout(() => {
-          // Redirect to login page
-          window.location.assign(target);
-        }, 2000
-      );
+      RedirectHelper.redirectTo(target);
     }));
   }
 
