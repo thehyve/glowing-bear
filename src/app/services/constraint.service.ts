@@ -26,6 +26,8 @@ import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
+import {MessageHelper} from '../utilities/message-helper';
+import {StudiesService} from './studies.service';
 
 /**
  * This service concerns with
@@ -45,7 +47,6 @@ export class ConstraintService {
    * The constraints should be copied when editing them.
    */
   private _allConstraints: Constraint[] = [];
-  private _studies: Study[] = [];
   private _studyConstraints: Constraint[] = [];
   private _validPedigreeTypes: object[] = [];
   private _concepts: Concept[] = [];
@@ -76,6 +77,7 @@ export class ConstraintService {
   }
 
   constructor(private treeNodeService: TreeNodeService,
+              private studiesService: StudiesService,
               private resourceService: ResourceService) {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -93,7 +95,7 @@ export class ConstraintService {
 
     // Construct constraints
     this.loadEmptyConstraints();
-    this.loadStudies();
+    this.loadStudiesConstraints();
     // create the pedigree-related constraints
     this.loadPedigrees();
     // construct concepts while loading the tree nodes
@@ -106,22 +108,24 @@ export class ConstraintService {
     this.allConstraints.push(new ConceptConstraint());
   }
 
-  private loadStudies() {
-    this.resourceService.getStudies()
-      .subscribe(
-        (studies: Study[]) => {
+  private loadStudiesConstraints() {
+    this.studiesService.studiesLoaded.asObservable().subscribe(
+      (studiesLoaded: boolean) => {
+        if (studiesLoaded) {
           // reset studies and study constraints
-          this.studies = studies;
           this.studyConstraints = [];
-          studies.forEach(study => {
+          this.studiesService.studies.forEach(study => {
             let constraint = new StudyConstraint();
             constraint.studies.push(study);
             this.studyConstraints.push(constraint);
             this.allConstraints.push(constraint);
           });
-        },
-        err => console.error(err)
-      );
+        } else {
+          MessageHelper.alert('info', 'No studies found')
+        }
+      },
+      err => console.error(err)
+    );
   }
 
   private loadPedigrees() {
@@ -402,14 +406,6 @@ export class ConstraintService {
 
   set allConstraints(value: Constraint[]) {
     this._allConstraints = value;
-  }
-
-  get studies(): Study[] {
-    return this._studies;
-  }
-
-  set studies(value: Study[]) {
-    this._studies = value;
   }
 
   get studyConstraints(): Constraint[] {

@@ -18,10 +18,16 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {QueryService} from './query.service';
+import {AccessLevel} from './authentication/access-level';
+import {AuthenticationService} from './authentication/authentication.service';
+import {StudiesService} from './studies.service';
+import {Observable} from 'rxjs/Observable';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class ExportService {
 
+  private _exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
@@ -29,20 +35,41 @@ export class ExportService {
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
+              private authService: AuthenticationService,
+              private studiesService: StudiesService,
               private dataTableService: DataTableService,
               private injector: Injector,
               private datePipe: DatePipe) {
+    if (this.authService.accessLevel === AccessLevel.Full) {
+      console.log('Export enabled.');
+      this._exportEnabled.next(true);
+      this._exportEnabled.complete();
+    } else {
+      this.studiesService.existsPublicStudy.subscribe((existsPublicStudy) => {
+        console.log(`Export ${existsPublicStudy ? 'enabled' : 'disabled'}.`);
+        this._exportEnabled.next(existsPublicStudy);
+        this._exportEnabled.complete();
+      });
+    }
+  }
+
+  public isExportEnabled(): Observable<boolean> {
+    return this._exportEnabled.asObservable();
   }
 
   public updateExports() {
-    let combo = this.constraintService.constraint_1_2();
-    // update the export info
-    this.isLoadingExportDataTypes = true;
-    this.resourceService.getExportDataTypes(combo)
-      .subscribe(dataTypes => {
-        this.exportDataTypes = dataTypes;
-        this.isLoadingExportDataTypes = false;
-      });
+    this.isExportEnabled().subscribe((exportEnabled) => {
+      if (exportEnabled) {
+        let combo = this.constraintService.constraint_1_2();
+        // update the export info
+        this.isLoadingExportDataTypes = true;
+        this.resourceService.getExportDataTypes(combo)
+          .subscribe(dataTypes => {
+            this.exportDataTypes = dataTypes;
+            this.isLoadingExportDataTypes = false;
+          });
+      }
+    });
   }
 
   /**

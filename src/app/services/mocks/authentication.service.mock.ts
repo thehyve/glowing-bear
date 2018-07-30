@@ -11,6 +11,7 @@ import {AuthenticationMethod} from '../authentication/authentication-method';
 import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {AuthorizationResult} from '../authentication/authorization-result';
 import {Observable} from 'rxjs/Observable';
+import {AccessLevel} from '../authentication/access-level';
 
 @Injectable()
 export class AuthenticationServiceMock implements OnDestroy {
@@ -36,4 +37,9 @@ export class AuthenticationServiceMock implements OnDestroy {
   get authorised(): AsyncSubject<boolean> {
     return this.authenticationMethod.authorised;
   }
+
+  get accessLevel(): AccessLevel {
+    return AccessLevel.Full;
+  }
+
 }

@@ -42,6 +42,7 @@ export class TransmartMapper {
     let study = new Study();
     study.id = transmartStudy.studyId;
     study.dimensions = transmartStudy.dimensions;
+    study.public = transmartStudy.secureObjectToken === 'PUBLIC';
     return study;
   }
 

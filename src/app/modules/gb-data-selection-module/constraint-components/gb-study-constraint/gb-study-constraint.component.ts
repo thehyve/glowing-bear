@@ -37,7 +37,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onSearch(event) {
-    let studies = this.constraintService.studies;
+    let studies = this.studiesService.studies;
     let query = event.query.toLowerCase();
     if (query) {
       this.searchResults = studies.filter((study: Study) => study.id.toLowerCase().includes(query));
@@ -47,7 +47,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onDropdown(event) {
-    let studies = this.constraintService.studies;
+    let studies = this.studiesService.studies;
 
     // Workaround for dropdown not showing properly, as described in
     // https://github.com/primefaces/primeng/issues/745

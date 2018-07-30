@@ -9,6 +9,7 @@
 export class Study {
   private _id: string;
   private _dimensions: string[];
+  private _public: boolean;
 
   get id(): string {
     return this._id;
@@ -25,4 +26,13 @@ export class Study {
   set dimensions(value: string[]) {
     this._dimensions = value;
   }
+
+  get public(): boolean {
+    return this._public;
+  }
+
+  set public(value: boolean) {
+    this._public = value;
+  }
+
 }

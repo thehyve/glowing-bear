@@ -37,48 +37,10 @@ import {AuthenticationService} from './services/authentication/authentication.se
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {AuthorizationResult} from './services/authentication/authorization-result';
-import * as jwt_decode from 'jwt-decode';
-import {AccessLevel} from './services/authentication/access-level';
+import {StudiesService} from './services/studies.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
-  return () => config.load()
-    .then(() => {
-      authService.load()
-        .then((authResult: AuthorizationResult) => {
-          /*
-           * ------------------- start: if authorized -----------------------
-           */
-          if (authResult === AuthorizationResult.Authorized) {
-            /*
-             * Parse the decoded token, determine the access level
-             * TODO: in future
-             * 1. associate access level to showing data table;
-             * 2. fetch client id programmatically (i.e. glowingbear-js)
-             * 3. possibly create user service and user management
-             */
-            const clientId = config.getConfig('oidc-client-id', 'transmart-client');
-            let token = jwt_decode(authService.token);
-            if (token['resource_access']) {
-              let glowingBearJs = token['resource_access'][clientId];
-              if (glowingBearJs) {
-                let roles = glowingBearJs['roles'];
-                let str = '';
-                if (roles && roles.constructor === Array && roles.length > 0) {
-                  roles.forEach((role: string) => {
-                    str += role + ' ';
-                  });
-                  authService.accessLevel = str.includes('COUNTS_WITH_THRESHOLD')
-                    ? AccessLevel.Restricted : AccessLevel.Full;
-                }
-              }
-            }
-          }
-          /*
-           * ------------------- end: if authorized -----------------------
-           */
-        });
-    });
+  return () => config.load().then(() => authService.load());
 }
 
 @NgModule({
@@ -102,6 +64,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   providers: [
     ResourceService,
     TransmartResourceService,
+    StudiesService,
     TreeNodeService,
     ConstraintService,
     QueryService,

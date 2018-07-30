@@ -6,8 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class TransmartStudy {
-  studyId: string;
-  secureObjectToken: string;
-  dimensions: string[];
+export class RedirectHelper {
+
+  public static redirectTo(target: string): void {
+    console.log(`Redirecting to ${target} ...`);
+    setTimeout(() => {
+        // Redirect to login page
+        window.location.assign(target);
+      }, 2000
+    );
+  }
+
 }

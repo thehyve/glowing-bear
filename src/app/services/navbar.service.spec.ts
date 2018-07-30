@@ -14,29 +14,35 @@ import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 import {QueryService} from './query.service';
 import {QueryServiceMock} from './mocks/query.service.mock';
 import {AccessLevel} from './authentication/access-level';
+import {ExportService} from './export.service';
+import {ExportServiceMock} from './mocks/export.service.mock';
+import {Observable} from 'rxjs/Observable';
+import Spy = jasmine.Spy;
 
 describe('NavbarService', () => {
-  let authService: AuthenticationService;
   let queryService: QueryService;
   let navbarService: NavbarService;
+  let exportService: ExportService;
+  let exportEnabled: boolean;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: AuthenticationService,
-          useClass: AuthenticationServiceMock
-        },
-        {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: ExportService,
+          useClass: ExportServiceMock
         },
         NavbarService
       ]
     });
-    authService = TestBed.get(AuthenticationService);
-    authService.accessLevel = AccessLevel.Restricted;
     queryService = TestBed.get(QueryService);
+    exportService = TestBed.get(ExportService);
+    exportEnabled = false;
+    spyOn(exportService, 'isExportEnabled').and.callFake(() => Observable.of(exportEnabled));
     navbarService = TestBed.get(NavbarService);
   });
 
@@ -46,10 +52,10 @@ describe('NavbarService', () => {
   }));
 
   it('should add export item when access level is full', () => {
-    authService.accessLevel = AccessLevel.Full;
-    navbarService = new NavbarService(authService, queryService);
+    exportEnabled = true;
+    navbarService = new NavbarService(exportService, queryService);
     expect(navbarService.items.length).toBe(3);
-  })
+  });
 
   it('should update navbar', () => {
     let which = 'others random';

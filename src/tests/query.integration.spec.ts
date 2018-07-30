@@ -14,6 +14,9 @@ import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {NavbarService} from '../app/services/navbar.service';
 import {DatePipe} from '@angular/common';
+import {StudiesService} from '../app/services/studies.service';
+import {AuthenticationService} from '../app/services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 
 describe('Integration test for query saving and restoring', () => {
 
@@ -139,11 +142,16 @@ describe('Integration test for query saving and restoring', () => {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         TreeNodeService,
         ConstraintService,
         DataTableService,
         CrossTableService,
         ExportService,
+        StudiesService,
         QueryService,
         NavbarService,
         DatePipe
