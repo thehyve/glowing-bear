@@ -1,0 +1,29 @@
+<div #parentContainer class="gb-container">
+  <div class="gb-container">
+    <!-- Top panel -->
+    <div class="gb-top-panel">
+      <span class="float-right">
+        <button type="button" id="logout" class="btn btn-outline-secondary"
+                (click)="logout()">
+          <i class="fa fa-sign-out" aria-hidden="true"></i>
+        </button>
+      </span>
+    </div>
+    <!-- Left panel -->
+    <div #leftPanel class="gb-left-panel">
+      <gb-side-panel></gb-side-panel>
+    </div>
+
+    <!-- Middle split bar -->
+    <div #gutter class="gutter"></div>
+
+    <!-- Right panel -->
+    <div #rightPanel class="gb-right-panel">
+      <gb-nav-bar></gb-nav-bar>
+      <div class="gb-router-outlet-container">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+  </div>
+</div>

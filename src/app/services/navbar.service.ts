@@ -1,5 +1,16 @@
-import { Injectable } from '@angular/core';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
+import {QueryService} from './query.service';
+import {MessageHelper} from '../utilities/message-helper';
+import {ExportService} from './export.service';
 
 @Injectable()
 export class NavbarService {
@@ -12,12 +23,17 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor() {
+  constructor(private exportService: ExportService,
+              private queryService: QueryService) {
     this.items = [
       {label: 'Data Selection', routerLink: '/data-selection'},
-      {label: 'Analysis', routerLink: '/analysis'},
-      {label: 'Export', routerLink: '/export'}
+      {label: 'Analysis', routerLink: '/analysis'}
     ];
+    this.exportService.isExportEnabled().subscribe((exportEnabled) => {
+      if (exportEnabled) {
+        this.items.push({label: 'Export', routerLink: '/export'});
+      }
+    });
   }
 
   updateNavbar(whichStep: string) {
@@ -30,8 +46,70 @@ export class NavbarService {
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
     } else if (this.isExport) {
+      this.updateDataSelection();
       this.activeItem = this._items[2];
     }
+  }
+
+  updateDataSelection(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      const errorMessage = 'Fail to update data selection.';
+      if (this.queryService.isDirty_1) {
+        this.queryService.update_1()
+          .then(() => {
+            this.queryService.update_2()
+              .then(() => {
+                this.queryService.update_3()
+                  .then(() => {
+                    resolve(true);
+                  })
+                  .catch(err => {
+                    console.error(errorMessage);
+                    MessageHelper.alert('error', errorMessage);
+                    reject(err);
+                  })
+              })
+              .catch(err => {
+                console.error(errorMessage);
+                MessageHelper.alert('error', errorMessage);
+                reject(err);
+              });
+          })
+          .catch(err => {
+            console.error(errorMessage);
+            MessageHelper.alert('error', errorMessage);
+            reject(err);
+          });
+      } else if (this.queryService.isDirty_2) {
+        this.queryService.update_2()
+          .then(() => {
+            this.queryService.update_3()
+              .then(() => {
+                resolve(true);
+              })
+              .catch(err => {
+                console.error(errorMessage);
+                MessageHelper.alert('error', errorMessage);
+                reject(err);
+              })
+          })
+          .catch(err => {
+            console.error(errorMessage);
+            MessageHelper.alert('error', errorMessage);
+            reject(err);
+          });
+      } else if (this.queryService.isDirty_3) {
+        this.queryService.update_3()
+          .then(() => {
+            resolve(true);
+          })
+          .catch(err => {
+            console.error(errorMessage);
+            MessageHelper.alert('error', errorMessage);
+            reject(err);
+          })
+      }
+    });
   }
 
   get items(): MenuItem[] {

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {
   Component, OnInit, ViewChild
 } from '@angular/core';
@@ -9,9 +17,11 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {QueryService} from '../../../../services/query.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Step} from '../../../../models/query-models/step';
-import {FormatHelper} from '../../../../utilities/FormatHelper';
+import {FormatHelper} from '../../../../utilities/format-helper';
 import {Query} from '../../../../models/query-models/query';
-import {MessageService} from '../../../../services/message.service';
+import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
+import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -51,17 +61,15 @@ export class GbSelectionComponent implements OnInit {
       .map(id => id.trim())
       .filter(id => id.length > 0);
     let query = new Query(null, name);
-    query.patientsQuery = {
-      'type': 'patient_set',
-      'subjectIds': subjectIds
-    };
-    query.observationsQuery = {data: null};
+    let subjectSetConstraint = new SubjectSetConstraint();
+    subjectSetConstraint.subjectIds = subjectIds;
+    query.subjectQuery = subjectSetConstraint;
+    query.observationQuery = {data: null};
     return query;
   }
 
   constructor(private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private messageService: MessageService) {
+              private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -69,15 +77,15 @@ export class GbSelectionComponent implements OnInit {
   }
 
   get subjectCount_1(): string {
-    return FormatHelper.formatCountNumber(this.queryService.subjectCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.counts_1.subjectCount);
   }
 
   get inclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.inclusionSubjectCount);
+    return FormatHelper.formatCountNumber(this.queryService.inclusionCounts.subjectCount);
   }
 
   get exclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.exclusionSubjectCount);
+    return FormatHelper.formatCountNumber(this.queryService.exclusionCounts.subjectCount);
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
@@ -86,12 +94,6 @@ export class GbSelectionComponent implements OnInit {
 
   get rootExclusionConstraint(): CombinationConstraint {
     return this.constraintService.rootExclusionConstraint;
-  }
-
-  clearCriteria() {
-    this.queryService.step = Step.I;
-    this.constraintService.clearSelectionConstraint();
-    this.queryService.update_1();
   }
 
   importCriteria() {
@@ -130,14 +132,14 @@ export class GbSelectionComponent implements OnInit {
       if (_json['patientsQuery']) {
         let name = file.name.substr(0, file.name.indexOf('.'));
         let query = new Query('', name);
-        query.patientsQuery = _json['patientsQuery'];
+        query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
         return query;
       } else {
-        this.messageService.alert('error', 'Invalid file content for query import.');
+        MessageHelper.alert('error', 'Invalid file content for query import.');
         return;
       }
     } else {
-      this.messageService.alert('error', 'Invalid file format for STEP 1.');
+      MessageHelper.alert('error', 'Invalid file format for STEP 1.');
       return;
     }
   }

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {TestBed, inject} from '@angular/core/testing';
 
 import {ExportService} from './export.service';
@@ -7,11 +15,22 @@ import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
-import {MessageService} from './message.service';
-import {MessageServiceMock} from './mocks/message.service.mock';
-import {DatePipe} from "@angular/common";
+import {DatePipe} from '@angular/common';
+import {ExportJob} from '../models/export-models/export-job';
+import {ExportDataType} from '../models/export-models/export-data-type';
+import {ExportFileFormat} from '../models/export-models/export-file-format';
+import {QueryService} from './query.service';
+import {QueryServiceMock} from './mocks/query.service.mock';
+import {CountItem} from '../models/aggregate-models/count-item';
+import {AuthenticationService} from './authentication/authentication.service';
+import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
+import {StudiesService} from './studies.service';
+import {StudiesServiceMock} from './mocks/studies.service.mock';
 
 describe('ExportService', () => {
+  let exportService: ExportService;
+  let queryService: QueryService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -24,20 +43,55 @@ describe('ExportService', () => {
           useClass: ResourceServiceMock
         },
         {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        {
+          provide: StudiesService,
+          useClass: StudiesServiceMock
+        },
+        {
           provide: DataTableService,
           useClass: DataTableServiceMock
         },
         {
-          provide: MessageService,
-          useClass: MessageServiceMock
+          provide: QueryService,
+          useClass: QueryServiceMock
         },
         ExportService,
         DatePipe
       ]
     });
+    exportService = TestBed.get(ExportService);
+    queryService = TestBed.get(QueryService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('should validate export job name', () => {
+    let newExportJob = new ExportJob();
+    newExportJob.id = 'id';
+    newExportJob.jobName = 'test job name';
+    exportService.exportJobs = [newExportJob];
+    let result = exportService.validateExportJob('');
+    expect(result).toBe(false);
+    result = exportService.validateExportJob('test job name');
+    expect(result).toBe(false);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    let exportDataType = new ExportDataType('test data type', true);
+    exportService.exportDataTypes = [exportDataType];
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    let fileFormat = new ExportFileFormat('tsv', true);
+    exportDataType.fileFormats.push(fileFormat);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
+    queryService.counts_2 = new CountItem(1, 1);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(true);
+  });
+
 });

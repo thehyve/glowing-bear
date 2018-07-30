@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbSidePanelComponent} from './gb-side-panel.component';
@@ -21,8 +29,8 @@ import {Md2AccordionModule} from 'md2';
 import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
-import {MessageService} from '../../services/message.service';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
+import {CrossTableService} from '../../services/cross-table.service';
+import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -72,8 +80,8 @@ describe('GbSidePanelComponent', () => {
           useClass: NavbarServiceMock
         },
         {
-          provide: MessageService,
-          useClass: MessageServiceMock
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
         },
         ConfirmationService
       ]

@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
@@ -105,19 +113,18 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       let metadata = dataObject['metadata'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
       let treeNodeElmIcon = elm.querySelector('li.ui-treenode .ui-treenode-icon');
-
       let handleDragstart = (function (event) {
         event.stopPropagation();
         dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
-      let showInfo = (function (event) {
+      let showInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
 
-      let hideInfo = (function (event) {
+      let hideInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.hide(event);
       }).bind(this);
@@ -155,10 +162,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
   update() {
     if (this.expansionStatus['expanded']) {
-      if (this.queryService.treeNodeCountsUpdate) {
-        this.treeNodeService
-          .updateTreeNodeCounts(this.queryService.studyCountMap_1, this.queryService.conceptCountMap_1);
-      }
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
       let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
@@ -183,42 +186,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
     }
-  }
-
-  /**
-   * Recursively filter the tree nodes and return the copied tree nodes that match,
-   * return the reduced tree as a new instance
-   * (An alternative solution as backup)
-   * @param treeNodes
-   * @param field
-   * @param filterWord
-   * @returns {Array}
-   */
-  filterWithCopiedTreeNodes(treeNodes, field, filterWord) {
-    let result = {
-      hasMatching: false,
-      matchingTreeNodes: [] // matchingTreeNodes is a subset of treeNodes
-    };
-    for (let node of treeNodes) {
-      let nodeCopy = Object.assign({}, node);
-      nodeCopy['expanded'] = true;
-      let fieldString = node[field].toLowerCase();
-      if (fieldString.includes(filterWord)) {
-        result.hasMatching = true;
-        result.matchingTreeNodes.push(nodeCopy);
-      }
-      if (node['children'] && node['children'].length > 0) {
-        let subResult = this.filterWithCopiedTreeNodes(node['children'], field, filterWord);
-        if (subResult.hasMatching) {
-          nodeCopy['children'] = subResult.matchingTreeNodes;
-          result.hasMatching = true;
-          if (result.matchingTreeNodes.indexOf(nodeCopy) === -1) {
-            result.matchingTreeNodes.push(nodeCopy);
-          }
-        }
-      }
-    }
-    return result;
   }
 
   /**
@@ -269,10 +236,10 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
           node['expanded'] = false;
           if (node['children'] && node['children'].length > 0) {
             node['styleClass'] = 'is-not-leaf';
+            this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
           } else {
             node['styleClass'] = undefined;
           }
-          this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
         }
       }
     }
@@ -331,12 +298,15 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * Clear filtering words
    */
   clearFilter() {
-    if (this.searchTerm !== '') {
-      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
-      this.removeFalsePrimeNgClasses(this.delay);
-      const input = this.element.nativeElement.querySelector('.ui-inputtext');
-      input.value = '';
-    }
+    this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
+    this.removeFalsePrimeNgClasses(this.delay);
+    const input = this.element.nativeElement.querySelector('.ui-inputtext');
+    input.value = '';
+    this.hits = 0;
+  }
+
+  get isLoading(): boolean {
+    return !this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 
 }

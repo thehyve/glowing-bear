@@ -1,77 +1,141 @@
-import {Injectable} from '@angular/core';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Injectable, Injector} from '@angular/core';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ConstraintService} from './constraint.service';
 import {ResourceService} from './resource.service';
 import {ExportJob} from '../models/export-models/export-job';
 import {DataTableService} from './data-table.service';
-import {MessageService} from './message.service';
 import {saveAs} from 'file-saver';
 import {DatePipe} from '@angular/common';
+import {MessageHelper} from '../utilities/message-helper';
+import {ErrorHelper} from '../utilities/error-helper';
+import {HttpErrorResponse} from '@angular/common/http';
+import {QueryService} from './query.service';
+import {AccessLevel} from './authentication/access-level';
+import {AuthenticationService} from './authentication/authentication.service';
+import {StudiesService} from './studies.service';
+import {Observable} from 'rxjs/Observable';
+import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 @Injectable()
 export class ExportService {
 
+  private _exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _exportDataTypes: ExportDataType[] = [];
-  private _exportJobs: ExportJob[];
+  private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
   private _isLoadingExportDataTypes = false;
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
-              public messageService: MessageService,
+              private authService: AuthenticationService,
+              private studiesService: StudiesService,
               private dataTableService: DataTableService,
+              private injector: Injector,
               private datePipe: DatePipe) {
+    if (this.authService.accessLevel === AccessLevel.Full) {
+      console.log('Export enabled.');
+      this._exportEnabled.next(true);
+      this._exportEnabled.complete();
+    } else {
+      this.studiesService.existsPublicStudy.subscribe((existsPublicStudy) => {
+        console.log(`Export ${existsPublicStudy ? 'enabled' : 'disabled'}.`);
+        this._exportEnabled.next(existsPublicStudy);
+        this._exportEnabled.complete();
+      });
+    }
+  }
+
+  public isExportEnabled(): Observable<boolean> {
+    return this._exportEnabled.asObservable();
   }
 
   public updateExports() {
-    let combo = this.constraintService.constraint_1_2();
-    // update the export info
-    this.isLoadingExportDataTypes = true;
-    this.resourceService.getExportDataTypes(combo)
-      .subscribe(dataTypes => {
-        this.exportDataTypes = dataTypes;
-        this.isLoadingExportDataTypes = false;
-      });
+    this.isExportEnabled().subscribe((exportEnabled) => {
+      if (exportEnabled) {
+        let combo = this.constraintService.constraint_1_2();
+        // update the export info
+        this.isLoadingExportDataTypes = true;
+        this.resourceService.getExportDataTypes(combo)
+          .subscribe(dataTypes => {
+            this.exportDataTypes = dataTypes;
+            this.isLoadingExportDataTypes = false;
+          });
+      }
+    });
   }
 
   /**
    * Create the export job when the user clicks the 'Export selected sets' button
    */
-  createExportJob() {
-    let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
-    let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
+  createExportJob(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
+      let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
 
-    if (this.validateExportJob(name)) {
-      let summary = 'Running export job "' + name + '".';
-      this.messageService.alert('info', summary);
-      this.resourceService.createExportJob(name)
-        .subscribe(
-          newJob => {
-            summary = 'Export job "' + name + '" is created.';
-            this.messageService.alert('success', summary);
-            this.exportJobName = '';
-            this.runExportJob(newJob);
-          },
-          err => console.error(err)
-        );
-    }
+      if (this.validateExportJob(name)) {
+        let summary = 'Running export job "' + name + '".';
+        MessageHelper.alert('info', summary);
+        this.resourceService.createExportJob(name)
+          .subscribe(
+            (newJob: ExportJob) => {
+              summary = 'Export job "' + name + '" is created.';
+              MessageHelper.alert('success', summary);
+              this.exportJobName = '';
+              this.runExportJob(newJob)
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject(err)
+                });
+            },
+            (err: HttpErrorResponse) => {
+              ErrorHelper.handleError(err);
+              reject(`Fail to create export job ${name}.`);
+            }
+          );
+      } else {
+        reject(`Invalid export job ${name}`);
+      }
+    });
   }
 
   /**
    * Run the just created export job
    * @param job
    */
-  public runExportJob(job: ExportJob) {
-    let constraint = this.constraintService.constraint_1_2();
-    this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
-      .subscribe(
-        returnedExportJob => {
-          if (returnedExportJob) {
-            this.updateExportJobs();
+  public runExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let constraint = this.constraintService.constraint_1_2();
+      this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
+        .subscribe(
+          returnedExportJob => {
+            if (returnedExportJob) {
+              this.updateExportJobs()
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject(err);
+                });
+            } else {
+              reject(`Fail to run export job ${job.jobName}, server returns undefined job.`);
+            }
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(`Fail to run export job ${job.jobName}.`);
           }
-        },
-        err => this.resourceService.handleError(err)
-      );
+        );
+    });
   }
 
   /**
@@ -79,7 +143,7 @@ export class ExportService {
    * then the files of that job can be downloaded
    * @param job
    */
-  downloadExportJob(job) {
+  downloadExportJob(job: ExportJob) {
     job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
@@ -87,8 +151,11 @@ export class ExportService {
           let blob = new Blob([data], {type: 'application/zip'});
           saveAs(blob, `${job.jobName}.zip`, true);
         },
-        err => console.error(err),
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        },
         () => {
+          MessageHelper.alert('success', `Export ${job.jobName} download completed`);
         }
       );
   }
@@ -100,7 +167,9 @@ export class ExportService {
         response => {
           this.updateExportJobs();
         },
-        err => console.error(err)
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        }
       );
   }
 
@@ -111,21 +180,29 @@ export class ExportService {
         response => {
           this.updateExportJobs();
         },
-        err => console.error(err)
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+        }
       );
   }
 
-  updateExportJobs() {
-    this.resourceService.getExportJobs()
-      .subscribe(
-        jobs => {
-          jobs.forEach(job => {
-            job.isInDisabledState = false
-          });
-          this.exportJobs = jobs;
-        },
-        err => console.error(err)
-      );
+  updateExportJobs(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getExportJobs()
+        .subscribe(
+          jobs => {
+            jobs.forEach(job => {
+              job.isInDisabledState = false
+            });
+            this.exportJobs = jobs;
+            resolve(true);
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject('Fail to update export jobs.');
+          }
+        );
+    });
   }
 
   /**
@@ -133,13 +210,13 @@ export class ExportService {
    * @param {string} name
    * @returns {boolean}
    */
-  private validateExportJob(name: string): boolean {
+  validateExportJob(name: string): boolean {
     let validName = name !== '';
 
     // 1. Validate if job name is specified
     if (!validName) {
       const summary = 'Please specify the job name.';
-      this.messageService.alert('warn', summary);
+      MessageHelper.alert('warn', summary);
       return false;
     }
 
@@ -147,7 +224,7 @@ export class ExportService {
     for (let job of this.exportJobs) {
       if (job['jobName'] === name) {
         const summary = 'Duplicate job name, choose a new name.';
-        this.messageService.alert('warn', summary);
+        MessageHelper.alert('warn', summary);
         return false;
       }
     }
@@ -155,7 +232,7 @@ export class ExportService {
     // 3. Validate if at least one data type is selected
     if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
-      this.messageService.alert('warn', summary);
+      MessageHelper.alert('warn', summary);
       return false;
     }
 
@@ -164,19 +241,19 @@ export class ExportService {
       if (dataFormat['checked'] === true) {
         if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
           const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
-          this.messageService.alert('warn', summary);
+          MessageHelper.alert('warn', summary);
           return false;
         }
       }
     }
 
     // 5. Validate if at least one observation is included
-    // TODO: refactor this, while avoiding cyclic dependencies between expoert service and query service
-    // if (this.queryService.observationCount_2 < 1) {
-    //   const summary = 'No observation included to be exported.';
-    //   this.messageService.alert('warn', summary);
-    //   return false;
-    // }
+    let queryService = this.injector.get(QueryService);
+    if (queryService.counts_2.observationCount < 1) {
+      const summary = 'No observation included to be exported.';
+      MessageHelper.alert('warn', summary);
+      return false;
+    }
 
     return true;
   }

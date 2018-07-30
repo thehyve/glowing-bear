@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SelectItem} from 'primeng/primeng';
@@ -13,10 +21,11 @@ type TriState = true | false | undefined;
 })
 export class GbPedigreeConstraintComponent extends GbConstraintComponent implements OnInit {
 
-  private _selectedPedigreeType: SelectItem;
-  private _pedigreeTypes: SelectItem[];
+  selectedPedigreeType: string;
+  pedigreeTypes: SelectItem[];
+  triStateOptions: object[];
   private _rightHandSideConstraint: Constraint;
-  public triStateOptions: object[];
+
 
   ngOnInit() {
     this.pedigreeTypes = [];
@@ -27,12 +36,13 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
       ];
     const relationType = (<PedigreeConstraint>this.constraint).relationType;
     for (let typeObj of this.constraintService.validPedigreeTypes) {
-      this.pedigreeTypes.push({
+      let ptype: SelectItem = {
         label: typeObj['text'],
         value: typeObj['type']
-      });
+      };
+      this.pedigreeTypes.push(ptype);
       if (relationType === typeObj['type']) {
-        this.selectedPedigreeType = typeObj['type'];
+        this.selectedPedigreeType = ptype.value;
       }
     }
     this.rightHandSideConstraint = (<PedigreeConstraint>this.constraint).rightHandSideConstraint;
@@ -41,22 +51,6 @@ export class GbPedigreeConstraintComponent extends GbConstraintComponent impleme
   updateRelationType(event) {
     (<PedigreeConstraint>this.constraint).relationType = event.value;
     this.update();
-  }
-
-  get selectedPedigreeType(): SelectItem {
-    return this._selectedPedigreeType;
-  }
-
-  set selectedPedigreeType(value: SelectItem) {
-    this._selectedPedigreeType = value;
-  }
-
-  get pedigreeTypes(): SelectItem[] {
-    return this._pedigreeTypes;
-  }
-
-  set pedigreeTypes(value: SelectItem[]) {
-    this._pedigreeTypes = value;
   }
 
   get rightHandSideConstraint(): Constraint {

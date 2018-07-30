@@ -1,15 +1,22 @@
-import {Constraint} from './constraint';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
-export class ValueConstraint implements Constraint {
-  private _parent: Constraint;
+import {Constraint} from './constraint';
+import {FormatHelper} from '../../utilities/format-helper';
+
+export class ValueConstraint extends Constraint {
+
   private _valueType: string;
   private _operator: string;
   private _value: any;
-  private _isSubselection: boolean;
-  private _textRepresentation: string;
 
   constructor() {
-    this.parent = null;
+    super();
     this.textRepresentation = 'Value';
   }
 
@@ -35,55 +42,10 @@ export class ValueConstraint implements Constraint {
 
   set value(value: any) {
     this._value = value;
+    this.textRepresentation = value ? FormatHelper.nullValuePlaceholder : value.toString();
   }
 
-  getClassName(): string {
+  get className(): string {
     return 'ValueConstraint';
-  }
-
-  toQueryObjectWithSubselection(): Object {
-    // TODO: implement the 'subselection' wrapper on a normal query object
-    return null;
-  }
-
-  toQueryObjectWithoutSubselection(): object {
-    return {
-      type: 'value',
-      valueType: this._valueType,
-      operator: this._operator,
-      value: this._value
-    };
-  }
-
-  toQueryObject(): Object {
-    if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection();
-    } else {
-      return this.toQueryObjectWithoutSubselection();
-    }
-  }
-
-  get textRepresentation(): string {
-    return this._textRepresentation;
-  }
-
-  set textRepresentation(value: string) {
-    this._textRepresentation = value;
-  }
-
-  get isSubselection(): boolean {
-    return this._isSubselection;
-  }
-
-  set isSubselection(value: boolean) {
-    this._isSubselection = value;
-  }
-
-  get parent(): Constraint {
-    return this._parent;
-  }
-
-  set parent(value: Constraint) {
-    this._parent = value;
   }
 }

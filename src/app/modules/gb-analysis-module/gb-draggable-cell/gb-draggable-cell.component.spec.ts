@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDraggableCellComponent} from './gb-draggable-cell.component';
@@ -5,7 +13,7 @@ import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service
 import {CrossTableService} from '../../../services/cross-table.service';
 import {ConceptConstraint} from '../../../models/constraint-models/concept-constraint';
 import {Concept} from '../../../models/constraint-models/concept';
-import {CategoricalAggregate} from '../../../models/constraint-models/categorical-aggregate';
+import {CategoricalAggregate} from '../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../models/constraint-models/concept-type';
 import {DragDropModule} from 'primeng/primeng';
 

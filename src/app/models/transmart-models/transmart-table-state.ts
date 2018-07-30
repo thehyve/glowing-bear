@@ -1,24 +1,24 @@
-import {Order} from '../table-models/order';
-import {TransmartSort} from "./transmart-sort";
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {TransmartSort} from './transmart-sort';
 
 export class TransmartTableState {
-  public rowDimensions: Array<string>;
-  public columnDimensions: Array<string>;
-  public rowSort: Array<TransmartSort>;
-  public columnSort: Array<TransmartSort>;
+  public rowDimensions: string[] = [];
+  public columnDimensions: string[] = [];
+  public rowSort: TransmartSort[] = [];
+  public columnSort: TransmartSort[] = [];
 
-  constructor(rowDimensions: Array<string>,
-              columnDimensions: Array<string>) {
+  constructor(rowDimensions: string[], columnDimensions: string[]) {
     this.rowDimensions = rowDimensions;
     this.rowSort = [];
-    for (let rowDim of rowDimensions) {
-      this.rowSort.push(new TransmartSort(rowDim, Order.ASC));
-    }
     this.columnDimensions = columnDimensions;
     this.columnSort = [];
-    for (let colDim of columnDimensions) {
-      this.columnSort.push(new TransmartSort(colDim, Order.ASC));
-    }
   }
 
 }

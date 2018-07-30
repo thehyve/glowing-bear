@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDataSelectionComponent} from './gb-data-selection.component';
@@ -8,7 +16,6 @@ import {
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {EndpointService} from '../../services/endpoint.service';
 import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
@@ -23,8 +30,6 @@ import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
-import {MessageServiceMock} from '../../services/mocks/message.service.mock';
-import {MessageService} from '../../services/message.service';
 
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
@@ -53,10 +58,6 @@ describe('GbDataSelectionComponent', () => {
       ],
       providers: [
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
@@ -75,10 +76,6 @@ describe('GbDataSelectionComponent', () => {
         {
           provide: DataTableService,
           useClass: DataTableServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })

@@ -4,7 +4,7 @@
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-query-filter-input"
-                    placeholder="Search queries"
+                    placeholder="Filter queries"
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <button class="btn btn-secondary btn-sm gb-query-panel-clear-btn"
@@ -14,10 +14,12 @@
     <input id="queryFileUpload"
            type="file"
            style="display: none"/>
+    <hr>
     <button class="btn btn-outline-primary gb-query-panel-import-btn"
             (click)="importQuery()"
             type="button">import query
     </button>
+
   </div>
 
 
@@ -35,7 +37,8 @@
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
-      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+      <button *ngIf="isQuerySubscriptionIncluded"
+              pButton class="ui-button-secondary gb-query-sort-btn" type="button"
               (click)="sortBySubscription()"
               icon="icon-sort-subscription">
       </button>
@@ -55,7 +58,8 @@
             <div class="gb-query-header clearfix">
               <div class="gb-query-header-name">{{query.name}}</div>
               <div class="float-right">
-                <button pButton class="ui-button-secondary" type="button"
+                <button *ngIf="isQuerySubscriptionIncluded"
+                        pButton class="ui-button-secondary" type="button"
                         (click)="toggleQuerySubscription($event, query)"
                         icon="{{getQuerySubscriptionButtonIcon(query)}}">
                 </button>
@@ -83,7 +87,7 @@
           <div>Created: {{query.createDateInfo}}</div>
           <div>Updated: {{query.updateDateInfo}}</div>
           <!-- start: if the query is subscribed, show the subscription panel -->
-          <div *ngIf="query.subscribed">
+          <div *ngIf="isQuerySubscriptionIncluded && query.subscribed">
             <div class="gb-subscription-panel-header"
                  (click)="toggleSubscriptionPanel(query)">Subscription
             </div>

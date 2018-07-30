@@ -1,9 +1,18 @@
-import {Component, ElementRef, Input, OnInit} from '@angular/core';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Component, Input, OnInit} from '@angular/core';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {TreeNodeService} from '../../../services/tree-node.service';
 import {ConstraintService} from '../../../services/constraint.service';
 import {DropMode} from '../../../models/drop-mode';
+import {MessageHelper} from '../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -44,18 +53,25 @@ export class GbDroppableZoneComponent implements OnInit {
     this.dragCounter--;
   }
 
-  onDrop() {
+  onDrop(e) {
+    e.preventDefault();
     const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
-    // if no existing constraint is used, try to create a new one based on tree node drop
+    // if no existing constraint (from one of the already created draggable cells) is used,
+    // try to create a new one based on the (possible) tree node drop
     if (!constraint) {
       if (this.treeNodeService.selectedTreeNode) {
         constraint = this.constraintService
           .generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode, DropMode.TreeNode);
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
+          constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);
           // new constraint is introduced, creating new header constraints as well as cells
-          this.crossTableService.updateValueConstraints(this.constraints);
+          this.crossTableService.update(this.constraints);
+        } else {
+          const summary = 'Not a valid constraint, please choose a categorical concept!';
+          MessageHelper.alert('error', summary);
+          console.error(summary, constraint);
         }
       }
     } else {
@@ -65,9 +81,7 @@ export class GbDroppableZoneComponent implements OnInit {
         // no need to call backend to update value aggregates and cells
         // just update the rows and cols based on existing cells
         this.constraints.push(constraint);
-        if (selectedConstraintCell) {
-          selectedConstraintCell.remove();
-        }
+        selectedConstraintCell.remove();
       } else {
         // own constraint is dropped to the same zone, re-ordering action
         // do nothing for now, possible extension:

@@ -1,17 +1,35 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {TreeNode} from 'primeng/api';
+import {DropMode} from '../../models/drop-mode';
+import {Concept} from '../../models/constraint-models/concept';
+import {Study} from '../../models/constraint-models/study';
 
 export class ConstraintServiceMock {
 
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
-  concepts = [];
   _constraint: Constraint = new CombinationConstraint();
   validPedigreeTypes = [];
+  concepts: Concept[] = [];
+  conceptConstraints: Constraint[] = [];
+  conceptLabels: string[] = [];
+  allConstraints: Constraint[] = [];
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
     this._rootExclusionConstraint = new CombinationConstraint();
+  }
+
+  init() {
   }
 
   public depthOfConstraint(constraint: Constraint): number {
@@ -38,7 +56,11 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
-  public isCategoricalConceptConstraint(constraint: Constraint): boolean {
-    return true;
+  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
+    return this._constraint;
+  }
+
+  public searchAllConstraints(query: string): Constraint[] {
+    return [];
   }
 }

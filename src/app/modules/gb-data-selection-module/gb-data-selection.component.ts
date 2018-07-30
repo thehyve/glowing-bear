@@ -1,6 +1,13 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {FormatHelper} from '../../utilities/FormatHelper';
-import {MessageService} from '../../services/message.service';
+import {FormatHelper} from '../../utilities/format-helper';
 import {QueryService} from '../../services/query.service';
 
 @Component({
@@ -10,7 +17,7 @@ import {QueryService} from '../../services/query.service';
 })
 export class GbDataSelectionComponent implements OnInit {
 
-  constructor(public messageService: MessageService, public queryService: QueryService) {
+  constructor(public queryService: QueryService) {
   }
 
   ngOnInit() {
@@ -33,43 +40,47 @@ export class GbDataSelectionComponent implements OnInit {
   }
 
   get subjectCount_0(): string {
-    return FormatHelper.formatCountNumber(this.queryService.subjectCount_0);
+    return FormatHelper.formatCountNumber(this.queryService.counts_0.subjectCount);
   }
 
   get subjectCount_1(): string {
-    return FormatHelper.formatCountNumber(this.queryService.subjectCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.counts_1.subjectCount);
   }
 
   get subjectCount_2(): string {
-    return FormatHelper.formatCountNumber(this.queryService.subjectCount_2);
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.subjectCount);
   }
 
   get subjectCountPercentage_1(): string {
-    return FormatHelper.percentage(this.queryService.subjectCount_1, this.queryService.subjectCount_0);
+    return FormatHelper.percentage(this.queryService.counts_1.subjectCount, this.queryService.counts_0.subjectCount);
   }
 
   get subjectCountPercentage_2(): string {
-    return FormatHelper.percentage(this.queryService.subjectCount_2, this.queryService.subjectCount_1);
+    return FormatHelper.percentage(this.queryService.counts_2.subjectCount, this.queryService.counts_1.subjectCount);
   }
 
   get observationCount_0(): string {
-    return FormatHelper.formatCountNumber(this.queryService.observationCount_0);
+    return FormatHelper.formatCountNumber(this.queryService.counts_0.observationCount);
   }
 
   get observationCount_1(): string {
-    return FormatHelper.formatCountNumber(this.queryService.observationCount_1);
+    return FormatHelper.formatCountNumber(this.queryService.counts_1.observationCount);
   }
 
   get observationCount_2(): string {
-    return FormatHelper.formatCountNumber(this.queryService.observationCount_2);
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.observationCount);
   }
 
   get observationCountPercentage_1(): string {
-    return FormatHelper.percentage(this.queryService.observationCount_1, this.queryService.observationCount_0);
+    return FormatHelper.percentage(this.queryService.counts_1.observationCount, this.queryService.counts_0.observationCount);
   }
 
   get observationCountPercentage_2(): string {
-    return FormatHelper.percentage(this.queryService.observationCount_2, this.queryService.observationCount_1);
+    return FormatHelper.percentage(this.queryService.counts_2.observationCount, this.queryService.counts_1.observationCount);
+  }
+
+  get isDataTableUsed(): boolean {
+    return this.queryService.isDataTableUsed;
   }
 
   update_1(event) {

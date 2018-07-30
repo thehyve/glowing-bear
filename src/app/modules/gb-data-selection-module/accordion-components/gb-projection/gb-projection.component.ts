@@ -1,9 +1,17 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
-import {MessageService} from '../../../../services/message.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-projection',
@@ -12,11 +20,10 @@ import {MessageService} from '../../../../services/message.service';
 })
 export class GbProjectionComponent implements OnInit {
 
-  private isUploadListenerNotAdded: boolean;
+  isUploadListenerNotAdded: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
-              private queryService: QueryService,
-              private messageService: MessageService) {
+              private queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 
@@ -40,6 +47,8 @@ export class GbProjectionComponent implements OnInit {
     if (this.queryService.instantCountsUpdate_2) {
       this.queryService.update_2();
     } else {
+      this.queryService.counts_2.subjectCount = -1;
+      this.queryService.counts_2.observationCount = -1;
       this.queryService.isDirty_2 = true;
     }
   }
@@ -85,7 +94,7 @@ export class GbProjectionComponent implements OnInit {
       } else if (_json['observationsQuery']) {
         observationQuery = _json['observationsQuery'];
       } else {
-        this.messageService.alert('error', 'Invalid file content for STEP 2.');
+        MessageHelper.alert('error', 'Invalid file content for STEP 2.');
         return;
       }
       return {
@@ -93,7 +102,7 @@ export class GbProjectionComponent implements OnInit {
         'observationsQuery': observationQuery
       };
     } else {
-      this.messageService.alert('error', 'Invalid file format for STEP 2.');
+      MessageHelper.alert('error', 'Invalid file format for STEP 2.');
       return;
     }
   }
@@ -109,12 +118,16 @@ export class GbProjectionComponent implements OnInit {
     this.updateCounts();
   }
 
+  onCheckChange(val) {
+    this.checkAll(val);
+  }
+
   expandAll(value: boolean) {
     this.treeNodeService
       .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
   }
 
-  get isTreeNodeLoadingComplete(): boolean {
-    return this.treeNodeService.isTreeNodeLoadingComplete();
+  get isTreeNodeLoadingCompleted(): boolean {
+    return this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 }

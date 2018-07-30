@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbConstraintComponent} from './gb-constraint.component';
@@ -13,6 +21,8 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 import {MockComponent} from 'ng2-mock-component';
+import {StudiesService} from '../../../../services/studies.service';
+import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
 
 describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
@@ -44,6 +54,10 @@ describe('GbConstraintComponent', () => {
         {
           provide: QueryService,
           useClass: QueryServiceMock
+        },
+        {
+          provide: StudiesService,
+          useClass: StudiesServiceMock
         }
       ]
     })
@@ -59,19 +73,19 @@ describe('GbConstraintComponent', () => {
 
   it('should create GbConstraintComponent for StudyConstraint', () => {
     component.constraint = new StudyConstraint();
-    expect(component.constraint.getClassName()).toBe('StudyConstraint');
+    expect(component.constraint.className).toBe('StudyConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for ConceptConstraint', () => {
     component.constraint = new ConceptConstraint();
-    expect(component.constraint.getClassName()).toBe('ConceptConstraint');
+    expect(component.constraint.className).toBe('ConceptConstraint');
     expect(component).toBeTruthy();
   });
 
   it('should create GbConstraintComponent for CombinationConstraint', () => {
     component.constraint = new CombinationConstraint();
-    expect(component.constraint.getClassName()).toBe('CombinationConstraint');
+    expect(component.constraint.className).toBe('CombinationConstraint');
     expect(component).toBeTruthy();
   });
 

@@ -1,0 +1,99 @@
+/*
+    This is our main wrapping element,
+    it's made 100vh high to ensure it is always the correct size
+    and then moved into place and padded with negative margin and padding
+*/
+.gb-container {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
+}
+
+.gb-router-outlet-container {
+  margin-top: 4em;
+}
+
+/*
+    All the scrollable sections should overflow
+    and be whatever height they need to be.
+    As they are flex-items (due to being inside a flex container)
+    they could be made to stretch full height at all times if needed.
+    WebKit inertia scrolling is being added here
+    for any present/future devices that are able to make use of it.
+*/
+.gb-left-panel,
+.gb-right-panel {
+  overflow: auto;
+  height: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+}
+
+/*
+    We can choose to explicitly hide the scroll bar if we want
+ */
+/*.gb-left-panel::-webkit-scrollbar,*/
+/*.gb-right-panel::-webkit-scrollbar {*/
+/*display: none;*/
+/*}*/
+
+.gb-left-panel {
+  top: var(--gb-top-panel-height);
+  position: relative;
+  display: inline;
+  width: 30%;
+  background-color: #ededed;
+  margin-left: 0px;
+  margin-top: -5px;
+}
+
+.gb-right-panel {
+  top: var(--gb-top-panel-height);
+  position: relative;
+  padding-top: 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-top: 0px;
+  width: calc(74% - 10px - 6px);
+  background-color: white;
+}
+
+.gutter {
+  position: relative; /* important (all position that's not `static`) */
+  width: 10px;
+  height: auto;
+  background-color: #e4e4e4;
+  cursor: col-resize;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.gb-top-panel {
+  background-color: var(--gb-clinical-green-dark);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  border: none;
+  padding: 2px 1em 2px 1em;
+  margin: 0px;
+  height: var(--gb-top-panel-height);
+}
+
+.gb-top-panel button {
+  background-color: transparent;
+  border: none;
+  color: white;
+  padding: 3px 5px 1px 7px;
+  margin-top: -5px;
+}
+.gb-top-panel button:hover {
+  color: var(--gb-orange-light)
+}
+.gb-top-panel button:active {
+  border: none;
+}

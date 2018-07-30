@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {Dimension} from '../../../../models/table-models/dimension';
 import {DataTableService} from '../../../../services/data-table.service';
@@ -18,6 +26,7 @@ export class GbDataTableDimensionsComponent implements OnInit {
   }
 
   onChange() {
+    this.dataTableService.validateDimensions();
     this.queryService.isDirty_3 = true;
     if (this.queryService.instantCountsUpdate_3) {
       this.queryService.update_3();
@@ -28,7 +37,8 @@ export class GbDataTableDimensionsComponent implements OnInit {
    * This function handles the drop event when the user is reordering dimensions within
    * the same row-dimension container or the same column-dimension container
    */
-  onDrop() {
+  onDrop(e) {
+    e.preventDefault();
     let changed = false;
     if (this.dataTableService.prevRowDimensions.length === this.dataTableService.rowDimensions.length) {
       for (let i = 0; i < this.dataTableService.rowDimensions.length; i++) {

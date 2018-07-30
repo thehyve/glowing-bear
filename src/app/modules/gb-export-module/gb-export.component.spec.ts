@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbExportComponent} from './gb-export.component';
@@ -9,14 +17,11 @@ import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ResourceService} from '../../services/resource.service';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
-import {MessageServiceMock} from "../../services/mocks/message.service.mock";
-import {MessageService} from "../../services/message.service";
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -39,7 +44,6 @@ describe('GbExportComponent', () => {
         MessagesModule
       ],
       providers: [
-        SimpleTimer,
         {
           provide: AppConfig,
           useClass: AppConfigMock
@@ -51,10 +55,6 @@ describe('GbExportComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        {
-          provide: MessageService,
-          useClass: MessageServiceMock
         }
       ]
     })

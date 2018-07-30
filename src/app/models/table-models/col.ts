@@ -1,4 +1,12 @@
-import {FormatHelper} from '../../utilities/FormatHelper';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class Col {
   public static COLUMN_FIELD_PREFIX = 'col';
@@ -17,8 +25,7 @@ export class Col {
     if (metadata != null && metadata.size) {
       this.metadata = metadata;
       this.header += ' ⓘ';
-    }
-    else {
+    } else {
       this.metadata = new Map();
     }
   }

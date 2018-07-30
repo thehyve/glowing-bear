@@ -1,5 +1,14 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportJob} from '../../models/export-models/export-job';
+import {Observable} from 'rxjs/Observable';
 
 export class ExportServiceMock {
   private _exportDataTypes: ExportDataType[] = [];
@@ -7,6 +16,9 @@ export class ExportServiceMock {
   private _exportJobName: string;
   private _isLoadingExportDataTypes = false;
 
+  public isExportEnabled(): Observable<boolean> {
+    return Observable.of(true);
+  }
 
   updateExportJobs() {
   }

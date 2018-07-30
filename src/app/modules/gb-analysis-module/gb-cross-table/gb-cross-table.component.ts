@@ -1,4 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Component, OnInit} from '@angular/core';
 import {CrossTableService} from '../../../services/cross-table.service';
 import {CrossTable} from '../../../models/table-models/cross-table';
 import {Constraint} from '../../../models/constraint-models/constraint';
@@ -18,23 +26,23 @@ export class GbCrossTableComponent implements OnInit {
   ngOnInit() {
   }
 
-  get crossTable(): CrossTable {
-    return this.crossTableService.crossTable;
-  }
-
   get rowConstraints(): Array<Constraint> {
-    return this.crossTable.rowConstraints;
+    return this.crossTableService.rowConstraints;
   }
 
   get columnConstraints(): Array<Constraint> {
-    return this.crossTable.columnConstraints;
+    return this.crossTableService.columnConstraints;
   }
 
   get rows(): Array<Row> {
-    return this.crossTable.rows;
+    return this.crossTableService.rows;
   }
 
   get cols(): Array<Col> {
-    return this.crossTable.cols;
+    return this.crossTableService.cols;
+  }
+
+  get isUpdating(): boolean {
+    return this.crossTableService.crossTable.isUpdating;
   }
 }

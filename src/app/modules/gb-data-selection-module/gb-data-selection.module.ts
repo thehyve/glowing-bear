@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -20,9 +28,8 @@ import {
   TreeTableModule,
   DropdownModule,
   TooltipModule,
-  MessagesModule, PickListModule, PaginatorModule
+  MessagesModule, PickListModule, PaginatorModule, MultiSelectModule
 } from 'primeng/primeng';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
@@ -50,12 +57,10 @@ import {TableModule} from 'primeng/table';
     TooltipModule,
     MessagesModule,
     PickListModule,
+    MultiSelectModule
   ],
   exports: [
     RouterModule
-  ],
-  providers: [
-    SimpleTimer
   ],
   declarations: [
     GbDataSelectionComponent,

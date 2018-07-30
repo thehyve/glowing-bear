@@ -1,15 +1,16 @@
 <div class="export-container">
 
   <!---------------------- create new export ---------------------->
-  <div class="export-section-banner">
-    <h5>Create new export for the currently selected data</h5>
-  </div>
+  <div *ngIf="!isLoadingExportDataTypes && exportDataTypes.length > 0">
+    <div class="export-section-banner">
+      <h5>Create new export for the currently selected data</h5>
+    </div>
 
-  <div *ngIf="exportDataTypes.length > 0" class="gb-export-format-container">
+    <div class="gb-export-format-container">
 
-    <!-- area to indicate which data formats to export -->
-    <div class="gb-export-format-header">Select data types and formats to export:</div>
-    <div *ngFor="let dataType of exportDataTypes">
+      <!-- area to indicate which data formats to export -->
+      <div class="gb-export-format-header">Select data types and formats to export:</div>
+      <div *ngFor="let dataType of exportDataTypes">
       <span class="row">
         <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
           <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
@@ -22,34 +23,41 @@
         </span>
         )
       </span>
-    </div>
+      </div>
 
-    <!-- export name input and button -->
-    <div class="form-inline gb-export-btn-container">
-      <input id="exportJobNameInput" type="text" class="form-text"
-             placeholder="Export job name"
-             (drop)="onExportJobNameInputDrop($event)"
-             [(ngModel)]="exportJobName">
-      <span>&nbsp;</span>
-      <button type="button" class="btn btn-primary btn-sm"
-              (click)="createExportJob()">Create Export</button>
-      <span>&nbsp;</span>
-      <!-- show the date column checkbox if the resource service is in transmart mode -->
-      <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
-      <div *ngIf="isTransmartEnv">
-        <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
-          <p-checkbox class="gb-include-date-columns-checkbox"
-                      [(ngModel)]="resourceService.transmartDateColumnIncluded"
-                      binary="true"></p-checkbox>
-          Include measurement date columns
+      <!-- export name input and button -->
+      <div class="form-inline gb-export-btn-container">
+        <input id="exportJobNameInput" type="text" class="form-text"
+               placeholder="Export job name"
+               (drop)="onExportJobNameInputDrop($event)"
+               [(ngModel)]="exportJobName">
+        <span>&nbsp;</span>
+        <button type="button" class="btn btn-primary btn-sm"
+                (click)="createExportJob()">Create Export</button>
+        <span>&nbsp;</span>
+        <!-- show the date column checkbox if the resource service is in transmart mode -->
+        <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
+        <div *ngIf="isTransmartEnv">
+          <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
+            <p-checkbox class="gb-include-date-columns-checkbox"
+                        [(ngModel)]="resourceService.transmartDateColumnIncluded"
+                        binary="true"></p-checkbox>
+            Include measurement date columns
+          </div>
         </div>
       </div>
     </div>
   </div>
 
+
   <!-- the spinning icon -->
   <div *ngIf="isLoadingExportDataTypes">
-    <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
+    <div class="export-section-banner">
+      <h5>Loading export data types</h5>
+    </div>
+    <p class="loading center">
+      <span>•</span><span>•</span><span>•</span>
+    </p>
   </div>
 
   <hr>

@@ -1,11 +1,19 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Constraint} from './constraint';
 import {PedigreeState} from './pedigree-state';
 import {CombinationConstraint} from './combination-constraint';
 
 type TriState = true | false | undefined;
 
-export class PedigreeConstraint implements Constraint {
-  private _parent: Constraint;
+export class PedigreeConstraint extends Constraint {
+
   private _label: string;
   private _description: string;
   private _biological: TriState;
@@ -13,11 +21,9 @@ export class PedigreeConstraint implements Constraint {
   private _symmetrical: boolean;
   private _relationType: PedigreeState;
   private _rightHandSideConstraint: CombinationConstraint;
-  private _isSubselection: boolean;
-  private _textRepresentation: string;
 
   constructor(label: string) {
-    this.parent = null;
+    super();
     this.label = label;
     let relation = '';
     switch (label) {
@@ -58,52 +64,14 @@ export class PedigreeConstraint implements Constraint {
       }
     }
     this.rightHandSideConstraint = new CombinationConstraint();
-    this.rightHandSideConstraint.parent = this;
+    this.rightHandSideConstraint.parentConstraint = this;
     this.biological = undefined;
     this.shareHousehold = undefined;
     this.textRepresentation = `Pedigree: ${relation}`;
   }
 
-  getClassName(): string {
+  get className(): string {
     return 'PedigreeConstraint';
-  }
-
-  /**
-   * TODO
-   * @returns {Object}
-   */
-  toQueryObjectWithSubselection(full?: boolean): object {
-    return {};
-  }
-
-  toQueryObjectWithoutSubselection(full?: boolean): object {
-    return {
-      type: 'relation',
-      relatedSubjectsConstraint: this.rightHandSideConstraint.toQueryObject(full),
-      relationTypeLabel: this.label,
-      biological: this.biological,
-      shareHousehold: this.shareHousehold
-    };
-  }
-
-  /**
-   * TODO: implement shareHousehold flag
-   * @returns {Object}
-   */
-  toQueryObject(full?: boolean): object {
-    if (this.isSubselection) {
-      return this.toQueryObjectWithSubselection(full);
-    } else {
-      return this.toQueryObjectWithoutSubselection(full);
-    }
-  }
-
-  get textRepresentation(): string {
-    return this._textRepresentation;
-  }
-
-  set textRepresentation(value: string) {
-    this._textRepresentation = value;
   }
 
   get rightHandSideConstraint(): CombinationConstraint {
@@ -112,7 +80,7 @@ export class PedigreeConstraint implements Constraint {
 
   set rightHandSideConstraint(value: CombinationConstraint) {
     this._rightHandSideConstraint = value;
-    this._rightHandSideConstraint.parent = this;
+    this._rightHandSideConstraint.parentConstraint = this;
   }
 
   get relationType(): PedigreeState {
@@ -193,23 +161,17 @@ export class PedigreeConstraint implements Constraint {
     this._symmetrical = value;
   }
 
-  get isSubselection(): boolean {
-    return this._isSubselection;
-  }
-
-  set isSubselection(value: boolean) {
-    this._isSubselection = value;
-  }
-
-  get parent(): Constraint {
-    return this._parent;
-  }
-
-  set parent(value: Constraint) {
-    this._parent = value;
+  set parentConstraint(value: Constraint) {
+    this._parentConstraint = value;
     if (this.rightHandSideConstraint &&
-      this.rightHandSideConstraint.parent !== this) {
-      this.rightHandSideConstraint.parent = this;
+      this.rightHandSideConstraint.parentConstraint !== this) {
+      this.rightHandSideConstraint.parentConstraint = this;
     }
+  }
+
+  // for some reason, defining only the setter makes the super's getter ignored
+  // need to re-define it here
+  get parentConstraint(): Constraint {
+    return this._parentConstraint;
   }
 }

@@ -1,7 +1,14 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {DataTableService} from '../../../../services/data-table.service';
 import {Row} from '../../../../models/table-models/row';
-import {HeaderRow} from '../../../../models/table-models/header-row';
 import {Col} from '../../../../models/table-models/col';
 
 @Component({
@@ -22,23 +29,7 @@ export class GbDataTableGridComponent implements OnInit {
   }
 
   get cols(): Col[] {
-    if (this.dataTableService.isUsingHeaders) {
-      if (this.dataTableService.headerRows.length > 0) {
-        return this.dataTableService.headerRows[this.dataTableService.headerRows.length - 1].cols;
-      } else {
-        return [];
-      }
-    } else {
-      return this.dataTableService.cols;
-    }
-  }
-
-  get isUsingHeaders(): boolean {
-    return this.dataTableService.isUsingHeaders;
-  }
-
-  get headerRows(): HeaderRow[] {
-    return this.dataTableService.headerRows;
+    return this.dataTableService.cols;
   }
 
   get currentPage(): number {

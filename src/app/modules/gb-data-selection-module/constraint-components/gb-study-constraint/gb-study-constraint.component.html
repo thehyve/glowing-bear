@@ -1,14 +1,13 @@
-<div class="form-inline">
+<div class="form-inline" (drop)="onDrop($event)">
   <label>Study </label>
 
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedStudies"
                   [suggestions]="searchResults"
-                  field="studyId"
+                  field="id"
                   (completeMethod)="onSearch($event)"
-                  (onSelect)="updateStudies($event)"
-                  (onUnselect)="onUnselect($event)"
-                  (onBlur)="updateStudies($event)"
+                  (onSelect)="update()"
+                  (onUnselect)="update()"
                   dropdown="true"
                   [style]="{'width':'100%'}"
                   [inputStyle]="{'width':'100%'}"

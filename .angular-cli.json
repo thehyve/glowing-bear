@@ -48,7 +48,7 @@
       "project": "src/tsconfig.spec.json"
     },
     {
-      "project": "e2e/tsconfig.e2e.json"
+      "project": "tsconfig.json"
     }
   ],
   "test": {
@@ -58,6 +58,9 @@
   },
   "defaults": {
     "styleExt": "css",
+    "build": {
+      "showCircularDependencies": false
+    },
     "component": {}
   }
 }

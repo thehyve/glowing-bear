@@ -1,18 +1,27 @@
-import {TestBed, async} from '@angular/core/testing';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
 import {AppConfig} from './config/app.config';
-import {APP_INITIALIZER} from '@angular/core';
+import {APP_INITIALIZER, DebugElement} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
-import {EndpointService} from './services/endpoint.service';
+import {AuthenticationService} from './services/authentication/authentication.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
-import {EndpointServiceMock} from './services/mocks/endpoint.service.mock';
+import {AuthenticationServiceMock} from './services/mocks/authentication.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
@@ -25,24 +34,30 @@ import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
 import {DataTableService} from './services/data-table.service';
 import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
-import {TransmartResourceService} from './services/transmart-resource/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
 import {NavbarService} from './services/navbar.service';
 import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
-import {MessageService} from './services/message.service';
-import {MessageServiceMock} from './services/mocks/message.service.mock';
 import {ExportService} from './services/export.service';
 import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
-
+import {GbMainModule} from './modules/gb-main-module/gb-main.module';
+import {MessageHelper} from './utilities/message-helper';
+import {Observable} from 'rxjs/Observable';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
 }
 
 describe('AppComponent', () => {
+
+  let fixture: ComponentFixture<AppComponent>;
+  let debugElement: DebugElement;
+  let component: AppComponent;
+  let authenticationService: AuthenticationService;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
@@ -51,8 +66,10 @@ describe('AppComponent', () => {
       imports: [
         BrowserModule,
         FormsModule,
+        HttpClientModule,
         BrowserAnimationsModule,
         GrowlModule,
+        GbMainModule,
         GbNavBarModule,
         GbSidePanelModule,
         GbDataSelectionModule,
@@ -75,8 +92,8 @@ describe('AppComponent', () => {
           multi: true
         },
         {
-          provide: EndpointService,
-          useClass: EndpointServiceMock
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
         },
         {
           provide: TransmartResourceService,
@@ -111,20 +128,55 @@ describe('AppComponent', () => {
           useClass: NavbarServiceMock
         },
         {
-          provide: MessageService,
-          useClass: MessageServiceMock
-        },
-        {
           provide: ExportService,
           useClass: ExportServiceMock
         }
       ]
     }).compileComponents();
+
+    fixture = TestBed.createComponent(AppComponent);
+    debugElement = fixture.debugElement;
+    component = fixture.componentInstance;
+    authenticationService = TestBed.get(AuthenticationService);
   }));
 
   it('should be created', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
+    expect(component).toBeTruthy();
   }));
+
+  it('should logout', () => {
+    spyOn(component, 'logout').and.callThrough();
+    spyOn(authenticationService, 'logout').and.callThrough();
+    component.logout();
+    expect(component.logout).toHaveBeenCalled();
+    expect(authenticationService.logout).toHaveBeenCalled();
+  });
+
+  it('should get messages', () => {
+    spyOnProperty(component, 'messages', 'get').and.callThrough();
+    expect(component.messages).toBe(MessageHelper.messages);
+  });
+
+  it('should set messages', () => {
+    const dummy = [{foo: 'bar'}];
+    spyOnProperty(component, 'messages', 'set').and.callThrough();
+    component.messages = dummy;
+    expect(component.messages).toBe(dummy);
+  });
+
+  it('should handle authentication', () => {
+    let authenticated = true;
+    let spy1 = spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+        return Observable.of(authenticated);
+      });
+    let spy2 = spyOn(MessageHelper, 'alert').and.stub();
+    component.ngOnInit();
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalledWith('success', 'Authentication successful!');
+
+    authenticated = false;
+    component.ngOnInit();
+    expect(spy2).toHaveBeenCalledWith('error', 'Authentication failed!');
+  })
 });

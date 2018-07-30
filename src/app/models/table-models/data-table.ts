@@ -1,6 +1,13 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Dimension} from './dimension';
 import {Row} from './row';
-import {HeaderRow} from './header-row';
 import {Col} from './col';
 import {Constraint} from '../constraint-models/constraint';
 import {TrueConstraint} from '../constraint-models/true-constraint';
@@ -22,14 +29,10 @@ export class DataTable {
   private _rows: Array<Row>;
   // The index header row, used when headerRows are not used
   private _cols: Array<Col>;
-  // The hierarchical header rows with merged cells, used when cols are now used
-  private _headerRows: Array<HeaderRow>;
   // Indicate if the current data table is dirty
   private _isDirty: boolean;
   // Indicate if the current data table is updating
   private _isUpdating: boolean;
-  // Indicate if using merged-cell headers
-  private _isUsingHeaders: boolean;
   // Indicate if there is no more data to get from the back-end
   private _isLastPage: boolean;
   // The offset and limit used to make table calls with pagination
@@ -41,7 +44,6 @@ export class DataTable {
   constructor() {
     this.constraint = new TrueConstraint();
     this.isDirty = false;
-    this.isUsingHeaders = false;
     this.isLastPage = false;
     this.currentPage = 1;
     this.offset = 0;
@@ -62,7 +64,6 @@ export class DataTable {
   clearCells() {
     this.rows = [];
     this.cols = [];
-    this.headerRows = [];
   }
 
   get rowDimensions(): Array<Dimension> {
@@ -97,14 +98,6 @@ export class DataTable {
     this._cols = value;
   }
 
-  get headerRows(): Array<HeaderRow> {
-    return this._headerRows;
-  }
-
-  set headerRows(value: Array<HeaderRow>) {
-    this._headerRows = value;
-  }
-
   get constraint(): Constraint {
     return this._constraint;
   }
@@ -127,14 +120,6 @@ export class DataTable {
 
   set isUpdating(value: boolean) {
     this._isUpdating = value;
-  }
-
-  get isUsingHeaders(): boolean {
-    return this._isUsingHeaders;
-  }
-
-  set isUsingHeaders(value: boolean) {
-    this._isUsingHeaders = value;
   }
 
   get offset(): number {

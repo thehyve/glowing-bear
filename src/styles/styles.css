@@ -76,6 +76,77 @@ body .hline {
   margin-bottom: 5px;
 }
 
+@keyframes blink {
+  /**
+   * At the start of the animation the dot
+   * has an opacity of .2
+   */
+  0% {
+    opacity: .2;
+  }
+  /**
+   * At 20% the dot is fully visible and
+   * then fades out slowly
+   */
+  20% {
+    opacity: 1;
+  }
+  /**
+   * Until it reaches an opacity of .2 and
+   * the animation can start again
+   */
+  100% {
+    opacity: .2;
+  }
+}
+
+.loading-blink {
+  text-align: center;
+  font-size: 3em;
+  padding-right: 3em;
+}
+
+.loading-blink span {
+  /**
+   * Use the blink animation, which is defined above
+   */
+  animation-name: blink;
+  /**
+   * The animation should take 1.4 seconds
+   */
+  animation-duration: 1.4s;
+  /**
+   * It will repeat itself forever
+   */
+  animation-iteration-count: infinite;
+  /**
+   * This makes sure that the starting style (opacity: .2)
+   * of the animation is applied before the animation starts.
+   * Otherwise we would see a short flash or would have
+   * to set the default styling of the dots to the same
+   * as the animation. Same applies for the ending styles.
+   */
+  animation-fill-mode: both;
+}
+
+.loading-blink span:nth-child(2) {
+  /**
+   * Starts the animation of the third dot
+   * with a delay of .2s, otherwise all dots
+   * would animate at the same time
+   */
+  animation-delay: .2s;
+}
+
+.loading-blink span:nth-child(3) {
+  /**
+   * Starts the animation of the third dot
+   * with a delay of .4s, otherwise all dots
+   * would animate at the same time
+   */
+  animation-delay: .4s;
+}
+
 /*
  * Style for PrimeNg growl messages
  */
@@ -197,6 +268,11 @@ gb-data-selection .v-align-center {
   align-items: center;
 }
 
+gb-data-selection .ui-multiselect {
+  padding: 1px;
+  color: dimgrey;
+}
+
 /*
  * Style for buttons such as update, clear criteria, expand all/none, check all/none
  * in Data Selection
@@ -287,6 +363,11 @@ gb-projection p-treenode {
   font-size: small;
 }
 
+gb-projection p-checkbox label {
+  margin: auto;
+  font-size: small;
+}
+
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */
@@ -323,14 +404,6 @@ gb-tree-nodes .gb-tree-filter-input > input {
 }
 
 /*
- * Fix the style of the PrimeNg overlay panel so that it always stays on top
- * (overlay panel is used in the tree section on the left side)
- */
-gb-tree-nodes .ui-overlaypanel {
-  position: fixed !important;
-}
-
-/*
  * style class for loading tree nodes and patient counts
  */
 /*style fix for the primeng tree-container in the side-panel*/
@@ -338,31 +411,6 @@ gb-tree-nodes .gb-tree-container {
   width: auto;
   background-color: transparent;
   border: none;
-}
-
-/*
- * Style for the count element in a tree node on the left side
- * padding: top, right, bottom, left
- */
-@keyframes gb-count-element-animation {
-  from {
-    background-color: var(--gb-orange-light);
-  }
-  to {
-    background-color: transparent;
-  }
-}
-
-gb-tree-nodes .gb-count-element {
-  background-color: transparent;
-  padding: 1px 1px 1px 2px;
-  border-radius: 6px;
-  vertical-align: middle;
-}
-
-gb-tree-nodes .gb-count-element-updated {
-  animation-name: gb-count-element-animation;
-  animation-duration: 2s;
 }
 
 /*tree node styles for filtering*/

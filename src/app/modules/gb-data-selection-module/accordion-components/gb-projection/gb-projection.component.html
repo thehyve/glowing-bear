@@ -1,29 +1,28 @@
 <div>
-  <div class="container form-inline">
-    <span>&nbsp;</span>
-    <button type="button" (click)="expandAll(false)"
-            class="btn btn-primary btn-sm gb-data-selection-control-btn">Collapse All
-    </button>
-    <span style="color: lightgray">&nbsp;&middot;&nbsp;</span>
-    <button type="button" (click)="checkAll(true)"
-            class="btn btn-primary btn-sm gb-data-selection-control-btn">Check All
-    </button>
-    <span>&nbsp;</span>
-    <button type="button" (click)="checkAll(false)"
-            class="btn btn-primary btn-sm gb-data-selection-control-btn">Check None
-    </button>
-    <span style="color: lightgray">&nbsp;&middot;&nbsp;</span>
-    <button type="button" (click)="importCriteria()"
-            class="btn btn-primary btn-sm gb-data-selection-control-btn float-right">Import Criteria
-    </button>
-    <input id="step2CriteriaFileUpload"
-           type="file"
-           style="display: none"/>
-  </div>
-  <div *ngIf="!isTreeNodeLoadingComplete" class="container">
-    <i class="fa fa-circle-o-notch fa-spin"></i> loading tree nodes
+  <div class="container">
+    <!-- Check and expand buttons -->
+    <div class="float-left">
+      <span>&nbsp;</span>
+      <button type="button" (click)="expandAll(false)"
+              class="btn btn-primary btn-sm">Collapse All
+      </button>
+      <span>&nbsp;</span>
+      <p-checkbox label="Check all" (onChange)="onCheckChange($event)"></p-checkbox>
+    </div>
+
+    <!--Import criteria -->
+    <div class="float-right" style="margin-right: 2em">
+      <button type="button" (click)="importCriteria()"
+              class="btn btn-primary btn-sm gb-data-selection-control-btn float-right">Import Criteria
+      </button>
+      <input id="step2CriteriaFileUpload"
+             type="file"
+             style="display: none"/>
+    </div>
   </div>
 
+  <br>
+  <br>
   <p-tree [value]="projectionTreeData"
           selectionMode="checkbox"
           (onNodeSelect)="updateCounts()"
@@ -31,4 +30,10 @@
           [(selection)]="selectedProjectionTreeData"
           styleClass="gb-projection-tree-container">
   </p-tree>
+
+  <!-- the loading indicator -->
+  <div *ngIf="!isTreeNodeLoadingCompleted" style="margin: auto;">
+    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+  </div>
+
 </div>

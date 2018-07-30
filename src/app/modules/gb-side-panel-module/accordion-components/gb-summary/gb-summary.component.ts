@@ -1,8 +1,19 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {AfterViewInit, Component, ElementRef, OnInit} from '@angular/core';
 import {QueryService} from '../../../../services/query.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../../../models/drop-mode';
+import {FormatHelper} from '../../../../utilities/format-helper';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-summary',
@@ -16,6 +27,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
 
   constructor(private queryService: QueryService,
               private treeNodeService: TreeNodeService,
+              private crossTableService: CrossTableService,
               private element: ElementRef) {
   }
 
@@ -34,9 +46,11 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
   }
 
   private update() {
-    let treeNodeElements =
-      this.element.nativeElement.querySelector('.ui-tree-container').children;
-    this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
+    let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
+    if (treeNodeContainer) {
+      let treeNodeElements = treeNodeContainer.children;
+      this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
+    }
   }
 
   private updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
@@ -67,14 +81,20 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     }
   }
 
-  get subjectCount(): number {
-    return this.queryService.subjectCount_2 >= 0 ?
-      this.queryService.subjectCount_2 : this.queryService.subjectCount_1;
+  clearAll() {
+    this.queryService.clearAll()
+      .then(() => {
+        this.crossTableService.clear();
+        MessageHelper.alert('success', 'All selections are cleared.');
+      });
   }
 
-  get observationCount(): number {
-    return this.queryService.observationCount_2 >= 0 ?
-      this.queryService.observationCount_2 : this.queryService.observationCount_1;
+  get subjectCount(): string {
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.subjectCount);
+  }
+
+  get observationCount(): string {
+    return FormatHelper.formatCountNumber(this.queryService.counts_2.observationCount);
   }
 
   get finalTreeNodes(): TreeNode[] {
