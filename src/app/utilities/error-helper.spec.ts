@@ -26,4 +26,18 @@ describe('ErrorHelper.handleError', () => {
     expect(console.error).toHaveBeenCalledTimes(2);
   });
 
+  it('logs an access http error', () => {
+    let error = new HttpErrorResponse({
+      error: 'Access denied',
+      headers: new HttpHeaders(),
+      status: 403,
+      statusText: 'Access denied',
+      url: 'http://example.com'
+    });
+
+    console.error = jasmine.createSpy('error');
+    ErrorHelper.handleError(error);
+    expect(console.error).toHaveBeenCalledTimes(2);
+  });
+
 });
