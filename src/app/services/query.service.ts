@@ -389,7 +389,12 @@ export class QueryService {
             this.isUpdating_3 = false;
             resolve(true);
           })
-          .catch(err => reject(err))
+          .catch(err => {
+            ErrorHelper.handleError(err);
+            this.isDirty_3 = false;
+            this.isUpdating_3 = false;
+            reject(err)
+          })
       } else {
         this.isDirty_3 = false;
         this.isUpdating_3 = false;
