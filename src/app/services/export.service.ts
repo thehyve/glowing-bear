@@ -67,7 +67,13 @@ export class ExportService {
           .subscribe(dataTypes => {
             this.exportDataTypes = dataTypes;
             this.isLoadingExportDataTypes = false;
-          });
+          },
+            (err: HttpErrorResponse) => {
+              ErrorHelper.handleError(err);
+              this.exportDataTypes = [];
+              this.isLoadingExportDataTypes = false;
+            }
+          );
       }
     });
   }
