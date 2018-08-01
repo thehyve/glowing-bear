@@ -32,6 +32,8 @@ export class ErrorHelper {
         console.error(error.error);
         if (status === 401) {
           MessageHelper.alert('error', 'Unauthorised');
+        } else if (status === 403) {
+          MessageHelper.alert('error', 'Access denied');
         } else {
           MessageHelper.alert('error', 'A server-side error occurred');
         }

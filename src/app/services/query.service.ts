@@ -236,7 +236,6 @@ export class QueryService {
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       // update export flags
-      this.exportService.isLoadingExportDataTypes = true;
       this.isUpdating_1 = true;
       // set the flags
       this.loadingStateInclusion = 'loading';
@@ -339,8 +338,6 @@ export class QueryService {
               this.isUpdating_2 = false;
               this.isDirty_2 = false;
               this.isDirty_3 = true;
-              // update the export variables
-              this.exportService.updateExports();
               // update the final tree nodes in the summary panel
               if (this.counts_2.subjectCount > 0) {
                 this.treeNodeService.updateFinalTreeNodes();
@@ -389,7 +386,12 @@ export class QueryService {
             this.isUpdating_3 = false;
             resolve(true);
           })
-          .catch(err => reject(err))
+          .catch(err => {
+            ErrorHelper.handleError(err);
+            this.isDirty_3 = false;
+            this.isUpdating_3 = false;
+            reject(err)
+          })
       } else {
         this.isDirty_3 = false;
         this.isUpdating_3 = false;
