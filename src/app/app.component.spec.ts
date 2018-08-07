@@ -164,19 +164,31 @@ describe('AppComponent', () => {
     expect(component.messages).toBe(dummy);
   });
 
-  it('should handle authentication', () => {
+  it('should handle authentication success', () => {
     let authenticated = true;
-    let spy1 = spyOnProperty(authenticationService, 'authorised', 'get')
+    let authorisedCall = spyOnProperty(authenticationService, 'authorised', 'get')
       .and.callFake(() => {
         return Observable.of(authenticated);
       });
-    let spy2 = spyOn(MessageHelper, 'alert').and.stub();
+    let messageHelperCall = spyOn(MessageHelper, 'alert').and.stub();
     component.ngOnInit();
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalledWith('success', 'Authentication successful!');
+    expect(authorisedCall).toHaveBeenCalledTimes(1);
+    expect(messageHelperCall).toHaveBeenCalledTimes(1);
+    expect(messageHelperCall).toHaveBeenCalledWith('success', 'Authentication successful!');
+    expect(component.authenticationCompleted).toEqual(true);
+  });
 
-    authenticated = false;
+  it('should handle authentication failure', () => {
+    let authenticated = false;
+    let authorisedCall = spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+        return Observable.of(authenticated);
+      });
+    let messageHelperCall = spyOn(MessageHelper, 'alert').and.stub();
     component.ngOnInit();
-    expect(spy2).toHaveBeenCalledWith('error', 'Authentication failed!');
-  })
+    expect(authorisedCall).toHaveBeenCalledTimes(1);
+    expect(messageHelperCall).toHaveBeenCalledTimes(0);
+    expect(component.authenticationCompleted).toEqual(false);
+  });
+
 });

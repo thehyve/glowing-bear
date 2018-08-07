@@ -30,7 +30,6 @@ export class AppComponent implements OnInit {
         this._authenticationCompleted = true;
       } else {
         console.warn('Authenticated failed.');
-        MessageHelper.alert('error', 'Authentication failed!');
       }
     });
   }
