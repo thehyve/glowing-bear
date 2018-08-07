@@ -16,6 +16,7 @@ import {GbCrossTableComponent} from './gb-cross-table/gb-cross-table.component';
 import {GbDraggableCellComponent} from './gb-draggable-cell/gb-draggable-cell.component';
 import {GbDroppableZoneComponent} from './gb-droppable-zone/gb-droppable-zone.component';
 import {TableModule} from 'primeng/table';
+import {GbFractalisModule} from '../gb-fractalis-module/gb-fractalis.module';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import {TableModule} from 'primeng/table';
     routing,
     DragDropModule,
     TableModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    GbFractalisModule
   ],
   exports: [
     RouterModule
