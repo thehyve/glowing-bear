@@ -196,18 +196,18 @@ export class CrossTableService {
       try {
         this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
         this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+        this.resourceService.getCrossTable(this.crossTable)
+          .subscribe((crossTable: CrossTable) => {
+            this.crossTable = crossTable;
+            this.crossTable.isUpdating = false;
+            resolve(true);
+          }, (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject('Fail to get table cells from server.');
+          });
       } catch (e) {
         reject(e.message);
       }
-      this.resourceService.getCrossTable(this.crossTable)
-        .subscribe((crossTable: CrossTable) => {
-          this.crossTable = crossTable;
-          this.crossTable.isUpdating = false;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to get table cells from server.');
-        });
     });
   }
 

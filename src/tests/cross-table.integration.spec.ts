@@ -126,13 +126,7 @@ describe('Integration tests for cross table ', () => {
       expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
       expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
     });
-    crossTableService.crossTable.columnConstraints.splice(0, 1);
-    crossTableService.update([categorical, conjunctiveCategorical]);
-    crossTableService.updateCells()
-      .then(() => {
-        expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
-        expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
-      });
+    // TODO: simulate successful moving existing constraint in cross table
   });
 
 });

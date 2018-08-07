@@ -82,7 +82,7 @@ describe('TransmartResourceService', () => {
     transmartResourceService.studies.then(() =>
       fail()
     ).catch(() => {
-      expect(MessageHelper.messages.length).toEqual(messageCount + 1);
+      expect(MessageHelper.messages.length).toEqual(messageCount);
       expect(MessageHelper.messages[messageCount].summary).toContain('A server-side error occurred');
     });
   });

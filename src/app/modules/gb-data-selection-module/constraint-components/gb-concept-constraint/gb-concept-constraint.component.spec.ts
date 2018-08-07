@@ -36,6 +36,7 @@ import {UIHelper} from '../../../../utilities/ui-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
 import {StudiesService} from '../../../../services/studies.service';
+import {throwError} from 'rxjs/internal/observable/throwError';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -174,10 +175,10 @@ describe('GbConceptConstraintComponent', () => {
     component.constraint = constraint;
     let spy = spyOn(ErrorHelper, 'handleError').and.stub();
     spyOn(resourceService, 'getAggregate').and.callFake(() => {
-      return Observable.throw('error');
+      return throwError('error');
     });
     spyOn(resourceService, 'getTrialVisits').and.callFake(() => {
-      return Observable.throw('error');
+      return throwError('error');
     });
     component.initializeConstraints();
     expect(spy).toHaveBeenCalledTimes(2);

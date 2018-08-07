@@ -167,7 +167,7 @@ export class TransmartResourceService {
    * @param responseField
    * @returns {Observable<any | any>}
    */
-  private getCall(urlPart, responseField): Observable<any | TransmartStudy[]> {
+  private getCall(urlPart, responseField) {
     const url = `${this.endpointUrl}/${urlPart}`;
     if (responseField) {
       return this.http.get(url).pipe(

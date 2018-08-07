@@ -23,6 +23,7 @@ import {TreeNode} from 'primeng/api';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {throwError} from 'rxjs/internal/observable/throwError';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
@@ -88,7 +89,7 @@ describe('TreeNodeService', () => {
 
   it('should handle error for the initial loading of tree nodes', () => {
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
-      return Observable.throw(httpErrorResponse);
+      return throwError(httpErrorResponse);
     });
     let spy2 = spyOn(ErrorHelper, 'handleError').and.stub();
     treeNodeService.loadTreeNodes();
@@ -162,7 +163,7 @@ describe('TreeNodeService', () => {
       ]
     }
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
-      return Observable.throw(httpErrorResponse);
+      return throwError(httpErrorResponse);
     })
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth').and.stub();
     let spy3 = spyOn(treeNodeService, 'processTreeNode').and.stub();
