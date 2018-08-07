@@ -21,8 +21,7 @@ import {QueryService} from './query.service';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudiesService} from './studies.service';
-import {Observable} from 'rxjs/Observable';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {Observable, AsyncSubject} from 'rxjs';
 
 @Injectable()
 export class ExportService {

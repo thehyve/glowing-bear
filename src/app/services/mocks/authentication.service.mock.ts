@@ -6,11 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {of as observableOf, AsyncSubject, Observable} from 'rxjs';
 import {Injectable, OnDestroy} from '@angular/core';
 import {AuthenticationMethod} from '../authentication/authentication-method';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {AuthorizationResult} from '../authentication/authorization-result';
-import {Observable} from 'rxjs/Observable';
 import {AccessLevel} from '../authentication/access-level';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class AuthenticationServiceMock implements OnDestroy {
   }
 
   authorise(): Observable<AuthorizationResult> {
-    return Observable.of(AuthorizationResult.Authorized);
+    return observableOf(AuthorizationResult.Authorized);
   }
 
   get authorised(): AsyncSubject<boolean> {

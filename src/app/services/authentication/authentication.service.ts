@@ -8,11 +8,10 @@
 
 import {Injectable, Injector, OnDestroy} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {Observable} from 'rxjs/Observable';
+import {Observable, AsyncSubject} from 'rxjs';
 import {AuthenticationMethod} from './authentication-method';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorizationResult} from './authorization-result';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {AccessLevel} from './access-level';
 import * as jwt_decode from 'jwt-decode';
 

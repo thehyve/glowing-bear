@@ -6,7 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Observable} from 'rxjs/Observable';
+
+import {of as observableOf, Observable} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
@@ -50,11 +51,11 @@ export class TransmartResourceServiceMock {
   }
 
   getStudies(): Observable<TransmartStudy[]> {
-    return Observable.of(this._studies);
+    return observableOf(this._studies);
   }
 
   get studies(): Promise<TransmartStudy[]> {
-    return Observable.of(this._studies).toPromise();
+    return observableOf(this._studies).toPromise();
   }
 
   getPedigrees(): Observable<Pedigree[]> {
@@ -65,7 +66,7 @@ export class TransmartResourceServiceMock {
     p2.description = 'Dizyotic Twin';
     p2.label = 'DZ';
     let pedigrees: Pedigree[] = [p1, p2];
-    return Observable.of(pedigrees);
+    return observableOf(pedigrees);
   }
 
   getQueries(): Observable<TransmartQuery[]> {
@@ -198,30 +199,30 @@ export class TransmartResourceServiceMock {
       patientsQueryFull: q2.patientsQuery
     };
     let queries: TransmartQuery[] = [q1, q2];
-    return Observable.of(queries);
+    return observableOf(queries);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    return Observable.of(this.treeNodes);
+    return observableOf(this.treeNodes);
   }
 
   getExportJobs(): Observable<ExportJob[]> {
-    return Observable.of(this.exportJobs);
+    return observableOf(this.exportJobs);
   }
 
   logout() {
-    return Observable.of({});
+    return observableOf({});
   }
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
-    return Observable.of([]);
+    return observableOf([]);
   }
 
   getDataTable(tableState: TransmartTableState,
                constraint: Constraint,
                offset: number, limit: number): Observable<TransmartDataTable> {
     let dataTableResult = new TransmartDataTable();
-    return Observable.of(dataTableResult);
+    return observableOf(dataTableResult);
   }
 
   getCrossTable(baseConstraint: Constraint,
@@ -229,7 +230,7 @@ export class TransmartResourceServiceMock {
                 columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
     let crossTableResult = new TransmartCrossTable();
     crossTableResult.rows = [[0]];
-    return Observable.of(crossTableResult);
+    return observableOf(crossTableResult);
   }
 
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
@@ -245,7 +246,7 @@ export class TransmartResourceServiceMock {
         }
       }
     }
-    return Observable.of(response);
+    return observableOf(response);
   }
 
   getCountsPerStudy(constraint: Constraint): Observable<object> {
@@ -259,7 +260,7 @@ export class TransmartResourceServiceMock {
         observationCount: 100
       }
     };
-    return Observable.of(response);
+    return observableOf(response);
   }
 
   getCountsPerConcept(constraint: Constraint): Observable<object> {
@@ -273,14 +274,14 @@ export class TransmartResourceServiceMock {
         observationCount: 70
       }
     }
-    return Observable.of(countsPerConcept);
+    return observableOf(countsPerConcept);
   }
 
   getCounts(constraint: Constraint): Observable<TransmartCountItem> {
     let item = new TransmartCountItem();
     item.patientCount = 23;
     item.observationCount = 46;
-    return Observable.of(item);
+    return observableOf(item);
   }
 
   getAggregate(constraint: Constraint): Observable<object> {
@@ -294,15 +295,15 @@ export class TransmartResourceServiceMock {
         }
       }
     };
-    return Observable.of(numAgg);
+    return observableOf(numAgg);
   }
 
   getExportFileFormats(): Observable<string[]> {
-    return Observable.of(['tsv', 'csv']);
+    return observableOf(['tsv', 'csv']);
   }
 
   getExportDataFormats(constraint: Constraint): Observable<string[]> {
-    return Observable.of([]);
+    return observableOf([]);
   }
 
   get autosaveSubjectSets(): boolean {

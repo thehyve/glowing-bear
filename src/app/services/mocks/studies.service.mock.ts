@@ -7,8 +7,7 @@
  */
 
 import {Study} from '../../models/constraint-models/study';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
-import {Observable} from 'rxjs/Observable';
+import {AsyncSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 export class StudiesServiceMock {
