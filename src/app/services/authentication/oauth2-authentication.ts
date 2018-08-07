@@ -109,7 +109,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
             this._lock = false;
           });
         }, (error: any) => {
-          ErrorHelper.handleError(error);
           console.error(`Error retrieving token using ${grantType}: ${error}`);
           if (grantType === 'refresh_token') {
             // Remove previous token
@@ -243,11 +242,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       target = `${this.apiUrl}/logout`;
     }
     MessageHelper.alert('info', 'Redirect to logout page ...');
-    console.log(`Redirecting to ${target} ...`);
-    setTimeout(() => {
-        window.location.assign(target);
-      }, 4000
-    );
+    RedirectHelper.redirectTo(target);
   }
 
 }
