@@ -20,129 +20,129 @@ import {ConstraintService} from '../app/services/constraint.service';
 import {StudiesService} from '../app/services/studies.service';
 
 const mockResponseData = {
-  'columnDimensions' : [ {
-    'elements' : {
-      'TNS:DEM:AGE' : {
-        'conceptCode' : 'TNS:DEM:AGE',
-        'conceptPath' : '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Demography\\Age\\',
-        'label' : 'TNS:DEM:AGE',
-        'name' : 'Age'
+  'columnDimensions': [{
+    'elements': {
+      'TNS:DEM:AGE': {
+        'conceptCode': 'TNS:DEM:AGE',
+        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Demography\\Age\\',
+        'label': 'TNS:DEM:AGE',
+        'name': 'Age'
       },
-      'TNS:HD:EXPBREAST' : {
-        'conceptCode' : 'TNS:HD:EXPBREAST',
-        'conceptPath' : '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Breast\\',
-        'label' : 'TNS:HD:EXPBREAST',
-        'name' : 'Breast'
+      'TNS:HD:EXPBREAST': {
+        'conceptCode': 'TNS:HD:EXPBREAST',
+        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Breast\\',
+        'label': 'TNS:HD:EXPBREAST',
+        'name': 'Breast'
       },
-      'TNS:HD:EXPLUNG' : {
-        'conceptCode' : 'TNS:HD:EXPLUNG',
-        'conceptPath' : '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Lung\\',
-        'label' : 'TNS:HD:EXPLUNG',
-        'name' : 'Lung'
+      'TNS:HD:EXPLUNG': {
+        'conceptCode': 'TNS:HD:EXPLUNG',
+        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\HD\\Lung\\',
+        'label': 'TNS:HD:EXPLUNG',
+        'name': 'Lung'
       },
-      'TNS:LAB:CELLCNT' : {
-        'conceptCode' : 'TNS:LAB:CELLCNT',
-        'conceptPath' : '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Lab\\Cell Count\\',
-        'label' : 'TNS:LAB:CELLCNT',
-        'name' : 'Cell Count'
+      'TNS:LAB:CELLCNT': {
+        'conceptCode': 'TNS:LAB:CELLCNT',
+        'conceptPath': '\\Public Studies\\TUMOR_NORMAL_SAMPLES\\Lab\\Cell Count\\',
+        'label': 'TNS:LAB:CELLCNT',
+        'name': 'Cell Count'
       }
     },
-    'name' : 'concept'
+    'name': 'concept'
   }, {
-    'name' : 'sample_type'
-  } ],
-    'columnHeaders' : [ {
-    'dimension' : 'concept',
-    'keys' : [ 'TNS:DEM:AGE', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPLUNG', 'TNS:HD:EXPLUNG',
-      'TNS:LAB:CELLCNT', 'TNS:LAB:CELLCNT' ]
+    'name': 'sample_type'
+  }],
+  'columnHeaders': [{
+    'dimension': 'concept',
+    'keys': ['TNS:DEM:AGE', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPBREAST', 'TNS:HD:EXPLUNG', 'TNS:HD:EXPLUNG',
+      'TNS:LAB:CELLCNT', 'TNS:LAB:CELLCNT']
   }, {
-    'dimension' : 'sample_type',
-    'elements' : [ null, 'Normal', 'Tumor', 'Normal', 'Tumor', 'Normal', 'Tumor' ]
-  } ],
-    'offset' : 0,
-    'rowCount' : 3,
-    'rowDimensions' : [ {
-    'elements' : {
-      '-43/TNS:43' : {
-        'age' : 52,
-        'birthDate' : null,
-        'deathDate' : null,
-        'id' : -43,
-        'inTrialId' : '3',
-        'label' : '-43/TNS:43',
-        'maritalStatus' : null,
-        'race' : 'Caucasian',
-        'religion' : null,
-        'sex' : 'female',
-        'sexCd' : 'Female',
-        'subjectIds' : {
-          'SUBJ_ID' : 'TNS:43'
+    'dimension': 'sample_type',
+    'elements': [null, 'Normal', 'Tumor', 'Normal', 'Tumor', 'Normal', 'Tumor']
+  }],
+  'offset': 0,
+  'rowCount': 3,
+  'rowDimensions': [{
+    'elements': {
+      '-43/TNS:43': {
+        'age': 52,
+        'birthDate': null,
+        'deathDate': null,
+        'id': -43,
+        'inTrialId': '3',
+        'label': '-43/TNS:43',
+        'maritalStatus': null,
+        'race': 'Caucasian',
+        'religion': null,
+        'sex': 'female',
+        'sexCd': 'Female',
+        'subjectIds': {
+          'SUBJ_ID': 'TNS:43'
         },
-        'trial' : 'TUMOR_NORMAL_SAMPLES'
+        'trial': 'TUMOR_NORMAL_SAMPLES'
       },
-      '-53/TNS:53' : {
-        'age' : 42,
-        'birthDate' : null,
-        'deathDate' : null,
-        'id' : -53,
-        'inTrialId' : '2',
-        'label' : '-53/TNS:53',
-        'maritalStatus' : null,
-        'race' : 'Latino',
-        'religion' : null,
-        'sex' : 'male',
-        'sexCd' : 'Male',
-        'subjectIds' : {
-          'SUBJ_ID' : 'TNS:53'
+      '-53/TNS:53': {
+        'age': 42,
+        'birthDate': null,
+        'deathDate': null,
+        'id': -53,
+        'inTrialId': '2',
+        'label': '-53/TNS:53',
+        'maritalStatus': null,
+        'race': 'Latino',
+        'religion': null,
+        'sex': 'male',
+        'sexCd': 'Male',
+        'subjectIds': {
+          'SUBJ_ID': 'TNS:53'
         },
-        'trial' : 'TUMOR_NORMAL_SAMPLES'
+        'trial': 'TUMOR_NORMAL_SAMPLES'
       },
-      '-63/TNS:63' : {
-        'age' : 40,
-        'birthDate' : null,
-        'deathDate' : null,
-        'id' : -63,
-        'inTrialId' : '1',
-        'label' : '-63/TNS:63',
-        'maritalStatus' : null,
-        'race' : 'Caucasian',
-        'religion' : null,
-        'sex' : 'male',
-        'sexCd' : 'Male',
-        'subjectIds' : {
-          'SUBJ_ID' : 'TNS:63'
+      '-63/TNS:63': {
+        'age': 40,
+        'birthDate': null,
+        'deathDate': null,
+        'id': -63,
+        'inTrialId': '1',
+        'label': '-63/TNS:63',
+        'maritalStatus': null,
+        'race': 'Caucasian',
+        'religion': null,
+        'sex': 'male',
+        'sexCd': 'Male',
+        'subjectIds': {
+          'SUBJ_ID': 'TNS:63'
         },
-        'trial' : 'TUMOR_NORMAL_SAMPLES'
+        'trial': 'TUMOR_NORMAL_SAMPLES'
       }
     },
-    'name' : 'patient'
-  } ],
-    'rows' : [ {
-    'cells' : [ 40, null, 'sample3', 'sample1', 'sample2', 203, 100 ],
-    'rowHeaders' : [ {
-      'dimension' : 'patient',
-      'key' : '-63/TNS:63'
-    } ]
+    'name': 'patient'
+  }],
+  'rows': [{
+    'cells': [40, null, 'sample3', 'sample1', 'sample2', 203, 100],
+    'rowHeaders': [{
+      'dimension': 'patient',
+      'key': '-63/TNS:63'
+    }]
   }, {
-    'cells' : [ 42, null, 'sample5', null, 'sample4', 180, 80 ],
-    'rowHeaders' : [ {
-      'dimension' : 'patient',
-      'key' : '-53/TNS:53'
-    } ]
+    'cells': [42, null, 'sample5', null, 'sample4', 180, 80],
+    'rowHeaders': [{
+      'dimension': 'patient',
+      'key': '-53/TNS:53'
+    }]
   }, {
-    'cells' : [ 52, 'sample9', null, [ 'sample7', 'sample8' ], 'sample6', [ 380, 240 ], 28 ],
-    'rowHeaders' : [ {
-      'dimension' : 'patient',
-      'key' : '-43/TNS:43'
-    } ]
-  } ],
-    'sort' : [ {
-    'dimension' : 'patient',
-    'sortOrder' : 'asc'
+    'cells': [52, 'sample9', null, ['sample7', 'sample8'], 'sample6', [380, 240], 28],
+    'rowHeaders': [{
+      'dimension': 'patient',
+      'key': '-43/TNS:43'
+    }]
+  }],
+  'sort': [{
+    'dimension': 'patient',
+    'sortOrder': 'asc'
   }, {
-    'dimension' : 'concept',
-    'sortOrder' : 'asc'
-  } ]
+    'dimension': 'concept',
+    'sortOrder': 'asc'
+  }]
 };
 
 /**

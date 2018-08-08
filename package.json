@@ -8,7 +8,7 @@
     "build": "ng build",
     "package": "ng build --prod",
     "test": "ng test --code-coverage",
-    "testOnce": "ng test --single-run --code-coverage",
+    "testOnce": "ng test --watch=false --code-coverage",
     "lint": "ng lint glowing-bear glowing-bear-e2e --type-check",
     "report-coverage": "codecov",
     "e2e": "npx cypress run",
