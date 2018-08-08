@@ -12,7 +12,7 @@ import {DatePipe} from '@angular/common';
 import {ExportDataType} from '../app/models/export-models/export-data-type';
 import {ExportFileFormat} from '../app/models/export-models/export-file-format';
 import {ExportJob} from '../app/models/export-models/export-job';
-import {StudiesService} from '../app/services/studies.service';
+import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 
@@ -37,7 +37,7 @@ describe('Integration test for data export', () => {
         DataTableService,
         CrossTableService,
         ExportService,
-        StudiesService,
+        StudyService,
         QueryService,
         NavbarService,
         DatePipe

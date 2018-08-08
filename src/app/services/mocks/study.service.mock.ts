@@ -10,7 +10,7 @@ import {Study} from '../../models/constraint-models/study';
 import {AsyncSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-export class StudiesServiceMock {
+export class StudyServiceMock {
 
   private _loaded: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _studies: Study[] = [];

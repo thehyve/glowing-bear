@@ -15,8 +15,8 @@ import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
-import {StudiesService} from './studies.service';
-import {StudiesServiceMock} from './mocks/studies.service.mock';
+import {StudyService} from './study.service';
+import {StudyServiceMock} from './mocks/study.service.mock';
 
 describe('ConstraintService', () => {
   beforeEach(() => {
@@ -27,8 +27,8 @@ describe('ConstraintService', () => {
           useClass: TreeNodeServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         },
         {
           provide: ResourceService,

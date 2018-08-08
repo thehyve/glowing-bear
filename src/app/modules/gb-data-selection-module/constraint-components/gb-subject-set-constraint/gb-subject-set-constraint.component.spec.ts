@@ -17,8 +17,8 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
-import {StudiesService} from '../../../../services/studies.service';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
+import {StudyService} from '../../../../services/study.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 
 describe('GbSubjectSetConstraintComponent', () => {
   let component: GbSubjectSetConstraintComponent;
@@ -41,8 +41,8 @@ describe('GbSubjectSetConstraintComponent', () => {
           useClass: TreeNodeServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         },
         {
           provide: QueryService,

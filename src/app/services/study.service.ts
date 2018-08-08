@@ -17,7 +17,7 @@ import {map} from 'rxjs/operators';
  * for other components.
  */
 @Injectable()
-export class StudiesService {
+export class StudyService {
 
   private _loaded: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _studies: Study[] = [];

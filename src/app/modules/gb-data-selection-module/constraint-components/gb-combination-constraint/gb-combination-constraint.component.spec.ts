@@ -23,8 +23,8 @@ import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
-import {StudiesService} from '../../../../services/studies.service';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
+import {StudyService} from '../../../../services/study.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -59,8 +59,8 @@ describe('GbCombinationConstraintComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         }
       ]
     })

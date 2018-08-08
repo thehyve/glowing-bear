@@ -34,8 +34,8 @@ import {TimeConstraint} from '../../../../models/constraint-models/time-constrai
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
-import {StudiesService} from '../../../../services/studies.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {StudyService} from '../../../../services/study.service';
 import {throwError} from 'rxjs/internal/observable/throwError';
 
 describe('GbConceptConstraintComponent', () => {
@@ -76,8 +76,8 @@ describe('GbConceptConstraintComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         }
       ]
     })

@@ -21,7 +21,7 @@ import {Observable} from 'rxjs/Observable';
 import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
 import {Concept} from '../app/models/constraint-models/concept';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
-import {StudiesService} from '../app/services/studies.service';
+import {StudyService} from '../app/services/study.service';
 
 describe('Integration tests for cross table ', () => {
 
@@ -38,7 +38,7 @@ describe('Integration tests for cross table ', () => {
           useClass: ResourceServiceMock
         },
         ConstraintService,
-        StudiesService,
+        StudyService,
         CrossTableService,
         TreeNodeService,
         NavbarService

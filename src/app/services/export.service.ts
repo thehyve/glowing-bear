@@ -20,7 +20,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {QueryService} from './query.service';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
-import {StudiesService} from './studies.service';
+import {StudyService} from './study.service';
 import {Observable, AsyncSubject} from 'rxjs';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class ExportService {
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
-              private studiesService: StudiesService,
+              private studyService: StudyService,
               private dataTableService: DataTableService,
               private injector: Injector,
               private datePipe: DatePipe) {
@@ -44,7 +44,7 @@ export class ExportService {
       this._exportEnabled.next(true);
       this._exportEnabled.complete();
     } else {
-      this.studiesService.existsPublicStudy.subscribe((existsPublicStudy) => {
+      this.studyService.existsPublicStudy.subscribe((existsPublicStudy) => {
         console.log(`Export ${existsPublicStudy ? 'enabled' : 'disabled'}.`);
         this._exportEnabled.next(existsPublicStudy);
         this._exportEnabled.complete();

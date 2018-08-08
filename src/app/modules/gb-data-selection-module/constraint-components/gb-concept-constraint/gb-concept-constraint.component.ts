@@ -153,7 +153,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         this.allTrialVisits = [];
         this.selectedTrialVisits = [];
         this.suggestedTrialVisits = [];
-        this.studiesService.existsTrialVisitDimension.subscribe(existsTrialVisitDimension => {
+        this.studyService.existsTrialVisitDimension.subscribe(existsTrialVisitDimension => {
           if (existsTrialVisitDimension) {
             this.resourceService.getTrialVisits(conceptOnlyConstraint)
               .subscribe(
