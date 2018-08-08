@@ -89,4 +89,40 @@ describe('GbConstraintComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should emit remove event', () => {
+    let spy1 = spyOn(component.constraintRemoved, 'emit').and.stub();
+    component.remove();
+    expect(spy1).toHaveBeenCalled();
+  });
+
+  it('should handle drag and drop', () => {
+    let dragStart: DragEvent = new DragEvent('dragstart');
+    let dragOver: DragEvent = new DragEvent('dragover');
+    let dragLeave: DragEvent = new DragEvent('dragleave');
+    let drop: DragEvent = new DragEvent('drop');
+
+    let spy1 = spyOn(dragStart, 'stopPropagation').and.stub();
+    let spy2 = spyOn(dragStart, 'preventDefault').and.stub();
+    let spy3 = spyOn(dragOver, 'stopPropagation').and.stub();
+    let spy4 = spyOn(dragOver, 'preventDefault').and.stub();
+    let spy5 = spyOn(drop, 'preventDefault').and.stub();
+
+    component.onDragEnter(dragStart);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect(component.element.nativeElement.firstChild.classList).toContain('dropzone');
+
+    component.onDragOver(dragOver);
+    expect(spy3).toHaveBeenCalled();
+    expect(spy4).toHaveBeenCalled();
+    expect(component.element.nativeElement.firstChild.classList).toContain('dropzone');
+
+    component.onDragLeave(dragLeave);
+    expect(component.element.nativeElement.firstChild.classList).not.toContain('dropzone');
+
+    component.onDrop(drop);
+    expect(spy5).toHaveBeenCalled();
+    expect(component.element.nativeElement.firstChild.classList).not.toContain('dropzone');
+  });
+
 });

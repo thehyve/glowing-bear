@@ -32,7 +32,7 @@ export class GbConstraintComponent implements OnInit {
               protected constraintService: ConstraintService,
               protected queryService: QueryService,
               protected studyService: StudyService,
-              protected element: ElementRef) {
+              public element: ElementRef) {
   }
 
   ngOnInit() {

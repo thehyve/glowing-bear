@@ -25,7 +25,6 @@ import {Concept} from '../../../../models/constraint-models/concept';
 import {Observable} from 'rxjs/Observable';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {ErrorHelper} from '../../../../utilities/error-helper';
-import {Error} from 'tslint/lib/error';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
@@ -430,7 +429,30 @@ describe('GbConceptConstraintComponent', () => {
     component.valDate2 = new Date('2018-06-06');
     component.updateDateConceptValues();
     expect(constraint.valDateConstraint.date2.getTime()).toEqual(1528250400000);
+  })
 
+  it('should check the states of the concept component', () => {
+    let c: Concept = new Concept();
+    (<ConceptConstraint>component.constraint).concept = c;
+    c.type = ConceptType.NUMERICAL;
+    expect(component.isNumeric()).toBe(true);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(false);
+    c.type = ConceptType.CATEGORICAL;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(true);
+    expect(component.isDate()).toBe(false);
+    c.type = ConceptType.DATE;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(true);
+  })
+
+  it('should return false when concept is absent in constraint', () => {
+    (<ConceptConstraint>component.constraint).concept = null;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(false);
   })
 
 });
