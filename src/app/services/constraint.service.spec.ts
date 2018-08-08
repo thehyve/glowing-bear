@@ -7,7 +7,6 @@
  */
 
 import {TestBed, inject} from '@angular/core/testing';
-
 import {ConstraintService} from './constraint.service';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
@@ -60,5 +59,6 @@ describe('ConstraintService', () => {
     expect(result.length).toBe(1);
     result = constraintService.searchAllConstraints('non-exist');
     expect(result.length).toBe(0);
-  })
+  });
+
 });
