@@ -92,6 +92,9 @@ describe('ExportService', () => {
     queryService.counts_2 = new CountItem(1, 1);
     result = exportService.validateExportJob('test job name 1');
     expect(result).toBe(true);
+    queryService.counts_2 = new CountItem(0, 0);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
   });
 
 });
