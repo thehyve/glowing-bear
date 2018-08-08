@@ -9,7 +9,7 @@
     "package": "ng build --prod",
     "test": "ng test --code-coverage",
     "testOnce": "ng test --single-run --code-coverage",
-    "lint": "ng lint --type-check",
+    "lint": "ng lint glowing-bear glowing-bear-e2e --type-check",
     "report-coverage": "codecov",
     "e2e": "npx cypress run",
     "cypress": "npx cypress open",
@@ -66,7 +66,7 @@
     "protractor": "~5.1.2",
     "protractor-cucumber-framework": "^3.1.0",
     "ts-node": "~2.0.0",
-    "tslint": "~5.0.0",
+    "tslint": "~5.11.0",
     "typescript": "2.9.2"
   },
   "repository": {
