@@ -61,8 +61,6 @@ export class NavbarService {
               .then(() => {
                 this.queryService.update_3()
                   .then(() => {
-                    // update the export variables
-                    this.exportService.updateExports();
                     resolve(true);
                   })
                   .catch(err => {
