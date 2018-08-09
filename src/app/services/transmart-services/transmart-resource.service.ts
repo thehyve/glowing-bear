@@ -9,7 +9,7 @@
 
 import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse, HttpResponse} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';

@@ -17,6 +17,9 @@ import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {QueryService} from '../query.service';
 import {QueryServiceMock} from '../mocks/query.service.mock';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {Pedigree} from '../../models/constraint-models/pedigree';
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 
 describe('TransmartResourceService', () => {
 
@@ -25,7 +28,8 @@ describe('TransmartResourceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
-        HttpClientModule
+        HttpClientModule,
+        HttpClientTestingModule
       ],
       providers: [
         TransmartResourceService,
@@ -38,10 +42,207 @@ describe('TransmartResourceService', () => {
     transmartResourceService = TestBed.get(TransmartResourceService);
   });
 
-  it('TransmartResourceService should be injected',
+  afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
+    httpMock.verify();
+  }));
+
+  it('should be injected',
     inject([TransmartResourceService], (service: TransmartResourceService) => {
       expect(service).toBeTruthy();
     }));
+
+  it('should get tree nodes',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          tree_nodes: {
+            foo: 'bar'
+          }
+        };
+        service.getTreeNodes('root', 2, false, false).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/tree_nodes?root=root&depth=2';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        req.flush(mockData);
+      }));
+
+  it('should get pedigrees',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          relationTypes: {
+            foo: 'bar'
+          }
+        };
+        service.getPedigrees().subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/pedigree/relation_types';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        req.flush(mockData);
+      }));
+
+  it('should get export jobs',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          exportJobs: {
+            foo: 'bar'
+          }
+        };
+        service.getExportJobs().subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/jobs';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        req.flush(mockData);
+      }));
+
+  it('should get export data formats',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          dataFormats: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getExportDataFormats(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/data_formats';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get export file formats',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          fileFormats: {
+            foo: 'bar'
+          }
+        };
+        service.getExportFileFormats().subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/file_formats?dataView=default';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        req.flush(mockData);
+      }));
+
+  it('should get trial visits',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          elements: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getTrialVisits(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/dimensions/trial visit/elements?constraint={"type":"true"}';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        req.flush(mockData);
+      }));
+
+
+  it('should get aggregate',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          aggregatesPerConcept: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getAggregate(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/aggregates_per_concept';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get counts',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          foo: 'bar'
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getCounts(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/counts';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get counts per concept',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          countsPerConcept: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getCountsPerConcept(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/counts_per_concept';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get counts per study',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          countsPerStudy: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getCountsPerStudy(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/counts_per_study';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get counts per study and concept',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          countsPerStudy: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getCountsPerStudyAndConcept(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/counts_per_study_and_concept';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
 
   it('should fetch studies from the TranSMART resource service', function () {
     let study1 = new TransmartStudy();
