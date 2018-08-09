@@ -9,8 +9,8 @@
   padding: 8px 12px;
 }
 
-.gb-warning {
+.gb-info {
   color: black;
-  background-color: #ffffcc;
-  border-left: 6px solid #ffeb3b;
+  background-color: #f0f0f0;
+  border-left: 6px solid #13b4e6;
 }
