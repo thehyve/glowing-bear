@@ -7,14 +7,13 @@
  */
 
 
-import {of as observableOf, AsyncSubject, Observable} from 'rxjs';
-import {Injectable, OnDestroy} from '@angular/core';
+import {AsyncSubject} from 'rxjs';
+import {Injectable} from '@angular/core';
 import {AuthenticationMethod} from '../authentication/authentication-method';
-import {AuthorizationResult} from '../authentication/authorization-result';
 import {AccessLevel} from '../authentication/access-level';
 
 @Injectable()
-export class AuthenticationServiceMock implements OnDestroy {
+export class AuthenticationServiceMock {
 
   private authenticationMethod: AuthenticationMethod;
 
@@ -24,14 +23,7 @@ export class AuthenticationServiceMock implements OnDestroy {
   public load() {
   }
 
-  ngOnDestroy(): void {
-  }
-
   logout() {
-  }
-
-  authorise(): Observable<AuthorizationResult> {
-    return observableOf(AuthorizationResult.Authorized);
   }
 
   get authorised(): AsyncSubject<boolean> {
