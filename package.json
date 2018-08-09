@@ -40,7 +40,7 @@
     "rxjs": "^6.2.2",
     "sanitize-filename": "^1.6.1",
     "zone.js": "^0.8.5",
-    "rxjs-compat": "^6.0.0-rc.0"
+    "rxjs-compat": "^6.2.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.7.0",

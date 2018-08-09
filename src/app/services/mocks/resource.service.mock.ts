@@ -16,15 +16,10 @@ import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {HttpErrorResponse} from '@angular/common/http';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {TransmartResourceService} from '../transmart-services/transmart-resource.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
-import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
 
 export class ResourceServiceMock {
   private studies: Study[];

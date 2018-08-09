@@ -217,14 +217,12 @@ export class ExportService {
    */
   validateExportJob(name: string): boolean {
     let validName = name !== '';
-
     // 1. Validate if job name is specified
     if (!validName) {
       const summary = 'Please specify the job name.';
       MessageHelper.alert('warn', summary);
       return false;
     }
-
     // 2. Validate if job name is not duplicated
     for (let job of this.exportJobs) {
       if (job['jobName'] === name) {
@@ -233,14 +231,12 @@ export class ExportService {
         return false;
       }
     }
-
     // 3. Validate if at least one data type is selected
     if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       MessageHelper.alert('warn', summary);
       return false;
     }
-
     // 4. Validate if at least one file format is selected for checked data formats
     for (let dataFormat of this.exportDataTypes) {
       if (dataFormat['checked'] === true) {
@@ -251,7 +247,6 @@ export class ExportService {
         }
       }
     }
-
     // 5. Validate if at least one observation is included
     let queryService = this.injector.get(QueryService);
     if (queryService.counts_2.observationCount < 1) {
