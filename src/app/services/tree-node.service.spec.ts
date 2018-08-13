@@ -662,6 +662,7 @@ describe('TreeNodeService', () => {
     let conceptCode = 'a-code';
     let studyId1 = 'an-id-1';
     let conceptCode1 = 'a-code-1';
+    let conceptCode2 = 'a-code-2';
     let conceptMap = new Map<string, CountItem>();
     conceptMap.set(conceptCode, new CountItem(10, 20));
     treeNodeService.selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
@@ -669,12 +670,15 @@ describe('TreeNodeService', () => {
     let conceptMap1 = new Map<string, CountItem>();
     conceptMap1.set(conceptCode1, new CountItem(100, 200));
     treeNodeService.selectedStudyConceptCountMap.set(studyId1, conceptMap1);
+    treeNodeService.selectedConceptCountMap = new Map<string, CountItem>();
+    treeNodeService.selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
     let node1: TreeNode = {};
     let node2: TreeNode = {};
     let node2a: TreeNode = {};
     let node3: TreeNode = {};
     let node4: TreeNode = {};
     let node5: TreeNode = {};
+    let node6: TreeNode = {};
     node1['visualAttributes'] = ['bar', 'foo', 'LEAF'];
     node2['children'] = [node2a];
     node4['visualAttributes'] = ['LEAF'];
@@ -685,10 +689,14 @@ describe('TreeNodeService', () => {
     node2a['studyId'] = studyId1;
     node2a['conceptCode'] = conceptCode1;
     node5['children'] = [{}];
-    let nodes = [node1, node2, node3, node4, node5];
+    node6['name'] = 'node6';
+    node6['studyId'] = undefined;
+    node6['conceptCode'] = conceptCode2;
+    node6['visualAttributes'] = ['LEAF'];
+    let nodes = [node1, node2, node3, node4, node5, node6];
     let resultNodes = treeNodeService.updateProjectionTreeDataIterative(nodes);
     expect(node4['expanded']).toBe(false);
-    expect(resultNodes.length).toEqual(2);
+    expect(resultNodes.length).toEqual(3);
     expect(resultNodes[0]['label']).toBeUndefined();
     expect(resultNodes[1]['label']).toBeDefined();
   })
