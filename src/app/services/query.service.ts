@@ -258,6 +258,7 @@ export class QueryService {
             this.counts_0.observationCount = this.counts_1.observationCount;
           }
           this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
+          this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
           this.isUpdating_1 = false;
           this.loadingStateInclusion = 'complete';
           this.loadingStateExclusion = 'complete';

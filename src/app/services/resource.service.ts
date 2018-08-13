@@ -47,6 +47,7 @@ export class ResourceService {
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  private _selectedConceptCountMap: Map<string, CountItem>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
@@ -111,6 +112,8 @@ export class ResourceService {
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
               this.selectedStudyConceptCountMap =
                 TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
+              this.selectedConceptCountMap =
+                TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
               resolve(true);
             })
             .catch(err => {
@@ -575,9 +578,9 @@ export class ResourceService {
             crossTable.constraint,
             crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
             crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints))).pipe(
-          map((tmCrossTable: TransmartCrossTable) => {
-            return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
-          }));
+            map((tmCrossTable: TransmartCrossTable) => {
+              return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
+            }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -608,6 +611,14 @@ export class ResourceService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
   }
 
   get endpointMode(): EndpointMode {
