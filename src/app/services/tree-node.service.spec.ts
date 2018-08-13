@@ -15,7 +15,7 @@ import {NavbarServiceMock} from './mocks/navbar.service.mock';
 import {ConstraintService} from './constraint.service';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
@@ -74,7 +74,7 @@ describe('TreeNodeService', () => {
     constraintService.concepts = [new Concept()];
     constraintService.conceptConstraints = [new ConceptConstraint()];
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
-      return Observable.of(dummyNodes);
+      return observableOf(dummyNodes);
     });
     let spy2 = spyOn(treeNodeService, 'processTreeNodes').and.stub();
     let spy3 = spyOn(treeNodeService, 'loadTreeNext').and.stub();
@@ -111,9 +111,9 @@ describe('TreeNodeService', () => {
     let spy1 = spyOn(resourceService, 'getTreeNodes')
       .and.callFake((fullname, depth, hasCounts, hasTag) => {
         if (fullname === parentFullName) {
-          return Observable.of([parentNode]);
+          return observableOf([parentNode]);
         }
-        return Observable.of([otherNode]);
+        return observableOf([otherNode]);
       })
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth')
       .and.callFake((refNode, depth, descendants) => {
@@ -142,7 +142,7 @@ describe('TreeNodeService', () => {
       ]
     }
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
-      return Observable.of(null);
+      return observableOf(null);
     })
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth').and.stub();
     let spy3 = spyOn(treeNodeService, 'processTreeNode').and.stub();

@@ -23,6 +23,7 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {Concept} from '../../models/constraint-models/concept';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {of as observableOf} from 'rxjs';
 
 describe('TransmartResourceService', () => {
 
@@ -361,7 +362,7 @@ describe('TransmartResourceService', () => {
     let testStudies: TransmartStudy[] = [study1, study2];
 
     let resourceCall = spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
-      Observable.of(testStudies)
+      observableOf(testStudies)
     );
 
     // The first time, the studies should be fetched from the resource

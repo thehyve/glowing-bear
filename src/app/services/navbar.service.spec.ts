@@ -9,15 +9,11 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
-import {AuthenticationService} from './authentication/authentication.service';
-import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 import {QueryService} from './query.service';
 import {QueryServiceMock} from './mocks/query.service.mock';
-import {AccessLevel} from './authentication/access-level';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
-import {Observable} from 'rxjs/Observable';
-import Spy = jasmine.Spy;
+import {of as observableOf} from 'rxjs';
 
 describe('NavbarService', () => {
   let queryService: QueryService;
@@ -42,7 +38,7 @@ describe('NavbarService', () => {
     queryService = TestBed.get(QueryService);
     exportService = TestBed.get(ExportService);
     exportEnabled = false;
-    spyOn(exportService, 'isExportEnabled').and.callFake(() => Observable.of(exportEnabled));
+    spyOn(exportService, 'isExportEnabled').and.callFake(() => observableOf(exportEnabled));
     navbarService = TestBed.get(NavbarService);
   });
 

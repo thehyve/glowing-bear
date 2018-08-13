@@ -10,7 +10,7 @@ import {TestBed} from '@angular/core/testing';
 import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from '../app/services/mocks/transmart-resource.service.mock';
 import {ResourceService} from '../app/services/resource.service';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import Spy = jasmine.Spy;
 import {TransmartTableState} from '../app/models/transmart-models/transmart-table-state';
 import {Constraint} from '../app/models/constraint-models/constraint';
@@ -182,7 +182,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
       .and.callFake((tableState: TransmartTableState,
                      constraint: Constraint,
                      offset: number, limit: number) => {
-        return Observable.of(mockResponseData);
+        return observableOf(mockResponseData);
       });
 
     dataTableService.updateDataTable();

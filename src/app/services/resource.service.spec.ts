@@ -17,7 +17,7 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {NumericalAggregate} from '../models/aggregate-models/numerical-aggregate';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {Concept} from '../models/constraint-models/concept';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {Query} from '../models/query-models/query';
@@ -155,7 +155,7 @@ describe('ResourceService', () => {
       }
     };
     spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
-      return Observable.of(catAgg);
+      return observableOf(catAgg);
     });
     dummy.concept.code = 'CV:DEM:RACE';
     resourceService.getAggregate(dummy)
@@ -174,7 +174,7 @@ describe('ResourceService', () => {
 
   it('should handle empty aggregate object', () => {
     spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
-      return Observable.of({});
+      return observableOf({});
     });
     let dummy = new ConceptConstraint();
     dummy.concept = new Concept();

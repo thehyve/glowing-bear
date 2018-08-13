@@ -17,7 +17,7 @@ import {Constraint} from '../app/models/constraint-models/constraint';
 import {TreeNodeService} from '../app/services/tree-node.service';
 import {NavbarService} from '../app/services/navbar.service';
 import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
 import {Concept} from '../app/models/constraint-models/concept';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
@@ -87,11 +87,11 @@ describe('Integration tests for cross table ', () => {
       let agg = new CategoricalAggregate();
       agg.valueCounts.set('heart', 10);
       agg.valueCounts.set('liver', 20);
-      return Observable.of(agg);
+      return observableOf(agg);
     });
     let spy2 = spyOn(crossTableService, 'updateCells').and.callThrough();
     let spy3 = spyOn(resourceService, 'getCrossTable').and.callFake(() => {
-      return Observable.of(crossTableService.crossTable);
+      return observableOf(crossTableService.crossTable);
     });
     let conjunctiveCategorical = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
     crossTableService.crossTable.rowConstraints.push(conjunctiveCategorical);
