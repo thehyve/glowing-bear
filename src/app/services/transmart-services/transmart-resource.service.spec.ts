@@ -15,11 +15,14 @@ import {AppConfigMock} from '../../config/app.config.mock';
 import {MessageHelper} from '../../utilities/message-helper';
 import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {QueryService} from '../query.service';
-import {QueryServiceMock} from '../mocks/query.service.mock';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {Concept} from '../../models/constraint-models/concept';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 
 describe('TransmartResourceService', () => {
 
@@ -135,6 +138,110 @@ describe('TransmartResourceService', () => {
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('GET');
         req.flush(mockData);
+      }));
+
+  it('should download export job',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const jobId = 'anid';
+        const mockData: Blob = new Blob([]);
+        service.downloadExportJob(jobId).subscribe(res => {
+          expect(res).toBe(mockData);
+        })
+        const url = service.endpointUrl + '/export/' + jobId + '/download';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('GET');
+        expect(req.request.responseType).toEqual('blob');
+        req.flush(mockData);
+      }));
+
+  it('should cancel export job',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          exportJob: {
+            foo: 'bar'
+          }
+        };
+        const jobId = 'an-id';
+        service.cancelExportJob(jobId).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/' + jobId + '/cancel';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should archive export job',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          foo: 'bar'
+        };
+        const jobId = 'an-id';
+        service.archiveExportJob(jobId).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/' + jobId;
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('DELETE');
+        req.flush(mockData);
+      }));
+
+  it('should run export job',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        // scenario 1: no auto saved subject set, no table state
+        const jobId = 'an-id';
+        const mockData = {
+          exportJob: {
+            foo: 'bar'
+          }
+        };
+        let mockConstraint = new TrueConstraint();
+        const el1 = new TransmartExportElement();
+        const el2 = new TransmartExportElement();
+        const elements = [el1, el2];
+        let tableState = undefined;
+        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/export/' + jobId + '/run';
+        let req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body['constraint']).toBeDefined();
+        expect(req.request.body['constraint']['type']).toBe('true');
+        expect(req.request.body['elements']).toBeDefined();
+        expect(req.request.body['includeMeasurementDateColumns']).toBeDefined();
+
+        // scenario 2: with auto saved subject set, no table state
+        service.autosaveSubjectSets = true;
+        service.subjectSetConstraint = new SubjectSetConstraint();
+        service.subjectSetConstraint.subjectIds = ['id1', 'id2'];
+        mockConstraint = new CombinationConstraint();
+        let c1 = new ConceptConstraint();
+        c1.concept = new Concept();
+        let c2 = new ConceptConstraint();
+        c2.concept = new Concept();
+        (<CombinationConstraint>mockConstraint).addChild(c1);
+        (<CombinationConstraint>mockConstraint).addChild(c2);
+        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        req = httpMock.expectOne(url);
+        expect(req.request.body['constraint']['type']).toBe('and');
+
+        // scenario 2: with auto saved subject set, with table state
+        tableState = new TransmartTableState(['row1'], []);
+        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        req = httpMock.expectOne(url);
+        expect(req.request.body['tableConfig']).toBeDefined();
+        expect(req.request.body['tableConfig']['rowDimensions'][0]).toBe('row1');
+
+        console.log(req.request.body['constraint'])
       }));
 
   it('should get trial visits',
