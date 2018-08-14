@@ -228,8 +228,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   handleTrialVisits(visits) {
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     this.allTrialVisits = visits;
-    this.selectedTrialVisits = visits.slice(0);
-    constraint.trialVisitConstraint.trialVisits = visits.slice(0);
+    this.selectedTrialVisits = visits.slice(0); // new array of visits
+    constraint.trialVisitConstraint.trialVisits = visits.slice(0); // new array of visits
   }
 
   generateCategoricalValueItems(valueCounts: Map<string, number>, targetValues: string[]): SelectItem[] {
@@ -511,12 +511,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
     this.update();
-  }
-
-  onUnselectTrialVisit(visit) {
-    let index = this.selectedTrialVisits.indexOf(visit);
-    this.selectedTrialVisits.splice(index, 1);
-    this.updateTrialVisitValues();
   }
 
   /*

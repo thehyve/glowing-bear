@@ -140,9 +140,9 @@
                           [suggestions]="suggestedTrialVisits"
                           (completeMethod)="onTrialVisitSearch($event)"
                           (onSelect)="updateTrialVisitValues($event)"
-                          (onUnselect)="onUnselectTrialVisit($event)"
+                          (onUnselect)="updateTrialVisitValues($event)"
                           dropdown="true"
-                          field="relTimeLabel"
+                          field="label"
                           (onDropdownClick)="onTrialVisitDropdown($event)"
                           [multiple]="true"></p-autoComplete>
           <button type="button" class="btn btn-outline-secondary"

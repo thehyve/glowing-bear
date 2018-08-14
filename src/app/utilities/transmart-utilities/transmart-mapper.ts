@@ -27,6 +27,8 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {Study} from '../../models/constraint-models/study';
 import {Concept} from '../../models/constraint-models/concept';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
+import {TrialVisit} from '../../models/constraint-models/trial-visit';
 
 export class TransmartMapper {
 
@@ -174,6 +176,20 @@ export class TransmartMapper {
     }
 
     return aggregate;
+  }
+
+  public static mapTransmartTrialVisit(tmTrialVisit: TransmartTrialVisit): TrialVisit {
+    let tv = new TrialVisit(tmTrialVisit.id);
+    tv.relTime = Number(tmTrialVisit.relTime);
+    tv.relTimeunit = tmTrialVisit.relTimeUnit;
+    tv.relTimeLabel = tmTrialVisit.relTimeLabel;
+    return tv;
+  }
+
+  public static mapTransmartTrialVisits(tmTrialVisits: TransmartTrialVisit[]): TrialVisit[] {
+    return tmTrialVisits.map((visit: TransmartTrialVisit) => {
+      return TransmartMapper.mapTransmartTrialVisit(visit);
+    })
   }
 
   /**
