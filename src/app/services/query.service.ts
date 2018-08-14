@@ -99,6 +99,8 @@ export class QueryService {
   // _subjectCount_2 < or = _subjectCount_1
   // _observationCount_2 could be <, > or = _observationCount_1
   private _counts_2: CountItem;
+  // boolean value to indicate if all tree nodes in step 2 are checked
+  private _checkAll_2 = false;
   /*
    *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
    */
@@ -181,6 +183,7 @@ export class QueryService {
     this.constraintService.clearConstraint_1();
     this.constraintService.clearConstraint_2();
     this.step = Step.I;
+    this.checkAll_2 = false;
     return this.updateAll(true);
   }
 
@@ -736,5 +739,13 @@ export class QueryService {
 
   set isQuerySubscriptionIncluded(value: boolean) {
     this._isQuerySubscriptionIncluded = value;
+  }
+
+  get checkAll_2(): boolean {
+    return this._checkAll_2;
+  }
+
+  set checkAll_2(value: boolean) {
+    this._checkAll_2 = value;
   }
 }
