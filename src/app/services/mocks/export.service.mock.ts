@@ -6,9 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {of as observableOf, Observable} from 'rxjs';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Observable} from 'rxjs/Observable';
 
 export class ExportServiceMock {
   private _exportDataTypes: ExportDataType[] = [];
@@ -17,7 +18,7 @@ export class ExportServiceMock {
   private _isLoadingExportDataTypes = false;
 
   public isExportEnabled(): Observable<boolean> {
-    return Observable.of(true);
+    return observableOf(true);
   }
 
   updateExportJobs() {

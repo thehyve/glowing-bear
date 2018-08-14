@@ -21,15 +21,15 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 import {Study} from '../../../../models/constraint-models/study';
-import {StudiesService} from '../../../../services/studies.service';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
+import {StudyService} from '../../../../services/study.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 
 describe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
   let fixture: ComponentFixture<GbStudyConstraintComponent>;
   let constraintService: ConstraintService;
   let treeNodeService: TreeNodeService;
-  let studiesService: StudiesService;
+  let studyService: StudyService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -56,15 +56,15 @@ describe('GbStudyConstraintComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         }
       ]
     })
       .compileComponents();
     constraintService = TestBed.get(ConstraintService);
     treeNodeService = TestBed.get(TreeNodeService);
-    studiesService = TestBed.get(StudiesService);
+    studyService = TestBed.get(StudyService);
   }));
 
   beforeEach(() => {
@@ -85,7 +85,7 @@ describe('GbStudyConstraintComponent', () => {
     ];
     let e = new MouseEvent('');
     e['originalEvent'] = new MouseEvent('');
-    let spy1 = spyOnProperty(studiesService, 'studies', 'get').and.returnValue(dummies);
+    let spy1 = spyOnProperty(studyService, 'studies', 'get').and.returnValue(dummies);
     component.onDropdown(e);
     expect(spy1).toHaveBeenCalled();
     expect(component.searchResults).toBe(dummies);
@@ -133,7 +133,7 @@ describe('GbStudyConstraintComponent', () => {
     let study1 = new Study(); study1.id = 'id1';
     let study2 = new Study(); study2.id = 'id2';
     let study3 = new Study(); study3.id = 'abc';
-    studiesService.studies =  [study1, study2, study3];
+    studyService.studies =  [study1, study2, study3];
     component.onSearch(event);
     expect(component.searchResults.length).toEqual(1);
 

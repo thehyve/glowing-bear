@@ -24,8 +24,8 @@ import {QueryServiceMock} from './mocks/query.service.mock';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
-import {StudiesService} from './studies.service';
-import {StudiesServiceMock} from './mocks/studies.service.mock';
+import {StudyService} from './study.service';
+import {StudyServiceMock} from './mocks/study.service.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -47,8 +47,8 @@ describe('ExportService', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         },
         {
           provide: DataTableService,
@@ -92,6 +92,9 @@ describe('ExportService', () => {
     queryService.counts_2 = new CountItem(1, 1);
     result = exportService.validateExportJob('test job name 1');
     expect(result).toBe(true);
+    queryService.counts_2 = new CountItem(0, 0);
+    result = exportService.validateExportJob('test job name 1');
+    expect(result).toBe(false);
   });
 
 });

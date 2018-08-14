@@ -6,7 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Observable} from 'rxjs/Observable';
+
+import {of as observableOf, Observable} from 'rxjs';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
@@ -15,15 +16,10 @@ import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
 import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {HttpErrorResponse} from '@angular/common/http';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {TransmartResourceService} from '../transmart-services/transmart-resource.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
-import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -60,19 +56,19 @@ export class ResourceServiceMock {
   }
 
   getStudies(): Observable<Study[]> {
-    return Observable.of(this.studies);
+    return observableOf(this.studies);
   }
 
   getPedigrees(): Observable<object[]> {
-    return Observable.of([]);
+    return observableOf([]);
   }
 
   getQueries(): Observable<Query[]> {
-    return Observable.of(this.queries);
+    return observableOf(this.queries);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    return Observable.of(this.treeNodes);
+    return observableOf(this.treeNodes);
   }
 
   getExportJobs(): Observable<ExportJob[]> {
@@ -80,12 +76,12 @@ export class ResourceServiceMock {
     newExportJob.id = 'id';
     newExportJob.jobName = 'test job name';
     this.exportJobs = [newExportJob];
-    return Observable.of(this.exportJobs);
+    return observableOf(this.exportJobs);
   }
 
   getDataTable(dataTable: DataTable,
                offset: number, limit: number): Observable<DataTable> {
-    return Observable.of(this.dataTable);
+    return observableOf(this.dataTable);
   }
 
   get sortableDimensions(): Set<string> {
@@ -93,11 +89,11 @@ export class ResourceServiceMock {
   }
 
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
-    return Observable.of(this.crossTable);
+    return observableOf(this.crossTable);
   }
 
   getCounts(constraint: Constraint): Observable<object> {
-    return Observable.of({});
+    return observableOf({});
   }
 
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>>> {
@@ -112,7 +108,7 @@ export class ResourceServiceMock {
     let map = new Map<string, Map<string, CountItem>>();
     map.set('study1', map1);
     map.set('study2', map2);
-    return Observable.of(map);
+    return observableOf(map);
   }
 
   getCountsPerStudy(constraint: Constraint): Observable<Map<string, CountItem>> {
@@ -121,7 +117,7 @@ export class ResourceServiceMock {
     let item2 = new CountItem(100, 200);
     map.set('study1', item1);
     map.set('study2', item2);
-    return Observable.of(map);
+    return observableOf(map);
   }
 
   getCountsPerConcept(constraint: Constraint): Observable<Map<string, CountItem>> {
@@ -132,42 +128,42 @@ export class ResourceServiceMock {
     map.set('concept1', item1);
     map.set('concept2', item2);
     map.set('concept3', item3);
-    return Observable.of(map);
+    return observableOf(map);
   }
 
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
-    return Observable.of(this.aggregate);
+    return observableOf(this.aggregate);
   }
 
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
-    return Observable.of([]);
+    return observableOf([]);
   }
 
   logout() {
-    return Observable.of({});
+    return observableOf({});
   }
 
   diffQuery(queryId: string): Observable<object[]> {
-    return Observable.of([{}]);
+    return observableOf([{}]);
   }
 
   deleteQuery(queryId: string): Observable<{}> {
-    return Observable.of({});
+    return observableOf({});
   }
 
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
-    return Observable.of([]);
+    return observableOf([]);
   }
 
   saveQuery(query: Query): Observable<Query> {
-    return Observable.of(new Query('id', 'name'));
+    return observableOf(new Query('id', 'name'));
   }
 
   createExportJob(name: string): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
     newExportJob.jobName = 'test job name';
-    return Observable.of(newExportJob);
+    return observableOf(newExportJob);
   }
 
   runExportJob(job: ExportJob,
@@ -177,6 +173,6 @@ export class ResourceServiceMock {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
     newExportJob.jobName = 'test job name';
-    return Observable.of(newExportJob);
+    return observableOf(newExportJob);
   }
 }

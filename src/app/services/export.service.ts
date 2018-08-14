@@ -20,9 +20,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {QueryService} from './query.service';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
-import {StudiesService} from './studies.service';
-import {Observable} from 'rxjs/Observable';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {StudyService} from './study.service';
+import {Observable, AsyncSubject} from 'rxjs';
 
 @Injectable()
 export class ExportService {
@@ -36,7 +35,7 @@ export class ExportService {
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
-              private studiesService: StudiesService,
+              private studyService: StudyService,
               private dataTableService: DataTableService,
               private injector: Injector,
               private datePipe: DatePipe) {
@@ -45,7 +44,7 @@ export class ExportService {
       this._exportEnabled.next(true);
       this._exportEnabled.complete();
     } else {
-      this.studiesService.existsPublicStudy.subscribe((existsPublicStudy) => {
+      this.studyService.existsPublicStudy.subscribe((existsPublicStudy) => {
         console.log(`Export ${existsPublicStudy ? 'enabled' : 'disabled'}.`);
         this._exportEnabled.next(existsPublicStudy);
         this._exportEnabled.complete();
@@ -218,14 +217,12 @@ export class ExportService {
    */
   validateExportJob(name: string): boolean {
     let validName = name !== '';
-
     // 1. Validate if job name is specified
     if (!validName) {
       const summary = 'Please specify the job name.';
       MessageHelper.alert('warn', summary);
       return false;
     }
-
     // 2. Validate if job name is not duplicated
     for (let job of this.exportJobs) {
       if (job['jobName'] === name) {
@@ -234,14 +231,12 @@ export class ExportService {
         return false;
       }
     }
-
     // 3. Validate if at least one data type is selected
     if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
       const summary = 'Please select at least one data type.';
       MessageHelper.alert('warn', summary);
       return false;
     }
-
     // 4. Validate if at least one file format is selected for checked data formats
     for (let dataFormat of this.exportDataTypes) {
       if (dataFormat['checked'] === true) {
@@ -252,7 +247,6 @@ export class ExportService {
         }
       }
     }
-
     // 5. Validate if at least one observation is included
     let queryService = this.injector.get(QueryService);
     if (queryService.counts_2.observationCount < 1) {

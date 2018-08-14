@@ -17,11 +17,12 @@ import {Constraint} from '../app/models/constraint-models/constraint';
 import {TreeNodeService} from '../app/services/tree-node.service';
 import {NavbarService} from '../app/services/navbar.service';
 import {CategoricalAggregate} from '../app/models/aggregate-models/categorical-aggregate';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
 import {Concept} from '../app/models/constraint-models/concept';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
-import {StudiesService} from '../app/services/studies.service';
+import {StudyService} from '../app/services/study.service';
+import {ValueConstraint} from '../app/models/constraint-models/value-constraint';
 
 describe('Integration tests for cross table ', () => {
 
@@ -38,7 +39,7 @@ describe('Integration tests for cross table ', () => {
           useClass: ResourceServiceMock
         },
         ConstraintService,
-        StudiesService,
+        StudyService,
         CrossTableService,
         TreeNodeService,
         NavbarService
@@ -86,11 +87,11 @@ describe('Integration tests for cross table ', () => {
       let agg = new CategoricalAggregate();
       agg.valueCounts.set('heart', 10);
       agg.valueCounts.set('liver', 20);
-      return Observable.of(agg);
+      return observableOf(agg);
     });
     let spy2 = spyOn(crossTableService, 'updateCells').and.callThrough();
     let spy3 = spyOn(resourceService, 'getCrossTable').and.callFake(() => {
-      return Observable.of(crossTableService.crossTable);
+      return observableOf(crossTableService.crossTable);
     });
     let conjunctiveCategorical = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
     crossTableService.crossTable.rowConstraints.push(conjunctiveCategorical);
@@ -109,7 +110,7 @@ describe('Integration tests for cross table ', () => {
     });
   });
 
-  it('should update the cells of the cross table when an existing constraint is moved', () => {
+  it('should update the cells of the cross table when value constraints are present', () => {
     let categorical: ConceptConstraint = new ConceptConstraint();
     categorical.concept = new Concept();
     categorical.concept.name = 'categorical_2';
@@ -122,16 +123,46 @@ describe('Integration tests for cross table ', () => {
     crossTableService.crossTable.columnConstraints.push(conjunctiveCategorical);
     expect(crossTableService.crossTable.rowHeaderConstraints).toBeUndefined();
     expect(crossTableService.crossTable.columnHeaderConstraints).toBeUndefined();
-    crossTableService.updateCells().catch((err) => {
-      expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
-      expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
-    });
-    crossTableService.crossTable.columnConstraints.splice(0, 1);
-    crossTableService.update([categorical, conjunctiveCategorical]);
     crossTableService.updateCells()
       .then(() => {
-        expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(1);
-        expect(crossTableService.crossTable.columnHeaderConstraints.length).toBe(1);
+        fail('should have failed retrieving cross table cells because there is no constraint values.')
+      })
+      .catch((err) => {
+        expect(crossTableService.crossTable.rowHeaderConstraints).not.toBeDefined();
+        expect(crossTableService.crossTable.columnHeaderConstraints).not.toBeDefined();
+      });
+    // when the value constraints are defined
+    crossTableService.crossTable.valueConstraints = new Map<Constraint, Array<Constraint>>();
+    let v1 = new ValueConstraint();
+    v1.valueType = 'STRING';
+    v1.operator = '=';
+    v1.textRepresentation = 'V1';
+    let v2 = new ValueConstraint();
+    v2.valueType = 'STRING';
+    v2.operator = '=';
+    v2.textRepresentation = 'V2';
+    let v3 = new ValueConstraint();
+    v3.valueType = 'STRING';
+    v3.operator = '=';
+    v3.textRepresentation = 'V3';
+    let v4 = new ValueConstraint();
+    v4.valueType = 'STRING';
+    v4.operator = '=';
+    v4.textRepresentation = 'V4';
+    let v5 = new ValueConstraint();
+    v5.valueType = 'STRING';
+    v5.operator = '=';
+    v5.textRepresentation = 'V5';
+    crossTableService.crossTable.valueConstraints.set(categorical, [v1, v2]);
+    crossTableService.crossTable.valueConstraints.set(conjunctiveCategorical, [v3, v4, v5]);
+    crossTableService.updateCells()
+      .then(() => {
+        // since this does not involve real backend calls, no header constraints are defined
+        expect(crossTableService.crossTable.rowHeaderConstraints).not.toBeDefined();
+        expect(crossTableService.crossTable.columnHeaderConstraints).not.toBeDefined();
+      })
+      .catch((err) => {
+        fail('should have succeeded retrieving cross table cells because there is constraint values.')
       });
   });
 

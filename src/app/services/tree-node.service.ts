@@ -80,9 +80,13 @@ export class TreeNodeService {
    * }
    */
   private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
+
   // the subset of _studyConceptCountMap that holds the selected maps
   // based on the constraint in step 1
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _conceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedConceptCountMap: Map<string, CountItem>;
 
   public conceptCountMapCompleted = false;
   public studyCountMapCompleted = false;
@@ -324,9 +328,14 @@ export class TreeNodeService {
         let cmap = this.studyConceptCountMap.get(node['studyId']);
         if (cmap) {
           nodeCountItem = cmap.get(node['conceptCode']);
+        } else {
+          console.log('node ', node, ' has study id that this.studyConceptCountMap not, ', this.studyConceptCountMap)
         }
       } else {
         nodeCountItem = this.conceptCountMap.get(node['conceptCode']);
+        if (!nodeCountItem) {
+          console.log('node concept code not there in this.conceptCountMap', this.conceptCountMap)
+        }
       }
     } else {
       if (node['type'] === 'UNKNOWN') {
@@ -336,6 +345,9 @@ export class TreeNodeService {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
         nodeCountItem = this.studyCountMap.get(node['studyId']);
+        if (!nodeCountItem) {
+          console.log('node study id not there in this.studyCountMap', this.studyCountMap)
+        }
       }
       node['icon'] = '';
     }
@@ -510,18 +522,23 @@ export class TreeNodeService {
   updateProjectionTreeDataIterative(nodes: TreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
-      if (this.isTreeNodeLeaf(node)) {
+      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
         let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
         if (conceptMap && conceptMap.size > 0) {
-          let nodeCopy = node;
-          nodeCopy['expanded'] = false;
-          let item: CountItem = conceptMap.get(nodeCopy['conceptCode']);
-          if (item) {
-            nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
-            nodesWithCodes.push(nodeCopy);
-          }
+          node['expanded'] = false;
+          countItem = conceptMap.get(node['conceptCode']);
+        } else {
+          countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
-      } else if (node['children']) {
+        if (countItem) {
+          node['label'] = node['name'] + ` (sub: ${countItem.subjectCount}, obs: ${countItem.observationCount})`;
+          nodesWithCodes.push(node);
+        } else {
+          const summary = `Could not retrieve counts for tree node '${node['name']}' from server.`;
+          MessageHelper.alert('warn', summary);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
           this.updateProjectionTreeDataIterative(node['children']);
         if (newNodeChildren.length > 0) {
@@ -847,5 +864,13 @@ export class TreeNodeService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
   }
 }

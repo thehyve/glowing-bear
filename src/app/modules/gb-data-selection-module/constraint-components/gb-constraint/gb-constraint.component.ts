@@ -14,7 +14,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
-import {StudiesService} from '../../../../services/studies.service';
+import {StudyService} from '../../../../services/study.service';
 
 @Component({
   selector: 'gb-constraint',
@@ -31,8 +31,8 @@ export class GbConstraintComponent implements OnInit {
               protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
               protected queryService: QueryService,
-              protected studiesService: StudiesService,
-              protected element: ElementRef) {
+              protected studyService: StudyService,
+              public element: ElementRef) {
   }
 
   ngOnInit() {

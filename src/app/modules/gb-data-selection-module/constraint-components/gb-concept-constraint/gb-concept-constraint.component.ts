@@ -153,7 +153,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         this.allTrialVisits = [];
         this.selectedTrialVisits = [];
         this.suggestedTrialVisits = [];
-        this.studiesService.existsTrialVisitDimension.subscribe(existsTrialVisitDimension => {
+        this.studyService.existsTrialVisitDimension.subscribe(existsTrialVisitDimension => {
           if (existsTrialVisitDimension) {
             this.resourceService.getTrialVisits(conceptOnlyConstraint)
               .subscribe(
@@ -553,7 +553,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * -------------------- state checkers --------------------
    */
-  isNumeric() {
+  isNumeric(): boolean {
     let concept: Concept = (<ConceptConstraint>this.constraint).concept;
     if (!concept) {
       return false;
@@ -561,7 +561,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return concept.type === ConceptType.NUMERICAL;
   }
 
-  isCategorical() {
+  isCategorical(): boolean {
     let concept: Concept = (<ConceptConstraint>this.constraint).concept;
     if (!concept) {
       return false;
@@ -569,7 +569,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return concept.type === ConceptType.CATEGORICAL;
   }
 
-  isDate() {
+  isDate(): boolean {
     let concept: Concept = (<ConceptConstraint>this.constraint).concept;
     if (!concept) {
       return false;
@@ -577,7 +577,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return concept.type === ConceptType.DATE;
   }
 
-  isBetween() {
+  isBetween(): boolean {
     return this.operatorState === GbConceptOperatorState.BETWEEN;
   }
 

@@ -6,19 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {from as observableFrom, Observable, BehaviorSubject, AsyncSubject} from 'rxjs';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AppConfig} from '../../config/app.config';
 import {Injectable, Injector} from '@angular/core';
 import {AuthenticationMethod} from './authentication-method';
-import {Observable} from 'rxjs/Observable';
 import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {RedirectHelper} from '../../utilities/redirect-helper';
 
 /**
@@ -184,7 +183,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
     let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
     let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
-    return Observable.fromPromise(new Promise((resolve) => {
+    return observableFrom(new Promise((resolve) => {
       resolve(AuthorizationResult.Unauthorized);
       RedirectHelper.redirectTo(target);
     }));
@@ -199,9 +198,9 @@ export class Oauth2Authentication implements AuthenticationMethod {
     }
     if (this.tokenExpired && this._token.refreshToken) {
       console.warn('Token expired.');
-      return Observable.from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
+      return observableFrom(this.fetchAccessToken('refresh_token', this._token.refreshToken));
     }
-    return Observable.from(new Promise<AuthorizationResult>(resolve => {
+    return observableFrom(new Promise<AuthorizationResult>(resolve => {
       console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
       this._authorised.next(true);
       this._authorised.complete();

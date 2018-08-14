@@ -45,7 +45,7 @@ import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -168,7 +168,7 @@ describe('AppComponent', () => {
     let authenticated = true;
     let authorisedCall = spyOnProperty(authenticationService, 'authorised', 'get')
       .and.callFake(() => {
-        return Observable.of(authenticated);
+        return observableOf(authenticated);
       });
     let messageHelperCall = spyOn(MessageHelper, 'alert').and.stub();
     component.ngOnInit();
@@ -182,7 +182,7 @@ describe('AppComponent', () => {
     let authenticated = false;
     let authorisedCall = spyOnProperty(authenticationService, 'authorised', 'get')
       .and.callFake(() => {
-        return Observable.of(authenticated);
+        return observableOf(authenticated);
       });
     let messageHelperCall = spyOn(MessageHelper, 'alert').and.stub();
     component.ngOnInit();

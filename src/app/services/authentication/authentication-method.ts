@@ -6,9 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Observable} from 'rxjs/Observable';
+import {Observable, AsyncSubject} from 'rxjs';
 import {AuthorizationResult} from './authorization-result';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 export interface AuthenticationMethod {
 

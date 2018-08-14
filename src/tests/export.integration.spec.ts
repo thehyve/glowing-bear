@@ -9,10 +9,8 @@ import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
 import {QueryService} from '../app/services/query.service';
 import {ResourceService} from '../app/services/resource.service';
 import {DatePipe} from '@angular/common';
-import {ExportDataType} from '../app/models/export-models/export-data-type';
-import {ExportFileFormat} from '../app/models/export-models/export-file-format';
 import {ExportJob} from '../app/models/export-models/export-job';
-import {StudiesService} from '../app/services/studies.service';
+import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 
@@ -37,7 +35,7 @@ describe('Integration test for data export', () => {
         DataTableService,
         CrossTableService,
         ExportService,
-        StudiesService,
+        StudyService,
         QueryService,
         NavbarService,
         DatePipe
@@ -53,21 +51,22 @@ describe('Integration test for data export', () => {
     newExportJob.id = 'id1';
     newExportJob.jobName = 'test job name 1';
     exportService.exportJobName = 'test export name 1';
-    let spy1 = spyOn(resourceService, 'createExportJob').and.callThrough();
-    exportService.createExportJob();
-    expect(spy1).not.toHaveBeenCalled();
-
-    exportService.exportJobs = [];
-    let dataType = new ExportDataType('test data type name', true);
-    let fileFormat = new ExportFileFormat('tsv', true);
-    dataType.fileFormats.push(fileFormat);
-    exportService.exportDataTypes.push(dataType);
-    let promise = exportService.createExportJob();
-    promise.then(() => {
-      expect(spy1).toHaveBeenCalled();
-      expect(exportService.exportJobs).toBeDefined();
-      expect(exportService.exportJobs.length).toBe(1);
-    });
+    let spyCreate = spyOn(resourceService, 'createExportJob').and.callThrough();
+    let spyValidate = spyOn(exportService, 'validateExportJob', ).and.returnValue(true);
+    let spyRun = spyOn(resourceService, 'runExportJob').and.callThrough();
+    let spyGet = spyOn(resourceService, 'getExportJobs').and.callThrough();
+    exportService.createExportJob()
+      .then(() => {
+        expect(spyCreate).toHaveBeenCalled();
+        expect(spyValidate).toHaveBeenCalled();
+        expect(spyRun).toHaveBeenCalled();
+        expect(spyGet).toHaveBeenCalled();
+        expect(exportService.exportJobs).toBeDefined();
+        expect(exportService.exportJobs.length).toBe(1);
+      })
+      .catch(err => {
+        fail('should have created and updated the export job but failed to do so.');
+      });
   });
 
 });

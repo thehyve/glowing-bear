@@ -6,7 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {ConstraintService} from '../constraint.service';
 import {TreeNode} from 'primeng/primeng';
 import {CountItem} from '../../models/aggregate-models/count-item';
 
