@@ -74,7 +74,7 @@ export class QueryService {
   // flag indicating if the counts in the first step are being updated
   private _isUpdating_1 = false;
   // flag indicating if the query in the 1st step has been changed
-  private _isDirty_1 = false;
+  private _isDirty_1 = true;
   // the counts in the first step
   private _counts_1: CountItem;
   loadingStateInclusion: LoadingState = 'complete';
@@ -94,7 +94,7 @@ export class QueryService {
   // flag indicating if the counts in the 2nd step caused by the changes in the 1st step are being updated
   private _isPreparing_2 = false;
   // flag indicating if the query in the 2nd step has been changed
-  private _isDirty_2 = false;
+  private _isDirty_2 = true;
   // the number of subjects further refined in the second step
   // _subjectCount_2 < or = _subjectCount_1
   // _observationCount_2 could be <, > or = _observationCount_1
@@ -238,46 +238,50 @@ export class QueryService {
 
   public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      // update export flags
-      this.exportService.isLoadingExportDataTypes = true;
-      this.isUpdating_1 = true;
-      // set the flags
-      this.loadingStateInclusion = 'loading';
-      this.loadingStateExclusion = 'loading';
-      this.loadingStateTotal_1 = 'loading';
-      let constraint_1 = this.constraintService.constraint_1();
-      let inclusionConstraint = this.constraintService.generateInclusionConstraint();
-      let exclusionConstraint = this.constraintService.generateExclusionConstraint();
-      this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
-        .then(() => {
-          let inCounts = this.resourceService.inclusionCounts;
-          let exCounts = this.resourceService.exclusionCounts;
-          this.inclusionCounts = inCounts;
-          this.exclusionCounts = exCounts;
-          this.counts_1.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
-          this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
-          if (initialUpdate) {
-            this.counts_0.subjectCount = this.counts_1.subjectCount;
-            this.counts_0.observationCount = this.counts_1.observationCount;
-          }
-          this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
-          this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
-          this.isUpdating_1 = false;
-          this.loadingStateInclusion = 'complete';
-          this.loadingStateExclusion = 'complete';
-          this.loadingStateTotal_1 = 'complete';
+      if (this.isDirty_1) {
+        // update export flags
+        this.exportService.isLoadingExportDataTypes = true;
+        this.isUpdating_1 = true;
+        // set the flags
+        this.loadingStateInclusion = 'loading';
+        this.loadingStateExclusion = 'loading';
+        this.loadingStateTotal_1 = 'loading';
+        let constraint_1 = this.constraintService.constraint_1();
+        let inclusionConstraint = this.constraintService.generateInclusionConstraint();
+        let exclusionConstraint = this.constraintService.generateExclusionConstraint();
+        this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
+          .then(() => {
+            let inCounts = this.resourceService.inclusionCounts;
+            let exCounts = this.resourceService.exclusionCounts;
+            this.inclusionCounts = inCounts;
+            this.exclusionCounts = exCounts;
+            this.counts_1.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
+            this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
+            if (initialUpdate) {
+              this.counts_0.subjectCount = this.counts_1.subjectCount;
+              this.counts_0.observationCount = this.counts_1.observationCount;
+            }
+            this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
+            this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
+            this.isUpdating_1 = false;
+            this.loadingStateInclusion = 'complete';
+            this.loadingStateExclusion = 'complete';
+            this.loadingStateTotal_1 = 'complete';
 
-          this.counts_2.subjectCount = -1;
-          this.counts_2.observationCount = -1;
-          // step 1 is no longer dirty
-          this.isDirty_1 = false;
-          // step 2 becomes dirty and needs to be updated
-          this.isDirty_2 = true;
-          resolve(true);
-        })
-        .catch(err => {
-          reject(err);
-        })
+            this.counts_2.subjectCount = -1;
+            this.counts_2.observationCount = -1;
+            // step 1 is no longer dirty
+            this.isDirty_1 = false;
+            // step 2 becomes dirty and needs to be updated
+            this.isDirty_2 = true;
+            resolve(true);
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        resolve(true);
+      }
     });
   }
 
@@ -295,29 +299,26 @@ export class QueryService {
 
   prepare_2(resolve) {
     if (this.treeNodeService.isTreeNodeLoadingCompleted) {
-      // Only update the tree in the 2nd step when the user changes sth. in the 1st step
-      if (this.step !== Step.II) {
-        let checklist = this.query ? this.query.observationQuery['data'] : null;
-        if (checklist) {
-          let parentPaths = [];
-          for (let path of checklist) {
-            let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
-            for (let _parentPath of _parentPaths) {
-              if (!parentPaths.includes(_parentPath)) {
-                parentPaths.push(_parentPath);
-              }
+      // update the tree in the 2nd step
+      let checklist = this.query ? this.query.observationQuery['data'] : null;
+      if (checklist) {
+        let parentPaths = [];
+        for (let path of checklist) {
+          let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
+          for (let _parentPath of _parentPaths) {
+            if (!parentPaths.includes(_parentPath)) {
+              parentPaths.push(_parentPath);
             }
           }
-          checklist = checklist.concat(parentPaths);
-        } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
-          checklist = [];
-          for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
-            checklist.push(selectedNode['fullName']);
-          }
         }
-        this.treeNodeService.updateProjectionTreeData(checklist);
+        checklist = checklist.concat(parentPaths);
+      } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
+        checklist = [];
+        for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
+          checklist.push(selectedNode['fullName']);
+        }
       }
-
+      this.treeNodeService.updateProjectionTreeData(checklist);
       this.query = null;
       this.isPreparing_2 = false;
       resolve(true);
@@ -371,10 +372,14 @@ export class QueryService {
    */
   public update_2(): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.update_2a()
-        .then(this.update_2b.bind(this))
-        .then(() => resolve(true))
-        .catch(err => reject(err));
+      if (this.isDirty_2) {
+        this.update_2a()
+          .then(this.update_2b.bind(this))
+          .then(() => resolve(true))
+          .catch(err => reject(err));
+      } else {
+        resolve(true);
+      }
     });
   }
 
@@ -383,25 +388,28 @@ export class QueryService {
    */
   public update_3(targetDataTable?: DataTable): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.isDirty_3 = true;
-      this.isUpdating_3 = true;
-      if (this.isDataTableUsed) {
-        this.dataTableService.dataTable.currentPage = 1;
-        this.dataTableService.updateDataTable(targetDataTable)
-          .then(() => {
-            this.isDirty_3 = false;
-            this.isUpdating_3 = false;
-            resolve(true);
-          })
-          .catch(err => {
-            ErrorHelper.handleError(err);
-            this.isDirty_3 = false;
-            this.isUpdating_3 = false;
-            reject(err)
-          })
+      if (this.isDirty_3) {
+        this.isUpdating_3 = true;
+        if (this.isDataTableUsed) {
+          this.dataTableService.dataTable.currentPage = 1;
+          this.dataTableService.updateDataTable(targetDataTable)
+            .then(() => {
+              this.isDirty_3 = false;
+              this.isUpdating_3 = false;
+              resolve(true);
+            })
+            .catch(err => {
+              ErrorHelper.handleError(err);
+              this.isDirty_3 = false;
+              this.isUpdating_3 = false;
+              reject(err)
+            })
+        } else {
+          this.isDirty_3 = false;
+          this.isUpdating_3 = false;
+          resolve(true);
+        }
       } else {
-        this.isDirty_3 = false;
-        this.isUpdating_3 = false;
         resolve(true);
       }
     });

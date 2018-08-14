@@ -90,11 +90,20 @@ export class GbDataSelectionComponent implements OnInit {
 
   update_2(event) {
     event.stopPropagation();
-    this.queryService.update_2();
+    this.queryService.update_1()
+      .then(() => {
+        this.queryService.update_2();
+      });
   }
 
   update_3(event) {
     event.stopPropagation();
-    this.queryService.update_3();
+    this.queryService.update_1()
+      .then(() => {
+        this.queryService.update_2()
+          .then(() => {
+            this.queryService.update_3();
+          });
+      });
   }
 }
