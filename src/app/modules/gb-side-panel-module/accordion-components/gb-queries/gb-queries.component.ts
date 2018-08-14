@@ -161,7 +161,7 @@ export class GbQueriesComponent implements OnInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     for (let query of this.queryService.queries) {
-      if (query.name.indexOf(filterWord) === -1) {
+      if (query.name.toLowerCase().indexOf(filterWord) === -1) {
         query.visible = false;
       } else {
         query.visible = true;
