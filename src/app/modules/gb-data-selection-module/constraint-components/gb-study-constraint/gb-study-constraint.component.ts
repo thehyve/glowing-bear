@@ -55,11 +55,6 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
     this.searchResults = studies;
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 

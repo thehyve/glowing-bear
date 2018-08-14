@@ -89,7 +89,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
-    return query.subscribed ? 'fa-rss-square' : 'fa-rss';
+    return query.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
   }
 
   // query bookmark
@@ -99,7 +99,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
-    return query.bookmarked ? 'fa-star' : 'fa-star-o';
+    return query.bookmarked ? 'fa fa-star' : 'fa fa-star-o';
   }
 
   restoreQuery(event: Event, selectedQuery: Query) {

@@ -62,11 +62,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.searchResults = results;
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
   }
 
   onSelect(selectedConstraint) {

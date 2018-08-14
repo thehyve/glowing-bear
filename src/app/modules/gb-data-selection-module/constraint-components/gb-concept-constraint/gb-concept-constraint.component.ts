@@ -390,18 +390,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    */
   onDropdown(event) {
     let concepts = this.constraintService.concepts;
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
     this.searchResults = [];
     this.searchResults = concepts;
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
@@ -500,16 +492,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   onTrialVisitDropdown(event) {
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
     this.suggestedTrialVisits = this.allTrialVisits.slice(0);
     event.originalEvent.preventDefault();
     event.originalEvent.stopPropagation();
-    if (this.trialVisitAutoComplete.panelVisible) {
-      this.trialVisitAutoComplete.hide();
-    } else {
-      this.trialVisitAutoComplete.show();
-    }
   }
 
   selectAllTrialVisits() {
