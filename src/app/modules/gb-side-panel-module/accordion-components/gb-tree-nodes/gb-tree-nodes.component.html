@@ -26,7 +26,7 @@
   <!-- the metadata popup -->
   <p-overlayPanel #treeNodeMetadataPanel
                   [dismissable]="true"
-                  [showCloseIcon]="true">
+                  [showCloseIcon]="false">
     <!--{{metadataContent}}-->
     <div *ngFor="let item of metadataContent">
       <div class="ui-grid-row gb-metadata-row">
@@ -42,5 +42,3 @@
   </div>
 
 </div>
-
-<!--<p-tree [value]="filesTree"></p-tree>-->
