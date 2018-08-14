@@ -89,22 +89,23 @@
           <div>Created: {{query.createDateInfo}}</div>
           <div>Updated: {{query.updateDateInfo}}</div>
           <!-- start: if the query is subscribed, show the subscription panel -->
-          <div *ngIf="isQuerySubscriptionIncluded && query.subscribed">
+          <div *ngIf="isQuerySubscriptionIncluded && query.subscribed" style="background-color: #e9e9e9">
             <div class="gb-subscription-panel-header"
-                 (click)="toggleSubscriptionPanel(query)">Subscription
-            </div>
-            <div *ngIf="!query.subscriptionCollapsed"
-                 class="gb-subscription-panel-body">
+                 (click)="toggleSubscriptionPanel(query)">
+              <b>Subscription</b>
               <div>
-                <span>frequency:</span>
+                <span>frequency: &nbsp;</span>
                 <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
-                               (click)="radioCheckSubscriptionFrequency(query)"
+                               (click)="radioCheckSubscriptionFrequency($event, query)"
                                [(ngModel)]="query.subscriptionFreq"></p-radioButton>
                 ,&nbsp;&nbsp;
                 <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
-                               (click)="radioCheckSubscriptionFrequency(query)"
+                               (click)="radioCheckSubscriptionFrequency($event, query)"
                                [(ngModel)]="query.subscriptionFreq"></p-radioButton>
               </div>
+            </div>
+            <div *ngIf="!query.subscriptionCollapsed"
+                 class="gb-subscription-panel-body">
               <div *ngIf="query.diffRecords && query.diffRecords.length > 0">
                 <div *ngFor="let record of query.diffRecords">
                   <hr>

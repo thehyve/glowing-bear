@@ -144,7 +144,9 @@ export class GbQueriesComponent implements OnInit {
     DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(query), query.name);
   }
 
-  radioCheckSubscriptionFrequency(query: Query) {
+  radioCheckSubscriptionFrequency(event: MouseEvent, query: Query) {
+    event.stopPropagation();
+    event.preventDefault();
     let queryObj = {
       subscriptionFreq: query.subscriptionFreq
     };

@@ -302,7 +302,7 @@ describe('QueriesComponent', () => {
 
   it('check subscription frequency radio button', () => {
     let spy1 = spyOn(queryService, 'updateQuery').and.stub();
-    component.radioCheckSubscriptionFrequency(new Query('id', 'name'));
+    component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Query('id', 'name'));
     expect(spy1).toHaveBeenCalled();
   })
 

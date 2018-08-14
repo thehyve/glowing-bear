@@ -462,7 +462,7 @@ gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-width: medium;
   border-color: lightgray !important;
   box-shadow: 0 1px 0 lightgray !important;
-  background-color: #f2f2f2;
+  background-color: var(--gb-clinical-green-light-light);
   padding-left: 0.5em;
 }
 
