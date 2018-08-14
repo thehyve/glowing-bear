@@ -30,7 +30,7 @@ export class QueryServiceMock {
     this.counts_2 = new CountItem(0, 0);
   }
 
-  public update_1(): Promise<any> {
+  public update_1(initialUpdate?: boolean): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });
@@ -43,6 +43,12 @@ export class QueryServiceMock {
   }
 
   public update_3(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
+  }
+
+  updateAll(initialUpdate?: boolean): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });
