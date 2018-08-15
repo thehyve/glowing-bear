@@ -11,6 +11,7 @@ export class TrialVisit {
   private _relTimeLabel: string;
   private _relTimeunit: string;
   private _relTime: number;
+  private _label: string;
 
   constructor(id?: string) {
     this.id = id ? id : '';
@@ -30,6 +31,7 @@ export class TrialVisit {
 
   set relTimeLabel(value: string) {
     this._relTimeLabel = value;
+    this.label = this.relTimeLabel + '(' + this.id + ')';
   }
 
   get relTimeunit(): string {
@@ -46,5 +48,13 @@ export class TrialVisit {
 
   set relTime(value: number) {
     this._relTime = value;
+  }
+
+  get label(): string {
+    return this._label;
+  }
+
+  set label(value: string) {
+    this._label = value;
   }
 }

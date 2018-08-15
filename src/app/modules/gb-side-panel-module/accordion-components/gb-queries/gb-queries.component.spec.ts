@@ -198,10 +198,10 @@ describe('QueriesComponent', () => {
     let query = new Query('id', 'name');
     query.subscribed = true;
     let icon = component.getQuerySubscriptionButtonIcon(query);
-    expect(icon).toEqual('fa-rss-square');
+    expect(icon).toEqual('fa fa-rss-square');
     query.subscribed = false;
     icon = component.getQuerySubscriptionButtonIcon(query);
-    expect(icon).toEqual('fa-rss');
+    expect(icon).toEqual('fa fa-rss');
   })
 
   it('should get toggle query bookmark', () => {
@@ -218,10 +218,10 @@ describe('QueriesComponent', () => {
     let query = new Query('id', 'name');
     query.bookmarked = true;
     let icon = component.getQueryBookmarkButtonIcon(query);
-    expect(icon).toEqual('fa-star');
+    expect(icon).toEqual('fa fa-star');
     query.bookmarked = false;
     icon = component.getQueryBookmarkButtonIcon(query);
-    expect(icon).toEqual('fa-star-o');
+    expect(icon).toEqual('fa fa-star-o');
   })
 
   it('should restore query', () => {
@@ -302,7 +302,7 @@ describe('QueriesComponent', () => {
 
   it('check subscription frequency radio button', () => {
     let spy1 = spyOn(queryService, 'updateQuery').and.stub();
-    component.radioCheckSubscriptionFrequency(new Query('id', 'name'));
+    component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Query('id', 'name'));
     expect(spy1).toHaveBeenCalled();
   })
 

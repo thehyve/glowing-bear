@@ -317,37 +317,29 @@ export class TreeNodeService {
       } else if (node['type'] === 'CATEGORICAL') {
         node['icon'] = 'icon-abc';
       } else if (node['type'] === 'DATE') {
-        node['icon'] = 'fa-calendar';
+        node['icon'] = 'fa fa-calendar-o';
       } else if (node['type'] === 'TEXT') {
-        node['icon'] = 'fa-newspaper-o';
+        node['icon'] = 'fa fa-newspaper-o';
       } else {
-        node['icon'] = 'fa-folder-o';
+        node['icon'] = 'fa fa-file';
       }
       // node count
       if (node['studyId']) {
         let cmap = this.studyConceptCountMap.get(node['studyId']);
         if (cmap) {
           nodeCountItem = cmap.get(node['conceptCode']);
-        } else {
-          console.log('node ', node, ' has study id that this.studyConceptCountMap not, ', this.studyConceptCountMap)
         }
       } else {
         nodeCountItem = this.conceptCountMap.get(node['conceptCode']);
-        if (!nodeCountItem) {
-          console.log('node concept code not there in this.conceptCountMap', this.conceptCountMap)
-        }
       }
     } else {
       if (node['type'] === 'UNKNOWN') {
-        node['expandedIcon'] = 'fa-folder-open';
-        node['collapsedIcon'] = 'fa-folder';
+        node['expandedIcon'] = 'fa fa-folder-open';
+        node['collapsedIcon'] = 'fa fa-folder';
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
         nodeCountItem = this.studyCountMap.get(node['studyId']);
-        if (!nodeCountItem) {
-          console.log('node study id not there in this.studyCountMap', this.studyCountMap)
-        }
       }
       node['icon'] = '';
     }
@@ -534,9 +526,6 @@ export class TreeNodeService {
         if (countItem) {
           node['label'] = node['name'] + ` (sub: ${countItem.subjectCount}, obs: ${countItem.observationCount})`;
           nodesWithCodes.push(node);
-        } else {
-          const summary = `Could not retrieve counts for tree node '${node['name']}' from server.`;
-          MessageHelper.alert('warn', summary);
         }
       } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
@@ -769,7 +758,7 @@ export class TreeNodeService {
   updateTreeNodeCountsIterative(nodes: TreeNode[]) {
     nodes.forEach((node: TreeNode) => {
       if (node['subjectCount']) {
-        let tail = node['metadata'] ? ' ⓘ' : ' ';
+        let tail = node['metadata'] ? ' ⓘ ' : ' ';
         node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
       }
       if (node['children']) {

@@ -38,6 +38,7 @@ import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transma
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
+import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 
 
 @Injectable()
@@ -236,7 +237,10 @@ export class ResourceService {
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getTrialVisits(constraint);
+        return this.transmartResourceService.getTrialVisits(constraint).pipe(
+          map((tmTrialVisits: TransmartTrialVisit[]) => {
+            return TransmartMapper.mapTransmartTrialVisits(tmTrialVisits);
+          }));
       }
       default: {
         return this.handleEndpointModeError();

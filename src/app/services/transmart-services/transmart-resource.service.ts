@@ -31,6 +31,7 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {catchError, map} from 'rxjs/operators';
+import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 
 
 @Injectable()
@@ -499,7 +500,7 @@ export class TransmartResourceService {
    * @param constraint
    * @returns {Observable<R|T>}
    */
-  getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
+  getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
     const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
     const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
     const responseField = 'elements';

@@ -13,10 +13,12 @@ import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 import {routing} from './gb-main.routing';
 import {RouterModule} from '@angular/router';
+import {AngularSplitModule} from 'angular-split';
 
 @NgModule({
   imports: [
     CommonModule,
+    AngularSplitModule,
     routing,
     GbNavBarModule,
     GbSidePanelModule

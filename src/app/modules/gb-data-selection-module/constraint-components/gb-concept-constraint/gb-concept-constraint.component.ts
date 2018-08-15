@@ -20,10 +20,8 @@ import {DateOperatorState} from '../../../../models/constraint-models/date-opera
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
-import {FormatHelper} from '../../../../utilities/format-helper';
 import {SelectItem, TreeNode} from 'primeng/api';
 import {ErrorHelper} from '../../../../utilities/error-helper';
-import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 
@@ -49,19 +47,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   @ViewChild('categoricalAutoComplete') categoricalAutoComplete: AutoComplete;
   @ViewChild('trialVisitAutoComplete') trialVisitAutoComplete: AutoComplete;
 
-  private _searchResults: Concept[];
-  private _operatorState: GbConceptOperatorState;
-  private _isMinEqual: boolean;
-  private _isMaxEqual: boolean;
+  searchResults: Concept[];
+  operatorState: GbConceptOperatorState;
+  isMinEqual: boolean;
+  isMaxEqual: boolean;
 
   /*
    * numeric value range
    */
-  private _equalVal: number;
-  private _minVal: number;
-  private _maxVal: number;
-  private _minLimit: number;
-  private _maxLimit: number;
+  equalVal: number;
+  minVal: number;
+  maxVal: number;
+  minLimit: number;
+  maxLimit: number;
 
   /*
    * date value range
@@ -81,7 +79,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * flag indicating if to show more options
    */
-  private _showMoreOptions = false;
+  showMoreOptions = false;
 
   /*
    * observation date range (i.e. the reported date range)
@@ -228,8 +226,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   handleTrialVisits(visits) {
     let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     this.allTrialVisits = visits;
-    this.selectedTrialVisits = visits.slice(0);
-    constraint.trialVisitConstraint.trialVisits = visits.slice(0);
+    this.selectedTrialVisits = visits.slice(0); // new array of visits
+    constraint.trialVisitConstraint.trialVisits = visits.slice(0); // new array of visits
   }
 
   generateCategoricalValueItems(valueCounts: Map<string, number>, targetValues: string[]): SelectItem[] {
@@ -389,19 +387,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * @param event
    */
   onDropdown(event) {
-    let concepts = this.constraintService.concepts;
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
-    this.searchResults = [];
-    this.searchResults = concepts;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
+    this.searchResults = this.constraintService.concepts.slice(0);
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
@@ -500,16 +486,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   onTrialVisitDropdown(event) {
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
     this.suggestedTrialVisits = this.allTrialVisits.slice(0);
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    if (this.trialVisitAutoComplete.panelVisible) {
-      this.trialVisitAutoComplete.hide();
-    } else {
-      this.trialVisitAutoComplete.show();
-    }
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   selectAllTrialVisits() {
@@ -526,12 +504,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let trialVisitConstraint: TrialVisitConstraint = (<ConceptConstraint>this.constraint).trialVisitConstraint;
     trialVisitConstraint.trialVisits = this.selectedTrialVisits.slice(0);
     this.update();
-  }
-
-  onUnselectTrialVisit(visit) {
-    let index = this.selectedTrialVisits.indexOf(visit);
-    this.selectedTrialVisits.splice(index, 1);
-    this.updateTrialVisitValues();
   }
 
   /*
@@ -660,83 +632,18 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.droppedConstraint = null;
   }
 
-  get operatorState(): GbConceptOperatorState {
-    return this._operatorState;
-  }
-
-  set operatorState(value: GbConceptOperatorState) {
-    this._operatorState = value;
-  }
-
-  get isMinEqual(): boolean {
-    return this._isMinEqual;
-  }
-
-  set isMinEqual(value: boolean) {
-    this._isMinEqual = value;
-  }
-
-  get isMaxEqual(): boolean {
-    return this._isMaxEqual;
-  }
-
-  set isMaxEqual(value: boolean) {
-    this._isMaxEqual = value;
-  }
-
-  get minVal(): number {
-    return this._minVal;
-  }
-
-  set minVal(value: number) {
-    this._minVal = value;
-  }
-
-  get maxVal(): number {
-    return this._maxVal;
-  }
-
-  set maxVal(value: number) {
-    this._maxVal = value;
-  }
-
-  get maxLimit(): number {
-    return this._maxLimit;
-  }
-
-  set maxLimit(value: number) {
-    this._maxLimit = value;
-  }
-
-  get minLimit(): number {
-    return this._minLimit;
-  }
-
-  set minLimit(value: number) {
-    this._minLimit = value;
-  }
-
-  get equalVal(): number {
-    return this._equalVal;
-  }
-
-  set equalVal(value: number) {
-    this._equalVal = value;
-  }
-
-  get searchResults(): Concept[] {
-    return this._searchResults;
-  }
-
-  set searchResults(value: Concept[]) {
-    this._searchResults = value;
-  }
-
-  get showMoreOptions(): boolean {
-    return this._showMoreOptions;
-  }
-
-  set showMoreOptions(value: boolean) {
-    this._showMoreOptions = value;
+  /**
+   * sort the suggested categorical values so that the selected ones go on top
+   */
+  onCategoricalValuePanelHide() {
+    this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
+      if (this.selectedCategories.includes(a.value)) {
+        return -1;
+      } else if (this.selectedCategories.includes(b.value)) {
+        return 1;
+      } else {
+        return 0
+      }
+    });
   }
 }

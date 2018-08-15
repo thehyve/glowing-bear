@@ -79,16 +79,16 @@ describe('GbStudyConstraintComponent', () => {
   });
 
   it('should prepare suggested studies for dropdown', () => {
-    let dummies = [
-      new Study(),
-      new Study()
-    ];
+    let s1 = new Study(); s1.id = 's1';
+    let s2 = new Study(); s2.id = 's2';
+    let dummies = [s1, s2];
     let e = new MouseEvent('');
     e['originalEvent'] = new MouseEvent('');
     let spy1 = spyOnProperty(studyService, 'studies', 'get').and.returnValue(dummies);
     component.onDropdown(e);
     expect(spy1).toHaveBeenCalled();
-    expect(component.searchResults).toBe(dummies);
+    expect(component.searchResults.length).toBe(2);
+    expect(component.searchResults[0].id).toBe('s1')
   })
 
   it('should handle the drop of a study constraint', () => {

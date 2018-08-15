@@ -23,7 +23,7 @@ export class GbProjectionComponent implements OnInit {
   isUploadListenerNotAdded: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
-              private queryService: QueryService) {
+              public queryService: QueryService) {
     this.isUploadListenerNotAdded = true;
   }
 

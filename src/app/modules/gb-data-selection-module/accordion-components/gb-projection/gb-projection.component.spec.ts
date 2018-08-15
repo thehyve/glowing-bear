@@ -14,6 +14,7 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
+import {FormsModule} from '@angular/forms';
 
 describe('GbProjectionComponent', () => {
   let component: GbProjectionComponent;
@@ -27,6 +28,7 @@ describe('GbProjectionComponent', () => {
         GbProjectionComponent
       ],
       imports: [
+        FormsModule,
         TreeModule,
         CheckboxModule
       ],

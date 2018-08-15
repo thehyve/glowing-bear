@@ -14,6 +14,7 @@ import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 import {TreeNode} from 'primeng/api';
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -54,19 +55,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   onDropdown(event) {
-    let results = this.constraintService.searchAllConstraints('');
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
-    this.searchResults = [];
-    this.searchResults = results;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
+    this.searchResults = this.constraintService.searchAllConstraints('');
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   onSelect(selectedConstraint) {

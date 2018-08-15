@@ -26,22 +26,19 @@
 }
 
 .gb-subscription-panel-header {
-  background-color: #fafafa;
-  border-radius: 6px;
-  margin-top: 3px;
+  background-color: #e9e9e9;
+  margin-top: 0.5em;
+  margin-left: -3px;
+  padding-left: 3px;
+  padding-top: 2px;
   cursor: pointer;
 }
 .gb-subscription-panel-header:hover {
-  background-color: var(--gb-clinical-green-light-light);
-}
-.gb-subscription-panel-header:active {
-  background-color: var(--gb-clinical-green-light);
+  background-color: lightgray;
 }
 
 .gb-subscription-panel-body {
-  background-color: #fafafa;
-  border-radius: 6px;
-  padding-left: 6px;
+  padding-left: 3px;
   margin-top: 3px;
 }
 
@@ -136,12 +133,15 @@ input:read-only {
  * margin: top right bottom left
  */
 md2-accordion-header .ui-button-secondary {
-  margin-top: 3px;
-  margin-left: -3px;
-  padding: 0px;
+  margin-top: auto;
+  padding-left: 8px;
+  padding-right: 8px;
   color: #505050;
   border: none;
   background-color: transparent;
+}
+md2-accordion-header .ui-button-secondary:hover {
+  background-color: var(--gb-orange-light-light);
 }
 
 .gb-query-sort-btn {
