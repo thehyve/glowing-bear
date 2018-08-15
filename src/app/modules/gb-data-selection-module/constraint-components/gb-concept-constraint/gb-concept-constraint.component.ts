@@ -389,11 +389,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * @param event
    */
   onDropdown(event) {
-    let concepts = this.constraintService.concepts;
-    this.searchResults = [];
-    this.searchResults = concepts;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
+    this.searchResults = this.constraintService.concepts.slice(0);
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
@@ -493,8 +489,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   onTrialVisitDropdown(event) {
     this.suggestedTrialVisits = this.allTrialVisits.slice(0);
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   selectAllTrialVisits() {
