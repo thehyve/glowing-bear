@@ -184,6 +184,9 @@ export class QueryService {
     this.constraintService.clearConstraint_2();
     this.step = Step.I;
     this.checkAll_2 = false;
+    this.isDirty_1 = true;
+    this.isDirty_2 = true;
+    this.isDirty_3 = true;
     return this.updateAll(true);
   }
 
