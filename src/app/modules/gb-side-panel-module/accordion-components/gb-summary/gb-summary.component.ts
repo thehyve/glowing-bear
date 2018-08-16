@@ -49,14 +49,13 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
     if (treeNodeContainer) {
       let treeNodeElements = treeNodeContainer.children;
-      console.log('about to update', treeNodeContainer, treeNodeElements)
       this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
     }
   }
 
   updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
     let index = 0;
-    for (let elm of treeNodeElements) { console.log('elm, ', elm);
+    for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
@@ -73,7 +72,6 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
-      console.log('elm', elm, ', uiTreeNodeChildrenElm: ', uiTreeNodeChildrenElm)
       if (uiTreeNodeChildrenElm) {
         this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
       }

@@ -456,6 +456,9 @@ export class QueryService {
         this.constraintService.clearConstraint_1();
         this.constraintService.restoreConstraint_1(query.subjectQuery);
       }
+      this.isDirty_1 = true;
+      this.isDirty_2 = true;
+      this.isDirty_3 = true;
       this.updateAll()
         .then(() => {
           MessageHelper.alert('info', 'Success', `Query ${query.name} is successfully imported.`);
