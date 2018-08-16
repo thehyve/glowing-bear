@@ -28,7 +28,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
   constructor(private queryService: QueryService,
               private treeNodeService: TreeNodeService,
               private crossTableService: CrossTableService,
-              private element: ElementRef) {
+              public element: ElementRef) {
   }
 
   ngOnInit() {
@@ -45,17 +45,18 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     this.observer.observe(this.element.nativeElement, config);
   }
 
-  private update() {
+  update() {
     let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
     if (treeNodeContainer) {
       let treeNodeElements = treeNodeContainer.children;
+      console.log('about to update', treeNodeContainer, treeNodeElements)
       this.updateEventListeners(treeNodeElements, this.finalTreeNodes);
     }
   }
 
-  private updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
+  updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
     let index = 0;
-    for (let elm of treeNodeElements) {
+    for (let elm of treeNodeElements) { console.log('elm, ', elm);
       let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
       let treeNodeElm = elm.querySelector('li.ui-treenode');
@@ -65,15 +66,14 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
         dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
-
       // if the data object type belongs to the listed types
       if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)
         && !treeNodeElm.hasAttribute('hasEventListener')) {
         treeNodeElm.setAttribute('hasEventListener', true);
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
-
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
+      console.log('elm', elm, ', uiTreeNodeChildrenElm: ', uiTreeNodeChildrenElm)
       if (uiTreeNodeChildrenElm) {
         this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
       }
