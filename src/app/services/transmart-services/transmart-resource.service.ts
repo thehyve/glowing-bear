@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/Rx'
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
@@ -25,12 +25,13 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ErrorHelper} from '../../utilities/error-helper';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
+import {catchError, map} from 'rxjs/operators';
+import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 
 
 @Injectable()
@@ -59,6 +60,7 @@ export class TransmartResourceService {
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
+  private _conceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
@@ -134,6 +136,14 @@ export class TransmartResourceService {
     this._studyConceptCountObject = value;
   }
 
+  get conceptCountObject(): object {
+    return this._conceptCountObject;
+  }
+
+  set conceptCountObject(value: object) {
+    this._conceptCountObject = value;
+  }
+
   /**
    * Make a post http request
    * @param urlPart - the part used in baseUrl/urlPart
@@ -144,12 +154,20 @@ export class TransmartResourceService {
   private postCall(urlPart, body, responseField) {
     const url = `${this.endpointUrl}/${urlPart}`;
     if (responseField) {
-      return this.http.post(url, body)
-        .map(res => res[responseField])
-        .catch(ErrorHelper.handleError.bind(this));
+      return this.http.post(url, body).pipe(
+        map(res => res[responseField]),
+        catchError(error => {
+          ErrorHelper.handleError(error);
+          return observableOf(error);
+        })
+      );
     } else {
-      return this.http.post(url, body)
-        .catch(ErrorHelper.handleError.bind(this));
+      return this.http.post(url, body).pipe(
+        catchError(error => {
+          ErrorHelper.handleError(error);
+          return observableOf(error);
+        })
+      );
     }
   }
 
@@ -162,12 +180,20 @@ export class TransmartResourceService {
   private getCall(urlPart, responseField) {
     const url = `${this.endpointUrl}/${urlPart}`;
     if (responseField) {
-      return this.http.get(url)
-        .map(res => res[responseField])
-        .catch(ErrorHelper.handleError.bind(this));
+      return this.http.get(url).pipe(
+        map((res) => res[responseField]),
+        catchError((error: HttpErrorResponse) => {
+          ErrorHelper.handleError(error);
+          return observableOf(error);
+        })
+      );
     } else {
-      return this.http.get(url)
-        .catch(ErrorHelper.handleError.bind(this));
+      return this.http.get(url).pipe(
+        catchError((error: HttpErrorResponse) => {
+          ErrorHelper.handleError(error);
+          return observableOf(error);
+        })
+      );
     }
   }
 
@@ -179,8 +205,12 @@ export class TransmartResourceService {
    */
   private putCall(urlPart, body) {
     let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.put(url, body)
-      .catch(ErrorHelper.handleError.bind(this));
+    return this.http.put(url, body).pipe(
+      catchError(error => {
+        ErrorHelper.handleError(error);
+        return observableOf(error);
+      })
+    );
   }
 
   /**
@@ -190,8 +220,12 @@ export class TransmartResourceService {
    */
   private deleteCall(urlPart) {
     let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.delete(url)
-      .catch(ErrorHelper.handleError.bind(this));
+    return this.http.delete(url).pipe(
+      catchError(error => {
+        ErrorHelper.handleError(error);
+        return observableOf(error);
+      })
+    );
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -216,7 +250,7 @@ export class TransmartResourceService {
    */
   get studies(): Promise<TransmartStudy[]> {
     if (this._studies != null) {
-      return Observable.of(this._studies).toPromise();
+      return observableOf(this._studies).toPromise();
     }
     if (this._studiesLock) {
       return this._studiesSubject.toPromise();
@@ -310,14 +344,14 @@ export class TransmartResourceService {
                                 exclusionConstraint?: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.getCountsPerStudyAndConcept(constraint)
-        .subscribe((countObj: object) => {
-          this.studyConceptCountObject = countObj;
+        .subscribe((studyConceptCountObj: object) => {
+          this.studyConceptCountObject = studyConceptCountObj;
           let totalCountItem: TransmartCountItem = new TransmartCountItem();
           // if in autosaveSubjectSets mode, need to calculate total observation count
           if (this.autosaveSubjectSets) {
             let totalObservationCount = 0;
-            for (let studyId in countObj) {
-              let conceptCount: object = countObj[studyId];
+            for (let studyId in studyConceptCountObj) {
+              let conceptCount: object = studyConceptCountObj[studyId];
               for (let conceptCode in conceptCount) {
                 let countItem: TransmartCountItem = conceptCount[conceptCode];
                 totalObservationCount += countItem.observationCount;
@@ -326,19 +360,25 @@ export class TransmartResourceService {
             totalCountItem.patientCount = this.subjectSetConstraint.setSize;
             totalCountItem.observationCount = totalObservationCount;
           }
-          this.updateExclusionCounts(exclusionConstraint)
-            .then(() => {
-              this.updateInclusionCounts(inclusionConstraint, totalCountItem)
+          this.getCountsPerConcept(constraint)
+            .subscribe((conceptCountObj: object) => {
+              this.conceptCountObject = conceptCountObj;
+              this.updateExclusionCounts(exclusionConstraint)
                 .then(() => {
-                  resolve(true);
+                  this.updateInclusionCounts(inclusionConstraint, totalCountItem)
+                    .then(() => {
+                      resolve(true);
+                    })
+                    .catch(err => {
+                      reject('Fail to update transmart inclusion counts.');
+                    })
                 })
                 .catch(err => {
-                  reject('Fail to update transmart inclusion counts.');
+                  reject('Fail to update transmart exclusion counts.')
                 })
-            })
-            .catch(err => {
-              reject('Fail to update transmart exclusion counts.')
-            })
+            }, err => {
+              reject('Fail to retrieve concept-count object from transmart.')
+            });
         }, err => {
           reject('Fail to retrieve study-concept-count object from transmart.')
         });
@@ -460,7 +500,7 @@ export class TransmartResourceService {
    * @param constraint
    * @returns {Observable<R|T>}
    */
-  getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
+  getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
     const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
     const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
     const responseField = 'elements';
@@ -568,8 +608,8 @@ export class TransmartResourceService {
    */
   downloadExportJob(jobId: string) {
     let url = `${this.endpointUrl}/export/${jobId}/download`;
-    return this.http.get(url, {responseType: 'blob'})
-      .catch(ErrorHelper.handleError.bind(this));
+    return this.http.get(url, {responseType: 'blob'}).pipe(
+      catchError(ErrorHelper.handleError.bind(this)));
   }
 
   /**
@@ -693,9 +733,9 @@ export class TransmartResourceService {
     const urlPart = `dimensions/study/elements`;
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
-    return this.postCall(urlPart, body, responseField).map(
+    return this.postCall(urlPart, body, responseField).pipe(map(
       (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
-    );
+    ));
   }
 
   get sortableDimensions(): Set<string> {

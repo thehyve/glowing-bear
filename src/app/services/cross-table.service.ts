@@ -78,9 +78,11 @@ export class CrossTableService {
    */
   public update(constraints: Array<Constraint>): Promise<any> {
     return new Promise((resolve, reject) => {
+      this.crossTable.isUpdating = true;
       this.updateValueConstraints(constraints)
         .then(this.updateCells.bind(this))
         .then(() => {
+          this.crossTable.isUpdating = false;
           resolve(true)
         })
         .catch(err => {
@@ -108,7 +110,6 @@ export class CrossTableService {
    */
   private updateValueConstraints(constraints: Array<Constraint>): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.crossTable.isUpdating = true;
       // clear existing value constraints
       this.clearValueConstraints(constraints);
       let promises: Promise<any>[] = [];
@@ -196,18 +197,18 @@ export class CrossTableService {
       try {
         this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
         this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+        this.resourceService.getCrossTable(this.crossTable)
+          .subscribe((crossTable: CrossTable) => {
+            this.crossTable = crossTable;
+            this.crossTable.isUpdating = false;
+            resolve(true);
+          }, (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject('Fail to get table cells from server.');
+          });
       } catch (e) {
         reject(e.message);
       }
-      this.resourceService.getCrossTable(this.crossTable)
-        .subscribe((crossTable: CrossTable) => {
-          this.crossTable = crossTable;
-          this.crossTable.isUpdating = false;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to get table cells from server.');
-        });
     });
   }
 

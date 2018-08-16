@@ -6,8 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {of as observableOf, from as observableFrom, throwError as observableThrowError, Observable} from 'rxjs';
+
+import {switchMap, map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
@@ -35,6 +38,7 @@ import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transma
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
+import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 
 
 @Injectable()
@@ -44,6 +48,7 @@ export class ResourceService {
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  private _selectedConceptCountMap: Map<string, CountItem>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
@@ -52,7 +57,7 @@ export class ResourceService {
   handleEndpointModeError(): Observable<any> {
     const msg = 'Incorrect Endpoint Mode is used.';
     console.error(msg);
-    return Observable.throw(new Error(msg));
+    return observableThrowError(new Error(msg));
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -63,10 +68,10 @@ export class ResourceService {
   getStudies(): Observable<Study[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return Observable.fromPromise(this.transmartResourceService.studies)
-          .map((tmStudies: TransmartStudy[]) => {
+        return observableFrom(this.transmartResourceService.studies).pipe(
+          map((tmStudies: TransmartStudy[]) => {
             return TransmartMapper.mapTransmartStudies(tmStudies);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -108,6 +113,8 @@ export class ResourceService {
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
               this.selectedStudyConceptCountMap =
                 TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
+              this.selectedConceptCountMap =
+                TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
               resolve(true);
             })
             .catch(err => {
@@ -131,10 +138,10 @@ export class ResourceService {
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>>> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerStudyAndConcept(constraint)
-          .map((response: object) => {
+        return this.transmartResourceService.getCountsPerStudyAndConcept(constraint).pipe(
+          map((response: object) => {
             return TransmartMapper.mapStudyConceptCountObject(response);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -151,10 +158,10 @@ export class ResourceService {
   getCountsPerStudy(constraint: Constraint): Observable<Map<string, CountItem>> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerStudy(constraint)
-          .map((response: object) => {
+        return this.transmartResourceService.getCountsPerStudy(constraint).pipe(
+          map((response: object) => {
             return TransmartMapper.mapStudyCountObject(response);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -170,10 +177,10 @@ export class ResourceService {
   getCountsPerConcept(constraint: Constraint): Observable<Map<string, CountItem>> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerConcept(constraint)
-          .map((response: object) => {
+        return this.transmartResourceService.getCountsPerConcept(constraint).pipe(
+          map((response: object) => {
             return TransmartMapper.mapConceptCountObject(response);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -189,10 +196,10 @@ export class ResourceService {
   getCounts(constraint: Constraint): Observable<CountItem> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCounts(constraint)
-          .map((tmCountItem: TransmartCountItem) => {
+        return this.transmartResourceService.getCounts(constraint).pipe(
+          map((tmCountItem: TransmartCountItem) => {
             return TransmartMapper.mapTransmartCountItem(tmCountItem);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -210,10 +217,10 @@ export class ResourceService {
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getAggregate(constraint)
-          .map((tmConceptAggregate: object) => {
+        return this.transmartResourceService.getAggregate(constraint).pipe(
+          map((tmConceptAggregate: object) => {
             return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -230,7 +237,10 @@ export class ResourceService {
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getTrialVisits(constraint);
+        return this.transmartResourceService.getTrialVisits(constraint).pipe(
+          map((tmTrialVisits: TransmartTrialVisit[]) => {
+            return TransmartMapper.mapTransmartTrialVisits(tmTrialVisits);
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -258,12 +268,12 @@ export class ResourceService {
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportFileFormats()
-          .switchMap(fileFormatNames => {
+        return this.transmartResourceService.getExportFileFormats().pipe(
+          switchMap(fileFormatNames => {
             return this.transmartResourceService.getExportDataFormats(constraint)
           }, (fileFormatNames, dataFormatNames) => {
             return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -343,7 +353,7 @@ export class ResourceService {
         }
       }
     } else {
-      return Observable.of(null);
+      return observableOf(null);
     }
   }
 
@@ -403,10 +413,10 @@ export class ResourceService {
   getQueries(): Observable<Query[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getQueries()
-          .map((transmartQueries: TransmartQuery[]) => {
+        return this.transmartResourceService.getQueries().pipe(
+          map((transmartQueries: TransmartQuery[]) => {
             return TransmartMapper.mapTransmartQueries(transmartQueries);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -423,10 +433,10 @@ export class ResourceService {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
-        return this.transmartResourceService.saveQuery(transmartQuery)
-          .map((savedTransmartQuery: TransmartQuery) => {
+        return this.transmartResourceService.saveQuery(transmartQuery).pipe(
+          map((savedTransmartQuery: TransmartQuery) => {
             return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -499,8 +509,8 @@ export class ResourceService {
         let limit = dataTable.limit;
 
         // Fetch dimensions for the data matching the constraint
-        return this.getDimensions(dataTable.constraint)
-          .switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
+        return this.getDimensions(dataTable.constraint).pipe(
+          switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
             // Merge available dimensions and current table state
             let tableState: TransmartTableState =
               TransmartDataTableMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
@@ -510,7 +520,7 @@ export class ResourceService {
             let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
             newDataTable.constraint = dataTable.constraint;
             return newDataTable;
-          });
+          }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -536,8 +546,8 @@ export class ResourceService {
    */
   private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     // Fetch study names for the constraint
-    return this.transmartResourceService.getStudyIds(constraint)
-      .switchMap(() => {
+    return this.transmartResourceService.getStudyIds(constraint).pipe(
+      switchMap(() => {
         // Fetch study details, including dimensions, for these studies
         return this.transmartResourceService.studies;
       }, (studyIds: string[], studies: TransmartStudy[]) => {
@@ -547,7 +557,7 @@ export class ResourceService {
         } else {
           return new TransmartStudyDimensions();
         }
-      });
+      }));
   }
 
   // TODO: refactor transmart speciic variables here, hide them from glowing bear
@@ -571,10 +581,10 @@ export class ResourceService {
           .getCrossTable(
             crossTable.constraint,
             crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
-          .map((tmCrossTable: TransmartCrossTable) => {
-            return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
-          });
+            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints))).pipe(
+            map((tmCrossTable: TransmartCrossTable) => {
+              return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
+            }));
       }
       default: {
         return this.handleEndpointModeError();
@@ -605,6 +615,14 @@ export class ResourceService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
   }
 
   get endpointMode(): EndpointMode {

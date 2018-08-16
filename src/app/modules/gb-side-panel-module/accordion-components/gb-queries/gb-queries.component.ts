@@ -89,7 +89,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
-    return query.subscribed ? 'fa-rss-square' : 'fa-rss';
+    return query.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
   }
 
   // query bookmark
@@ -99,7 +99,7 @@ export class GbQueriesComponent implements OnInit {
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
-    return query.bookmarked ? 'fa-star' : 'fa-star-o';
+    return query.bookmarked ? 'fa fa-star' : 'fa fa-star-o';
   }
 
   restoreQuery(event: Event, selectedQuery: Query) {
@@ -144,7 +144,9 @@ export class GbQueriesComponent implements OnInit {
     DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(query), query.name);
   }
 
-  radioCheckSubscriptionFrequency(query: Query) {
+  radioCheckSubscriptionFrequency(event: MouseEvent, query: Query) {
+    event.stopPropagation();
+    event.preventDefault();
     let queryObj = {
       subscriptionFreq: query.subscriptionFreq
     };
@@ -159,7 +161,7 @@ export class GbQueriesComponent implements OnInit {
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     for (let query of this.queryService.queries) {
-      if (query.name.indexOf(filterWord) === -1) {
+      if (query.name.toLowerCase().indexOf(filterWord) === -1) {
         query.visible = false;
       } else {
         query.visible = true;

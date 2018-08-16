@@ -51,7 +51,8 @@
   <div *ngIf="isCategorical()" class="v-align-center form-inline gb-constraint-child-container">
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
-                   [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"></p-multiSelect>
+                   [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"
+                   (onPanelHide)="onCategoricalValuePanelHide()"></p-multiSelect>
   </div>
 
   <!--  if the concept is DATE -->
@@ -59,8 +60,8 @@
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">
-      <i *ngSwitchCase="ValDateOperatorStateEnum.BEFORE">before </i>
-      <i *ngSwitchCase="ValDateOperatorStateEnum.AFTER">after </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.BEFORE">on or before </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.AFTER">on or after </i>
       <i *ngSwitchCase="ValDateOperatorStateEnum.BETWEEN">between </i>
       <i *ngSwitchCase="ValDateOperatorStateEnum.NOT_BETWEEN">not between </i>
     </button>
@@ -102,8 +103,8 @@
           <span>and observation date &nbsp;</span>
           <button type="button" class="btn btn-outline-secondary"
                   (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
-            <i *ngSwitchCase="ObsDateOperatorStateEnum.BEFORE">before </i>
-            <i *ngSwitchCase="ObsDateOperatorStateEnum.AFTER">after </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.BEFORE">on or before </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.AFTER">on or after </i>
             <i *ngSwitchCase="ObsDateOperatorStateEnum.BETWEEN">between </i>
             <i *ngSwitchCase="ObsDateOperatorStateEnum.NOT_BETWEEN">not between </i>
           </button>
@@ -140,9 +141,9 @@
                           [suggestions]="suggestedTrialVisits"
                           (completeMethod)="onTrialVisitSearch($event)"
                           (onSelect)="updateTrialVisitValues($event)"
-                          (onUnselect)="onUnselectTrialVisit($event)"
+                          (onUnselect)="updateTrialVisitValues($event)"
                           dropdown="true"
-                          field="relTimeLabel"
+                          field="label"
                           (onDropdownClick)="onTrialVisitDropdown($event)"
                           [multiple]="true"></p-autoComplete>
           <button type="button" class="btn btn-outline-secondary"

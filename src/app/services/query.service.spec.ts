@@ -24,10 +24,11 @@ import {ExportServiceMock} from './mocks/export.service.mock';
 import {CrossTableService} from './cross-table.service';
 import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {Query} from '../models/query-models/query';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {ErrorHelper} from '../utilities/error-helper';
+import {throwError} from 'rxjs/internal/observable/throwError';
 
 
 describe('QueryService', () => {
@@ -104,7 +105,7 @@ describe('QueryService', () => {
     q2.bookmarked = true;
     q2.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
     let spy1 = spyOn(resourceService, 'diffQuery').and.callFake(() => {
-      return Observable.of(['foo']);
+      return observableOf(['foo']);
     });
     let spy2 = spyOn(queryService, 'parseQueryDiffRecords').and.stub();
     queryService.handleLoadedQueries([q, q1, q2]);
@@ -132,7 +133,7 @@ describe('QueryService', () => {
 
   it('should handle query deletion error', () => {
     let spy = spyOn(resourceService, 'deleteQuery').and.callFake(() => {
-      return Observable.throw(null);
+      return throwError(null);
     })
     let spy1 = spyOn(ErrorHelper, 'handleError').and.stub();
     let query = new Query('test-id', 'test-name');

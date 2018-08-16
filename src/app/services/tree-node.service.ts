@@ -80,9 +80,13 @@ export class TreeNodeService {
    * }
    */
   private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
+
   // the subset of _studyConceptCountMap that holds the selected maps
   // based on the constraint in step 1
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _conceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedConceptCountMap: Map<string, CountItem>;
 
   public conceptCountMapCompleted = false;
   public studyCountMapCompleted = false;
@@ -313,11 +317,11 @@ export class TreeNodeService {
       } else if (node['type'] === 'CATEGORICAL') {
         node['icon'] = 'icon-abc';
       } else if (node['type'] === 'DATE') {
-        node['icon'] = 'fa-calendar';
+        node['icon'] = 'fa fa-calendar-o';
       } else if (node['type'] === 'TEXT') {
-        node['icon'] = 'fa-newspaper-o';
+        node['icon'] = 'fa fa-newspaper-o';
       } else {
-        node['icon'] = 'fa-folder-o';
+        node['icon'] = 'fa fa-file';
       }
       // node count
       if (node['studyId']) {
@@ -330,8 +334,8 @@ export class TreeNodeService {
       }
     } else {
       if (node['type'] === 'UNKNOWN') {
-        node['expandedIcon'] = 'fa-folder-open';
-        node['collapsedIcon'] = 'fa-folder';
+        node['expandedIcon'] = 'fa fa-folder-open';
+        node['collapsedIcon'] = 'fa fa-folder';
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
@@ -510,18 +514,20 @@ export class TreeNodeService {
   updateProjectionTreeDataIterative(nodes: TreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
-      if (this.isTreeNodeLeaf(node)) {
+      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
         let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
         if (conceptMap && conceptMap.size > 0) {
-          let nodeCopy = node;
-          nodeCopy['expanded'] = false;
-          let item: CountItem = conceptMap.get(nodeCopy['conceptCode']);
-          if (item) {
-            nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${item.subjectCount}, obs: ${item.observationCount})`;
-            nodesWithCodes.push(nodeCopy);
-          }
+          node['expanded'] = false;
+          countItem = conceptMap.get(node['conceptCode']);
+        } else {
+          countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
-      } else if (node['children']) {
+        if (countItem) {
+          node['label'] = node['name'] + ` (sub: ${countItem.subjectCount}, obs: ${countItem.observationCount})`;
+          nodesWithCodes.push(node);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
           this.updateProjectionTreeDataIterative(node['children']);
         if (newNodeChildren.length > 0) {
@@ -752,13 +758,53 @@ export class TreeNodeService {
   updateTreeNodeCountsIterative(nodes: TreeNode[]) {
     nodes.forEach((node: TreeNode) => {
       if (node['subjectCount']) {
-        let tail = node['metadata'] ? ' ⓘ' : ' ';
+        let tail = node['metadata'] ? ' ⓘ ' : ' ';
         node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
       }
       if (node['children']) {
         this.updateTreeNodeCountsIterative(node['children']);
       }
     });
+  }
+
+  /**
+   * The param checklist is a list of tree node fullnames
+   * indicating which tree nodes are selected in the step 2.
+   * Based on this checklist, the tree node service updates
+   * the tree nodes in step 2.
+   *
+   * When the user is restoring a saved query, this checklist
+   * will be directly constructed from the saved query.
+   * When the user checks the tree nodes in step 2 by clicking
+   * the checkboxes, the checklist will be constructed from such actions.
+   *
+   * However, neither checklist construction approach does not
+   * include parent tree nodes of the checked child tree nodes
+   * due to PrimeNg issues. These parent tree nodes should be
+   * included as well in the checklist.
+   *
+   * This function does just that.
+   * @param {string[]} checklist
+   */
+  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
+    let newExistingChecklist = existingChecklist ? existingChecklist : [];
+    if (newExistingChecklist.length === 0 &&
+      this.selectedProjectionTreeData.length > 0) {
+      for (let selectedNode of this.selectedProjectionTreeData) {
+        newExistingChecklist.push(selectedNode['fullName']);
+      }
+    }
+    let parentPaths: string[] = [];
+    for (let path of newExistingChecklist) {
+      let _parentPaths = this.getParentTreeNodePaths(path);
+      for (let _parentPath of _parentPaths) {
+        if (!parentPaths.includes(_parentPath) &&
+          !newExistingChecklist.includes(_parentPath)) {
+          parentPaths.push(_parentPath);
+        }
+      }
+    }
+    return newExistingChecklist.concat(parentPaths);
   }
 
   get treeNodes(): TreeNode[] {
@@ -847,5 +893,13 @@ export class TreeNodeService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
   }
 }

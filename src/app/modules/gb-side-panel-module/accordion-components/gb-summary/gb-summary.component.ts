@@ -28,7 +28,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
   constructor(private queryService: QueryService,
               private treeNodeService: TreeNodeService,
               private crossTableService: CrossTableService,
-              private element: ElementRef) {
+              public element: ElementRef) {
   }
 
   ngOnInit() {
@@ -45,7 +45,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     this.observer.observe(this.element.nativeElement, config);
   }
 
-  private update() {
+  update() {
     let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
     if (treeNodeContainer) {
       let treeNodeElements = treeNodeContainer.children;
@@ -53,7 +53,7 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
+  updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodes[index];
@@ -65,14 +65,12 @@ export class GbSummaryComponent implements OnInit, AfterViewInit {
         dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
-
       // if the data object type belongs to the listed types
       if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)
         && !treeNodeElm.hasAttribute('hasEventListener')) {
         treeNodeElm.setAttribute('hasEventListener', true);
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
-
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
         this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);

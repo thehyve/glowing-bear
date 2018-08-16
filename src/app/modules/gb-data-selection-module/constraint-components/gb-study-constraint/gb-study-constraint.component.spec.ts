@@ -21,15 +21,15 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {QueryService} from '../../../../services/query.service';
 import {Study} from '../../../../models/constraint-models/study';
-import {StudiesService} from '../../../../services/studies.service';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
+import {StudyService} from '../../../../services/study.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 
 describe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
   let fixture: ComponentFixture<GbStudyConstraintComponent>;
   let constraintService: ConstraintService;
   let treeNodeService: TreeNodeService;
-  let studiesService: StudiesService;
+  let studyService: StudyService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -56,15 +56,15 @@ describe('GbStudyConstraintComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         }
       ]
     })
       .compileComponents();
     constraintService = TestBed.get(ConstraintService);
     treeNodeService = TestBed.get(TreeNodeService);
-    studiesService = TestBed.get(StudiesService);
+    studyService = TestBed.get(StudyService);
   }));
 
   beforeEach(() => {
@@ -79,16 +79,16 @@ describe('GbStudyConstraintComponent', () => {
   });
 
   it('should prepare suggested studies for dropdown', () => {
-    let dummies = [
-      new Study(),
-      new Study()
-    ];
+    let s1 = new Study(); s1.id = 's1';
+    let s2 = new Study(); s2.id = 's2';
+    let dummies = [s1, s2];
     let e = new MouseEvent('');
     e['originalEvent'] = new MouseEvent('');
-    let spy1 = spyOnProperty(studiesService, 'studies', 'get').and.returnValue(dummies);
+    let spy1 = spyOnProperty(studyService, 'studies', 'get').and.returnValue(dummies);
     component.onDropdown(e);
     expect(spy1).toHaveBeenCalled();
-    expect(component.searchResults).toBe(dummies);
+    expect(component.searchResults.length).toBe(2);
+    expect(component.searchResults[0].id).toBe('s1')
   })
 
   it('should handle the drop of a study constraint', () => {
@@ -133,7 +133,7 @@ describe('GbStudyConstraintComponent', () => {
     let study1 = new Study(); study1.id = 'id1';
     let study2 = new Study(); study2.id = 'id2';
     let study3 = new Study(); study3.id = 'abc';
-    studiesService.studies =  [study1, study2, study3];
+    studyService.studies =  [study1, study2, study3];
     component.onSearch(event);
     expect(component.searchResults.length).toEqual(1);
 

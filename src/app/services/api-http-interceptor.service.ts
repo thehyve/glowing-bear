@@ -6,9 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
+import {tap, switchMap} from 'rxjs/operators';
 import {Injectable, Injector} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {AppConfig} from '../config/app.config';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthorizationResult} from './authentication/authorization-result';
@@ -41,24 +43,24 @@ export class ApiHttpInterceptor implements HttpInterceptor {
     }
 
     // API request: wait for authorization
-    return this.authenticationService.authorised.switchMap((isAuthorized) => {
+    return this.authenticationService.authorised.pipe(switchMap((isAuthorized) => {
       if (isAuthorized && this.authenticationService.validToken) {
         return next.handle(this.addAPIHeaders(req));
       } else {
-        return this.authenticationService.authorise().switchMap((authResult: AuthorizationResult) => {
+        return this.authenticationService.authorise().pipe(switchMap((authResult: AuthorizationResult) => {
           if (authResult !== AuthorizationResult.Authorized) {
             throw new Error('Not authorized');
           }
-          return next.handle(this.addAPIHeaders(req)).do(() => {}, (err: any) => {
+          return next.handle(this.addAPIHeaders(req)).pipe(tap(() => {}, (err: any) => {
             if (err instanceof HttpErrorResponse) {
               if (err.status === 401) {
                 this.authenticationService.logout();
               }
             }
-          });
-        });
+          }));
+        }));
       }
-    });
+    }));
   }
 
   private addAPIHeaders(req: HttpRequest<any>): HttpRequest<any> {

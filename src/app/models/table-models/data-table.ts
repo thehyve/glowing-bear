@@ -43,7 +43,7 @@ export class DataTable {
 
   constructor() {
     this.constraint = new TrueConstraint();
-    this.isDirty = false;
+    this.isDirty = true;
     this.isLastPage = false;
     this.currentPage = 1;
     this.offset = 0;

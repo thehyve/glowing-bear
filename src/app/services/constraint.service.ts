@@ -18,7 +18,6 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNode} from 'primeng/api';
@@ -27,7 +26,7 @@ import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transm
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
-import {StudiesService} from './studies.service';
+import {StudyService} from './study.service';
 
 /**
  * This service concerns with
@@ -77,7 +76,7 @@ export class ConstraintService {
   }
 
   constructor(private treeNodeService: TreeNodeService,
-              private studiesService: StudiesService,
+              private studyService: StudyService,
               private resourceService: ResourceService) {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -109,12 +108,12 @@ export class ConstraintService {
   }
 
   private loadStudiesConstraints() {
-    this.studiesService.studiesLoaded.asObservable().subscribe(
+    this.studyService.studiesLoaded.asObservable().subscribe(
       (studiesLoaded: boolean) => {
         if (studiesLoaded) {
           // reset studies and study constraints
           this.studyConstraints = [];
-          this.studiesService.studies.forEach(study => {
+          this.studyService.studies.forEach(study => {
             let constraint = new StudyConstraint();
             constraint.studies.push(study);
             this.studyConstraints.push(constraint);

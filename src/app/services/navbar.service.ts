@@ -46,70 +46,9 @@ export class NavbarService {
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
     } else if (this.isExport) {
-      this.updateDataSelection();
+      this.queryService.updateAll();
       this.activeItem = this._items[2];
     }
-  }
-
-  updateDataSelection(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      const errorMessage = 'Fail to update data selection.';
-      if (this.queryService.isDirty_1) {
-        this.queryService.update_1()
-          .then(() => {
-            this.queryService.update_2()
-              .then(() => {
-                this.queryService.update_3()
-                  .then(() => {
-                    resolve(true);
-                  })
-                  .catch(err => {
-                    console.error(errorMessage);
-                    MessageHelper.alert('error', errorMessage);
-                    reject(err);
-                  })
-              })
-              .catch(err => {
-                console.error(errorMessage);
-                MessageHelper.alert('error', errorMessage);
-                reject(err);
-              });
-          })
-          .catch(err => {
-            console.error(errorMessage);
-            MessageHelper.alert('error', errorMessage);
-            reject(err);
-          });
-      } else if (this.queryService.isDirty_2) {
-        this.queryService.update_2()
-          .then(() => {
-            this.queryService.update_3()
-              .then(() => {
-                resolve(true);
-              })
-              .catch(err => {
-                console.error(errorMessage);
-                MessageHelper.alert('error', errorMessage);
-                reject(err);
-              })
-          })
-          .catch(err => {
-            console.error(errorMessage);
-            MessageHelper.alert('error', errorMessage);
-            reject(err);
-          });
-      } else if (this.queryService.isDirty_3) {
-        this.queryService.update_3()
-          .then(() => {
-            resolve(true);
-          })
-          .catch(err => {
-            console.error(errorMessage);
-            MessageHelper.alert('error', errorMessage);
-            reject(err);
-          })
-      }
-    });
   }
 
   get items(): MenuItem[] {

@@ -14,7 +14,7 @@ import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {NavbarService} from '../app/services/navbar.service';
 import {DatePipe} from '@angular/common';
-import {StudiesService} from '../app/services/studies.service';
+import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 
@@ -151,7 +151,7 @@ describe('Integration test for query saving and restoring', () => {
         DataTableService,
         CrossTableService,
         ExportService,
-        StudiesService,
+        StudyService,
         QueryService,
         NavbarService,
         DatePipe
@@ -213,7 +213,13 @@ describe('Integration test for query saving and restoring', () => {
             expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
             expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
             expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
+            expect(queryService.isDirty_1).toBe(false);
+            expect(queryService.isDirty_2).toBe(false);
+            expect(queryService.isDirty_3).toBe(false);
           });
+        expect(queryService.isDirty_1).toBe(true);
+        expect(queryService.isDirty_2).toBe(true);
+        expect(queryService.isDirty_3).toBe(true);
       });
   });
 

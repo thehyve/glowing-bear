@@ -37,7 +37,7 @@ import {AuthenticationService} from './services/authentication/authentication.se
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {StudiesService} from './services/studies.service';
+import {StudyService} from './services/study.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -64,7 +64,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   providers: [
     ResourceService,
     TransmartResourceService,
-    StudiesService,
+    StudyService,
     TreeNodeService,
     ConstraintService,
     QueryService,

@@ -24,6 +24,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
   searchResults: Study[];
+  isDropdownVisible = false;
 
   ngOnInit() {
   }
@@ -37,7 +38,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onSearch(event) {
-    let studies = this.studiesService.studies;
+    let studies = this.studyService.studies;
     let query = event.query.toLowerCase();
     if (query) {
       this.searchResults = studies.filter((study: Study) => study.id.toLowerCase().includes(query));
@@ -47,19 +48,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onDropdown(event) {
-    let studies = this.studiesService.studies;
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
-    this.searchResults = [];
-    this.searchResults = studies;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
+    this.searchResults = this.studyService.studies.slice(0);
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 

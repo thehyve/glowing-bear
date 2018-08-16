@@ -22,10 +22,9 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {Concept} from '../../../../models/constraint-models/concept';
-import {Observable} from 'rxjs/Observable';
+import {of as observableOf} from 'rxjs';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {ErrorHelper} from '../../../../utilities/error-helper';
-import {Error} from 'tslint/lib/error';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
@@ -34,8 +33,9 @@ import {TimeConstraint} from '../../../../models/constraint-models/time-constrai
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
-import {StudiesServiceMock} from '../../../../services/mocks/studies.service.mock';
-import {StudiesService} from '../../../../services/studies.service';
+import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {StudyService} from '../../../../services/study.service';
+import {throwError} from 'rxjs/internal/observable/throwError';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -75,8 +75,8 @@ describe('GbConceptConstraintComponent', () => {
           useClass: QueryServiceMock
         },
         {
-          provide: StudiesService,
-          useClass: StudiesServiceMock
+          provide: StudyService,
+          useClass: StudyServiceMock
         }
       ]
     })
@@ -103,8 +103,8 @@ describe('GbConceptConstraintComponent', () => {
     let dummyAggregate = {};
     let dummyTrialVistis = [];
     let dummyConcept = new Concept();
-    let spy1 = spyOn(resourceService, 'getAggregate').and.returnValue(Observable.of(dummyAggregate));
-    let spy2 = spyOn(resourceService, 'getTrialVisits').and.returnValue(Observable.of(dummyTrialVistis));
+    let spy1 = spyOn(resourceService, 'getAggregate').and.returnValue(observableOf(dummyAggregate));
+    let spy2 = spyOn(resourceService, 'getTrialVisits').and.returnValue(observableOf(dummyTrialVistis));
     component.initializeConstraints();
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled();
@@ -174,10 +174,10 @@ describe('GbConceptConstraintComponent', () => {
     component.constraint = constraint;
     let spy = spyOn(ErrorHelper, 'handleError').and.stub();
     spyOn(resourceService, 'getAggregate').and.callFake(() => {
-      return Observable.throw('error');
+      return throwError('error');
     });
     spyOn(resourceService, 'getTrialVisits').and.callFake(() => {
-      return Observable.throw('error');
+      return throwError('error');
     });
     component.initializeConstraints();
     expect(spy).toHaveBeenCalledTimes(2);
@@ -429,7 +429,30 @@ describe('GbConceptConstraintComponent', () => {
     component.valDate2 = new Date('2018-06-06');
     component.updateDateConceptValues();
     expect(constraint.valDateConstraint.date2.getTime()).toEqual(1528250400000);
+  })
 
+  it('should check the states of the concept component', () => {
+    let c: Concept = new Concept();
+    (<ConceptConstraint>component.constraint).concept = c;
+    c.type = ConceptType.NUMERICAL;
+    expect(component.isNumeric()).toBe(true);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(false);
+    c.type = ConceptType.CATEGORICAL;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(true);
+    expect(component.isDate()).toBe(false);
+    c.type = ConceptType.DATE;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(true);
+  })
+
+  it('should return false when concept is absent in constraint', () => {
+    (<ConceptConstraint>component.constraint).concept = null;
+    expect(component.isNumeric()).toBe(false);
+    expect(component.isCategorical()).toBe(false);
+    expect(component.isDate()).toBe(false);
   })
 
 });

@@ -9,8 +9,7 @@
 import {Study} from '../models/constraint-models/study';
 import {ResourceService} from './resource.service';
 import {Injectable} from '@angular/core';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
-import {Observable} from 'rxjs/Observable';
+import {AsyncSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 /**
@@ -18,7 +17,7 @@ import {map} from 'rxjs/operators';
  * for other components.
  */
 @Injectable()
-export class StudiesService {
+export class StudyService {
 
   private _loaded: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _studies: Study[] = [];
