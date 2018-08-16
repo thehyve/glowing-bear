@@ -78,9 +78,11 @@ export class CrossTableService {
    */
   public update(constraints: Array<Constraint>): Promise<any> {
     return new Promise((resolve, reject) => {
+      this.crossTable.isUpdating = true;
       this.updateValueConstraints(constraints)
         .then(this.updateCells.bind(this))
         .then(() => {
+          this.crossTable.isUpdating = false;
           resolve(true)
         })
         .catch(err => {
@@ -108,7 +110,6 @@ export class CrossTableService {
    */
   private updateValueConstraints(constraints: Array<Constraint>): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.crossTable.isUpdating = true;
       // clear existing value constraints
       this.clearValueConstraints(constraints);
       let promises: Promise<any>[] = [];
