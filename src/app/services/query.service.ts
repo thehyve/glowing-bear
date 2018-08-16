@@ -303,24 +303,9 @@ export class QueryService {
   prepare_2(resolve) {
     if (this.treeNodeService.isTreeNodeLoadingCompleted) {
       // update the tree in the 2nd step
-      let checklist = this.query ? this.query.observationQuery['data'] : null;
-      if (checklist) {
-        let parentPaths = [];
-        for (let path of checklist) {
-          let _parentPaths = this.treeNodeService.getParentTreeNodePaths(path);
-          for (let _parentPath of _parentPaths) {
-            if (!parentPaths.includes(_parentPath)) {
-              parentPaths.push(_parentPath);
-            }
-          }
-        }
-        checklist = checklist.concat(parentPaths);
-      } else if (this.treeNodeService.selectedProjectionTreeData.length > 0) {
-        checklist = [];
-        for (let selectedNode of this.treeNodeService.selectedProjectionTreeData) {
-          checklist.push(selectedNode['fullName']);
-        }
-      }
+      const existingChecklist = this.query ? this.query.observationQuery['data'] : null;
+      let checklist =
+        this.treeNodeService.getFullProjectionTreeDataChecklist(existingChecklist);
       this.treeNodeService.updateProjectionTreeData(checklist);
       this.query = null;
       this.isPreparing_2 = false;

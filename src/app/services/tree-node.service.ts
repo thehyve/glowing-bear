@@ -767,6 +767,47 @@ export class TreeNodeService {
     });
   }
 
+  /**
+   * The param checklist is a list of tree node fullnames
+   * indicating which tree nodes are selected in the step 2.
+   * Based on this checklist, the tree node service updates
+   * the tree nodes in step 2.
+   *
+   * When the user is restoring a saved query, this checklist
+   * will be directed constructed from the saved query.
+   * When the user checks the tree nodes in step 2 by clicking
+   * the checkboxes, the checklist will be constructed from such actions.
+   *
+   * However, neither checklist construction approach does not
+   * include parent tree nodes of the checked child tree nodes
+   * due to PrimeNg issues.
+   * These parent tree nodes should be marked as partialSelected
+   * and included in the checklist.
+   *
+   * This function does just that.
+   * @param {string[]} checklist
+   */
+  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
+    let newExistingChecklist = existingChecklist ? existingChecklist : [];
+    if (newExistingChecklist.length === 0 &&
+      this.selectedProjectionTreeData.length > 0) {
+      for (let selectedNode of this.selectedProjectionTreeData) {
+        newExistingChecklist.push(selectedNode['fullName']);
+      }
+    }
+    let parentPaths: string[] = [];
+    for (let path of newExistingChecklist) {
+      let _parentPaths = this.getParentTreeNodePaths(path);
+      for (let _parentPath of _parentPaths) {
+        if (!parentPaths.includes(_parentPath) &&
+          !newExistingChecklist.includes(_parentPath)) {
+          parentPaths.push(_parentPath);
+        }
+      }
+    }
+    return newExistingChecklist.concat(parentPaths);
+  }
+
   get treeNodes(): TreeNode[] {
     return this._treeNodes;
   }
