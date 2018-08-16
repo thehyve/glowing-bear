@@ -213,7 +213,13 @@ describe('Integration test for query saving and restoring', () => {
             expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
             expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
             expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
+            expect(queryService.isDirty_1).toBe(false);
+            expect(queryService.isDirty_2).toBe(false);
+            expect(queryService.isDirty_3).toBe(false);
           });
+        expect(queryService.isDirty_1).toBe(true);
+        expect(queryService.isDirty_2).toBe(true);
+        expect(queryService.isDirty_3).toBe(true);
       });
   });
 

@@ -123,7 +123,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
             (responseAggregate: Aggregate) => {
               if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
                 this.handleNumericAggregate(responseAggregate);
-              } else if (this.isCategorical()) { // -----------------------> If it's CATEGORICAL
+              } else if (this.isCategorical()) { // ------------------------> If it's CATEGORICAL
                 this.handleCategoricalAggregate(responseAggregate);
               } else if (this.isDate()) { // -------------------------------------> If it's DATE
                 this.handleDateAggregate(responseAggregate);
