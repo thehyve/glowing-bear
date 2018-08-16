@@ -28,11 +28,11 @@ export class TimeConstraint extends Constraint {
           this.dateOperator = DateOperatorState.BETWEEN;
           break;
         }
-        case '<-': {
+        case '<=': {
           this.dateOperator = DateOperatorState.BEFORE;
           break;
         }
-        case '->': {
+        case '=>': {
           this.dateOperator = DateOperatorState.AFTER;
           break;
         }

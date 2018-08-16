@@ -136,8 +136,8 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       let operator = {
         [DateOperatorState.BETWEEN]: '<-->',
         [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-        [DateOperatorState.BEFORE]: '<-',
-        [DateOperatorState.AFTER]: '->'
+        [DateOperatorState.BEFORE]: '<=',
+        [DateOperatorState.AFTER]: '=>'
       }[constraint.dateOperator];
       // Values (dates)
       let values = [constraint.date1.toISOString()];
