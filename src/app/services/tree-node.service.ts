@@ -774,15 +774,14 @@ export class TreeNodeService {
    * the tree nodes in step 2.
    *
    * When the user is restoring a saved query, this checklist
-   * will be directed constructed from the saved query.
+   * will be directly constructed from the saved query.
    * When the user checks the tree nodes in step 2 by clicking
    * the checkboxes, the checklist will be constructed from such actions.
    *
    * However, neither checklist construction approach does not
    * include parent tree nodes of the checked child tree nodes
-   * due to PrimeNg issues.
-   * These parent tree nodes should be marked as partialSelected
-   * and included in the checklist.
+   * due to PrimeNg issues. These parent tree nodes should be
+   * included as well in the checklist.
    *
    * This function does just that.
    * @param {string[]} checklist
