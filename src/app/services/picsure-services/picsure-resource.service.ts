@@ -15,7 +15,6 @@ import {SelectClause} from '../../models/picsure-models/request/select-clause';
 import {Concept} from '../../models/constraint-models/concept';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {MedcoService} from './medco.service';
-import {PicsureConstraintSerialiser} from '../../utilities/picsure-utilities/picsure-constraint-serialiser';
 
 @Injectable()
 export class PicSureResourceService {
@@ -42,9 +41,6 @@ export class PicSureResourceService {
     this.initialized.subscribe();
   }
 
-  // ------------------- public helpers ----------------------
-
-  // ------------------- private helpers ----------------------
 
   private loadResource(resourceName: string) {
     return this.getPicsureResources().switchMap(
@@ -61,20 +57,12 @@ export class PicSureResourceService {
 
         if (this._currentResource === undefined) {
           throw new Error('Configured resource does not exist');
-        } else if (!this.checkMinimumRequirements()) {
-          throw new Error('Configured resource does not match the minimum Glowing Bear requirements.')
         } else {
           console.log(`Configured resource is ${this._currentResource.name}`);
           return Observable.of(true);
         }
       }
     );
-  }
-
-  private checkMinimumRequirements(): boolean {
-    // todo: type of things is tree
-    // todo: predicates and data types needed
-    return true;
   }
 
   // ------------------- getters/setter ----------------------
@@ -125,7 +113,6 @@ export class PicSureResourceService {
 
         treeNode.conceptCode = `${treeNodeObj['ontology']}:${treeNodeObj['ontologyId']}`;
         treeNode.metadata = treeNodeObj['attributes'];
-        // todo: treeNode.dropMode = DropMode.TreeNode;?
 
         // extract concept type
         if (treeNodeObj['dataType']) {
@@ -192,13 +179,11 @@ export class PicSureResourceService {
     return this.apiEndpointService.postCall(urlPart, query);
   }
 
-  // todo: result status model
   getResultStatus(resultId: number): Observable<object> {
     let urlPart = `resultService/resultStatus/${resultId}`;
     return this.apiEndpointService.getCall(urlPart);
   }
 
-  // todo: result model
   getResult(resultId: number): Observable<object> {
     let urlPart = `resultService/result/${resultId}/JSON`;
     return this.apiEndpointService.getCall(urlPart);
@@ -216,42 +201,6 @@ export class PicSureResourceService {
     return this.getTreeNodes(treeRoot, 'CHILD');
   }
 
-  //   getStudies(): Observable<DimensionField[]> {
-  //   return this.getTreeNodes(`/${this.appConfig.getConfig('picsure-resource-name')}`, 'STUDY')
-  //     .map((irctTreeNodes) => {
-  //       return irctTreeNodes.map(irctTreeNode => { return {
-  //         id: irctTreeNode.getOntologyCode(),
-  //         name: irctTreeNode.name,
-  //         pui: irctTreeNode.pui
-  //       }});
-  //     });
-  // }
-
-  // getTrialVisits(conceptPui: string): Observable<DimensionField[]> {
-  //   return this.getTreeNodes(conceptPui, 'TRIAL_VISIT').map((irctTreeNodes) => {
-  //     return irctTreeNodes.map(irctTreeNode => { return {
-  //       id: irctTreeNode.getOntologyCode(),
-  //       name: irctTreeNode.name,
-  //       pui: irctTreeNode.pui
-  //     }});
-  //   });
-  // }
-
-  // getPedigreeRelationTypes(): Observable<PedigreeRelationTypeResponse[]> {
-  //   return this.getTreeNodes(`/${this.appConfig.getConfig('picsure-resource-name')}`, 'PEDIGREE')
-  //     .map((irctTreeNodes) => {
-  //       return irctTreeNodes.map(irctTreeNode => {
-  //         let relType: PedigreeRelationTypeResponse = new PedigreeRelationTypeResponse();
-  //         relType.label = irctTreeNode.name;
-  //         relType.description = irctTreeNode.description;
-  //         relType.biological = irctTreeNode.attributes['biological'];
-  //         relType.symmetrical = irctTreeNode.attributes['symmetrical'];
-  //         relType.pui = irctTreeNode.pui;
-  //         return relType;
-  //       });
-  //     });
-  // }
-
   /**
    * Get aggregate (i.e. metadata) about a concept.
    * Is set to support from PIC-SURE only NUMERICAL and CATEGORICAL aggregates.
@@ -259,7 +208,7 @@ export class PicSureResourceService {
    * @returns {Observable<Aggregate>}
    */
   getAggregate(concept: Concept): Observable<Aggregate> {
-    if (concept.type !== ConceptType.NUMERICAL && concept.type !== ConceptType.CATEGORICAL) {
+    if (concept.type !== ConceptType.CATEGORICAL) {
       return Observable.of(new Aggregate());
     }
 
@@ -273,10 +222,6 @@ export class PicSureResourceService {
             .filter((attrKey) => attrKey.startsWith('aggregate.categorical'))
             .forEach((catAggKey) => agg.valueCounts.set(picsureTreeNodes[0].metadata[catAggKey], -1));
           return agg;
-
-        case ConceptType.NUMERICAL:
-          console.error('TBD'); // todo
-          break;
 
         default:
           console.warn(`Returning empty aggregate for ${concept.path}, problem?`);
@@ -327,7 +272,7 @@ export class PicSureResourceService {
    */
   waitOnResult(resultId: number): Observable<object> {
     return Observable
-      .interval(1000) // todo config
+      .interval(1000)
       .flatMap(() => this.getResultStatus(resultId))
       .do((resultStatus) => console.log(`Result ${resultId} is ${resultStatus['status']}`))
       .filter((resultStatus) => resultStatus['status'] === 'AVAILABLE' || resultStatus['status'] === 'ERROR')
@@ -335,6 +280,6 @@ export class PicSureResourceService {
       .flatMap((resultStatus) => resultStatus['status'] === 'AVAILABLE' ?
         this.getResult(resultId) :
         Observable.throw(`Error of result ${resultId}: ${resultStatus['message']}`))
-      .timeout(60000) // todo config
+      .timeout(60000)
   }
 }

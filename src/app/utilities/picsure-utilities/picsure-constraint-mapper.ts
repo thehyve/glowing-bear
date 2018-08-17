@@ -15,7 +15,6 @@ export class PicsureConstraintMapper {
 
   public static mapConstraint(constraint: Constraint, medcoService?: MedcoService): WhereClause[] {
     let result = PicsureConstraintMapper.getSerialiser(medcoService).visit(constraint);
-    console.log(result); // todo: remove
     return PicsureConstraintMapper.verifyConstraintObject(constraint, result);
   }
 

@@ -38,6 +38,7 @@ import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {AppConfig} from '../config/app.config';
 import {PicSureResourceService} from './picsure-services/picsure-resource.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
+import {TreeNode} from '../models/tree-models/tree-node';
 
 @Injectable()
 export class ResourceService {
@@ -73,7 +74,7 @@ export class ResourceService {
       case EndpointMode.TRANSMART:
         return TransmartConstraintMapper.generateConstraintFromObject(constraintObjectInput);
 
-      case EndpointMode.PICSURE:
+      default:
         this.handleEndpointModeError('Not supported: PIC-SURE does not support custom constraints from tree');
     }
   }
@@ -91,6 +92,10 @@ export class ResourceService {
             return TransmartMapper.mapTransmartStudies(tmStudies);
           });
       }
+
+      case EndpointMode.PICSURE:
+        return Observable.of([]);
+
       default: {
         return this.handleEndpointModeError();
       }
@@ -104,13 +109,16 @@ export class ResourceService {
    * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
    * @returns {Observable<Object>}
    */
-  getRootTreeNodes(depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> { // todo: to treenode
+  getRootTreeNodes(depth: number, hasCounts: boolean, hasTags: boolean): Observable<TreeNode[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART:
         return this.transmartResourceService.getTreeNodes('\\', depth, hasCounts, hasTags);
 
       case EndpointMode.PICSURE:
         return this.picSureResourceService.getRootTreeNodes();
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -122,13 +130,16 @@ export class ResourceService {
    * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
    * @returns {Observable<Object>}
    */
-  getChildTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> { // todo: to treenode
+  getChildTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<TreeNode[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART:
         return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
 
       case EndpointMode.PICSURE:
         return this.picSureResourceService.getChildNodes(root);
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -136,9 +147,10 @@ export class ResourceService {
   updateInclusionExclusionCounts(constraint: Constraint,
                                  inclusionConstraint: Constraint,
                                  exclusionConstraint?: Constraint): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      switch (this.endpointMode) {
-        case EndpointMode.TRANSMART: {
+
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART: {
+        return new Promise<any>((resolve, reject) => {
           this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
             .then(() => {
               this.inclusionCounts =
@@ -152,13 +164,36 @@ export class ResourceService {
             .catch(err => {
               reject(err);
             });
-          break;
-        }
-        default: {
-          return this.handleEndpointModeError();
-        }
+        });
       }
-    });
+
+      case EndpointMode.PICSURE: {
+        return Promise.all([
+          new Promise<any>((resolve) => {
+            this.picSureResourceService.getPatientsCounts(inclusionConstraint).subscribe((inclusionCount) => {
+              this.inclusionCounts = inclusionCount;
+              resolve(true);
+            });
+          }),
+          new Promise<any>((resolve) => {
+            if (exclusionConstraint) {
+              this.picSureResourceService.getPatientsCounts(exclusionConstraint).subscribe((exclusionCount) => {
+                  this.exclusionCounts = exclusionCount;
+                  resolve(true);
+                }
+              );
+            } else {
+              this.exclusionCounts = new CountItem(0, -1);
+              resolve(true);
+            }
+          })
+        ]);
+
+      }
+
+      default:
+        return this.handleEndpointModeError().toPromise();
+    }
   }
 
   /**
@@ -175,6 +210,10 @@ export class ResourceService {
             return TransmartMapper.mapStudyConceptCountObject(response);
           });
       }
+
+      case EndpointMode.PICSURE:
+        return Observable.of(new Map());
+
       default: {
         return this.handleEndpointModeError();
       }
@@ -195,6 +234,10 @@ export class ResourceService {
             return TransmartMapper.mapStudyCountObject(response);
           });
       }
+
+      case EndpointMode.PICSURE:
+        return Observable.of(new Map());
+
       default: {
         return this.handleEndpointModeError();
       }
@@ -214,6 +257,10 @@ export class ResourceService {
             return TransmartMapper.mapConceptCountObject(response);
           });
       }
+
+      case EndpointMode.PICSURE:
+        return Observable.of(new Map());
+
       default: {
         return this.handleEndpointModeError();
       }
@@ -235,6 +282,9 @@ export class ResourceService {
       }
       case EndpointMode.PICSURE:
         return this.picSureResourceService.getPatientsCounts(constraint);
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -255,6 +305,9 @@ export class ResourceService {
       }
       case EndpointMode.PICSURE:
         return this.picSureResourceService.getAggregate(constraint.concept);
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -271,6 +324,9 @@ export class ResourceService {
       }
       case EndpointMode.PICSURE:
         return Observable.of([]);
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -286,6 +342,9 @@ export class ResourceService {
       }
       case EndpointMode.PICSURE:
         return Observable.of([]);
+
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -442,7 +501,7 @@ export class ResourceService {
             return TransmartMapper.mapTransmartQueries(transmartQueries);
           });
       }
-      case EndpointMode.PICSURE: {
+      default: {
         console.warn('getQueries() not supported');
         return Observable.of([]);
       }
@@ -547,10 +606,8 @@ export class ResourceService {
             return newDataTable;
           });
       }
-      case EndpointMode.PICSURE: {
-        console.warn('getDataTable() not supported');
-        return Observable.of(dataTable);
-      }
+      default:
+        return this.handleEndpointModeError();
     }
   }
 
@@ -586,7 +643,6 @@ export class ResourceService {
       });
   }
 
-  // TODO: refactor transmart speciic variables here, hide them from glowing bear
   get transmartExportDataView(): string {
     return this.transmartResourceService.exportDataView;
   }

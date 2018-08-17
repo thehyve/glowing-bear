@@ -89,7 +89,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       combinationConstraint.addChild(newConstraint);
 
       // force combination state if i2b2 style nesting
-      let parentConstraint = this.constraint.parent as CombinationConstraint;
+      let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
       if (this.config.getConfig('force-i2b2-nesting-style', false) &&
         parentConstraint && parentConstraint.isRoot) {
         (<CombinationConstraint>this.constraint).combinationState = CombinationState.Or;
@@ -114,7 +114,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       combinationConstraint.addChild(this.droppedConstraint);
 
       // force combination state if free nesting not supported
-      let parentConstraint = this.constraint.parent as CombinationConstraint;
+      let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
       if (this.config.getConfig('force-i2b2-nesting-style', false) &&
         parentConstraint && parentConstraint.isRoot) {
         combinationConstraint.combinationState = CombinationState.Or;
@@ -145,7 +145,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
   }
 
-  // todo: check behavior of allowGroupChildren if we get pedigree or something similar
   allowGroupChildren(): boolean {
     if (!(this.constraint instanceof CombinationConstraint)) {
       return false;

@@ -12,7 +12,6 @@ import {ConceptType} from '../../models/constraint-models/concept-type';
 import {WhereClause} from '../../models/picsure-models/request/where-clause';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
-import {ExportService} from '../../services/export.service';
 import {MedcoService} from '../../services/picsure-services/medco.service';
 
 /**
@@ -33,93 +32,6 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     super();
     this.medcoService = medcoService;
   }
-
-
-  // todo: check if needed!
-  // toQueryObject(): WhereClause[] {
-  //   let whereClause: WhereClause = {
-  //     predicate: 'SUBJECT_SET'
-  //   };
-  //   if (this.subjectIds.length > 0) {
-  //     whereClause.fields = {
-  //       SUBJECT_IDS: this.subjectIds
-  //     };
-  //   } else if (this.patientIds.length > 0) {
-  //     whereClause.fields = {
-  //       PATIENT_IDS: this.patientIds
-  //     };
-  //   } else if (this.id) {
-  //     whereClause.fields = {
-  //       PATIENT_SET_ID: this.id
-  //     };
-  //   } else {
-  //     console.warn('Empty patient set constraint generated');
-  //   }
-  //   return [whereClause];
-  // }
-
-  // todo: check if needed?
-  // this should generate where clause
-  // toQueryObject(full?: boolean): WhereClause[] {
-  //   // When no concept is selected, we cannot create a query object (it should be ignored)
-  //   if (!this.concept) {
-  //     return [];
-  //   }
-  //
-  //   let whereClauses: WhereClause[] = [];
-  //   for (let opIdx in this.operators) {
-  //     whereClauses.push({
-  //       predicate: 'CONCEPT',
-  //       field: {
-  //         pui: this.concept.path,
-  //         dataType: this.concept.type.toString()
-  //       },
-  //       logicalOperator: 'AND'
-  //     });
-  //
-  //     switch (this.concept.type) {
-  //       case ConceptType.CONCEPT:
-  //         break;
-  //
-  //       // 1 operator = 1 value
-  //       case ConceptType.CONCEPT_NUMERIC:
-  //       case ConceptType.CONCEPT_STRING:
-  //         whereClauses[-1].fields = {
-  //           operator: this.operators[opIdx],
-  //           value: this.values[opIdx]
-  //         };
-  //         break;
-  //
-  //       // 1 operator = 1+ values
-  //       case ConceptType.CONCEPT_DATE:
-  //       case ConceptType.CONCEPT_CATEGORICAL:
-  //         whereClauses[-1].fields = {
-  //           operator: this.operators[opIdx],
-  //           values: this.values
-  //         };
-  //         break;
-  //
-  //       case ConceptType.CONCEPT_HIGH_DIM:
-  //         // todo ??
-  //         break;
-  //
-  //       case ConceptType.UNKNOWN:
-  //       default:
-  //         console.warn(`Concept type not recognized: ${this.concept.type}`);
-  //     }
-  //
-  //   }
-  //
-  //   if (this.applyTrialVisitConstraint) {
-  //     whereClauses.push(...this.trialVisitConstraint.toQueryObject());
-  //   }
-  //   if (this.applyObsDateConstraint) {
-  //     whereClauses.push(...this.obsDateConstraint.toQueryObject());
-  //   }
-  //
-  //   delete whereClauses[0].logicalOperator;
-  //   return whereClauses;
-  // }
 
 
   visitValueConstraint(constraint: ValueConstraint): WhereClause[] {
@@ -192,30 +104,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
   }
 
   visitSubjectSetConstraint(constraint: SubjectSetConstraint): WhereClause[] {
-    // let result = null;
-    // if (constraint.mark = ConstraintMark.OBSERVATION) {
-    //   const type = 'patient_set';
-    //   if (constraint.subjectIds.length > 0) {
-    //     result = {
-    //       type: type,
-    //       subjectIds: constraint.subjectIds
-    //     };
-    //   } else if (constraint.patientIds.length > 0) {
-    //     result = {
-    //       type: type,
-    //       patientIds: constraint.patientIds
-    //     };
-    //   } else if (constraint.id) {
-    //     result = {
-    //       type: type,
-    //       patientSetId: constraint.id
-    //     };
-    //   } else {
-    //     result = null;
-    //   }
-    // }
-    // return result;
-    return []; // todo
+    throw new Error('SubjectSetConstraint not supported by PIC-SURE');
   }
 
   visitPedigreeConstraint(constraint: PedigreeConstraint): WhereClause[] {
@@ -247,54 +136,69 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
    * @returns {WhereClause[]}
    */
   visitConceptConstraint(constraint: ConceptConstraint): WhereClause[] {
-    // todo: condition on mark === observation?
     if (!constraint.concept) {
       return [];
     }
 
+    // todo: if modifier, it should be the concept, with a CONSTRAIN_MODIFIER
+
     let whereClauses: WhereClause[] = [];
-    if (constraint.concept.type === ConceptType.SIMPLE) {
-    // if (constraint.valueConstraints.length === 0) {
-      whereClauses.push({
-        predicate: 'CONTAINS',
-        field: {
-          pui: constraint.concept.path,
-          dataType: 'CONCEPT'
-        }
-      });
-    } else if (constraint.concept.type === ConceptType.ENCRYPTED) {
-      if (!this.medcoService) {
-        throw new Error(`MedCo service should be loaded`);
-      }
+    switch (constraint.concept.type) {
+      case ConceptType.SIMPLE:
+        whereClauses.push({
+          predicate: 'CONTAINS',
+          field: {
+            pui: constraint.concept.path,
+            dataType: 'CONCEPT'
+          }
+        });
+        break;
 
-      // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
-      let encId = this.medcoService.encryptInteger(Number(constraint.concept.code.split(':')[1]));
-      let splitPath = constraint.concept.path.split('/');
-      let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/`;
-
-      whereClauses.push({
-        predicate: 'CONTAINS',
-        field: {
-          pui: encPath,
-          dataType: 'ENC_CONCEPT'
+      case ConceptType.ENCRYPTED:
+        if (!this.medcoService) {
+          throw new Error(`MedCo service should be loaded`);
         }
-      });
-    } else {
-      // todo
-      for (let val of constraint.valueConstraints) {
-        let valWhereClauses: WhereClause[] = this.visit(val)
-          .map((valWhereClause) => {
-            valWhereClause.predicate = 'CONCEPTTODO'; // todo this
-            valWhereClause.field = {
-              pui: constraint.concept.path,
-              dataType: constraint.concept.type.toString()
-            };
-            valWhereClause.logicalOperator =
-              constraint.concept.type === ConceptType.CATEGORICAL ? 'OR' : 'AND';
-            return valWhereClause;
-          });
-        whereClauses.push(...valWhereClauses);
-      }
+
+        // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
+        let encId = this.medcoService.encryptInteger(Number(constraint.concept.code.split(':')[1]));
+        let splitPath = constraint.concept.path.split('/');
+        let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/`;
+
+        whereClauses.push({
+          predicate: 'CONTAINS',
+          field: {
+            pui: encPath,
+            dataType: 'ENC_CONCEPT'
+          }
+        });
+        break;
+
+      case ConceptType.CATEGORICAL:
+      case ConceptType.NUMERICAL:
+        for (let val of constraint.valueConstraints) {
+          let valWhereClauses: WhereClause[] = this.visit(val)
+            .map((valWhereClause) => {
+              valWhereClause.predicate = 'CONSTRAIN_VALUE'; // todo this
+              valWhereClause.field = {
+                pui: constraint.concept.path,
+                dataType: constraint.concept.type.toString()
+              };
+              valWhereClause.fields['OPERATOR'] = ''; // todo (from visitValue) LIKE[exact]
+              valWhereClause.fields['CONSTRAINT'] = ''; // todo (from visitValue)
+              valWhereClause.logicalOperator =
+                constraint.concept.type === ConceptType.CATEGORICAL ? 'OR' : 'AND';
+              return valWhereClause;
+            });
+          whereClauses.push(...valWhereClauses);
+        }
+        break;
+
+      case ConceptType.DATE:
+        // todo
+        break;
+
+      default:
+        throw new Error(`Concept type not supported: ${constraint.concept.type.toString()}`);
     }
 
     if (constraint.applyTrialVisitConstraint) {
