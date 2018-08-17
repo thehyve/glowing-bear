@@ -453,6 +453,22 @@ describe('GbConceptConstraintComponent', () => {
     expect(component.isNumeric()).toBe(false);
     expect(component.isCategorical()).toBe(false);
     expect(component.isDate()).toBe(false);
-  })
+  });
+
+  it('should sort the suggested categorical values first on selection, then on alphabet', () => {
+    component.selectedCategories = ['mouth', 'stomach', 'leg'];
+    component.suggestedCategories = [];
+    let suggestedCategoryValues = ['lung', 'mouth', 'head', 'stomach', 'breast', 'leg'];
+    suggestedCategoryValues.forEach(name => {
+      component.suggestedCategories.push({
+        label: name, value: name
+      });
+    });
+    component.onCategoricalValuePanelShow();
+    expect(component.suggestedCategories[0].value).toEqual('leg');
+    expect(component.suggestedCategories[1].value).toEqual('mouth');
+    expect(component.suggestedCategories[2].value).toEqual('stomach');
+    expect(component.suggestedCategories[3].value).toEqual('breast');
+  });
 
 });

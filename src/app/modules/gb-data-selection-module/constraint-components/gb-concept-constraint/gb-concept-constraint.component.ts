@@ -633,9 +633,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   /**
-   * sort the suggested categorical values so that the selected ones go on top
+   * sort the suggested categorical values so that the selected ones go on top,
+   * then sort alphabetically
    */
-  onCategoricalValuePanelHide() {
+  onCategoricalValuePanelShow() {
+    // put selected categories on top
     this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
       if (this.selectedCategories.includes(a.value)) {
         return -1;
@@ -643,6 +645,29 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         return 1;
       } else {
         return 0
+      }
+    });
+    // sort alphabetically
+    this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
+      if (this.selectedCategories.includes(a.value) && this.selectedCategories.includes(b.value)) {
+        if (a.value > b.value) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else {
+        return 0;
+      }
+    });
+    this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
+      if (!this.selectedCategories.includes(a.value) && !this.selectedCategories.includes(b.value)) {
+        if (a.value > b.value) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else {
+        return 0;
       }
     });
   }
