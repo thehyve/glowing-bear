@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
+import {ApplicationRef, Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
@@ -64,7 +64,8 @@ export class CrossTableService {
     return constraint.textRepresentation;
   }
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private resourceService: ResourceService,
+              private applicationRef: ApplicationRef) {
     this.clear();
   }
 
@@ -83,6 +84,12 @@ export class CrossTableService {
         .then(this.updateCells.bind(this))
         .then(() => {
           this.crossTable.isUpdating = false;
+          /**
+           * For some funny reason, after the drop of a tree node to cross table,
+           * the cross table component does not update its view sometimes.
+           * Here we force it to update.
+           */
+          this.applicationRef.tick();
           resolve(true)
         })
         .catch(err => {
@@ -201,6 +208,7 @@ export class CrossTableService {
           .subscribe((crossTable: CrossTable) => {
             this.crossTable = crossTable;
             this.crossTable.isUpdating = false;
+            this.applicationRef.tick();
             resolve(true);
           }, (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
