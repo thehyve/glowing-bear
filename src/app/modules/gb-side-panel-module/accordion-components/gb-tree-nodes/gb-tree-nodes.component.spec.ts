@@ -81,7 +81,7 @@ describe('TreeNodesComponent', () => {
       querySelector: function (arg: string) {
         if (arg === 'li.ui-treenode') {
           return treeNodeElm;
-        } else if (arg === 'li.ui-treenode .ui-treenode-icon') {
+        } else if (arg === 'li.ui-treenode .ui-treenode-label') {
           return treeNodeElmIcon;
         } else if (arg === '.ui-treenode-children') {
           return null;
