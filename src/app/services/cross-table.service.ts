@@ -208,6 +208,11 @@ export class CrossTableService {
           .subscribe((crossTable: CrossTable) => {
             this.crossTable = crossTable;
             this.crossTable.isUpdating = false;
+            /**
+             * For some funny reason, after the drop of a tree node to cross table,
+             * the cross table component does not update its view sometimes.
+             * Here we force it to update.
+             */
             this.applicationRef.tick();
             resolve(true);
           }, (err: HttpErrorResponse) => {
