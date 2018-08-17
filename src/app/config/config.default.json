@@ -1,5 +1,5 @@
 {
-  "api-url": "https://transmart-dev.thehyve.net",
+  "api-url": "https://transmart-dev.thehyve.net/v2",
   "app-url": "http://localhost:4200",
   "autosave-subject-sets": false,
   "export-data-view": "default",

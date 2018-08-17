@@ -9,11 +9,11 @@
   "instant-counts-update-3": false,
 
   "authentication-service-type": "oidc",
-  "oidc-server-url": "http://localhost:8081/auth/realms/master",
+  "oidc-server-url": "http://localhost:8081/auth/realms/master/protocol/openid-connect",
   "oidc-client-id": "i2b2-local",
 
   "endpoint-mode": "picsure",
-  "picsure-resource-name": "i2b2-local",
+  "picsure-resource-name": "i2b2-local-jwt",
   "include-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
