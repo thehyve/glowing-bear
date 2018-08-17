@@ -14,13 +14,11 @@ import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {ErrorHelper} from '../utilities/error-helper';
-import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
-import {NavbarService} from './navbar.service';
 
 @Injectable()
 export class TreeNodeService {
@@ -95,7 +93,6 @@ export class TreeNodeService {
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
 
   constructor(private resourceService: ResourceService,
-              private navbarService: NavbarService,
               private config: AppConfig,
               private injector: Injector) { }
 
@@ -440,7 +437,7 @@ export class TreeNodeService {
       let children = node.children;
       node.parent = null;
       node.children = null;
-      let nodeCopy = JSON.parse(JSON.stringify(node));
+      let nodeCopy = node.clone();
       if (children) {
         let childrenCopy = this.copyTreeNodes(children);
         nodeCopy.children = childrenCopy;

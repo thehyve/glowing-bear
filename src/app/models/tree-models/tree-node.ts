@@ -43,6 +43,39 @@ export class TreeNode implements PrimeNgTreeNode {
   parent: TreeNode;
   partialSelected: boolean;
 
+  clone(): TreeNode {
+    let copy: TreeNode = new TreeNode();
+    copy.path = this.path;
+    copy.name = this.name;
+    copy.displayName = this.displayName;
+    copy.description = this.description;
+    copy.nodeType = this.nodeType;
+    copy.conceptType = this.conceptType;
+    copy.conceptCode = this.conceptCode;
+    copy.dropMode = this.dropMode;
+    if (this.metadata) {
+      copy.metadata = JSON.parse(JSON.stringify(this.metadata));
+    }
+    copy.depth = this.depth;
+    if (this.constraint) {
+      copy.constraint = JSON.parse(JSON.stringify(this.constraint));
+    }
+    copy.studyId = this.studyId;
+    copy.subjectCount = this.subjectCount;
+    copy.childrenAttached = this.childrenAttached;
+    // copy.children = this.children.map((child) => child.clone());
+    copy.icon = this.icon;
+    copy.label = this.label;
+    copy.expandedIcon = this.expandedIcon;
+    copy.collapsedIcon = this.collapsedIcon;
+    copy.leaf = this.leaf;
+    copy.expanded = this.expanded;
+    copy.styleClass = this.styleClass;
+    // copy.parent =
+    copy.partialSelected = this.partialSelected;
+    return copy
+  }
+
   /**
    * Returns true if children were attached and at least 1 is present.
    * @returns {boolean}
@@ -100,6 +133,8 @@ export class TreeNode implements PrimeNgTreeNode {
       if (treeNode !== undefined) {
         if (this.isParentOf(treeNode)) {
           this.children.push(treeNode);
+        } else if (this.path === treeNode.path) {
+          this.children = treeNode.children;
         } else {
           console.warn(`Isolated tree node, possible error, this: ${this.path}, treeNode: ${treeNode.path}`);
         }

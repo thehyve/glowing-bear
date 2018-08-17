@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx'
 import {Constraint} from '../../models/constraint-models/constraint';
@@ -32,9 +31,9 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {ApiEndpointService} from '../api-endpoint.service';
-import {Concept} from '../../models/constraint-models/concept';
-import {MessageHelper} from '../../utilities/message-helper';
 import {ConceptType} from '../../models/constraint-models/concept-type';
+import {TreeNode} from '../../models/tree-models/tree-node';
+import {TreeNodeType} from '../../models/tree-models/tree-node-type';
 
 @Injectable()
 export class TransmartResourceService {
@@ -177,6 +176,77 @@ export class TransmartResourceService {
     });
   }
 
+  private convertTreeNodes(transmartNodes: object[]): TreeNode[] {
+
+    let treeNodes: TreeNode[] = [];
+    transmartNodes.forEach((transmartNode: object) => {
+
+      // ---- generate tree node model
+      let treeNode = new TreeNode();
+      treeNode.path = transmartNode['fullName'];
+      treeNode.name = transmartNode['name'];
+      treeNode.conceptCode = transmartNode['conceptCode'];
+      treeNode.metadata = transmartNode['metadata'];
+
+      const tail = '\\' + treeNode.name + '\\';
+      let head = treeNode.path.substring(0, treeNode.path.length - tail.length);
+      treeNode.displayName = treeNode.name + ' (' + head + ')';
+      treeNode.description = treeNode.displayName;
+
+      treeNode.leaf = (transmartNode['visualAttributes'] as string[]).includes('LEAF');
+
+      if (transmartNode['constraint']) {
+        treeNode.constraint = transmartNode['constraint'];
+        treeNode.constraint['fullName'] = treeNode.path;
+        treeNode.constraint['name'] = treeNode.name;
+        treeNode.constraint['conceptPath'] = treeNode.path;
+        treeNode.constraint['conceptCode'] = treeNode.conceptCode;
+        treeNode.constraint['valueType'] = transmartNode['type'];
+      }
+
+      // extract concept type
+      if (transmartNode['type'] === 'UNKNOWN') {
+        treeNode.nodeType = TreeNodeType.UNKNOWN;
+      } else if (transmartNode['type'] === 'STUDY') {
+        treeNode.nodeType = TreeNodeType.STUDY;
+      } else if (transmartNode['type'] === 'NUMERIC') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.NUMERICAL;
+      } else if (transmartNode['type'] === 'HIGH_DIMENSIONAL') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.HIGH_DIM;
+      } else if (transmartNode['type'] === 'CATEGORICAL') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.CATEGORICAL;
+      } else if (transmartNode['type'] === 'CATEGORICAL_OPTION') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.CATEGORICAL_OPTION;
+      } else if (transmartNode['type'] === 'DATE') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.DATE;
+      } else if (transmartNode['type'] === 'TEXT') {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.TEXT;
+      } else {
+        treeNode.nodeType = TreeNodeType.CONCEPT;
+        treeNode.conceptType = ConceptType.SIMPLE;
+      }
+
+      treeNode.depth = treeNode.path.split('\\').length - 2;
+
+      // children
+      treeNode.childrenAttached = true;
+      if (transmartNode['children']) {
+        treeNode.children = this.convertTreeNodes(transmartNode['children'] as object[]);
+      } else {
+        treeNode.children = [];
+      }
+
+      treeNodes.push(treeNode);
+    });
+    return treeNodes;
+  }
+
   /**
    * Get a specific branch of the tree nodes
    * @param {string} root - the path to the specific tree node
@@ -185,7 +255,7 @@ export class TransmartResourceService {
    * @param {boolean} hasTags - whether we want to include metadata in the tree nodes
    * @returns {Observable<Object>}
    */
-  getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
+  getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<TreeNode[]> {
     let urlPart = `tree_nodes?root=${root}&depth=${depth}`;
     if (hasCounts) {
       urlPart += '&counts=true';
@@ -194,51 +264,9 @@ export class TransmartResourceService {
       urlPart += '&tags=true';
     }
     const responseField = 'tree_nodes';
-    return this.apiEndpointService.getCall(urlPart, responseField);
-    // todo: get that from transmart: node['visualAttributes'].includes('LEAF') = leaf
-    // for transmart: !== UNKWOWN: queryable
-    // todo: generate the treenode object correctly here
-    // todo for transmart: put that in the transmart resource service!
-    // this should be done in transamrt specific stuff
-    // if (node.constraint) {
-    //   node.constraint['fullName'] = node.fullName;
-    //   node.constraint['name'] = node.name;
-    //   node.constraint['conceptPath'] = node.conceptPath;
-    //   node.constraint['conceptCode'] = node.conceptCode;
-    //   node.constraint['valueType'] = node.type;
-    // }
-    // todo:
-    // validtreenotypes
-    // } else if (treeNodeType === 'NUMERIC' ||
-    //         treeNodeType === 'CATEGORICAL' ||
-    //         treeNodeType === 'CATEGORICAL_OPTION' ||
-    //         treeNodeType === 'DATE' ||
-    //         treeNodeType === 'HIGH_DIMENSIONAL' ||
-    //         treeNodeType === 'TEXT') {
-    // ==> CONCEPT type tree node
-
-    // todo 2:
-    //    if (treeNode['name'] &&
-    //       treeNode['fullName'] &&
-    //       treeNode['conceptPath'] &&
-    //       treeNode['conceptCode'] &&
-    //       treeNode['type']) {
-    //       let concept = new Concept();
-    //       const tail = '\\' + treeNode['name'] + '\\';
-    //       const fullName = treeNode['fullName'];
-    //       let head = fullName.substring(0, fullName.length - tail.length);
-    //       concept.label = treeNode['name'] + ' (' + head + ')';
-    //       concept.path = treeNode['conceptPath'];
-    //       concept.type = <ConceptType> treeNode['type'];
-    //       concept.code = treeNode['conceptCode'];
-    //       concept.fullName = treeNode['fullName'];
-    //       concept.name = treeNode['name'];
-    //       return concept;
-    //     } else {
-    //       const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';
-    //       MessageHelper.alert('error', summary);
-    //       return null;
-    //     }
+    return this.apiEndpointService.getCall(urlPart, responseField).map((res: object[]) => {
+      return this.convertTreeNodes(res);
+    });
   }
 
   // -------------------------------------- count calls --------------------------------------
