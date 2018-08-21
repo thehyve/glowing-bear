@@ -12,12 +12,12 @@
       <gb-droppable-zone [constraints]="rowConstraints"></gb-droppable-zone>
     </div>
     <div class="col-md-10">
-      <!-- spinning icon goes here -->
+      <!-- when the table is still updating -->
       <div *ngIf="isUpdating">
         <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
       </div>
 
-      <!-- the table content goes here -->
+      <!-- when the table finished updating, the table content goes here -->
       <div *ngIf="!isUpdating">
         <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
           <ng-template pTemplate="header" let-columns>
