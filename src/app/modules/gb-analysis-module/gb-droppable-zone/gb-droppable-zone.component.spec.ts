@@ -70,7 +70,7 @@ describe('GbDroppableZoneComponent', () => {
   it('should conditionally update dragCounter when sth. is dragged into the zone', () => {
     component.dragCounter = -1;
     crossTableService.selectedConstraintCell = null;
-    component.onDragEnter({});
+    component.onDragEnter(new DragEvent('dragenter'));
     expect(component.dragCounter).toEqual(1);
 
     component.dragCounter = 3;
@@ -78,18 +78,18 @@ describe('GbDroppableZoneComponent', () => {
     let spy1 = spyOnProperty(crossTableService, 'selectedConstraintCell', 'get').and.returnValue({
       constraint: dummy
     })
-    component.onDragEnter({});
+    component.onDragEnter(new DragEvent('dragenter'));
     expect(spy1).toHaveBeenCalled();
     expect(component.dragCounter).toEqual(4);
 
     component.dragCounter = 3;
     component.constraints = [dummy];
-    component.onDragEnter({});
+    component.onDragEnter(new DragEvent('dragenter'));
     expect(component.dragCounter).toEqual(3);
   })
 
   it('should update dragCounter when drag leaves', () => {
-    let e = new Event('');
+    let e = new DragEvent('dragleave');
     let spy1 = spyOn(e, 'preventDefault').and.stub();
     component.dragCounter = 6;
     component.onDragLeave(e);
