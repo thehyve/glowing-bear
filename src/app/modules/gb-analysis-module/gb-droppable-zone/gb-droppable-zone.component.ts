@@ -32,7 +32,7 @@ export class GbDroppableZoneComponent implements OnInit {
   ngOnInit() {
   }
 
-  onDragEnter(e) {
+  onDragEnter(e: DragEvent) {
     if (this.dragCounter < 0) {
       this.dragCounter = 0;
     }
@@ -48,7 +48,7 @@ export class GbDroppableZoneComponent implements OnInit {
     }
   }
 
-  onDragLeave(e) {
+  onDragLeave(e: DragEvent) {
     e.preventDefault();
     this.dragCounter--;
   }

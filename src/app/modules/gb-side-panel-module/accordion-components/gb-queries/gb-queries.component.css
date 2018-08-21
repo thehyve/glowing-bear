@@ -17,6 +17,7 @@
   font-size: small;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
+  margin-top: 0.5em;
 }
 
 .gb-query-panel-sort-btn-container {
@@ -148,8 +149,9 @@ md2-accordion-header .ui-button-secondary:hover {
   color: #606060 !important;
   background-color: transparent !important;
   border: black;
-  padding: 0px;
+  padding: 0em;
   margin: 0px -3px 0px 0px;
+  -moz-margin-start: 1.1em;
 }
 
 .gb-query-sort-btn:hover {
