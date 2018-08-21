@@ -40,7 +40,6 @@ import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 
-
 @Injectable()
 export class ResourceService {
 
