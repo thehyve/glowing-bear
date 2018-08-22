@@ -13,6 +13,7 @@ import {TreeNodeService} from '../../../services/tree-node.service';
 import {ConstraintService} from '../../../services/constraint.service';
 import {DropMode} from '../../../models/drop-mode';
 import {MessageHelper} from '../../../utilities/message-helper';
+import {AxisType} from '../../../models/table-models/axis-type';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -20,8 +21,9 @@ import {MessageHelper} from '../../../utilities/message-helper';
   styleUrls: ['./gb-droppable-zone.component.css']
 })
 export class GbDroppableZoneComponent implements OnInit {
-
   @Input() constraints: Array<Constraint> = [];
+  @Input() axis: AxisType = null;
+
   public dragCounter = 0;
 
   constructor(private crossTableService: CrossTableService,

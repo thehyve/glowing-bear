@@ -464,7 +464,7 @@ describe('GbConceptConstraintComponent', () => {
         label: name, value: name
       });
     });
-    component.onCategoricalValuePanelShow();
+    component.onCategoricalValuePanelHide();
     expect(component.suggestedCategories[0].value).toEqual('leg');
     expect(component.suggestedCategories[1].value).toEqual('mouth');
     expect(component.suggestedCategories[2].value).toEqual('stomach');

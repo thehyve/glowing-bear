@@ -52,7 +52,8 @@
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
                    [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"
-                   (onPanelShow)="onCategoricalValuePanelShow()"></p-multiSelect>
+                   [resetFilterOnHide]="true"
+                   (onPanelHide)="onCategoricalValuePanelHide()"></p-multiSelect>
   </div>
 
   <!--  if the concept is DATE -->

@@ -487,6 +487,16 @@ gb-queries md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
   color: transparent;
 }
 
+gb-queries .ui-radiobutton .ui-radiobutton-box .ui-radiobutton-icon {
+  top: 0px !important;
+  left: 2px !important;
+}
+
+gb-queries .ui-radiobutton, .ui-radiobutton-label {
+  vertical-align: text-top !important;
+  padding-top: 3px;
+}
+
 /*
  * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
  */

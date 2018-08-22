@@ -1,5 +1,6 @@
 .gb-cross-table-container {
   font-size: small;
+  margin-right: 1em;
 }
 
 .gb-cross-table-top-header {
@@ -13,4 +14,19 @@
   background-color: var(--gb-clinical-green-light-light);
   font-weight: bold;
   color: #2d353c;
+}
+
+.gb-cross-table-description-1 {
+  text-align: center;
+  font-size: large;
+  font-weight: bold;
+  color: grey;
+}
+
+.gb-cross-table-description-2 {
+  text-align: center;
+  font-size: medium;
+  font-weight: normal;
+  color: grey;
+  margin-bottom: 1em;
 }
