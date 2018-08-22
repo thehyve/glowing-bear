@@ -52,6 +52,7 @@
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
                    [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"
+                   [resetFilterOnHide]="true"
                    (onPanelHide)="onCategoricalValuePanelHide()"></p-multiSelect>
   </div>
 
