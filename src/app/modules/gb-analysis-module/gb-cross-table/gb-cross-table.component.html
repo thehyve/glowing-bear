@@ -1,17 +1,26 @@
 <div class="gb-cross-table-container">
 
+  <!-- Header and description -->
+  <div class="gb-cross-table-description-1">
+    Cross Table
+  </div>
+  <div class="gb-cross-table-description-2">
+    Create a cross table by dragging categorical tree nodes into the drop zones below.
+  </div>
+
+  <!-- The cross table -->
   <div class="row" style="margin-bottom: 10px">
-    <div class="col-md-2"></div>
-    <div class="col-md-10">
-      <gb-droppable-zone [constraints]="columnConstraints"></gb-droppable-zone>
+    <div class="col-md-3"></div>
+    <div class="col-md-9">
+      <gb-droppable-zone [constraints]="columnConstraints" axis="Column"></gb-droppable-zone>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-md-2">
-      <gb-droppable-zone [constraints]="rowConstraints"></gb-droppable-zone>
+    <div class="col-md-3">
+      <gb-droppable-zone [constraints]="rowConstraints" axis="Row"></gb-droppable-zone>
     </div>
-    <div class="col-md-10">
+    <div class="col-md-9">
       <!-- when the table is still updating -->
       <div *ngIf="isUpdating">
         <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>

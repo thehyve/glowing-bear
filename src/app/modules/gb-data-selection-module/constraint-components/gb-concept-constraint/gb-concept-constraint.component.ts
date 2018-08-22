@@ -206,6 +206,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
     this.suggestedCategories = this.generateCategoricalValueItems(valueCounts, suggestedValues);
     this.selectedCategories = selectedValues;
+    // sort the suggested categories
+    this.onCategoricalValuePanelHide();
   }
 
   handleDateAggregate(responseAggregate: Aggregate) {
@@ -636,18 +638,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * sort the suggested categorical values so that the selected ones go on top,
    * then sort alphabetically
    */
-  onCategoricalValuePanelShow() {
-    // put selected categories on top
-    this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
-      if (this.selectedCategories.includes(a.value)) {
-        return -1;
-      } else if (this.selectedCategories.includes(b.value)) {
-        return 1;
-      } else {
-        return 0
-      }
-    });
-    // sort alphabetically
+  onCategoricalValuePanelHide() {
+    // put selected categories on top, then sort alphabetically
     this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
       if (this.selectedCategories.includes(a.value) && this.selectedCategories.includes(b.value)) {
         if (a.value > b.value) {
@@ -655,19 +647,16 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         } else {
           return -1;
         }
+      } else if (this.selectedCategories.includes(a.value)) {
+        return -1;
+      } else if (this.selectedCategories.includes(b.value)) {
+        return 1;
       } else {
-        return 0;
-      }
-    });
-    this.suggestedCategories.sort((a: SelectItem, b: SelectItem) => {
-      if (!this.selectedCategories.includes(a.value) && !this.selectedCategories.includes(b.value)) {
         if (a.value > b.value) {
           return 1;
         } else {
           return -1;
         }
-      } else {
-        return 0;
       }
     });
   }

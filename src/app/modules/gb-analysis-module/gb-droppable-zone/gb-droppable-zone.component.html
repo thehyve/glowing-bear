@@ -13,7 +13,14 @@
       </gb-draggable-cell>
     </div>
     <span *ngIf="constraints.length === 0"
-          class="gb-droppable-zone-info-container">drop zone</span>
+          class="gb-droppable-zone-info-container">
+      <span *ngIf="axis == 'Row'">
+        Row drop zone
+      </span>
+        <span *ngIf="axis == 'Column'">
+        Column drop zone
+      </span>
+    </span>
   </div>
 
 </div>
