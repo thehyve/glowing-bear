@@ -1,31 +1,72 @@
-# GlowingBear
+# Glowing Bear
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=master)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
-A cohort selection user interface for [TranSMART].
+A frontend application for clinical data selection and analysis 
+based on [TranSMART]. Visit https://glowingbear.app for more information.
+
+This project is based on [Angular 6](https://github.com/angular/angular), 
+[Angular CLI 6](https://github.com/angular/angular-cli) and 
+[Yarn 1.9.4](https://github.com/yarnpkg/yarn/releases)
 
 
-## Development
+### How to install
+* First, make sure the latest Angular CLI and Yarn are installed globally.
 
-This project was generated with [Angular CLI] version 1.0.0.
+* Second, clone Glowing Bear's code and install its dependencies
+    ```
+    git clone https://github.com/thehyve/glowing-bear.git
+    cd glowing-bear
+    yarn
+    ```
 
-### Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### How to run
+We assume that a TranSMART backend has been installed and run,
+either locally, e.g. on [localhost:8081](localhost:8081), 
+or remotely, e.g. on https://transmart-dev.thehyve.net. 
+For information on how to install and run TranSMART, 
+please refer to its [documentation](https://github.com/thehyve/transmart-core).
 
-### Code scaffolding
+* First, use the configuration for development 
+by changing [env.json](src/app/config/env.json) to
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+    ```json
+    {
+      "env": "dev"
+    }
+    ```
 
-### Build
+* Second, modify [config.dev.json](src/app/config/config.dev.json) 
+so that the `api-url` points to your running transmart instance.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+    ```json
+    {
+      "api-url": "http://localhost:8081"
+    }
+    ```
 
-### Running unit tests
+* Third, run
+    ```
+    yarn start
+    ```
+    The app is run on `http://localhost:4200/` and 
+    will automatically reload if you change any of the source files.
 
-Run `ng test` to execute the unit tests via [Karma], run `ng test --code-coverage` to test with generated coverage documents, which are located in the coverage folder.
 
-### Running end-to-end tests
+
+### How to build
+`yarn build` (or `ng build`)
+
+`yarn package` (or `ng build --prod`)
+
+The build artifacts will be stored in the `dist/` directory.
+
+
+
+### How to test
+Run `yarn test` to execute the unit tests via [Karma], 
+the generated coverage documents can be found in the `coverage/` folder.
 
 For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
 [Cypress] is install as part of the your `npm install` command. 
@@ -33,14 +74,11 @@ To run the tests using the headless browser `npm run e2e` or `npm run cypress` t
 by default the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
 WARNING: tests alter state. All saved queries are deleted.
 
-### Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
 
-## Publishing
-
+### How to deploy
 We use Gradle to create bundles that are suitable for deployment:
+
 ```bash
 # Create a tar bundle in build/distributions
 gradle assemble
@@ -49,13 +87,13 @@ gradle assemble
 gradle publish
 ```
 
-## Deployment
-
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
 
 Untar the archive in a directory where it can be served by a web server,
-e.g., [Apache] or [nginx].
+e.g. [Apache] or [nginx].
+
+
 
 ### Configuration
 
@@ -63,12 +101,14 @@ The application can be configured by changing the `env.json` and `config.*.json`
 files in `app/config`.
 
 Example `env.json`:
+
 ```json
 {
   "env": "default"
 }
 ```
 Example `config.prod.json`:
+
 ```json
 {
   "api-url": "https://transmart.thehyve.net",
@@ -85,8 +125,7 @@ Supported properties in the `config.*.json` files:
 |:------------------------- |:--------- |:----------- |
 | `api-url`                 |           | URL of the TranSMART API to connect to. |
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
-| `app-url`                 |           | URL where the Glowing Bear is accessible for the user. |
-| `tree-node-counts-update` | `true`    | Fetch counts for study nodes in step 2 of Data Selection. |
+| `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
 | `show-observation-counts` | `true`    | |
