@@ -15,7 +15,28 @@ import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AngularSplitModule} from 'angular-split';
 import {APP_BASE_HREF} from '@angular/common';
+import {DataTableService} from '../../services/data-table.service';
+import {ExportService} from '../../services/export.service';
+import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from '../../services/mocks/transmart-resource.service.mock';
+import {CrossTableService} from '../../services/cross-table.service';
+import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
+import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
+import {AuthenticationService} from '../../services/authentication/authentication.service';
+import {ConstraintService} from '../../services/constraint.service';
+import {ExportServiceMock} from '../../services/mocks/export.service.mock';
+import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
+import {ResourceService} from '../../services/resource.service';
+import {TreeNodeService} from '../../services/tree-node.service';
+import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
+import {AuthenticationServiceMock} from '../../services/mocks/authentication.service.mock';
+import {QueryService} from '../../services/query.service';
+import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {NavbarService} from '../../services/navbar.service';
+import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {MockComponent} from 'ng2-mock-component';
+
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -40,6 +61,46 @@ describe('GbMainComponent', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
+        },
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        {
+          provide: TransmartResourceService,
+          useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
+        },
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        {
+          provide: QueryService,
+          useClass: QueryServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: CrossTableService,
+          useClass: CrossTableServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        },
+        {
+          provide: ExportService,
+          useClass: ExportServiceMock
         }
       ]
     })

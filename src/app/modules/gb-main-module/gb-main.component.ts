@@ -7,6 +7,12 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {AuthenticationService} from '../../services/authentication/authentication.service';
+import {ResourceService} from '../../services/resource.service';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {TreeNodeService} from '../../services/tree-node.service';
+import {ConstraintService} from '../../services/constraint.service';
+import {QueryService} from '../../services/query.service';
 
 @Component({
   selector: 'gb-main',
@@ -15,7 +21,12 @@ import {Component, OnInit} from '@angular/core';
 })
 export class GbMainComponent implements OnInit {
 
-  constructor() {
+  constructor(private authenticationService: AuthenticationService,
+              private resourceService: ResourceService,
+              private transmartResourceService: TransmartResourceService,
+              private treeNodeService: TreeNodeService,
+              private constraintService: ConstraintService,
+              private queryService: QueryService) {
   }
 
   ngOnInit() {
