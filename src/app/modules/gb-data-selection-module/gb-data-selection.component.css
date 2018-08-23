@@ -41,13 +41,17 @@
 
 .gb-data-selection-update-btn {
   margin-left: 1em;
-  margin-right: 1em;
+  margin-right: 0.5em;
   border: 1px dashed;
 }
 
 .gb-data-selection-update-btn-dirty {
   border: 2px solid;
   font-weight: bolder;
+}
+
+.gb-data-selection-information-text {
+  color: white;
 }
 
 .fa-circle-o-notch {
@@ -90,4 +94,12 @@
 .gb-data-selection-top-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
+}
+
+.fa-info-circle {
+  margin-left: 0;
+  margin-right: 0.4em;
+  color: var(--gb-clinical-green);
+  font-size: 1.3em;
+  vertical-align: middle;
 }
