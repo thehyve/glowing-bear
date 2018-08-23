@@ -8,10 +8,8 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
-import {MenuItem} from 'primeng/components/common/api';
-import {QueryService} from '../../services/query.service';
 import {NavbarService} from '../../services/navbar.service';
-import {MessageHelper} from '../../utilities/message-helper';
+import {MenuItem} from 'primeng/api';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -20,12 +18,8 @@ import {MessageHelper} from '../../utilities/message-helper';
 })
 export class GbNavbarComponent implements OnInit {
 
-  public queryName: string;
-
   constructor(private router: Router,
-              private navbarService: NavbarService,
-              private queryService: QueryService) {
-    this.queryName = '';
+              private navbarService: NavbarService) {
   }
 
   ngOnInit() {
@@ -37,48 +31,17 @@ export class GbNavbarComponent implements OnInit {
     });
   }
 
-  get items(): MenuItem[] {
-    return this.navbarService.items;
+  logout() {
+    this.navbarService.logout();
   }
 
-  set items(value: MenuItem[]) {
-    this.navbarService.items = value;
+  get items(): MenuItem[] {
+    return this.navbarService.items;
   }
 
   get activeItem(): MenuItem {
     return this.navbarService.activeItem;
   }
 
-  set activeItem(value: MenuItem) {
-    this.navbarService.activeItem = value;
-  }
-
-  get isDataSelection(): boolean {
-    return this.navbarService.isDataSelection;
-  }
-
-  /**
-   * Prevent the default behavior of node drop
-   * @param event
-   */
-  preventNodeDrop(event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  saveQuery() {
-    let name = this.queryName ? this.queryName.trim() : '';
-    let queryNameIsValid = name !== '';
-    if (queryNameIsValid) {
-      this.queryService.saveQueryByName(name);
-      this.queryName = '';
-    } else {
-      MessageHelper.alert('error', 'Please specify the query name.', '');
-    }
-  }
-
-  get isSavingQueryCompleted(): boolean {
-    return this.queryService.isSavingQueryCompleted;
-  }
 }
 

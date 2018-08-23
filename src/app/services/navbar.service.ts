@@ -11,6 +11,7 @@ import {MenuItem} from 'primeng/api';
 import {QueryService} from './query.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {ExportService} from './export.service';
+import {AuthenticationService} from './authentication/authentication.service';
 
 @Injectable()
 export class NavbarService {
@@ -23,7 +24,8 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor(private exportService: ExportService,
+  constructor(private authenticationService: AuthenticationService,
+              private exportService: ExportService,
               private queryService: QueryService) {
     this.items = [
       {label: 'Data Selection', routerLink: '/data-selection'},
@@ -49,6 +51,10 @@ export class NavbarService {
       this.queryService.updateAll();
       this.activeItem = this._items[2];
     }
+  }
+
+  logout() {
+    this.authenticationService.logout();
   }
 
   get items(): MenuItem[] {

@@ -23,7 +23,6 @@ describe('ConstraintService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ConstraintService,
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock

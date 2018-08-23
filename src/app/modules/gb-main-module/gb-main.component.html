@@ -1,16 +1,6 @@
 <div class="gb-container">
-  <!-- Top panel -->
-  <div class="gb-top-panel">
-      <span class="float-right">
-        <button type="button" id="logout" class="btn btn-outline-secondary"
-                (click)="logout()">
-          <i class="fa fa-sign-out" aria-hidden="true"></i>
-        </button>
-      </span>
-  </div>
-
   <!-- Split main panel -->
-  <split direction="horizontal" [gutterSize]="10" class="gb-main-panel">
+  <split direction="horizontal" [gutterSize]="10">
     <split-area [size]="25">
       <gb-side-panel></gb-side-panel>
     </split-area>
@@ -21,5 +11,4 @@
       </div>
     </split-area>
   </split>
-
 </div>

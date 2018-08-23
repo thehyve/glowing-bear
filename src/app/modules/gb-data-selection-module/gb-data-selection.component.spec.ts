@@ -34,6 +34,7 @@ import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock
 describe('GbDataSelectionComponent', () => {
   let component: GbDataSelectionComponent;
   let fixture: ComponentFixture<GbDataSelectionComponent>;
+  let queryService: QueryService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -85,10 +86,38 @@ describe('GbDataSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbDataSelectionComponent);
     component = fixture.componentInstance;
+    queryService = TestBed.get(QueryService);
     fixture.detectChanges();
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should save query', () => {
+    spyOn(component, 'saveQuery').and.callThrough();
+    component.saveQuery();
+    expect(component.saveQuery).toHaveBeenCalled();
+    // when queryName is defined
+    component.queryName = 'test name';
+    spyOn(queryService, 'saveQueryByName').and.callThrough();
+    component.saveQuery();
+    expect(queryService.saveQueryByName).toHaveBeenCalled();
+  });
+
+  it('should prevent node drop on top panel', () => {
+    let func = function () {
+    };
+    let event = {
+      stopPropagation: func,
+      preventDefault: func
+    };
+    spyOn(component, 'preventNodeDrop').and.callThrough();
+    spyOn(event, 'stopPropagation').and.callThrough();
+    spyOn(event, 'preventDefault').and.callThrough();
+    component.preventNodeDrop(event);
+    expect(component.preventNodeDrop).toHaveBeenCalled();
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(event.preventDefault).toHaveBeenCalled();
   });
 });
