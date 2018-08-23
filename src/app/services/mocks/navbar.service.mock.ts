@@ -39,6 +39,8 @@ export class NavbarServiceMock {
     }
   }
 
+  logout() {}
+
   get items(): MenuItem[] {
     return this._items;
   }

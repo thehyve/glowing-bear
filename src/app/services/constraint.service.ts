@@ -66,15 +66,6 @@ export class ConstraintService {
     return depth;
   }
 
-  public constraint_1_2(): Constraint {
-    const c1 = this.constraint_1();
-    const c2 = this.constraint_2();
-    let combo = new CombinationConstraint();
-    combo.addChild(c1);
-    combo.addChild(c2);
-    return combo;
-  }
-
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
               private resourceService: ResourceService) {
@@ -145,6 +136,15 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
+  }
+
+  public constraint_1_2(): Constraint {
+    const c1 = this.constraint_1();
+    const c2 = this.constraint_2();
+    let combo = new CombinationConstraint();
+    combo.addChild(c1);
+    combo.addChild(c2);
+    return combo;
   }
 
   /**

@@ -10,14 +10,15 @@
 */
 :root {
   --gb-loading-bg-color: #28AA9D;
-  --gb-navbar-bg-color: #fdfdfd;
   --gb-orange-light: #ffa27f;
   --gb-orange-light-light: #ffd9cb;
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
   --gb-clinical-green-dark: #2d8c81;
-  --gb-top-panel-height: 26px;
+  --gb-gray-light: #bfbfbf;
+  --gb-gray: #808080;
+  --gb-gray-dark: #404040;
 }
 
 /*
