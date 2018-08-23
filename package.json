@@ -1,7 +1,7 @@
 {
   "name": "glowing-bear",
   "version": "0.0.1-SNAPSHOT",
-  "license": "GPL-3.0+",
+  "license": "MPL-2.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot",

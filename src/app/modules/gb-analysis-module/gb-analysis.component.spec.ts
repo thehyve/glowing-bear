@@ -19,7 +19,8 @@ describe('GbAnalysisComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbAnalysisComponent,
-        MockComponent({selector: 'gb-cross-table'})
+        MockComponent({selector: 'gb-cross-table'}),
+        MockComponent({selector: 'gb-fractalis'})
       ]
     })
       .compileComponents();
