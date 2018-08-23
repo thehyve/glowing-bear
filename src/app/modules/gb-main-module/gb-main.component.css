@@ -9,36 +9,5 @@
 }
 
 .gb-router-outlet-container {
-  margin-top: 4em;
   padding-left: 0.5em;
-}
-
-.gb-main-panel {
-  margin-top: var(--gb-top-panel-height);
-}
-
-.gb-top-panel {
-  background-color: var(--gb-clinical-green-dark);
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 100;
-  border: none;
-  padding: 2px 1em 2px 1em;
-  margin: 0px;
-  height: var(--gb-top-panel-height);
-}
-
-.gb-top-panel button {
-  background-color: transparent;
-  border: none;
-  color: white;
-  padding: 3px 5px 1px 7px;
-  margin-top: -5px;
-}
-.gb-top-panel button:hover {
-  color: var(--gb-orange-light)
-}
-.gb-top-panel button:active {
-  border: none;
 }
