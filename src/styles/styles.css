@@ -505,6 +505,10 @@ gb-queries .ui-radiobutton, .ui-radiobutton-label {
   padding-top: 3px;
 }
 
+.gb-query-tooltip.ui-tooltip .ui-tooltip-text {
+  background-color: var(--gb-clinical-green);
+}
+
 /*
  * ------------------------------ Styles for gb-data-table-dimensions component -------------------------------
  */
