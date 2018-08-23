@@ -73,42 +73,6 @@ describe('GbMainComponent', () => {
         {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
-        },
-        {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
-        },
-        {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
-        },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
-        {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
-        },
-        {
-          provide: QueryService,
-          useClass: QueryServiceMock
-        },
-        {
-          provide: DataTableService,
-          useClass: DataTableServiceMock
-        },
-        {
-          provide: CrossTableService,
-          useClass: CrossTableServiceMock
-        },
-        {
-          provide: NavbarService,
-          useClass: NavbarServiceMock
-        },
-        {
-          provide: ExportService,
-          useClass: ExportServiceMock
         }
       ]
     })
