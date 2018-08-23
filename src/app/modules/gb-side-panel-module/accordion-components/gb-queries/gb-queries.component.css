@@ -27,9 +27,12 @@
 }
 
 .gb-subscription-panel-header {
-  background-color: #e9e9e9;
   padding: 3px;
   cursor: pointer;
+  border-radius: 6px;
+  margin-left: -3px;
+  max-width: 162px;
+  box-shadow: 1px 1px 1px 1px lightgrey;
 }
 .gb-subscription-panel-header:hover {
   background-color: lightgray;
