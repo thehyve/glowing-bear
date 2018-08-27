@@ -1,0 +1,20 @@
+.gb-logo-panel {
+  height: var(--gb-navbar-height);
+  background-color: var(--gb-clinical-green-dark);
+  width: 100%;
+}
+
+.gb-logo-panel img {
+  width: 46px;
+  vertical-align: middle;
+  margin-bottom: 13px;
+  margin-left: 6px;
+  margin-top: 2px;
+}
+
+.gb-logo-text {
+  color: white;
+  font-weight: bolder;
+  font-size: 20px;
+  margin-left: 9px;
+}
