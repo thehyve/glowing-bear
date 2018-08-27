@@ -14,11 +14,11 @@ import {Router, RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {GbMainModule} from '../gb-main-module/gb-main.module';
+import {AppConfig} from '../../config/app.config';
+import {AppConfigMock} from '../../config/app.config.mock';
 
 describe('GbNavbarComponent', () => {
   let component: GbNavbarComponent;
@@ -41,6 +41,10 @@ describe('GbNavbarComponent', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         {
           provide: NavbarService,

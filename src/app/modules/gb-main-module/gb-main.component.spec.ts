@@ -41,6 +41,8 @@ import {TreeNodeService} from '../../services/tree-node.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {AuthenticationServiceMock} from '../../services/mocks/authentication.service.mock';
 import {AngularSplitModule} from 'angular-split';
+import {AppConfig} from '../../config/app.config';
+import {AppConfigMock} from '../../config/app.config.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -68,6 +70,10 @@ describe('GbMainComponent', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         {
           provide: AuthenticationService,

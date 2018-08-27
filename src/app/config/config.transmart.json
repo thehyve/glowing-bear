@@ -2,6 +2,7 @@
   "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
   "app-url": "https://glowingbear-dev.thehyve.net",
+  "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
   "export-data-view": "default",
   "show-observation-counts": true,

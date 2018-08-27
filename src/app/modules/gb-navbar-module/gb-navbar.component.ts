@@ -10,6 +10,7 @@ import {Component, OnInit} from '@angular/core';
 import {Router, NavigationEnd} from '@angular/router';
 import {NavbarService} from '../../services/navbar.service';
 import {MenuItem} from 'primeng/api';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -17,9 +18,12 @@ import {MenuItem} from 'primeng/api';
   styleUrls: ['./gb-navbar.component.css']
 })
 export class GbNavbarComponent implements OnInit {
+  docUrl: string;
 
   constructor(private router: Router,
+              private appConfig: AppConfig,
               private navbarService: NavbarService) {
+    this.docUrl = appConfig.getConfig('doc-url', 'https://glowingbear.app');
   }
 
   ngOnInit() {
