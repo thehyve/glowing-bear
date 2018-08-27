@@ -19,6 +19,7 @@
   --gb-gray-light: #bfbfbf;
   --gb-gray: #808080;
   --gb-gray-dark: #404040;
+  --gb-navbar-height: 50px;
 }
 
 /*
@@ -379,6 +380,10 @@ gb-summary {
 
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
+}
+
+gb-side-panel .ui-accordion .ui-accordion-header {
+  background-color: white;
 }
 
 /*

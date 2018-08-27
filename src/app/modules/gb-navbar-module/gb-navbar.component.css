@@ -1,5 +1,6 @@
 .gb-nav {
   background-color: var(--gb-clinical-green-dark);
+  height: var(--gb-navbar-height);
   overflow: hidden;
 }
 
