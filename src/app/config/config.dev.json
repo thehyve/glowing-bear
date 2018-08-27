@@ -2,6 +2,7 @@
   "api-url": "http://localhost:8081",
   "api-version": "v2",
   "app-url": "http://localhost:4200",
+  "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
   "export-data-view": "default",
   "show-observation-counts": true,

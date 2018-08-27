@@ -21,7 +21,7 @@ This project is based on [Angular 6](https://github.com/angular/angular),
     ```
 
 
-### How to run
+### How to run locally
 We assume that a TranSMART backend has been installed and run,
 either locally, e.g. on [localhost:8081](localhost:8081), 
 or remotely, e.g. on https://transmart-dev.thehyve.net. 
