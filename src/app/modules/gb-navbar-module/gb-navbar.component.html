@@ -1,21 +1,11 @@
-<div class="gb-navbar">
-  <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
-
-  <!-- The data selection control panel -->
-  <div *ngIf="isDataSelection" class="container form-inline gb-data-selection-overview-panel">
-    <!-- Saving query -->
-    <div>
-      <input id="queryName" type="text"
-             class="form-control gb-data-selection-overview-panel-input"
-             placeholder="Specify query name"
-             (drop)="preventNodeDrop($event)"
-             [(ngModel)]="queryName">
-      <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
-              (click)="saveQuery()"
-              type="button">
-        <span *ngIf="isSavingQueryCompleted">Save query</span>
-        <span *ngIf="!isSavingQueryCompleted">Saving...</span>
-      </button>
-    </div>
+<div class="gb-nav">
+  <span *ngFor="let item of items">
+    <a [routerLink]="item.routerLink"
+       [class]="activeItem && item.label === activeItem.label ? 'active' : ''">
+      {{item.label}}
+    </a>
+  </span>
+  <div class="gb-nav-right">
+    <a (click)="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
   </div>
 </div>

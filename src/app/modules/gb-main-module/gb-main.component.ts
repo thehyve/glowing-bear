@@ -32,8 +32,4 @@ export class GbMainComponent implements OnInit {
   ngOnInit() {
   }
 
-  logout() {
-    this.authenticationService.logout();
-  }
-
 }

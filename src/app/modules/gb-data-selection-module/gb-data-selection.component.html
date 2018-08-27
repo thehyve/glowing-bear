@@ -1,4 +1,18 @@
 <div class="gb-data-selection-container">
+  <!-- Saving query -->
+  <div class="container form-inline gb-data-selection-top-panel">
+    <input id="queryName" type="text"
+           class="form-control gb-data-selection-top-panel-input"
+           placeholder="Specify query name"
+           (drop)="preventNodeDrop($event)"
+           [(ngModel)]="queryName">
+    <button class="btn btn-outline-primary btn-sm gb-data-selection-top-panel-btn"
+            (click)="saveQuery()"
+            type="button">
+      <span *ngIf="isSavingQueryCompleted">Save query</span>
+      <span *ngIf="!isSavingQueryCompleted">Saving...</span>
+    </button>
+  </div>
 
   <!-- The accordions -->
   <md2-accordion [multiple]="true"

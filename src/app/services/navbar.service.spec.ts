@@ -14,16 +14,23 @@ import {QueryServiceMock} from './mocks/query.service.mock';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
 import {of as observableOf} from 'rxjs';
+import {AuthenticationService} from './authentication/authentication.service';
+import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 
 describe('NavbarService', () => {
   let queryService: QueryService;
   let navbarService: NavbarService;
   let exportService: ExportService;
+  let authService: AuthenticationService;
   let exportEnabled: boolean;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: QueryService,
           useClass: QueryServiceMock
@@ -37,6 +44,7 @@ describe('NavbarService', () => {
     });
     queryService = TestBed.get(QueryService);
     exportService = TestBed.get(ExportService);
+    authService = TestBed.get(AuthenticationService);
     exportEnabled = false;
     spyOn(exportService, 'isExportEnabled').and.callFake(() => observableOf(exportEnabled));
     navbarService = TestBed.get(NavbarService);
@@ -49,7 +57,7 @@ describe('NavbarService', () => {
 
   it('should add export item when access level is full', () => {
     exportEnabled = true;
-    navbarService = new NavbarService(exportService, queryService);
+    navbarService = new NavbarService(authService, exportService, queryService);
     expect(navbarService.items.length).toBe(3);
   });
 

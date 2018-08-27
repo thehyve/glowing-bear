@@ -35,8 +35,7 @@ describe('ConstraintService', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        ConstraintService
+        }
       ]
     });
     constraintService = TestBed.get(ConstraintService);

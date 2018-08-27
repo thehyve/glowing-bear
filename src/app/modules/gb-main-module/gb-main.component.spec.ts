@@ -45,7 +45,6 @@ import {AngularSplitModule} from 'angular-split';
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
   let fixture: ComponentFixture<GbMainComponent>;
-  let authService: AuthenticationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -119,16 +118,9 @@ describe('GbMainComponent', () => {
     fixture = TestBed.createComponent(GbMainComponent);
     component = fixture.componentInstance;
     component.ngOnInit();
-    authService = TestBed.get(AuthenticationService);
   })
 
   it('should be created', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should log out', () => {
-    let spy = spyOn(authService, 'logout').and.stub();
-    component.logout();
-    expect(spy).toHaveBeenCalled();
-  })
 });
