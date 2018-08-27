@@ -59,3 +59,5 @@ src/app/config/env.json
 # yarn
 *.log
 cypress/screenshots
+dump.rdb
+fractalis.log

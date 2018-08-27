@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from '../../services/authentication/authentication.service';
-// import * as fjs from '../../../../node_modules/fractalis/lib/fractal-1.2.2-test-1.min.js';
 import * as fjs from 'fractalis';
+import {MessageHelper} from '../../utilities/message-helper';
 
 @Component({
   selector: 'gb-fractalis',
@@ -15,23 +15,60 @@ export class GbFractalisComponent implements OnInit {
   }
 
   ngOnInit() {
-    // TODO: current fractalis testing version does not suport export
-    // TODO: need to add it manually in node_modules
-    // TODO: in future, expect an update from fractalis
+    console.log('token: ', this.authService.token);
+    let token = this.authService.token;
     const config = {
       handler: 'transmart',
-      dataSource: 'http://localhost:8081/v2',
-      fractalisNode: 'http://localhost:80',
+      dataSource: 'http://10.18.35.175:8081',
+      fractalisNode: 'http://localhost',
       getAuth() {
-        return {token: this.authService.token}
+        return {token: token}
       },
       options: {
         controlPanelPosition: 'right',
         controlPanelExpanded: true
       }
     };
-    this.fractal = fjs.fractal.init(config);
-    console.log('fractal', this.fractal)
+    let constraint1 = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'concept',
+            conceptCode: 'O1KP:NUM1'
+          }
+        },
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'study_name',
+            studyId: 'ORACLE_1000_PATIENT'
+          }
+        }
+      ]
+    };
+    let constraint2 = {
+      type: 'concept',
+      conceptCode: 'O1KP:NUM1'
+    }
+    let descriptor = {
+      constraint: JSON.stringify(constraint2),
+      data_type: 'numerical',
+      label: 'second test'
+    };
+    if (fjs.fractalis) {
+      this.fractal = fjs.fractalis.init(config);
+      console.log('Fratalis imported: ', this.fractal);
+      this.fractal.loadData([descriptor])
+        .then(res => {
+          console.log('response here', res)
+        });
+    } else {
+      MessageHelper.alert('error', 'Fail to import Fractalis.');
+    }
   }
 
 }

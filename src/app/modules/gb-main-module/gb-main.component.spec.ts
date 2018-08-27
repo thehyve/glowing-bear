@@ -43,6 +43,7 @@ import {AuthenticationServiceMock} from '../../services/mocks/authentication.ser
 import {AngularSplitModule} from 'angular-split';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {GbFractalisModule} from "../gb-fractalis-module/gb-fractalis.module";
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -64,6 +65,7 @@ describe('GbMainComponent', () => {
         GbSidePanelModule,
         GbDataSelectionModule,
         GbAnalysisModule,
+        GbFractalisModule,
         routing
       ],
       providers: [
