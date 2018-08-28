@@ -11,7 +11,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbDataSelectionComponent} from './gb-data-selection.component';
 import {
   AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule, MessagesModule,
-  TooltipModule
+  TooltipModule, OverlayPanelModule
 } from 'primeng/primeng';
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
@@ -55,7 +55,8 @@ describe('GbDataSelectionComponent', () => {
         CalendarModule,
         TreeModule,
         MessagesModule,
-        TooltipModule
+        TooltipModule,
+        OverlayPanelModule
       ],
       providers: [
         {
