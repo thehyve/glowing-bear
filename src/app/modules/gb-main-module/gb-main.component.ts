@@ -13,6 +13,7 @@ import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-main',
@@ -21,7 +22,8 @@ import {TransmartResourceService} from '../../services/transmart-services/transm
 })
 export class GbMainComponent implements OnInit {
 
-  constructor(private authenticationService: AuthenticationService,
+  constructor(private appConfig: AppConfig,
+              private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
               private transmartResourceService: TransmartResourceService,
               private treeNodeService: TreeNodeService,
@@ -30,10 +32,6 @@ export class GbMainComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  logout() {
-    this.authenticationService.logout();
   }
 
 }

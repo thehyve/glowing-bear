@@ -41,11 +41,12 @@ import {TreeNodeService} from '../../services/tree-node.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {AuthenticationServiceMock} from '../../services/mocks/authentication.service.mock';
 import {AngularSplitModule} from 'angular-split';
+import {AppConfig} from '../../config/app.config';
+import {AppConfigMock} from '../../config/app.config.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
   let fixture: ComponentFixture<GbMainComponent>;
-  let authService: AuthenticationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -69,6 +70,10 @@ describe('GbMainComponent', () => {
         {
           provide: APP_BASE_HREF,
           useValue: '/'
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         {
           provide: AuthenticationService,
@@ -119,16 +124,9 @@ describe('GbMainComponent', () => {
     fixture = TestBed.createComponent(GbMainComponent);
     component = fixture.componentInstance;
     component.ngOnInit();
-    authService = TestBed.get(AuthenticationService);
   })
 
   it('should be created', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should log out', () => {
-    let spy = spyOn(authService, 'logout').and.stub();
-    component.logout();
-    expect(spy).toHaveBeenCalled();
-  })
 });

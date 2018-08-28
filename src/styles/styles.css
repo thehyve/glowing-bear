@@ -10,14 +10,16 @@
 */
 :root {
   --gb-loading-bg-color: #28AA9D;
-  --gb-navbar-bg-color: #fdfdfd;
   --gb-orange-light: #ffa27f;
   --gb-orange-light-light: #ffd9cb;
   --gb-clinical-green: #339C90;
   --gb-clinical-green-light: #84c3bc;
   --gb-clinical-green-light-light: #c8eae6;
   --gb-clinical-green-dark: #2d8c81;
-  --gb-top-panel-height: 26px;
+  --gb-gray-light: #bfbfbf;
+  --gb-gray: #808080;
+  --gb-gray-dark: #404040;
+  --gb-navbar-height: 50px;
 }
 
 /*
@@ -380,6 +382,10 @@ gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
 }
 
+gb-side-panel .ui-accordion .ui-accordion-header {
+  background-color: white;
+}
+
 /*
  * ------------------------------ Styles for gb-summary component -------------------------------
  */
@@ -403,6 +409,7 @@ gb-tree-nodes .gb-tree-filter-input > input {
   height: 1.8em;
   width: 100%;
   min-width: 3em;
+  max-width: 7em;
 }
 
 /*
@@ -443,6 +450,7 @@ gb-queries .gb-query-filter-input > input {
   height: 1.8em;
   width: 100%;
   min-width: 3em;
+  max-width: 7em;
 }
 
 /*style fix for hiding the border in data list in saved queries in the side panel*/
