@@ -43,6 +43,7 @@
                       {{queryService.isDirty_1? 'gb-data-selection-update-btn-dirty' : ''}}">
                 Update
               </button>
+              <i class="fa fa-info-circle" (mouseenter)="op_1.show($event)" (mouseleave)="op_1.hide($event)"></i>
             </span>
           </div>
         </div>
@@ -76,6 +77,7 @@
                       {{queryService.isDirty_2? 'gb-data-selection-update-btn-dirty' : ''}}">
                 Update
               </button>
+              <i class="fa fa-info-circle" (mouseenter)="op_2.show($event)" (mouseleave)="op_2.hide($event)"></i>
             </span>
           </div>
         </div>
@@ -106,6 +108,7 @@
                       {{queryService.isDirty_3? 'gb-data-selection-update-btn-dirty' : ''}}">
                 Update
               </button>
+              <i class="fa fa-info-circle" (mouseenter)="op_3.show($event)" (mouseleave)="op_3.hide($event)"></i>
             </span>
           </div>
         </div>
@@ -114,5 +117,32 @@
     </md2-accordion-tab>
 
   </md2-accordion>
+
+  <p-overlayPanel #op_1
+                  [dismissable]="true"
+                  [showCloseIcon]="false"
+                  [style]="{'background':'#339C90', 'width': '50%'}">
+    <div class="gb-data-selection-information-text">
+      To define a group of subjects, either drag nodes from the tree into an "add criteria" box or use the "+" icon to add criteria to your selection. When you are done adding criteria, please click the “Update” button on the right to get feedback about your group size, or to submit your selection before advancing.
+    </div>
+  </p-overlayPanel>
+
+  <p-overlayPanel #op_2
+                  [dismissable]="true"
+                  [showCloseIcon]="false"
+                  [style]="{'background':'#339C90', 'width': '50%'}">
+    <div class="gb-data-selection-information-text">
+      Below you see the variables for which data exists in your group of subjects. Select variables for your data selection by marking the corresponding boxes. When you are done with selecting variables, please click the “Update” button on the right to get feedback about the number of observations (data points) in your data selection, or to submit your selection before advancing.
+    </div>
+  </p-overlayPanel>
+
+  <p-overlayPanel #op_3
+                  [dismissable]="true"
+                  [showCloseIcon]="false"
+                  [style]="{'background':'#339C90', 'width': '50%'}">
+    <div class="gb-data-selection-information-text">
+      To preview the data you selected in step 1 and 2, click the "Update" button on the right. A table appears with a preview of your data. You can alter the table by switching key variables from the row or column position with the tool above the table. Click the "Update" button for Step 3 to update your data representation. The first 10 rows of your data selection are displayed in the table. Use the previous and next buttons beneath the table to scroll through the rest of the data. When you are done creating your data representation click the "Update" button before going to the “Export” tab.
+    </div>
+  </p-overlayPanel>
 
 </div>

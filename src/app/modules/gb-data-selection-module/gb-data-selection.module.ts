@@ -28,7 +28,7 @@ import {
   TreeTableModule,
   DropdownModule,
   TooltipModule,
-  MessagesModule, PickListModule, PaginatorModule, MultiSelectModule
+  MessagesModule, PickListModule, PaginatorModule, MultiSelectModule, OverlayPanelModule
 } from 'primeng/primeng';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
@@ -57,7 +57,8 @@ import {TableModule} from 'primeng/table';
     TooltipModule,
     MessagesModule,
     PickListModule,
-    MultiSelectModule
+    MultiSelectModule,
+    OverlayPanelModule
   ],
   exports: [
     RouterModule
