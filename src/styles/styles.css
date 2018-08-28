@@ -409,6 +409,7 @@ gb-tree-nodes .gb-tree-filter-input > input {
   height: 1.8em;
   width: 100%;
   min-width: 3em;
+  max-width: 7em;
 }
 
 /*
@@ -449,6 +450,7 @@ gb-queries .gb-query-filter-input > input {
   height: 1.8em;
   width: 100%;
   min-width: 3em;
+  max-width: 7em;
 }
 
 /*style fix for hiding the border in data list in saved queries in the side panel*/
