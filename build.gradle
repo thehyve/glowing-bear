@@ -52,7 +52,15 @@ task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
   description = 'Builds the application'
   args = ['run', 'package']
 }
-distTar.dependsOn(yarnPackage)
+
+task versionTxt() {
+	doLast {
+		new File('dist/version.txt').text = version
+	}
+}
+versionTxt.dependsOn(yarnPackage)
+
+distTar.dependsOn(versionTxt)
 
 task yarnLint(type: YarnTask, dependsOn: 'yarn') {
   group = 'verification'
