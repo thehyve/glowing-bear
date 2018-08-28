@@ -19,11 +19,13 @@ import {AppConfig} from '../../config/app.config';
 })
 export class GbNavbarComponent implements OnInit {
   docUrl: string;
+  appVersion: string;
 
   constructor(private router: Router,
               private appConfig: AppConfig,
               private navbarService: NavbarService) {
     this.docUrl = appConfig.getConfig('doc-url', 'https://glowingbear.app');
+    this.appVersion = appConfig.getConfig('app-version', '0.6.1-rc.2');
   }
 
   ngOnInit() {

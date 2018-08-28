@@ -1,3 +1,7 @@
+.gb-query-panel-top {
+  margin-bottom: 3px;
+}
+
 .fa.fa-circle {
   font-size: 10px;
   color: darkgray;
@@ -15,9 +19,8 @@
 
 .gb-query-panel-import-btn {
   font-size: small;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  margin-top: 0.5em;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .gb-query-panel-sort-btn-container {
