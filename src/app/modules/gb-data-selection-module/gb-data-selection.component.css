@@ -87,10 +87,12 @@
 .gb-data-selection-top-panel-btn {
   margin: .1em;
 }
+
 .gb-data-selection-top-panel-btn:hover {
   background-color: var(--gb-clinical-green);
   opacity: 0.7;
 }
+
 .gb-data-selection-top-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
