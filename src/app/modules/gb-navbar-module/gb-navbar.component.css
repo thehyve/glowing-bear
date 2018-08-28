@@ -30,3 +30,8 @@
 .gb-nav-right {
   float: right;
 }
+
+.gb-nav-right small {
+  font-weight: lighter;
+  vertical-align: text-bottom;
+}
