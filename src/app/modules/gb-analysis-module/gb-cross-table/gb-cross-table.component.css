@@ -17,17 +17,14 @@
   color: #2d353c;
 }
 
-.gb-cross-table-description-1 {
+.gb-cross-table-description {
   text-align: center;
   font-size: large;
   font-weight: bold;
   color: grey;
 }
 
-.gb-cross-table-description-2 {
-  text-align: center;
+.gb-cross-table-info-text {
+  color: white;
   font-size: medium;
-  font-weight: normal;
-  color: grey;
-  margin-bottom: 1em;
 }

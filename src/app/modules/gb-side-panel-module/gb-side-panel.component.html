@@ -4,27 +4,29 @@
     <span class="gb-logo-text">GLOWING BEAR</span>
   </div>
 
-  <p-accordion [multiple]="true">
+  <div class="gb-side-accordion-container">
+    <p-accordion [multiple]="true">
 
-    <div>
-      <p-accordionTab header="Current Data Selection" [selected]="true">
-        <gb-summary></gb-summary>
-      </p-accordionTab>
-    </div>
+      <div>
+        <p-accordionTab header="Current Data Selection" [selected]="true">
+          <gb-summary></gb-summary>
+        </p-accordionTab>
+      </div>
 
-    <div *ngIf="isDataSelection">
-      <p-accordionTab header="Ontology" [selected]="true">
-        <gb-tree-nodes></gb-tree-nodes>
-      </p-accordionTab>
-    </div>
+      <div *ngIf="isDataSelection">
+        <p-accordionTab header="Ontology" [selected]="true">
+          <gb-tree-nodes></gb-tree-nodes>
+        </p-accordionTab>
+      </div>
 
-    <div *ngIf="isDataSelection">
-      <p-accordionTab header="Queries" [selected]="true">
-        <gb-queries></gb-queries>
-      </p-accordionTab>
-    </div>
+      <div *ngIf="isDataSelection">
+        <p-accordionTab header="Queries" [selected]="true">
+          <gb-queries></gb-queries>
+        </p-accordionTab>
+      </div>
 
-  </p-accordion>
+    </p-accordion>
+  </div>
 
   <br>
   <br>

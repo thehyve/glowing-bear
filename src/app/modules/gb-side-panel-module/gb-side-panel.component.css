@@ -2,6 +2,9 @@
   height: var(--gb-navbar-height);
   background-color: var(--gb-clinical-green-dark);
   width: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 99;
 }
 
 .gb-logo-panel img {
@@ -17,4 +20,8 @@
   font-weight: bolder;
   font-size: 20px;
   margin-left: 9px;
+}
+
+.gb-side-accordion-container {
+  margin-top: var(--gb-navbar-height-extra);
 }

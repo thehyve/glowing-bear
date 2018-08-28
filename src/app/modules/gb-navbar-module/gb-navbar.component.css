@@ -2,6 +2,8 @@
   background-color: var(--gb-clinical-green-dark);
   height: var(--gb-navbar-height);
   overflow: hidden;
+  position: fixed;
+  z-index: 100;
 }
 
 /* Style the links inside the navigation bar */
@@ -14,13 +16,11 @@
   font-size: 17px;
 }
 
-/* Change the color of links on hover */
 .gb-nav a:hover {
   background-color: #e3e3e3;
   color: var(--gb-gray-dark);
 }
 
-/* Add a color to the active/current link */
 .gb-nav a.active {
   background-color: #fdfdfd;
   color: var(--gb-gray-dark);
@@ -28,7 +28,31 @@
 
 /* Right-aligned section inside the top navigation */
 .gb-nav-right {
-  float: right;
+  position: fixed;
+  z-index: 101;
+  background-color: var(--gb-clinical-green-dark);
+  right: 1em;
+  height: var(--gb-navbar-height);
+}
+
+.gb-nav-right a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.gb-nav-right a:hover {
+  background-color: #e3e3e3;
+  color: var(--gb-gray-dark);
+  cursor: pointer;
+}
+
+.gb-nav-right a.active {
+  background-color: #fdfdfd;
+  color: var(--gb-gray-dark);
 }
 
 .gb-nav-right small {

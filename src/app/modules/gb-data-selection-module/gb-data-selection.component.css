@@ -68,7 +68,7 @@
   border-radius: 3px;
   border: 1px solid lightgray;
   padding: 0.5em 1em 0.5em 1em;
-  margin: 3px 16px -2px 0px;
+  margin: var(--gb-navbar-height-extra) 16px -2px 0px;
   color: darkslategrey;
   overflow: hidden;
   width: 100%;
@@ -96,22 +96,4 @@
 .gb-data-selection-top-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
-}
-
-.fa-info {
-  margin-left: 0.5em;
-  border-radius: 1em;
-  background-color: white;
-  color: var(--gb-clinical-green-light);
-  border: 2px var(--gb-clinical-green-light) solid;
-  padding-left: 0.4em;
-  padding-right: 0.4em;
-  padding-top: 1px;
-  padding-bottom: 0px;
-  font-size: small;
-}
-
-.fa-info:hover {
-  background-color: var(--gb-clinical-green-light);;
-  color: white;
 }
