@@ -41,13 +41,17 @@
 
 .gb-data-selection-update-btn {
   margin-left: 1em;
-  margin-right: 1em;
+  margin-right: 0.5em;
   border: 1px dashed;
 }
 
 .gb-data-selection-update-btn-dirty {
   border: 2px solid;
   font-weight: bolder;
+}
+
+.gb-data-selection-information-text {
+  color: white;
 }
 
 .fa-circle-o-notch {
@@ -90,4 +94,22 @@
 .gb-data-selection-top-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
+}
+
+.fa-info {
+  margin-left: 0.5em;
+  border-radius: 1em;
+  background-color: white;
+  color: var(--gb-clinical-green-light);
+  border: 2px var(--gb-clinical-green-light) solid;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-top: 1px;
+  padding-bottom: 0px;
+  font-size: small;
+}
+
+.fa-info:hover {
+  background-color: var(--gb-clinical-green-light);;
+  color: white;
 }
