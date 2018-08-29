@@ -27,7 +27,7 @@
   </div>
 
 
-  <div *ngIf="queries.length > 1" class="container gb-query-panel-sort-btn-container clearfix">
+  <div *ngIf="queries.length > 0" class="container gb-query-panel-sort-btn-container clearfix">
     <div class="float-right">
       <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
               pTooltip="Sort by query name"
@@ -57,8 +57,6 @@
     </div>
     <br><br>
   </div>
-  <hr style="margin: 1px;">
-
 
   <!-- queries -->
   <p-confirmDialog></p-confirmDialog>
