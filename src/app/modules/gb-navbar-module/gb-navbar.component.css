@@ -32,7 +32,7 @@
   z-index: 101;
   background-color: var(--gb-clinical-green-dark);
   right: 1em;
-  height: 48px;
+  height: var(--gb-navbar-height);
 }
 
 .gb-nav-right a {
