@@ -48,6 +48,7 @@
   background-color: #e3e3e3;
   color: var(--gb-gray-dark);
   cursor: pointer;
+  height: var(--gb-navbar-height);
 }
 
 .gb-nav-right a.active {
