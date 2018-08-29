@@ -1,8 +1,8 @@
-<div class="export-container">
+<div class="gb-export-container">
 
   <!---------------------- create new export ---------------------->
   <div *ngIf="!isLoadingExportDataTypes && exportDataTypes.length > 0">
-    <div class="export-section-banner">
+    <div class="gb-export-section-banner">
       <h5>Create new export for the currently selected data</h5>
     </div>
 
@@ -52,7 +52,7 @@
 
   <!-- the spinning icon -->
   <div *ngIf="isLoadingExportDataTypes">
-    <div class="export-section-banner">
+    <div class="gb-export-section-banner">
       <h5>Loading export data types</h5>
     </div>
     <p class="loading center">
@@ -63,7 +63,7 @@
   <hr>
 
   <!---------------------- previous exports ---------------------->
-  <div class="export-section-banner">
+  <div class="gb-export-section-banner">
     <h5>Previous Exports</h5>
   </div>
 

@@ -15,6 +15,7 @@ import {TableModule} from 'primeng/table';
 import {ResourceService} from '../../../services/resource.service';
 import {ResourceServiceMock} from '../../../services/mocks/resource.service.mock';
 import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
+import {OverlayPanelModule} from 'primeng/primeng';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
@@ -23,7 +24,8 @@ describe('GbCrossTableComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        TableModule
+        TableModule,
+        OverlayPanelModule
       ],
       providers: [
         {

@@ -20,6 +20,7 @@
   --gb-gray: #808080;
   --gb-gray-dark: #404040;
   --gb-navbar-height: 50px;
+  --gb-navbar-height-extra: 52px;
 }
 
 /*
@@ -148,6 +149,24 @@ body .hline {
    * would animate at the same time
    */
   animation-delay: .4s;
+}
+
+.fa-info {
+  margin-left: 0.5em;
+  border-radius: 1em;
+  background-color: white;
+  color: var(--gb-clinical-green-light);
+  border: 2px var(--gb-clinical-green-light) solid;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  padding-top: 1px;
+  padding-bottom: 0px;
+  font-size: small;
+}
+
+.fa-info:hover {
+  background-color: var(--gb-clinical-green-light);;
+  color: white;
 }
 
 /*
