@@ -15,6 +15,10 @@
   margin-top: 2px;
 }
 
+.gb-logo-panel img:hover {
+  cursor: pointer;
+}
+
 .gb-logo-text {
   color: white;
   font-weight: bolder;
@@ -22,6 +26,14 @@
   margin-left: 9px;
 }
 
+.gb-logo-text:hover {
+  cursor: pointer;
+}
+
 .gb-side-accordion-container {
   margin-top: var(--gb-navbar-height-extra);
+}
+
+.gb-side-panel-container {
+  margin-bottom: 5em;
 }

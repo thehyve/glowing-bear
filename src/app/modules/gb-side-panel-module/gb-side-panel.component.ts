@@ -8,6 +8,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-side-panel',
@@ -16,7 +17,11 @@ import {NavbarService} from '../../services/navbar.service';
 })
 export class GbSidePanelComponent implements OnInit {
 
-  constructor(private navbarService: NavbarService) {
+  docUrl: string;
+
+  constructor(private appConfig: AppConfig,
+              private navbarService: NavbarService) {
+    this.docUrl = appConfig.getConfig('doc-url', AppConfig.DEFAULT_DOC_URL);
   }
 
   ngOnInit() {
@@ -24,5 +29,9 @@ export class GbSidePanelComponent implements OnInit {
 
   get isDataSelection(): boolean {
     return this.navbarService.isDataSelection;
+  }
+
+  goToDocUrl() {
+    window.open(this.docUrl);
   }
 }

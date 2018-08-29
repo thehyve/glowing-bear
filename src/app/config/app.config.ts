@@ -15,6 +15,8 @@ import {ErrorHelper} from '../utilities/error-helper';
 @Injectable()
 export class AppConfig {
 
+  public static DEFAULT_DOC_URL = 'https://glowingbear.app';
+  public static DEFAULT_APP_VERSION = '0.7.2-rc.1';
   static path = 'app/config/';
   config: Object = null;
   env: Object = null;
