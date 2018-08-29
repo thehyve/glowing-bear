@@ -94,7 +94,7 @@ publishing {
     repositories {
         maven {
             name 'nl.thehyve.nexus'
-            url 'https://repo.thehyve.nl/content/repositories/snapshots/'
+            url 'https://repo.thehyve.nl/content/repositories/releases/'
         }
     }
     publications {
