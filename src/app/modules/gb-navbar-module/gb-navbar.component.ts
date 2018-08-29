@@ -25,7 +25,7 @@ export class GbNavbarComponent implements OnInit {
               private appConfig: AppConfig,
               private navbarService: NavbarService) {
     this.docUrl = appConfig.getConfig('doc-url', 'https://glowingbear.app');
-    this.appVersion = appConfig.getConfig('app-version', '0.7.1-rc.2');
+    this.appVersion = appConfig.getConfig('app-version', '0.7.1-rc.3');
   }
 
   ngOnInit() {
