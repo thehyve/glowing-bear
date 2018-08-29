@@ -32,7 +32,7 @@
   z-index: 101;
   background-color: var(--gb-clinical-green-dark);
   right: 1em;
-  height: var(--gb-navbar-height);
+  height: 48px;
 }
 
 .gb-nav-right a {
@@ -48,6 +48,7 @@
   background-color: #e3e3e3;
   color: var(--gb-gray-dark);
   cursor: pointer;
+  height: var(--gb-navbar-height);
 }
 
 .gb-nav-right a.active {
