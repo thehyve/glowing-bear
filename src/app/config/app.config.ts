@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Rx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
@@ -16,7 +15,6 @@ import {ErrorHelper} from '../utilities/error-helper';
 export class AppConfig {
 
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
-  public static DEFAULT_APP_VERSION = '0.7.3-rc.1';
   static path = 'app/config/';
   config: Object = null;
   env: Object = null;
@@ -41,6 +39,10 @@ export class AppConfig {
    */
   public getEnv() {
     return this.env['env'];
+  }
+
+  public getVersion() {
+    return this.config['app-version'];
   }
 
   public load() {

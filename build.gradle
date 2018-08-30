@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     ext {
         gradleNodeVersion = '1.2.0'
@@ -13,8 +15,11 @@ buildscript {
     }
 }
 
+def versionFile = new File('src/app/config/config.default.json')
+def versionObject = new JsonSlurper().parseText(versionFile.text)
+
 ext {
-    glowingBearVersion = '0.0.1-SNAPSHOT'
+    glowingBearVersion = versionObject['app-version']
     nodeVersion = '8.10.0'
     yarnVersion = '1.9.4'
     gradleWrapperVersion = '4.0'
