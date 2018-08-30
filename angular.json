@@ -19,6 +19,7 @@
             "polyfills": "src/polyfills.ts",
             "assets": [
               "src/assets",
+              "src/app/config/version.json",
               "src/app/config/env.json",
               "src/app/config/config.dev.json",
               "src/app/config/config.default.json",
