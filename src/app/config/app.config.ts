@@ -43,7 +43,6 @@ export class AppConfig {
     return this.env['env'];
   }
 
-
   public load() {
     return new Promise((resolve, reject) => {
 
