@@ -12,6 +12,7 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import {Query} from '../../../../models/query-models/query';
 
 @Component({
   selector: 'gb-projection',
@@ -76,8 +77,8 @@ export class GbProjectionComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  private parseFile(file: File, data: any) {
-    let observationQuery = {};
+  private parseFile(file: File, data: any): Query {
+    let observationQuery = {data: null};
     // file.type is empty for some browsers and Windows OS
     if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
@@ -91,16 +92,16 @@ export class GbProjectionComponent implements OnInit {
         observationQuery = {
           data: _json['paths']
         };
-      } else if (_json['observationsQuery']) {
-        observationQuery = _json['observationsQuery'];
+      } else if (_json['observationQuery']) {
+        observationQuery = _json['observationQuery'];
       } else {
         MessageHelper.alert('error', 'Invalid file content for STEP 2.');
         return;
       }
-      return {
-        'name': file.name.substr(0, file.name.indexOf('.')),
-        'observationsQuery': observationQuery
-      };
+
+      let query = new Query(null, file.name.substr(0, file.name.indexOf('.')));
+      query.observationQuery = observationQuery;
+      return query;
     } else {
       MessageHelper.alert('error', 'Invalid file format for STEP 2.');
       return;
