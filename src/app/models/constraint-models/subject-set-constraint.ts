@@ -12,9 +12,9 @@ import {SubjectSet} from './subject-set';
 
 export class SubjectSetConstraint extends Constraint {
   // external subject Ids
-  private _subjectIds = [];
+  private _subjectIds: string[] = [];
   // internal subject Ids
-  private _patientIds = [];
+  private _patientIds: string[] = [];
   private _setSize: number;
   private _status: string;
   private _id: number;
@@ -35,19 +35,19 @@ export class SubjectSetConstraint extends Constraint {
     return 'SubjectSetConstraint';
   }
 
-  get subjectIds() {
+  get subjectIds(): string[] {
     return this._subjectIds;
   }
 
-  set subjectIds(value) {
+  set subjectIds(value: string[]) {
     this._subjectIds = value;
   }
 
-  get patientIds() {
+  get patientIds(): string[] {
     return this._patientIds;
   }
 
-  set patientIds(value) {
+  set patientIds(value: string[]) {
     this._patientIds = value;
   }
 

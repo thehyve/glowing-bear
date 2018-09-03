@@ -17,6 +17,7 @@ import {DatePipe} from '@angular/common';
 import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
+import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 
 describe('Integration test for query saving and restoring', () => {
 
@@ -220,6 +221,18 @@ describe('Integration test for query saving and restoring', () => {
         expect(queryService.isDirty_1).toBe(true);
         expect(queryService.isDirty_2).toBe(true);
         expect(queryService.isDirty_3).toBe(true);
+      });
+  });
+
+  it('should restore query containing subject set constraint', () => {
+    let query = new Query(null, 'test');
+    let subjectSetConstraint = new SubjectSetConstraint();
+    subjectSetConstraint.subjectIds = ['1', '2', '3'];
+    query.subjectQuery = subjectSetConstraint;
+    query.observationQuery = {data: null};
+    queryService.restoreQuery(query)
+      .catch(err => {
+        fail('should have successfully restored the query with subject-set constraint but not')
       });
   });
 
