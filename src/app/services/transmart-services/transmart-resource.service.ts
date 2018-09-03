@@ -344,7 +344,7 @@ export class TransmartResourceService {
                                 exclusionConstraint?: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.getCountsPerStudyAndConcept(constraint)
-        .subscribe((studyConceptCountObj: object) => {
+        .subscribe((studyConceptCountObj: object) => { console.log('studyConceptCountObj',studyConceptCountObj)
           this.studyConceptCountObject = studyConceptCountObj;
           let totalCountItem: TransmartCountItem = new TransmartCountItem();
           // if in autosaveSubjectSets mode, need to calculate total observation count

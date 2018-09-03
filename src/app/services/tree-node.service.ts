@@ -120,7 +120,7 @@ export class TreeNodeService {
     this.loadCountMaps()
       .then(() => {
         this.loadTreeNodes()
-          .then(() => {
+          .then(() => {console.log(this.studyCountMap)
             this.updateTreeNodeCounts();
           })
           .catch(err => {
