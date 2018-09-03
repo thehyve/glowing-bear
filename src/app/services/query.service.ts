@@ -301,7 +301,7 @@ export class QueryService {
   }
 
   prepare_2(resolve) {
-    if (this.treeNodeService.isTreeNodeLoadingCompleted) { console.log(this.query)
+    if (this.treeNodeService.isTreeNodeLoadingCompleted) {
       // update the tree in the 2nd step
       const existingChecklist = this.query ? this.query.observationQuery['data'] : null;
       let checklist =
