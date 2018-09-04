@@ -7,15 +7,21 @@
  */
 
 export class AppConfigMock {
+  private version: Object = null;
   private config: Object = null;
   private env: Object = null;
+
   constructor() {
     this.config = {
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'transmart'
     };
+    this.version = {
+      'version': 'test'
+    }
   }
+
   public getConfig(key: any, defaultValue?: any) {
     if (key in this.config) {
       return this.config[key];
@@ -23,16 +29,23 @@ export class AppConfigMock {
       return defaultValue;
     }
   }
+
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  public getVersion() {
+    return this.version['version'];
   }
 
   load() {}
 }
 
 export class OidcConfigMock {
+  private version: Object = null;
   private config: Object = null;
   private env: Object = {};
+
   constructor() {
     this.config = {
       'api-url': 'https://transmart.example.com',
@@ -41,7 +54,11 @@ export class OidcConfigMock {
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
       'oidc-client-id': 'transmart-client'
     };
+    this.version = {
+      'version': 'test'
+    }
   }
+
   public getConfig(key: any, defaultValue?: any) {
     if (key in this.config) {
       return this.config[key];
@@ -49,8 +66,13 @@ export class OidcConfigMock {
       return defaultValue;
     }
   }
+
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  public getVersion() {
+    return this.version['version'];
   }
 
   load() {}

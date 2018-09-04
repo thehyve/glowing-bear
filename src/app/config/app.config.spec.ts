@@ -45,7 +45,7 @@ describe('AppConfig', () => {
     expect(val).toBe(null);
     val = appConfig.getConfig('sth else', 'custom value');
     expect(val).toBe('custom value');
-  })
+  });
 
   it('should get the env from config', () => {
     appConfig.env = {
@@ -53,10 +53,13 @@ describe('AppConfig', () => {
     };
     let val = appConfig.getEnv();
     expect(val).toBe('foobar');
-  })
+  });
 
   it('should load the correct config json file', () => {
     AppConfig.path = 'somepath/';
+    let dummyVersionResponse = {
+      version: '0.0.1-test'
+    };
     let dummyEnvResponse = {
       env: 'dev',
       foo: 'bar'
@@ -67,31 +70,50 @@ describe('AppConfig', () => {
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
     appConfig.load();
+    httpMock.expectOne(AppConfig.path + 'version.json').flush(dummyVersionResponse);
     httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
     httpMock.expectOne(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json').flush(dummyConfigResponse);
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(3);
     expect(spyMessage).toHaveBeenCalledTimes(0);
-  })
+  });
+
+  it('should return the version from the json file', () => {
+    AppConfig.path = 'somepath/';
+    let versionResponse = {
+      version: '0.0.1-test'
+    };
+    let spy = spyOn(appConfig.http, 'get').and.callThrough();
+    appConfig.load();
+    httpMock.expectOne(AppConfig.path + 'version.json').flush(versionResponse);
+    httpMock.expectOne(AppConfig.path + 'env.json').flush({env: 'dev'});
+    httpMock.expectOne(AppConfig.path + 'config.dev.json').flush({});
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(appConfig.getVersion()).toEqual(versionResponse.version);
+  });
 
   it('should not load config file when env is wrong', () => {
     AppConfig.path = 'somepath/';
+    let dummyVersionResponse = {
+      version: '0.0.1-test'
+    };
     let dummyEnvResponse = {
       env: 'sth.wrong',
       foo: 'bar'
     };
-    let dummyConfigResponse = {
-      bar: 'foo'
-    };
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
     appConfig.load();
+    httpMock.expectOne(AppConfig.path + 'version.json').flush(dummyVersionResponse);
     httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
     httpMock.expectNone(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json');
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(2);
     expect(spyMessage).toHaveBeenCalledTimes(1);
-  })
+  });
 
   it('should report error when retrieving env.json fails', () => {
+    let dummyVersionResponse = {
+      version: '0.0.1-test'
+    };
     let errorResponse = {
       status: 404,
       statusText: 'bad request'
@@ -100,13 +122,17 @@ describe('AppConfig', () => {
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
     appConfig.load();
+    httpMock.expectOne(AppConfig.path + 'version.json').flush(dummyVersionResponse);
     httpMock.expectOne(AppConfig.path + 'env.json').flush('cannot load env json', errorResponse);
-    expect(spy).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(2);
     expect(spyMessage).toHaveBeenCalledTimes(1);
-  })
+  });
 
   it('should report error  when retrieving config json fails', () => {
     AppConfig.path = 'somepath/';
+    let dummyVersionResponse = {
+      version: '0.0.1-test'
+    };
     let dummyEnvResponse = {
       env: 'dev',
       foo: 'bar'
@@ -118,10 +144,12 @@ describe('AppConfig', () => {
     let spy = spyOn(appConfig.http, 'get').and.callThrough();
     let spyMessage = spyOn(MessageHelper, 'alert');
     appConfig.load();
+    httpMock.expectOne(AppConfig.path + 'version.json').flush(dummyVersionResponse);
     httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
     httpMock.expectOne(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json')
       .flush('cannot load config json', errorResponse);
-    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy).toHaveBeenCalledTimes(3);
     expect(spyMessage).toHaveBeenCalledTimes(1);
-  })
+  });
+
 });

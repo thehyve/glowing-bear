@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Rx';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
@@ -16,8 +15,8 @@ import {ErrorHelper} from '../utilities/error-helper';
 export class AppConfig {
 
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
-  public static DEFAULT_APP_VERSION = '0.7.3-rc.1';
   static path = 'app/config/';
+  version: Object = null;
   config: Object = null;
   env: Object = null;
   envs: Array<string> = null;
@@ -43,6 +42,10 @@ export class AppConfig {
     return this.env['env'];
   }
 
+  public getVersion() {
+    return this.version['version'];
+  }
+
   public load() {
     return new Promise((resolve, reject) => {
 
@@ -51,6 +54,15 @@ export class AppConfig {
           'Content-Type': 'application/json'
         })
       };
+      this.http
+        .get(AppConfig.path + 'version.json', options)
+        .subscribe((response) => {
+          this.version = response;
+        }, (err) => {
+          ErrorHelper.handleError(err);
+          const summary = 'Application version could not be read.';
+          console.error(summary);
+        });
       this.http
         .get(AppConfig.path + 'env.json', options)
         .subscribe((envResponse) => {
