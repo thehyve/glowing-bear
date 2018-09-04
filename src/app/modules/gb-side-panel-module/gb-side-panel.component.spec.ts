@@ -31,6 +31,8 @@ import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {CrossTableService} from '../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
+import {AppConfig} from '../../config/app.config';
+import {AppConfigMock} from '../../config/app.config.mock';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -63,6 +65,10 @@ describe('GbSidePanelComponent', () => {
         RadioButtonModule
       ],
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
