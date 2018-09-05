@@ -133,4 +133,24 @@ describe('AppConfig', () => {
     expect(spyMessage).toHaveBeenCalledTimes(1);
   });
 
+  it('should get the default value when the given key is present', () => {
+    appConfig.config = {};
+    expect(appConfig.getConfig('api-url')).toBe(AppConfig.DEFAULT_API_URL);
+    expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
+    expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
+    expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
+    expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
+    expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
+    expect(appConfig.getConfig('export-data-view')).toBe(AppConfig.DEFAULT_EXPORT_DATA_VIEW);
+    expect(appConfig.getConfig('show-observation-counts')).toBe(AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS);
+    expect(appConfig.getConfig('instant-counts-update-1')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1);
+    expect(appConfig.getConfig('instant-counts-update-2')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2);
+    expect(appConfig.getConfig('instant-counts-update-3')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3);
+    expect(appConfig.getConfig('include-data-table')).toBe(AppConfig.DEFAULT_INCLUDE_DATA_TABLE);
+    expect(appConfig.getConfig('include-query-subscription')).toBe(AppConfig.DEFAULT_INCLUDE_QUERY_SUBSCRIPTION);
+    expect(appConfig.getConfig('authentication-service-type')).toBe(AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE);
+    expect(appConfig.getConfig('oidc-server-url')).toBe(AppConfig.DEFAULT_OIDC_SERVER_URL);
+    expect(appConfig.getConfig('oidc-client-id')).toBe(AppConfig.DEFAULT_OIDC_CLIENT_ID);
+  })
+
 });
