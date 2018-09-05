@@ -43,8 +43,6 @@ describe('AppConfig', () => {
     expect(val).toBe('bar');
     val = appConfig.getConfig('sth else');
     expect(val).toBe(null);
-    val = appConfig.getConfig('sth else', 'custom value');
-    expect(val).toBe('custom value');
   });
 
   it('should get the env from config', () => {
@@ -83,7 +81,7 @@ describe('AppConfig', () => {
     httpMock.expectOne(AppConfig.path + 'env.json').flush({env: 'dev'});
     httpMock.expectOne(AppConfig.path + 'config.dev.json').flush(configResponse);
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(appConfig.getVersion()).toEqual('0.0.1-test');
+    expect(appConfig.getConfig('app-version')).toEqual('0.0.1-test');
   });
 
   it('should not load config file when env is wrong', () => {
@@ -134,5 +132,30 @@ describe('AppConfig', () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spyMessage).toHaveBeenCalledTimes(1);
   });
+
+  it('should get the default value when the given key is present', () => {
+    appConfig.config = {};
+    try {
+      appConfig.getConfig('api-url');
+      fail('The call to get api-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
+    expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
+    expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
+    expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
+    expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
+    expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
+    expect(appConfig.getConfig('export-data-view')).toBe(AppConfig.DEFAULT_EXPORT_DATA_VIEW);
+    expect(appConfig.getConfig('show-observation-counts')).toBe(AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS);
+    expect(appConfig.getConfig('instant-counts-update-1')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1);
+    expect(appConfig.getConfig('instant-counts-update-2')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2);
+    expect(appConfig.getConfig('instant-counts-update-3')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3);
+    expect(appConfig.getConfig('include-data-table')).toBe(AppConfig.DEFAULT_INCLUDE_DATA_TABLE);
+    expect(appConfig.getConfig('include-query-subscription')).toBe(AppConfig.DEFAULT_INCLUDE_QUERY_SUBSCRIPTION);
+    expect(appConfig.getConfig('authentication-service-type')).toBe(AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE);
+    expect(appConfig.getConfig('oidc-server-url')).toBe(AppConfig.DEFAULT_OIDC_SERVER_URL);
+    expect(appConfig.getConfig('oidc-client-id')).toBe(AppConfig.DEFAULT_OIDC_CLIENT_ID);
+  })
 
 });

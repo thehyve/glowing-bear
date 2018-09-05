@@ -64,9 +64,9 @@ export class TransmartResourceService {
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
-    this.exportDataView = appConfig.getConfig('export-data-view', 'default');
+    this.exportDataView = appConfig.getConfig('export-data-view');
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
-    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets', false);
+    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
     this.subjectSetConstraint = new SubjectSetConstraint();
     this.inclusionCounts = new TransmartCountItem();
     this.exclusionCounts = new TransmartCountItem();

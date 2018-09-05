@@ -24,8 +24,8 @@ export class GbNavbarComponent implements OnInit {
   constructor(private router: Router,
               private appConfig: AppConfig,
               private navbarService: NavbarService) {
-    this.docUrl = appConfig.getConfig('doc-url', AppConfig.DEFAULT_DOC_URL);
-    this.appVersion = appConfig.getVersion();
+    this.docUrl = appConfig.getConfig('doc-url');
+    this.appVersion = appConfig.getConfig('app-version');
   }
 
   ngOnInit() {

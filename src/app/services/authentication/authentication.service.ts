@@ -60,10 +60,10 @@ export class AuthenticationService implements OnDestroy {
    * Parse the decoded token, determine the access level
    */
   private readAccessLevelFromToken() {
-    let serviceType = this.config.getConfig('authentication-service-type', 'oidc');
+    let serviceType = this.config.getConfig('authentication-service-type');
     switch (serviceType) {
       case 'oidc':
-        const clientId = this.config.getConfig('oidc-client-id', 'transmart-client');
+        const clientId = this.config.getConfig('oidc-client-id');
         try {
           let token = jwt_decode(this.token);
           if (token['resource_access']) {

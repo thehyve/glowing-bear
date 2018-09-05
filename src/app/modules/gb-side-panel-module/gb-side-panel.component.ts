@@ -21,7 +21,7 @@ export class GbSidePanelComponent implements OnInit {
 
   constructor(private appConfig: AppConfig,
               private navbarService: NavbarService) {
-    this.docUrl = appConfig.getConfig('doc-url', AppConfig.DEFAULT_DOC_URL);
+    this.docUrl = appConfig.getConfig('doc-url');
   }
 
   ngOnInit() {
