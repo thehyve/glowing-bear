@@ -14,10 +14,9 @@ import {ErrorHelper} from '../utilities/error-helper';
 @Injectable()
 export class AppConfig {
 
-  public static DEFAULT_API_URL = 'https://transmart-dev.thehyve.net';
   public static DEFAULT_API_VERSION = 'v2';
   public static DEFAULT_APP_URL = 'http://localhost:4200';
-  public static DEFAULT_APP_VERSION = '0.0.1-SNAPSHOT';
+  public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
   public static DEFAULT_EXPORT_DATA_VIEW = 'default';
@@ -51,7 +50,7 @@ export class AppConfig {
     if (!value) {
       switch (key) {
         case 'api-url': {
-          value = AppConfig.DEFAULT_API_URL; break;
+          throw Error('The API URL is unspecified in the configuration.')
         }
         case 'api-version': {
           value = AppConfig.DEFAULT_API_VERSION; break;

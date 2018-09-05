@@ -135,7 +135,12 @@ describe('AppConfig', () => {
 
   it('should get the default value when the given key is present', () => {
     appConfig.config = {};
-    expect(appConfig.getConfig('api-url')).toBe(AppConfig.DEFAULT_API_URL);
+    try {
+      appConfig.getConfig('api-url');
+      fail('The call to get api-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
     expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
     expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
