@@ -9,13 +9,16 @@
 export class AppConfigMock {
   private config: Object = null;
   private env: Object = null;
+
   constructor() {
     this.config = {
+      'app-version': '0.0.1-test',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'transmart'
     };
   }
+
   public getConfig(key: any, defaultValue?: any) {
     if (key in this.config) {
       return this.config[key];
@@ -23,8 +26,13 @@ export class AppConfigMock {
       return defaultValue;
     }
   }
+
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  public getVersion() {
+    return this.config['app-version'];
   }
 
   load() {}
@@ -33,8 +41,10 @@ export class AppConfigMock {
 export class OidcConfigMock {
   private config: Object = null;
   private env: Object = {};
+
   constructor() {
     this.config = {
+      'app-version': '0.0.1-test',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'oidc',
@@ -42,6 +52,7 @@ export class OidcConfigMock {
       'oidc-client-id': 'transmart-client'
     };
   }
+
   public getConfig(key: any, defaultValue?: any) {
     if (key in this.config) {
       return this.config[key];
@@ -49,8 +60,13 @@ export class OidcConfigMock {
       return defaultValue;
     }
   }
+
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  public getVersion() {
+    return this.config['app-version'];
   }
 
   load() {}
