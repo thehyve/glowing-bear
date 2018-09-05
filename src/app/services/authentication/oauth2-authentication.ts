@@ -133,7 +133,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.appUrl = this.config.getConfig('app-url');
       this.apiUrl = this.config.getConfig('api-url');
 
-      let serviceType = this.config.getConfig('authentication-service-type', 'oidc');
+      let serviceType = this.config.getConfig('authentication-service-type');
       switch (serviceType) {
         case 'oidc':
           this.authUrl = this.config.getConfig('oidc-server-url');

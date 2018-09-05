@@ -43,8 +43,6 @@ describe('AppConfig', () => {
     expect(val).toBe('bar');
     val = appConfig.getConfig('sth else');
     expect(val).toBe(null);
-    val = appConfig.getConfig('sth else', 'custom value');
-    expect(val).toBe('custom value');
   });
 
   it('should get the env from config', () => {
@@ -83,7 +81,7 @@ describe('AppConfig', () => {
     httpMock.expectOne(AppConfig.path + 'env.json').flush({env: 'dev'});
     httpMock.expectOne(AppConfig.path + 'config.dev.json').flush(configResponse);
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(appConfig.getVersion()).toEqual('0.0.1-test');
+    expect(appConfig.getConfig('app-version')).toEqual('0.0.1-test');
   });
 
   it('should not load config file when env is wrong', () => {

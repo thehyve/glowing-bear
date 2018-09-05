@@ -1,3 +1,5 @@
+import {AppConfig} from './app.config';
+
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
@@ -15,24 +17,18 @@ export class AppConfigMock {
       'app-version': '0.0.1-test',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
-      'authentication-service-type': 'transmart'
+      'authentication-service-type': 'transmart',
+      'export-data-view': 'default'
     };
   }
 
-  public getConfig(key: any, defaultValue?: any) {
-    if (key in this.config) {
-      return this.config[key];
-    } else {
-      return defaultValue;
-    }
+  public getConfig(key: any) {
+    return this.config[key];
   }
+
 
   public getEnv(key: any) {
     return this.env[key];
-  }
-
-  public getVersion() {
-    return this.config['app-version'];
   }
 
   load() {}
@@ -53,20 +49,12 @@ export class OidcConfigMock {
     };
   }
 
-  public getConfig(key: any, defaultValue?: any) {
-    if (key in this.config) {
-      return this.config[key];
-    } else {
-      return defaultValue;
-    }
+  public getConfig(key: any) {
+    return this.config[key];
   }
 
   public getEnv(key: any) {
     return this.env[key];
-  }
-
-  public getVersion() {
-    return this.config['app-version'];
   }
 
   load() {}

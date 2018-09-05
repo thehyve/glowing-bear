@@ -14,7 +14,24 @@ import {ErrorHelper} from '../utilities/error-helper';
 @Injectable()
 export class AppConfig {
 
+  public static DEFAULT_API_URL = 'https://transmart-dev.thehyve.net';
+  public static DEFAULT_API_VERSION = 'v2';
+  public static DEFAULT_APP_URL = 'http://localhost:4200';
+  public static DEFAULT_APP_VERSION = '0.0.1-SNAPSHOT';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
+  public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
+  public static DEFAULT_EXPORT_DATA_VIEW = 'default';
+  public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
+  public static DEFAULT_INSTANT_COUNTS_UPDATE_1 = false;
+  public static DEFAULT_INSTANT_COUNTS_UPDATE_2 = false;
+  public static DEFAULT_INSTANT_COUNTS_UPDATE_3 = false;
+  public static DEFAULT_INCLUDE_DATA_TABLE = true;
+  public static DEFAULT_INCLUDE_QUERY_SUBSCRIPTION = false;
+  public static DEFAULT_AUTHENTICATION_SERVICE_TYPE = 'oidc';
+  public static DEFAULT_OIDC_SERVER_URL =
+    'https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect';
+  public static DEFAULT_OIDC_CLIENT_ID = 'transmart-client';
+
   static path = 'app/config/';
   config: Object = null;
   env: Object = null;
@@ -29,9 +46,64 @@ export class AppConfig {
    * Use to get the data found in the second file (config file)
    * if present; returns default value otherwise.
    */
-  public getConfig(key: any, defaultValue: any = null) {
+  public getConfig(key: any) {
     let value = this.config[key];
-    return value != null ? value : defaultValue;
+    if (!value) {
+      switch (key) {
+        case 'api-url': {
+          value = AppConfig.DEFAULT_API_URL; break;
+        }
+        case 'api-version': {
+          value = AppConfig.DEFAULT_API_VERSION; break;
+        }
+        case 'app-url': {
+          value = AppConfig.DEFAULT_APP_URL; break;
+        }
+        case 'app-version': {
+          value = AppConfig.DEFAULT_APP_VERSION; break;
+        }
+        case 'doc-url': {
+          value = AppConfig.DEFAULT_DOC_URL; break;
+        }
+        case 'autosave-subject-sets': {
+          value = AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS; break;
+        }
+        case 'export-data-view': {
+          value = AppConfig.DEFAULT_EXPORT_DATA_VIEW; break;
+        }
+        case 'show-observation-counts': {
+          value = AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS; break;
+        }
+        case 'instant-counts-update-1': {
+          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1; break;
+        }
+        case 'instant-counts-update-2': {
+          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2; break;
+        }
+        case 'instant-counts-update-3': {
+          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3; break;
+        }
+        case 'include-data-table': {
+          value = AppConfig.DEFAULT_INCLUDE_DATA_TABLE; break;
+        }
+        case 'include-query-subscription': {
+          value = AppConfig.DEFAULT_INCLUDE_QUERY_SUBSCRIPTION; break;
+        }
+        case 'authentication-service-type': {
+          value = AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE; break;
+        }
+        case 'oidc-server-url': {
+          value = AppConfig.DEFAULT_OIDC_SERVER_URL; break;
+        }
+        case 'oidc-client-id': {
+          value = AppConfig.DEFAULT_OIDC_CLIENT_ID; break;
+        }
+        default: {
+          value = null; break;
+        }
+      }
+    }
+    return value;
   }
 
   /**
@@ -39,10 +111,6 @@ export class AppConfig {
    */
   public getEnv() {
     return this.env['env'];
-  }
-
-  public getVersion() {
-    return this.config['app-version'];
   }
 
   public load() {
