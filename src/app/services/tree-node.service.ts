@@ -19,6 +19,7 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../config/app.config';
+import {FormatHelper} from '../utilities/format-helper';
 
 @Injectable()
 export class TreeNodeService {
@@ -102,7 +103,9 @@ export class TreeNodeService {
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
 
-  constructor(private appConfig: AppConfig, private resourceService: ResourceService, private injector: Injector) {
+  constructor(private appConfig: AppConfig,
+              private resourceService: ResourceService,
+              private injector: Injector) {
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
     this.validTreeNodeTypes = [
       'NUMERIC',
@@ -120,7 +123,7 @@ export class TreeNodeService {
     this.loadCountMaps()
       .then(() => {
         this.loadTreeNodes()
-          .then(() => {console.log(this.studyCountMap)
+          .then(() => {
             this.updateTreeNodeCounts();
           })
           .catch(err => {
@@ -347,7 +350,7 @@ export class TreeNodeService {
       }
       node['icon'] = '';
     }
-    node['subjectCount'] = nodeCountItem ? nodeCountItem.subjectCount : undefined;
+    node['subjectCount'] = nodeCountItem ? FormatHelper.formatCountNumber(nodeCountItem.subjectCount) : undefined;
   }
 
   /**
@@ -528,9 +531,9 @@ export class TreeNodeService {
           countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
         if (countItem) {
-          let countsText = `sub: ${countItem.subjectCount}`;
+          let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
           if (this.showObservationCounts) {
-            countsText += `, obs: ${countItem.observationCount}`;
+            countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
           }
           node['label'] = `${node['name']} (${countsText})`;
           nodesWithCodes.push(node);

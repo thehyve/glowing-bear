@@ -153,7 +153,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy5).toHaveBeenCalled();
   })
 
-  it('should not initialize the constraint when it not numerical, categorical or date', () => {
+  it('should not initialize the constraint when it is not numerical, categorical or date', () => {
     let constraint = new ConceptConstraint();
     constraint.concept = new Concept();
     constraint.concept.type = null;

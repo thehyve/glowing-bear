@@ -54,7 +54,8 @@ export class AuthenticationService implements OnDestroy {
     return AccessLevel.Full;
   }
 
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector) {
+  }
 
   /**
    * Parse the decoded token, determine the access level
