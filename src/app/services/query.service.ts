@@ -110,7 +110,7 @@ export class QueryService {
   /*
    * ------ other variables ------
    */
-  // Flag indicating if the query subscription optioin for each query in the query panel should be incldued
+  // Flag indicating if the query subscription optioin for each query in the query panel should be included
   private _isQuerySubscriptionIncluded = false;
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
@@ -124,11 +124,11 @@ export class QueryService {
               private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
               private exportService: ExportService) {
-    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
-    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
-    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
-    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts', true);
-    let includeDataTable = this.appConfig.getConfig('include-data-table', true);
+    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1');
+    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2');
+    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3');
+    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
+    let includeDataTable = this.appConfig.getConfig('include-data-table');
     if (!includeDataTable) {
       this.isDataTableUsed = false;
     } else {
@@ -136,7 +136,7 @@ export class QueryService {
         this.isDataTableUsed = exportEnabled
       );
     }
-    this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
+    this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription');
 
     this.initializeCounts();
     this.loadQueries();

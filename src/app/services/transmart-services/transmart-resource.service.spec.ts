@@ -381,7 +381,7 @@ describe('TransmartResourceService', () => {
 
   it('should notify the user when studies cannot be fetched', function () {
     spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
-      Observable.fromPromise(new Promise(() => {
+      Observable.of(new Promise(() => {
         throw new HttpErrorResponse({status: 500});
       }))
     );

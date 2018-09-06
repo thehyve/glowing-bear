@@ -13,6 +13,8 @@ import {ExportJob} from '../app/models/export-models/export-job';
 import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
+import {AppConfigMock} from '../app/config/app.config.mock';
+import {AppConfig} from '../app/config/app.config';
 
 describe('Integration test for data export', () => {
 
@@ -22,6 +24,10 @@ describe('Integration test for data export', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock

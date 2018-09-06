@@ -23,6 +23,8 @@ import {Concept} from '../app/models/constraint-models/concept';
 import {ConceptType} from '../app/models/constraint-models/concept-type';
 import {StudyService} from '../app/services/study.service';
 import {ValueConstraint} from '../app/models/constraint-models/value-constraint';
+import {AppConfigMock} from '../app/config/app.config.mock';
+import {AppConfig} from '../app/config/app.config';
 
 describe('Integration tests for cross table ', () => {
 
@@ -34,6 +36,10 @@ describe('Integration tests for cross table ', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock

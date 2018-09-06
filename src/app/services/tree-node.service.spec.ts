@@ -24,6 +24,8 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {throwError} from 'rxjs/internal/observable/throwError';
+import {AppConfigMock} from '../config/app.config.mock';
+import {AppConfig} from '../config/app.config';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
@@ -35,6 +37,10 @@ describe('TreeNodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
