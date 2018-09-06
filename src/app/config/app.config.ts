@@ -47,7 +47,7 @@ export class AppConfig {
    */
   public getConfig(key: any) {
     let value = this.config[key];
-    if (!value) {
+    if (value === null || value === undefined) {
       switch (key) {
         case 'api-url': {
           throw Error('The API URL is unspecified in the configuration.')

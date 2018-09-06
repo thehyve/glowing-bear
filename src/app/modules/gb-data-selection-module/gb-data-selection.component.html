@@ -95,10 +95,10 @@
           </div>
           <div class="gb-data-selection-accordion-sub-header-2">
             <span class="gb-data-selection-accordion-sub-header-3 float-left">
-              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>,
-              <span *ngIf="queryService.showObservationCounts"
-                    class="gb-data-selection-emphasis-text">
-                {{observationCount_2}} observations
+              <span class="gb-data-selection-emphasis-text">{{subjectCount_2}} subjects</span>
+              <span *ngIf="queryService.showObservationCounts">
+                ,
+                <span class="gb-data-selection-emphasis-text">{{observationCount_2}} observations</span>
               </span>
             </span>
             <span *ngIf="!queryService.instantCountsUpdate_3" class="float-right">

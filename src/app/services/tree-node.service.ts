@@ -18,6 +18,7 @@ import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class TreeNodeService {
@@ -98,8 +99,11 @@ export class TreeNodeService {
   // the status indicating the when the tree is being loaded or finished loading
   private _validTreeNodeTypes: string[] = [];
 
+  // Flag indicating if the observation counts are calculated and shown
+  private _showObservationCounts: boolean;
 
-  constructor(private resourceService: ResourceService, private injector: Injector) {
+  constructor(private appConfig: AppConfig, private resourceService: ResourceService, private injector: Injector) {
+    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
@@ -524,7 +528,11 @@ export class TreeNodeService {
           countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
         if (countItem) {
-          node['label'] = node['name'] + ` (sub: ${countItem.subjectCount}, obs: ${countItem.observationCount})`;
+          let countsText = `sub: ${countItem.subjectCount}`;
+          if (this.showObservationCounts) {
+            countsText += `, obs: ${countItem.observationCount}`;
+          }
+          node['label'] = `${node['name']} (${countsText})`;
           nodesWithCodes.push(node);
         }
       } else if (node['children']) { // if the node is an intermediate node
@@ -902,4 +910,13 @@ export class TreeNodeService {
   set selectedConceptCountMap(value: Map<string, CountItem>) {
     this._selectedConceptCountMap = value;
   }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
+  }
+
 }
