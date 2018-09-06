@@ -11,6 +11,7 @@ import {CrossTableService} from '../../../services/cross-table.service';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {Row} from '../../../models/table-models/row';
 import {Col} from '../../../models/table-models/col';
+import {FormatHelper} from '../../../utilities/format-helper';
 
 @Component({
   selector: 'gb-cross-table',
@@ -43,5 +44,13 @@ export class GbCrossTableComponent implements OnInit {
 
   get isUpdating(): boolean {
     return this.crossTableService.crossTable.isUpdating;
+  }
+
+  formatCountNumber(value: any): any {
+    if (typeof value === 'number') {
+      return FormatHelper.formatCountNumber(value);
+    } else {
+      return value;
+    }
   }
 }

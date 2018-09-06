@@ -25,6 +25,7 @@ import {ErrorHelper} from '../../../../utilities/error-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormatHelper} from '../../../../utilities/format-helper';
+import {AccessLevel} from '../../../../services/authentication/access-level';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -131,7 +132,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
                 reject(err.message);
               }
             );
-        } else {
+        } else if (this.authService.accessLevel === AccessLevel.Full) {
           this.resourceService.getAggregate(conceptOnlyConstraint)
             .subscribe(
               (responseAggregate: Aggregate) => {

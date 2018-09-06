@@ -251,9 +251,8 @@ export class CrossTableService {
         this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
         resolve(true);
       } else {
-        this.resourceService.getAggregate(categoricalConceptConstraint)
-          .subscribe((responseAggregate: Aggregate) => {
-            const categoricalAggregate = <CategoricalAggregate>responseAggregate;
+        this.resourceService.getCategoricalAggregate(categoricalConceptConstraint)
+          .subscribe((categoricalAggregate: CategoricalAggregate) => {
             this.setCategoricalValueConstraints(categoricalAggregate, peerConstraint);
             resolve(true);
           }, (err: HttpErrorResponse) => {

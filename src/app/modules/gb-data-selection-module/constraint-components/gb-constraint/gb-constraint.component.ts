@@ -15,6 +15,7 @@ import {CombinationConstraint} from '../../../../models/constraint-models/combin
 import {QueryService} from '../../../../services/query.service';
 import {Step} from '../../../../models/query-models/step';
 import {StudyService} from '../../../../services/study.service';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 
 @Component({
   selector: 'gb-constraint',
@@ -27,7 +28,8 @@ export class GbConstraintComponent implements OnInit {
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
   droppedConstraint: Constraint = null;
 
-  constructor(protected treeNodeService: TreeNodeService,
+  constructor(protected authService: AuthenticationService,
+              protected treeNodeService: TreeNodeService,
               protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
               protected queryService: QueryService,

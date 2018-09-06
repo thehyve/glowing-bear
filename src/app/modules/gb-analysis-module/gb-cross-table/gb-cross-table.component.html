@@ -56,7 +56,7 @@
               <td *ngFor="let col of columns" class="ui-resizable-column"
                   [ngClass]="{'gb-cross-table-header': row.data[col.field]['isHeader']}">
               <span>
-                {{row.data[col.field]['value']}}
+                {{formatCountNumber(row.data[col.field]['value'])}}
               </span>
               </td>
             </tr>
