@@ -39,6 +39,7 @@ import {TransmartCountItem} from '../models/transmart-models/transmart-count-ite
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
+import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 
 @Injectable()
 export class ResourceService {
@@ -219,6 +220,20 @@ export class ResourceService {
         return this.transmartResourceService.getAggregate(constraint).pipe(
           map((tmConceptAggregate: object) => {
             return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
+          }));
+      }
+      default: {
+        return this.handleEndpointModeError();
+      }
+    }
+  }
+
+  getCategoricalAggregate(constraint: ConceptConstraint): Observable<CategoricalAggregate> {
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART: {
+        return this.transmartResourceService.getCategoricalAggregate(constraint).pipe(
+          map((tmConceptAggregate: object) => {
+            return TransmartMapper.mapTransmartCategoricalConceptAggregate(tmConceptAggregate, constraint.concept.code);
           }));
       }
       default: {

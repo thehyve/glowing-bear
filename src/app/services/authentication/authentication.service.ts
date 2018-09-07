@@ -14,13 +14,14 @@ import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorizationResult} from './authorization-result';
 import {AccessLevel} from './access-level';
 import * as jwt_decode from 'jwt-decode';
+import {Subject} from 'rxjs/Rx';
 
 @Injectable()
 export class AuthenticationService implements OnDestroy {
 
   private config: AppConfig;
   private authenticationMethod: AuthenticationMethod;
-  private _accessLevel: AccessLevel = AccessLevel.Restricted;
+  private _accessLevel: Subject<AccessLevel> = new AsyncSubject<AccessLevel>();
 
   static getAccessLevelFromRoles(roles: string[]): AccessLevel {
     if (roles.includes('ROLE_ADMIN')) {
@@ -54,7 +55,8 @@ export class AuthenticationService implements OnDestroy {
     return AccessLevel.Full;
   }
 
-  constructor(private injector: Injector) { }
+  constructor(private injector: Injector) {
+  }
 
   /**
    * Parse the decoded token, determine the access level
@@ -62,7 +64,7 @@ export class AuthenticationService implements OnDestroy {
   private readAccessLevelFromToken() {
     let serviceType = this.config.getConfig('authentication-service-type');
     switch (serviceType) {
-      case 'oidc':
+      case 'oidc': {
         const clientId = this.config.getConfig('oidc-client-id');
         try {
           let token = jwt_decode(this.token);
@@ -71,21 +73,30 @@ export class AuthenticationService implements OnDestroy {
             if (clientAccess) {
               let roles = clientAccess['roles'];
               if (roles && roles.constructor === Array && roles.length > 0) {
-                this.accessLevel = AuthenticationService.getAccessLevelFromRoles(roles);
-                console.log(`Access level: ${this.accessLevel}`);
+                const level = AuthenticationService.getAccessLevelFromRoles(roles);
+                this.accessLevel.next(level);
+                this.accessLevel.complete();
+                console.log(`Access level: ${level}`);
               }
             }
           }
         } catch (e) {
           console.error(`Error decoding JWT token`, e);
-          this.accessLevel = AccessLevel.Restricted;
+          this.accessLevel.next(AccessLevel.Restricted);
+          this.accessLevel.complete();
         }
         break;
-      case 'transmart':
-        this.accessLevel = AccessLevel.Full;
+      }
+      case 'transmart': {
+        this.accessLevel.next(AccessLevel.Full);
+        this.accessLevel.complete();
         break;
-      default:
-        throw new Error(`Unsupported authentication service type: ${serviceType}`);
+      }
+      default: {
+        const message = `Unsupported authentication service type: ${serviceType}`;
+        this.accessLevel.error(message);
+        throw new Error(message);
+      }
     }
   }
 
@@ -124,11 +135,11 @@ export class AuthenticationService implements OnDestroy {
     return this.authenticationMethod.token;
   }
 
-  get accessLevel(): AccessLevel {
+  get accessLevel(): Subject<AccessLevel> {
     return this._accessLevel;
   }
 
-  set accessLevel(value: AccessLevel) {
+  set accessLevel(value: Subject<AccessLevel>) {
     this._accessLevel = value;
   }
 }

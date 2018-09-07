@@ -36,6 +36,8 @@ import {FormatHelper} from '../../../../utilities/format-helper';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {StudyService} from '../../../../services/study.service';
 import {throwError} from 'rxjs/internal/observable/throwError';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -58,6 +60,10 @@ describe('GbConceptConstraintComponent', () => {
         MultiSelectModule
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
@@ -153,7 +159,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy5).toHaveBeenCalled();
   })
 
-  it('should not initialize the constraint when it not numerical, categorical or date', () => {
+  it('should not initialize the constraint when it is not numerical, categorical or date', () => {
     let constraint = new ConceptConstraint();
     constraint.concept = new Concept();
     constraint.concept.type = null;

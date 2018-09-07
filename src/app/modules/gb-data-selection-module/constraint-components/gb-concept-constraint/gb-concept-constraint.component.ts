@@ -24,6 +24,8 @@ import {SelectItem, TreeNode} from 'primeng/api';
 import {ErrorHelper} from '../../../../utilities/error-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {HttpErrorResponse} from '@angular/common/http';
+import {FormatHelper} from '../../../../utilities/format-helper';
+import {AccessLevel} from '../../../../services/authentication/access-level';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -118,23 +120,40 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         // (We don't want to apply value and date constraints when getting aggregates)
         let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
         conceptOnlyConstraint.concept = constraint.concept;
-        this.resourceService.getAggregate(conceptOnlyConstraint)
-          .subscribe(
-            (responseAggregate: Aggregate) => {
-              if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-                this.handleNumericAggregate(responseAggregate);
-              } else if (this.isCategorical()) { // ------------------------> If it's CATEGORICAL
+        if (this.isCategorical()) { // ------------------------> If it's CATEGORICAL
+          this.resourceService.getCategoricalAggregate(conceptOnlyConstraint)
+            .subscribe(
+              (responseAggregate: CategoricalAggregate) => {
                 this.handleCategoricalAggregate(responseAggregate);
-              } else if (this.isDate()) { // -------------------------------------> If it's DATE
-                this.handleDateAggregate(responseAggregate);
+                resolve(true);
+              },
+              (err: HttpErrorResponse) => {
+                ErrorHelper.handleError(err);
+                reject(err.message);
               }
-              resolve(true);
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              reject(err.message);
-            }
-          );
+            );
+        } else {
+          this.authService.accessLevel.asObservable()
+            .subscribe((level: AccessLevel) => {
+              if (level === AccessLevel.Full) {
+                this.resourceService.getAggregate(conceptOnlyConstraint)
+                  .subscribe(
+                    (responseAggregate: Aggregate) => {
+                      if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
+                        this.handleNumericAggregate(responseAggregate);
+                      } else if (this.isDate()) { // -------------------------------------> If it's DATE
+                        this.handleDateAggregate(responseAggregate);
+                      }
+                      resolve(true);
+                    },
+                    (err: HttpErrorResponse) => {
+                      ErrorHelper.handleError(err);
+                      reject(err.message);
+                    }
+                  );
+              }
+            });
+        }
 
         // Initialize the dates from the time constraint
         // Because the date picker represents the date/time in the local timezone,
@@ -236,7 +255,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let items = [];
     targetValues.forEach((target) => {
       if (valueCounts.has(target)) {
-        const count = valueCounts.get(target);
+        const count = FormatHelper.formatCountNumber(valueCounts.get(target));
         items.push({
           label: target + ' (' + count + ')',
           value: target

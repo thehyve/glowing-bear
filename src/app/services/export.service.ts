@@ -39,17 +39,19 @@ export class ExportService {
               private dataTableService: DataTableService,
               private injector: Injector,
               private datePipe: DatePipe) {
-    if (this.authService.accessLevel === AccessLevel.Full) {
-      console.log('Export enabled.');
-      this._exportEnabled.next(true);
-      this._exportEnabled.complete();
-    } else {
-      this.studyService.existsPublicStudy.subscribe((existsPublicStudy) => {
-        console.log(`Export ${existsPublicStudy ? 'enabled' : 'disabled'}.`);
-        this._exportEnabled.next(existsPublicStudy);
-        this._exportEnabled.complete();
+    this.authService.accessLevel.asObservable()
+      .subscribe((level: AccessLevel) => {
+        if (level === AccessLevel.Full) {
+          this._exportEnabled.next(true);
+          this._exportEnabled.complete();
+        } else {
+          this.studyService.existsPublicStudy
+            .subscribe((existsPublicStudy) => {
+              this._exportEnabled.next(existsPublicStudy);
+              this._exportEnabled.complete();
+            });
+        }
       });
-    }
   }
 
   public isExportEnabled(): Observable<boolean> {
@@ -64,9 +66,9 @@ export class ExportService {
         this.isLoadingExportDataTypes = true;
         this.resourceService.getExportDataTypes(combo)
           .subscribe(dataTypes => {
-            this.exportDataTypes = dataTypes;
-            this.isLoadingExportDataTypes = false;
-          },
+              this.exportDataTypes = dataTypes;
+              this.isLoadingExportDataTypes = false;
+            },
             (err: HttpErrorResponse) => {
               ErrorHelper.handleError(err);
               this.exportDataTypes = [];

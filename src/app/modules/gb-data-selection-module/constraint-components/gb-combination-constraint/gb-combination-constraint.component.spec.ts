@@ -25,6 +25,8 @@ import {StudyConstraint} from '../../../../models/constraint-models/study-constr
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -42,6 +44,10 @@ describe('GbCombinationConstraintComponent', () => {
         AutoCompleteModule
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock

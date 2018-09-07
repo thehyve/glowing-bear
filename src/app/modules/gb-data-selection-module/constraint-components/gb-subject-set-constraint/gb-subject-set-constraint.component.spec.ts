@@ -19,6 +19,8 @@ import {QueryService} from '../../../../services/query.service';
 import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbSubjectSetConstraintComponent', () => {
   let component: GbSubjectSetConstraintComponent;
@@ -28,6 +30,10 @@ describe('GbSubjectSetConstraintComponent', () => {
     TestBed.configureTestingModule({
       declarations: [GbSubjectSetConstraintComponent],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock

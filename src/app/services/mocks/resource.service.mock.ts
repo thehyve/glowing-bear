@@ -20,6 +20,7 @@ import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {TransmartResourceService} from '../transmart-services/transmart-resource.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -133,6 +134,11 @@ export class ResourceServiceMock {
 
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
     return observableOf(this.aggregate);
+  }
+
+  getCategoricalAggregate(constraint: ConceptConstraint): Observable<CategoricalAggregate> {
+    let agg: CategoricalAggregate = new CategoricalAggregate();
+    return observableOf(agg);
   }
 
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {

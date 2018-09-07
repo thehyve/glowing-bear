@@ -174,6 +174,23 @@ export class TransmartMapper {
     return aggregate;
   }
 
+  public static mapTransmartCategoricalConceptAggregate(tmCategoricalConceptAggregate: object,
+                                                        conceptCode: string): CategoricalAggregate {
+    let aggregate: CategoricalAggregate = new CategoricalAggregate();
+    let aggObj = tmCategoricalConceptAggregate[conceptCode];
+    if (aggObj) {
+      const countObj = aggObj['valueCounts'];
+      for (let key in countObj) {
+        aggregate.valueCounts.set(key, countObj[key]);
+      }
+      const nullCount = aggObj['nullValueCounts'];
+      if (nullCount && nullCount > 0) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
+      }
+    }
+    return aggregate;
+  }
+
   public static mapTransmartTrialVisit(tmTrialVisit: TransmartTrialVisit): TrialVisit {
     let tv = new TrialVisit(tmTrialVisit.id);
     tv.relTime = Number(tmTrialVisit.relTime);

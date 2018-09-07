@@ -263,7 +263,6 @@ describe('TransmartResourceService', () => {
         req.flush(mockData);
       }));
 
-
   it('should get aggregate',
     inject([HttpTestingController, TransmartResourceService],
       (httpMock: HttpTestingController, service: TransmartResourceService) => {
@@ -277,6 +276,24 @@ describe('TransmartResourceService', () => {
           expect(res['foo']).toBe('bar');
         });
         const url = service.endpointUrl + '/observations/aggregates_per_concept';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
+  it('should get categorical aggregate',
+    inject([HttpTestingController, TransmartResourceService],
+      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+        const mockData = {
+          aggregatesPerCategoricalConcept: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getCategoricalAggregate(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/observations/aggregates_per_categorical_concept';
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('POST');
         req.flush(mockData);
