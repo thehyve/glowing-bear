@@ -89,7 +89,7 @@ describe('Integration tests for cross table ', () => {
 
   it('should update the cross table on tree node drop', () => {
     // tree node drop to row zone
-    let spy1 = spyOn(resourceService, 'getAggregate').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'getCategoricalAggregate').and.callFake(() => {
       let agg = new CategoricalAggregate();
       agg.valueCounts.set('heart', 10);
       agg.valueCounts.set('liver', 20);

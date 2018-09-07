@@ -36,6 +36,8 @@ import {FormatHelper} from '../../../../utilities/format-helper';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {StudyService} from '../../../../services/study.service';
 import {throwError} from 'rxjs/internal/observable/throwError';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -58,6 +60,10 @@ describe('GbConceptConstraintComponent', () => {
         MultiSelectModule
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock

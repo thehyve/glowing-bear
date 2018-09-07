@@ -23,6 +23,8 @@ import {QueryService} from '../../../../services/query.service';
 import {MockComponent} from 'ng2-mock-component';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
@@ -39,6 +41,10 @@ describe('GbConstraintComponent', () => {
         MockComponent({selector: 'gb-pedigree-constraint', inputs: ['constraint']})
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
