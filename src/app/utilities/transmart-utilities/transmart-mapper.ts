@@ -136,11 +136,7 @@ export class TransmartMapper {
             let el = new TransmartExportElement();
             el.dataType = dataType.name;
             el.format = fileFormat.name;
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              el.dataView = 'dataTable';
-            } else {
-              el.dataView = defaultDataView;
-            }
+            el.dataView = defaultDataView;
             elements.push(el);
           }
         }
