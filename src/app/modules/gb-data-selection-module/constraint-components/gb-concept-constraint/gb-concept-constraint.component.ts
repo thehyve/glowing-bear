@@ -132,22 +132,27 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
                 reject(err.message);
               }
             );
-        } else if (this.authService.accessLevel === AccessLevel.Full) {
-          this.resourceService.getAggregate(conceptOnlyConstraint)
-            .subscribe(
-              (responseAggregate: Aggregate) => {
-                if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
-                  this.handleNumericAggregate(responseAggregate);
-                } else if (this.isDate()) { // -------------------------------------> If it's DATE
-                  this.handleDateAggregate(responseAggregate);
-                }
-                resolve(true);
-              },
-              (err: HttpErrorResponse) => {
-                ErrorHelper.handleError(err);
-                reject(err.message);
+        } else {
+          this.authService.accessLevel.asObservable()
+            .subscribe((level: AccessLevel) => {
+              if (level === AccessLevel.Full) {
+                this.resourceService.getAggregate(conceptOnlyConstraint)
+                  .subscribe(
+                    (responseAggregate: Aggregate) => {
+                      if (this.isNumeric()) { // --------------------------------------> If it's NUMERIC
+                        this.handleNumericAggregate(responseAggregate);
+                      } else if (this.isDate()) { // -------------------------------------> If it's DATE
+                        this.handleDateAggregate(responseAggregate);
+                      }
+                      resolve(true);
+                    },
+                    (err: HttpErrorResponse) => {
+                      ErrorHelper.handleError(err);
+                      reject(err.message);
+                    }
+                  );
               }
-            );
+            });
         }
 
         // Initialize the dates from the time constraint

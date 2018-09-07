@@ -49,8 +49,11 @@ describe('Oauth2Authentication with Transmart service type', () => {
     config = TestBed.get(AppConfig);
     authenticationService = TestBed.get(AuthenticationService);
     httpMock = TestBed.get(HttpTestingController);
-    spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
-    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => { console.log(`Stub redirect to ${target}`)});
+    spyOn(history, 'replaceState').and.callFake((data, title, url) => {
+    });
+    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => {
+      console.log(`Stub redirect to ${target}`)
+    });
     localStorage.removeItem('token');
   });
 
@@ -122,8 +125,11 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     config = TestBed.get(AppConfig);
     authenticationService = TestBed.get(AuthenticationService);
     httpMock = TestBed.get(HttpTestingController);
-    spyOn(history, 'replaceState').and.callFake((data, title, url) => {});
-    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => { console.log(`Stub redirect to ${target}`)});
+    spyOn(history, 'replaceState').and.callFake((data, title, url) => {
+    });
+    spyOn(RedirectHelper, 'redirectTo').and.callFake((target) => {
+      console.log(`Stub redirect to ${target}`)
+    });
     localStorage.removeItem('token');
   });
 
@@ -245,7 +251,9 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
       expect(jwt_decode(authenticationService.token)).toEqual(tokenContents1);
-      expect(authenticationService.accessLevel).toEqual(AccessLevel.Restricted);
+      authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
+        expect(level).toEqual(AccessLevel.Restricted);
+      });
       done();
     });
     const tokenRequest = httpMock.expectOne(`${config.getConfig('oidc-server-url')}/token`);
@@ -336,7 +344,9 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
       expect(jwt_decode(authenticationService.token)).toEqual(tokenContents2);
-      expect(authenticationService.accessLevel).toEqual(AccessLevel.Full);
+      authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
+        expect(level).toEqual(AccessLevel.Full);
+      });
       done();
     });
     const tokenRequest = httpMock.expectOne(`${config.getConfig('oidc-server-url')}/token`);
@@ -428,7 +438,9 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
       expect(jwt_decode(authenticationService.token)).toEqual(tokenContents3);
-      expect(authenticationService.accessLevel).toEqual(AccessLevel.Full);
+      authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
+        expect(level).toEqual(AccessLevel.Full);
+      });
       done();
     });
     const tokenRequest = httpMock.expectOne(`${config.getConfig('oidc-server-url')}/token`);

@@ -11,6 +11,7 @@ import {AsyncSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AuthenticationMethod} from '../authentication/authentication-method';
 import {AccessLevel} from '../authentication/access-level';
+import {Subject} from 'rxjs/Rx';
 
 @Injectable()
 export class AuthenticationServiceMock {
@@ -30,8 +31,11 @@ export class AuthenticationServiceMock {
     return this.authenticationMethod.authorised;
   }
 
-  get accessLevel(): AccessLevel {
-    return AccessLevel.Full;
+  get accessLevel(): Subject<AccessLevel> {
+    let accessLevel: Subject<AccessLevel> = new AsyncSubject<AccessLevel>();
+    accessLevel.next(AccessLevel.Full);
+    accessLevel.complete();
+    return accessLevel;
   }
 
 }
