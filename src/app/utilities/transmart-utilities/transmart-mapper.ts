@@ -136,11 +136,7 @@ export class TransmartMapper {
             let el = new TransmartExportElement();
             el.dataType = dataType.name;
             el.format = fileFormat.name;
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              el.dataView = 'dataTable';
-            } else {
-              el.dataView = defaultDataView;
-            }
+            el.dataView = defaultDataView;
             elements.push(el);
           }
         }
@@ -175,6 +171,23 @@ export class TransmartMapper {
       }
     }
 
+    return aggregate;
+  }
+
+  public static mapTransmartCategoricalConceptAggregate(tmCategoricalConceptAggregate: object,
+                                                        conceptCode: string): CategoricalAggregate {
+    let aggregate: CategoricalAggregate = new CategoricalAggregate();
+    let aggObj = tmCategoricalConceptAggregate[conceptCode];
+    if (aggObj) {
+      const countObj = aggObj['valueCounts'];
+      for (let key in countObj) {
+        aggregate.valueCounts.set(key, countObj[key]);
+      }
+      const nullCount = aggObj['nullValueCounts'];
+      if (nullCount && nullCount > 0) {
+        (<CategoricalAggregate>aggregate).valueCounts.set(FormatHelper.nullValuePlaceholder, nullCount);
+      }
+    }
     return aggregate;
   }
 

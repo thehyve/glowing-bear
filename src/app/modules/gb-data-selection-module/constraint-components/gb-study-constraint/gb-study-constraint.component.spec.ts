@@ -23,6 +23,8 @@ import {QueryService} from '../../../../services/query.service';
 import {Study} from '../../../../models/constraint-models/study';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
@@ -39,6 +41,10 @@ describe('GbStudyConstraintComponent', () => {
         AutoCompleteModule
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock

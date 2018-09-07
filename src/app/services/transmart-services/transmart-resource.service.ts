@@ -6,7 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-
 import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
@@ -491,6 +490,13 @@ export class TransmartResourceService {
     const urlPart = 'observations/aggregates_per_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerConcept';
+    return this.postCall(urlPart, body, responseField);
+  }
+
+  getCategoricalAggregate(constraint: Constraint): Observable<object> {
+    const urlPart = 'observations/aggregates_per_categorical_concept';
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const responseField = 'aggregatesPerCategoricalConcept';
     return this.postCall(urlPart, body, responseField);
   }
 

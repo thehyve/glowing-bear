@@ -24,7 +24,7 @@ export class NavbarService {
   private _isExport = false;
 
 
-  constructor(private authenticationService: AuthenticationService,
+  constructor(private authService: AuthenticationService,
               private exportService: ExportService,
               private queryService: QueryService) {
     this.items = [
@@ -54,7 +54,7 @@ export class NavbarService {
   }
 
   logout() {
-    this.authenticationService.logout();
+    this.authService.logout();
   }
 
   get items(): MenuItem[] {

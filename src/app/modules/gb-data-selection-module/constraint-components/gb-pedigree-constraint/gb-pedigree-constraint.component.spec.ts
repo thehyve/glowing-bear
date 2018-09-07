@@ -24,6 +24,8 @@ import {QueryService} from '../../../../services/query.service';
 import {MockComponent} from 'ng2-mock-component';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
+import {AuthenticationService} from '../../../../services/authentication/authentication.service';
+import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 
 describe('GbPedigreeConstraintComponent', () => {
   let component: GbPedigreeConstraintComponent;
@@ -42,6 +44,10 @@ describe('GbPedigreeConstraintComponent', () => {
         CheckboxModule
       ],
       providers: [
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
