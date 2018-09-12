@@ -19,7 +19,7 @@ export class AppConfig {
   public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
-  public static DEFAULT_EXPORT_DATA_VIEW = 'default';
+  public static DEFAULT_EXPORT_DATA_VIEW = 'dataTable';
   public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
   public static DEFAULT_INSTANT_COUNTS_UPDATE_1 = false;
   public static DEFAULT_INSTANT_COUNTS_UPDATE_2 = false;

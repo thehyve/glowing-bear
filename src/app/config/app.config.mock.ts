@@ -1,5 +1,3 @@
-import {AppConfig} from './app.config';
-
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
@@ -15,10 +13,11 @@ export class AppConfigMock {
   constructor() {
     this.config = {
       'app-version': '0.0.1-test',
+      'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'transmart',
-      'export-data-view': 'default'
+      'export-data-view': 'dataTable'
     };
   }
 
@@ -41,6 +40,7 @@ export class OidcConfigMock {
   constructor() {
     this.config = {
       'app-version': '0.0.1-test',
+      'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'oidc',
