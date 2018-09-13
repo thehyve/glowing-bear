@@ -135,7 +135,7 @@ describe('TransmartResourceService', () => {
         service.getExportFileFormats().subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
-        const url = service.endpointUrl + '/export/file_formats?dataView=default';
+        const url = service.endpointUrl + '/export/file_formats?dataView=dataTable';
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('GET');
         req.flush(mockData);

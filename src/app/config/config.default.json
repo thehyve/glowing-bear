@@ -5,7 +5,7 @@
   "app-version": "0.8.0-rc.1",
   "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
-  "export-data-view": "default",
+  "export-data-view": "dataTable",
   "show-observation-counts": true,
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
