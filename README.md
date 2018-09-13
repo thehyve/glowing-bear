@@ -1,5 +1,5 @@
 # Glowing Bear
-[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=master)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 A frontend application for clinical data selection and analysis 
@@ -108,14 +108,14 @@ in [build.gradle](build.gradle) is set to a release repository.
 The application can be configured by changing the `env.json` and `config.*.json`
 files in `app/config`.
 
-Example `env.json`:
+Example `env.json` (allowed values are `default`, `dev` and `transmart`):
 
 ```json
 {
-  "env": "default"
+  "env": "dev"
 }
 ```
-Example `config.prod.json`:
+Example `config.dev.json`:
 
 ```json
 {
