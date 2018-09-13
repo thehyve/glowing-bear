@@ -5,13 +5,15 @@
     "module": "commonjs",
     "target": "es5",
     "baseUrl": "",
+    "emitDecoratorMetadata": true,
     "types": [
       "jasmine",
       "node"
     ]
   },
   "files": [
-    "test.ts"
+    "test.ts",
+    "polyfills.ts"
   ],
   "include": [
     "**/*.spec.ts",

@@ -4,8 +4,7 @@
       <p-dropdown [options]="pedigreeTypes"
                   [style]="{'margin-top':'6px', 'margin-left':'6px'}"
                   [(ngModel)]="selectedPedigreeType"
-                  (onChange)="updateRelationType($event)"
-                  optionLabel="text"></p-dropdown>
+                  (onChange)="updateRelationType($event)"></p-dropdown>
       <div class="gb-pedigree-checkbox-container">
         <span>biological:</span>
         <p-dropdown [options]="triStateOptions"

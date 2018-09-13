@@ -1,36 +1,116 @@
-import {Injectable} from '@angular/core';
-import {Concept} from '../models/concept';
-import {ConceptConstraint} from '../models/constraints/concept-constraint';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Injectable, Injector} from '@angular/core';
+import {Concept} from '../models/constraint-models/concept';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
-
-type LoadingState = 'loading' | 'complete';
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {ErrorHelper} from '../utilities/error-helper';
+import {MessageHelper} from '../utilities/message-helper';
+import {CountItem} from '../models/aggregate-models/count-item';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {HttpErrorResponse} from '@angular/common/http';
+import {AppConfig} from '../config/app.config';
+import {FormatHelper} from '../utilities/format-helper';
 
 @Injectable()
 export class TreeNodeService {
 
-  // the variable that holds the entire tree structure, used by the tree on the left
-  public treeNodes: TreeNode[] = [];
+  /*
+   * This service maintains three copies of tree nodes:
+   * 1. treeNodes - the entire ontology tree representing the data structure of the backend
+   * 2. projectionTreeData - the partial ontology tree representing the tree nodes
+   *    corresponding to subject group defined in step 1,
+   *    and this partial tree is used for variable selection in step 2
+   * 3. finalTreeNodes - the partial ontology tree corresponding to the final tree nodes
+   *    that the user has selected in all the steps of data selection
+   */
+  // the variable that holds the entire tree structure, used by the tree on the left side bar
+  private _treeNodes: TreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
-  public treeNodesCopy: TreeNode[] = [];
-  // the entire tree table data that holds the patients' observations in the 2nd step (projection)
+  private _treeNodesCopy: TreeNode[] = [];
+  // the tree data that is rendered in the 2nd step (projection)
   private _projectionTreeData: TreeNode[] = [];
-  // the selected tree table data that holds the patients' observations in the 2nd step (projection)
+  // the selected tree data in the 2nd step (projection)
   private _selectedProjectionTreeData: TreeNode[] = [];
+  // the final tree nodes resulted from data selection
+  private _finalTreeNodes: TreeNode[] = [];
+  // the selected tree node in the side-panel by dragging
+  private _selectedTreeNode: TreeNode = null;
+  /**
+   * The map that holds the conceptCode -> count item relations
+   *  e.g.
+   * "EHR:DEM:AGE": {
+   *   "observationCount": 3,
+   *   "subjectCount": 3
+   *  },
+   * "EHR:VSIGN:HR": {
+   *  "observationCount": 9,
+   *  "subjectCount": 3
+   * }
+   */
+  private _conceptCountMap: Map<string, CountItem>;
+  /**
+   * The map that holds the studyId -> count item relations
+   * e.g.
+   * "MIX_HD": {
+   *   "observationCount": 12,
+   *   "subjectCount": 3
+   * }
+   */
+  private _studyCountMap: Map<string, CountItem>;
+  /**
+   * The map that holds the studyId -> conceptCode -> count item relations
+   * e.g.
+   * "SHARED_CONCEPTS_STUDY_A": {
+   *    "DEMO:POB": {
+   *        "observationCount": 2,
+   *        "subjectCount": 2
+   *    },
+   *    "VSIGN:HR": {
+   *        "observationCount": 3,
+   *        "subjectCount": 3
+   *    }
+   * }
+   */
+  private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
+
+  // the subset of _studyConceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _conceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedConceptCountMap: Map<string, CountItem>;
+
+  public conceptCountMapCompleted = false;
+  public studyCountMapCompleted = false;
+  public studyConceptCountMapCompleted = false;
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
 
   // the status indicating the when the tree is being loaded or finished loading
-  public loadingTreeNodes: LoadingState = 'complete';
   private _validTreeNodeTypes: string[] = [];
 
+  // Flag indicating if the observation counts are calculated and shown
+  private _showObservationCounts: boolean;
 
-  constructor(private resourceService: ResourceService) {
+  constructor(private appConfig: AppConfig,
+              private resourceService: ResourceService,
+              private injector: Injector) {
+    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
+      'CATEGORICAL_OPTION',
       'DATE',
       'STUDY',
       'TEXT',
@@ -39,58 +119,153 @@ export class TreeNodeService {
     ];
   }
 
+  public load() {
+    this.loadCountMaps()
+      .then(() => {
+        this.loadTreeNodes()
+          .then(() => {
+            this.updateTreeNodeCounts();
+          })
+          .catch(err => {
+            console.error(err);
+          })
+      })
+      .catch(err => {
+        console.error(err);
+      })
+  }
+
+  updateConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerConcept(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.conceptCountMap = map;
+          this.conceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load concept count map from server.');
+        });
+    });
+  }
+
+  updateStudyCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudy(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.studyCountMap = map;
+          this.studyCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study count map from server.');
+        });
+    });
+  }
+
+  updateStudyConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
+        .subscribe((map: Map<string, Map<string, CountItem>>) => {
+          this.studyConceptCountMap = map;
+          this.studyConceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study-concept count map from server.');
+        });
+    });
+  }
+
+  loadCountMaps(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let promise1 = this.updateConceptCountMap();
+      let promise2 = this.updateStudyCountMap();
+      let promise3 = this.updateStudyConceptCountMap();
+      Promise.all([promise1, promise2, promise3])
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    });
+  }
+
   /**
-   * Load the tree nodes for rendering the tree on the left side panel.
+   * Load the tree nodes for rendering the tree on the left side panel;
+   * construct concept constraints based on the tree nodes
    */
-  public loadTreeNodes(constraintService: ConstraintService) {
-    this.loadingTreeNodes = 'loading';
-    constraintService.conceptLabels = [];
-    // Retrieve all tree nodes and extract the concepts iteratively
-    this.resourceService.getTreeNodes('\\', 2, false, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          this.loadingTreeNodes = 'complete';
-          // reset concepts and concept constraints
-          constraintService.concepts = [];
-          constraintService.conceptConstraints = [];
-          this.processTreeNodes(treeNodes, constraintService);
-          treeNodes.forEach((function (node) {
-            this.treeNodes.push(node); // to ensure the treeNodes pointer remains unchanged
-            this.loadTreeNext(node, constraintService);
-          }).bind(this));
-        },
-        err => console.error(err)
-      );
+  loadTreeNodes(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let constraintService: ConstraintService = this.injector.get(ConstraintService);
+      constraintService.conceptLabels = [];
+      // Retrieve all tree nodes and extract the concepts iteratively
+      this.resourceService.getTreeNodes('\\', 2, false, true)
+        .subscribe(
+          (treeNodes: object[]) => {
+            // reset concepts and concept constraints
+            constraintService.concepts = [];
+            constraintService.conceptConstraints = [];
+            this.processTreeNodes(treeNodes, constraintService);
+            let promises = [];
+            treeNodes.forEach((function (node) {
+              this.treeNodes.push(node); // to ensure the treeNodes pointer remains unchanged
+              let promise = this.loadTreeNext(node, constraintService);
+              promises.push(promise);
+            }).bind(this));
+            Promise.all(promises)
+              .then(() => resolve(true))
+              .catch(err => reject(err));
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message);
+          }
+        );
+    });
   }
 
   /**
    * Iteratively load the descendants of the given tree node
    * @param parentNode
    */
-  private loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService) {
-    this.treeNodeCallsSent++;
-    let depth = 20;
-    this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
-      .subscribe(
-        (treeNodes: object[]) => {
-          this.treeNodeCallsReceived++;
-          const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-          const children = refNode ? refNode['children'] : undefined;
-          if (children) {
-            parentNode['children'] = children;
-          }
-          this.processTreeNode(parentNode, constraintService);
-          this.processTreeNodes(children, constraintService);
-          let descendants = [];
-          this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
-          if (descendants.length > 0) {
-            for (let descendant of descendants) {
-              this.loadTreeNext(descendant, constraintService);
+  loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.treeNodeCallsSent++;
+      let depth = 20;
+      this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+        .subscribe(
+          (treeNodes: object[]) => {
+            this.treeNodeCallsReceived++;
+            const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+            const children = refNode ? refNode['children'] : undefined;
+            if (children) {
+              parentNode['children'] = children;
             }
+            this.processTreeNode(parentNode, constraintService);
+            this.processTreeNodes(children, constraintService);
+            let descendants = [];
+            this.getTreeNodeDescendantsWithDepth(refNode, depth, descendants);
+            if (descendants.length > 0) {
+              let promises = [];
+              for (let descendant of descendants) {
+                let promise = this.loadTreeNext(descendant, constraintService);
+                promises.push(promise);
+              }
+              Promise.all(promises)
+                .then(() => resolve(true))
+                .catch(err => reject(err));
+            } else {
+              resolve(true);
+            }
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message)
           }
-        },
-        err => console.error(err)
-      );
+        );
+    });
   }
 
   /**
@@ -99,7 +274,7 @@ export class TreeNodeService {
    *  And augment tree nodes with PrimeNG tree-ui specifications
    * @param treeNodes
    */
-  private processTreeNodes(treeNodes: object[], constraintService: ConstraintService) {
+  processTreeNodes(treeNodes: object[], constraintService: ConstraintService) {
     if (!treeNodes) {
       return;
     }
@@ -111,7 +286,17 @@ export class TreeNodeService {
     }
   }
 
-  private processTreeNode(node: Object, constraintService: ConstraintService) {
+  /**
+   * Add PrimeNG visual properties for tree nodes
+   * Add counts to node labels
+   * Add concept constraints to constraint service
+   * @param {Object} node
+   * @param {ConstraintService} constraintService
+   */
+  processTreeNode(node: Object, constraintService: ConstraintService) {
+    let tail = node['metadata'] ? ' ⓘ' : ' ';
+    node['label'] = node['name'] + tail;
+    let nodeCountItem: CountItem = undefined;
     // Extract concept
     if (node['visualAttributes'].includes('LEAF')) {
       let concept = this.getConceptFromTreeNode(node);
@@ -123,6 +308,7 @@ export class TreeNodeService {
         constraintService.conceptConstraints.push(constraint);
         constraintService.allConstraints.push(constraint);
       }
+      // node constraint
       if (node['constraint']) {
         node['constraint']['fullName'] = node['fullName'];
         node['constraint']['name'] = node['name'];
@@ -130,23 +316,7 @@ export class TreeNodeService {
         node['constraint']['conceptCode'] = node['conceptCode'];
         node['constraint']['valueType'] = node['type'];
       }
-    }
-    // Add PrimeNG visual properties for tree nodes
-    let countStr = ' ';
-    node['label'] = node['name'] + countStr;
-    if (node['metadata']) {
-      node['label'] = node['label'] + ' ⓘ';
-    }
-    if (node['children']) {
-      if (node['type'] === 'UNKNOWN') {
-        node['expandedIcon'] = 'fa-folder-open';
-        node['collapsedIcon'] = 'fa-folder';
-      } else if (node['type'] === 'STUDY') {
-        node['expandedIcon'] = 'icon-folder-study-open';
-        node['collapsedIcon'] = 'icon-folder-study';
-      }
-      node['icon'] = '';
-    } else {
+      // node icon
       if (node['type'] === 'NUMERIC') {
         node['icon'] = 'icon-123';
       } else if (node['type'] === 'HIGH_DIMENSIONAL') {
@@ -154,13 +324,33 @@ export class TreeNodeService {
       } else if (node['type'] === 'CATEGORICAL') {
         node['icon'] = 'icon-abc';
       } else if (node['type'] === 'DATE') {
-        node['icon'] = 'fa-calendar';
+        node['icon'] = 'fa fa-calendar-o';
       } else if (node['type'] === 'TEXT') {
-        node['icon'] = 'fa-newspaper-o';
+        node['icon'] = 'fa fa-newspaper-o';
       } else {
-        node['icon'] = 'fa-folder-o';
+        node['icon'] = 'fa fa-file';
       }
+      // node count
+      if (node['studyId']) {
+        let cmap = this.studyConceptCountMap.get(node['studyId']);
+        if (cmap) {
+          nodeCountItem = cmap.get(node['conceptCode']);
+        }
+      } else {
+        nodeCountItem = this.conceptCountMap.get(node['conceptCode']);
+      }
+    } else {
+      if (node['type'] === 'UNKNOWN') {
+        node['expandedIcon'] = 'fa fa-folder-open';
+        node['collapsedIcon'] = 'fa fa-folder';
+      } else if (node['type'] === 'STUDY') {
+        node['expandedIcon'] = 'icon-folder-study-open';
+        node['collapsedIcon'] = 'icon-folder-study';
+        nodeCountItem = this.studyCountMap.get(node['studyId']);
+      }
+      node['icon'] = '';
     }
+    node['subjectCount'] = nodeCountItem ? FormatHelper.formatCountNumber(nodeCountItem.subjectCount) : undefined;
   }
 
   /**
@@ -169,17 +359,27 @@ export class TreeNodeService {
    * @returns {Concept}
    */
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
-    let concept = new Concept();
-    const tail = '\\' + treeNode['name'] + '\\';
-    const fullName = treeNode['fullName'];
-    let head = fullName.substring(0, fullName.length - tail.length);
-    concept.label = treeNode['name'] + ' (' + head + ')';
-    concept.path = treeNode['conceptPath'];
-    concept.type = treeNode['type'];
-    concept.code = treeNode['conceptCode'];
-    concept.fullName = treeNode['fullName'];
-    concept.name = treeNode['name'];
-    return concept;
+    if (treeNode['name'] &&
+      treeNode['fullName'] &&
+      treeNode['conceptPath'] &&
+      treeNode['conceptCode'] &&
+      treeNode['type']) {
+      let concept = new Concept();
+      const tail = '\\' + treeNode['name'] + '\\';
+      const fullName = treeNode['fullName'];
+      let head = fullName.substring(0, fullName.length - tail.length);
+      concept.label = treeNode['name'] + ' (' + head + ')';
+      concept.path = treeNode['conceptPath'];
+      concept.type = <ConceptType> treeNode['type'];
+      concept.code = treeNode['conceptCode'];
+      concept.fullName = treeNode['fullName'];
+      concept.name = treeNode['name'];
+      return concept;
+    } else {
+      const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';
+      MessageHelper.alert('error', summary);
+      return null;
+    }
   }
 
   /**
@@ -238,22 +438,22 @@ export class TreeNodeService {
    * based on a given set of concept codes as filtering criteria.
    * @param {Object} conceptCountMap
    */
-  public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
+  public updateProjectionTreeData(checklist: Array<string>) {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
     if (this.treeNodesCopy.length === 0) {
       this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
     }
-    let conceptCodes = [];
-    for (let code in conceptCountMap) {
-      conceptCodes.push(code);
-    }
     this.projectionTreeData =
-      this.updateProjectionTreeDataIterative(this.treeNodesCopy, conceptCodes, conceptCountMap);
+      this.updateProjectionTreeDataIterative(this.treeNodesCopy);
     this.selectedProjectionTreeData = [];
     this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
   }
 
-  private copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+  public updateFinalTreeNodes() {
+    this.finalTreeNodes = this.copySelectedTreeNodes(this.projectionTreeData);
+  }
+
+  copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node['parent'];
@@ -272,12 +472,37 @@ export class TreeNodeService {
     return nodesCopy;
   }
 
+  copySelectedTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    let nodesCopy = [];
+    for (let node of nodes) {
+      // if the node has been partially selected
+      let selected = node.partialSelected;
+      // if the node has been selected
+      selected = selected ? true : this.selectedProjectionTreeData.includes(node);
+      if (selected) {
+        let parent = node['parent'];
+        let children = node['children'];
+        node['parent'] = null;
+        node['children'] = null;
+        let nodeCopy = JSON.parse(JSON.stringify(node));
+        if (children) {
+          let childrenCopy = this.copySelectedTreeNodes(children);
+          nodeCopy['children'] = childrenCopy;
+        }
+        nodesCopy.push(nodeCopy);
+        node['parent'] = parent;
+        node['children'] = children;
+      }
+    }
+    return nodesCopy;
+  }
+
   /**
    * Copy the given treenode upward, i.e. excluding its children
    * @param {TreeNode} node
    * @returns {TreeNode}
    */
-  private copyTreeNodeUpward(node: TreeNode): TreeNode {
+  copyTreeNodeUpward(node: TreeNode): TreeNode {
     let nodeCopy = {};
     let parentCopy = null;
     for (let key in node) {
@@ -293,23 +518,29 @@ export class TreeNodeService {
     return nodeCopy;
   }
 
-  private updateProjectionTreeDataIterative(nodes: TreeNode[],
-                                            conceptCodes: string[],
-                                            conceptCountMap: object) {
+  updateProjectionTreeDataIterative(nodes: TreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
-      if (conceptCodes.indexOf(node['conceptCode']) !== -1) {
-        let nodeCopy = node;
-        nodeCopy['expanded'] = false;
-        if (conceptCountMap[node['conceptCode']]) {
-          const patientCount = conceptCountMap[node['conceptCode']]['patientCount'];
-          const observationCount = conceptCountMap[node['conceptCode']]['observationCount'];
-          nodeCopy['label'] = nodeCopy['name'] + ` (sub: ${patientCount}, obs: ${observationCount})`;
+      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
+        let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
+        if (conceptMap && conceptMap.size > 0) {
+          node['expanded'] = false;
+          countItem = conceptMap.get(node['conceptCode']);
+        } else {
+          countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
-        nodesWithCodes.push(nodeCopy);
-      } else if (node['children']) {
+        if (countItem) {
+          let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
+          if (this.showObservationCounts) {
+            countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
+          }
+          node['label'] = `${node['name']} (${countsText})`;
+          nodesWithCodes.push(node);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
-          this.updateProjectionTreeDataIterative(node['children'], conceptCodes, conceptCountMap);
+          this.updateProjectionTreeDataIterative(node['children']);
         if (newNodeChildren.length > 0) {
           let nodeCopy = this.copyTreeNodeUpward(node);
           nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
@@ -321,9 +552,9 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  private checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
+  checkProjectionTreeDataIterative(nodes: TreeNode[], checklist?: Array<string>) {
     for (let node of nodes) {
-      if (checklist && checklist.indexOf(node['fullName']) !== -1) {
+      if (checklist && checklist.includes(node['fullName'])) {
         this.selectedProjectionTreeData.push(node);
       }
       if (node['children']) {
@@ -339,97 +570,6 @@ export class TreeNodeService {
         this.checkAllProjectionTreeDataIterative(node['children']);
       }
     }
-  }
-
-  /**
-   * Append a count element to the given treenode-content element
-   * @param treeNodeContent
-   * @param {number} count
-   * @param {boolean} updated - true: add animation to indicate updated count
-   */
-  private appendCountElement(treeNodeContent, count: number, updated: boolean) {
-    const countString = count < 0 ? '...' : '(' + count + ')';
-    let countElm = treeNodeContent.querySelector('.gb-count-element');
-    if (!countElm) {
-      countElm = document.createElement('span');
-      countElm.classList.add('gb-count-element');
-      if (updated) {
-        countElm.classList.add('gb-count-element-updated');
-      }
-      countElm.textContent = countString;
-      treeNodeContent.appendChild(countElm);
-    } else {
-      const oldCountString = countElm.textContent;
-      if (countString !== oldCountString) {
-        treeNodeContent.removeChild(countElm);
-        countElm = document.createElement('span');
-        countElm.classList.add('gb-count-element');
-        if (updated) {
-          countElm.classList.add('gb-count-element-updated');
-        }
-        countElm.textContent = countString;
-        treeNodeContent.appendChild(countElm);
-      }
-    }
-  }
-
-  /**
-   * Update the counts of the study tree nodes of given tree node elements
-   *
-   * @param treeNodeElements - the visual html elements p-treenode
-   * @param {TreeNode} treeNodeData - the underlying data objects
-   * @param {object} studyCountMap
-   * @param {object} conceptCountMap
-   */
-  private updateTreeNodeCountsIterative(treeNodeElements: any,
-                                        treeNodeData: TreeNode[],
-                                        studyCountMap: object,
-                                        conceptCountMap: object) {
-    let index = 0;
-    for (let elm of treeNodeElements) {
-      let dataObject: TreeNode = treeNodeData[index];
-      if (this.isTreeNodeAstudy(dataObject) ||
-        this.isTreeNodeAconcept(dataObject)) {
-        let treeNodeContent = elm.querySelector('.ui-treenode-content');
-        const identifier =
-          this.isTreeNodeAstudy(dataObject) ? dataObject['studyId'] : dataObject['conceptCode'];
-        const _map =
-          this.isTreeNodeAstudy(dataObject) ? studyCountMap : conceptCountMap;
-        const patientCount =
-          _map[identifier] ? _map[identifier]['patientCount'] : -1;
-        const updated =
-          (dataObject['patientCount'] && dataObject['patientCount'] !== patientCount) || !dataObject['patientCount'];
-        dataObject['patientCount'] = patientCount;
-        this.appendCountElement(treeNodeContent, patientCount, updated);
-      }
-      // If the tree node is currently expanded
-      if (dataObject['expanded']) {
-        let uiTreenodeChildren = elm.querySelector('.ui-treenode-children');
-        if (uiTreenodeChildren) {
-          this.updateTreeNodeCountsIterative(
-            uiTreenodeChildren.children,
-            dataObject.children,
-            studyCountMap,
-            conceptCountMap);
-        }
-      }
-      index++;
-    }
-  }
-
-  /**
-   * Update the tree nodes' counts on the left panel
-   */
-  public updateTreeNodeCounts(studyCountMap: object,
-                              conceptCountMap: object) {
-    let rootTreeNodeElements = document
-      .getElementById('tree-nodes-component')
-      .querySelector('.ui-tree-container').children;
-    this.updateTreeNodeCountsIterative(
-      rootTreeNodeElements,
-      this.treeNodes,
-      studyCountMap,
-      conceptCountMap);
   }
 
   private depthOfTreeNode(node: TreeNode): number {
@@ -458,7 +598,13 @@ export class TreeNodeService {
     for (let node of nodes) {
       node['expanded'] = value;
       if (node['children']) {
-        this.expandProjectionTreeDataIterative(node['children'], value);
+        if (value) { // If it is expansion, expand it gradually.
+          window.setTimeout((function () {
+            this.expandProjectionTreeDataIterative(node['children'], value);
+          }).bind(this), 100);
+        } else { // If it is collapse, collapse it immediately
+          this.expandProjectionTreeDataIterative(node['children'], value);
+        }
       }
     }
   }
@@ -520,7 +666,7 @@ export class TreeNodeService {
    */
   public findTreeNodesByPaths(nodes: TreeNode[], paths: string[], foundNodes: TreeNode[]) {
     for (let node of nodes) {
-      if (paths.indexOf(node['fullName']) !== -1) {
+      if (paths.includes(node['fullName'])) {
         foundNodes.push(node);
       }
       if (node['children']) {
@@ -560,6 +706,142 @@ export class TreeNodeService {
     return foundNodes;
   }
 
+  /**
+   * Check if a tree node is a concept node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public isTreeNodeConcept(node: TreeNode): boolean {
+    const type = node['type'];
+    return type === 'NUMERIC' ||
+      type === 'CATEGORICAL' ||
+      type === 'DATE' ||
+      type === 'TEXT' ||
+      type === 'HIGH_DIMENSIONAL';
+  }
+
+  /**
+   * Check if a tree node is a study node
+   * @param {TreeNode} node
+   * @returns {boolean}
+   */
+  public isTreeNodeStudy(node: TreeNode): boolean {
+    return node['type'] ? node['type'] === 'STUDY' : false;
+  }
+
+  public isTreeNodeLeaf(node: TreeNode): boolean {
+    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
+  }
+
+  /**
+   * Check if the tree_nodes calls are finished,
+   * excluding the case where sent calls and received calls are both 0
+   * @returns {boolean}
+   */
+  get isTreeNodeLoadingCompleted(): boolean {
+    return this.treeNodeCallsSent > 0 ? (this.treeNodeCallsSent === this.treeNodeCallsReceived) : false;
+  }
+
+  /**
+   * Convert item names to treenode paths
+   * @param {TreeNode[]} nodes
+   * @param {string[]} items
+   * @param {string[]} paths
+   */
+  public convertItemsToPaths(nodes: TreeNode[], items: string[], paths: string[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node) {
+        const itemName = (node['metadata'] || {})['item_name'];
+        if (items.indexOf(itemName) > -1) {
+          paths.push(node['fullName']);
+        }
+        if (node['children']) {
+          this.convertItemsToPaths(node['children'], items, paths);
+        }
+      }
+    });
+  }
+
+  public updateTreeNodeCounts() {
+    this.updateTreeNodeCountsIterative(this.treeNodes);
+  }
+
+  updateTreeNodeCountsIterative(nodes: TreeNode[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node['subjectCount']) {
+        let tail = node['metadata'] ? ' ⓘ ' : ' ';
+        node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
+      }
+      if (node['children']) {
+        this.updateTreeNodeCountsIterative(node['children']);
+      }
+    });
+  }
+
+  /**
+   * The param checklist is a list of tree node fullnames
+   * indicating which tree nodes are selected in the step 2.
+   * Based on this checklist, the tree node service updates
+   * the tree nodes in step 2.
+   *
+   * When the user is restoring a saved query, this checklist
+   * will be directly constructed from the saved query.
+   * When the user checks the tree nodes in step 2 by clicking
+   * the checkboxes, the checklist will be constructed from such actions.
+   *
+   * However, neither checklist construction approach does not
+   * include parent tree nodes of the checked child tree nodes
+   * due to PrimeNg issues. These parent tree nodes should be
+   * included as well in the checklist.
+   *
+   * This function does just that.
+   * @param {string[]} checklist
+   */
+  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
+    let newExistingChecklist = existingChecklist ? existingChecklist : [];
+    if (newExistingChecklist.length === 0 &&
+      this.selectedProjectionTreeData.length > 0) {
+      for (let selectedNode of this.selectedProjectionTreeData) {
+        newExistingChecklist.push(selectedNode['fullName']);
+      }
+    }
+    let parentPaths: string[] = [];
+    for (let path of newExistingChecklist) {
+      let _parentPaths = this.getParentTreeNodePaths(path);
+      for (let _parentPath of _parentPaths) {
+        if (!parentPaths.includes(_parentPath) &&
+          !newExistingChecklist.includes(_parentPath)) {
+          parentPaths.push(_parentPath);
+        }
+      }
+    }
+    return newExistingChecklist.concat(parentPaths);
+  }
+
+  get treeNodes(): TreeNode[] {
+    return this._treeNodes;
+  }
+
+  set treeNodes(value: TreeNode[]) {
+    this._treeNodes = value;
+  }
+
+  get finalTreeNodes(): TreeNode[] {
+    return this._finalTreeNodes;
+  }
+
+  set finalTreeNodes(value: TreeNode[]) {
+    this._finalTreeNodes = value;
+  }
+
+  get treeNodesCopy(): TreeNode[] {
+    return this._treeNodesCopy;
+  }
+
+  set treeNodesCopy(value: TreeNode[]) {
+    this._treeNodesCopy = value;
+  }
+
   get projectionTreeData(): TreeNode[] {
     return this._projectionTreeData;
   }
@@ -584,54 +866,60 @@ export class TreeNodeService {
     this._validTreeNodeTypes = value;
   }
 
-  /**
-   * Check if a tree node is a concept node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeAconcept(node: TreeNode): boolean {
-    const type = node['type'];
-    return type === 'NUMERIC' ||
-           type === 'CATEGORICAL' ||
-           type === 'DATE' ||
-           type === 'TEXT' ||
-           type === 'HIGH_DIMENSIONAL';
+  get selectedTreeNode(): TreeNode {
+    return this._selectedTreeNode;
   }
 
-  /**
-   * Check if a tree node is a study node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeAstudy(node: TreeNode): boolean {
-    return node['type'] === 'STUDY';
+  set selectedTreeNode(value: TreeNode) {
+    this._selectedTreeNode = value;
   }
 
-  /**
-   * Check if the tree_nodes calls are finished
-   * @returns {boolean}
-   */
-  public isTreeNodeLoadingComplete(): boolean {
-    return this.treeNodeCallsSent === this.treeNodeCallsReceived;
+  get conceptCountMap(): Map<string, CountItem> {
+    return this._conceptCountMap;
   }
 
-  /**
-   * Convert item names to treenode paths
-   * @param {TreeNode[]} nodes
-   * @param {string[]} items
-   * @param {string[]} paths
-   */
-  public convertItemsToPaths(nodes: TreeNode[], items: string[], paths: string[]) {
-    nodes.forEach((node: TreeNode) => {
-      if (node) {
-        const itemName = ((node || {})['metadata'] || {})['item_name'];
-        if (items.indexOf(itemName) > -1) {
-          paths.push(node['fullName']);
-        }
-        if (node['children']) {
-          this.convertItemsToPaths(node['children'], items, paths);
-        }
-      }
-    });
+  set conceptCountMap(value: Map<string, CountItem>) {
+    this._conceptCountMap = value;
   }
+
+  get studyCountMap(): Map<string, CountItem> {
+    return this._studyCountMap;
+  }
+
+  set studyCountMap(value: Map<string, CountItem>) {
+    this._studyCountMap = value;
+  }
+
+  get studyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._studyConceptCountMap;
+  }
+
+  set studyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._studyConceptCountMap = value;
+  }
+
+  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._selectedStudyConceptCountMap;
+  }
+
+  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
+  }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
+  }
+
 }

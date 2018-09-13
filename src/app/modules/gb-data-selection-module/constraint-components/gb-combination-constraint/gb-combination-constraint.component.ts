@@ -1,12 +1,20 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {CombinationConstraint} from '../../../../models/constraints/combination-constraint';
-import {Constraint} from '../../../../models/constraints/constraint';
-import {
-  AutoComplete
-} from 'primeng/components/autocomplete/autocomplete';
-import {CombinationState} from '../../../../models/constraints/combination-state';
-import {PedigreeConstraint} from '../../../../models/constraints/pedigree-constraint';
+import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
+import {Constraint} from '../../../../models/constraint-models/constraint';
+import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {CombinationState} from '../../../../models/constraint-models/combination-state';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
+import {TreeNode} from 'primeng/api';
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -38,7 +46,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
-    this.updateCounts();
+    this.update();
   }
 
   onSearch(event) {
@@ -47,19 +55,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   onDropdown(event) {
-    let results = this.constraintService.searchAllConstraints('');
-
-    // Workaround for dropdown not showing properly, as described in
-    // https://github.com/primefaces/primeng/issues/745
-    this.searchResults = [];
-    this.searchResults = results;
-    event.originalEvent.preventDefault();
-    event.originalEvent.stopPropagation();
-    if (this.autoComplete.panelVisible) {
-      this.autoComplete.hide();
-    } else {
-      this.autoComplete.show();
-    }
+    this.searchResults = this.constraintService.searchAllConstraints('');
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
   }
 
   onSelect(selectedConstraint) {
@@ -69,10 +66,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
 
-      if (newConstraint.getClassName() === 'CombinationConstraint') {
+      if (newConstraint.className === 'CombinationConstraint') {
         // we don't want to copy a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
-      } else if (newConstraint.getClassName() === 'PedigreeConstraint') {
+      } else if (newConstraint.className === 'PedigreeConstraint') {
         // we don't want to copy a PedigreeConstraint's right-hand-side constraint
         (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
       }
@@ -84,7 +81,21 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
       this.autoComplete.selectItem(null);
-      this.updateCounts();
+      this.update();
+    }
+  }
+
+  onDrop(event) {
+    event.stopPropagation();
+    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
+    this.droppedConstraint =
+      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode['dropMode']);
+    this.treeNodeService.selectedTreeNode = null;
+    if (this.droppedConstraint) {
+      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+      combinationConstraint.addChild(this.droppedConstraint);
+      this.update();
+      this.droppedConstraint = null;
     }
   }
 
@@ -94,7 +105,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   toggleJunction() {
     (<CombinationConstraint>this.constraint).switchCombinationState();
-    this.updateCounts();
+    this.update();
   }
 
   get childContainerClass(): string {

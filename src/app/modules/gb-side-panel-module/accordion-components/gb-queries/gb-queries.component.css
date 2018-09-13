@@ -1,3 +1,7 @@
+.gb-query-panel-top {
+  margin-bottom: 3px;
+}
+
 .fa.fa-circle {
   font-size: 10px;
   color: darkgray;
@@ -15,14 +19,61 @@
 
 .gb-query-panel-import-btn {
   font-size: small;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .gb-query-panel-sort-btn-container {
   margin-top: 6px;
   margin-bottom: -10px;
   display: flow-root;
+}
+
+.gb-subscription-panel-header {
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-left: -3px;
+  max-width: 162px;
+  box-shadow: 1px 1px 1px 1px lightgrey;
+}
+.gb-subscription-panel-header:hover {
+  background-color: lightgray;
+}
+
+.gb-subscription-panel-body {
+  padding-left: 3px;
+  margin-top: 3px;
+}
+
+.gb-subscription-panel-body-record {
+  margin-bottom: 1px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+.gb-subscription-panel-body-record:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+.gb-subscription-panel-body-record:active {
+  background-color: var(--gb-clinical-green-light);
+}
+
+.gb-query-log-download-btn {
+  background-color: transparent;
+  border: none;
+  color: grey;
+}
+.gb-query-log-download-btn:hover {
+  background-color: #e6e6e6;
+  opacity: 0.9;
+}
+.gb-query-log-download-btn:active {
+  opacity: 1;
+}
+
+hr {
+  margin-top: 1px;
+  margin-bottom: 2px;
 }
 
 /*
@@ -86,20 +137,24 @@ input:read-only {
  * margin: top right bottom left
  */
 md2-accordion-header .ui-button-secondary {
-  margin-top: 3px;
-  margin-left: -3px;
-  padding: 0px;
+  margin-top: auto;
+  padding-left: 8px;
+  padding-right: 8px;
   color: #505050;
   border: none;
   background-color: transparent;
+}
+md2-accordion-header .ui-button-secondary:hover {
+  background-color: var(--gb-orange-light-light);
 }
 
 .gb-query-sort-btn {
   color: #606060 !important;
   background-color: transparent !important;
   border: black;
-  padding: 0px;
+  padding: 0em;
   margin: 0px -3px 0px 0px;
+  -moz-margin-start: 1.1em;
 }
 
 .gb-query-sort-btn:hover {

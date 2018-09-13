@@ -1,0 +1,39 @@
+.gb-logo-panel {
+  height: var(--gb-navbar-height);
+  background-color: var(--gb-clinical-green-dark);
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  z-index: 99;
+}
+
+.gb-logo-panel img {
+  width: 46px;
+  vertical-align: middle;
+  margin-bottom: 13px;
+  margin-left: 6px;
+  margin-top: 2px;
+}
+
+.gb-logo-panel img:hover {
+  cursor: pointer;
+}
+
+.gb-logo-text {
+  color: white;
+  font-weight: bolder;
+  font-size: 20px;
+  margin-left: 9px;
+}
+
+.gb-logo-text:hover {
+  cursor: pointer;
+}
+
+.gb-side-accordion-container {
+  margin-top: var(--gb-navbar-height-extra);
+}
+
+.gb-side-panel-container {
+  margin-bottom: 5em;
+}

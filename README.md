@@ -1,45 +1,84 @@
-# GlowingBear
-[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=master)](https://travis-ci.org/thehyve/glowing-bear/branches)
+# Glowing Bear
+[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
-A cohort selection user interface for [TranSMART].
+A frontend application for clinical data selection and analysis 
+based on [TranSMART]. Visit https://glowingbear.app for more information.
 
-
-## Development
-
-This project was generated with [Angular CLI] version 1.0.0.
-
-### Development server
-
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
-
-### Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
-
-### Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-### Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma], run `ng test --code-coverage` to test with generated coverage documents, which are located in the coverage folder.
-
-### Running end-to-end tests
-
-For e2e test we use [Protractor] in combination with the [cucumber-js] framework.
-To install protractor run `npm install -g protractor`. 
-To run the tests you need to have an up to dated version of chrome installed and the TranSMART application running, by default on `localhost:8080`.
-To run all tests: `protractor`.
-To run specific feature files: `protractor --specs=e2e/features/name-of.feature`.
-
-### Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+This project is based on [Angular 6](https://github.com/angular/angular), 
+[Angular CLI 6](https://github.com/angular/angular-cli) and 
+[Yarn 1.9.4](https://github.com/yarnpkg/yarn/releases)
 
 
-## Publishing
+### How to install
+* First, make sure the latest Angular CLI and Yarn are installed globally.
 
+* Second, clone Glowing Bear's code and install its dependencies
+    ```
+    git clone https://github.com/thehyve/glowing-bear.git
+    cd glowing-bear
+    yarn
+    ```
+
+
+### How to run locally
+We assume that a TranSMART backend has been installed and run,
+either locally, e.g. on [localhost:8081](localhost:8081), 
+or remotely, e.g. on https://transmart-dev.thehyve.net. 
+For information on how to install and run TranSMART, 
+please refer to its [documentation](https://github.com/thehyve/transmart-core).
+
+* First, use the configuration for development 
+by changing [env.json](src/app/config/env.json) to
+
+    ```json
+    {
+      "env": "dev"
+    }
+    ```
+
+* Second, modify [config.dev.json](src/app/config/config.dev.json) 
+so that the `api-url` points to your running transmart instance.
+
+    ```json
+    {
+      "api-url": "http://localhost:8081"
+    }
+    ```
+
+* Third, run
+    ```
+    yarn start
+    ```
+    The app is run on `http://localhost:4200/` and 
+    will automatically reload if you change any of the source files.
+
+
+
+### How to build
+`yarn build` (or `ng build`)
+
+`yarn package` (or `ng build --prod`)
+
+The build artifacts will be stored in the `dist/` directory.
+
+
+
+### How to test
+Run `yarn test` to execute the unit tests via [Karma], 
+the generated coverage documents can be found in the `coverage/` folder.
+
+For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
+[Cypress] is install as part of the your `npm install` command. 
+To run the tests using the headless browser `npm run e2e` or `npm run cypress` to launch the GUI.
+by default the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
+WARNING: tests alter state. All saved queries are deleted.
+
+
+
+### How to deploy
 We use Gradle to create bundles that are suitable for deployment:
+
 ```bash
 # Create a tar bundle in build/distributions
 gradle assemble
@@ -48,26 +87,38 @@ gradle assemble
 gradle publish
 ```
 
-## Deployment
+The latest release is [glowing-bear-0.8.0.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/0.8.0/glowing-bear-0.8.0.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
 
 Untar the archive in a directory where it can be served by a web server,
-e.g., [Apache] or [nginx].
+e.g. [Apache] or [nginx].
+
+
+
+### How to create a release
+
+For creating a new release, increase the version in [config.default.json](src/app/config/config.default.json)
+and [package.json](package.json). Make sure the `publishing.repositories.maven.url` property
+in [build.gradle](build.gradle) is set to a release repository.
+
+
 
 ### Configuration
 
 The application can be configured by changing the `env.json` and `config.*.json`
 files in `app/config`.
 
-Example `env.json`:
+Example `env.json` (allowed values are `default`, `dev` and `transmart`):
+
 ```json
 {
-  "env": "prod"
+  "env": "dev"
 }
 ```
-Example `config.prod.json`:
+Example `config.dev.json`:
+
 ```json
 {
   "api-url": "https://transmart.thehyve.net",
@@ -84,9 +135,16 @@ Supported properties in the `config.*.json` files:
 |:------------------------- |:--------- |:----------- |
 | `api-url`                 |           | URL of the TranSMART API to connect to. |
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
-| `app-url`                 |           | URL where the Glowing Bear is accessible for the user. |
-| `tree-node-counts-update` | `true`    | Fetch counts for study nodes in step 2 of Data Selection. |
+| `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
+| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
+| `show-observation-counts` | `true`    | |
+| `instant-counts-update-1` | `false`   | |
+| `instant-counts-update-2` | `false`   | |
+| `instant-counts-update-3` | `false`   | |
+| `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
+| `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
+| `oidc-client-id`          | `glowingbear-js` | |
 
 
 ## License
@@ -94,17 +152,10 @@ Supported properties in the `config.*.json` files:
 Copyright &copy; 2017&ndash;2018 &nbsp; The Hyve B.V.
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the [Mozilla Public License 2.0](LICENSE).
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the [GNU General Public License](LICENSE)
-along with this program. If not, see https://www.gnu.org/licenses/.
+You should have received a copy of the license along with this program. 
+If not, see https://opensource.org/licenses/MPL-2.0.
 
 
 [tranSMART]: https://github.com/thehyve/transmart-core
@@ -114,3 +165,5 @@ along with this program. If not, see https://www.gnu.org/licenses/.
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [nginx]: https://nginx.org
 [Apache]: https://httpd.apache.org
+[Cypress]: https://www.cypress.io/
+[cypress-cucumber-preprocessor]: https://github.com/TheBrainFamily/cypress-cucumber-preprocessor

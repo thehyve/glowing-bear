@@ -1,8 +1,18 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {TreeNode} from 'primeng/primeng';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {QueryService} from '../../../../services/query.service';
-import {Step} from '../../../../models/step';
+import {Step} from '../../../../models/query-models/step';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {Query} from '../../../../models/query-models/query';
 
 @Component({
   selector: 'gb-projection',
@@ -11,8 +21,11 @@ import {Step} from '../../../../models/step';
 })
 export class GbProjectionComponent implements OnInit {
 
+  isUploadListenerNotAdded: boolean;
+
   constructor(private treeNodeService: TreeNodeService,
-              private queryService: QueryService) {
+              public queryService: QueryService) {
+    this.isUploadListenerNotAdded = true;
   }
 
   ngOnInit() {
@@ -33,9 +46,65 @@ export class GbProjectionComponent implements OnInit {
   updateCounts() {
     this.queryService.step = Step.II;
     if (this.queryService.instantCountsUpdate_2) {
-      this.queryService.updateCounts_2();
+      this.queryService.update_2();
     } else {
+      this.queryService.counts_2.subjectCount = -1;
+      this.queryService.counts_2.observationCount = -1;
       this.queryService.isDirty_2 = true;
+    }
+  }
+
+  importCriteria() {
+    let uploadElm = document.getElementById('step2CriteriaFileUpload');
+    if (this.isUploadListenerNotAdded) {
+      uploadElm
+        .addEventListener('change', this.criteriaFileUpload.bind(this), false);
+      this.isUploadListenerNotAdded = false;
+    }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
+    uploadElm.click();
+  }
+
+  criteriaFileUpload(event) {
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    reader.onload = (function (e) {
+      let data = e.target['result'];
+      let query = this.parseFile(file, data);
+      this.queryService.restoreQuery(query);
+    }).bind(this);
+    reader.readAsText(file);
+  }
+
+  private parseFile(file: File, data: any): Query {
+    let observationQuery = {data: null};
+    // file.type is empty for some browsers and Windows OS
+    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
+      let _json = JSON.parse(data);
+      if (_json['names']) {
+        let pathArray = [];
+        this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
+        observationQuery = {
+          data: pathArray
+        };
+      } else if (_json['paths']) {
+        observationQuery = {
+          data: _json['paths']
+        };
+      } else if (_json['observationQuery']) {
+        observationQuery = _json['observationQuery'];
+      } else {
+        MessageHelper.alert('error', 'Invalid file content for STEP 2.');
+        return;
+      }
+
+      let query = new Query(null, file.name.substr(0, file.name.indexOf('.')));
+      query.observationQuery = observationQuery;
+      return query;
+    } else {
+      MessageHelper.alert('error', 'Invalid file format for STEP 2.');
+      return;
     }
   }
 
@@ -50,8 +119,16 @@ export class GbProjectionComponent implements OnInit {
     this.updateCounts();
   }
 
+  onCheckChange(val) {
+    this.checkAll(val);
+  }
+
   expandAll(value: boolean) {
     this.treeNodeService
       .expandProjectionTreeDataIterative(this.treeNodeService.projectionTreeData, value);
+  }
+
+  get isTreeNodeLoadingCompleted(): boolean {
+    return this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 }

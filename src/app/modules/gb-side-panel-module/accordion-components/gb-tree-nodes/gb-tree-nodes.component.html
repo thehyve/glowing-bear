@@ -1,15 +1,20 @@
-<div id="tree-nodes-component" [@notifyState]="treeNodeService.loadingTreeNodes">
+<div id="tree-nodes-component">
 
-  <!-- the search/filter input -->
+  <!--the search/filter input-->
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-tree-filter-input"
-                    placeholder="Filter tree nodes"
+                    placeholder="filter"
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
+    <span>&nbsp;</span>
     <button class="btn btn-secondary btn-sm gb-treenodes-filter-btn"
             (click)="clearFilter()"
-            type="button">clear</button>
+            type="button">clear
+    </button>
+    <div *ngIf="hits > 0" class="gb-treenodes-filter-result">
+      {{hits}} results found
+    </div>
   </div>
 
 
@@ -22,7 +27,7 @@
   <!-- the metadata popup -->
   <p-overlayPanel #treeNodeMetadataPanel
                   [dismissable]="true"
-                  [showCloseIcon]="true">
+                  [showCloseIcon]="false">
     <!--{{metadataContent}}-->
     <div *ngFor="let item of metadataContent">
       <div class="ui-grid-row gb-metadata-row">
@@ -32,10 +37,9 @@
   </p-overlayPanel>
 
 
-  <!-- the spinning icon -->
-  <br>
-  <i class="fa fa-spin fa-refresh fa-fw gb-spinner"
-     [class.loading]="treeNodeService.loadingTreeNodes == 'loading'"></i>
+  <!-- the loading indicator -->
+  <div *ngIf="isLoading" style="margin: auto;">
+    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+  </div>
 
 </div>
-

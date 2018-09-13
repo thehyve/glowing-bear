@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
@@ -17,17 +25,18 @@ import {
   TreeModule,
   PanelModule,
   DataListModule,
-  DataTableModule,
   TreeTableModule,
   DropdownModule,
   TooltipModule,
-  MessagesModule
+  MessagesModule, PickListModule, PaginatorModule, MultiSelectModule, OverlayPanelModule
 } from 'primeng/primeng';
-import {GbExportComponent} from './accordion-components/gb-export/gb-export.component';
-import {SimpleTimer} from 'ng2-simple-timer';
 import {GbProjectionComponent} from './accordion-components/gb-projection/gb-projection.component';
-import {GbPatientSetConstraintComponent} from './constraint-components/gb-patient-set-constraint/gb-patient-set-constraint.component';
+import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
+import {GbDataTableComponent} from './accordion-components/gb-data-table/gb-data-table.component';
+import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
+import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
+import {TableModule} from 'primeng/table';
 
 @NgModule({
   imports: [
@@ -41,29 +50,32 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
     TreeModule,
     PanelModule,
     DataListModule,
-    DataTableModule,
     TreeTableModule,
+    TableModule,
+    PaginatorModule,
     DropdownModule,
     TooltipModule,
-    MessagesModule
+    MessagesModule,
+    PickListModule,
+    MultiSelectModule,
+    OverlayPanelModule
   ],
   exports: [
     RouterModule
   ],
-  providers: [
-    SimpleTimer
-  ],
   declarations: [
     GbDataSelectionComponent,
     GbSelectionComponent,
-    GbExportComponent,
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,
     GbConstraintComponent,
     GbConceptConstraintComponent,
     GbProjectionComponent,
-    GbPatientSetConstraintComponent,
-    GbPedigreeConstraintComponent
+    GbSubjectSetConstraintComponent,
+    GbPedigreeConstraintComponent,
+    GbDataTableComponent,
+    GbDataTableDimensionsComponent,
+    GbDataTableGridComponent
   ],
   entryComponents: [
     GbConstraintComponent,

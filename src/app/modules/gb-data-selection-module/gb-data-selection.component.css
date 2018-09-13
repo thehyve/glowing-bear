@@ -7,7 +7,8 @@
 }
 
 .gb-data-selection-container {
-  margin-top: 100px;
+  margin-top: 1px;
+  margin-bottom: 100px;
 }
 
 .gb-data-selection-accordion-header {
@@ -40,7 +41,7 @@
 
 .gb-data-selection-update-btn {
   margin-left: 1em;
-  margin-right: 1em;
+  margin-right: 0.5em;
   border: 1px dashed;
 }
 
@@ -49,6 +50,50 @@
   font-weight: bolder;
 }
 
+.gb-data-selection-information-text {
+  color: white;
+}
+
 .fa-circle-o-notch {
   opacity: .5;
+}
+
+/*
+ * The style for the overview panel on top of data-selection
+ * padding and margin: top, right, bottom, left
+ * shadow option: text-shadow: 1px 1px 3px black;
+ */
+.gb-data-selection-top-panel {
+  background-color: rgba(51, 156, 144, 0.1);
+  border-radius: 3px;
+  border: 1px solid lightgray;
+  padding: 0.5em 1em 0.5em 1em;
+  margin: var(--gb-navbar-height-extra) 16px -2px 0px;
+  color: darkslategrey;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.gb-data-selection-top-panel-input {
+  margin-bottom: 3px;
+  margin-right: 7px;
+  max-width: 100%;
+  font-size: small;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+}
+
+/* save btn */
+.gb-data-selection-top-panel-btn {
+  margin: .1em;
+}
+
+.gb-data-selection-top-panel-btn:hover {
+  background-color: var(--gb-clinical-green);
+  opacity: 0.7;
+}
+
+.gb-data-selection-top-panel-btn:active {
+  background-color: var(--gb-clinical-green);
+  opacity: 0.9;
 }

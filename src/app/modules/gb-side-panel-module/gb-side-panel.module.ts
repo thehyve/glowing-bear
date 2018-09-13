@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GbSidePanelComponent} from './gb-side-panel.component';
@@ -16,10 +24,12 @@ import {
   ConfirmDialogModule,
   InputTextModule,
   PanelModule,
+  RadioButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {Md2AccordionModule} from 'md2';
+import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 
 @NgModule({
   imports: [
@@ -36,12 +46,14 @@ import {Md2AccordionModule} from 'md2';
     InputTextModule,
     TooltipModule,
     ConfirmDialogModule,
-    Md2AccordionModule
+    Md2AccordionModule,
+    RadioButtonModule
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
-    GbQueriesComponent
+    GbQueriesComponent,
+    GbSummaryComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]

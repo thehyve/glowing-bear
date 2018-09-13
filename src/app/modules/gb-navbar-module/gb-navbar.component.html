@@ -1,0 +1,13 @@
+<div class="gb-nav">
+  <span *ngFor="let item of items">
+    <a [routerLink]="item.routerLink"
+       [class]="activeItem && item.label === activeItem.label ? 'active' : ''">
+      {{item.label}}
+    </a>
+  </span>
+</div>
+
+<div class="gb-nav-right">
+  <a [href]="docUrl" target="_blank"><small>{{appVersion}}</small>&nbsp; <i class="fa fa-question-circle-o"></i></a>
+  <a (click)="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
+</div>

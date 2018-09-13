@@ -1,0 +1,30 @@
+.gb-cross-table-container {
+  font-size: small;
+  margin-right: 1em;
+  margin-top: 0.5em;
+}
+
+.gb-cross-table-top-header {
+  border-left: 3px var(--gb-clinical-green-dark) solid;
+  border-right: 3px var(--gb-clinical-green-dark) solid;
+  border-top: transparent;
+  background-color: transparent;
+}
+
+.gb-cross-table-header {
+  background-color: var(--gb-clinical-green-light-light);
+  font-weight: bold;
+  color: #2d353c;
+}
+
+.gb-cross-table-description {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
+  color: darkgray;
+}
+
+.gb-cross-table-info-text {
+  color: white;
+  font-size: medium;
+}

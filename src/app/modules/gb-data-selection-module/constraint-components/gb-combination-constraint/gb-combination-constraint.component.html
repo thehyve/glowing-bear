@@ -1,4 +1,4 @@
-<div class="gb-combination-constraint-container">
+<div class="gb-combination-constraint-container" (drop)="onDrop($event)">
 
   <div class="{{childContainerClass}}">
     <!-- Child Constraints -->
@@ -13,7 +13,6 @@
       <gb-constraint [constraint]="child"
                      (constraintRemoved)="onConstraintRemoved(child)"></gb-constraint>
     </div>
-
 
     <div class="form-inline gb-combination-constraint-input-container">
 

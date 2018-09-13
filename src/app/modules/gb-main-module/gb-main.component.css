@@ -1,0 +1,13 @@
+.gb-container {
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+  position: relative;
+  width: 100%;
+  backface-visibility: hidden;
+  will-change: overflow;
+}
+
+.gb-router-outlet-container {
+  padding-left: 0.5em;
+}

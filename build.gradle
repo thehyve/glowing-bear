@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 buildscript {
     ext {
         gradleNodeVersion = '1.2.0'
@@ -13,9 +15,13 @@ buildscript {
     }
 }
 
+def versionFile = new File('src/app/config/config.default.json')
+def versionObject = new JsonSlurper().parseText(versionFile.text)
+
 ext {
-    glowingBearVersion = '0.0.1-SNAPSHOT'
-    nodeVersion = '7.10.1'
+    glowingBearVersion = versionObject['app-version']
+    nodeVersion = '8.10.0'
+    yarnVersion = '1.9.4'
     gradleWrapperVersion = '4.0'
 }
 
@@ -42,25 +48,40 @@ task wrapper(type: Wrapper) {
 
 node {
     version = nodeVersion
+    yarnVersion = yarnVersion
     download = true
 }
 
-task npmPackage(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'application'
-    description = 'Builds the application'
-    args = ['run', 'package']
+task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
+  group = 'application'
+  description = 'Builds the application'
+  args = ['run', 'package']
 }
-distTar.dependsOn(npmPackage)
+distTar.dependsOn(yarnPackage)
 
-task npmTest(type: NpmTask, dependsOn: 'npmInstall') {
-    group = 'verification'
-    description = 'Executes user interface unit tests'
-    args = ['run', 'testOnce']
+task yarnLint(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Performs static code analysis'
+  args = ['run', 'lint']
 }
-check.dependsOn(npmTest)
+check.dependsOn(yarnLint)
+
+task yarnTest(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Executes user interface unit tests'
+  args = ['run', 'testOnce']
+}
+check.dependsOn(yarnTest)
+
+task yarnCodecov(type: YarnTask, dependsOn: 'yarn') {
+  group = 'verification'
+  description = 'Report code coverage'
+  args = ['run', 'report-coverage']
+}
 
 clean {
     delete fileTree(dir: 'dist')
+    delete 'coverage'
 }
 
 distributions {
@@ -78,15 +99,17 @@ publishing {
     repositories {
         maven {
             name 'nl.thehyve.nexus'
-            url 'https://repo.thehyve.nl/content/repositories/snapshots/'
+            url 'https://repo.thehyve.nl/content/repositories/releases/'
         }
     }
     publications {
         maven(MavenPublication) {
+            artifactId 'glowing-bear'
             artifact distTar // Publish the output of the distTar task
         }
     }
 }
 publishToMavenLocal.dependsOn 'distTar'
 publish.dependsOn 'distTar'
+distTar.baseName = 'glowing-bear'
 

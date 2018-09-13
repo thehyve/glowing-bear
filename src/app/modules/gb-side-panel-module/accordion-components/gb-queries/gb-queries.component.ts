@@ -1,10 +1,21 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {Query} from '../../../../models/query';
+import {Query} from '../../../../models/query-models/query';
 import {QueryService} from '../../../../services/query.service';
-import {DownloadHelper} from '../../../../utilities/DownloadHelper';
+import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
+import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
-import {UIHelper} from '../../../../utilities/UIHelper';
+import {UIHelper} from '../../../../utilities/ui-helper';
+import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-queries',
@@ -14,7 +25,8 @@ import {UIHelper} from '../../../../utilities/UIHelper';
 export class GbQueriesComponent implements OnInit {
 
   searchTerm = '';
-  private isUploadListenerNotAdded: boolean;
+  isUploadListenerNotAdded: boolean;
+  file: File; // holds the uploaded query file
 
   constructor(public treeNodeService: TreeNodeService,
               private queryService: QueryService,
@@ -33,84 +45,61 @@ export class GbQueriesComponent implements OnInit {
         .addEventListener('change', this.queryFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
     }
+    // reset the input path so that it will take the same file again
+    uploadElm['value'] = '';
     uploadElm.click();
   }
 
   queryFileUpload(event) {
+    MessageHelper.alert('info', 'Query file is being processed, waiting for response.');
     let reader = new FileReader();
-    let file = event.target.files[0];
-    reader.onload = (function (e) {
-      if (file.type === 'application/json') {
-        let _json = JSON.parse(e.target['result']);
-        let pathArray = null;
-        // If the json is of standard format
-        if (_json['patientsQuery'] || _json['observationsQuery']) {
-          this.queryService.restoreQuery(_json);
-        } else if (_json['names']) {
-          pathArray = [];
-          this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
-        } else if (_json['paths']) {
-          pathArray = _json['paths'];
-        } else if (_json.constructor === Array) {
-          pathArray = _json;
-        }
-        if (pathArray) {
-          let query = {
-            'name': file.name,
-            'observationsQuery': {
-              data: pathArray
-            }
-          };
-          this.queryService.restoreQuery(query);
-        }
-      } else if (file.type === 'text/plain' ||
-        file.type === 'text/tab-separated-values' ||
-        file.type === 'text/csv' ||
-        file.type === '') {
-        // we assume the text contains a list of subject Ids
-        let query = {
-          'name': file.name,
-          'patientsQuery': {
-            'type': 'patient_set',
-            'subjectIds': e.target['result'].split('\n')
-          },
-          'observationsQuery': {}
-        };
-        this.queryService.restoreQuery(query);
-      }
+    this.file = event.target.files[0];
+    reader.onload = this.handleQueryFileUploadEvent.bind(this);
+    reader.readAsText(this.file);
+  }
 
-      // reset the input path so that it will take the same file again
-      document.getElementById('queryFileUpload')['value'] = '';
-    }).bind(this);
-    reader.readAsText(file);
+  handleQueryFileUploadEvent(e) {
+    let data = e.target['result'];
+    let queryObj = this.verifyFile(this.file, data);
+    this.queryService.saveQueryByObject(queryObj);
+  }
+
+  // verify the uploaded query file
+  verifyFile(file: File, data: any) {
+    // file.type is empty for some browsers and Windows OS
+    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
+      let _json = JSON.parse(data);
+      // If the json is of standard format
+      if (_json['subjectQuery'] || _json['observationQuery']) {
+        return _json;
+      } else {
+        MessageHelper.alert('error', 'Invalid file content for query import.');
+        return;
+      }
+    } else {
+      MessageHelper.alert('error', 'Invalid file content for query import.');
+      return;
+    }
   }
 
   // query subscription
   toggleQuerySubscription(event: Event, query: Query) {
     event.stopPropagation();
-    query.subscribed = !query.subscribed;
-    const queryObject = {
-      bookmarked: query.subscribed
-    };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.toggleQuerySubscription(query);
   }
 
   getQuerySubscriptionButtonIcon(query: Query) {
-    return query.subscribed ? 'fa-rss-square' : 'fa-rss';
+    return query.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
   }
 
   // query bookmark
   toggleQueryBookmark(event: Event, query: Query) {
     event.stopPropagation();
-    query.bookmarked = !query.bookmarked;
-    const queryObject = {
-      bookmarked: query.bookmarked
-    };
-    this.queryService.updateQuery(query.id, queryObject);
+    this.queryService.toggleQueryBookmark(query);
   }
 
   getQueryBookmarkButtonIcon(query: Query) {
-    return query.bookmarked ? 'fa-star' : 'fa-star-o';
+    return query.bookmarked ? 'fa fa-star' : 'fa fa-star-o';
   }
 
   restoreQuery(event: Event, selectedQuery: Query) {
@@ -120,6 +109,14 @@ export class GbQueriesComponent implements OnInit {
     }
     selectedQuery.selected = true;
     this.queryService.restoreQuery(selectedQuery);
+  }
+
+  toggleSubscriptionPanel(query: Query) {
+    query.subscriptionCollapsed = !query.subscriptionCollapsed;
+  }
+
+  toggleSubscriptionRecordPanel(record: QueryDiffRecord) {
+    record.showCompleteRepresentation = !record.showCompleteRepresentation;
   }
 
   removeQuery(event: Event, query: Query) {
@@ -137,19 +134,34 @@ export class GbQueriesComponent implements OnInit {
         this.removeQuery(event, query);
       },
       reject: () => {
+        MessageHelper.alert('error', `Cannot remove the query ${query.name}`);
       }
     });
   }
 
   downloadQuery(event: Event, query: Query) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(query, query.name);
+    DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(query), query.name);
+  }
+
+  radioCheckSubscriptionFrequency(event: MouseEvent, query: Query) {
+    event.stopPropagation();
+    event.preventDefault();
+    let queryObj = {
+      subscriptionFreq: query.subscriptionFreq
+    };
+    this.queryService.updateQuery(query, queryObj);
+  }
+
+  downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
+    const filename = query.name + '-record-' + record.createDate;
+    DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }
 
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
     for (let query of this.queryService.queries) {
-      if (query.name.indexOf(filterWord) === -1) {
+      if (query.name.toLowerCase().indexOf(filterWord) === -1) {
         query.visible = false;
       } else {
         query.visible = true;
@@ -216,5 +228,9 @@ export class GbQueriesComponent implements OnInit {
         return 0;
       }
     });
+  }
+
+  get isQuerySubscriptionIncluded(): boolean {
+    return this.queryService.isQuerySubscriptionIncluded;
   }
 }
