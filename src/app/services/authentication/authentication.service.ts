@@ -67,30 +67,33 @@ export class AuthenticationService implements OnDestroy {
       case 'oidc': {
         const clientId = this.config.getConfig('oidc-client-id');
         try {
+          let roles: string[] = [];
           let token = jwt_decode(this.token);
           if (token['resource_access']) {
             let clientAccess = token['resource_access'][clientId];
             if (clientAccess) {
-              let roles = clientAccess['roles'];
-              if (roles && roles.constructor === Array && roles.length > 0) {
-                const level = AuthenticationService.getAccessLevelFromRoles(roles);
-                this.accessLevel.next(level);
-                this.accessLevel.complete();
-                console.log(`Access level: ${level}`);
+              let clientAccessRoles = clientAccess['roles'];
+              if (clientAccessRoles && clientAccessRoles.constructor === Array) {
+                roles = clientAccessRoles;
               }
             }
           }
+          const level = AuthenticationService.getAccessLevelFromRoles(roles);
+          this.accessLevel.next(level);
+          this.accessLevel.complete();
+          console.log(`Access level: ${level}`);
+          return;
         } catch (e) {
           console.error(`Error decoding JWT token`, e);
           this.accessLevel.next(AccessLevel.Restricted);
           this.accessLevel.complete();
         }
-        break;
+        return;
       }
       case 'transmart': {
         this.accessLevel.next(AccessLevel.Full);
         this.accessLevel.complete();
-        break;
+        return;
       }
       default: {
         const message = `Unsupported authentication service type: ${serviceType}`;
