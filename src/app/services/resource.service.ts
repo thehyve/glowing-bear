@@ -40,6 +40,7 @@ import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
+import {TransmartExternalJobResourceService} from "./transmart-services/transmart-external-job-resource.service";
 
 @Injectable()
 export class ResourceService {
@@ -50,7 +51,8 @@ export class ResourceService {
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
   private _selectedConceptCountMap: Map<string, CountItem>;
 
-  constructor(private transmartResourceService: TransmartResourceService) {
+  constructor(private transmartResourceService: TransmartResourceService,
+              private transmartExternalJobResourceService: TransmartExternalJobResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
   }
 
@@ -282,12 +284,16 @@ export class ResourceService {
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportFileFormats().pipe(
-          switchMap(fileFormatNames => {
-            return this.transmartResourceService.getExportDataFormats(constraint)
-          }, (fileFormatNames, dataFormatNames) => {
-            return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
-          }));
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return TransmartExternalJobResourceService.getExportDataTypes()
+        } else {
+          return this.transmartResourceService.getExportFileFormats().pipe(
+            switchMap(fileFormatNames => {
+              return this.transmartResourceService.getExportDataFormats(constraint)
+            }, (fileFormatNames, dataFormatNames) => {
+              return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
+            }));
+        }
       }
       default: {
         return this.handleEndpointModeError();
@@ -302,7 +308,11 @@ export class ResourceService {
   getExportJobs(): Observable<any[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportJobs();
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return this.transmartExternalJobResourceService.getAllJobs();
+        } else {
+          return this.transmartResourceService.getExportJobs();
+        }
       }
       default: {
         return this.handleEndpointModeError();
@@ -318,7 +328,11 @@ export class ResourceService {
   createExportJob(name: string): Observable<ExportJob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.createExportJob(name);
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return TransmartExternalJobResourceService.createExportJob(name);
+        } else {
+          return this.transmartResourceService.createExportJob(name);
+        }
       }
       default: {
         return this.handleEndpointModeError();
@@ -355,12 +369,16 @@ export class ResourceService {
     if (hasSelectedFormat) {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          let transmartTableState: TransmartTableState = null;
-          if (includeDataTable) {
-            transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
+          if(this.transmartResourceService.exportDataView == 'customFormat') {
+            return this.transmartExternalJobResourceService.runJob(job.id, constraint)
+          } else {
+            let transmartTableState: TransmartTableState = null;
+            if (includeDataTable) {
+              transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
+            }
+            const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
+            return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
           }
-          const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
-          return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
         }
         default: {
           return this.handleEndpointModeError();
@@ -379,6 +397,9 @@ export class ResourceService {
   downloadExportJob(jobId: string) {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return this.transmartExternalJobResourceService.downloadJobData(jobId)
+        }
         return this.transmartResourceService.downloadExportJob(jobId);
       }
       default: {
@@ -395,6 +416,9 @@ export class ResourceService {
   cancelExportJob(jobId: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return this.transmartExternalJobResourceService.cancelJob(jobId)
+        }
         return this.transmartResourceService.cancelExportJob(jobId);
       }
       default: {
@@ -411,7 +435,11 @@ export class ResourceService {
   archiveExportJob(jobId: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.archiveExportJob(jobId);
+        if(this.transmartResourceService.exportDataView == 'customFormat') {
+          return TransmartExternalJobResourceService.archiveJob(jobId);
+        } else {
+          return this.transmartResourceService.archiveExportJob(jobId);
+        }
       }
       default: {
         return this.handleEndpointModeError();

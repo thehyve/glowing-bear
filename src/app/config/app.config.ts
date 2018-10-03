@@ -30,6 +30,7 @@ export class AppConfig {
   public static DEFAULT_OIDC_SERVER_URL =
     'https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect';
   public static DEFAULT_OIDC_CLIENT_ID = 'transmart-client';
+  public static DEFAULT_EXPORT_SERVICE_URL = 'http://localhost:8999';
 
   static path = 'app/config/';
   config: Object = null;
@@ -96,6 +97,12 @@ export class AppConfig {
         }
         case 'oidc-client-id': {
           value = AppConfig.DEFAULT_OIDC_CLIENT_ID; break;
+        }
+        case 'export-service-url': {
+          value = AppConfig.DEFAULT_EXPORT_SERVICE_URL; break;
+        }
+        case 'custom-export-job-name': {
+          throw Error('The name of the custom export job is unspecified in the configuration.')
         }
         default: {
           value = null; break;

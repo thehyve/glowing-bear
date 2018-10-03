@@ -43,6 +43,8 @@ import {AuthenticationServiceMock} from '../../services/mocks/authentication.ser
 import {AngularSplitModule} from 'angular-split';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {TransmartExternalJobResourceService} from "../../services/transmart-services/transmart-external-job-resource.service";
+import {TransmartExternalJobResourceServiceMock} from "../../services/mocks/transmart-external-job-resource.service.mock";
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -82,6 +84,10 @@ describe('GbMainComponent', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: TransmartExternalJobResourceService,
+          useClass: TransmartExternalJobResourceServiceMock
         },
         {
           provide: ResourceService,
