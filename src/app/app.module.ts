@@ -38,7 +38,7 @@ import {Oauth2Authentication} from './services/authentication/oauth2-authenticat
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {StudyService} from './services/study.service';
-import {TransmartExternalJobResourceService} from "./services/transmart-services/transmart-external-job-resource.service";
+import {TransmartExternalJobResourceService} from './services/transmart-services/transmart-external-job-resource.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());

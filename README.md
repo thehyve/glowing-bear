@@ -135,7 +135,7 @@ Supported properties in the `config.*.json` files:
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
-| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
+| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`, `customFormat`. |
 | `show-observation-counts` | `true`    | |
 | `instant-counts-update-1` | `false`   | |
 | `instant-counts-update-2` | `false`   | |
@@ -143,6 +143,8 @@ Supported properties in the `config.*.json` files:
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
+| `export-service-url`      |           | URL of the external tool that handles the export, when the `export-data-view` is set to `customFormat`. |
+| `custom-export-job-name`  |           | Name of the export job that will be triggered in the external tool, when the `export-data-view` is set to `customFormat`. |
 
 
 ## License

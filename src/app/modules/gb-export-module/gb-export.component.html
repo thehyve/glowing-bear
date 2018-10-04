@@ -113,6 +113,7 @@
         </button>
         <ng-template #archive>
           <button type="button"
+                  *ngIf="(isTransmartEnv && resourceService.transmartExportDataView === 'customFormat')"
                   class="btn btn-outline-primary btn-sm"
                   [disabled] = "job.isInDisabledState"
                   (click)="archiveExportJob(job)">

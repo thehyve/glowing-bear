@@ -21,8 +21,8 @@ import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {Query} from '../models/query-models/query';
-import {TransmartExternalJobResourceService} from "./transmart-services/transmart-external-job-resource.service";
-import {TransmartExternalJobResourceServiceMock} from "./mocks/transmart-external-job-resource.service.mock";
+import {TransmartExternalJobResourceService} from './transmart-services/transmart-external-job-resource.service';
+import {TransmartExternalJobResourceServiceMock} from './mocks/transmart-external-job-resource.service.mock';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;

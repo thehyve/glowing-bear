@@ -18,8 +18,9 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {catchError, map} from 'rxjs/operators';
-import {ExportDataType} from "../../models/export-models/export-data-type";
-import {ExportFileFormat} from "../../models/export-models/export-file-format";
+import {ExportDataType} from '../../models/export-models/export-data-type';
+import {ExportFileFormat} from '../../models/export-models/export-file-format';
+import {TransmartExternalJob} from '../../models/transmart-models/transmart-external-job';
 
 
 @Injectable()
@@ -91,6 +92,8 @@ export class TransmartExternalJobResourceService {
     this._autosaveSubjectSets = value;
   }
 
+  // ------------------------------------- export job calls -------------------------------------
+
   /**
    * Make a post http request
    * @param urlPart - the part used in baseUrl/urlPart
@@ -148,7 +151,7 @@ export class TransmartExternalJobResourceService {
    * Get the current user's existing export jobs
    * @returns {Observable<any[]>}
    */
-  getAllJobs(): Observable<any[]> {
+  getAllJobs(): Observable<TransmartExternalJob[]> {
     const urlPart = 'jobs';
     const responseField = 'jobs';
     return this.getCall(urlPart, responseField);
@@ -159,7 +162,7 @@ export class TransmartExternalJobResourceService {
    * @param jobId
    * @returns {Observable<ExportJob>}
    */
-  getJobStatus(jobId: string): Observable<ExportJob> {
+  getJobStatus(jobId: string): Observable<TransmartExternalJob> {
     const urlPart = `jobs/status/${jobId}`;
     const responseField = 'exportJob';
     return this.getCall(urlPart, responseField);
@@ -172,7 +175,7 @@ export class TransmartExternalJobResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<ExportJob>}
    */
-  runJob(jobId: string, constraint: Constraint): Observable<ExportJob> {
+  runJob(jobId: string, constraint: Constraint): Observable<TransmartExternalJob> {
     const urlPart = `jobs/create`;
     const responseField = 'job';
     let targetConstraint = constraint;
@@ -192,7 +195,7 @@ export class TransmartExternalJobResourceService {
       }
     };
 
-    return this.postCall(urlPart, body, null);
+    return this.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -213,8 +216,7 @@ export class TransmartExternalJobResourceService {
    */
   cancelJob(jobId: string): Observable<{}> {
     const urlPart = `jobs/cancel/${jobId}`;
-    const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    return this.getCall(urlPart, null);
   }
 
 
@@ -226,7 +228,7 @@ export class TransmartExternalJobResourceService {
    * @param {string} name
    * @returns {Observable<ExportJob>}
    */
-  static createExportJob(name: string): Observable<ExportJob> {
+  createExportJob(name: string): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = name;
     newExportJob.jobName = name;
@@ -238,7 +240,7 @@ export class TransmartExternalJobResourceService {
    * only TSV export of clinical data is currently supported
    * @returns {Observable<ExportJob>}
    */
-  static getExportDataTypes(): Observable<ExportDataType[]> {
+  getExportDataTypes(): Observable<ExportDataType[]> {
     let dataTypes = [];
     let dataType = new ExportDataType('clinical', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
@@ -251,8 +253,7 @@ export class TransmartExternalJobResourceService {
    * @param {string} jobID
    * @returns {Observable<{}>}
    */
-  static archiveJob(jobID: string): Observable<{}> {
+  archiveJob(jobID: string): Observable<{}> {
     return observableOf({})
   }
-
 }

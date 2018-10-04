@@ -14,7 +14,7 @@ import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 import {AppConfig} from '../../config/app.config';
-import {TransmartExternalJobResourceService} from "../../services/transmart-services/transmart-external-job-resource.service";
+import {TransmartExternalJobResourceService} from '../../services/transmart-services/transmart-external-job-resource.service';
 
 @Component({
   selector: 'gb-main',

@@ -46,8 +46,8 @@ import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
-import {TransmartExternalJobResourceService} from "./services/transmart-services/transmart-external-job-resource.service";
-import {TransmartExternalJobResourceServiceMock} from "./services/mocks/transmart-external-job-resource.service.mock";
+import {TransmartExternalJobResourceService} from './services/transmart-services/transmart-external-job-resource.service';
+import {TransmartExternalJobResourceServiceMock} from './services/mocks/transmart-external-job-resource.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();

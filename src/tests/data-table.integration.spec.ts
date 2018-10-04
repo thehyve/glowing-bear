@@ -18,8 +18,8 @@ import {DataTableService} from '../app/services/data-table.service';
 import {ConstraintServiceMock} from '../app/services/mocks/constraint.service.mock';
 import {ConstraintService} from '../app/services/constraint.service';
 import {StudyService} from '../app/services/study.service';
-import {TransmartExternalJobResourceService} from "../app/services/transmart-services/transmart-external-job-resource.service";
-import {TransmartExternalJobResourceServiceMock} from "../app/services/mocks/transmart-external-job-resource.service.mock";
+import {TransmartExternalJobResourceService} from '../app/services/transmart-services/transmart-external-job-resource.service';
+import {TransmartExternalJobResourceServiceMock} from '../app/services/mocks/transmart-external-job-resource.service.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
