@@ -102,11 +102,11 @@ describe('TransmartExternalJobResourceService', () => {
         };
         const jobId = 'an-id';
         service.cancelJob(jobId).subscribe((res) => {
-          expect(res['foo']).toBe('bar');
+          expect(res).toBe(mockData);
         });
         const url = service.endpointUrl + '/jobs/cancel/' + jobId;
         const req = httpMock.expectOne(url);
-        expect(req.request.method).toEqual('POST');
+        expect(req.request.method).toEqual('GET');
         req.flush(mockData);
       }));
 
@@ -114,9 +114,9 @@ describe('TransmartExternalJobResourceService', () => {
     inject([HttpTestingController, TransmartExternalJobResourceService],
       (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
         // scenario 1: no auto saved subject set
-        const jobId = 'an-id';
+        const jobName = 'custom_name';
         let mockConstraint = new TrueConstraint();
-        service.runJob(jobId, mockConstraint).subscribe((res) => {
+        service.runJob(jobName, mockConstraint).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
         const url = service.endpointUrl + '/jobs/create';
@@ -125,6 +125,7 @@ describe('TransmartExternalJobResourceService', () => {
         expect(req.request.body['job_parameters']).toBeDefined();
         expect(req.request.body['job_parameters']['constraint']).toBeDefined();
         expect(req.request.body['job_parameters']['constraint']['type']).toBe('true');
+        expect(req.request.body['job_parameters']['custom_name']).toBe('custom_name');
 
         // scenario 2: with auto saved subject set
         service.autosaveSubjectSets = true;
@@ -137,7 +138,7 @@ describe('TransmartExternalJobResourceService', () => {
         c2.concept = new Concept();
         (<CombinationConstraint>mockConstraint).addChild(c1);
         (<CombinationConstraint>mockConstraint).addChild(c2);
-        service.runJob(jobId, mockConstraint).subscribe((res) => {
+        service.runJob(jobName, mockConstraint).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
         req = httpMock.expectOne(url);

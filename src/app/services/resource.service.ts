@@ -375,7 +375,7 @@ export class ResourceService {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           if (this.transmartResourceService.exportDataView === 'customFormat') {
-            return this.transmartExternalJobResourceService.runJob(job.id, constraint).pipe(
+            return this.transmartExternalJobResourceService.runJob(job.jobName, constraint).pipe(
               map((tmExJob: TransmartExternalJob) => {
                 return TransmartExternalJobMapper.mapCustomExportJob(tmExJob);
               }));

@@ -171,11 +171,11 @@ export class TransmartExternalJobResourceService {
   /**
    * Create and run an export job for the current user, with a given name
    *
-   * @param {string} jobId
+   * @param {string} jobName
    * @param {Constraint} constraint
    * @returns {Observable<ExportJob>}
    */
-  runJob(jobId: string, constraint: Constraint): Observable<TransmartExternalJob> {
+  runJob(jobName: string, constraint: Constraint): Observable<TransmartExternalJob> {
     const urlPart = `jobs/create`;
     const responseField = 'job';
     let targetConstraint = constraint;
@@ -192,6 +192,7 @@ export class TransmartExternalJobResourceService {
       job_type: this.customExportJobName,
       job_parameters: {
         constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+        custom_name: jobName
       }
     };
 

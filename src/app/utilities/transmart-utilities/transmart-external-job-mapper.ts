@@ -21,11 +21,13 @@ export class TransmartExternalJobMapper {
 
   static mapCustomExportJob(job: TransmartExternalJob): ExportJob {
     let ej = new ExportJob();
-    ej.id = job.task_id;
-    ej.jobName = job.task_id;
-    ej.jobStatus = statusDictionary[job.status];
-    ej.jobStatusTime = job.created_at;
-    ej.userId = job.user;
+    if (job) {
+      ej.id = job.task_id;
+      ej.jobName = job.job_parameters['custom_name'] ? job.job_parameters['custom_name'] : job.task_id;
+      ej.jobStatus = statusDictionary[job.status];
+      ej.jobStatusTime = job.created_at;
+      ej.userId = job.user;
+    }
     return ej;
   }
 

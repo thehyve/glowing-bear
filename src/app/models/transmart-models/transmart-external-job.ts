@@ -10,7 +10,7 @@ export class TransmartExternalJob {
 
   // The unique job id
   public task_id: string;
-  // The type of the job, e.g. a custom export job
+  // The type of the job that is triggered in the external tool
   public job_type: string;
   // The date of the job creation
   public created_at: string;

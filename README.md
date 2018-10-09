@@ -135,7 +135,7 @@ Supported properties in the `config.*.json` files:
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
-| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`, `customFormat`. |
+| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`, `customFormat`). |
 | `show-observation-counts` | `true`    | |
 | `instant-counts-update-1` | `false`   | |
 | `instant-counts-update-2` | `false`   | |
