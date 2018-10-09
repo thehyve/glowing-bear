@@ -71,6 +71,10 @@ export class GbExportComponent implements OnInit, OnDestroy {
     return (env === 'default') || (env === 'transmart');
   }
 
+  get isExternalExportAvailable(): boolean {
+    return this.appConfig.getConfig('use-external-job');
+  }
+
   get exportDataTypes(): ExportDataType[] {
     return this.exportService.exportDataTypes;
   }

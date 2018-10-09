@@ -23,6 +23,8 @@ import {Pedigree} from '../models/constraint-models/pedigree';
 import {Query} from '../models/query-models/query';
 import {TransmartExternalJobResourceService} from './transmart-services/transmart-external-job-resource.service';
 import {TransmartExternalJobResourceServiceMock} from './mocks/transmart-external-job-resource.service.mock';
+import {AppConfigMock} from '../config/app.config.mock';
+import {AppConfig} from '../config/app.config';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -39,6 +41,10 @@ describe('ResourceService', () => {
         {
           provide: TransmartExternalJobResourceService,
           useClass: TransmartExternalJobResourceServiceMock
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         }
       ]
     });

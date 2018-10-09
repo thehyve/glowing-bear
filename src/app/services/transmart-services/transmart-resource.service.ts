@@ -40,7 +40,7 @@ export class TransmartResourceService {
     'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
   ]);
 
-  // the export data view, either 'dataTable', 'surveyTable' or 'customFormat'.
+  // the export data view, either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
   private _dateColumnsIncluded = true;
   private _endpointUrl: string;

@@ -26,10 +26,6 @@ import {TransmartExternalJob} from '../../models/transmart-models/transmart-exte
 @Injectable()
 export class TransmartExternalJobResourceService {
 
-  /* the export data view, either 'dataTable', 'surveyTable' or 'customFormat'.
-   * The latter is expected here.
-   */
-  private _exportDataView: string;
   private _customExportJobName: string;
   private _endpointUrl: string;
 
@@ -46,7 +42,6 @@ export class TransmartExternalJobResourceService {
 
   constructor(private appConfig: AppConfig,
               private http: HttpClient) {
-    this.exportDataView = appConfig.getConfig('export-data-view');
     this.customExportJobName = appConfig.getConfig('custom-export-job-name');
     this.endpointUrl = appConfig.getConfig('export-service-url');
     this.subjectSetConstraint = new SubjectSetConstraint();
@@ -58,14 +53,6 @@ export class TransmartExternalJobResourceService {
 
   set subjectSetConstraint(value: SubjectSetConstraint) {
     this._subjectSetConstraint = value;
-  }
-
-  get exportDataView(): string {
-    return this._exportDataView;
-  }
-
-  set exportDataView(value: string) {
-    this._exportDataView = value;
   }
 
   get customExportJobName(): string {
@@ -221,10 +208,10 @@ export class TransmartExternalJobResourceService {
   }
 
 
-  // -------------------------------------- mocked calls --------------------------------------
+  // -------------------------------------- other export functions --------------------------------------
 
   /**
-   * Creates mocked export job,
+   * Creates export job,
    * when the external job handler has one method to both create and run the job
    * @param {string} name
    * @returns {Observable<ExportJob>}
@@ -237,7 +224,7 @@ export class TransmartExternalJobResourceService {
   }
 
   /**
-   * Returns mocked file formats,
+   * Returns file formats that are supported by the external tool,
    * only TSV export of clinical data is currently supported
    * @returns {Observable<ExportJob>}
    */

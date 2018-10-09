@@ -5,6 +5,7 @@
   "app-version": "0.0.1-SNAPSHOT",
   "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
+  "use-external-job": false,
   "export-data-view": "dataTable",
   "export-service-url": "http://localhost:8999",
   "custom-export-job-name": "patient_diagnosis_biosource_biomaterial_export",

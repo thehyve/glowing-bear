@@ -5,6 +5,7 @@
   "app-version": "0.0.1-SNAPSHOT",
   "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
+  "use-external-job": false,
   "export-data-view": "dataTable",
   "export-service-url": "",
   "custom-export-job-name": "",

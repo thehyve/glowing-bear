@@ -43,6 +43,7 @@ import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggre
 import {TransmartExternalJobResourceService} from './transmart-services/transmart-external-job-resource.service';
 import {TransmartExternalJobMapper} from '../utilities/transmart-utilities/transmart-external-job-mapper';
 import {TransmartExternalJob} from '../models/transmart-models/transmart-external-job';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class ResourceService {
@@ -53,7 +54,8 @@ export class ResourceService {
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
   private _selectedConceptCountMap: Map<string, CountItem>;
 
-  constructor(private transmartResourceService: TransmartResourceService,
+  constructor(private appConfig: AppConfig,
+              private transmartResourceService: TransmartResourceService,
               private transmartExternalJobResourceService: TransmartExternalJobResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
   }
@@ -286,7 +288,7 @@ export class ResourceService {
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.getExportDataTypes()
         } else {
           return this.transmartResourceService.getExportFileFormats().pipe(
@@ -310,7 +312,7 @@ export class ResourceService {
   getExportJobs(): Observable<any[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.getAllJobs().pipe(
             map((tmExJobs: TransmartExternalJob[]) => {
               return TransmartExternalJobMapper.mapCustomExportJobs(tmExJobs);
@@ -333,7 +335,7 @@ export class ResourceService {
   createExportJob(name: string): Observable<ExportJob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.createExportJob(name);
         } else {
           return this.transmartResourceService.createExportJob(name);
@@ -374,7 +376,7 @@ export class ResourceService {
     if (hasSelectedFormat) {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          if (this.transmartResourceService.exportDataView === 'customFormat') {
+          if (this.useExternalExportJob) {
             return this.transmartExternalJobResourceService.runJob(job.jobName, constraint).pipe(
               map((tmExJob: TransmartExternalJob) => {
                 return TransmartExternalJobMapper.mapCustomExportJob(tmExJob);
@@ -405,7 +407,7 @@ export class ResourceService {
   downloadExportJob(jobId: string) {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.downloadJobData(jobId);
         }
         return this.transmartResourceService.downloadExportJob(jobId);
@@ -424,7 +426,7 @@ export class ResourceService {
   cancelExportJob(jobId: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.cancelJob(jobId);
         }
         return this.transmartResourceService.cancelExportJob(jobId);
@@ -443,7 +445,7 @@ export class ResourceService {
   archiveExportJob(jobId: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        if (this.transmartResourceService.exportDataView === 'customFormat') {
+        if (this.useExternalExportJob) {
           return this.transmartExternalJobResourceService.archiveJob(jobId);
         } else {
           return this.transmartResourceService.archiveExportJob(jobId);
@@ -682,4 +684,9 @@ export class ResourceService {
   set endpointMode(value: EndpointMode) {
     this._endpointMode = value;
   }
+
+  get useExternalExportJob(): boolean {
+    return this.appConfig.getConfig('use-external-job');
+  }
+
 }

@@ -20,6 +20,8 @@ import {ConstraintService} from '../app/services/constraint.service';
 import {StudyService} from '../app/services/study.service';
 import {TransmartExternalJobResourceService} from '../app/services/transmart-services/transmart-external-job-resource.service';
 import {TransmartExternalJobResourceServiceMock} from '../app/services/mocks/transmart-external-job-resource.service.mock';
+import {AppConfig} from '../app/config/app.config';
+import {AppConfigMock} from '../app/config/app.config.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -172,6 +174,10 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         ResourceService,
         StudyService,
