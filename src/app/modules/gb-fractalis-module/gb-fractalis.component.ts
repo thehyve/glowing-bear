@@ -59,13 +59,17 @@ export class GbFractalisComponent implements OnInit {
       data_type: 'numerical',
       label: 'second test'
     };
+
     if (fjs.fractalis) {
       this.fractal = fjs.fractalis.init(config);
       console.log('Fratalis imported: ', this.fractal);
       this.fractal.loadData([descriptor])
         .then(res => {
           console.log('response here', res)
-        });
+        })
+        .catch(err => {
+          console.log('cannot load data: ', err);
+        })
     } else {
       MessageHelper.alert('error', 'Fail to import Fractalis.');
     }
