@@ -1,29 +1,46 @@
-import {Injectable} from '@angular/core';
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2018 EPFL LCA1
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
 import {GenKey, AggKeys, EncryptStr, DecryptStr} from '@medco/unlynx-crypto-js-lib'
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
+import {NavbarService} from "../navbar.service";
+import {Subject} from "rxjs";
+import {MedcoResult} from "../../models/picsure-models/medco-result";
 
 @Injectable()
 export class MedcoService {
 
-  private countResults: number[] = [];
-  private timesResult: object[] = [];
+  private _results: Subject<MedcoResult[]>;
 
   private publicKey: string;
   private privateKey: string;
 
   private cothorityKey: string;
 
+  private navbarService: NavbarService;
+
   /**
    * If the configuration key `medco-cothority-key-url` is present, the file will be fetched and the service enabled.
    * @param {AppConfig} config
    * @param http
+   * @param injector
    */
-  constructor(private config: AppConfig, private http: HttpClient) {
-    let cothorityKeyUrl = config.getConfig('medco-cothority-key-url');
+  constructor(private config: AppConfig,
+              private http: HttpClient,
+              private injector: Injector) {
+    this._results = new Subject();
 
     // fetch and load the cothority key
+    let cothorityKeyUrl = config.getConfig('medco-cothority-key-url');
     if (cothorityKeyUrl) {
       this.http
         .get(cothorityKeyUrl, {responseType: 'text'})
@@ -73,13 +90,13 @@ export class MedcoService {
   /**
    * Parse the MedCo results coming from PIC-SURE, themselves coming from the MedCo cells.
    * Stores the breakdown by hospital and the other information.
+   * Make available the "MedCo Results" tab in UI.
    *
    * @param {object} data the PIC-SURE data object
    * @returns {number} the total number of matching patients.
    */
   parseMedCoResults(data: object): number {
-    this.countResults = [];
-    this.timesResult = [];
+    let results: MedcoResult[] = [];
 
     // k is 0, 1, 2, ....
     for (let k in data) {
@@ -90,11 +107,39 @@ export class MedcoService {
         console.warn(`Returned public key is different from public key, expect problems (${resultObject['pub_key']})`);
       }
 
-      this.countResults.push(this.decryptInteger(resultObject['enc_count_result']));
-      this.timesResult.push(resultObject['times']);
-      console.log(`${k}: ${this.countResults[this.countResults.length - 1]},` +
-        `times: ${JSON.stringify(this.timesResult[this.timesResult.length - 1])}`)
+      let result: MedcoResult = {
+        siteName: `Clinical Site ${k}`,
+        encryptedSubjectCount: resultObject['enc_count_result'],
+        publicKey: resultObject['pub_key'],
+        subjectCount: this.decryptInteger(resultObject['enc_count_result']),
+        times: resultObject['times']
+      };
+
+      results.push(result);
+      console.log(`${k}: ${result.subjectCount}, times: ${JSON.stringify(result.times)}`)
     }
-    return this.countResults.reduce((a, b) => Number(a) + Number(b));
+
+    this.results.next(results);
+    this.addMedcoResultsTab();
+
+    return results.map((r) => r.subjectCount).reduce((a, b) => Number(a) + Number(b));
   }
+
+  /**
+   * Add in UI the Medco Results tab to display data breakdown.
+   */
+  private addMedcoResultsTab() {
+    if (!this.navbarService) {
+      this.navbarService = this.injector.get(NavbarService);
+    }
+
+    if (!this.navbarService.items.find( (item) => item.routerLink == '/medco-results')) {
+      this.navbarService.items.push({label: 'MedCo Results', routerLink: '/medco-results'});
+    }
+  }
+
+  get results(): Subject<MedcoResult[]> {
+    return this._results;
+  }
+
 }

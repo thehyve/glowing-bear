@@ -1,0 +1,22 @@
+<div class="medco-results-container">
+
+  <canvas id="medco-results-chart">{{ resultChart }}</canvas>
+
+  <hr />
+
+  <p-table [value]="medcoResult">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Clinical Site</th>
+        <th>Number of subjects</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-result>
+      <tr>
+        <td>{{result.siteName}}</td>
+        <td>{{result.subjectCount}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

@@ -27,6 +27,10 @@ export const routes: Routes = [
   {
     path: 'export',
     loadChildren: '../gb-export-module/gb-export.module#GbExportModule'
+  },
+  {
+    path: 'medco-results',
+    loadChildren: '../gb-medco-results-module/gb-medco-results.module#GbMedcoResultsModule'
   }
 ];
 
