@@ -11,6 +11,8 @@
                              [constraint]="constraint"></gb-combination-constraint>
   <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "
                          [constraint]="constraint"></gb-concept-constraint>
+  <gb-genomic-annotation-constraint *ngIf="constraint.className === 'GenomicAnnotationConstraint' "
+                                    [constraint]="constraint"></gb-genomic-annotation-constraint>
   <gb-study-constraint *ngIf="constraint.className === 'StudyConstraint' "
                        [constraint]="constraint"></gb-study-constraint>
   <gb-patient-set-constraint *ngIf="constraint.className === 'SubjectSetConstraint' "

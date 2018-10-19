@@ -43,6 +43,8 @@ import * as jwt_decode from 'jwt-decode';
 import {AccessLevel} from './services/authentication/access-level';
 import {ApiEndpointService} from './services/api-endpoint.service';
 import {MedcoService} from './services/picsure-services/medco.service';
+import {GbMedcoResultsModule} from "./modules/gb-medco-results-module/gb-medco-results.module";
+import {GenomicAnnotationsService} from "./services/picsure-services/genomic-annotations.service";
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load()
@@ -100,6 +102,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     GbDataSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
+    GbMedcoResultsModule,
     GbExportModule
   ],
   providers: [
@@ -119,6 +122,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     AuthenticationService,
     Oauth2Authentication,
     MedcoService,
+    GenomicAnnotationsService,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,

@@ -116,26 +116,33 @@ export class PicSureResourceService {
 
         // extract concept type
         if (treeNodeObj['dataType']) {
-          treeNode.nodeType = TreeNodeType.CONCEPT;
           switch (String(treeNodeObj['dataType']).toLowerCase()) {
             case 'enc_concept':
+              treeNode.nodeType = TreeNodeType.CONCEPT;
               treeNode.conceptType = ConceptType.ENCRYPTED;
               break;
 
             case 'concept_numeric':
+              treeNode.nodeType = TreeNodeType.CONCEPT;
               treeNode.conceptType = ConceptType.NUMERICAL;
               break;
 
             case 'concept_enum':
+              treeNode.nodeType = TreeNodeType.CONCEPT;
               treeNode.conceptType = ConceptType.CATEGORICAL;
               break;
 
             case 'concept_string':
+              treeNode.nodeType = TreeNodeType.CONCEPT;
               treeNode.conceptType = ConceptType.TEXT;
               break;
 
+            case 'genomic_annotation':
+              treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
+
             case 'concept':
             default:
+              treeNode.nodeType = TreeNodeType.CONCEPT;
               treeNode.conceptType = ConceptType.SIMPLE;
               break;
 
@@ -280,6 +287,6 @@ export class PicSureResourceService {
       .flatMap((resultStatus) => resultStatus['status'] === 'AVAILABLE' ?
         this.getResult(resultId) :
         Observable.throw(`Error of result ${resultId}: ${resultStatus['message']}`))
-      .timeout(60000)
+      .timeout(60000);
   }
 }

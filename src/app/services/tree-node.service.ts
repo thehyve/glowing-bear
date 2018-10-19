@@ -299,6 +299,10 @@ export class TreeNodeService {
         constraintService.conceptConstraints.push(constraint);
         constraintService.allConstraints.push(constraint);
       }
+    } else if (node.nodeType === TreeNodeType.GENOMIC_ANNOTATION) {
+      if (constraintService.genomicAnnotationNames.includes(node.name)) {
+        constraintService.genomicAnnotationNames.push(node.name);
+      }
     }
 
     if (node.leaf) {

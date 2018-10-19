@@ -26,6 +26,7 @@ import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
+import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
 
 /**
  * This service concerns with
@@ -51,6 +52,7 @@ export class ConstraintService {
   private _concepts: Concept[] = [];
   private _conceptLabels: string[] = [];
   private _conceptConstraints: Constraint[] = [];
+  private _genomicAnnotationNames = [];
 
   /*
    * The maximum number of search results allowed when searching for a constraint
@@ -349,6 +351,12 @@ export class ConstraintService {
           }
           break;
 
+        case TreeNodeType.GENOMIC_ANNOTATION:
+          // case where node is a genomic annotation
+          constraint = new GenomicAnnotationConstraint();
+          (<GenomicAnnotationConstraint>constraint).annotationName = treeNode.name;
+          break;
+
         case TreeNodeType.UNKNOWN:
           let descendants = [];
           this.treeNodeService
@@ -457,5 +465,13 @@ export class ConstraintService {
 
   set maxNumSearchResults(value: number) {
     this._maxNumSearchResults = value;
+  }
+
+  get genomicAnnotationNames(): string[] {
+    return this._genomicAnnotationNames;
+  }
+
+  set genomicAnnotationNames(value: string[]) {
+    this._genomicAnnotationNames = value;
   }
 }
