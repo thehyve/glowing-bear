@@ -13,7 +13,7 @@ import {FormsModule} from '@angular/forms';
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 
-import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
+import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-cohort-selection.module';
 import {ResourceService} from './services/resource.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {AppConfig} from './config/app.config';
@@ -58,7 +58,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     routing,
     GbMainModule,
     GbNavBarModule,
-    GbDataSelectionModule,
+    GbCohortSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
     GbExportModule

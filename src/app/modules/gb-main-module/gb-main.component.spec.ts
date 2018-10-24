@@ -23,7 +23,7 @@ import {GrowlModule} from 'primeng/growl';
 import {GbAnalysisModule} from '../gb-analysis-module/gb-analysis.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
-import {GbDataSelectionModule} from '../gb-data-selection-module/gb-data-selection.module';
+import {GbCohortSelectionModule} from '../gb-cohort-selection-module/gb-cohort-selection.module';
 import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {DataTableService} from '../../services/data-table.service';
 import {ExportService} from '../../services/export.service';
@@ -66,7 +66,7 @@ describe('GbMainComponent', () => {
         GrowlModule,
         GbNavBarModule,
         GbSidePanelModule,
-        GbDataSelectionModule,
+        GbCohortSelectionModule,
         GbAnalysisModule,
         routing
       ],
