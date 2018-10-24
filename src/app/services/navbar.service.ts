@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {QueryService} from './query.service';
+import {CohortService} from './cohort.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {ExportService} from './export.service';
 import {AuthenticationService} from './authentication/authentication.service';
@@ -26,7 +26,7 @@ export class NavbarService {
 
   constructor(private authService: AuthenticationService,
               private exportService: ExportService,
-              private queryService: QueryService) {
+              private queryService: CohortService) {
     this.items = [
       {label: 'Cohort Selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'}

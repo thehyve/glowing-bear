@@ -8,7 +8,7 @@
 
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormatHelper} from '../../utilities/format-helper';
-import {QueryService} from '../../services/query.service';
+import {CohortService} from '../../services/cohort.service';
 import {MessageHelper} from '../../utilities/message-helper';
 import {GbConstraintComponent} from "./constraint-components/gb-constraint/gb-constraint.component";
 import {Query} from "../../models/query-models/query";
@@ -50,7 +50,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
 
-  constructor(public queryService: QueryService,
+  constructor(public queryService: CohortService,
               private constraintService: ConstraintService,) {
     this.queryName = '';
     this.isUploadListenerNotAdded = true;

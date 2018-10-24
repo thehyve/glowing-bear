@@ -9,7 +9,7 @@
 import {Query} from '../../models/query-models/query';
 import {CountItem} from '../../models/aggregate-models/count-item';
 
-export class QueryServiceMock {
+export class CohortServiceMock {
   private _queries: Query[] = [];
   counts_0: CountItem;
   inclusionCounts: CountItem;

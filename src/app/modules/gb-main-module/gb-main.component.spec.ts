@@ -11,8 +11,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {APP_BASE_HREF} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {GbMainComponent} from './gb-main.component';
@@ -108,8 +108,8 @@ describe('GbMainComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: DataTableService,

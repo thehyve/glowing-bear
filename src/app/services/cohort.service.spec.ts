@@ -13,7 +13,7 @@ import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
-import {QueryService} from './query.service';
+import {CohortService} from './cohort.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {AppConfig} from '../config/app.config';
 import {AppConfigMock} from '../config/app.config.mock';
@@ -31,9 +31,9 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {throwError} from 'rxjs/internal/observable/throwError';
 
 
-describe('QueryService', () => {
+describe('CohortService', () => {
   let resourceService: ResourceService;
-  let queryService: QueryService;
+  let queryService: CohortService;
   let httpErrorResponse: HttpErrorResponse;
 
   beforeEach(() => {
@@ -67,11 +67,11 @@ describe('QueryService', () => {
           provide: ExportService,
           useClass: ExportServiceMock
         },
-        QueryService
+        CohortService
       ]
     });
     resourceService = TestBed.get(ResourceService);
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -81,7 +81,7 @@ describe('QueryService', () => {
     });
   });
 
-  it('should be injected', inject([QueryService], (service: QueryService) => {
+  it('should be injected', inject([CohortService], (service: CohortService) => {
     expect(service).toBeTruthy();
   }));
 

@@ -16,7 +16,7 @@ import {saveAs} from 'file-saver';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
-import {QueryService} from './query.service';
+import {CohortService} from './cohort.service';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
@@ -269,7 +269,7 @@ export class ExportService {
       }
     }
     // 5. Validate if at least one observation is included
-    let queryService = this.injector.get(QueryService);
+    let queryService = this.injector.get(CohortService);
     if (queryService.counts_2.observationCount < 1) {
       const summary = 'No observation included to be exported.';
       MessageHelper.alert('warn', summary);
