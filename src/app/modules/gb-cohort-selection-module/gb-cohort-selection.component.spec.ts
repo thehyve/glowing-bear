@@ -26,9 +26,9 @@ import {routing} from './gb-cohort-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
-import {MockComponent} from 'ng2-mock-component';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
+import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-constraint";
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
@@ -38,8 +38,7 @@ describe('GbCohortSelectionComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbCohortSelectionComponent,
-        MockComponent({selector: 'gb-selection'})
+        GbCohortSelectionComponent
       ],
       imports: [
         BrowserAnimationsModule,
@@ -102,6 +101,7 @@ describe('GbCohortSelectionComponent', () => {
     component.saveQuery();
     expect(queryService.saveQueryByName).toHaveBeenCalled();
   });
+
   it('should prevent node drop on top panel', () => {
     let func = function () {
     };
@@ -116,6 +116,15 @@ describe('GbCohortSelectionComponent', () => {
     expect(component.preventNodeDrop).toHaveBeenCalled();
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('should process uploaded subject ids', () => {
+    let fileContents = 'id123\nid456\n';
+    let query = GbCohortSelectionComponent.processSubjectIdsUpload(fileContents, 'testName');
+    expect(query).toBeDefined();
+    expect(query.name).toEqual('testName');
+    expect(query.subjectQuery.className).toEqual('SubjectSetConstraint');
+    expect((<SubjectSetConstraint>query.subjectQuery).subjectIds.length).toEqual(2);
   });
 
 });

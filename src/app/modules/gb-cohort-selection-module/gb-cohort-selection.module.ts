@@ -12,7 +12,6 @@ import {CommonModule} from '@angular/common';
 import {GbCohortSelectionComponent} from './gb-cohort-selection.component';
 import {routing} from './gb-cohort-selection.routing';
 import {RouterModule} from '@angular/router';
-import {GbSelectionComponent} from './accordion-components/gb-selection/gb-selection.component';
 import {GbStudyConstraintComponent} from './constraint-components/gb-study-constraint/gb-study-constraint.component';
 import {GbCombinationConstraintComponent} from './constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
@@ -30,6 +29,7 @@ import {
 } from 'primeng/primeng';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   imports: [
@@ -53,7 +53,6 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
   ],
   declarations: [
     GbCohortSelectionComponent,
-    GbSelectionComponent,
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,
     GbConstraintComponent,
