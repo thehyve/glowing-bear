@@ -29,7 +29,6 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {Md2AccordionModule} from 'md2';
-import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 
 @NgModule({
   imports: [
@@ -52,8 +51,7 @@ import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.c
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
-    GbCohortsComponent,
-    GbSummaryComponent
+    GbCohortsComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]
