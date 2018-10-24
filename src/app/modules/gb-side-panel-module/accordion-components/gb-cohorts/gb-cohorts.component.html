@@ -67,7 +67,11 @@
         <md2-accordion-header>
           <div *ngIf="query.visible">
             <div class="gb-query-header clearfix">
-              <div class="gb-query-header-name">{{query.name}}</div>
+              <div class="gb-query-header-name">
+                <p-checkbox [(ngModel)]="query.selected" binary="true"
+                            (click)="onQueryCheckClick($event)"></p-checkbox>
+                {{query.name}}
+              </div>
               <div class="float-right">
                 <button *ngIf="isQuerySubscriptionIncluded"
                         pButton class="ui-button-secondary" type="button"
