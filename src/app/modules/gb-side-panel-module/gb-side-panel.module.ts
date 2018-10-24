@@ -19,7 +19,7 @@ import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.c
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
   AutoCompleteModule,
-  ButtonModule,
+  ButtonModule, CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
   InputTextModule,
@@ -46,7 +46,8 @@ import {Md2AccordionModule} from 'md2';
     TooltipModule,
     ConfirmDialogModule,
     Md2AccordionModule,
-    RadioButtonModule
+    RadioButtonModule,
+    CheckboxModule
   ],
   declarations: [
     GbSidePanelComponent,

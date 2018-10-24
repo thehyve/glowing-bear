@@ -233,4 +233,8 @@ export class GbCohortsComponent implements OnInit {
   get isQuerySubscriptionIncluded(): boolean {
     return this.queryService.isQuerySubscriptionIncluded;
   }
+
+  onQueryCheckClick(e: MouseEvent) {
+    e.stopPropagation();
+  }
 }
