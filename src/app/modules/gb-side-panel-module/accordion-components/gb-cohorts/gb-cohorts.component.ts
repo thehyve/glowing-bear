@@ -18,7 +18,7 @@ import {ConstraintHelper} from '../../../../utilities/constraint-utilities/const
 import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
-  selector: 'gb-queries',
+  selector: 'gb-cohorts',
   templateUrl: './gb-cohorts.component.html',
   styleUrls: ['./gb-cohorts.component.css']
 })
