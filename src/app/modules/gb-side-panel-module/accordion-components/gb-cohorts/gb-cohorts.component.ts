@@ -8,9 +8,9 @@
 
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {Query} from '../../../../models/query-models/query';
+import {Cohort} from '../../../../models/cohort-models/cohort';
 import {CohortService} from '../../../../services/cohort.service';
-import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
+import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
@@ -26,10 +26,10 @@ export class GbCohortsComponent implements OnInit {
 
   searchTerm = '';
   isUploadListenerNotAdded: boolean;
-  file: File; // holds the uploaded query file
+  file: File; // holds the uploaded cohort file
 
   constructor(public treeNodeService: TreeNodeService,
-              private queryService: CohortService,
+              private cohortService: CohortService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
@@ -38,11 +38,11 @@ export class GbCohortsComponent implements OnInit {
   ngOnInit() {
   }
 
-  importQuery() {
-    let uploadElm = document.getElementById('queryFileUpload');
+  importCohort() {
+    let uploadElm = document.getElementById('cohortFileUpload');
     if (this.isUploadListenerNotAdded) {
       uploadElm
-        .addEventListener('change', this.queryFileUpload.bind(this), false);
+        .addEventListener('change', this.cohortFileUpload.bind(this), false);
       this.isUploadListenerNotAdded = false;
     }
     // reset the input path so that it will take the same file again
@@ -50,27 +50,27 @@ export class GbCohortsComponent implements OnInit {
     uploadElm.click();
   }
 
-  queryFileUpload(event) {
-    MessageHelper.alert('info', 'Query file is being processed, waiting for response.');
+  cohortFileUpload(event) {
+    MessageHelper.alert('info', 'Cohort file is being processed, waiting for response.');
     let reader = new FileReader();
     this.file = event.target.files[0];
-    reader.onload = this.handleQueryFileUploadEvent.bind(this);
+    reader.onload = this.handleCohortFileUploadEvent.bind(this);
     reader.readAsText(this.file);
   }
 
-  handleQueryFileUploadEvent(e) {
+  handleCohortFileUploadEvent(e) {
     let data = e.target['result'];
-    let queryObj = this.verifyFile(this.file, data);
-    this.queryService.saveQueryByObject(queryObj);
+    let obj = this.verifyFile(this.file, data);
+    this.cohortService.saveCohortByObject(obj);
   }
 
-  // verify the uploaded query file
+  // verify the uploaded cohort file
   verifyFile(file: File, data: any) {
     // file.type is empty for some browsers and Windows OS
     if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
-      if (_json['subjectQuery'] || _json['observationQuery']) {
+      if (_json['subjectQuery']) {
         return _json;
       } else {
         MessageHelper.alert('error', 'Invalid file content for query import.');
@@ -82,89 +82,87 @@ export class GbCohortsComponent implements OnInit {
     }
   }
 
-  // query subscription
-  toggleQuerySubscription(event: Event, query: Query) {
+  toggleSubscription(event: Event, target: Cohort) {
     event.stopPropagation();
-    this.queryService.toggleQuerySubscription(query);
+    this.cohortService.toggleCohortSubscription(target);
   }
 
-  getQuerySubscriptionButtonIcon(query: Query) {
+  getSubscriptionButtonIcon(query: Cohort) {
     return query.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
   }
 
-  // query bookmark
-  toggleQueryBookmark(event: Event, query: Query) {
+  toggleBookmark(event: Event, target: Cohort) {
     event.stopPropagation();
-    this.queryService.toggleQueryBookmark(query);
+    this.cohortService.toggleCohortBookmark(target);
   }
 
-  getQueryBookmarkButtonIcon(query: Query) {
-    return query.bookmarked ? 'fa fa-star' : 'fa fa-star-o';
+  getBookmarkButtonIcon(target: Cohort) {
+    return target.bookmarked ? 'fa fa-star' : 'fa fa-star-o';
   }
 
-  restoreQuery(event: Event, selectedQuery: Query) {
+  restoreCohort(event: Event, selected: Cohort) {
     event.stopPropagation();
-    for (let query of this.queryService.queries) {
-      query.selected = false;
+    for (let c of this.cohortService.cohorts) {
+      c.selected = false;
     }
-    selectedQuery.selected = true;
-    this.queryService.restoreQuery(selectedQuery);
+    selected.selected = true;
+    this.cohortService.restoreCohort(selected);
   }
 
-  toggleSubscriptionPanel(query: Query) {
-    query.subscriptionCollapsed = !query.subscriptionCollapsed;
+  toggleSubscriptionPanel(target: Cohort) {
+    target.subscriptionCollapsed = !target.subscriptionCollapsed;
   }
 
-  toggleSubscriptionRecordPanel(record: QueryDiffRecord) {
+  toggleSubscriptionRecordPanel(record: CohortDiffRecord) {
     record.showCompleteRepresentation = !record.showCompleteRepresentation;
   }
 
-  removeQuery(event: Event, query: Query) {
+  removeCohort(event: Event, target: Cohort) {
     event.stopPropagation();
-    this.queryService.deleteQuery(query);
+    this.cohortService.deleteCohort(target);
   }
 
-  confirmRemoval(event: Event, query: Query) {
+  confirmRemoval(event: Event, target: Cohort) {
     event.stopPropagation();
     this.confirmationService.confirm({
       message: 'Are you sure you want to remove the query?',
       header: 'Delete Confirmation',
       icon: 'fa fa-trash',
       accept: () => {
-        this.removeQuery(event, query);
+        this.removeCohort(event, target);
       },
       reject: () => {
-        MessageHelper.alert('error', `Cannot remove the query ${query.name}`);
+        MessageHelper.alert('error', `Cannot remove the query ${target.name}`);
       }
     });
   }
 
-  downloadQuery(event: Event, query: Query) {
+  downloadQuery(event: Event, target: Cohort) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(query), query.name);
+    DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(target), target.name);
   }
 
-  radioCheckSubscriptionFrequency(event: MouseEvent, query: Query) {
+  radioCheckSubscriptionFrequency(event: MouseEvent, target: Cohort) {
     event.stopPropagation();
     event.preventDefault();
-    let queryObj = {
-      subscriptionFreq: query.subscriptionFreq
+    let obj = {
+      subscriptionFreq: target.subscriptionFreq
     };
-    this.queryService.updateQuery(query, queryObj);
+    this.cohortService.updateCohort(target, obj);
   }
 
-  downloadSubscriptionRecord(query: Query, record: QueryDiffRecord) {
-    const filename = query.name + '-record-' + record.createDate;
+  downloadSubscriptionRecord(target: Cohort, record: CohortDiffRecord) {
+    const filename = target.name + '-record-' + record.createDate;
     DownloadHelper.downloadJSON(record.completeRepresentation, filename);
   }
 
   onFiltering(event) {
     let filterWord = this.searchTerm.trim().toLowerCase();
-    for (let query of this.queryService.queries) {
-      if (query.name.toLowerCase().indexOf(filterWord) === -1) {
-        query.visible = false;
+    for (let c of this.cohortService.cohorts) {
+      if (c.name.toLowerCase().indexOf(filterWord) === -1) {
+        c.visible = false;
       } else {
-        query.visible = true;
+        c.visible = true;
       }
     }
     UIHelper.removePrimeNgLoaderIcon(this.element, 500);
@@ -172,14 +170,14 @@ export class GbCohortsComponent implements OnInit {
 
   clearFilter() {
     this.searchTerm = '';
-    for (let query of this.queryService.queries) {
+    for (let query of this.cohortService.cohorts) {
       query.visible = true;
     }
     UIHelper.removePrimeNgLoaderIcon(this.element, 500);
   }
 
-  get queries(): Query[] {
-    return this.queryService.queries;
+  get queries(): Cohort[] {
+    return this.cohortService.cohorts;
   }
 
   sortByName() {
@@ -230,11 +228,11 @@ export class GbCohortsComponent implements OnInit {
     });
   }
 
-  get isQuerySubscriptionIncluded(): boolean {
-    return this.queryService.isQuerySubscriptionIncluded;
+  get isCohortSubscriptionIncluded(): boolean {
+    return this.cohortService.isCohortSubscriptionIncluded;
   }
 
-  onQueryCheckClick(e: MouseEvent) {
+  onCohortCheckClick(e: MouseEvent) {
     e.stopPropagation();
   }
 }

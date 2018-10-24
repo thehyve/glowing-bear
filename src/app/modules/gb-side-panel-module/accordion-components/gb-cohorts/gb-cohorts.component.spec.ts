@@ -11,7 +11,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbCohortsComponent} from './gb-cohorts.component';
 import {
   AutoCompleteModule,
-  ButtonModule,
+  ButtonModule, CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
   DataListModule,
@@ -32,8 +32,8 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {log} from 'util';
 import {type} from 'os';
 import {get} from 'selenium-webdriver/http';
-import {Query} from '../../../../models/query-models/query';
-import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
+import {Cohort} from '../../../../models/cohort-models/cohort';
+import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
@@ -41,7 +41,7 @@ import {UIHelper} from '../../../../utilities/ui-helper';
 describe('QueriesComponent', () => {
   let component: GbCohortsComponent;
   let fixture: ComponentFixture<GbCohortsComponent>;
-  let queryService: CohortService;
+  let cohortService: CohortService;
   let confirmationService: ConfirmationService;
 
   beforeEach(async(() => {
@@ -59,7 +59,8 @@ describe('QueriesComponent', () => {
         AutoCompleteModule,
         ConfirmDialogModule,
         Md2AccordionModule,
-        RadioButtonModule
+        RadioButtonModule,
+        CheckboxModule
       ],
       providers: [
         {
@@ -80,7 +81,7 @@ describe('QueriesComponent', () => {
     fixture = TestBed.createComponent(GbCohortsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    queryService = TestBed.get(CohortService);
+    cohortService = TestBed.get(CohortService);
     confirmationService = TestBed.get(ConfirmationService);
   });
 
@@ -88,33 +89,33 @@ describe('QueriesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should simulate click when importing query', () => {
-    let id = 'queryFileUpload';
+  it('should simulate click when importing cohort', () => {
+    let id = 'cohortFileUpload';
     let uploadElm = document.getElementById(id);
     let spy1 = spyOn(document, 'getElementById').and.callThrough();
     let spy2 = spyOn(uploadElm, 'click').and.stub();
-    component.importQuery();
+    component.importCohort();
     expect(spy1).toHaveBeenCalledWith(id);
     expect(uploadElm['value']).toEqual('');
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should add event listener if needed when importing a query', () => {
-    let id = 'queryFileUpload';
+  it('should add event listener if needed when importing a cohort', () => {
+    let id = 'cohortFileUpload';
     let uploadElm = document.getElementById(id);
     component.isUploadListenerNotAdded = true;
     let spy1 = spyOn(uploadElm, 'addEventListener').and.stub();
-    component.importQuery();
+    component.importCohort();
     expect(spy1).toHaveBeenCalled();
     expect(component.isUploadListenerNotAdded).toBe(false);
   })
 
-  it('should not add event listener when there is one when importing a query', () => {
-    let id = 'queryFileUpload';
+  it('should not add event listener when there is one when importing a cohort', () => {
+    let id = 'cohortFileUpload';
     let uploadElm = document.getElementById(id);
     let spy1 = spyOn(uploadElm, 'addEventListener').and.stub();
     component.isUploadListenerNotAdded = false;
-    component.importQuery();
+    component.importCohort();
     expect(spy1).not.toHaveBeenCalled();
   })
 
@@ -127,10 +128,10 @@ describe('QueriesComponent', () => {
       }
     };
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
-    let spy2 = spyOn(queryService, 'saveQueryByObject').and.stub();
+    let spy2 = spyOn(cohortService, 'saveCohortByObject').and.stub();
     let spy3 = spyOn(component, 'verifyFile').and.stub();
 
-    component.queryFileUpload(event);
+    component.cohortFileUpload(event);
     fixture.whenStable().then(() => {
       FileReader.prototype.onload.bind(component);
       expect(spy1).toHaveBeenCalled();
@@ -139,7 +140,7 @@ describe('QueriesComponent', () => {
     })
   })
 
-  it('should parse uploaded query file if file type is json', () => {
+  it('should parse uploaded cohort file if file type is json', () => {
     let file = new File([], 'testFile.txt');
     let data = {};
     let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('application/json');
@@ -151,12 +152,11 @@ describe('QueriesComponent', () => {
     expect(spy1).toHaveBeenCalled();
   })
 
-  it('should parse uploaded query file if file tail is json', () => {
+  it('should parse uploaded cohort file if file tail is json', () => {
     let file = new File([], 'testFile.json');
     let data = {};
     let json = {
-      subjectQuery: {},
-      observationQuery: {}
+      subjectQuery: {}
     };
     let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('wrong-type');
     let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
@@ -184,93 +184,93 @@ describe('QueriesComponent', () => {
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should toggle query subscription', () => {
+  it('should toggle cohort subscription', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let cohort = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
-    let spy2 = spyOn(queryService, 'toggleQuerySubscription').and.stub();
-    component.toggleQuerySubscription(e, query);
+    let spy2 = spyOn(cohortService, 'toggleCohortSubscription').and.stub();
+    component.toggleSubscription(e, cohort);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should get query subscription button icon', () => {
-    let query = new Query('id', 'name');
-    query.subscribed = true;
-    let icon = component.getQuerySubscriptionButtonIcon(query);
+  it('should get cohort subscription button icon', () => {
+    let cohort = new Cohort('id', 'name');
+    cohort.subscribed = true;
+    let icon = component.getSubscriptionButtonIcon(cohort);
     expect(icon).toEqual('fa fa-rss-square');
-    query.subscribed = false;
-    icon = component.getQuerySubscriptionButtonIcon(query);
+    cohort.subscribed = false;
+    icon = component.getSubscriptionButtonIcon(cohort);
     expect(icon).toEqual('fa fa-rss');
   })
 
-  it('should get toggle query bookmark', () => {
+  it('should get toggle cohort bookmark', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let target = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
-    let spy2 = spyOn(queryService, 'toggleQueryBookmark').and.stub();
-    component.toggleQueryBookmark(e, query);
+    let spy2 = spyOn(cohortService, 'toggleCohortBookmark').and.stub();
+    component.toggleBookmark(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should get query bookmark button icon', () => {
-    let query = new Query('id', 'name');
-    query.bookmarked = true;
-    let icon = component.getQueryBookmarkButtonIcon(query);
+  it('should get cohort bookmark button icon', () => {
+    let target = new Cohort('id', 'name');
+    target.bookmarked = true;
+    let icon = component.getBookmarkButtonIcon(target);
     expect(icon).toEqual('fa fa-star');
-    query.bookmarked = false;
-    icon = component.getQueryBookmarkButtonIcon(query);
+    target.bookmarked = false;
+    icon = component.getBookmarkButtonIcon(target);
     expect(icon).toEqual('fa fa-star-o');
   })
 
-  it('should restore query', () => {
+  it('should restore cohort', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
-    let query1 = new Query('id1', 'name1');
-    queryService.queries = [query, query1];
+    let target = new Cohort('id', 'name');
+    let target1 = new Cohort('id1', 'name1');
+    cohortService.cohorts = [target, target1];
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
-    let spy2 = spyOn(queryService, 'restoreQuery').and.stub();
-    component.restoreQuery(e, query);
+    let spy2 = spyOn(cohortService, 'restoreCohort').and.stub();
+    component.restoreCohort(e, target);
     expect(spy1).toHaveBeenCalled();
-    expect(query.selected).toBe(true);
-    expect(query1.selected).toBe(false);
+    expect(target.selected).toBe(true);
+    expect(target1.selected).toBe(false);
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should toggle query subscription panel', () => {
-    let query = new Query('id', 'name');
-    query.subscriptionCollapsed = true;
-    component.toggleSubscriptionPanel(query);
-    expect(query.subscriptionCollapsed).toBe(false);
+  it('should toggle cohort subscription panel', () => {
+    let target = new Cohort('id', 'name');
+    target.subscriptionCollapsed = true;
+    component.toggleSubscriptionPanel(target);
+    expect(target.subscriptionCollapsed).toBe(false);
   })
 
-  it('should toggle query subscription record panel', () => {
-    let record = new QueryDiffRecord();
+  it('should toggle cohort subscription record panel', () => {
+    let record = new CohortDiffRecord();
     record.showCompleteRepresentation = true;
     component.toggleSubscriptionRecordPanel(record);
     expect(record.showCompleteRepresentation).toBe(false);
   })
 
-  it('should remove query', () => {
+  it('should remove cohort', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let target = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
-    let spy2 = spyOn(queryService, 'deleteQuery').and.stub();
-    component.removeQuery(e, query);
+    let spy2 = spyOn(cohortService, 'deleteCohort').and.stub();
+    component.removeCohort(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should confirm the removal of a query', () => {
+  it('should confirm the removal of a cohort', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let target = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(confirmationService, 'confirm').and.callFake((params) => {
       params.accept();
     });
-    let spy3 = spyOn(component, 'removeQuery').and.stub();
-    component.confirmRemoval(e, query);
+    let spy3 = spyOn(component, 'removeCohort').and.stub();
+    component.confirmRemoval(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
@@ -278,7 +278,7 @@ describe('QueriesComponent', () => {
 
   it('should handle query removal error', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let query = new Cohort('id', 'name');
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
     let spy2 = spyOn(confirmationService, 'confirm').and.callFake((params) => {
       params.reject();
@@ -290,7 +290,7 @@ describe('QueriesComponent', () => {
 
   it('should download query', () => {
     let e = new Event('');
-    let query = new Query('id', 'name');
+    let query = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
     let spy3 = spyOn(ConstraintHelper, 'mapQueryToObject').and.stub();
@@ -301,15 +301,15 @@ describe('QueriesComponent', () => {
   })
 
   it('check subscription frequency radio button', () => {
-    let spy1 = spyOn(queryService, 'updateQuery').and.stub();
-    component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Query('id', 'name'));
+    let spy1 = spyOn(cohortService, 'updateCohort').and.stub();
+    component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Cohort('id', 'name'));
     expect(spy1).toHaveBeenCalled();
   })
 
   it('download subscription record', () => {
     let spy1 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
-    let query = new Query('id', 'name');
-    let record = new QueryDiffRecord();
+    let query = new Cohort('id', 'name');
+    let record = new CohortDiffRecord();
     record.completeRepresentation = 'test-complete';
     record.createDate = 'test-create-date';
     component.downloadSubscriptionRecord(query, record);
@@ -318,25 +318,25 @@ describe('QueriesComponent', () => {
 
   it('should handle filering of queries', () => {
     let e = new Event('');
-    let query = new Query('id', 'name111');
+    let target = new Cohort('id', 'name111');
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
-    queryService.queries = [query];
+    cohortService.cohorts = [target];
     component.searchTerm = 'tesT-search term ';
     component.onFiltering(e);
-    expect(query.visible).toBe(false);
+    expect(target.visible).toBe(false);
 
     component.searchTerm = '11  ';
     component.onFiltering(e);
-    expect(query.visible).toBe(true);
+    expect(target.visible).toBe(true);
     expect(spy).toHaveBeenCalled();
   })
 
   it('should clear filter and restore query visibility', () => {
     component.searchTerm = 'test';
-    let query = new Query('id', 'name111');
+    let query = new Cohort('id', 'name111');
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
     query.visible = false;
-    queryService.queries = [query];
+    cohortService.cohorts = [query];
     component.clearFilter();
     expect(component.searchTerm).toBe('');
     expect(query.visible).toBe(true);
@@ -344,23 +344,23 @@ describe('QueriesComponent', () => {
   })
 
   it('should sort correctly', () => {
-    let q1 = new Query('id1', 'name1');
+    let q1 = new Cohort('id1', 'name1');
     q1.subscribed = true;
     q1.bookmarked = true;
     q1.updateDate = '2018';
-    let q1_1 = new Query('id1-1', 'name1');
+    let q1_1 = new Cohort('id1-1', 'name1');
     q1_1.subscribed = false;
     q1_1.bookmarked = true;
     q1_1.updateDate = '2018';
-    let q2 = new Query('id2', 'name2');
+    let q2 = new Cohort('id2', 'name2');
     q2.subscribed = false;
     q2.bookmarked = false;
     q2.updateDate = '2019';
-    let q3 = new Query('id3', 'name3');
+    let q3 = new Cohort('id3', 'name3');
     q3.subscribed = true;
     q3.bookmarked = true;
     q3.updateDate = '2020';
-    queryService.queries = [q2, q3, q1, q1_1];
+    cohortService.cohorts = [q2, q3, q1, q1_1];
     component.sortByName();
     expect(component.queries[0]).toBe(q1);
     expect(component.queries[1]).toBe(q1_1);

@@ -6,14 +6,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {QuerySubscriptionFrequency} from './query-subscription-frequency';
-import {QueryDiffRecord} from './query-diff-record';
+import {CohortSubscriptionFrequency} from './cohort-subscription-frequency';
+import {CohortDiffRecord} from './cohort-diff-record';
 import {DataTable} from '../table-models/data-table';
 import {Constraint} from '../constraint-models/constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../../utilities/constraint-utilities/constraint-helper';
 
-export class Query {
+export class Cohort {
 
   private _id: string;
   private _name: string;
@@ -31,14 +31,10 @@ export class Query {
   private _collapsed: boolean;
   // Indicate if the set is selected, in other words, being edited
   private _selected: boolean;
-  // The visual indicator flags the visibility of the query
+  // The visual indicator flags the visibility of the cohort
   private _visible: boolean;
-  // 1st step: the subject constraint part of the query
-  private _subjectQuery: Constraint;
-  // 2nd step: the observation constraint part of the query
-  private _observationQuery: { data: string[] };
-  // 3rd step: the definition of data table
-  private _dataTable: DataTable;
+  // the constraint that defines the cohort
+  private _constraint: Constraint;
 
   /*
    * Subscription feature
@@ -49,11 +45,11 @@ export class Query {
   // note that this panel only appears if the query is subscribed
   private _subscriptionCollapsed: boolean;
   // The frequency of the subscription: daily or monthly
-  private _subscriptionFreq: QuerySubscriptionFrequency;
+  private _subscriptionFreq: CohortSubscriptionFrequency;
   // The number of patients that this query covers
   private _numSubjects: number;
   // The historical records showing the differences between results of this query
-  private _diffRecords: QueryDiffRecord[];
+  private _diffRecords: CohortDiffRecord[];
 
 
   constructor(id: string, name: string) {
@@ -62,7 +58,7 @@ export class Query {
     this.collapsed = false;
     this.bookmarked = false;
     this.selected = false;
-    this.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+    this.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
     this.diffRecords = [];
   }
 
@@ -122,32 +118,6 @@ export class Query {
     this._selected = value;
   }
 
-  get subjectQuery(): Constraint {
-    return this._subjectQuery;
-  }
-
-  set subjectQuery(value: Constraint) {
-    this._subjectQuery = value;
-  }
-
-  get observationQuery(): { data: string[] } {
-    return this._observationQuery;
-  }
-
-  set observationQuery(value: { data: string[] }) {
-    this._observationQuery = value;
-  }
-
-  get dataTable(): DataTable {
-    return this._dataTable;
-  }
-
-  set dataTable(value: DataTable) {
-    if (value instanceof DataTable) {
-      this._dataTable = value;
-    }
-  }
-
   get createDate(): string {
     return this._createDate;
   }
@@ -204,11 +174,11 @@ export class Query {
     this._subscriptionCollapsed = value;
   }
 
-  get subscriptionFreq(): QuerySubscriptionFrequency {
+  get subscriptionFreq(): CohortSubscriptionFrequency {
     return this._subscriptionFreq;
   }
 
-  set subscriptionFreq(value: QuerySubscriptionFrequency) {
+  set subscriptionFreq(value: CohortSubscriptionFrequency) {
     this._subscriptionFreq = value;
   }
 
@@ -220,11 +190,19 @@ export class Query {
     this._numSubjects = value;
   }
 
-  get diffRecords(): QueryDiffRecord[] {
+  get diffRecords(): CohortDiffRecord[] {
     return this._diffRecords;
   }
 
-  set diffRecords(value: QueryDiffRecord[]) {
+  set diffRecords(value: CohortDiffRecord[]) {
     this._diffRecords = value;
+  }
+
+  get constraint(): Constraint {
+    return this._constraint;
+  }
+
+  set constraint(value: Constraint) {
+    this._constraint = value;
   }
 }

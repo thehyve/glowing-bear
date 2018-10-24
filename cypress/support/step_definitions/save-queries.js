@@ -1,4 +1,4 @@
-given("Query {string} is saved", (queryName) => {
+given("Cohort {string} is saved", (queryName) => {
   cy.server();
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
@@ -97,7 +97,7 @@ when("I delete the query {string}", (queryName) => {
   cy.contains('Yes').click();
 });
 
-when('I save the Query with name {string}', (queryName) => {
+when('I save the Cohort with name {string}', (queryName) => {
   cy.get('#queryName').type(queryName);
   cy.contains('Save query').click();
 });

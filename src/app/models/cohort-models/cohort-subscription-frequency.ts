@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum QuerySetType {
-  PATIENT = 'PATIENT',
-  SAMPLE = 'SAMPLE'
+export enum CohortSubscriptionFrequency {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY'
 }

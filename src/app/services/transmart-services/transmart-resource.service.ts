@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
@@ -496,7 +496,7 @@ export class TransmartResourceService {
   // -------------------------------------- query calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<Query[]>}
+   * @returns {Observable<Cohort[]>}
    */
   getQueries(): Observable<TransmartQuery[]> {
     return this.transmartHttpService.getQueries();
@@ -515,7 +515,7 @@ export class TransmartResourceService {
    * Modify an existing query.
    * @param {string} queryId
    * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @returns {Observable<Cohort>}
    */
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
     return this.transmartHttpService.updateQuery(queryId, queryBody);
