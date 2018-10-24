@@ -277,20 +277,20 @@ gb-nav-bar .ui-menuitem-text {
 }
 
 /*
- * ------------------------------ Styles for gb-data-selection component -------------------------------
+ * ------------------------------ Styles for gb-cohort-selection component -------------------------------
  */
 /*Change the color theme of the accordion in data-selection to clinical green*/
-gb-data-selection md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+gb-cohort-selection md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-color: var(--gb-clinical-green) !important;
   box-shadow: 0 1px 0 var(--gb-clinical-green) !important;
 }
 
-gb-data-selection .v-align-center {
+gb-cohort-selection .v-align-center {
   display: flex;
   align-items: center;
 }
 
-gb-data-selection .ui-multiselect {
+gb-cohort-selection .ui-multiselect {
   padding: 1px;
   color: dimgrey;
 }
@@ -299,15 +299,12 @@ gb-data-selection .ui-multiselect {
  * Style for buttons such as update, clear criteria, expand all/none, check all/none
  * in Data Selection
  */
-gb-data-selection .gb-data-selection-control-btn {
+gb-cohort-selection .gb-data-selection-control-btn {
   border-radius: 2em;
 }
 
-/*
- * ------------------------------ Styles for gb-selection component -------------------------------
- */
 /*Style for the padding of the constraint*/
-gb-selection .ui-panel-titlebar {
+gb-cohort-selection .ui-panel-titlebar {
   padding: 1px !important;
 }
 
@@ -316,39 +313,39 @@ gb-selection .ui-panel-titlebar {
  * displayed text aligned from right to left
  * text overflow is turned on
  */
-gb-selection .gb-concept-constraint-input > input {
+gb-cohort-selection .gb-concept-constraint-input > input {
   text-overflow: ellipsis;
   direction: ltr;
 }
 
 /* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
-gb-selection .ui-inputtext {
+gb-cohort-selection .ui-inputtext {
   height: 2em;
 }
 
 /* Fix cutting off letters inside inputtext field.
  Rendering engines of Firefox and Safari render line height slightly different than Chrome.
  Editing component css doesn't work. */
-gb-selection .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+gb-cohort-selection .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
   padding-bottom: 3px;
 }
 
-gb-selection .ui-autocomplete .ui-autocomplete-dropdown {
+gb-cohort-selection .ui-autocomplete .ui-autocomplete-dropdown {
   height: 2em;
 }
 
-gb-selection .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
+gb-cohort-selection .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
   padding: 0.1em;
   height: 100%;
 }
 
 /*Fix the width of placeholder in multiple autocomplete input field*/
-gb-selection .ui-autocomplete-input-token {
+gb-cohort-selection .ui-autocomplete-input-token {
   width: 10em;
 }
 
 /*Style for the p-panel in a concept constraint*/
-gb-selection .gb-constraint-child-container p-panel .ui-panel {
+gb-cohort-selection .gb-constraint-child-container p-panel .ui-panel {
   margin-left: 5px;
   padding: 0px;
   background-color: transparent;
@@ -357,46 +354,14 @@ gb-selection .gb-constraint-child-container p-panel .ui-panel {
 }
 
 /* Fix multiple autocomplete dropdown button new line break */
-gb-selection .ui-autocomplete {
+gb-cohort-selection .ui-autocomplete {
   display: inline-flex;
 }
 
-/*
- * ------------------------------ Styles for gb-projection component -------------------------------
- */
-/*style fix for the primeng tree-container in the 2nd step (padding: top, right, bottom, left)*/
-gb-projection .gb-projection-tree-container {
-  width: auto;
-  background-color: transparent;
-  border: none;
-}
-
-gb-projection .gb-projection-tree-container .ui-tree-container {
-  width: 100%;
-}
-
-gb-projection .gb-projection-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
-  padding: 1px 6px 1px 6px;
-  background-color: #67a2cf;
-}
-
-/*Make the font size in the tree smaller*/
-gb-projection p-treenode {
-  font-size: small;
-}
-
-gb-projection p-checkbox label {
-  margin: auto;
-  font-size: small;
-}
 
 /*
  * ------------------------------ Styles for gb-side-panel component -------------------------------
  */
-gb-summary {
-  font-size: small;
-}
-
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
 }
@@ -405,14 +370,6 @@ gb-side-panel .ui-accordion .ui-accordion-header {
   background-color: white;
 }
 
-/*
- * ------------------------------ Styles for gb-summary component -------------------------------
- */
-gb-summary .gb-final-tree-container {
-  width: auto;
-  background-color: transparent;
-  border: none;
-}
 
 /*
  * ------------------------------ Styles for gb-tree-nodes component -------------------------------
@@ -459,12 +416,12 @@ gb-tree-nodes .gb-is-not-leaf {
  * ------------------------------ Styles for gb-cohorts component -------------------------------
  */
 /*Make the font size in the saved query list smaller*/
-gb-queries p-dataList {
+gb-cohorts p-dataList {
   font-size: small;
 }
 
 /*Style for the search box in the queries accordion on the left side*/
-gb-queries .gb-query-filter-input > input {
+gb-cohorts .gb-query-filter-input > input {
   font-size: small !important;
   height: 1.8em;
   width: 100%;
@@ -473,12 +430,12 @@ gb-queries .gb-query-filter-input > input {
 }
 
 /*style fix for hiding the border in data list in saved queries in the side panel*/
-gb-queries .ui-widget-content {
+gb-cohorts .ui-widget-content {
   border: none;
 }
 
 /*style for a query item on the side panel*/
-gb-queries .gb-query-panel {
+gb-cohorts .gb-query-panel {
   padding: 0px;
   border-radius: 5px;
   margin-bottom: 2px;
@@ -487,7 +444,7 @@ gb-queries .gb-query-panel {
   font-size: small;
 }
 
-gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+gb-cohorts md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   border-width: medium;
   border-color: lightgray !important;
   box-shadow: 0 1px 0 lightgray !important;
@@ -495,7 +452,7 @@ gb-queries md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
   padding-left: 0.5em;
 }
 
-gb-queries md2-accordion-tab > .md2-accordion-header {
+gb-cohorts md2-accordion-tab > .md2-accordion-header {
   background-color: white;
   padding-left: 0.5em;
   font-size: small;
@@ -503,23 +460,23 @@ gb-queries md2-accordion-tab > .md2-accordion-header {
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab > .md2-accordion-tab-body {
+gb-cohorts md2-accordion-tab > .md2-accordion-tab-body {
   background-color: #fbfbfb;
   padding-left: 0.5em;
   font-size: small;
   color: dimgray;
 }
 
-gb-queries md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
+gb-cohorts md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
   color: transparent;
 }
 
-gb-queries .ui-radiobutton .ui-radiobutton-box .ui-radiobutton-icon {
+gb-cohorts .ui-radiobutton .ui-radiobutton-box .ui-radiobutton-icon {
   top: 0px !important;
   left: 2px !important;
 }
 
-gb-queries .ui-radiobutton, .ui-radiobutton-label {
+gb-cohorts .ui-radiobutton, .ui-radiobutton-label {
   vertical-align: text-top !important;
   padding-top: 3px;
 }
