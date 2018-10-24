@@ -22,7 +22,7 @@ import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {QueryService} from './services/query.service';
+import {CohortService} from './services/cohort.service';
 import {DataTableService} from './services/data-table.service';
 import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
@@ -71,7 +71,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     StudyService,
     TreeNodeService,
     ConstraintService,
-    QueryService,
+    CohortService,
     DataTableService,
     CrossTableService,
     NavbarService,

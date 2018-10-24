@@ -15,8 +15,8 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
@@ -51,8 +51,8 @@ describe('GbSubjectSetConstraintComponent', () => {
           useClass: StudyServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         }
       ]
     })

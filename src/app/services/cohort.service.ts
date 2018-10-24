@@ -50,7 +50,7 @@ type LoadingState = 'loading' | 'complete';
  * update data formats available for export based on the previous data selection
  */
 @Injectable()
-export class QueryService {
+export class CohortService {
   // The current step at which the user is composing query
   private _step: Step = Step.I;
   // The currently selected query

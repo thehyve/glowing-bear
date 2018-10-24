@@ -14,8 +14,8 @@ import {CheckboxModule, PickListModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 
 describe('GbDataTableDimensionsComponent', () => {
   let component: GbDataTableDimensionsComponent;
@@ -36,8 +36,8 @@ describe('GbDataTableDimensionsComponent', () => {
           useClass: DataTableServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         }
       ]
     })

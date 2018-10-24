@@ -18,8 +18,8 @@ import {ConstraintServiceMock} from '../../../../services/mocks/constraint.servi
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
-import {QueryService} from '../../../../services/query.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
 import {MockComponent} from 'ng2-mock-component';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
@@ -58,8 +58,8 @@ describe('GbConstraintComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: StudyService,

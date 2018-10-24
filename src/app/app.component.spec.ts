@@ -30,8 +30,8 @@ import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-c
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
-import {QueryService} from './services/query.service';
-import {QueryServiceMock} from './services/mocks/query.service.mock';
+import {CohortService} from './services/cohort.service';
+import {CohortServiceMock} from './services/mocks/cohort.service.mock';
 import {DataTableService} from './services/data-table.service';
 import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
 import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
@@ -124,8 +124,8 @@ describe('AppComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: DataTableService,
