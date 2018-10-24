@@ -10,12 +10,12 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {FormatHelper} from '../../utilities/format-helper';
 import {CohortService} from '../../services/cohort.service';
 import {MessageHelper} from '../../utilities/message-helper';
-import {GbConstraintComponent} from "./constraint-components/gb-constraint/gb-constraint.component";
-import {Cohort} from "../../models/cohort-models/cohort";
-import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-constraint";
-import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
-import {ConstraintService} from "../../services/constraint.service";
-import {TransmartConstraintMapper} from "../../utilities/transmart-utilities/transmart-constraint-mapper";
+import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
+import {Cohort} from '../../models/cohort-models/cohort';
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ConstraintService} from '../../services/constraint.service';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 @Component({
   selector: 'gb-cohort-selection',
@@ -50,7 +50,7 @@ export class GbCohortSelectionComponent implements OnInit {
 
 
   constructor(public cohortService: CohortService,
-              private constraintService: ConstraintService,) {
+              private constraintService: ConstraintService) {
     this.cohortName = '';
     this.isUploadListenerNotAdded = true;
   }
@@ -137,6 +137,7 @@ export class GbCohortSelectionComponent implements OnInit {
   get isSavingCohortCompleted(): boolean {
     return this.cohortService.isSavingCohortCompleted;
   }
+
   /**
    * Prevent the default behavior of node drop
    * @param event
@@ -145,6 +146,7 @@ export class GbCohortSelectionComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
   }
+
   saveCohort() {
     let name = this.cohortName ? this.cohortName.trim() : '';
     const isNameValid = name !== '';
