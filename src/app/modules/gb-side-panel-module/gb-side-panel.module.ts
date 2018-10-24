@@ -15,7 +15,7 @@ import {DataListModule} from 'primeng/components/datalist/datalist';
 import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
 import {TreeDragDropService} from 'primeng/components/common/api';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
-import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
+import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.component';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
   AutoCompleteModule,
@@ -52,7 +52,7 @@ import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.c
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
-    GbQueriesComponent,
+    GbCohortsComponent,
     GbSummaryComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
