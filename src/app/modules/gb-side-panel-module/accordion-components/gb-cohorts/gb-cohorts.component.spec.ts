@@ -8,7 +8,7 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbQueriesComponent} from './gb-queries.component';
+import {GbCohortsComponent} from './gb-cohorts.component';
 import {
   AutoCompleteModule,
   ButtonModule,
@@ -39,14 +39,14 @@ import {ConstraintHelper} from '../../../../utilities/constraint-utilities/const
 import {UIHelper} from '../../../../utilities/ui-helper';
 
 describe('QueriesComponent', () => {
-  let component: GbQueriesComponent;
-  let fixture: ComponentFixture<GbQueriesComponent>;
+  let component: GbCohortsComponent;
+  let fixture: ComponentFixture<GbCohortsComponent>;
   let queryService: QueryService;
   let confirmationService: ConfirmationService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbQueriesComponent],
+      declarations: [GbCohortsComponent],
       imports: [
         BrowserAnimationsModule,
         DataListModule,
@@ -77,7 +77,7 @@ describe('QueriesComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbQueriesComponent);
+    fixture = TestBed.createComponent(GbCohortsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     queryService = TestBed.get(QueryService);
