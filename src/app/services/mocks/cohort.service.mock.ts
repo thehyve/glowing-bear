@@ -6,11 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {CountItem} from '../../models/aggregate-models/count-item';
 
 export class CohortServiceMock {
-  private _queries: Query[] = [];
+  private _cohorts: Cohort[] = [];
   counts_0: CountItem;
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
@@ -58,33 +58,33 @@ export class CohortServiceMock {
     return new Promise<any>(resolve => resolve(true));
   }
 
-  get queries(): Query[] {
-    return this._queries;
+  get cohorts(): Cohort[] {
+    return this._cohorts;
   }
 
-  set queries(value: Query[]) {
-    this._queries = value;
+  set cohorts(value: Cohort[]) {
+    this._cohorts = value;
   }
 
-  saveQueryByName(name: string) {
+  saveCohortByName(name: string) {
   }
 
-  saveQueryByObject(obj: object) {
+  saveCohortByObject(obj: object) {
   }
 
-  toggleQuerySubscription(query: Query) {
+  toggleCohortSubscription(target: Cohort) {
   }
 
-  toggleQueryBookmark(query: Query) {
+  toggleCohortBookmark(target: Cohort) {
   }
 
-  restoreQuery(query: Query) {
+  restoreCohort(target: Cohort) {
   }
 
-  deleteQuery(query: Query) {
+  deleteCohort(target: Cohort) {
   }
 
-  updateQuery(query: Query, queryObj: object) {
+  updateCohort(target: Cohort, obj: object) {
   }
 
 }

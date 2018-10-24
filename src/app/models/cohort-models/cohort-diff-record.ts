@@ -6,18 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {QuerySetType} from './query-set-type';
-import {QueryDiffItem} from './query-diff-item';
+import {CohortSetType} from './cohort-set-type';
+import {CohortDiffItem} from './cohort-diff-item';
 
-export class QueryDiffRecord {
+export class CohortDiffRecord {
 
   private _id: number;
   private _queryName: string;
   private _queryUsername: string;
   private _setId: number;
-  private _setType: QuerySetType;
+  private _setType: CohortSetType;
   private _createDate: string;
-  private _diffItems: QueryDiffItem[];
+  private _diffItems: CohortDiffItem[];
   private _diffTypes: string[];
   private _partialRepresentation: object;
   private _completeRepresentation: object;
@@ -61,11 +61,11 @@ export class QueryDiffRecord {
     this._setId = value;
   }
 
-  get setType(): QuerySetType {
+  get setType(): CohortSetType {
     return this._setType;
   }
 
-  set setType(value: QuerySetType) {
+  set setType(value: CohortSetType) {
     this._setType = value;
   }
 
@@ -77,11 +77,11 @@ export class QueryDiffRecord {
     this._createDate = value;
   }
 
-  get diffItems(): QueryDiffItem[] {
+  get diffItems(): CohortDiffItem[] {
     return this._diffItems;
   }
 
-  set diffItems(value: QueryDiffItem[]) {
+  set diffItems(value: CohortDiffItem[]) {
     this._diffItems = value;
     this.diffTypes = [];
     let map = {};

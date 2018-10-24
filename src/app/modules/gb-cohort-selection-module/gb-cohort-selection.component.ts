@@ -11,7 +11,7 @@ import {FormatHelper} from '../../utilities/format-helper';
 import {CohortService} from '../../services/cohort.service';
 import {MessageHelper} from '../../utilities/message-helper';
 import {GbConstraintComponent} from "./constraint-components/gb-constraint/gb-constraint.component";
-import {Query} from "../../models/query-models/query";
+import {Cohort} from "../../models/cohort-models/cohort";
 import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-constraint";
 import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
 import {ConstraintService} from "../../services/constraint.service";
@@ -28,31 +28,30 @@ export class GbCohortSelectionComponent implements OnInit {
   @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
 
   private isUploadListenerNotAdded: boolean;
-  public queryName: string;
+  public cohortName: string;
 
   /**
    * Split a newline separated string into its parts
-   * and returns a patient set query where these parts are used as subject ids.
+   * and returns a patient set cohort where these parts are used as subject ids.
    * @param {string} fileContents the newline separated string.
-   * @param {string} name the query name.
-   * @return {Query} the resulting patient set query.
+   * @param {string} name the cohort name.
+   * @return {Cohort} the resulting patient set cohort.
    */
-  static processSubjectIdsUpload(fileContents: string, name: string): Query {
+  static processSubjectIdsUpload(fileContents: string, name: string): Cohort {
     let subjectIds: string[] = fileContents.split(/[\r\n]+/)
       .map(id => id.trim())
       .filter(id => id.length > 0);
-    let query = new Query(null, name);
+    let cohort = new Cohort(null, name);
     let subjectSetConstraint = new SubjectSetConstraint();
     subjectSetConstraint.subjectIds = subjectIds;
-    query.subjectQuery = subjectSetConstraint;
-    query.observationQuery = {data: null};
-    return query;
+    cohort.constraint = subjectSetConstraint;
+    return cohort;
   }
 
 
-  constructor(public queryService: CohortService,
+  constructor(public cohortService: CohortService,
               private constraintService: ConstraintService,) {
-    this.queryName = '';
+    this.cohortName = '';
     this.isUploadListenerNotAdded = true;
   }
 
@@ -76,11 +75,11 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get inclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.inclusionCounts.subjectCount);
+    return FormatHelper.formatCountNumber(this.cohortService.inclusionCounts.subjectCount);
   }
 
   get exclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.exclusionCounts.subjectCount);
+    return FormatHelper.formatCountNumber(this.cohortService.exclusionCounts.subjectCount);
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
@@ -92,51 +91,51 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get subjectCount_0(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_0.subjectCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_0.subjectCount);
   }
 
   get subjectCount_1(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_1.subjectCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_1.subjectCount);
   }
 
   get subjectCount_2(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_2.subjectCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_2.subjectCount);
   }
 
   get subjectCountPercentage_1(): string {
-    return FormatHelper.percentage(this.queryService.counts_1.subjectCount, this.queryService.counts_0.subjectCount);
+    return FormatHelper.percentage(this.cohortService.counts_1.subjectCount, this.cohortService.counts_0.subjectCount);
   }
 
   get subjectCountPercentage_2(): string {
-    return FormatHelper.percentage(this.queryService.counts_2.subjectCount, this.queryService.counts_1.subjectCount);
+    return FormatHelper.percentage(this.cohortService.counts_2.subjectCount, this.cohortService.counts_1.subjectCount);
   }
 
   get observationCount_0(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_0.observationCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_0.observationCount);
   }
 
   get observationCount_1(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_1.observationCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_1.observationCount);
   }
 
   get observationCount_2(): string {
-    return FormatHelper.formatCountNumber(this.queryService.counts_2.observationCount);
+    return FormatHelper.formatCountNumber(this.cohortService.counts_2.observationCount);
   }
 
   get observationCountPercentage_1(): string {
-    return FormatHelper.percentage(this.queryService.counts_1.observationCount, this.queryService.counts_0.observationCount);
+    return FormatHelper.percentage(this.cohortService.counts_1.observationCount, this.cohortService.counts_0.observationCount);
   }
 
   get observationCountPercentage_2(): string {
-    return FormatHelper.percentage(this.queryService.counts_2.observationCount, this.queryService.counts_1.observationCount);
+    return FormatHelper.percentage(this.cohortService.counts_2.observationCount, this.cohortService.counts_1.observationCount);
   }
 
   get isDataTableUsed(): boolean {
-    return this.queryService.isDataTableUsed;
+    return this.cohortService.isDataTableUsed;
   }
 
-  get isSavingQueryCompleted(): boolean {
-    return this.queryService.isSavingQueryCompleted;
+  get isSavingCohortCompleted(): boolean {
+    return this.cohortService.isSavingCohortCompleted;
   }
   /**
    * Prevent the default behavior of node drop
@@ -146,14 +145,14 @@ export class GbCohortSelectionComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
   }
-  saveQuery() {
-    let name = this.queryName ? this.queryName.trim() : '';
-    let queryNameIsValid = name !== '';
-    if (queryNameIsValid) {
-      this.queryService.saveQueryByName(name);
-      this.queryName = '';
+  saveCohort() {
+    let name = this.cohortName ? this.cohortName.trim() : '';
+    const isNameValid = name !== '';
+    if (isNameValid) {
+      this.cohortService.saveCohortByName(name);
+      this.cohortName = '';
     } else {
-      MessageHelper.alert('error', 'Please specify the query name.', '');
+      MessageHelper.alert('error', 'Please specify the cohort name.', '');
     }
   }
 
@@ -180,7 +179,7 @@ export class GbCohortSelectionComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  private parseFile(file: File, data: any): Query {
+  private parseFile(file: File, data: any): Cohort {
     if (file.type === 'text/plain' ||
       file.type === 'text/tab-separated-values' ||
       file.type === 'text/csv' ||
@@ -192,8 +191,8 @@ export class GbCohortSelectionComponent implements OnInit {
       // If the json is of standard format
       if (_json['patientsQuery']) {
         let name = file.name.substr(0, file.name.indexOf('.'));
-        let query = new Query('', name);
-        query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
+        let query = new Cohort('', name);
+        query.constraint = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
         return query;
       } else {
         MessageHelper.alert('error', 'Invalid file content for query import.');
@@ -207,24 +206,24 @@ export class GbCohortSelectionComponent implements OnInit {
 
   update_1(event) {
     event.stopPropagation();
-    this.queryService.update_1();
+    this.cohortService.update_1();
   }
 
   update_2(event) {
     event.stopPropagation();
-    this.queryService.update_1()
+    this.cohortService.update_1()
       .then(() => {
-        this.queryService.update_2();
+        this.cohortService.update_2();
       });
   }
 
   update_3(event) {
     event.stopPropagation();
-    this.queryService.update_1()
+    this.cohortService.update_1()
       .then(() => {
-        this.queryService.update_2()
+        this.cohortService.update_2()
           .then(() => {
-            this.queryService.update_3();
+            this.cohortService.update_3();
           });
       });
   }

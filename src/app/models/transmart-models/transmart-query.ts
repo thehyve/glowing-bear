@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {QuerySubscriptionFrequency} from '../query-models/query-subscription-frequency';
+import {CohortSubscriptionFrequency} from '../cohort-models/cohort-subscription-frequency';
 
 /**
  * Representation of a query model returned from tranSMART
@@ -32,7 +32,7 @@ export class TransmartQuery {
   // Indicate if the set is subscribed
   public subscribed?: boolean;
   // The frequency of the subscription: daily or monthly
-  public subscriptionFreq?: QuerySubscriptionFrequency;
+  public subscriptionFreq?: CohortSubscriptionFrequency;
 
   constructor(queryName: string) {
     this.name = queryName;

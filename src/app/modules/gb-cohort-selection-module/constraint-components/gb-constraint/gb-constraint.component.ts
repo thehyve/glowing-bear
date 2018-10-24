@@ -13,7 +13,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {CohortService} from '../../../../services/cohort.service';
-import {Step} from '../../../../models/query-models/step';
+import {Step} from '../../../../models/cohort-models/step';
 import {StudyService} from '../../../../services/study.service';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 
@@ -81,7 +81,6 @@ export class GbConstraintComponent implements OnInit {
   }
 
   update() {
-    this.queryService.step = Step.I;
     if (this.queryService.instantCountsUpdate_1) {
       this.queryService.update_1();
     } else {
