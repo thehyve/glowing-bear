@@ -6,19 +6,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {QueryDiffType} from './query-diff-type';
+import {CohortDiffType} from './cohort-diff-type';
 
-export class QueryDiffItem {
+export class CohortDiffItem {
   private _id: number;
-  private _diffType: QueryDiffType;
+  private _diffType: CohortDiffType;
   private _objectId: number;
 
 
-  get diffType(): QueryDiffType {
+  get diffType(): CohortDiffType {
     return this._diffType;
   }
 
-  set diffType(value: QueryDiffType) {
+  set diffType(value: CohortDiffType) {
     this._diffType = value;
   }
 

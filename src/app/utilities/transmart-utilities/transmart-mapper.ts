@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
@@ -56,8 +56,8 @@ export class TransmartMapper {
     return study;
   }
 
-  public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Query[] {
-    let queries: Query[] = [];
+  public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Cohort[] {
+    let queries: Cohort[] = [];
     transmartQueries.forEach(tmQuery => {
       try {
         let query = this.mapTransmartQuery(tmQuery);
@@ -69,18 +69,15 @@ export class TransmartMapper {
     return queries;
   }
 
-  public static mapTransmartQuery(transmartQuery: TransmartQuery): Query {
-    let query = new Query(transmartQuery.id, transmartQuery.name);
+  public static mapTransmartQuery(transmartQuery: TransmartQuery): Cohort {
+    let query = new Cohort(transmartQuery.id, transmartQuery.name);
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.subjectQuery =
-      TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
-    query.observationQuery = transmartQuery.observationsQuery;
+    query.constraint = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
-    query.dataTable = this.parseTransmartQueryBlobDataTable(transmartQuery.queryBlob);
     return query;
   }
 
@@ -106,16 +103,12 @@ export class TransmartMapper {
     return dataTable;
   }
 
-  public static mapQuery(query: Query): TransmartQuery {
+  public static mapQuery(query: Cohort): TransmartQuery {
     let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.subjectQuery, false);
-    transmartQuery.observationsQuery = query.observationQuery;
+    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.constraint, false);
     transmartQuery.queryBlob = {};
-    transmartQuery.queryBlob['patientsQueryFull'] = TransmartConstraintMapper.mapConstraint(query.subjectQuery, true);
-    if (query.dataTable) {
-      let transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(query.dataTable);
-      transmartQuery.queryBlob['dataTableState'] = transmartTableState;
-    }
+    transmartQuery.queryBlob['patientsQueryFull'] = TransmartConstraintMapper.mapConstraint(query.constraint, true);
+
     return transmartQuery;
   }
 

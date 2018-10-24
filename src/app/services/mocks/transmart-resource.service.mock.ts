@@ -9,7 +9,7 @@
 
 import {of as observableOf, Observable} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';

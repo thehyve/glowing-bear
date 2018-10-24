@@ -1,7 +1,7 @@
 import {TestBed} from '@angular/core/testing';
 import {ResourceService} from '../app/services/resource.service';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
-import {Query} from '../app/models/query-models/query';
+import {Cohort} from '../app/models/cohort-models/cohort';
 import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
 import {ConstraintHelper} from '../app/utilities/constraint-utilities/constraint-helper';
 import {ConstraintService} from '../app/services/constraint.service';
@@ -19,30 +19,15 @@ import {AuthenticationService} from '../app/services/authentication/authenticati
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 
-describe('Integration test for query saving and restoring', () => {
+describe('Integration test for cohort saving and restoring', () => {
 
-  // mocked query objects
+  // mocked cohort objects
   let q0obj = {
     bookmarked: false,
     createDate: '2018-07-02T14:47:05Z',
-    dataTable: {
-      columnDimensions: [],
-      rowDimensions: [
-        'patient',
-        'study',
-        'concept'
-      ]
-    },
     id: 'q0',
-    name: 'query that stores stuff in step 1 and 2',
-    observationQuery: {
-      data: [
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Age\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Gender\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\'
-      ]
-    },
-    subjectQuery: {
+    name: 'cohort that stores stuff',
+    constraint: {
       type: 'and',
       args: [
         {
@@ -125,8 +110,8 @@ describe('Integration test for query saving and restoring', () => {
     }
   };
 
-  let q0: Query = ConstraintHelper.mapObjectToQuery(q0obj);
-  let queryService: CohortService;
+  let q0: Cohort = ConstraintHelper.mapObjectToCohort(q0obj);
+  let cohortService: CohortService;
   let constraintService: ConstraintService;
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
@@ -158,20 +143,20 @@ describe('Integration test for query saving and restoring', () => {
         DatePipe
       ]
     });
-    queryService = TestBed.get(CohortService);
+    cohortService = TestBed.get(CohortService);
     constraintService = TestBed.get(ConstraintService);
     dataTableService = TestBed.get(DataTableService);
     resourceService = TestBed.get(ResourceService);
     treeNodeService = TestBed.get(TreeNodeService);
   });
 
-  it('should restore and save query in relation to other dependent services', () => {
+  it('should restore and save cohort in relation to other dependent services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
-    let spy1 = spyOn(queryService, 'update_1').and.callThrough();
-    let spy2 = spyOn(queryService, 'update_2').and.callThrough();
-    let spy3 = spyOn(queryService, 'update_3').and.callThrough();
-    let promise = queryService.restoreQuery(q0);
+    let spy1 = spyOn(cohortService, 'update_1').and.callThrough();
+    let spy2 = spyOn(cohortService, 'update_2').and.callThrough();
+    let spy3 = spyOn(cohortService, 'update_3').and.callThrough();
+    let promise = cohortService.restoreCohort(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
     let child0 = constraintService.rootInclusionConstraint.children[0];
     expect(child0.className).toEqual('ConceptConstraint');
@@ -185,54 +170,51 @@ describe('Integration test for query saving and restoring', () => {
     let child3 = constraintService.rootExclusionConstraint.children[0];
     expect(child3['concept']).toBeDefined();
     expect(child3['concept']['code']).toEqual('VSIGN:HR');
-    expect(queryService.query.observationQuery).toBeDefined();
-    expect(queryService.query.observationQuery.data.length).toBe(3);
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
       expect(spy3).toHaveBeenCalled();
-      expect(queryService.isDirty_1).toBe(false);
-      expect(queryService.isDirty_2).toBe(false);
-      expect(queryService.isDirty_3).toBe(false);
+      expect(cohortService.isDirty_1).toBe(false);
+      expect(cohortService.isDirty_2).toBe(false);
+      expect(cohortService.isDirty_3).toBe(false);
     });
 
 
-    let spySaveQuery = spyOn(resourceService, 'saveQuery').and.callThrough();
-    queryService.saveQueryByName('test-name');
-    expect(queryService.queries.length).toBe(1);
-    expect(queryService.isSavingQueryCompleted).toBe(true);
-    expect(spySaveQuery).toHaveBeenCalled();
+    let spySave = spyOn(resourceService, 'saveQuery').and.callThrough();
+    cohortService.saveCohortByName('test-name');
+    expect(cohortService.cohorts.length).toBe(1);
+    expect(cohortService.isSavingCohortCompleted).toBe(true);
+    expect(spySave).toHaveBeenCalled();
   });
 
-  it('should clear queries in relation to other dependent services', () => {
+  it('should clear cohorts in relation to other dependent services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
-    queryService.restoreQuery(q0)
+    cohortService.restoreCohort(q0)
       .then(() => {
-        queryService.clearAll()
+        cohortService.clearAll()
           .then(() => {
             expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
             expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
             expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
-            expect(queryService.isDirty_1).toBe(false);
-            expect(queryService.isDirty_2).toBe(false);
-            expect(queryService.isDirty_3).toBe(false);
+            expect(cohortService.isDirty_1).toBe(false);
+            expect(cohortService.isDirty_2).toBe(false);
+            expect(cohortService.isDirty_3).toBe(false);
           });
-        expect(queryService.isDirty_1).toBe(true);
-        expect(queryService.isDirty_2).toBe(true);
-        expect(queryService.isDirty_3).toBe(true);
+        expect(cohortService.isDirty_1).toBe(true);
+        expect(cohortService.isDirty_2).toBe(true);
+        expect(cohortService.isDirty_3).toBe(true);
       });
   });
 
-  it('should restore query containing subject set constraint', () => {
-    let query = new Query(null, 'test');
+  it('should restore cohort containing subject set constraint', () => {
+    let target = new Cohort(null, 'test');
     let subjectSetConstraint = new SubjectSetConstraint();
     subjectSetConstraint.subjectIds = ['1', '2', '3'];
-    query.subjectQuery = subjectSetConstraint;
-    query.observationQuery = {data: null};
-    queryService.restoreQuery(query)
+    target.constraint = subjectSetConstraint;
+    cohortService.restoreCohort(target)
       .catch(err => {
-        fail('should have successfully restored the query with subject-set constraint but not')
+        fail('should have successfully restored the cohort with subject-set constraint but not')
       });
   });
 

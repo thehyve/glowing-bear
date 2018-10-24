@@ -15,7 +15,7 @@ import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
@@ -403,7 +403,7 @@ export class ResourceService {
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Query[]> {
+  getQueries(): Observable<Cohort[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getQueries().pipe(
@@ -419,10 +419,10 @@ export class ResourceService {
 
   /**
    * Save a new query.
-   * @param {Query} query
-   * @returns {Observable<Query>}
+   * @param {Cohort} query
+   * @returns {Observable<Cohort>}
    */
-  saveQuery(query: Query): Observable<Query> {
+  saveQuery(query: Cohort): Observable<Cohort> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);

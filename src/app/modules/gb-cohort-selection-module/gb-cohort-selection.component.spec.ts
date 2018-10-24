@@ -34,7 +34,7 @@ import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-c
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
   let fixture: ComponentFixture<GbCohortSelectionComponent>;
-  let queryService: CohortService;
+  let cohortService: CohortService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -85,7 +85,7 @@ describe('GbCohortSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbCohortSelectionComponent);
     component = fixture.componentInstance;
-    queryService = TestBed.get(CohortService);
+    cohortService = TestBed.get(CohortService);
     fixture.detectChanges();
   });
 
@@ -94,14 +94,14 @@ describe('GbCohortSelectionComponent', () => {
   });
 
   it('should save query', () => {
-    spyOn(component, 'saveQuery').and.callThrough();
-    component.saveQuery();
-    expect(component.saveQuery).toHaveBeenCalled();
+    spyOn(component, 'saveCohort').and.callThrough();
+    component.saveCohort();
+    expect(component.saveCohort).toHaveBeenCalled();
     // when queryName is defined
-    component.queryName = 'test name';
-    spyOn(queryService, 'saveQueryByName').and.callThrough();
-    component.saveQuery();
-    expect(queryService.saveQueryByName).toHaveBeenCalled();
+    component.cohortName = 'test name';
+    spyOn(cohortService, 'saveCohortByName').and.callThrough();
+    component.saveCohort();
+    expect(cohortService.saveCohortByName).toHaveBeenCalled();
   });
 
   it('should prevent node drop on top panel', () => {
@@ -122,11 +122,11 @@ describe('GbCohortSelectionComponent', () => {
 
   it('should process uploaded subject ids', () => {
     let fileContents = 'id123\nid456\n';
-    let query = GbCohortSelectionComponent.processSubjectIdsUpload(fileContents, 'testName');
-    expect(query).toBeDefined();
-    expect(query.name).toEqual('testName');
-    expect(query.subjectQuery.className).toEqual('SubjectSetConstraint');
-    expect((<SubjectSetConstraint>query.subjectQuery).subjectIds.length).toEqual(2);
+    let target = GbCohortSelectionComponent.processSubjectIdsUpload(fileContents, 'testName');
+    expect(target).toBeDefined();
+    expect(target.name).toEqual('testName');
+    expect(target.constraint.className).toEqual('SubjectSetConstraint');
+    expect((<SubjectSetConstraint>target.constraint).subjectIds.length).toEqual(2);
   });
 
 });
