@@ -19,10 +19,10 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-queries',
-  templateUrl: './gb-queries.component.html',
-  styleUrls: ['./gb-queries.component.css']
+  templateUrl: './gb-cohorts.component.html',
+  styleUrls: ['./gb-cohorts.component.css']
 })
-export class GbQueriesComponent implements OnInit {
+export class GbCohortsComponent implements OnInit {
 
   searchTerm = '';
   isUploadListenerNotAdded: boolean;
