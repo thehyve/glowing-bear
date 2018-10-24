@@ -25,15 +25,15 @@ import {CrossTableService} from './cross-table.service';
 import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
 import {of as observableOf} from 'rxjs';
-import {Query} from '../models/query-models/query';
-import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {Cohort} from '../models/cohort-models/cohort';
+import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscription-frequency';
 import {ErrorHelper} from '../utilities/error-helper';
 import {throwError} from 'rxjs/internal/observable/throwError';
 
 
 describe('CohortService', () => {
   let resourceService: ResourceService;
-  let queryService: CohortService;
+  let cohortService: CohortService;
   let httpErrorResponse: HttpErrorResponse;
 
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('CohortService', () => {
       ]
     });
     resourceService = TestBed.get(ResourceService);
-    queryService = TestBed.get(CohortService);
+    cohortService = TestBed.get(CohortService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -86,49 +86,49 @@ describe('CohortService', () => {
   }));
 
   it('should handle loaded queries', () => {
-    let q = new Query('test query id', 'test query name');
+    let q = new Cohort('test query id', 'test query name');
     q.createDate = '2015-03-25';
     q.updateDate = '2015-03-26';
     q.subscribed = true;
     q.bookmarked = true;
     q.subscriptionFreq = null;
-    let q1 = new Query('test query id 1', 'test query name 1');
+    let q1 = new Cohort('test query id 1', 'test query name 1');
     q1.createDate = null;
     q1.updateDate = null;
     q1.subscribed = true;
     q1.bookmarked = false;
-    q1.subscriptionFreq = QuerySubscriptionFrequency.DAILY;
-    let q2 = new Query('test query id 2', 'test query name 2');
+    q1.subscriptionFreq = CohortSubscriptionFrequency.DAILY;
+    let q2 = new Cohort('test query id 2', 'test query name 2');
     q2.createDate = null;
     q2.updateDate = null;
     q2.subscribed = false;
     q2.bookmarked = true;
-    q2.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+    q2.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
     let spy1 = spyOn(resourceService, 'diffQuery').and.callFake(() => {
       return observableOf(['foo']);
     });
-    let spy2 = spyOn(queryService, 'parseQueryDiffRecords').and.stub();
-    queryService.handleLoadedQueries([q, q1, q2]);
+    let spy2 = spyOn(cohortService, 'parseCohortDiffRecords').and.stub();
+    cohortService.handleLoadedCohorts([q, q1, q2]);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-    expect(q.subscriptionFreq).toBe(QuerySubscriptionFrequency.WEEKLY);
-    expect(queryService.queries[0].id).toBe(q.id);
-    expect(queryService.queries[1].id).toBe(q2.id);
-    expect(queryService.queries[2].id).toBe(q1.id);
+    expect(q.subscriptionFreq).toBe(CohortSubscriptionFrequency.WEEKLY);
+    expect(cohortService.cohorts[0].id).toBe(q.id);
+    expect(cohortService.cohorts[1].id).toBe(q2.id);
+    expect(cohortService.cohorts[2].id).toBe(q1.id);
   });
 
   it('should delete a query', () => {
     let spy = spyOn(resourceService, 'deleteQuery').and.callThrough();
-    let query = new Query('test-id', 'test-name');
-    queryService.queries = [query];
-    queryService.deleteQuery(query);
+    let query = new Cohort('test-id', 'test-name');
+    cohortService.cohorts = [query];
+    cohortService.deleteCohort(query);
     expect(spy).toHaveBeenCalledWith(query.id);
-    expect(queryService.queries.length).toEqual(0);
+    expect(cohortService.cohorts.length).toEqual(0);
 
-    let query1 = new Query('test-id-1', 'test-name-1');
-    queryService.queries = [query1];
-    queryService.deleteQuery(query);
-    expect(queryService.queries.length).toEqual(1);
+    let query1 = new Cohort('test-id-1', 'test-name-1');
+    cohortService.cohorts = [query1];
+    cohortService.deleteCohort(query);
+    expect(cohortService.cohorts.length).toEqual(1);
   })
 
   it('should handle query deletion error', () => {
@@ -136,11 +136,11 @@ describe('CohortService', () => {
       return throwError(null);
     })
     let spy1 = spyOn(ErrorHelper, 'handleError').and.stub();
-    let query = new Query('test-id', 'test-name');
-    queryService.queries = [query];
-    queryService.deleteQuery(query);
+    let query = new Cohort('test-id', 'test-name');
+    cohortService.cohorts = [query];
+    cohortService.deleteCohort(query);
     expect(spy).toHaveBeenCalledWith(query.id);
-    expect(queryService.queries.length).toEqual(1);
+    expect(cohortService.cohorts.length).toEqual(1);
     expect(spy1).toHaveBeenCalled();
   })
 

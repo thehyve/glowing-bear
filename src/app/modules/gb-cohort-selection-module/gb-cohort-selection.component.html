@@ -1,29 +1,29 @@
 <div class="gb-cohort-selection-container">
   <!-- top panel -->
   <div class="container form-inline gb-cohort-selection-top-panel">
-    <input id="queryName" type="text"
+    <input id="cohortName" type="text"
            class="form-control gb-cohort-selection-top-panel-input"
            placeholder="Specify cohort name"
            (drop)="preventNodeDrop($event)"
-           [(ngModel)]="queryName">
+           [(ngModel)]="cohortName">
     <button class="btn btn-outline-primary btn-sm gb-cohort-selection-top-panel-btn"
-            (click)="saveQuery()"
+            (click)="saveCohort()"
             type="button">
-      <span *ngIf="isSavingQueryCompleted">Save cohort</span>
-      <span *ngIf="!isSavingQueryCompleted">Saving...</span>
+      <span *ngIf="isSavingCohortCompleted">Save cohort</span>
+      <span *ngIf="!isSavingCohortCompleted">Saving...</span>
     </button>
 
     <button type="button"
             (click)="update_1($event)"
             class="btn btn-outline-primary btn-sm gb-cohort-selection-update-btn
-                      {{queryService.isDirty_1? 'gb-cohort-selection-update-btn-dirty' : ''}}">
+                      {{cohortService.isDirty_1? 'gb-cohort-selection-update-btn-dirty' : ''}}">
       Update cohort
     </button>
 
   </div>
 
 
-  <!-- query composer -->
+  <!-- cohort query composer -->
   <div>
     <!-- Inclusion criteria -->
     <div #inclusionCriteriaBox

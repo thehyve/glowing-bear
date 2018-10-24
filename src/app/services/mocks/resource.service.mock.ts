@@ -10,7 +10,7 @@
 import {of as observableOf, Observable} from 'rxjs';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
@@ -25,7 +25,7 @@ import {EndpointMode} from '../../models/endpoint-mode';
 
 export class ResourceServiceMock {
   private studies: Study[];
-  private queries: Query[];
+  private queries: Cohort[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
   private dataTable: DataTable;
@@ -65,7 +65,7 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  getQueries(): Observable<Query[]> {
+  getQueries(): Observable<Cohort[]> {
     return observableOf(this.queries);
   }
 
@@ -161,8 +161,8 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  saveQuery(query: Query): Observable<Query> {
-    return observableOf(new Query('id', 'name'));
+  saveQuery(query: Cohort): Observable<Cohort> {
+    return observableOf(new Cohort('id', 'name'));
   }
 
   createExportJob(name: string): Observable<ExportJob> {

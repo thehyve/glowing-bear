@@ -9,17 +9,17 @@
 import {Injectable} from '@angular/core';
 import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {ConstraintService} from './constraint.service';
-import {Step} from '../models/query-models/step';
+import {Step} from '../models/cohort-models/step';
 import {FormatHelper} from '../utilities/format-helper';
 import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
-import {QueryDiffRecord} from '../models/query-models/query-diff-record';
-import {QuerySetType} from '../models/query-models/query-set-type';
-import {QueryDiffItem} from '../models/query-models/query-diff-item';
-import {QueryDiffType} from '../models/query-models/query-diff-type';
-import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
+import {CohortDiffRecord} from '../models/cohort-models/cohort-diff-record';
+import {CohortSetType} from '../models/cohort-models/cohort-set-type';
+import {CohortDiffItem} from '../models/cohort-models/cohort-diff-item';
+import {CohortDiffType} from '../models/cohort-models/cohort-diff-type';
+import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscription-frequency';
 import {DataTableService} from './data-table.service';
 import {DataTable} from '../models/table-models/data-table';
 import {ExportService} from './export.service';
@@ -51,12 +51,10 @@ type LoadingState = 'loading' | 'complete';
  */
 @Injectable()
 export class CohortService {
-  // The current step at which the user is composing query
-  private _step: Step = Step.I;
-  // The currently selected query
-  private _query: Query;
+  // The current cohort, which is continuously being edited and stays in the browser memory
+  private _cohort: Cohort;
   // The list of queries of the user
-  private _queries: Query[] = [];
+  private _cohorts: Cohort[] = [];
   /*
    * ------ variables used in the 0th step, i.e. the total numbers of things ------
    */
@@ -110,12 +108,12 @@ export class CohortService {
   /*
    * ------ other variables ------
    */
-  // Flag indicating if the query subscription optioin for each query in the query panel should be included
-  private _isQuerySubscriptionIncluded = false;
+  // Flag indicating if the cohort subscription optioin for each cohort in the cohort panel should be included
+  private _isCohortSubscriptionIncluded = false;
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
-  // Flag indicating if saving a query is finished
-  private _isSavingQueryCompleted = true;
+  // Flag indicating if saving a cohort is finished
+  private _isSavingCohortCompleted = true;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -136,10 +134,10 @@ export class CohortService {
         this.isDataTableUsed = exportEnabled
       );
     }
-    this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription');
+    this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-query-subscription');
 
     this.initializeCounts();
-    this.loadQueries();
+    this.loadCohorts();
     // initial updates
     this.updateAll(true);
   }
@@ -182,7 +180,6 @@ export class CohortService {
   clearAll(): Promise<any> {
     this.constraintService.clearConstraint_1();
     this.constraintService.clearConstraint_2();
-    this.step = Step.I;
     this.checkAll_2 = false;
     this.isDirty_1 = true;
     this.isDirty_2 = true;
@@ -193,50 +190,50 @@ export class CohortService {
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
-  loadQueries() {
+  loadCohorts() {
     this.resourceService.getQueries()
       .subscribe(
-        (queries: Query[]) => {
-          this.handleLoadedQueries(queries);
+        (cohorts: Cohort[]) => {
+          this.handleLoadedCohorts(cohorts);
         }
       );
   }
 
-  handleLoadedQueries(queries: Query[]) {
-    this.queries.length = 0;
+  handleLoadedCohorts(cohorts: Cohort[]) {
+    this.cohorts.length = 0;
     let bookmarkedQueries = [];
-    queries.forEach(query => {
-      query.collapsed = true;
-      query.visible = true;
-      query.subscriptionCollapsed = true;
-      if (query.createDate) {
-        query.createDateInfo = FormatHelper.formatDateSemantics(new Date(query.createDate));
+    cohorts.forEach(c => {
+      c.collapsed = true;
+      c.visible = true;
+      c.subscriptionCollapsed = true;
+      if (c.createDate) {
+        c.createDateInfo = FormatHelper.formatDateSemantics(new Date(c.createDate));
       }
-      if (query.updateDate) {
-        query.updateDateInfo = FormatHelper.formatDateSemantics(new Date(query.updateDate));
+      if (c.updateDate) {
+        c.updateDateInfo = FormatHelper.formatDateSemantics(new Date(c.updateDate));
       }
-      if (query.subscribed) {
-        if (!query.subscriptionFreq) {
-          query.subscriptionFreq = QuerySubscriptionFrequency.WEEKLY;
+      if (c.subscribed) {
+        if (!c.subscriptionFreq) {
+          c.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
         }
         /*
-         * load query diff records for this query
+         * load cohort diff records for this cohort
          */
-        this.resourceService.diffQuery(query.id)
+        this.resourceService.diffQuery(c.id)
           .subscribe(
             (records) => {
-              query.diffRecords = this.parseQueryDiffRecords(records);
+              c.diffRecords = this.parseCohortDiffRecords(records);
             }
           );
       }
 
-      if (query.bookmarked) {
-        bookmarkedQueries.push(query);
+      if (c.bookmarked) {
+        bookmarkedQueries.push(c);
       } else {
-        this.queries.push(query);
+        this.cohorts.push(c);
       }
     });
-    this.queries = bookmarkedQueries.concat(this.queries);
+    this.cohorts = bookmarkedQueries.concat(this.cohorts);
   }
 
   public update_1(initialUpdate?: boolean): Promise<any> {
@@ -303,11 +300,9 @@ export class CohortService {
   prepare_2(resolve) {
     if (this.treeNodeService.isTreeNodeLoadingCompleted) {
       // update the tree in the 2nd step
-      const existingChecklist = this.query ? this.query.observationQuery['data'] : null;
-      let checklist =
-        this.treeNodeService.getFullProjectionTreeDataChecklist(existingChecklist);
+      let checklist = this.treeNodeService.getFullProjectionTreeDataChecklist(null);
       this.treeNodeService.updateProjectionTreeData(checklist);
-      this.query = null;
+      this.cohort = null;
       this.isPreparing_2 = false;
       resolve(true);
     } else {
@@ -321,7 +316,7 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       if (!this.isUpdating_1 && !this.isPreparing_2) {
         this.isUpdating_2 = true;
-        this.query = null; // clear query
+        this.cohort = null;
         // update the subject count and observation count in the 2nd step
         const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
         this.resourceService.getCounts(constraint_1_2)
@@ -404,82 +399,74 @@ export class CohortService {
 
   }
 
-  public saveQueryByName(queryName: string) {
-    let newQuery = new Query('', queryName);
-    newQuery.subjectQuery = this.constraintService.constraint_1();
-    let data = [];
-    for (let item of this.treeNodeService.selectedProjectionTreeData) {
-      data.push(item['fullName']);
-    }
-    newQuery.observationQuery = {data: data};
-    newQuery.dataTable = this.dataTableService.dataTable;
-    this.saveQuery(newQuery);
+  public saveCohortByName(name: string) {
+    let result = new Cohort('', name);
+    result.constraint = this.constraintService.constraint_1();
+    this.saveCohort(result);
   }
 
-  public saveQueryByObject(queryObj: object) {
-    let newQuery: Query = ConstraintHelper.mapObjectToQuery(queryObj);
-    this.saveQuery(newQuery);
+  public saveCohortByObject(obj: object) {
+    this.saveCohort(ConstraintHelper.mapObjectToCohort(obj));
   }
 
-  saveQuery(newQuery: Query) {
-    this.isSavingQueryCompleted = false;
-    this.resourceService.saveQuery(newQuery)
+  saveCohort(target: Cohort) {
+    this.isSavingCohortCompleted = false;
+    this.resourceService.saveQuery(target)
       .subscribe(
-        (newlySavedQuery: Query) => {
-          newlySavedQuery.collapsed = true;
-          newlySavedQuery.visible = true;
+        (newlySaved: Cohort) => {
+          newlySaved.collapsed = true;
+          newlySaved.visible = true;
 
-          this.queries.push(newlySavedQuery);
-          this.isSavingQueryCompleted = true;
-          const summary = 'Query "' + newlySavedQuery.name + '" is added.';
+          this.cohorts.push(newlySaved);
+          this.isSavingCohortCompleted = true;
+          const summary = 'Cohort "' + newlySaved.name + '" is added.';
           MessageHelper.alert('success', summary);
         },
         (err) => {
           console.error(err);
-          this.isSavingQueryCompleted = true;
-          const summary = 'Could not add the query "' + newQuery.name + '".';
+          this.isSavingCohortCompleted = true;
+          const summary = 'Could not add the query "' + target.name + '".';
           MessageHelper.alert('error', summary);
         }
       );
   }
 
   /**
-   * Restore query
-   * @param {Query} query
+   * Restore cohort
+   * @param {Cohort} cohort
    */
-  public restoreQuery(query: Query): Promise<any> {
+  public restoreCohort(cohort: Cohort): Promise<any> {
     return new Promise((resolve, reject) => {
-      MessageHelper.alert('info', `Start importing query ${query.name}.`);
-      this.query = query;
-      this.step = Step.I;
-      if (query.subjectQuery) {
+      MessageHelper.alert('info', `Start importing query ${cohort.name}.`);
+      this.cohort = cohort;
+      if (cohort.constraint) {
         this.constraintService.clearConstraint_1();
-        this.constraintService.restoreConstraint_1(query.subjectQuery);
+        this.constraintService.restoreConstraint_1(cohort.constraint);
       }
       this.isDirty_1 = true;
       this.isDirty_2 = true;
       this.isDirty_3 = true;
       this.updateAll()
         .then(() => {
-          MessageHelper.alert('info', 'Success', `Query ${query.name} is successfully imported.`);
+          MessageHelper.alert('info', 'Success', `Query ${cohort.name} is successfully imported.`);
           resolve(true);
         })
         .catch(err => {
-          MessageHelper.alert('error', 'Fail to restore query ', query.name);
+          MessageHelper.alert('error', 'Fail to restore query ', cohort.name);
           reject(err);
         });
     });
   }
 
-  public updateQuery(query: Query, queryObj: object) {
-    this.resourceService.updateQuery(query.id, queryObj)
+  public updateCohort(target: Cohort, obj: object) {
+    this.resourceService.updateQuery(target.id, obj)
       .subscribe(
         () => {
-          if (query.subscribed) {
-            this.resourceService.diffQuery(query.id)
+          if (target.subscribed) {
+            this.resourceService.diffQuery(target.id)
               .subscribe(
                 records => {
-                  query.diffRecords = this.parseQueryDiffRecords(records);
+                  target.diffRecords = this.parseCohortDiffRecords(records);
                 }
               );
           }
@@ -488,13 +475,13 @@ export class CohortService {
       );
   }
 
-  public deleteQuery(query: Query) {
+  public deleteCohort(query: Cohort) {
     this.resourceService.deleteQuery(query['id'])
       .subscribe(
         () => {
-          const index = this.queries.indexOf(query);
+          const index = this.cohorts.indexOf(query);
           if (index > -1) {
-            this.queries.splice(index, 1);
+            this.cohorts.splice(index, 1);
           }
           // An alternative would be to directly update the queries
           // using 'treeNodeService.updateQueries()'
@@ -505,36 +492,36 @@ export class CohortService {
       );
   }
 
-  public parseQueryDiffRecords(records: object[]): QueryDiffRecord[] {
-    let diffRecords: QueryDiffRecord[] = [];
+  public parseCohortDiffRecords(records: object[]): CohortDiffRecord[] {
+    let diffRecords: CohortDiffRecord[] = [];
     for (let record of records) {
       let items = [];
       // parse the added objects
       if (record['objectsAdded']) {
         for (let objectId of record['objectsAdded']) {
-          let item = new QueryDiffItem();
+          let item = new CohortDiffItem();
           item.objectId = objectId;
-          item.diffType = QueryDiffType.ADDED;
+          item.diffType = CohortDiffType.ADDED;
           items.push(item);
         }
       }
       // parse the removed objects
       if (record['objectsRemoved']) {
         for (let objectId of record['objectsRemoved']) {
-          let item = new QueryDiffItem();
+          let item = new CohortDiffItem();
           item.objectId = objectId;
-          item.diffType = QueryDiffType.REMOVED;
+          item.diffType = CohortDiffType.REMOVED;
           items.push(item);
         }
       }
       if (items.length > 0) {
-        let diffRecord: QueryDiffRecord = new QueryDiffRecord();
+        let diffRecord: CohortDiffRecord = new CohortDiffRecord();
         diffRecord.id = record['id'];
         diffRecord.queryName = record['queryName'];
         diffRecord.queryUsername = record['queryUsername'];
         diffRecord.setId = record['setId'];
         diffRecord.setType = record['setType'] === 'PATIENT' ?
-          QuerySetType.PATIENT : QuerySetType.SAMPLE;
+          CohortSetType.PATIENT : CohortSetType.SAMPLE;
         diffRecord.createDate = record['createDate'];
         diffRecord.diffItems = items;
         diffRecords.push(diffRecord);
@@ -543,25 +530,25 @@ export class CohortService {
     return diffRecords;
   }
 
-  public toggleQuerySubscription(query: Query) {
-    query.subscribed = !query.subscribed;
-    let queryObj = {
-      subscribed: query.subscribed
+  public toggleCohortSubscription(target: Cohort) {
+    target.subscribed = !target.subscribed;
+    let obj = {
+      subscribed: target.subscribed
     };
-    if (query.subscribed) {
-      queryObj['subscriptionFreq'] =
-        query.subscriptionFreq ? query.subscriptionFreq : QuerySubscriptionFrequency.WEEKLY;
-      query.subscriptionFreq = queryObj['subscriptionFreq'];
+    if (target.subscribed) {
+      obj['subscriptionFreq'] =
+        target.subscriptionFreq ? target.subscriptionFreq : CohortSubscriptionFrequency.WEEKLY;
+      target.subscriptionFreq = obj['subscriptionFreq'];
     }
-    this.updateQuery(query, queryObj);
+    this.updateCohort(target, obj);
   }
 
-  public toggleQueryBookmark(query: Query) {
-    query.bookmarked = !query.bookmarked;
-    let queryObj = {
-      bookmarked: query.bookmarked
+  public toggleCohortBookmark(target: Cohort) {
+    target.bookmarked = !target.bookmarked;
+    let obj = {
+      bookmarked: target.bookmarked
     };
-    this.updateQuery(query, queryObj);
+    this.updateCohort(target, obj);
   }
 
   get inclusionCounts(): CountItem {
@@ -604,20 +591,20 @@ export class CohortService {
     this._counts_2 = value;
   }
 
-  get query(): Query {
-    return this._query;
+  get cohort(): Cohort {
+    return this._cohort;
   }
 
-  set query(value: Query) {
-    this._query = value;
+  set cohort(value: Cohort) {
+    this._cohort = value;
   }
 
-  get queries(): Query[] {
-    return this._queries;
+  get cohorts(): Cohort[] {
+    return this._cohorts;
   }
 
-  set queries(value: Query[]) {
-    this._queries = value;
+  set cohorts(value: Cohort[]) {
+    this._cohorts = value;
   }
 
   get instantCountsUpdate_1(): boolean {
@@ -642,14 +629,6 @@ export class CohortService {
 
   set instantCountsUpdate_3(value: boolean) {
     this._instantCountsUpdate_3 = value;
-  }
-
-  get step(): Step {
-    return this._step;
-  }
-
-  set step(value: Step) {
-    this._step = value;
   }
 
   get isUpdating_1(): boolean {
@@ -716,12 +695,12 @@ export class CohortService {
     this._showObservationCounts = value;
   }
 
-  get isSavingQueryCompleted(): boolean {
-    return this._isSavingQueryCompleted;
+  get isSavingCohortCompleted(): boolean {
+    return this._isSavingCohortCompleted;
   }
 
-  set isSavingQueryCompleted(value: boolean) {
-    this._isSavingQueryCompleted = value;
+  set isSavingCohortCompleted(value: boolean) {
+    this._isSavingCohortCompleted = value;
   }
 
   get isDataTableUsed(): boolean {
@@ -732,12 +711,12 @@ export class CohortService {
     this._isDataTableUsed = value;
   }
 
-  get isQuerySubscriptionIncluded(): boolean {
-    return this._isQuerySubscriptionIncluded;
+  get isCohortSubscriptionIncluded(): boolean {
+    return this._isCohortSubscriptionIncluded;
   }
 
-  set isQuerySubscriptionIncluded(value: boolean) {
-    this._isQuerySubscriptionIncluded = value;
+  set isCohortSubscriptionIncluded(value: boolean) {
+    this._isCohortSubscriptionIncluded = value;
   }
 
   get checkAll_2(): boolean {

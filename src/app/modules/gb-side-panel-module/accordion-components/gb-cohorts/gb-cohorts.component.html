@@ -12,7 +12,7 @@
             (click)="clearFilter()"
             type="button">clear
     </button>
-    <input id="queryFileUpload"
+    <input id="cohortFileUpload"
            type="file"
            style="display: none"/>
 
@@ -69,7 +69,7 @@
             <div class="gb-query-header clearfix">
               <div class="gb-query-header-name">
                 <p-checkbox [(ngModel)]="query.selected" binary="true"
-                            (click)="onQueryCheckClick($event)"></p-checkbox>
+                            (click)="onCohortCheckClick($event)"></p-checkbox>
                 {{query.name}}
               </div>
               <div class="float-right">

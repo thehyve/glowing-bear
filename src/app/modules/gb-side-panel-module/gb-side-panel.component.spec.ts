@@ -13,7 +13,7 @@ import {CommonModule} from '@angular/common';
 import {
   AccordionModule, AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, DataListModule,
   DragDropModule, InputTextModule, OverlayPanelModule, PanelModule,
-  TooltipModule, TreeModule, RadioButtonModule
+  TooltipModule, TreeModule, RadioButtonModule, CheckboxModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
@@ -60,7 +60,8 @@ describe('GbSidePanelComponent', () => {
         TooltipModule,
         ConfirmDialogModule,
         Md2AccordionModule,
-        RadioButtonModule
+        RadioButtonModule,
+        CheckboxModule
       ],
       providers: [
         {
