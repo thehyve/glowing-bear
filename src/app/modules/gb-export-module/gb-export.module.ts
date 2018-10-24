@@ -12,7 +12,7 @@ import {GbExportComponent} from './gb-export.component';
 import {FormsModule} from '@angular/forms';
 import {CheckboxModule, DataTableModule, MessagesModule, PickListModule, TooltipModule} from 'primeng/primeng';
 import {routing} from './gb-export.routing';
-import {GbDataTableComponent} from "../gb-cohort-selection-module/accordion-components/gb-data-table/gb-data-table.component";
+import {GbDataTableComponent} from "./data-table-components/gb-data-table/gb-data-table.component";
 import {GbDataTableDimensionsComponent} from "./data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component";
 import {GbDataTableGridComponent} from "./data-table-components/gb-data-table-grid/gb-data-table-grid.component";
 import {TableModule} from "primeng/table";

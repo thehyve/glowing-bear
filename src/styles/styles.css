@@ -456,7 +456,7 @@ gb-tree-nodes .gb-is-not-leaf {
 }
 
 /*
- * ------------------------------ Styles for gb-queries component -------------------------------
+ * ------------------------------ Styles for gb-cohorts component -------------------------------
  */
 /*Make the font size in the saved query list smaller*/
 gb-queries p-dataList {
