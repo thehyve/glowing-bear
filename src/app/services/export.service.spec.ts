@@ -19,8 +19,8 @@ import {DatePipe} from '@angular/common';
 import {ExportJob} from '../models/export-models/export-job';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
-import {QueryService} from './query.service';
-import {QueryServiceMock} from './mocks/query.service.mock';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
@@ -29,7 +29,7 @@ import {StudyServiceMock} from './mocks/study.service.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
-  let queryService: QueryService;
+  let queryService: CohortService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -55,15 +55,15 @@ describe('ExportService', () => {
           useClass: DataTableServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         ExportService,
         DatePipe
       ]
     });
     exportService = TestBed.get(ExportService);
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {

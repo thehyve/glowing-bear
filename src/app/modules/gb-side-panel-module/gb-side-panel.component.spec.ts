@@ -23,8 +23,8 @@ import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.component';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {Md2AccordionModule} from 'md2';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
@@ -76,8 +76,8 @@ describe('GbSidePanelComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: NavbarService,

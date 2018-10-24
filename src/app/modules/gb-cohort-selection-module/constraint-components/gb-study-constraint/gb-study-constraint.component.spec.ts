@@ -18,8 +18,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
-import {QueryService} from '../../../../services/query.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
 import {Study} from '../../../../models/constraint-models/study';
 import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
@@ -58,8 +58,8 @@ describe('GbStudyConstraintComponent', () => {
           useClass: TreeNodeServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: StudyService,

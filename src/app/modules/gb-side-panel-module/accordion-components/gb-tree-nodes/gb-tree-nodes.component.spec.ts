@@ -16,8 +16,8 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 
 describe('TreeNodesComponent', () => {
   let component: GbTreeNodesComponent;
@@ -45,8 +45,8 @@ describe('TreeNodesComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         }
       ]
     })

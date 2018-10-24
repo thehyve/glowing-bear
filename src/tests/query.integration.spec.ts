@@ -9,7 +9,7 @@ import {DataTableService} from '../app/services/data-table.service';
 import {TreeNodeService} from '../app/services/tree-node.service';
 import {CrossTableService} from '../app/services/cross-table.service';
 import {ExportService} from '../app/services/export.service';
-import {QueryService} from '../app/services/query.service';
+import {CohortService} from '../app/services/cohort.service';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {NavbarService} from '../app/services/navbar.service';
@@ -126,7 +126,7 @@ describe('Integration test for query saving and restoring', () => {
   };
 
   let q0: Query = ConstraintHelper.mapObjectToQuery(q0obj);
-  let queryService: QueryService;
+  let queryService: CohortService;
   let constraintService: ConstraintService;
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
@@ -153,12 +153,12 @@ describe('Integration test for query saving and restoring', () => {
         CrossTableService,
         ExportService,
         StudyService,
-        QueryService,
+        CohortService,
         NavbarService,
         DatePipe
       ]
     });
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
     constraintService = TestBed.get(ConstraintService);
     dataTableService = TestBed.get(DataTableService);
     resourceService = TestBed.get(ResourceService);

@@ -19,8 +19,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {of as observableOf} from 'rxjs';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
@@ -77,8 +77,8 @@ describe('GbConceptConstraintComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: StudyService,

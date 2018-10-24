@@ -9,7 +9,7 @@
 import {Component, OnInit, ElementRef} from '@angular/core';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {Query} from '../../../../models/query-models/query';
-import {QueryService} from '../../../../services/query.service';
+import {CohortService} from '../../../../services/cohort.service';
 import {QueryDiffRecord} from '../../../../models/query-models/query-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
@@ -29,7 +29,7 @@ export class GbCohortsComponent implements OnInit {
   file: File; // holds the uploaded query file
 
   constructor(public treeNodeService: TreeNodeService,
-              private queryService: QueryService,
+              private queryService: CohortService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
