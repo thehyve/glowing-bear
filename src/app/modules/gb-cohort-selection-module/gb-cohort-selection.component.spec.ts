@@ -16,7 +16,6 @@ import {
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {EndpointServiceMock} from '../../services/mocks/endpoint.service.mock';
 import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
 import {ResourceService} from '../../services/resource.service';
 import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
@@ -40,9 +39,7 @@ describe('GbCohortSelectionComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbCohortSelectionComponent,
-        MockComponent({selector: 'gb-selection'}),
-        MockComponent({selector: 'gb-projection'}),
-        MockComponent({selector: 'gb-data-table'})
+        MockComponent({selector: 'gb-selection'})
       ],
       imports: [
         BrowserAnimationsModule,
