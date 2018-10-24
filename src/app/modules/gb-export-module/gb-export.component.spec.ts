@@ -22,7 +22,7 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
-import {MockComponent} from "ng2-mock-component";
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;

@@ -29,7 +29,7 @@ import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-constraint";
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
