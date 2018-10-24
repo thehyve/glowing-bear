@@ -1,6 +1,10 @@
 <div class="gb-export-container">
   <!---------------------- data table ---------------------->
+  <div class="gb-export-section-banner">
+    <h5>View and arrange data</h5>
+  </div>
   <gb-data-table></gb-data-table>
+  <hr>
 
   <!---------------------- create new export ---------------------->
   <div *ngIf="!isLoadingExportDataTypes && exportDataTypes.length > 0">
