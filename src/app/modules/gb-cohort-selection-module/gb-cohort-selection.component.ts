@@ -12,11 +12,11 @@ import {QueryService} from '../../services/query.service';
 import {MessageHelper} from '../../utilities/message-helper';
 
 @Component({
-  selector: 'gb-data-selection',
-  templateUrl: './gb-data-selection.component.html',
-  styleUrls: ['./gb-data-selection.component.css']
+  selector: 'gb-cohort-selection',
+  templateUrl: './gb-cohort-selection.component.html',
+  styleUrls: ['./gb-cohort-selection.component.css']
 })
-export class GbDataSelectionComponent implements OnInit {
+export class GbCohortSelectionComponent implements OnInit {
   public queryName: string;
 
   constructor(public queryService: QueryService) {

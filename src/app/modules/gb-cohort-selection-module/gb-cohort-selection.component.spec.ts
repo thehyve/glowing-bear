@@ -8,7 +8,7 @@
 
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GbDataSelectionComponent} from './gb-data-selection.component';
+import {GbCohortSelectionComponent} from './gb-cohort-selection.component';
 import {
   AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule, MessagesModule,
   TooltipModule, OverlayPanelModule
@@ -23,7 +23,7 @@ import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
-import {routing} from './gb-data-selection.routing';
+import {routing} from './gb-cohort-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {QueryService} from '../../services/query.service';
 import {QueryServiceMock} from '../../services/mocks/query.service.mock';
@@ -31,15 +31,15 @@ import {MockComponent} from 'ng2-mock-component';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 
-describe('GbDataSelectionComponent', () => {
-  let component: GbDataSelectionComponent;
-  let fixture: ComponentFixture<GbDataSelectionComponent>;
+describe('GbCohortSelectionComponent', () => {
+  let component: GbCohortSelectionComponent;
+  let fixture: ComponentFixture<GbCohortSelectionComponent>;
   let queryService: QueryService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbDataSelectionComponent,
+        GbCohortSelectionComponent,
         MockComponent({selector: 'gb-selection'}),
         MockComponent({selector: 'gb-projection'}),
         MockComponent({selector: 'gb-data-table'})
@@ -85,7 +85,7 @@ describe('GbDataSelectionComponent', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbDataSelectionComponent);
+    fixture = TestBed.createComponent(GbCohortSelectionComponent);
     component = fixture.componentInstance;
     queryService = TestBed.get(QueryService);
     fixture.detectChanges();

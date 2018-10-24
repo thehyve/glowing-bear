@@ -9,8 +9,8 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {GbDataSelectionComponent} from './gb-data-selection.component';
-import {routing} from './gb-data-selection.routing';
+import {GbCohortSelectionComponent} from './gb-cohort-selection.component';
+import {routing} from './gb-cohort-selection.routing';
 import {RouterModule} from '@angular/router';
 import {GbSelectionComponent} from './accordion-components/gb-selection/gb-selection.component';
 import {GbStudyConstraintComponent} from './constraint-components/gb-study-constraint/gb-study-constraint.component';
@@ -64,7 +64,7 @@ import {TableModule} from 'primeng/table';
     RouterModule
   ],
   declarations: [
-    GbDataSelectionComponent,
+    GbCohortSelectionComponent,
     GbSelectionComponent,
     GbStudyConstraintComponent,
     GbCombinationConstraintComponent,
@@ -83,5 +83,5 @@ import {TableModule} from 'primeng/table';
     GbStudyConstraintComponent
   ]
 })
-export class GbDataSelectionModule {
+export class GbCohortSelectionModule {
 }

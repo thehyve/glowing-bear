@@ -26,7 +26,7 @@ import {ResourceServiceMock} from './services/mocks/resource.service.mock';
 import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
-import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
+import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-cohort-selection.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
@@ -76,7 +76,7 @@ describe('AppComponent', () => {
         GbMainModule,
         GbNavBarModule,
         GbSidePanelModule,
-        GbDataSelectionModule,
+        GbCohortSelectionModule,
         GbAnalysisModule,
         routing
       ],
