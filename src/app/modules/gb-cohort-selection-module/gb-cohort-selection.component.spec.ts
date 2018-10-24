@@ -24,21 +24,23 @@ import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {routing} from './gb-cohort-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
+import {MockComponent} from 'ng2-mock-component';
 import {SubjectSetConstraint} from "../../models/constraint-models/subject-set-constraint";
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
   let fixture: ComponentFixture<GbCohortSelectionComponent>;
-  let queryService: QueryService;
+  let queryService: CohortService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbCohortSelectionComponent
+        GbCohortSelectionComponent,
+        MockComponent({selector: 'gb-constraint', inputs: ['constraint', 'isRoot']})
       ],
       imports: [
         BrowserAnimationsModule,
@@ -68,8 +70,8 @@ describe('GbCohortSelectionComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: DataTableService,
@@ -83,7 +85,7 @@ describe('GbCohortSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbCohortSelectionComponent);
     component = fixture.componentInstance;
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
     fixture.detectChanges();
   });
 

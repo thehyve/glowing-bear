@@ -11,7 +11,7 @@ import {AuthenticationService} from '../../services/authentication/authenticatio
 import {ResourceService} from '../../services/resource.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
-import {QueryService} from '../../services/query.service';
+import {CohortService} from '../../services/cohort.service';
 import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {AppConfig} from '../../config/app.config';
 import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
@@ -32,7 +32,7 @@ export class GbMainComponent implements OnInit {
               private transmartPackerHttpService: TransmartPackerHttpService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private queryService: QueryService) {
+              private queryService: CohortService) {
   }
 
   ngOnInit() {

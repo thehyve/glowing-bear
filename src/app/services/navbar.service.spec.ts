@@ -9,8 +9,8 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
-import {QueryService} from './query.service';
-import {QueryServiceMock} from './mocks/query.service.mock';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
 import {of as observableOf} from 'rxjs';
@@ -18,7 +18,7 @@ import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 
 describe('NavbarService', () => {
-  let queryService: QueryService;
+  let queryService: CohortService;
   let navbarService: NavbarService;
   let exportService: ExportService;
   let authService: AuthenticationService;
@@ -32,8 +32,8 @@ describe('NavbarService', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: ExportService,
@@ -42,7 +42,7 @@ describe('NavbarService', () => {
         NavbarService
       ]
     });
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
     exportEnabled = false;

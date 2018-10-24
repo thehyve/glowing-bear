@@ -6,7 +6,7 @@ import {TestBed} from '@angular/core/testing';
 import {NavbarService} from '../app/services/navbar.service';
 import {ConstraintService} from '../app/services/constraint.service';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
-import {QueryService} from '../app/services/query.service';
+import {CohortService} from '../app/services/cohort.service';
 import {ResourceService} from '../app/services/resource.service';
 import {DatePipe} from '@angular/common';
 import {ExportJob} from '../app/models/export-models/export-job';
@@ -42,7 +42,7 @@ describe('Integration test for data export', () => {
         CrossTableService,
         ExportService,
         StudyService,
-        QueryService,
+        CohortService,
         NavbarService,
         DatePipe
       ]

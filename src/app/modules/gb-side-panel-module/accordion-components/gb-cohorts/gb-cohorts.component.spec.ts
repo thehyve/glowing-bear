@@ -25,8 +25,8 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {FormsModule} from '@angular/forms';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 import {Md2AccordionModule} from 'md2';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {log} from 'util';
@@ -41,7 +41,7 @@ import {UIHelper} from '../../../../utilities/ui-helper';
 describe('QueriesComponent', () => {
   let component: GbCohortsComponent;
   let fixture: ComponentFixture<GbCohortsComponent>;
-  let queryService: QueryService;
+  let queryService: CohortService;
   let confirmationService: ConfirmationService;
 
   beforeEach(async(() => {
@@ -67,8 +67,8 @@ describe('QueriesComponent', () => {
           useClass: TreeNodeServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         ConfirmationService
       ]
@@ -80,7 +80,7 @@ describe('QueriesComponent', () => {
     fixture = TestBed.createComponent(GbCohortsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    queryService = TestBed.get(QueryService);
+    queryService = TestBed.get(CohortService);
     confirmationService = TestBed.get(ConfirmationService);
   });
 
