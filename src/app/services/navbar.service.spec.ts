@@ -72,7 +72,7 @@ describe('NavbarService', () => {
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
-    which = 'data-selection';
+    which = 'cohort-selection';
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
