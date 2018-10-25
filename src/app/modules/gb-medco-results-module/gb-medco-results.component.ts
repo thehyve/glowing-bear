@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {MedcoService} from "../../services/picsure-services/medco.service";
 import {MedcoResult} from "../../models/picsure-models/medco-result";
 import {Chart} from 'chart.js';
@@ -25,33 +25,37 @@ export class GbMedcoResultsComponent implements OnInit {
   constructor(private medcoService: MedcoService) { }
 
   ngOnInit() {
+    this._resultChart = new Chart('medco-results-chart', {
+      type: 'doughnut',
+      data: {
+        labels: [],
+        datasets: [{
+          label: '# of subjects',
+          data: [],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)',
+          ],
+        }]
+      },
+      options: { }
+    });
+
     this.medcoService.results.subscribe( (results: MedcoResult[]) => {
       this._medcoResult = results;
-      this._resultChart = new Chart('medco-results-chart', {
-        type: 'doughnut',
-        data: {
-          labels: results.map((r) => r.siteName),
-          datasets: [{
-            label: '# of subjects',
-            data: results.map((r) => r.subjectCount),
-            backgroundColor: [
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(54, 162, 235, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(153, 102, 255, 0.5)',
-              'rgba(255, 159, 64, 0.5)',
-              'rgba(255, 99, 132, 0.5)',
-              'rgba(54, 162, 235, 0.5)',
-              'rgba(255, 206, 86, 0.5)',
-              'rgba(75, 192, 192, 0.5)',
-              'rgba(153, 102, 255, 0.5)',
-              'rgba(255, 159, 64, 0.5)',
-            ],
-          }]
-        },
-        options: { }
-      });
+
+      this.resultChart.data.labels = results.map((r) => r.siteName);
+      this.resultChart.data.datasets[0].data = results.map((r) => r.subjectCount);
       this.resultChart.update();
     });
   }

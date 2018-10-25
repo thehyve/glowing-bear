@@ -10,16 +10,16 @@
 import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
 import {GenKey, AggKeys, EncryptStr, DecryptStr} from '@medco/unlynx-crypto-js-lib'
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {NavbarService} from "../navbar.service";
-import {Subject} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {MedcoResult} from "../../models/picsure-models/medco-result";
 
 @Injectable()
 export class MedcoService {
 
-  private _results: Subject<MedcoResult[]>;
+  private _results: BehaviorSubject<MedcoResult[]>;
 
   private publicKey: string;
   private privateKey: string;
@@ -37,7 +37,7 @@ export class MedcoService {
   constructor(private config: AppConfig,
               private http: HttpClient,
               private injector: Injector) {
-    this._results = new Subject();
+    this._results = new BehaviorSubject([]);
 
     // fetch and load the cothority key
     let cothorityKeyUrl = config.getConfig('medco-cothority-key-url');
@@ -74,7 +74,7 @@ export class MedcoService {
    * @param {number} integer
    * @returns {string}
    */
-  encryptInteger(integer: number): string {
+  encryptInteger(integer: string): string {
     return EncryptStr(this.cothorityKey, integer);
   }
 
@@ -83,7 +83,7 @@ export class MedcoService {
    * @param {string} encInteger
    * @returns {number}
    */
-  decryptInteger(encInteger: string): number {
+  decryptInteger(encInteger: string): string {
     return DecryptStr(encInteger, this.privateKey);
   }
 
@@ -111,7 +111,7 @@ export class MedcoService {
         siteName: `Clinical Site ${k}`,
         encryptedSubjectCount: resultObject['enc_count_result'],
         publicKey: resultObject['pub_key'],
-        subjectCount: this.decryptInteger(resultObject['enc_count_result']),
+        subjectCount: Number(this.decryptInteger(resultObject['enc_count_result'])),
         times: resultObject['times']
       };
 
@@ -138,7 +138,7 @@ export class MedcoService {
     }
   }
 
-  get results(): Subject<MedcoResult[]> {
+  get results(): BehaviorSubject<MedcoResult[]> {
     return this._results;
   }
 
