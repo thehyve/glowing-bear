@@ -22,6 +22,7 @@ import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {AbstractConstraintVisitor} from '../constraint-utilities/abstract-constraint-visitor';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {ConceptType} from '../../models/constraint-models/concept-type';
+import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -407,6 +408,10 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
     } else {
       return this.visit(optConstraint);
     }
+  }
+
+  visitGenomicAnnotationConstraint(constraint: GenomicAnnotationConstraint): object {
+    throw new Error('GenomicAnnotationConstraint not supported by TranSMART');
   }
 
 }

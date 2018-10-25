@@ -1,10 +1,12 @@
 <div (drop)="onDrop($event)">
+  <!-- todo: use [multiple]="true" and a ngModel array in order to have multiple selection -->
   <div class="form-inline gb-constraint-child-container">
     <label>Genomic annotation: </label>
-    <p-autoComplete #autoComplete
-                    [(ngModel)]="selectedAnnotationName"
-                    [suggestions]="searchedAnnotationNames"
+    <p-autoComplete #annotationNameAutoComplete
+                    [(ngModel)]="selectedAnnotation"
+                    [suggestions]="searchedAnnotations"
                     (completeMethod)="annotationNameOnSearch($event)"
+                    field="displayName"
                     [style]="{'width':'100%'}"
                     [inputStyle]="{'width':'100%'}"
                     styleClass="gb-concept-constraint-input"
@@ -15,7 +17,7 @@
 
   <div class="form-inline gb-constraint-child-container">
     <label>Annotation value: </label>
-    <p-autoComplete #autoComplete
+    <p-autoComplete #annotationValueAutoComplete
                     [(ngModel)]="selectedAnnotationValue"
                     [suggestions]="searchedAnnotationValues"
                     (completeMethod)="annotationValueOnSearch($event)"

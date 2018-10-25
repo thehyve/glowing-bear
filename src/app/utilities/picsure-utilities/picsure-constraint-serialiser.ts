@@ -13,6 +13,9 @@ import {WhereClause} from '../../models/picsure-models/request/where-clause';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {MedcoService} from '../../services/picsure-services/medco.service';
+import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
+import {Injector} from "@angular/core";
+import {GenomicAnnotationsService} from "../../services/picsure-services/genomic-annotations.service";
 
 /**
  * Serialisation class for serialising constraint objects for use in the PIC-SURE API.
@@ -27,10 +30,12 @@ import {MedcoService} from '../../services/picsure-services/medco.service';
  */
 export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<WhereClause[]> {
   private medcoService: MedcoService;
+  private genomicAnnotationsService: GenomicAnnotationsService;
 
-  constructor(medcoService?: MedcoService) {
+  constructor(injector: Injector) {
     super();
-    this.medcoService = medcoService;
+    this.medcoService = injector.get(MedcoService);
+    this.genomicAnnotationsService = injector.get(GenomicAnnotationsService);
   }
 
 
@@ -131,6 +136,28 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     return negConstraint;
   }
 
+  visitGenomicAnnotationConstraint(constraint: GenomicAnnotationConstraint): WhereClause[] {
+    if (constraint.variantIds.length === 0) {
+      return [];
+    }
+
+    let whereClauses: WhereClause[] = [];
+    return constraint.variantIds.map((variantId) => {
+      // let encId = this.medcoService.encryptInteger(variantId);
+      let splitPath = constraint.annotation.path.split('/');
+      let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${variantId}/`;
+
+      return {
+        predicate: 'CONTAINS',
+        field: {
+          pui: encPath,
+          dataType: 'ENC_CONCEPT'
+        }
+      }
+    });
+  }
+
+
   /**
    * @param {ConceptConstraint} constraint
    * @returns {WhereClause[]}
@@ -160,7 +187,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
         }
 
         // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
-        let encId = this.medcoService.encryptInteger(Number(constraint.concept.code.split(':')[1]));
+        let encId = this.medcoService.encryptInteger(constraint.concept.code.split(':')[1]);
         let splitPath = constraint.concept.path.split('/');
         let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/`;
 

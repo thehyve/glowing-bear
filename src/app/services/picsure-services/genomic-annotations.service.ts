@@ -12,6 +12,11 @@ import {GenKey, AggKeys, EncryptStr, DecryptStr} from '@medco/unlynx-crypto-js-l
 import {HttpClient} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {Observable} from "rxjs";
+import {Constraint} from "../../models/constraint-models/constraint";
+import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
+import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
+import {and} from "@angular/router/src/utils/collection";
+import {GenomicAnnotation} from "../../models/constraint-models/genomic-annotation";
 
 @Injectable()
 export class GenomicAnnotationsService {
@@ -35,11 +40,10 @@ export class GenomicAnnotationsService {
    * @param annotationValue partial value of the annotation
    * @return array of corresponding values
    */
-  getAnnotationValues(annotationName: string, annotationValue: string): Observable<string[]> {
-    let annotationsUrl = this.config.getConfig('medco-genomic-annotations-url');
+  getAnnotationValues(annotation: GenomicAnnotation, annotationValue: string): Observable<string[]> {
     return this.http.get(
-      `${annotationsUrl}/getAnnotationValues.php?` +
-        `annotation_name=${annotationName}` +
+      `${this.annotationsUrl}/getAnnotationValues.php?` +
+        `annotation_name=${annotation.name}` +
         `&annotation_value=${annotationValue}` +
         `&limit=${GenomicAnnotationsService.QUERY_RECORD_LIMIT}`,
       {})
@@ -48,32 +52,63 @@ export class GenomicAnnotationsService {
   }
 
   /**
+   * For each GenomicAnnotationConstraint, query the variant identifiers and add them into the constraint.
+   * @param constraint
+   */
+  addVariantIdsToConstraints(constraint: Constraint): Observable<void> {
+
+    // gather the queries to be made
+    let genomicAnnotationConstraints: GenomicAnnotationConstraint[] = [];
+    this.getGenomicAnnotationConstraints(constraint, genomicAnnotationConstraints);
+
+    let queries: Observable<void>[] = genomicAnnotationConstraints
+      .map((constraint) => this.addVariantIdsToConstraint(constraint));
+
+    // execute all with forkjoin
+    return queries.length === 0 ?
+      Observable.of(undefined) :
+      Observable.forkJoin(queries).map(() => undefined);
+  }
+
+  private getGenomicAnnotationConstraints(constraint: Constraint, genomicAnnotationConstraints: GenomicAnnotationConstraint[]) {
+    if (constraint.className === 'CombinationConstraint') {
+      (constraint as CombinationConstraint).children.forEach((child) =>
+        this.getGenomicAnnotationConstraints(child, genomicAnnotationConstraints));
+    } else if (constraint.className === 'GenomicAnnotationConstraint') {
+      genomicAnnotationConstraints.push(constraint as GenomicAnnotationConstraint);
+    }
+  }
+
+  /**
    * Queries for variant identifiers corresponding to a genomic annotation.
    *
-   * @param annotationName name of the queried annotation
-   * @param annotationValue value of the annotation
-   * @param zygosityHeterozygous
-   * @param zygosityHomozygous
-   * @param zygosityUnknown
    * @return array of variant identifiers
+   * @param constraint
    */
-  getVariantIds(annotationName: string, annotationValue: string, zygosityHeterozygous: boolean,
-                zygosityHomozygous: boolean, zygosityUnknown: boolean): Observable<string[]> {
+  addVariantIdsToConstraint(constraint: GenomicAnnotationConstraint): Observable<void> {
 
-    let zygosity: string[] = [];
-    zygosityHeterozygous ? zygosity.push('heterozygous') : false;
-    zygosityHomozygous ? zygosity.push('homozygous') : false;
-    zygosityUnknown ? zygosity.push('unknown') : false;
+    let queryUrl = `${this.annotationsUrl}/fetchVariants.php?` +
+    `query_type=generic_annotation_and_zygosity` +
+    `&annotation_name=${constraint.annotation.name}` +
+    `&annotation_value=${constraint.annotationValue}`;
 
-    let annotationsUrl = this.config.getConfig('medco-genomic-annotations-url');
-    return this.http.get(
-      `${annotationsUrl}/fetchVariants.php?` +
-        `query_type=annotation_and_zygosity` +
-        `&annotation_name=${annotationName}` +
-        `&annotation_value=${annotationValue}` +
-        `&zigosity=${zygosity.join(',')}`,
-      {})
+    if (constraint.zygosityHeterozygous) {
+      queryUrl = `${queryUrl}&zygosity[]=Heterozygous`;
+    }
+
+    if (constraint.zygosityHomozygous) {
+      queryUrl = `${queryUrl}&zygosity[]=Homozygous`;
+    }
+
+    if (constraint.zygosityUnknown) {
+      queryUrl = `${queryUrl}&zygosity[]=Unknown`;
+    }
+
+    return this.http.get(queryUrl, {})
       .catch(ErrorHelper.handleError.bind(this))
-      .map((rep: object) => rep['variants'] as string[]);
+      .map((rep: object) => rep['variants'] as string[])
+      .do((variantIds: string[]) => constraint.variantIds = variantIds)
+      .do((variantIds: string[]) => console.log(`Fetched ${variantIds.length} variants for ${constraint.annotation.name} = ${constraint.annotationValue}`))
+      .map(() => undefined);
   }
 }

@@ -9,24 +9,7 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {Concept} from '../../../../models/constraint-models/concept';
-import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
-import {GbConceptOperatorState} from './gb-concept-operator-state';
-import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
-import {TrialVisit} from '../../../../models/constraint-models/trial-visit';
-import {TrialVisitConstraint} from '../../../../models/constraint-models/trial-visit-constraint';
-import {UIHelper} from '../../../../utilities/ui-helper';
-import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
-import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
-import {Aggregate} from '../../../../models/aggregate-models/aggregate';
-import {FormatHelper} from '../../../../utilities/format-helper';
-import {SelectItem} from 'primeng/api';
-import {ErrorHelper} from '../../../../utilities/error-helper';
-import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {MessageHelper} from '../../../../utilities/message-helper';
-import {HttpErrorResponse} from '@angular/common/http';
-import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {GenomicAnnotationConstraint} from "../../../../models/constraint-models/genomic-annotation-constraint";
 import {TreeNodeService} from "../../../../services/tree-node.service";
@@ -35,6 +18,8 @@ import {ConstraintService} from "../../../../services/constraint.service";
 import {QueryService} from "../../../../services/query.service";
 import {AppConfig} from "../../../../config/app.config";
 import {GenomicAnnotationsService} from "../../../../services/picsure-services/genomic-annotations.service";
+import {Subject} from "rxjs";
+import {GenomicAnnotation} from "../../../../models/constraint-models/genomic-annotation";
 
 @Component({
   selector: 'gb-genomic-annotation-constraint',
@@ -46,8 +31,9 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
   @ViewChild('annotationNameAutoComplete') annotationNameAutoComplete: AutoComplete;
   @ViewChild('annotationValueAutoComplete') annotationValueAutoComplete: AutoComplete;
 
-  private _searchedAnnotationNames: string[];
+  private _searchedAnnotations: GenomicAnnotation[];
   private _searchedAnnotationValues: string[];
+  private annotationValuesSearchTerm: Subject<string>;
 
   /*
    * flag indicating if to show more options
@@ -55,16 +41,14 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
   private _showMoreOptions = false;
 
   constructor(private genomicAnnotationService: GenomicAnnotationsService,
-              private treeNodeService: TreeNodeService,
-              private resourceService: ResourceService,
-              private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private element: ElementRef,
-              private config: AppConfig) {
+              protected treeNodeService: TreeNodeService,
+              protected resourceService: ResourceService,
+              protected constraintService: ConstraintService,
+              protected queryService: QueryService,
+              protected element: ElementRef,
+              protected config: AppConfig) {
     super(treeNodeService, resourceService, constraintService, queryService, element, config);
   }
-
-  // todo: getting variants and encrypting them
 
   ngOnInit() {
     this.initializeConstraints();
@@ -78,16 +62,19 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
       this.zygosityHeterozygous = true;
       this.zygosityUnknown = true;
 
-      this.searchedAnnotationNames = [];
+      this.searchedAnnotations = [];
       this.searchedAnnotationValues = [];
+
+      this.annotationValuesSearchTerm = new Subject();
+      this.annotationValuesSearchTerm
+        .debounceTime(200)
+        .distinctUntilChanged()
+        .switchMap( (searchTerm: string) =>  this.genomicAnnotationService.getAnnotationValues(this.selectedAnnotation, searchTerm))
+        .subscribe((vals: string[]) => this.searchedAnnotationValues = vals);
 
       this.showMoreOptions = false;
     });
   }
-
-
-
-
 
   /*
    * -------------------- event handlers: autocompletes --------------------
@@ -98,14 +85,15 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
    */
   annotationNameOnSearch(event) {
     let query = event.query.toLowerCase();
-    let annotationNames = this.constraintService.genomicConstraints?; // todo: create and fill this list
-    // todo: fill from tree into contraint
+    let annotations = this.constraintService.genomicAnnotations;
     if (query) {
-      this.searchedAnnotationNames = annotationNames.filter((name: string) => name.toLowerCase().includes(query));
+      this.searchedAnnotations = annotations.filter((genAnnotation: GenomicAnnotation) =>
+        genAnnotation.displayName.toLowerCase().includes(query) ||
+        genAnnotation.name.toLowerCase().includes(query)
+      );
     } else {
-      this.searchedAnnotationNames = annotationNames;
+      this.searchedAnnotations = annotations;
     }
-    // todo: this
   }
 
   /**
@@ -114,10 +102,8 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
    */
   annotationValueOnSearch(event) {
     let query = event.query.toLowerCase();
-    if (query && this.selectedAnnotationName) {
-      this.genomicAnnotationService.getAnnotationValues(this.selectedAnnotationName, query)
-        .switchMap((results: string[]) => this.searchedAnnotationValues = results)
-        .subscribe();
+    if (query && this.selectedAnnotation) {
+      this.annotationValuesSearchTerm.next(query);
     }
   }
 
@@ -167,7 +153,7 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
 
     if (this.droppedConstraint && this.droppedConstraint.className === 'GenomicAnnotationConstraint') {
-      this.genomicConstraint = this.droppedConstraint;
+      this.genomicConstraint = this.droppedConstraint as GenomicAnnotationConstraint;
       this.initializeConstraints()
         .then(() => {
           this.update();
@@ -192,12 +178,12 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
     this.constraint = value;
   }
 
-  get selectedAnnotationName(): string {
-    return this.genomicConstraint.annotationName;
+  get selectedAnnotation(): GenomicAnnotation {
+    return this.genomicConstraint.annotation;
   }
 
-  set selectedAnnotationName(value: string) {
-    this.genomicConstraint.annotationName = value;
+  set selectedAnnotation(value: GenomicAnnotation) {
+    this.genomicConstraint.annotation = value;
     this.initializeConstraints();
     this.update();
   }
@@ -236,12 +222,12 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
     this.genomicConstraint.zygosityUnknown = value;
   }
 
-  get searchedAnnotationNames(): string[] {
-    return this._searchedAnnotationNames;
+  get searchedAnnotations(): GenomicAnnotation[] {
+    return this._searchedAnnotations;
   }
 
-  set searchedAnnotationNames(value: string[]) {
-    this._searchedAnnotationNames = value;
+  set searchedAnnotations(value: GenomicAnnotation[]) {
+    this._searchedAnnotations = value;
   }
 
   get searchedAnnotationValues(): string[] {

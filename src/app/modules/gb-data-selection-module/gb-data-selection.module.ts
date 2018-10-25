@@ -37,6 +37,7 @@ import {GbDataTableComponent} from './accordion-components/gb-data-table/gb-data
 import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
 import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
 import {TableModule} from 'primeng/table';
+import {GbGenomicAnnotationConstraintComponent} from "./constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component";
 
 @NgModule({
   imports: [
@@ -74,7 +75,8 @@ import {TableModule} from 'primeng/table';
     GbPedigreeConstraintComponent,
     GbDataTableComponent,
     GbDataTableDimensionsComponent,
-    GbDataTableGridComponent
+    GbDataTableGridComponent,
+    GbGenomicAnnotationConstraintComponent
   ],
   entryComponents: [
     GbConstraintComponent,

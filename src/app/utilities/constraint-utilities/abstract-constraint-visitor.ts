@@ -18,6 +18,7 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
+import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
 
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
@@ -33,6 +34,8 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
         return this.visitStudyConstraint(<StudyConstraint>constraint);
       case 'ConceptConstraint':
         return this.visitConceptConstraint(<ConceptConstraint>constraint);
+      case 'GenomicAnnotationConstraint':
+        return this.visitGenomicAnnotationConstraint(<GenomicAnnotationConstraint>constraint);
       case 'ValueConstraint':
         return this.visitValueConstraint(<ValueConstraint>constraint);
       case 'PedigreeConstraint':
@@ -57,6 +60,8 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
   abstract visitStudyConstraint(constraint: StudyConstraint): T;
 
   abstract visitConceptConstraint(constraint: ConceptConstraint): T;
+
+  abstract visitGenomicAnnotationConstraint(constraint: GenomicAnnotationConstraint): T;
 
   abstract visitValueConstraint(constraint: ValueConstraint): T;
 

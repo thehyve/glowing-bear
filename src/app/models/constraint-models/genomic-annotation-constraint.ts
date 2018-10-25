@@ -7,10 +7,11 @@
  */
 
 import {Constraint} from './constraint';
+import {GenomicAnnotation} from "./genomic-annotation";
 
 export class GenomicAnnotationConstraint extends Constraint {
 
-  private _annotationName: string;
+  private _annotation: GenomicAnnotation;
   private _annotationValue: string;
   private _variantIds: string[];
 
@@ -24,18 +25,11 @@ export class GenomicAnnotationConstraint extends Constraint {
   constructor() {
     super();
     this.textRepresentation = 'Genomic Annotation';
+    this.annotation = new GenomicAnnotation();
   }
 
   get className(): string {
     return 'GenomicAnnotationConstraint';
-  }
-
-  get annotationName(): string {
-    return this._annotationName;
-  }
-
-  set annotationName(value: string) {
-    this._annotationName = value;
   }
 
   get annotationValue(): string {
@@ -76,5 +70,13 @@ export class GenomicAnnotationConstraint extends Constraint {
 
   set zygosityUnknown(value: boolean) {
     this._zygosityUnknown = value;
+  }
+
+  get annotation(): GenomicAnnotation {
+    return this._annotation;
+  }
+
+  set annotation(value: GenomicAnnotation) {
+    this._annotation = value;
   }
 }

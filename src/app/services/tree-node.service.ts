@@ -19,6 +19,7 @@ import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
+import {GenomicAnnotation} from "../models/constraint-models/genomic-annotation";
 
 @Injectable()
 export class TreeNodeService {
@@ -287,7 +288,7 @@ export class TreeNodeService {
    */
   processTreeNode(node: TreeNode, constraintService: ConstraintService) {
     let tail = node.metadata ? ' ⓘ' : ' ';
-    node.label = node.name + tail;
+    node.label = node.displayName + tail;
     // Extract concept
     if (node.nodeType === TreeNodeType.CONCEPT) {
       let concept = this.getConceptFromTreeNode(node);
@@ -300,8 +301,9 @@ export class TreeNodeService {
         constraintService.allConstraints.push(constraint);
       }
     } else if (node.nodeType === TreeNodeType.GENOMIC_ANNOTATION) {
-      if (constraintService.genomicAnnotationNames.includes(node.name)) {
-        constraintService.genomicAnnotationNames.push(node.name);
+      if (constraintService.genomicAnnotations.filter(
+        (annotation: GenomicAnnotation) => annotation.name === node.name).length === 0) {
+        constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
       }
     }
 

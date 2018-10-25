@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, Injector} from '@angular/core';
 import {PicsureResource} from '../../models/picsure-models/resource-definition/picsure-resource';
 import {AppConfig} from '../../config/app.config';
 import {Observable} from 'rxjs/Observable';
@@ -15,6 +15,7 @@ import {SelectClause} from '../../models/picsure-models/request/select-clause';
 import {Concept} from '../../models/constraint-models/concept';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {MedcoService} from './medco.service';
+import {GenomicAnnotationsService} from "./genomic-annotations.service";
 
 @Injectable()
 export class PicSureResourceService {
@@ -33,7 +34,9 @@ export class PicSureResourceService {
 
   constructor(private config: AppConfig,
               private apiEndpointService: ApiEndpointService,
-              private medcoService: MedcoService) {
+              private medcoService: MedcoService,
+              private genomicAnnotationsService: GenomicAnnotationsService,
+              private injector: Injector) {
     this.initialized = this.loadResource(this.config.getConfig('picsure-resource-name')).shareReplay(1);
   }
 
@@ -139,6 +142,9 @@ export class PicSureResourceService {
 
             case 'genomic_annotation':
               treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
+              // todo: the value to query for annotations should be taken from elsewhere
+              treeNode.name = treeNodeObj['ontologyId'];
+              break;
 
             case 'concept':
             default:
@@ -242,32 +248,34 @@ export class PicSureResourceService {
       return Observable.of(new CountItem(0, 0));
     }
 
-    return this.runQuery(
-      [],
-      PicsureConstraintMapper.mapConstraint(constraint, this.medcoService),
-      'only_count=true'
-    )
-      .switchMap((res) => this.waitOnResult(res['resultId']))
-      .map((result) => {
-        let data = result['data'][0];
-        if (data[0]['patient_set_counts']) {
-          return new CountItem(
-            Number(data[0]['patient_set_counts']),
-            -1
-          );
-        } else if (data[0]['medco_results_0']) {
-          return new CountItem(
-            this.medcoService.parseMedCoResults(data),
-            -1
-          );
-        } else {
-          console.error('No result detected.');
-          return new CountItem(
-            -1,
-            -1
-          );
-        }
-      });
+    return this.genomicAnnotationsService.addVariantIdsToConstraints(constraint)
+      .switchMap(() => this.runQuery(
+        [],
+        PicsureConstraintMapper.mapConstraint(constraint, this.injector),
+        'only_count=true'
+      )
+        .switchMap((res) => this.waitOnResult(res['resultId']))
+        .map((result) => {
+          let data = result['data'][0];
+          if (data[0]['patient_set_counts']) {
+            return new CountItem(
+              Number(data[0]['patient_set_counts']),
+              -1
+            );
+          } else if (data[0]['medco_results_0']) {
+            return new CountItem(
+              this.medcoService.parseMedCoResults(data),
+              -1
+            );
+          } else {
+            console.error('No result detected.');
+            return new CountItem(
+              -1,
+              -1
+            );
+          }
+        })
+      );
   }
 
   /**
