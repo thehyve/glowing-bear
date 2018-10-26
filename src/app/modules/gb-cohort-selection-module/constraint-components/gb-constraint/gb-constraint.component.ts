@@ -81,10 +81,10 @@ export class GbConstraintComponent implements OnInit {
   }
 
   update() {
-    if (this.queryService.instantCountsUpdate_1) {
-      this.queryService.update_1();
+    if (this.queryService.instantCohortCountsUpdate) {
+      this.queryService.update();
     } else {
-      this.queryService.isDirty_1 = true;
+      this.queryService.isDirty = true;
     }
   }
 

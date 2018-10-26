@@ -36,7 +36,9 @@ import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggre
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ResourceService {
 
   private _endpointMode: EndpointMode;

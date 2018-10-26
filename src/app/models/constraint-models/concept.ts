@@ -18,6 +18,8 @@ export class Concept {
   private _code: string;
   private _name: string;
   private _fullName: string;
+  // a flag indicating if the concept is selected/checked/marked
+  private _selected = true;
 
   constructor() {
   }
@@ -76,5 +78,13 @@ export class Concept {
 
   set fullName(value: string) {
     this._fullName = value;
+  }
+
+  get selected(): boolean {
+    return this._selected;
+  }
+
+  set selected(value: boolean) {
+    this._selected = value;
   }
 }

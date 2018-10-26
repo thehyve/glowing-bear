@@ -11,100 +11,47 @@ import {ResourceService} from './resource.service';
 import {TreeNodeService} from './tree-node.service';
 import {Cohort} from '../models/cohort-models/cohort';
 import {ConstraintService} from './constraint.service';
-import {Step} from '../models/cohort-models/step';
 import {FormatHelper} from '../utilities/format-helper';
-import {Constraint} from '../models/constraint-models/constraint';
 import {AppConfig} from '../config/app.config';
 import {CohortDiffRecord} from '../models/cohort-models/cohort-diff-record';
 import {CohortSetType} from '../models/cohort-models/cohort-set-type';
 import {CohortDiffItem} from '../models/cohort-models/cohort-diff-item';
 import {CohortDiffType} from '../models/cohort-models/cohort-diff-type';
 import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscription-frequency';
-import {DataTableService} from './data-table.service';
-import {DataTable} from '../models/table-models/data-table';
-import {ExportService} from './export.service';
-import {CrossTableService} from './cross-table.service';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
-import {HttpErrorResponse} from '@angular/common/http';
 
 type LoadingState = 'loading' | 'complete';
 
 /**
  * This service concerns with
- * (1) Updating subject and observation counts in the steps in data-selection
- * (2) Saving / Updating / Restoring / Deleting queries in the queries panel on the left
- *
- * Remark: the subject set, observation set, concept set and study set used
- * in the 2nd step (i.e. the projection step) are subsets of the corresponding sets
- * in the 1st step (i.e. the selection step).
- * Hence, each time the 1st sets updated, so should be the 2nd sets.
- * However, each time the 2nd sets updated, the 1st sets remain unaffected.
- *
- * General workflow of data selection:
- * select subjects (rows), update the counts in the 1st step -->
- * select concepts (columns), update the counts in the 2nd step -->
- * update data table and charts (to be implemented) in 3rd/4th steps -->
- * update data formats available for export based on the previous data selection
+ * (1) Updating subject and observation counts Cohort Selection
+ * (2) Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CohortService {
   // The current cohort, which is continuously being edited and stays in the browser memory
   private _cohort: Cohort;
-  // The list of queries of the user
+  // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
-  /*
-   * ------ variables used in the 0th step, i.e. the total numbers of things ------
-   */
-  private _counts_0: CountItem;
-  /*
-   * ------ variables used in the 1st step (Selection) accordion in Data Selection ------
-   */
+  // The total numbers of subjects & observations
+  private _totalCounts: CountItem;
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
-  /*
-   * when step 1 constraints are changed, whether to call update_1 immediately,
-   * used in gb-constraint-component
-   */
-  private _instantCountsUpdate_1: boolean;
-  // flag indicating if the counts in the first step are being updated
-  private _isUpdating_1 = false;
-  // flag indicating if the query in the 1st step has been changed
-  private _isDirty_1 = true;
+  // indicate when constraints are changed, whether to update counts immediately,
+  // used in gb-constraint-component
+  private _instantCohortCountsUpdate: boolean;
+  // flag indicating if cohort counts are being updated
+  private _isUpdating = false;
+  // flag indicating if the cohort constraint in Cohort Selection has been changed
+  private _isDirty = true;
   // the counts in the first step
-  private _counts_1: CountItem;
-  loadingStateInclusion: LoadingState = 'complete';
-  loadingStateExclusion: LoadingState = 'complete';
-  loadingStateTotal_1: LoadingState = 'complete';
+  private _counts: CountItem;
 
-  /*
-   * ------ variables used in the 2nd step (Projection) accordion in Data Selection ------
-   */
-  /*
-   * when step 2 constraints are changed, whether to call update_2 immediately,
-   * used in gb-projection-component
-   */
-  private _instantCountsUpdate_2: boolean;
-  // flag indicating if the counts in the 2nd step are being updated
-  private _isUpdating_2 = false;
-  // flag indicating if the counts in the 2nd step caused by the changes in the 1st step are being updated
-  private _isPreparing_2 = false;
-  // flag indicating if the query in the 2nd step has been changed
-  private _isDirty_2 = true;
-  // the number of subjects further refined in the second step
-  // _subjectCount_2 < or = _subjectCount_1
-  // _observationCount_2 could be <, > or = _observationCount_1
-  private _counts_2: CountItem;
-  // boolean value to indicate if all tree nodes in step 2 are checked
-  private _checkAll_2 = false;
-  /*
-   *  ------ variables used in the 3rd step (table) accordion in Data Selection ------
-   */
-  private _instantCountsUpdate_3: boolean;
-  private _isUpdating_3 = false;
-  private _isDataTableUsed = true;
   /*
    * ------ other variables ------
    */
@@ -118,73 +65,28 @@ export class CohortService {
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private dataTableService: DataTableService,
-              private crossTableService: CrossTableService,
-              private exportService: ExportService) {
-    this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1');
-    this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2');
-    this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3');
+              private constraintService: ConstraintService) {
+    this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
-    let includeDataTable = this.appConfig.getConfig('include-data-table');
-    if (!includeDataTable) {
-      this.isDataTableUsed = false;
-    } else {
-      this.exportService.isExportEnabled().subscribe((exportEnabled) =>
-        this.isDataTableUsed = exportEnabled
-      );
-    }
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
 
     this.initializeCounts();
     this.loadCohorts();
     // initial updates
-    this.updateAll(true);
+    this.update(true);
   }
 
   initializeCounts() {
-    this.counts_0 = new CountItem(0, 0);
+    this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
-    this.counts_1 = new CountItem(0, 0);
-    this.counts_2 = new CountItem(0, 0);
-  }
-
-  updateAll(initialUpdate?: boolean): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.update_1(initialUpdate)
-        .then(() => {
-          this.update_2()
-            .then(() => {
-              this.update_3()
-                .then(() => {
-                  resolve(true);
-                })
-                .catch(err => {
-                  console.error(err);
-                  reject(err);
-                })
-            })
-            .catch(err => {
-              console.error(err);
-              reject(err);
-            })
-        })
-        .catch(err => {
-          console.error(err);
-          reject(err);
-        })
-    });
+    this.counts = new CountItem(0, 0);
   }
 
   clearAll(): Promise<any> {
-    this.constraintService.clearConstraint_1();
-    this.constraintService.clearConstraint_2();
-    this.checkAll_2 = false;
-    this.isDirty_1 = true;
-    this.isDirty_2 = true;
-    this.isDirty_3 = true;
-    return this.updateAll(true);
+    this.constraintService.clearCohortConstraint();
+    this.isDirty = true;
+    return this.update(true);
   }
 
   /**
@@ -236,45 +138,31 @@ export class CohortService {
     this.cohorts = bookmarkedQueries.concat(this.cohorts);
   }
 
-  public update_1(initialUpdate?: boolean): Promise<any> {
+  public update(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (this.isDirty_1) {
-        // update export flags
-        this.exportService.isLoadingExportDataTypes = true;
-        this.isUpdating_1 = true;
-        // set the flags
-        this.loadingStateInclusion = 'loading';
-        this.loadingStateExclusion = 'loading';
-        this.loadingStateTotal_1 = 'loading';
-        let constraint_1 = this.constraintService.constraint_1();
-        let inclusionConstraint = this.constraintService.generateInclusionConstraint();
-        let exclusionConstraint = this.constraintService.generateExclusionConstraint();
-        this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
+      if (this.isDirty) {
+        this.isUpdating = true;
+        let constraint = this.constraintService.cohortConstraint();
+        let inclusionConstraint = this.constraintService.inclusionConstraint();
+        let exclusionConstraint = this.constraintService.exclusionConstraint();
+        this.resourceService
+          .updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
           .then(() => {
             let inCounts = this.resourceService.inclusionCounts;
             let exCounts = this.resourceService.exclusionCounts;
             this.inclusionCounts = inCounts;
             this.exclusionCounts = exCounts;
-            this.counts_1.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
-            this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
+            this.counts.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
+            this.counts.observationCount = inCounts.observationCount - exCounts.observationCount;
             if (initialUpdate) {
-              this.counts_0.subjectCount = this.counts_1.subjectCount;
-              this.counts_0.observationCount = this.counts_1.observationCount;
+              this.totalCounts.subjectCount = this.counts.subjectCount;
+              this.totalCounts.observationCount = this.counts.observationCount;
             }
             this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
             this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
-            this.isUpdating_1 = false;
-            this.loadingStateInclusion = 'complete';
-            this.loadingStateExclusion = 'complete';
-            this.loadingStateTotal_1 = 'complete';
-
-            this.counts_2.subjectCount = -1;
-            this.counts_2.observationCount = -1;
-            // step 1 is no longer dirty
-            this.isDirty_1 = false;
-            // step 2 becomes dirty and needs to be updated
-            this.isDirty_2 = true;
-            resolve(true);
+            this.isUpdating = false;
+            this.isDirty = false;
+            this.prepareVariables(resolve);
           })
           .catch(err => {
             reject(err);
@@ -285,123 +173,22 @@ export class CohortService {
     });
   }
 
-  /**
-   * This following functions handle the asynchronicity
-   * between updating the 2nd-step counts and the loading of tree nodes:
-   * only when the tree nodes are completely loaded can we start updating
-   * the counts in the 2nd step
-   */
-  update_2a(): Promise<any> {
-    return new Promise(resolve => {
-      this.prepare_2(resolve);
-    });
-  }
-
-  prepare_2(resolve) {
+  prepareVariables(resolve) {
     if (this.treeNodeService.isTreeNodeLoadingCompleted) {
-      // update the tree in the 2nd step
-      let checklist = this.treeNodeService.getFullProjectionTreeDataChecklist(null);
-      this.treeNodeService.updateProjectionTreeData(checklist);
-      this.cohort = null;
-      this.isPreparing_2 = false;
+      this.treeNodeService.updateVariables();
+      console.log('variables', this.treeNodeService.variables);
       resolve(true);
     } else {
       window.setTimeout((function () {
-        this.prepare_2(resolve);
+        this.prepareVariables(resolve);
       }).bind(this), 500);
     }
   }
 
-  update_2b(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (!this.isUpdating_1 && !this.isPreparing_2) {
-        this.isUpdating_2 = true;
-        this.cohort = null;
-        // update the subject count and observation count in the 2nd step
-        const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
-        this.resourceService.getCounts(constraint_1_2)
-          .subscribe(
-            (countItem: CountItem) => {
-              // update counts and flags
-              this.counts_2 = countItem;
-              this.isUpdating_2 = false;
-              this.isDirty_2 = false;
-              this.isDirty_3 = true;
-              // update the export variables
-              this.exportService.updateExports();
-              // update the final tree nodes in the summary panel
-              if (this.counts_2.subjectCount > 0) {
-                this.treeNodeService.updateFinalTreeNodes();
-              } else {
-                this.treeNodeService.finalTreeNodes = [];
-              }
-              // update the cross table baseline constraint
-              this.crossTableService.constraint = this.constraintService.constraint_1();
-              resolve(true);
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              reject(err.message);
-            }
-          );
-      } else {
-        resolve(true);
-      }
-    });
-  }
-
-  /**
-   * update the subject, observation, concept and study counts in the second step
-   */
-  public update_2(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (this.isDirty_2) {
-        this.update_2a()
-          .then(this.update_2b.bind(this))
-          .then(() => resolve(true))
-          .catch(err => reject(err));
-      } else {
-        resolve(true);
-      }
-    });
-  }
-
-  /**
-   * update the table
-   */
-  public update_3(targetDataTable?: DataTable): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (this.isDirty_3) {
-        this.isUpdating_3 = true;
-        if (this.isDataTableUsed) {
-          this.dataTableService.dataTable.currentPage = 1;
-          this.dataTableService.updateDataTable(targetDataTable)
-            .then(() => {
-              this.isDirty_3 = false;
-              this.isUpdating_3 = false;
-              resolve(true);
-            })
-            .catch(err => {
-              ErrorHelper.handleError(err);
-              this.isDirty_3 = false;
-              this.isUpdating_3 = false;
-              reject(err)
-            })
-        } else {
-          this.isDirty_3 = false;
-          this.isUpdating_3 = false;
-          resolve(true);
-        }
-      } else {
-        resolve(true);
-      }
-    });
-
-  }
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
-    result.constraint = this.constraintService.constraint_1();
+    result.constraint = this.constraintService.cohortConstraint();
     this.saveCohort(result);
   }
 
@@ -409,7 +196,7 @@ export class CohortService {
     this.saveCohort(ConstraintHelper.mapObjectToCohort(obj));
   }
 
-  saveCohort(target: Cohort) {
+  public saveCohort(target: Cohort) {
     this.isSavingCohortCompleted = false;
     this.resourceService.saveQuery(target)
       .subscribe(
@@ -440,13 +227,11 @@ export class CohortService {
       MessageHelper.alert('info', `Start importing query ${cohort.name}.`);
       this.cohort = cohort;
       if (cohort.constraint) {
-        this.constraintService.clearConstraint_1();
-        this.constraintService.restoreConstraint_1(cohort.constraint);
+        this.constraintService.clearCohortConstraint();
+        this.constraintService.restoreCohortConstraint(cohort.constraint);
       }
-      this.isDirty_1 = true;
-      this.isDirty_2 = true;
-      this.isDirty_3 = true;
-      this.updateAll()
+      this.isDirty = true;
+      this.update()
         .then(() => {
           MessageHelper.alert('info', 'Success', `Query ${cohort.name} is successfully imported.`);
           resolve(true);
@@ -567,28 +352,20 @@ export class CohortService {
     this._exclusionCounts = value;
   }
 
-  get counts_0(): CountItem {
-    return this._counts_0;
+  get totalCounts(): CountItem {
+    return this._totalCounts;
   }
 
-  set counts_0(value: CountItem) {
-    this._counts_0 = value;
+  set totalCounts(value: CountItem) {
+    this._totalCounts = value;
   }
 
-  get counts_1(): CountItem {
-    return this._counts_1;
+  get counts(): CountItem {
+    return this._counts;
   }
 
-  set counts_1(value: CountItem) {
-    this._counts_1 = value;
-  }
-
-  get counts_2(): CountItem {
-    return this._counts_2;
-  }
-
-  set counts_2(value: CountItem) {
-    this._counts_2 = value;
+  set counts(value: CountItem) {
+    this._counts = value;
   }
 
   get cohort(): Cohort {
@@ -607,84 +384,28 @@ export class CohortService {
     this._cohorts = value;
   }
 
-  get instantCountsUpdate_1(): boolean {
-    return this._instantCountsUpdate_1;
+  get instantCohortCountsUpdate(): boolean {
+    return this._instantCohortCountsUpdate;
   }
 
-  set instantCountsUpdate_1(value: boolean) {
-    this._instantCountsUpdate_1 = value;
+  set instantCohortCountsUpdate(value: boolean) {
+    this._instantCohortCountsUpdate = value;
   }
 
-  get instantCountsUpdate_2(): boolean {
-    return this._instantCountsUpdate_2;
+  get isDirty(): boolean {
+    return this._isDirty;
   }
 
-  set instantCountsUpdate_2(value: boolean) {
-    this._instantCountsUpdate_2 = value;
+  set isDirty(value: boolean) {
+    this._isDirty = value;
   }
 
-  get instantCountsUpdate_3(): boolean {
-    return this._instantCountsUpdate_3;
+  get isUpdating(): boolean {
+    return this._isUpdating;
   }
 
-  set instantCountsUpdate_3(value: boolean) {
-    this._instantCountsUpdate_3 = value;
-  }
-
-  get isUpdating_1(): boolean {
-    return this._isUpdating_1;
-  }
-
-  set isUpdating_1(value: boolean) {
-    this._isUpdating_1 = value;
-  }
-
-  get isUpdating_2(): boolean {
-    return this._isUpdating_2;
-  }
-
-  set isUpdating_2(value: boolean) {
-    this._isUpdating_2 = value;
-  }
-
-  get isUpdating_3(): boolean {
-    return this._isUpdating_3;
-  }
-
-  set isUpdating_3(value: boolean) {
-    this._isUpdating_3 = value;
-  }
-
-  get isPreparing_2(): boolean {
-    return this._isPreparing_2;
-  }
-
-  set isPreparing_2(value: boolean) {
-    this._isPreparing_2 = value;
-  }
-
-  get isDirty_1(): boolean {
-    return this._isDirty_1;
-  }
-
-  set isDirty_1(value: boolean) {
-    this._isDirty_1 = value;
-  }
-
-  get isDirty_2(): boolean {
-    return this._isDirty_2;
-  }
-
-  set isDirty_2(value: boolean) {
-    this._isDirty_2 = value;
-  }
-
-  get isDirty_3(): boolean {
-    return this.dataTableService.dataTable.isDirty;
-  }
-
-  set isDirty_3(value: boolean) {
-    this.dataTableService.dataTable.isDirty = value;
+  set isUpdating(value: boolean) {
+    this._isUpdating = value;
   }
 
   get showObservationCounts(): boolean {
@@ -703,27 +424,11 @@ export class CohortService {
     this._isSavingCohortCompleted = value;
   }
 
-  get isDataTableUsed(): boolean {
-    return this._isDataTableUsed;
-  }
-
-  set isDataTableUsed(value: boolean) {
-    this._isDataTableUsed = value;
-  }
-
   get isCohortSubscriptionIncluded(): boolean {
     return this._isCohortSubscriptionIncluded;
   }
 
   set isCohortSubscriptionIncluded(value: boolean) {
     this._isCohortSubscriptionIncluded = value;
-  }
-
-  get checkAll_2(): boolean {
-    return this._checkAll_2;
-  }
-
-  set checkAll_2(value: boolean) {
-    this._checkAll_2 = value;
   }
 }
