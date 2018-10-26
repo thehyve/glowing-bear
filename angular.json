@@ -102,27 +102,6 @@
           }
         }
       }
-    },
-    "glowing-bear-e2e": {
-      "root": "e2e",
-      "sourceRoot": "e2e",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "glowing-bear:serve"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [],
-            "exclude": []
-          }
-        }
-      }
     }
   },
   "defaultProject": "glowing-bear",
