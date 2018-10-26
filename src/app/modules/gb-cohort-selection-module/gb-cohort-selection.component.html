@@ -1,12 +1,12 @@
-<div class="gb-cohort-selection-container">
+<div class="container">
   <!-- top panel -->
-  <div class="container form-inline gb-cohort-selection-top-panel">
+  <div class="container form-inline top-panel">
     <input id="cohortName" type="text"
-           class="form-control gb-cohort-selection-top-panel-input"
+           class="form-control top-panel-input"
            placeholder="Specify cohort name"
            (drop)="preventNodeDrop($event)"
            [(ngModel)]="cohortName">
-    <button class="btn btn-outline-primary btn-sm gb-cohort-selection-top-panel-btn"
+    <button class="btn btn-outline-primary btn-sm top-panel-btn"
             (click)="saveCohort()"
             type="button">
       <span *ngIf="isSavingCohortCompleted">Save cohort</span>
@@ -15,8 +15,8 @@
 
     <button type="button"
             (click)="update_1($event)"
-            class="btn btn-outline-primary btn-sm gb-cohort-selection-update-btn
-                      {{cohortService.isDirty_1? 'gb-cohort-selection-update-btn-dirty' : ''}}">
+            class="btn btn-outline-primary btn-sm update-btn
+                      {{cohortService.isDirty_1? 'update-btn-dirty' : ''}}">
       Update cohort
     </button>
 
