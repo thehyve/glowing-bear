@@ -38,7 +38,7 @@ import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
 
-describe('QueriesComponent', () => {
+describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
   let fixture: ComponentFixture<GbCohortsComponent>;
   let cohortService: CohortService;
@@ -119,7 +119,7 @@ describe('QueriesComponent', () => {
     expect(spy1).not.toHaveBeenCalled();
   })
 
-  it('should read uploaded query file', async () => {
+  it('should read uploaded cohort file', async () => {
     fixture.detectChanges();
     let file = new File([], 'testFile');
     let event = {
@@ -156,7 +156,7 @@ describe('QueriesComponent', () => {
     let file = new File([], 'testFile.json');
     let data = {};
     let json = {
-      subjectQuery: {}
+      constraint: {}
     };
     let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('wrong-type');
     let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
@@ -276,7 +276,7 @@ describe('QueriesComponent', () => {
     expect(spy3).toHaveBeenCalled();
   })
 
-  it('should handle query removal error', () => {
+  it('should handle cohort removal error', () => {
     let e = new Event('');
     let query = new Cohort('id', 'name');
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
@@ -288,13 +288,13 @@ describe('QueriesComponent', () => {
     expect(spy2).toHaveBeenCalled();
   })
 
-  it('should download query', () => {
+  it('should download cohort', () => {
     let e = new Event('');
     let query = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
-    let spy3 = spyOn(ConstraintHelper, 'mapQueryToObject').and.stub();
-    component.downloadQuery(e, query);
+    let spy3 = spyOn(ConstraintHelper, 'mapCohortToObject').and.stub();
+    component.downloadCohort(e, query);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
@@ -316,7 +316,7 @@ describe('QueriesComponent', () => {
     expect(spy1).toHaveBeenCalled();
   })
 
-  it('should handle filering of queries', () => {
+  it('should handle filtering of cohorts', () => {
     let e = new Event('');
     let target = new Cohort('id', 'name111');
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
@@ -331,7 +331,7 @@ describe('QueriesComponent', () => {
     expect(spy).toHaveBeenCalled();
   })
 
-  it('should clear filter and restore query visibility', () => {
+  it('should clear filter and restore cohort visibility', () => {
     component.searchTerm = 'test';
     let query = new Cohort('id', 'name111');
     let spy = spyOn(UIHelper, 'removePrimeNgLoaderIcon').and.stub();
@@ -362,24 +362,24 @@ describe('QueriesComponent', () => {
     q3.updateDate = '2020';
     cohortService.cohorts = [q2, q3, q1, q1_1];
     component.sortByName();
-    expect(component.queries[0]).toBe(q1);
-    expect(component.queries[1]).toBe(q1_1);
-    expect(component.queries[2]).toBe(q2);
-    expect(component.queries[3]).toBe(q3);
+    expect(component.cohorts[0]).toBe(q1);
+    expect(component.cohorts[1]).toBe(q1_1);
+    expect(component.cohorts[2]).toBe(q2);
+    expect(component.cohorts[3]).toBe(q3);
 
     component.sortBySubscription();
-    expect(component.queries[0]).toBe(q1);
-    expect(component.queries[1]).toBe(q3);
+    expect(component.cohorts[0]).toBe(q1);
+    expect(component.cohorts[1]).toBe(q3);
 
     component.sortByDate();
-    expect(component.queries[0]).toBe(q1);
-    expect(component.queries[1]).toBe(q1_1);
+    expect(component.cohorts[0]).toBe(q1);
+    expect(component.cohorts[1]).toBe(q1_1);
 
     component.sortByBookmark();
-    expect(component.queries[0]).toBe(q1);
-    expect(component.queries[1]).toBe(q1_1);
-    expect(component.queries[2]).toBe(q3);
-    expect(component.queries[3]).toBe(q2);
+    expect(component.cohorts[0]).toBe(q1);
+    expect(component.cohorts[1]).toBe(q1_1);
+    expect(component.cohorts[2]).toBe(q3);
+    expect(component.cohorts[3]).toBe(q2);
   })
 
 });
