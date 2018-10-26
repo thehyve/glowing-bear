@@ -20,9 +20,7 @@ export class AppConfig {
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
   public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_1 = false;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_2 = false;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_3 = false;
+  public static DEFAULT_INSTANT_COUNTS_UPDATE = false;
   public static DEFAULT_INCLUDE_DATA_TABLE = true;
   public static DEFAULT_INCLUDE_QUERY_SUBSCRIPTION = false;
   public static DEFAULT_AUTHENTICATION_SERVICE_TYPE = 'oidc';
@@ -73,14 +71,8 @@ export class AppConfig {
         case 'show-observation-counts': {
           value = AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS; break;
         }
-        case 'instant-counts-update-1': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1; break;
-        }
-        case 'instant-counts-update-2': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2; break;
-        }
-        case 'instant-counts-update-3': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3; break;
+        case 'instant-counts-update': {
+          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE; break;
         }
         case 'include-data-table': {
           value = AppConfig.DEFAULT_INCLUDE_DATA_TABLE; break;

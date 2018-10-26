@@ -24,7 +24,9 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CrossTableService {
 
   /*

@@ -21,7 +21,9 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../config/app.config';
 import {FormatHelper} from '../utilities/format-helper';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TreeNodeService {
 
   /*
@@ -45,6 +47,14 @@ export class TreeNodeService {
   private _finalTreeNodes: TreeNode[] = [];
   // the selected tree node in the side-panel by dragging
   private _selectedTreeNode: TreeNode = null;
+
+  /*
+   * The list of concepts that correspond to
+   * the leaf/concept tree nodes that are narrowed down
+   * when user defines a cohort or a combination of cohorts.
+   */
+  private _variables: Concept[] = [];
+
   /**
    * The map that holds the conceptCode -> count item relations
    *  e.g.
@@ -433,20 +443,35 @@ export class TreeNodeService {
     }
   }
 
-  /**
-   * Update the tree table data for rendering the tree table in step 2, projection
-   * based on a given set of concept codes as filtering criteria.
-   * @param {Object} conceptCountMap
-   */
-  public updateProjectionTreeData(checklist: Array<string>) {
-    // If the tree nodes copy is empty, create it by duplicating the tree nodes
-    if (this.treeNodesCopy.length === 0) {
-      this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
+  public updateVariables() {
+    this.variables.length = 0;
+    this.updateVariablesIterative(this.treeNodes, []);
+  }
+
+  private updateVariablesIterative(nodes: TreeNode[], existingConceptCodes: string[]) {
+    for (let node of nodes) {
+      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
+        const code = node['conceptCode'];
+        let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
+        if (conceptMap && conceptMap.size > 0) {
+          node['expanded'] = false;
+          countItem = conceptMap.get(code);
+        } else {
+          countItem = this.selectedConceptCountMap.get(code);
+        }
+
+        if (countItem && !existingConceptCodes.includes(code)) {
+          existingConceptCodes.push(code);
+          let concept = new Concept();
+          concept.name = node['name'];
+          concept.code = code;
+          this.variables.push(concept);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
+          this.updateVariablesIterative(node['children'], existingConceptCodes);
+      }
     }
-    this.projectionTreeData =
-      this.updateProjectionTreeDataIterative(this.treeNodesCopy);
-    this.selectedProjectionTreeData = [];
-    this.checkProjectionTreeDataIterative(this.projectionTreeData, checklist);
   }
 
   public updateFinalTreeNodes() {
@@ -576,23 +601,7 @@ export class TreeNodeService {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
-  /**
-   * Givena tree node path, find the parent tree node paths
-   * @param {string} path - taking the form of '\a\tree\node\path\'
-   * @returns {string[]}
-   */
-  public getParentTreeNodePaths(path: string): string[] {
-    let paths: string[] = [];
-    const parts = path.split('\\');
-    if (parts.length - 2 > 1) {
-      let parentPath = '\\';
-      for (let i = 1; i < parts.length - 2; i++) {
-        parentPath += parts[i] + '\\';
-        paths.push(parentPath);
-      }
-    }
-    return paths;
-  }
+
 
   public expandProjectionTreeDataIterative(nodes: TreeNode[], value: boolean) {
     for (let node of nodes) {
@@ -778,46 +787,6 @@ export class TreeNodeService {
     });
   }
 
-  /**
-   * The param checklist is a list of tree node fullnames
-   * indicating which tree nodes are selected in the step 2.
-   * Based on this checklist, the tree node service updates
-   * the tree nodes in step 2.
-   *
-   * When the user is restoring a saved query, this checklist
-   * will be directly constructed from the saved query.
-   * When the user checks the tree nodes in step 2 by clicking
-   * the checkboxes, the checklist will be constructed from such actions.
-   *
-   * However, neither checklist construction approach does not
-   * include parent tree nodes of the checked child tree nodes
-   * due to PrimeNg issues. These parent tree nodes should be
-   * included as well in the checklist.
-   *
-   * This function does just that.
-   * @param {string[]} checklist
-   */
-  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
-    let newExistingChecklist = existingChecklist ? existingChecklist : [];
-    if (newExistingChecklist.length === 0 &&
-      this.selectedProjectionTreeData.length > 0) {
-      for (let selectedNode of this.selectedProjectionTreeData) {
-        newExistingChecklist.push(selectedNode['fullName']);
-      }
-    }
-    let parentPaths: string[] = [];
-    for (let path of newExistingChecklist) {
-      let _parentPaths = this.getParentTreeNodePaths(path);
-      for (let _parentPath of _parentPaths) {
-        if (!parentPaths.includes(_parentPath) &&
-          !newExistingChecklist.includes(_parentPath)) {
-          parentPaths.push(_parentPath);
-        }
-      }
-    }
-    return newExistingChecklist.concat(parentPaths);
-  }
-
   get treeNodes(): TreeNode[] {
     return this._treeNodes;
   }
@@ -922,4 +891,11 @@ export class TreeNodeService {
     this._showObservationCounts = value;
   }
 
+  get variables(): Concept[] {
+    return this._variables;
+  }
+
+  set variables(value: Concept[]) {
+    this._variables = value;
+  }
 }
