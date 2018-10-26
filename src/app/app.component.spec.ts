@@ -34,8 +34,8 @@ import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
 import {DataTableService} from './services/data-table.service';
 import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from './services/mocks/transmart-http.service.mock';
 import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
 import {NavbarService} from './services/navbar.service';
@@ -98,8 +98,8 @@ describe('AppComponent', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
+          provide: TransmartHttpService,
+          useClass: TransmartHttpServiceMock
         },
         {
           provide: TransmartExternalJobResourceService,

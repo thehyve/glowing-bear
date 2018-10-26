@@ -34,7 +34,7 @@ import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial
 
 
 @Injectable()
-export class TransmartResourceService {
+export class TransmartHttpService {
 
   static sortableDimensions = new Set<string>([
     'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
@@ -745,7 +745,7 @@ export class TransmartResourceService {
   }
 
   get sortableDimensions(): Set<string> {
-    return TransmartResourceService.sortableDimensions;
+    return TransmartHttpService.sortableDimensions;
   }
 
   getCrossTable(baseConstraint: Constraint,

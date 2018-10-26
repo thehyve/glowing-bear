@@ -9,8 +9,8 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {ResourceService} from './resource.service';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
+import {TransmartHttpService} from './transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from './mocks/transmart-http.service.mock';
 import {Study} from '../models/constraint-models/study';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
@@ -28,15 +28,15 @@ import {AppConfig} from '../config/app.config';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
-  let transmartResourceService: TransmartResourceService;
+  let transmartHttpService: TransmartHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         ResourceService,
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
+          provide: TransmartHttpService,
+          useClass: TransmartHttpServiceMock
         },
         {
           provide: TransmartExternalJobResourceService,
@@ -49,7 +49,7 @@ describe('ResourceService', () => {
       ]
     });
     resourceService = TestBed.get(ResourceService);
-    transmartResourceService = TestBed.get(TransmartResourceService);
+    transmartHttpService = TestBed.get(TransmartHttpService);
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -166,7 +166,7 @@ describe('ResourceService', () => {
         }
       }
     };
-    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
+    spyOn(transmartHttpService, 'getAggregate').and.callFake(() => {
       return observableOf(catAgg);
     });
     dummy.concept.code = 'CV:DEM:RACE';
@@ -185,7 +185,7 @@ describe('ResourceService', () => {
   });
 
   it('should handle empty aggregate object', () => {
-    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
+    spyOn(transmartHttpService, 'getAggregate').and.callFake(() => {
       return observableOf({});
     });
     let dummy = new ConceptConstraint();

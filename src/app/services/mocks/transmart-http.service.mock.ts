@@ -22,7 +22,7 @@ import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/tra
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 
-export class TransmartResourceServiceMock {
+export class TransmartHttpServiceMock {
   private _studies: TransmartStudy[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];

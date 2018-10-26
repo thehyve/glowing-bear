@@ -7,8 +7,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from '../app/services/mocks/transmart-resource.service.mock';
+import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
 import {ResourceService} from '../app/services/resource.service';
 import {of as observableOf} from 'rxjs';
 import Spy = jasmine.Spy;
@@ -157,15 +157,15 @@ const mockResponseData = {
 describe('Integration test data table retrieval calls for TranSMART', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
-  let transmartResourceService: TransmartResourceService;
+  let transmartHttpService: TransmartHttpService;
   let dataTableCall: Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
+          provide: TransmartHttpService,
+          useClass: TransmartHttpServiceMock
         },
         {
           provide: TransmartExternalJobResourceService,
@@ -184,13 +184,13 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         DataTableService
       ]
     });
-    transmartResourceService = TestBed.get(TransmartResourceService);
+    transmartHttpService = TestBed.get(TransmartHttpService);
     resourceService = TestBed.get(ResourceService);
     dataTableService = TestBed.get(DataTableService);
   });
 
   it('should load data table data on initialisation', () => {
-    dataTableCall = spyOn(transmartResourceService, 'getDataTable')
+    dataTableCall = spyOn(transmartHttpService, 'getDataTable')
       .and.callFake((tableState: TransmartTableState,
                      constraint: Constraint,
                      offset: number, limit: number) => {

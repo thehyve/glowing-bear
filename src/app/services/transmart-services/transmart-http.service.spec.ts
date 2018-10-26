@@ -8,7 +8,7 @@
 
 import {TestBed, inject} from '@angular/core/testing';
 
-import {TransmartResourceService} from './transmart-resource.service';
+import {TransmartHttpService} from './transmart-http.service';
 import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
@@ -25,9 +25,9 @@ import {Concept} from '../../models/constraint-models/concept';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {of as observableOf} from 'rxjs';
 
-describe('TransmartResourceService', () => {
+describe('TransmartHttpService', () => {
 
-  let transmartResourceService: TransmartResourceService;
+  let transmartHttpService: TransmartHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,14 +36,14 @@ describe('TransmartResourceService', () => {
         HttpClientTestingModule
       ],
       providers: [
-        TransmartResourceService,
+        TransmartHttpService,
         {
           provide: AppConfig,
           useClass: AppConfigMock
         }
       ]
     });
-    transmartResourceService = TestBed.get(TransmartResourceService);
+    transmartHttpService = TestBed.get(TransmartHttpService);
   });
 
   afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
@@ -51,13 +51,13 @@ describe('TransmartResourceService', () => {
   }));
 
   it('should be injected',
-    inject([TransmartResourceService], (service: TransmartResourceService) => {
+    inject([TransmartHttpService], (service: TransmartHttpService) => {
       expect(service).toBeTruthy();
     }));
 
   it('should get tree nodes',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           tree_nodes: {
             foo: 'bar'
@@ -73,8 +73,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get pedigrees',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           relationTypes: {
             foo: 'bar'
@@ -90,8 +90,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get export jobs',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           exportJobs: {
             foo: 'bar'
@@ -107,8 +107,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get export data formats',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           dataFormats: {
             foo: 'bar'
@@ -125,8 +125,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get export file formats',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           fileFormats: {
             foo: 'bar'
@@ -142,8 +142,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should download export job',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const jobId = 'anid';
         const mockData: Blob = new Blob([]);
         service.downloadExportJob(jobId).subscribe(res => {
@@ -157,8 +157,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should cancel export job',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           exportJob: {
             foo: 'bar'
@@ -175,8 +175,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should archive export job',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           foo: 'bar'
         };
@@ -191,8 +191,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should run export job',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         // scenario 1: no auto saved subject set, no table state
         const jobId = 'an-id';
         const mockData = {
@@ -246,8 +246,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get trial visits',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           elements: {
             foo: 'bar'
@@ -264,8 +264,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get aggregate',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           aggregatesPerConcept: {
             foo: 'bar'
@@ -282,8 +282,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get categorical aggregate',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           aggregatesPerCategoricalConcept: {
             foo: 'bar'
@@ -300,8 +300,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get counts',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           foo: 'bar'
         };
@@ -316,8 +316,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get counts per concept',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           countsPerConcept: {
             foo: 'bar'
@@ -334,8 +334,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get counts per study',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           countsPerStudy: {
             foo: 'bar'
@@ -352,8 +352,8 @@ describe('TransmartResourceService', () => {
       }));
 
   it('should get counts per study and concept',
-    inject([HttpTestingController, TransmartResourceService],
-      (httpMock: HttpTestingController, service: TransmartResourceService) => {
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
           countsPerStudy: {
             foo: 'bar'
@@ -378,16 +378,16 @@ describe('TransmartResourceService', () => {
     study2.dimensions = ['patient', 'concept', 'trial visit', 'sample_type'];
     let testStudies: TransmartStudy[] = [study1, study2];
 
-    let resourceCall = spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
+    let resourceCall = spyOn(transmartHttpService, 'getStudies').and.callFake(() =>
       observableOf(testStudies)
     );
 
     // The first time, the studies should be fetched from the resource
-    transmartResourceService.studies.then(studies1 => {
+    transmartHttpService.studies.then(studies1 => {
       expect(studies1).toEqual(testStudies);
       expect(resourceCall).toHaveBeenCalledTimes(1);
       // The second time, the studies should already be available
-      transmartResourceService.studies.then(studies2 => {
+      transmartHttpService.studies.then(studies2 => {
         expect(studies2).toEqual(testStudies);
         expect(resourceCall).toHaveBeenCalledTimes(1);
       });
@@ -397,7 +397,7 @@ describe('TransmartResourceService', () => {
   });
 
   it('should notify the user when studies cannot be fetched', function () {
-    spyOn(transmartResourceService, 'getStudies').and.callFake(() =>
+    spyOn(transmartHttpService, 'getStudies').and.callFake(() =>
       Observable.of(new Promise(() => {
         throw new HttpErrorResponse({status: 500});
       }))
@@ -405,7 +405,7 @@ describe('TransmartResourceService', () => {
 
     let messageCount = MessageHelper.messages.length;
     // The first time, the studies should be fetched from the resource
-    transmartResourceService.studies.then(() =>
+    transmartHttpService.studies.then(() =>
       fail()
     ).catch(() => {
       expect(MessageHelper.messages.length).toEqual(messageCount);
