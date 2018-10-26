@@ -14,9 +14,9 @@
     </button>
 
     <button type="button"
-            (click)="update_1($event)"
+            (click)="update($event)"
             class="btn btn-outline-primary btn-sm update-btn
-                      {{cohortService.isDirty_1? 'update-btn-dirty' : ''}}">
+                      {{cohortService.isDirty? 'update-btn-dirty' : ''}}">
       Update cohort
     </button>
 
@@ -54,7 +54,7 @@
     <!-- Intersection calculation -->
     <div class="subject-count-box">
       <span><b>Total:</b></span>
-      <span>{{subjectCount_1}} subjects match your selection.</span>
+      <span>{{subjectCount}} subjects match your selection.</span>
     </div>
 
   </div>

@@ -153,9 +153,7 @@ describe('Integration test for cohort saving and restoring', () => {
   it('should restore and save cohort in relation to other dependent services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
-    let spy1 = spyOn(cohortService, 'update_1').and.callThrough();
-    let spy2 = spyOn(cohortService, 'update_2').and.callThrough();
-    let spy3 = spyOn(cohortService, 'update_3').and.callThrough();
+    let spy1 = spyOn(cohortService, 'update').and.callThrough();
     let promise = cohortService.restoreCohort(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
     let child0 = constraintService.rootInclusionConstraint.children[0];
@@ -172,11 +170,7 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(child3['concept']['code']).toEqual('VSIGN:HR');
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
-      expect(spy2).toHaveBeenCalled();
-      expect(spy3).toHaveBeenCalled();
-      expect(cohortService.isDirty_1).toBe(false);
-      expect(cohortService.isDirty_2).toBe(false);
-      expect(cohortService.isDirty_3).toBe(false);
+      expect(cohortService.isDirty).toBe(false);
     });
 
 
@@ -197,13 +191,9 @@ describe('Integration test for cohort saving and restoring', () => {
             expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
             expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
             expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
-            expect(cohortService.isDirty_1).toBe(false);
-            expect(cohortService.isDirty_2).toBe(false);
-            expect(cohortService.isDirty_3).toBe(false);
+            expect(cohortService.isDirty).toBe(false);
           });
-        expect(cohortService.isDirty_1).toBe(true);
-        expect(cohortService.isDirty_2).toBe(true);
-        expect(cohortService.isDirty_3).toBe(true);
+        expect(cohortService.isDirty).toBe(true);
       });
   });
 

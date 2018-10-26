@@ -11,11 +11,10 @@ import {CountItem} from '../../models/aggregate-models/count-item';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
-  counts_0: CountItem;
+  totalCounts: CountItem;
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
-  counts_1: CountItem;
-  counts_2: CountItem;
+  counts: CountItem;
 
 
   constructor() {
@@ -23,32 +22,13 @@ export class CohortServiceMock {
   }
 
   initializeCounts() {
-    this.counts_0 = new CountItem(0, 0);
+    this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
-    this.counts_1 = new CountItem(0, 0);
-    this.counts_2 = new CountItem(0, 0);
+    this.counts = new CountItem(0, 0);
   }
 
-  public update_1(initialUpdate?: boolean): Promise<any> {
-    return new Promise<any>(resolve => {
-      resolve(true);
-    });
-  }
-
-  public update_2(): Promise<any> {
-    return new Promise<any>(resolve => {
-      resolve(true);
-    });
-  }
-
-  public update_3(): Promise<any> {
-    return new Promise<any>(resolve => {
-      resolve(true);
-    });
-  }
-
-  updateAll(initialUpdate?: boolean): Promise<any> {
+  public update(initialUpdate?: boolean): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });
