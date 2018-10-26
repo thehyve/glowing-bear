@@ -37,3 +37,12 @@
 .gb-side-panel-container {
   margin-bottom: 5em;
 }
+
+
+:host >>> .ui-accordion .ui-accordion-content {
+  padding: 1em;
+}
+
+:host >>> .ui-accordion .ui-accordion-header {
+  background-color: white;
+}

@@ -1,9 +1,9 @@
-<div class="gb-data-table-container">
+<div class="grid-container">
   <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
     <!-- header using individual cell headers -->
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngFor="let col of columns" class="gb-data-table-header" pResizableColumn
+        <th *ngFor="let col of columns" class="table-header" pResizableColumn
             style="color: transparent">
           <span>
             {{col.header}}
@@ -31,7 +31,7 @@
   </p-table>
 
   <!-- pagination buttons -->
-  <div class="gb-data-table-pagination-container">
+  <div class="pagination-container">
     <button type="button" class="btn-outline-secondary" (click)="previousPage()">
       previous <i class="fa fa-angle-left"></i>
     </button>

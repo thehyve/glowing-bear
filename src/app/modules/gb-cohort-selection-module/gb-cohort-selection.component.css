@@ -1,23 +1,10 @@
-.nav-btn:hover {
-  background-color: lightgray;
-}
-
-.nav-active {
-  font-weight: bolder;
-}
-
-.gb-cohort-selection-container {
-  margin-top: 1px;
-  margin-bottom: 100px;
-}
-
-.gb-cohort-selection-update-btn {
+.update-btn {
   margin-left: 1em;
   margin-right: 0.5em;
   border: 1px dashed;
 }
 
-.gb-cohort-selection-update-btn-dirty {
+.update-btn-dirty {
   border: 2px solid;
   font-weight: bolder;
 }
@@ -32,7 +19,7 @@
  * padding and margin: top, right, bottom, left
  * shadow option: text-shadow: 1px 1px 3px black;
  */
-.gb-cohort-selection-top-panel {
+.top-panel {
   background-color: rgba(51, 156, 144, 0.1);
   border-radius: 3px;
   border: 1px solid lightgray;
@@ -40,11 +27,11 @@
   margin: var(--gb-navbar-height-extra) 1em 1em 0em;
   color: darkslategrey;
   overflow: hidden;
-  width: 99%;
+  width: 100%;
   font-size: 0.9em;
 }
 
-.gb-cohort-selection-top-panel-input {
+.top-panel-input {
   margin-bottom: 3px;
   margin-right: 7px;
   max-width: 100%;
@@ -53,16 +40,72 @@
 }
 
 /* save btn */
-.gb-cohort-selection-top-panel-btn {
+.top-panel-btn {
   margin: .1em;
 }
 
-.gb-cohort-selection-top-panel-btn:hover {
+.top-panel-btn:hover {
   background-color: var(--gb-clinical-green);
   opacity: 0.7;
 }
 
-.gb-cohort-selection-top-panel-btn:active {
+.top-panel-btn:active {
   background-color: var(--gb-clinical-green);
   opacity: 0.9;
+}
+
+
+/*Style for the padding of the constraint*/
+:host >>> .ui-panel-titlebar {
+  padding: 1px !important;
+}
+
+/*
+ * style fix for a concept constraint input
+ * displayed text aligned from right to left
+ * text overflow is turned on
+ */
+:host >>> .gb-concept-constraint-input > input {
+  text-overflow: ellipsis;
+  direction: ltr;
+}
+
+/* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
+:host >>> .ui-inputtext {
+  height: 2em;
+}
+
+/* Fix cutting off letters inside inputtext field.
+ Rendering engines of Firefox and Safari render line height slightly different than Chrome.
+ Editing component css doesn't work. */
+:host >>> .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+  padding-bottom: 3px;
+}
+
+:host >>> .ui-autocomplete .ui-autocomplete-dropdown {
+  height: 2em;
+}
+
+:host >>> .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
+  padding: 0.1em;
+  height: 100%;
+}
+
+/*Fix the width of placeholder in multiple autocomplete input field*/
+:host >>> .ui-autocomplete-input-token {
+  width: 10em;
+}
+
+/*Style for the p-panel in a concept constraint*/
+:host >>> .gb-constraint-child-container p-panel .ui-panel {
+  margin-left: 5px;
+  padding: 0px;
+  background-color: transparent;
+  width: 90%;
+  border: none;
+}
+
+/* Fix multiple autocomplete dropdown button new line break */
+:host >>> .ui-autocomplete {
+  display: inline-flex;
 }
