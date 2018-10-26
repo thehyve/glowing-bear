@@ -1,4 +1,63 @@
-.gb-query-panel-top {
+/*
+ * adding :host, the trick to make primeng component style overriding work locally
+ */
+:host >>> .filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  width: 100%;
+  min-width: 3em;
+  max-width: 7em;
+}
+
+/*Make the font size in the saved query list smaller*/
+:host >>> p-dataList {
+  font-size: small;
+}
+
+/*style fix for hiding the border in data list in saved queries in the side panel*/
+:host >>> .ui-widget-content {
+  border: none;
+}
+
+:host >>> md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+  border-width: medium;
+  border-color: lightgray !important;
+  box-shadow: 0 1px 0 lightgray !important;
+  background-color: var(--gb-clinical-green-light-light);
+  padding-left: 0.5em;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-header {
+  background-color: white;
+  padding-left: 0.5em;
+  font-size: small;
+  min-width: 200px;
+  color: dimgray;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-tab-body {
+  background-color: #fbfbfb;
+  padding-left: 0.5em;
+  font-size: small;
+  color: dimgray;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
+  color: transparent;
+}
+
+:host >>> .ui-radiobutton .ui-radiobutton-box .ui-radiobutton-icon {
+  top: 0px !important;
+  left: 2px !important;
+}
+
+:host >>> .ui-radiobutton, .ui-radiobutton-label {
+  vertical-align: text-top !important;
+  padding-top: 3px;
+}
+
+
+.top-panel {
   margin-bottom: 3px;
 }
 
@@ -10,26 +69,26 @@
   margin-bottom: 3px;
 }
 
-.gb-query-panel-clear-btn {
+.clear-btn {
   font-size: small;
   padding-top: 0.2em;
   padding-bottom: 0.2em;
   color: gray;
 }
 
-.gb-query-panel-import-btn {
+.import-btn {
   font-size: small;
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
-.gb-query-panel-sort-btn-container {
+.sort-btn-container {
   margin-top: 6px;
   margin-bottom: -10px;
   display: flow-root;
 }
 
-.gb-subscription-panel-header {
+.subscription-panel-header {
   padding: 3px;
   cursor: pointer;
   border-radius: 6px;
@@ -37,37 +96,37 @@
   max-width: 162px;
   box-shadow: 1px 1px 1px 1px lightgrey;
 }
-.gb-subscription-panel-header:hover {
+.subscription-panel-header:hover {
   background-color: lightgray;
 }
 
-.gb-subscription-panel-body {
+.subscription-panel-body {
   padding-left: 3px;
   margin-top: 3px;
 }
 
-.gb-subscription-panel-body-record {
+.subscription-panel-body-record {
   margin-bottom: 1px;
   margin-top: 5px;
   cursor: pointer;
 }
-.gb-subscription-panel-body-record:hover {
+.subscription-panel-body-record:hover {
   background-color: var(--gb-clinical-green-light-light);
 }
-.gb-subscription-panel-body-record:active {
+.subscription-panel-body-record:active {
   background-color: var(--gb-clinical-green-light);
 }
 
-.gb-query-log-download-btn {
+.log-download-btn {
   background-color: transparent;
   border: none;
   color: grey;
 }
-.gb-query-log-download-btn:hover {
+.log-download-btn:hover {
   background-color: #e6e6e6;
   opacity: 0.9;
 }
-.gb-query-log-download-btn:active {
+.log-download-btn:active {
   opacity: 1;
 }
 
@@ -76,62 +135,6 @@ hr {
   margin-bottom: 2px;
 }
 
-/*
- * Style the set name edit input
- */
-input[type="text"] {
-  max-width: 100%;
-}
-input[type="text"]:disabled {
-  background: transparent;
-  opacity: 1;
-  border: none;
-  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
-  font-size: 110%;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: #606060;
-}
-
-
-/*
- * Style the set name edit input
- */
-input:-moz-read-only { /* For Firefox */
-  background: transparent;
-  opacity: 1;
-  border: none;
-  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
-  font-size: 110%;
-  max-width: 46% !important;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: #606060;
-}
-input:read-only {
-  background: transparent;
-  opacity: 1;
-  border: none;
-  font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
-  font-size: 110%;
-  max-width: 46% !important;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  color: #606060;
-}
-
-/*
- * Style for the toggle button
- */
-.gb-query-panel-toggle-button {
-  border: none;
-  background-color: transparent !important;
-  margin-right: -10px;
-}
 
 /*
  * margin: top right bottom left
@@ -148,7 +151,7 @@ md2-accordion-header .ui-button-secondary:hover {
   background-color: var(--gb-orange-light-light);
 }
 
-.gb-query-sort-btn {
+.sort-btn {
   color: #606060 !important;
   background-color: transparent !important;
   border: black;
@@ -157,22 +160,18 @@ md2-accordion-header .ui-button-secondary:hover {
   -moz-margin-start: 1.1em;
 }
 
-.gb-query-sort-btn:hover {
+.sort-btn:hover {
   background-color: var(--gb-clinical-green) !important;
   opacity: 0.8 !important;
   color: white !important;
 }
 
-.gb-query-sort-btn:active {
+.sort-btn:active {
   background-color: #236d64 !important;
   opacity: 0.8 !important;
 }
 
-.gb-query-panel-body {
-  color: #606060;
-}
-
-.gb-query-header-name {
+.cohort-header-name {
   border: none;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -183,10 +182,6 @@ md2-accordion-header .ui-button-secondary:hover {
   float: left;
 }
 
-.gb-query-header {
+.cohort-header {
   display: flow-root;
-}
-.gb-query-body {
-  padding: 3px;
-  word-wrap: break-word;
 }
