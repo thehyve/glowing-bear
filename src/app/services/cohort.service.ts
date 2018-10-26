@@ -134,7 +134,7 @@ export class CohortService {
         this.isDataTableUsed = exportEnabled
       );
     }
-    this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-query-subscription');
+    this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
 
     this.initializeCounts();
     this.loadCohorts();

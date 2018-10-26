@@ -8,11 +8,11 @@
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <span>&nbsp;</span>
-    <button class="btn btn-secondary btn-sm gb-treenodes-filter-btn"
+    <button class="btn btn-secondary btn-sm filter-btn"
             (click)="clearFilter()"
             type="button">clear
     </button>
-    <div *ngIf="hits > 0" class="gb-treenodes-filter-result">
+    <div *ngIf="hits > 0" class="filter-result">
       {{hits}} results found
     </div>
   </div>
@@ -30,7 +30,7 @@
                   [showCloseIcon]="false">
     <!--{{metadataContent}}-->
     <div *ngFor="let item of metadataContent">
-      <div class="ui-grid-row gb-metadata-row">
+      <div class="ui-grid-row metadata-row">
         {{item.key}}: {{item.val}}
       </div>
     </div>

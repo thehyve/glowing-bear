@@ -1,4 +1,4 @@
-.gb-table-dimension-container {
+.dimension-container {
   padding: 2px;
   text-align: center;
   width: 50%;
@@ -7,3 +7,27 @@
   margin-right: auto;
 }
 
+:host >>> .ui-picklist-droppoint {
+  height: 3px !important;
+}
+
+:host >>> .ui-picklist-droppoint-highlight {
+  background: var(--gb-clinical-green-dark);
+  height: 2em !important;
+}
+
+:host >>> .ui-picklist .ui-picklist-caption {
+  font-size: small;
+  font-weight: bold;
+  padding: 0px;
+}
+
+:host >>> .ui-picklist .ui-picklist-filter-container {
+  font-size: small;
+  padding: 0px 0px 0px .5em;
+}
+
+:host >>> .ui-picklist .ui-picklist-list .ui-picklist-item {
+  padding: 1px;
+  font-size: small;
+}

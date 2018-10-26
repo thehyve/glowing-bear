@@ -1,28 +1,37 @@
-.gb-data-table-container {
+.grid-container {
   font-size: small;
 }
 
-.gb-data-table-header {
+.table-header {
   border-left: 3px var(--gb-clinical-green-dark) solid;
   border-right: 3px var(--gb-clinical-green-dark) solid;
   background-color: var(--gb-clinical-green-light-light);
 }
 
-.gb-data-table-pagination-container {
+.pagination-container {
   margin: 10px 0px 0px 0px;
   text-align: center;
 }
 
-.gb-data-table-pagination-container .btn-outline-secondary {
+.pagination-container .btn-outline-secondary {
   color: GrayText;
   border: none;
 }
 
-.gb-data-table-pagination-container .btn-outline-secondary:hover {
+.pagination-container .btn-outline-secondary:hover {
   background-color: var(--gb-clinical-green-light-light);
 }
 
-.gb-data-table-pagination-container .btn-outline-secondary:active {
+.pagination-container .btn-outline-secondary:active {
   font-weight: bolder;
   background-color: var(--gb-clinical-green-light-light);
+}
+
+
+:host >>> .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
 }

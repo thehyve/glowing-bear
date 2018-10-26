@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GbVariablesComponent } from './gb-variables.component';
+import {GbVariablesComponent} from './gb-variables.component';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -8,9 +8,9 @@ describe('GbVariablesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GbVariablesComponent ]
+      declarations: [GbVariablesComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
