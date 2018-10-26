@@ -124,6 +124,11 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
 
+      let showInfo1 = ((event: MouseEvent) => {
+        this.updateMetadataContent(metadata);
+        this.treeNodeMetadataPanel.show(event);
+      }).bind(this);
+
       let hideInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.hide(event);
@@ -204,8 +209,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (treeNodes) {
       // if there is a filter word
       if (filterWord.length > 0) {
-        for (let node of treeNodes) {
-          node['expanded'] = false;
+        treeNodes.forEach((node: TreeNode) => {
+          let expanded = false;
           node['styleClass'] = undefined;
           let fieldString = node[field].toLowerCase();
           if (fieldString.includes(filterWord)) { // if there is a hit
@@ -225,12 +230,18 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
             if (subResult.hasMatching) {
               result.hasMatching = true;
               if (this.numExpandedNodes < this.maxNumExpandedNodes) {
-                node['expanded'] = true;
+                expanded = true;
                 this.numExpandedNodes++;
               }
             }
           }
-        }
+          /*
+           * for some funny reason, typescript considers false and true as their own types
+           * thus directly assigning node['expanded'] with true or false values results in conflict
+           */
+          node['expanded'] = expanded;
+        });
+
       } else { // if the filter word is empty
         for (let node of treeNodes) {
           node['expanded'] = false;
