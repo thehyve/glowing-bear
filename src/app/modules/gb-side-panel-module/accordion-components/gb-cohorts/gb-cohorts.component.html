@@ -1,14 +1,14 @@
 <div>
 
   <!-- the search/filter input and sorting buttons -->
-  <div class="gb-query-panel-top">
+  <div class="top-panel">
     <p-autoComplete [(ngModel)]="searchTerm"
-                    styleClass="gb-query-filter-input"
+                    styleClass="filter-input"
                     placeholder="filter"
                     (onClear)="onFiltering($event)"
                     (completeMethod)="onFiltering($event)"></p-autoComplete>
     <span>&nbsp;</span>
-    <button class="btn btn-secondary btn-sm gb-query-panel-clear-btn"
+    <button class="btn btn-secondary btn-sm clear-btn"
             (click)="clearFilter()"
             type="button">clear
     </button>
@@ -17,7 +17,7 @@
            style="display: none"/>
 
     <div class="pull-right">
-      <button class="btn btn-outline-primary gb-query-panel-import-btn"
+      <button class="btn btn-outline-primary import-btn"
               (click)="importCohort()"
               type="button">
         <span>import</span>
@@ -27,30 +27,30 @@
   </div>
 
 
-  <div *ngIf="queries.length > 0" class="container gb-query-panel-sort-btn-container clearfix">
+  <div *ngIf="queries.length > 0" class="container sort-btn-container clearfix">
     <div class="float-right">
-      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
-              pTooltip="Sort by query name"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+      <button pButton class="ui-button-secondary sort-btn" type="button"
+              pTooltip="Sort by cohort name"
+              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
               (click)="sortByName()"
               icon="icon-sort-alphabet">
       </button>
-      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+      <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by importance"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
               (click)="sortByBookmark()"
               icon="icon-sort-star">
       </button>
-      <button pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+      <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by last edit date"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
       <button *ngIf="isQuerySubscriptionIncluded"
-              pButton class="ui-button-secondary gb-query-sort-btn" type="button"
+              pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by active subscriptions"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
               (click)="sortBySubscription()"
               icon="icon-sort-subscription">
       </button>
@@ -66,8 +66,8 @@
         <!-- accordion header -->
         <md2-accordion-header>
           <div *ngIf="query.visible">
-            <div class="gb-query-header clearfix">
-              <div class="gb-query-header-name">
+            <div class="cohort-header clearfix">
+              <div class="cohort-header-name">
                 <p-checkbox [(ngModel)]="query.selected" binary="true"
                             (click)="onCohortCheckClick($event)"></p-checkbox>
                 {{query.name}}
@@ -76,30 +76,30 @@
                 <button *ngIf="isQuerySubscriptionIncluded"
                         pButton class="ui-button-secondary" type="button"
                         pTooltip="Subscribe to email notifications when new data is available"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
                         (click)="toggleQuerySubscription($event, query)"
-                        icon="{{getQuerySubscriptionButtonIcon(query)}}">
+                        icon="{{getSubscriptionButtonIcon(query)}}">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
                         pTooltip="Mark as important"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
                         (click)="toggleQueryBookmark($event, query)"
-                        icon="{{getQueryBookmarkButtonIcon(query)}}">
+                        icon="{{getBookmarkButtonIcon(query)}}">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
                         pTooltip="Download this query for sharing/importing"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
                         (click)="downloadQuery($event, query)"
                         icon="fa fa-download">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Restore" tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+                        pTooltip="Restore" tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
                         (click)="restoreQuery($event, query)"
                         icon="fa fa-arrow-right">
                 </button>
                 <span>&nbsp;</span>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Remove" tooltipPosition="top" placeholder="Top" tooltipStyleClass="gb-query-tooltip"
+                        pTooltip="Remove" tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
                         (click)="confirmRemoval($event, query)"
                         icon="fa fa-times">
                 </button>
@@ -124,23 +124,23 @@
           </div>
           <!-- start: if the query is subscribed, show the subscription panel -->
           <div *ngIf="isQuerySubscriptionIncluded && query.subscribed">
-            <div class="gb-subscription-panel-header"
+            <div class="subscription-panel-header"
                  (click)="toggleSubscriptionPanel(query)">
               <span>{{query.subscriptionCollapsed ? 'Show' : 'Hide'}} subscription records</span>
             </div>
             <div *ngIf="!query.subscriptionCollapsed"
-                 class="gb-subscription-panel-body">
+                 class="subscription-panel-body">
               <div *ngIf="query.diffRecords && query.diffRecords.length > 0">
                 <div *ngFor="let record of query.diffRecords">
                   <hr>
                   <span>
                     <b>{{record.createDate}}</b>
-                    <button class="gb-query-log-download-btn"
+                    <button class="log-download-btn"
                             (click)="downloadSubscriptionRecord(query, record)">
                       <i class="fa fa-arrow-down"></i>
                     </button>
                   </span>
-                  <div class="gb-subscription-panel-body-record"
+                  <div class="subscription-panel-body-record"
                        (click)="toggleSubscriptionRecordPanel(record)">
                     <div *ngIf="record.showCompleteRepresentation">
                       <div *ngFor="let diffType of record.diffTypes">
