@@ -70,14 +70,14 @@ export class GbCohortsComponent implements OnInit {
     if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
       let _json = JSON.parse(data);
       // If the json is of standard format
-      if (_json['subjectQuery']) {
+      if (_json['constraint']) {
         return _json;
       } else {
-        MessageHelper.alert('error', 'Invalid file content for query import.');
+        MessageHelper.alert('error', 'Invalid file content for cohort import.');
         return;
       }
     } else {
-      MessageHelper.alert('error', 'Invalid file content for query import.');
+      MessageHelper.alert('error', 'Invalid file content for cohort import.');
       return;
     }
   }
@@ -87,8 +87,8 @@ export class GbCohortsComponent implements OnInit {
     this.cohortService.toggleCohortSubscription(target);
   }
 
-  getSubscriptionButtonIcon(query: Cohort) {
-    return query.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
+  getSubscriptionButtonIcon(target: Cohort) {
+    return target.subscribed ? 'fa fa-rss-square' : 'fa fa-rss';
   }
 
   toggleBookmark(event: Event, target: Cohort) {
@@ -125,21 +125,21 @@ export class GbCohortsComponent implements OnInit {
   confirmRemoval(event: Event, target: Cohort) {
     event.stopPropagation();
     this.confirmationService.confirm({
-      message: 'Are you sure you want to remove the query?',
+      message: 'Are you sure you want to remove the cohort?',
       header: 'Delete Confirmation',
       icon: 'fa fa-trash',
       accept: () => {
         this.removeCohort(event, target);
       },
       reject: () => {
-        MessageHelper.alert('error', `Cannot remove the query ${target.name}`);
+        MessageHelper.alert('error', `Cannot remove the cohort ${target.name}`);
       }
     });
   }
 
-  downloadQuery(event: Event, target: Cohort) {
+  downloadCohort(event: Event, target: Cohort) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(ConstraintHelper.mapQueryToObject(target), target.name);
+    DownloadHelper.downloadJSON(ConstraintHelper.mapCohortToObject(target), target.name);
   }
 
   radioCheckSubscriptionFrequency(event: MouseEvent, target: Cohort) {
@@ -170,18 +170,18 @@ export class GbCohortsComponent implements OnInit {
 
   clearFilter() {
     this.searchTerm = '';
-    for (let query of this.cohortService.cohorts) {
-      query.visible = true;
+    for (let c of this.cohortService.cohorts) {
+      c.visible = true;
     }
     UIHelper.removePrimeNgLoaderIcon(this.element, 500);
   }
 
-  get queries(): Cohort[] {
+  get cohorts(): Cohort[] {
     return this.cohortService.cohorts;
   }
 
   sortByName() {
-    this.queries.sort((q1, q2) => {
+    this.cohorts.sort((q1, q2) => {
       if (q1.name > q2.name) {
         return 1;
       } else if (q1['name'] < q2['name']) {
@@ -193,7 +193,7 @@ export class GbCohortsComponent implements OnInit {
   }
 
   sortBySubscription() {
-    this.queries.sort((q1, q2) => {
+    this.cohorts.sort((q1, q2) => {
       if (!q1.subscribed && q2.subscribed) {
         return 1;
       } else if (q1.subscribed && !q2.subscribed) {
@@ -205,7 +205,7 @@ export class GbCohortsComponent implements OnInit {
   }
 
   sortByDate() {
-    this.queries.sort((q1, q2) => {
+    this.cohorts.sort((q1, q2) => {
       if (q1.updateDate > q2.updateDate) {
         return 1;
       } else if (q1.updateDate < q2.updateDate) {
@@ -217,7 +217,7 @@ export class GbCohortsComponent implements OnInit {
   }
 
   sortByBookmark() {
-    this.queries.sort((q1, q2) => {
+    this.cohorts.sort((q1, q2) => {
       if (q1.bookmarked && !q2.bookmarked) {
         return -1;
       } else if (!q1.bookmarked && q2.bookmarked) {

@@ -27,7 +27,7 @@
   </div>
 
 
-  <div *ngIf="queries.length > 0" class="container sort-btn-container clearfix">
+  <div *ngIf="cohorts.length > 0" class="container sort-btn-container clearfix">
     <div class="float-right">
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by cohort name"
@@ -47,7 +47,7 @@
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
-      <button *ngIf="isQuerySubscriptionIncluded"
+      <button *ngIf="isCohortSubscriptionIncluded"
               pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by active subscriptions"
               tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
@@ -58,49 +58,49 @@
     <br><br>
   </div>
 
-  <!-- queries -->
+  <!-- cohort list -->
   <p-confirmDialog></p-confirmDialog>
   <div>
     <md2-accordion [multiple]="true">
-      <md2-accordion-tab *ngFor="let query of queries">
+      <md2-accordion-tab *ngFor="let cohort of cohorts">
         <!-- accordion header -->
         <md2-accordion-header>
-          <div *ngIf="query.visible">
+          <div *ngIf="cohort.visible">
             <div class="cohort-header clearfix">
               <div class="cohort-header-name">
-                <p-checkbox [(ngModel)]="query.selected" binary="true"
+                <p-checkbox [(ngModel)]="cohort.selected" binary="true"
                             (click)="onCohortCheckClick($event)"></p-checkbox>
-                {{query.name}}
+                {{cohort.name}}
               </div>
               <div class="float-right">
-                <button *ngIf="isQuerySubscriptionIncluded"
+                <button *ngIf="isCohortSubscriptionIncluded"
                         pButton class="ui-button-secondary" type="button"
                         pTooltip="Subscribe to email notifications when new data is available"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
-                        (click)="toggleQuerySubscription($event, query)"
-                        icon="{{getSubscriptionButtonIcon(query)}}">
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="toggleSubscription($event, cohort)"
+                        icon="{{getSubscriptionButtonIcon(cohort)}}">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
                         pTooltip="Mark as important"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
-                        (click)="toggleQueryBookmark($event, query)"
-                        icon="{{getBookmarkButtonIcon(query)}}">
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="toggleBookmark($event, cohort)"
+                        icon="{{getBookmarkButtonIcon(cohort)}}">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Download this query for sharing/importing"
-                        tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
-                        (click)="downloadQuery($event, query)"
+                        pTooltip="Download this cohort for sharing/importing"
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="downloadCohort($event, cohort)"
                         icon="fa fa-download">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Restore" tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
-                        (click)="restoreQuery($event, query)"
+                        pTooltip="Restore" tooltipPosition="top" placeholder="Top"
+                        (click)="restoreCohort($event, cohort)"
                         icon="fa fa-arrow-right">
                 </button>
                 <span>&nbsp;</span>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Remove" tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
-                        (click)="confirmRemoval($event, query)"
+                        pTooltip="Remove" tooltipPosition="top" placeholder="Top"
+                        (click)="confirmRemoval($event, cohort)"
                         icon="fa fa-times">
                 </button>
               </div>
@@ -108,35 +108,35 @@
           </div>
         </md2-accordion-header>
         <!-- accordion body -->
-        <div *ngIf="query.visible">
-          <div>Name: {{query.name}}</div>
-          <div>Created: {{query.createDateInfo}}</div>
-          <div>Updated: {{query.updateDateInfo}}</div>
-          <div *ngIf="isQuerySubscriptionIncluded && query.subscribed">
+        <div *ngIf="cohort.visible">
+          <div>Name: {{cohort.name}}</div>
+          <div>Created: {{cohort.createDateInfo}}</div>
+          <div>Updated: {{cohort.updateDateInfo}}</div>
+          <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">
             Subscription:
-            <p-radioButton [(name)]="query.id" value="DAILY" label="Daily"
-                           (click)="radioCheckSubscriptionFrequency($event, query)"
-                           [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+            <p-radioButton [(name)]="cohort.id" value="DAILY" label="Daily"
+                           (click)="radioCheckSubscriptionFrequency($event, cohort)"
+                           [(ngModel)]="cohort.subscriptionFreq"></p-radioButton>
             &nbsp;
-            <p-radioButton [(name)]="query.id" value="WEEKLY" label="Weekly"
-                           (click)="radioCheckSubscriptionFrequency($event, query)"
-                           [(ngModel)]="query.subscriptionFreq"></p-radioButton>
+            <p-radioButton [(name)]="cohort.id" value="WEEKLY" label="Weekly"
+                           (click)="radioCheckSubscriptionFrequency($event, cohort)"
+                           [(ngModel)]="cohort.subscriptionFreq"></p-radioButton>
           </div>
-          <!-- start: if the query is subscribed, show the subscription panel -->
-          <div *ngIf="isQuerySubscriptionIncluded && query.subscribed">
+          <!-- start: if the cohort is subscribed, show the subscription panel -->
+          <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">
             <div class="subscription-panel-header"
-                 (click)="toggleSubscriptionPanel(query)">
-              <span>{{query.subscriptionCollapsed ? 'Show' : 'Hide'}} subscription records</span>
+                 (click)="toggleSubscriptionPanel(cohort)">
+              <span>{{cohort.subscriptionCollapsed ? 'Show' : 'Hide'}} subscription records</span>
             </div>
-            <div *ngIf="!query.subscriptionCollapsed"
+            <div *ngIf="!cohort.subscriptionCollapsed"
                  class="subscription-panel-body">
-              <div *ngIf="query.diffRecords && query.diffRecords.length > 0">
-                <div *ngFor="let record of query.diffRecords">
+              <div *ngIf="cohort.diffRecords && cohort.diffRecords.length > 0">
+                <div *ngFor="let record of cohort.diffRecords">
                   <hr>
                   <span>
                     <b>{{record.createDate}}</b>
                     <button class="log-download-btn"
-                            (click)="downloadSubscriptionRecord(query, record)">
+                            (click)="downloadSubscriptionRecord(cohort, record)">
                       <i class="fa fa-arrow-down"></i>
                     </button>
                   </span>
@@ -160,7 +160,7 @@
                 </div>
               </div>
 
-              <div *ngIf="query.diffRecords.length === 0">
+              <div *ngIf="cohort.diffRecords.length === 0">
                 no record
               </div>
             </div>

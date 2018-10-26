@@ -145,26 +145,26 @@ export class ConstraintHelper {
     return constraint;
   }
 
-  static mapQueryToObject(query: Cohort): object {
+  static mapCohortToObject(target: Cohort): object {
     let obj = {};
-    obj['id'] = query.id;
-    obj['name'] = query.name;
-    obj['bookmarked'] = query.bookmarked;
-    obj['subscribed'] = query.subscribed;
-    if (query.subscriptionFreq) {
-      obj['subscriptionFreq'] = query.subscriptionFreq;
+    obj['id'] = target.id;
+    obj['name'] = target.name;
+    obj['bookmarked'] = target.bookmarked;
+    obj['subscribed'] = target.subscribed;
+    if (target.subscriptionFreq) {
+      obj['subscriptionFreq'] = target.subscriptionFreq;
     }
-    if (query.description) {
-      obj['description'] = query.description;
+    if (target.description) {
+      obj['description'] = target.description;
     }
-    if (query.createDate) {
-      obj['createDate'] = query.createDate;
+    if (target.createDate) {
+      obj['createDate'] = target.createDate;
     }
-    if (query.updateDate) {
-      obj['updateDate'] = query.updateDate;
+    if (target.updateDate) {
+      obj['updateDate'] = target.updateDate;
     }
-    if (query.constraint) {
-      obj['constraint'] = ConstraintHelper.mapConstraintToObject(query.constraint);
+    if (target.constraint) {
+      obj['constraint'] = ConstraintHelper.mapConstraintToObject(target.constraint);
     }
     return obj;
   }
