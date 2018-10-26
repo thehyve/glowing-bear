@@ -1,7 +1,7 @@
-<div class="gb-cross-table-container">
+<div class="table-container">
 
   <!-- Header and description -->
-  <div class="gb-cross-table-description">
+  <div class="description">
     Cross Table
     <i class="fa fa-info" (mouseenter)="gb_cross_table_info.show($event)"
        (mouseleave)="gb_cross_table_info.hide($event)"></i>
@@ -11,7 +11,7 @@
                   [dismissable]="true"
                   [showCloseIcon]="false"
                   [style]="{'background':'#339C90', 'width': '50%'}">
-    <div class="gb-cross-table-info-text">
+    <div class="info-text">
       Create a cross table by dragging categorical tree nodes, in the "Current Data Selection" panel on the left side,
       into the drop zones below.
     </div>
@@ -41,7 +41,7 @@
           <ng-template pTemplate="header" let-columns>
             <tr>
               <th *ngFor="let col of columns" pResizableColumn
-                  class="gb-cross-table-top-header"
+                  class="top-header"
                   style="color: transparent">
               <span>
                 {{col.header}}
@@ -54,7 +54,7 @@
           <ng-template pTemplate="body" let-row let-columns="columns">
             <tr>
               <td *ngFor="let col of columns" class="ui-resizable-column"
-                  [ngClass]="{'gb-cross-table-header': row.data[col.field]['isHeader']}">
+                  [ngClass]="{'header': row.data[col.field]['isHeader']}">
               <span>
                 {{formatCountNumber(row.data[col.field]['value'])}}
               </span>

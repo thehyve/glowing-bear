@@ -10,7 +10,7 @@
   "instant-counts-update-2": false,
   "instant-counts-update-3": false,
   "include-data-table": true,
-  "include-query-subscription": true,
+  "include-cohort-subscription": true,
   "authentication-service-type": "oidc",
   "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
   "oidc-client-id": "transmart-client",
