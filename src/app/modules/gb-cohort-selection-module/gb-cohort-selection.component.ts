@@ -30,25 +30,6 @@ export class GbCohortSelectionComponent implements OnInit {
   private isUploadListenerNotAdded: boolean;
   public cohortName: string;
 
-  /**
-   * Split a newline separated string into its parts
-   * and returns a patient set cohort where these parts are used as subject ids.
-   * @param {string} fileContents the newline separated string.
-   * @param {string} name the cohort name.
-   * @return {Cohort} the resulting patient set cohort.
-   */
-  static processSubjectIdsUpload(fileContents: string, name: string): Cohort {
-    let subjectIds: string[] = fileContents.split(/[\r\n]+/)
-      .map(id => id.trim())
-      .filter(id => id.length > 0);
-    let cohort = new Cohort(null, name);
-    let subjectSetConstraint = new SubjectSetConstraint();
-    subjectSetConstraint.subjectIds = subjectIds;
-    cohort.constraint = subjectSetConstraint;
-    return cohort;
-  }
-
-
   constructor(public cohortService: CohortService,
               private constraintService: ConstraintService) {
     this.cohortName = '';
@@ -90,48 +71,20 @@ export class GbCohortSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  get subjectCount_0(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_0.subjectCount);
+  get totalSubjectCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.subjectCount);
   }
 
-  get subjectCount_1(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_1.subjectCount);
+  get subjectCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
   }
 
-  get subjectCount_2(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_2.subjectCount);
+  get totalObservationCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.observationCount);
   }
 
-  get subjectCountPercentage_1(): string {
-    return FormatHelper.percentage(this.cohortService.counts_1.subjectCount, this.cohortService.counts_0.subjectCount);
-  }
-
-  get subjectCountPercentage_2(): string {
-    return FormatHelper.percentage(this.cohortService.counts_2.subjectCount, this.cohortService.counts_1.subjectCount);
-  }
-
-  get observationCount_0(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_0.observationCount);
-  }
-
-  get observationCount_1(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_1.observationCount);
-  }
-
-  get observationCount_2(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts_2.observationCount);
-  }
-
-  get observationCountPercentage_1(): string {
-    return FormatHelper.percentage(this.cohortService.counts_1.observationCount, this.cohortService.counts_0.observationCount);
-  }
-
-  get observationCountPercentage_2(): string {
-    return FormatHelper.percentage(this.cohortService.counts_2.observationCount, this.cohortService.counts_1.observationCount);
-  }
-
-  get isDataTableUsed(): boolean {
-    return this.cohortService.isDataTableUsed;
+  get observationCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.counts.observationCount);
   }
 
   get isSavingCohortCompleted(): boolean {
@@ -158,75 +111,9 @@ export class GbCohortSelectionComponent implements OnInit {
     }
   }
 
-  importCriteria() {
-    let uploadElm = document.getElementById('step1CriteriaFileUpload');
-    if (this.isUploadListenerNotAdded) {
-      uploadElm
-        .addEventListener('change', this.criteriaFileUpload.bind(this), false);
-      this.isUploadListenerNotAdded = false;
-    }
-    // reset the input path so that it will take the same file again
-    uploadElm['value'] = '';
-    uploadElm.click();
-  }
-
-  criteriaFileUpload(event) {
-    let reader = new FileReader();
-    let file: File = event.target.files[0];
-    reader.onload = (function (e: Event) {
-      let data = e.target['result'];
-      let query = this.parseFile(file, data);
-      this.queryService.restoreQuery(query);
-    }).bind(this);
-    reader.readAsText(file);
-  }
-
-  private parseFile(file: File, data: any): Cohort {
-    if (file.type === 'text/plain' ||
-      file.type === 'text/tab-separated-values' ||
-      file.type === 'text/csv' ||
-      (file.type === '' && file.name.split('.').pop() !== 'json')) {
-      // we assume the text contains a list of subject Ids
-      return GbCohortSelectionComponent.processSubjectIdsUpload(data as string, file.name);
-    } else if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
-      let _json = JSON.parse(data);
-      // If the json is of standard format
-      if (_json['patientsQuery']) {
-        let name = file.name.substr(0, file.name.indexOf('.'));
-        let query = new Cohort('', name);
-        query.constraint = TransmartConstraintMapper.generateConstraintFromObject(_json['patientsQuery']);
-        return query;
-      } else {
-        MessageHelper.alert('error', 'Invalid file content for query import.');
-        return;
-      }
-    } else {
-      MessageHelper.alert('error', 'Invalid file format for STEP 1.');
-      return;
-    }
-  }
-
-  update_1(event) {
+  update(event) {
     event.stopPropagation();
-    this.cohortService.update_1();
+    this.cohortService.update();
   }
 
-  update_2(event) {
-    event.stopPropagation();
-    this.cohortService.update_1()
-      .then(() => {
-        this.cohortService.update_2();
-      });
-  }
-
-  update_3(event) {
-    event.stopPropagation();
-    this.cohortService.update_1()
-      .then(() => {
-        this.cohortService.update_2()
-          .then(() => {
-            this.cohortService.update_3();
-          });
-      });
-  }
 }

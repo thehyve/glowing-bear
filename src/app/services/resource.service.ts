@@ -35,7 +35,9 @@ import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-vi
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ResourceService {
 
   private _endpointMode: EndpointMode;

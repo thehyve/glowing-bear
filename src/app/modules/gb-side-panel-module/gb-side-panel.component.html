@@ -1,15 +1,17 @@
-<div class="gb-side-panel-container">
+<div class="side-panel-container">
   <div class="gb-logo-panel">
     <img src="../../../assets/icons/glowingbear.png" (click)="goToDocUrl()">
     <span class="gb-logo-text" (click)="goToDocUrl()">GLOWING BEAR</span>
   </div>
 
-  <div class="gb-side-accordion-container">
+  <div class="accordion-container">
     <p-accordion [multiple]="true">
 
-      <p-accordionTab header="Ontology" [selected]="true">
-        <gb-tree-nodes></gb-tree-nodes>
-      </p-accordionTab>
+      <div *ngIf="isDataSelection">
+        <p-accordionTab header="Ontology" [selected]="true">
+          <gb-tree-nodes></gb-tree-nodes>
+        </p-accordionTab>
+      </div>
 
       <p-accordionTab header="Cohorts" [selected]="true">
         <gb-cohorts></gb-cohorts>

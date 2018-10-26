@@ -33,7 +33,9 @@ import {StudyService} from './study.service';
  * (1) translating string or JSON objects into Constraint class instances
  * (2) clear or restore constraints
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
@@ -67,7 +69,7 @@ export class ConstraintService {
   }
 
   public constraint_1_2(): Constraint {
-    const c1 = this.constraint_1();
+    const c1 = this.cohortConstraint();
     const c2 = this.constraint_2();
     let combo = new CombinationConstraint();
     combo.addChild(c1);
@@ -182,7 +184,7 @@ export class ConstraintService {
    * Generate the constraint for retrieving the patients with only the inclusion criteria
    * @returns {Constraint}
    */
-  public generateInclusionConstraint(): Constraint {
+  public inclusionConstraint(): Constraint {
     let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
     return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
       inclusionConstraint : new TrueConstraint();
@@ -198,10 +200,10 @@ export class ConstraintService {
    * but also in the inclusion set
    * @returns {CombinationConstraint}
    */
-  public generateExclusionConstraint(): Constraint {
+  public exclusionConstraint(): Constraint {
     if (this.hasExclusionConstraint()) {
       // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.generateInclusionConstraint();
+      let inclusionConstraint = this.inclusionConstraint();
       let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
 
       let combination = new CombinationConstraint();
@@ -213,16 +215,12 @@ export class ConstraintService {
     }
   }
 
-  public constraint_1(): Constraint {
-    return this.generateSelectionConstraint();
-  }
-
   /**
    * In the 1st step,
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  private generateSelectionConstraint(): Constraint {
+  public cohortConstraint(): Constraint {
     let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
@@ -260,12 +258,12 @@ export class ConstraintService {
   /**
    * Clear the patient constraints
    */
-  public clearConstraint_1() {
+  public clearCohortConstraint() {
     this.rootInclusionConstraint.children.length = 0;
     this.rootExclusionConstraint.children.length = 0;
   }
 
-  public restoreConstraint_1(constraint: Constraint) {
+  public restoreCohortConstraint(constraint: Constraint) {
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
@@ -276,7 +274,7 @@ export class ConstraintService {
         this.rootExclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreConstraint_1(remainingConstraint);
+        this.restoreCohortConstraint(remainingConstraint);
       } else {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);

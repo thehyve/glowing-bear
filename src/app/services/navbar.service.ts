@@ -13,7 +13,9 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ExportService} from './export.service';
 import {AuthenticationService} from './authentication/authentication.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class NavbarService {
 
   private _items: MenuItem[];
@@ -48,7 +50,7 @@ export class NavbarService {
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
     } else if (this.isExport) {
-      this.queryService.updateAll();
+      // TODO: update cohort and variables before export
       this.activeItem = this._items[2];
     }
   }

@@ -30,11 +30,11 @@
   cursor: pointer;
 }
 
-.gb-side-accordion-container {
+.accordion-container {
   margin-top: var(--gb-navbar-height-extra);
 }
 
-.gb-side-panel-container {
+.side-panel-container {
   margin-bottom: 5em;
 }
 
