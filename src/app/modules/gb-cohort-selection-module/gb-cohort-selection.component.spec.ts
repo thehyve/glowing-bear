@@ -29,7 +29,6 @@ import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
@@ -118,15 +117,6 @@ describe('GbCohortSelectionComponent', () => {
     expect(component.preventNodeDrop).toHaveBeenCalled();
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(event.preventDefault).toHaveBeenCalled();
-  });
-
-  it('should process uploaded subject ids', () => {
-    let fileContents = 'id123\nid456\n';
-    let target = GbCohortSelectionComponent.processSubjectIdsUpload(fileContents, 'testName');
-    expect(target).toBeDefined();
-    expect(target.name).toEqual('testName');
-    expect(target.constraint.className).toEqual('SubjectSetConstraint');
-    expect((<SubjectSetConstraint>target.constraint).subjectIds.length).toEqual(2);
   });
 
 });
