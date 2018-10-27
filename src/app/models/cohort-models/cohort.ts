@@ -58,7 +58,7 @@ export class Cohort {
     this.id = id;
     this.name = name;
     this.collapsed = true;
-    this.visible  = true;
+    this.visible = true;
     this.bookmarked = false;
     this.selected = false;
     this.controlsEnabled = true;
@@ -105,7 +105,7 @@ export class Cohort {
 
   set subscribed(value: boolean) {
     this._subscribed = value;
-    if(value && !this.subscriptionFreq) {
+    if (value && !this.subscriptionFreq) {
       this.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
     }
   }

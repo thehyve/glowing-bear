@@ -231,8 +231,7 @@ export class CohortService {
             MessageHelper.alert('error', 'Fail to restore query ', cohort.name);
             reject(err);
           });
-      }
-      else {
+      } else {
         reject(`Cohort "${cohort.name}" does not have valid constraint to restore.`);
       }
     });
