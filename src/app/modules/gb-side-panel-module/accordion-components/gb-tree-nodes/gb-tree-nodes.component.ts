@@ -12,7 +12,6 @@ import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {CohortService} from '../../../../services/cohort.service';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -56,7 +55,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
-              private queryService: CohortService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -317,7 +315,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   }
 
   get isLoading(): boolean {
-    return !this.treeNodeService.isTreeNodeLoadingCompleted;
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
 }

@@ -5,13 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {Injectable} from '@angular/core';
 import {ResourceService} from './resource.service';
-import {TreeNodeService} from './tree-node.service';
 import {Cohort} from '../models/cohort-models/cohort';
 import {ConstraintService} from './constraint.service';
-import {FormatHelper} from '../utilities/format-helper';
 import {AppConfig} from '../config/app.config';
 import {CohortDiffRecord} from '../models/cohort-models/cohort-diff-record';
 import {CohortSetType} from '../models/cohort-models/cohort-set-type';
@@ -23,8 +20,6 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
-
-type LoadingState = 'loading' | 'complete';
 
 /**
  * This service concerns with
@@ -65,7 +60,6 @@ export class CohortService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
-              private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
@@ -106,7 +100,7 @@ export class CohortService {
     // reset cohorts array
     this.cohorts.length = 0;
     // create current cohort
-    let current: Cohort = new Cohort('', 'Current cohort');
+    let current: Cohort = new Cohort('', 'currently editing');
     current.createDate = new Date().toISOString();
     current.updateDate = new Date().toISOString();
     current.selected = true;
@@ -154,10 +148,11 @@ export class CohortService {
               this.totalCounts.subjectCount = this.counts.subjectCount;
               this.totalCounts.observationCount = this.counts.observationCount;
             }
-            this.treeNodeService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
-            this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
+            this.constraintService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
+            this.constraintService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
             this.isUpdating = false;
             this.isDirty = false;
+            this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.prepareVariables(resolve);
           })
@@ -171,21 +166,20 @@ export class CohortService {
   }
 
   prepareVariables(resolve) {
-    if (this.treeNodeService.isTreeNodeLoadingCompleted) {
-      this.treeNodeService.updateVariables();
-      console.log('variables', this.treeNodeService.variables);
-      resolve(true);
-    } else {
+    if (this.constraintService.isTreeNodesLoading) {
       window.setTimeout((function () {
         this.prepareVariables(resolve);
       }).bind(this), 500);
+    } else {
+      this.constraintService.updateVariables();
+      resolve(true);
     }
   }
 
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
-    result.constraint = this.constraintService.cohortConstraint();
+    result.constraint = this.currentCohort.constraint;
     this.saveCohort(result);
   }
 
@@ -269,10 +263,6 @@ export class CohortService {
           if (index > -1) {
             this.cohorts.splice(index, 1);
           }
-          // An alternative would be to directly update the queries
-          // using 'treeNodeService.updateQueries()'
-          // but this approach retrieves new query objects and
-          // leaves the all queries to remain collapsed
         },
         err => ErrorHelper.handleError(err)
       );
