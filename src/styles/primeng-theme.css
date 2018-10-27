@@ -142,7 +142,7 @@ body .ui-togglebutton:not(.ui-state-disabled):not(.ui-state-active):hover {
   background-color: var(--gb-clinical-green);
 }
 body .ui-togglebutton:not(.ui-state-disabled).ui-state-active {
-  background-color: #025aa5;
+  background-color: var(--gb-clinical-green);
 }
 body .ui-chips .ui-chips-token .ui-chips-token-label {
   padding: 0.125em;

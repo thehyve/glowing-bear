@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {Concept} from '../../../../models/constraint-models/concept';
 
 @Component({
   selector: 'gb-variables',
@@ -7,10 +9,15 @@ import {Component, OnInit} from '@angular/core';
 })
 export class GbVariablesComponent implements OnInit {
 
-  constructor() {
+  constructor(private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
+    // TODO: render variables in this compnent in a list, with categories
+    console.log('variables', this.variables)
   }
 
+  get variables(): Concept[] {
+    return this.constraintService.variables;
+  }
 }

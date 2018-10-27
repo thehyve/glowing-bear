@@ -94,7 +94,7 @@ export class TreeNodeServiceMock {
     this._validTreeNodeTypes = value;
   }
 
-  get isTreeNodeLoadingCompleted(): boolean {
+  get isTreeNodesLoadingCompleted(): boolean {
     return true;
   }
 
