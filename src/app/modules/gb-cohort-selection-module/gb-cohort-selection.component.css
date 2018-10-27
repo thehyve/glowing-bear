@@ -1,3 +1,33 @@
+/*
+ * padding and margin: top, right, bottom, left
+ * shadow option: text-shadow: 1px 1px 3px black;
+ */
+.top-panel {
+  background-color: rgba(51, 156, 144, 0.1);
+  border-radius: 3px;
+  border: 1px solid lightgray;
+  padding: 0.5em 1em 0.5em 1em;
+  margin-top: var(--gb-navbar-height-extra);
+  margin-bottom: 1em;
+  color: darkslategrey;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.save-input {
+  margin-bottom: 3px;
+  margin-right: 7px;
+  max-width: 100%;
+  font-size: small;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+}
+
+/* save btn */
+.save-btn {
+  margin: .1em;
+}
+
 .update-btn {
   margin-left: 1em;
   margin-right: 0.5em;
@@ -14,45 +44,6 @@
   opacity: .5;
 }
 
-/*
- * The style for the overview panel on top of data-selection
- * padding and margin: top, right, bottom, left
- * shadow option: text-shadow: 1px 1px 3px black;
- */
-.top-panel {
-  background-color: rgba(51, 156, 144, 0.1);
-  border-radius: 3px;
-  border: 1px solid lightgray;
-  padding: 0.5em 1em 0.5em 1em;
-  margin: var(--gb-navbar-height-extra) 1em 1em 0em;
-  color: darkslategrey;
-  overflow: hidden;
-  width: 100%;
-  font-size: 0.9em;
-}
-
-.top-panel-input {
-  margin-bottom: 3px;
-  margin-right: 7px;
-  max-width: 100%;
-  font-size: small;
-  padding: 0.3em 0.3em 0.3em 0.5em;
-}
-
-/* save btn */
-.top-panel-btn {
-  margin: .1em;
-}
-
-.top-panel-btn:hover {
-  background-color: var(--gb-clinical-green);
-  opacity: 0.7;
-}
-
-.top-panel-btn:active {
-  background-color: var(--gb-clinical-green);
-  opacity: 0.9;
-}
 
 
 /*Style for the padding of the constraint*/
@@ -108,4 +99,12 @@
 /* Fix multiple autocomplete dropdown button new line break */
 :host >>> .ui-autocomplete {
   display: inline-flex;
+}
+
+.criteria-box {
+  margin-bottom: 2em;
+}
+
+.subject-count-box {
+  margin-left: 0.5em;
 }

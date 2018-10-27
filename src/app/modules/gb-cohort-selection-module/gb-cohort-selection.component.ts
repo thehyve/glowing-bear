@@ -91,6 +91,14 @@ export class GbCohortSelectionComponent implements OnInit {
     return this.cohortService.isSavingCohortCompleted;
   }
 
+  get isUpdating(): boolean {
+    return this.cohortService.isUpdating;
+  }
+
+  get isDirty(): boolean {
+    return this.cohortService.isDirty;
+  }
+
   /**
    * Prevent the default behavior of node drop
    * @param event

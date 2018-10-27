@@ -102,10 +102,6 @@ export class GbCohortsComponent implements OnInit {
 
   restoreCohort(event: Event, selected: Cohort) {
     event.stopPropagation();
-    for (let c of this.cohortService.cohorts) {
-      c.selected = false;
-    }
-    selected.selected = true;
     this.cohortService.restoreCohort(selected);
   }
 
@@ -234,5 +230,6 @@ export class GbCohortsComponent implements OnInit {
 
   onCohortCheckClick(e: MouseEvent) {
     e.stopPropagation();
+    // TODO: handle the inclusion/exclusion of cohorts
   }
 }

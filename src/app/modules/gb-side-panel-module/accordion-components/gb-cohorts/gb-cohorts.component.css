@@ -56,6 +56,22 @@
   padding-top: 3px;
 }
 
+:host >>> .ui-togglebutton {
+  padding: 0.1em;
+  border-radius: 0.5em;
+  background-color: transparent;
+  border: 1px solid var(--gb-clinical-green-light-light);
+  color: var(--gb-clinical-green);
+}
+
+:host >>> .ui-togglebutton:hover {
+  color: white;
+  background-color: var(--gb-clinical-green-light);
+}
+
+:host >>> .ui-togglebutton.ui-state-active {
+  color: white !important;
+}
 
 .top-panel {
   margin-bottom: 3px;
@@ -184,4 +200,5 @@ md2-accordion-header .ui-button-secondary:hover {
 
 .cohort-header {
   display: flow-root;
+  padding-bottom: 0.1em;
 }

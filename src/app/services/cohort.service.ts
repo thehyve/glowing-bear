@@ -22,6 +22,7 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -35,7 +36,7 @@ type LoadingState = 'loading' | 'complete';
 })
 export class CohortService {
   // The current cohort, which is continuously being edited and stays in the browser memory
-  private _cohort: Cohort;
+  private _currentCohort: Cohort;
   // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
   // The total numbers of subjects & observations
@@ -102,25 +103,21 @@ export class CohortService {
   }
 
   handleLoadedCohorts(cohorts: Cohort[]) {
+    // reset cohorts array
     this.cohorts.length = 0;
-    let bookmarkedQueries = [];
+    // create current cohort
+    let current: Cohort = new Cohort('', 'Current cohort');
+    current.createDate = new Date().toISOString();
+    current.updateDate = new Date().toISOString();
+    current.selected = true;
+    current.controlsEnabled = false;
+    current.constraint = new TrueConstraint();
+    this.currentCohort = current;
+    // process saved cohorts
+    let bookmarkedCohorts = [];
     cohorts.forEach(c => {
-      c.collapsed = true;
-      c.visible = true;
-      c.subscriptionCollapsed = true;
-      if (c.createDate) {
-        c.createDateInfo = FormatHelper.formatDateSemantics(new Date(c.createDate));
-      }
-      if (c.updateDate) {
-        c.updateDateInfo = FormatHelper.formatDateSemantics(new Date(c.updateDate));
-      }
       if (c.subscribed) {
-        if (!c.subscriptionFreq) {
-          c.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
-        }
-        /*
-         * load cohort diff records for this cohort
-         */
+        // load cohort diff records for this cohort
         this.resourceService.diffQuery(c.id)
           .subscribe(
             (records) => {
@@ -128,14 +125,13 @@ export class CohortService {
             }
           );
       }
-
       if (c.bookmarked) {
-        bookmarkedQueries.push(c);
+        bookmarkedCohorts.push(c);
       } else {
         this.cohorts.push(c);
       }
     });
-    this.cohorts = bookmarkedQueries.concat(this.cohorts);
+    this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
   public update(initialUpdate?: boolean): Promise<any> {
@@ -162,6 +158,7 @@ export class CohortService {
             this.treeNodeService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
             this.isUpdating = false;
             this.isDirty = false;
+            this.currentCohort.updateDate = new Date().toISOString();
             this.prepareVariables(resolve);
           })
           .catch(err => {
@@ -224,22 +221,26 @@ export class CohortService {
    */
   public restoreCohort(cohort: Cohort): Promise<any> {
     return new Promise((resolve, reject) => {
-      MessageHelper.alert('info', `Start importing query ${cohort.name}.`);
-      this.cohort = cohort;
+      MessageHelper.alert('info', `Start importing cohort "${cohort.name}".`);
       if (cohort.constraint) {
+        cohort.selected = true;
+        this.currentCohort.constraint = cohort.constraint;
         this.constraintService.clearCohortConstraint();
         this.constraintService.restoreCohortConstraint(cohort.constraint);
+        this.isDirty = true;
+        this.update()
+          .then(() => {
+            MessageHelper.alert('info', 'Success', `Cohort ${cohort.name} is successfully imported.`);
+            resolve(true);
+          })
+          .catch(err => {
+            MessageHelper.alert('error', 'Fail to restore query ', cohort.name);
+            reject(err);
+          });
       }
-      this.isDirty = true;
-      this.update()
-        .then(() => {
-          MessageHelper.alert('info', 'Success', `Query ${cohort.name} is successfully imported.`);
-          resolve(true);
-        })
-        .catch(err => {
-          MessageHelper.alert('error', 'Fail to restore query ', cohort.name);
-          reject(err);
-        });
+      else {
+        reject(`Cohort "${cohort.name}" does not have valid constraint to restore.`);
+      }
     });
   }
 
@@ -368,12 +369,12 @@ export class CohortService {
     this._counts = value;
   }
 
-  get cohort(): Cohort {
-    return this._cohort;
+  get currentCohort(): Cohort {
+    return this._currentCohort;
   }
 
-  set cohort(value: Cohort) {
-    this._cohort = value;
+  set currentCohort(value: Cohort) {
+    this._currentCohort = value;
   }
 
   get cohorts(): Cohort[] {

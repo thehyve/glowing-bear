@@ -12,9 +12,9 @@ import {DataTable} from '../table-models/data-table';
 import {Constraint} from '../constraint-models/constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../../utilities/constraint-utilities/constraint-helper';
+import {FormatHelper} from '../../utilities/format-helper';
 
 export class Cohort {
-
   private _id: string;
   private _name: string;
   private _description: string;
@@ -29,11 +29,13 @@ export class Cohort {
   private _bookmarked: boolean;
   // Indicate if the set is collapsed
   private _collapsed: boolean;
-  // Indicate if the set is selected, in other words, being edited
+  // Indicate if the set is selected
   private _selected: boolean;
   // The visual indicator flags the visibility of the cohort
   private _visible: boolean;
-  // the constraint that defines the cohort
+  // Indicate if the controls for this cohort are enabled
+  private _controlsEnabled: boolean;
+  // The constraint that defines the cohort
   private _constraint: Constraint;
 
   /*
@@ -55,10 +57,13 @@ export class Cohort {
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
-    this.collapsed = false;
+    this.collapsed = true;
+    this.visible  = true;
     this.bookmarked = false;
     this.selected = false;
+    this.controlsEnabled = true;
     this.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
+    this.subscriptionCollapsed = true;
     this.diffRecords = [];
   }
 
@@ -100,6 +105,9 @@ export class Cohort {
 
   set subscribed(value: boolean) {
     this._subscribed = value;
+    if(value && !this.subscriptionFreq) {
+      this.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
+    }
   }
 
   get collapsed(): boolean {
@@ -124,6 +132,7 @@ export class Cohort {
 
   set createDate(value: string) {
     this._createDate = value;
+    this.createDateInfo = FormatHelper.formatDateSemantics(new Date(value));
   }
 
   get updateDate(): string {
@@ -132,6 +141,7 @@ export class Cohort {
 
   set updateDate(value: string) {
     this._updateDate = value;
+    this.updateDateInfo = FormatHelper.formatDateSemantics(new Date(value));
   }
 
   get apiVersion(): string {
@@ -204,5 +214,13 @@ export class Cohort {
 
   set constraint(value: Constraint) {
     this._constraint = value;
+  }
+
+  get controlsEnabled(): boolean {
+    return this._controlsEnabled;
+  }
+
+  set controlsEnabled(value: boolean) {
+    this._controlsEnabled = value;
   }
 }
