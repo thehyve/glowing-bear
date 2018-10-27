@@ -580,10 +580,10 @@ body .ui-slider .ui-slider-range {
   background: #43a7fd;
 }
 body .ui-buttonset.ui-selectbutton .ui-button:first-child {
-  border-right: none;
+  /*border-right: none;*/
 }
 body .ui-buttonset.ui-selectbutton .ui-button:last-child {
-  border-left: none;
+  /*border-left: none;*/
 }
 body .ui-buttonset .ui-button {
   background-color: #e6e6e6;
