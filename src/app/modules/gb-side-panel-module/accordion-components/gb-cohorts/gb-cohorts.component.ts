@@ -230,6 +230,6 @@ export class GbCohortsComponent implements OnInit {
 
   onCohortCheckClick(e: MouseEvent) {
     e.stopPropagation();
-    // TODO: handle the inclusion/exclusion of cohorts
+    // TODO: handle the inclusion/exclusion of cohorts, adjust the scope of variables
   }
 }
