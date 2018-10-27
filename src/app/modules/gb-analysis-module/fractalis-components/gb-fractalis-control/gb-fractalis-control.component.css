@@ -1,0 +1,23 @@
+.fractalis-control-container {
+  padding-top: 0.5em;
+}
+
+.instruction {
+  font-size: large;
+  color: grey;
+  padding: 0.1em 0.5em 0.5em 0.5em;
+}
+
+.variable-drop-zone {
+  background-color: #f2f2f2;
+  border: 1px solid lightgray;
+  border-radius: 0.5em;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
+  font-size: larger;
+  color: grey;
+  min-height: 10em;
+}
+

@@ -23,6 +23,12 @@ export class GbExportComponent implements OnInit, OnDestroy {
 
   private timer: Timer;
 
+  // TODO: fix export workflow:
+  // 1. user defines cohort in cohort selection
+  // 2. user goes to export tab, variables on the left are selectable
+  // 3. based on cohort and variables, compose combination constraint to get data table
+  // 4. user arranges data table
+  // 5. user selects export data type, defines export job
   constructor(private appConfig: AppConfig,
               private exportService: ExportService,
               public resourceService: ResourceService) {

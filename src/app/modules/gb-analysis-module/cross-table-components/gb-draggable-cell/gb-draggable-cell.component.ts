@@ -7,8 +7,8 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Constraint} from '../../../models/constraint-models/constraint';
-import {CrossTableService} from '../../../services/cross-table.service';
+import {Constraint} from '../../../../models/constraint-models/constraint';
+import {CrossTableService} from '../../../../services/cross-table.service';
 
 @Component({
   selector: 'gb-draggable-cell',

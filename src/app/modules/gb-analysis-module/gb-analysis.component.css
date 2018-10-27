@@ -1,3 +1,4 @@
-.gb-analysis-container {
-  margin-top: var(--gb-navbar-height-extra);
+/* top, right, bottom, left */
+.analysis-container {
+  margin: var(--gb-navbar-height-extra) 0.5em 1em 0.5em;
 }

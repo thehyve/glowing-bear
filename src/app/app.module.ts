@@ -40,6 +40,7 @@ import {TransmartHttpService} from './services/transmart-services/transmart-http
 import {StudyService} from './services/study.service';
 import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {FractalisService} from './services/fractalis.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -80,6 +81,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     AppConfig,
     AuthenticationService,
     Oauth2Authentication,
+    FractalisService,
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,
