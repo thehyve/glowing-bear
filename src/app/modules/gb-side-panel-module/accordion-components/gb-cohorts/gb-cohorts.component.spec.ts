@@ -11,14 +11,14 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbCohortsComponent} from './gb-cohorts.component';
 import {
   AutoCompleteModule,
-  ButtonModule, CheckboxModule,
+  ButtonModule,
   ConfirmationService,
   ConfirmDialogModule,
   DataListModule,
   DragDropModule,
   InputTextModule,
   PanelModule,
-  RadioButtonModule,
+  RadioButtonModule, ToggleButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -29,9 +29,6 @@ import {CohortService} from '../../../../services/cohort.service';
 import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 import {Md2AccordionModule} from 'md2';
 import {MessageHelper} from '../../../../utilities/message-helper';
-import {log} from 'util';
-import {type} from 'os';
-import {get} from 'selenium-webdriver/http';
 import {Cohort} from '../../../../models/cohort-models/cohort';
 import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
@@ -60,7 +57,7 @@ describe('GbCohortsComponent', () => {
         ConfirmDialogModule,
         Md2AccordionModule,
         RadioButtonModule,
-        CheckboxModule
+        ToggleButtonModule
       ],
       providers: [
         {
@@ -233,8 +230,6 @@ describe('GbCohortsComponent', () => {
     let spy2 = spyOn(cohortService, 'restoreCohort').and.stub();
     component.restoreCohort(e, target);
     expect(spy1).toHaveBeenCalled();
-    expect(target.selected).toBe(true);
-    expect(target1.selected).toBe(false);
     expect(spy2).toHaveBeenCalled();
   })
 

@@ -1,6 +1,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -8,7 +10,15 @@ describe('GbVariablesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbVariablesComponent]
+      declarations: [
+        GbVariablesComponent
+      ],
+      providers: [
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+      ]
     })
       .compileComponents();
   }));
@@ -19,7 +29,7 @@ describe('GbVariablesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should be created', () => {
     expect(component).toBeTruthy();
   });
 });

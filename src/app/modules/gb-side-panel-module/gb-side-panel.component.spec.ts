@@ -16,13 +16,11 @@ import {
   TooltipModule, TreeModule, RadioButtonModule, CheckboxModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.component';
 import {CohortService} from '../../services/cohort.service';
 import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {Md2AccordionModule} from 'md2';
@@ -32,6 +30,7 @@ import {CrossTableService} from '../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -41,8 +40,9 @@ describe('GbSidePanelComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbSidePanelComponent,
-        GbTreeNodesComponent,
-        GbCohortsComponent
+        MockComponent({selector: 'gb-tree-nodes'}),
+        MockComponent({selector: 'gb-cohorts'}),
+        MockComponent({selector: 'gb-variables'})
       ],
       imports: [
         BrowserAnimationsModule,

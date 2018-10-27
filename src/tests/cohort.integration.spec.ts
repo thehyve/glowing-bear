@@ -156,6 +156,7 @@ describe('Integration test for cohort saving and restoring', () => {
     let spy1 = spyOn(cohortService, 'update').and.callThrough();
     let promise = cohortService.restoreCohort(q0);
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
+
     let child0 = constraintService.rootInclusionConstraint.children[0];
     expect(child0.className).toEqual('ConceptConstraint');
     expect(child0['concept']).toBeDefined();
@@ -164,10 +165,10 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(child1.className).toEqual('ConceptConstraint');
     expect(child1['concept']).toBeDefined();
     expect(child1['concept']['code']).toEqual('O1KP:CAT8');
-    expect(constraintService.rootExclusionConstraint.children.length).toEqual(1);
     let child3 = constraintService.rootExclusionConstraint.children[0];
     expect(child3['concept']).toBeDefined();
     expect(child3['concept']['code']).toEqual('VSIGN:HR');
+
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
       expect(cohortService.isDirty).toBe(false);
@@ -176,7 +177,7 @@ describe('Integration test for cohort saving and restoring', () => {
 
     let spySave = spyOn(resourceService, 'saveQuery').and.callThrough();
     cohortService.saveCohortByName('test-name');
-    expect(cohortService.cohorts.length).toBe(1);
+    expect(cohortService.cohorts.length).toBe(2);
     expect(cohortService.isSavingCohortCompleted).toBe(true);
     expect(spySave).toHaveBeenCalled();
   });
@@ -190,7 +191,6 @@ describe('Integration test for cohort saving and restoring', () => {
           .then(() => {
             expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
             expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
-            expect(treeNodeService.selectedProjectionTreeData.length).toBe(0);
             expect(cohortService.isDirty).toBe(false);
           });
         expect(cohortService.isDirty).toBe(true);
