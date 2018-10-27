@@ -68,11 +68,14 @@
           <div *ngIf="cohort.visible">
             <div class="cohort-header clearfix">
               <div class="cohort-header-name">
-                <p-checkbox [(ngModel)]="cohort.selected" binary="true"
-                            (click)="onCohortCheckClick($event)"></p-checkbox>
-                {{cohort.name}}
+                <p-toggleButton [(ngModel)]="cohort.selected"
+                                onLabel="{{cohort.name}}"
+                                offLabel="{{cohort.name}}"
+                                onIcon="pi pi-check"
+                                offIcon="pi"
+                                (click)="onCohortCheckClick($event)"></p-toggleButton>
               </div>
-              <div class="float-right">
+              <div *ngIf="cohort.controlsEnabled" class="float-right">
                 <button *ngIf="isCohortSubscriptionIncluded"
                         pButton class="ui-button-secondary" type="button"
                         pTooltip="Subscribe to email notifications when new data is available"

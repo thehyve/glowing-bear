@@ -894,7 +894,7 @@ body .ui-accordion .ui-accordion-header.ui-tabview-outline.ui-state-active {
   background-color: #2c877c;
 }
 body .ui-accordion .ui-accordion-content {
-  padding: 1.25em;
+  padding: 0.75em !important;
 }
 body .ui-tabview {
   padding: 0;

@@ -19,12 +19,12 @@ import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.c
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
   AutoCompleteModule,
-  ButtonModule, CheckboxModule,
+  ButtonModule,
   ConfirmationService,
   ConfirmDialogModule,
   InputTextModule,
   PanelModule,
-  RadioButtonModule,
+  RadioButtonModule, ToggleButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -48,7 +48,7 @@ import { GbVariablesComponent } from './accordion-components/gb-variables/gb-var
     ConfirmDialogModule,
     Md2AccordionModule,
     RadioButtonModule,
-    CheckboxModule
+    ToggleButtonModule
   ],
   declarations: [
     GbSidePanelComponent,
