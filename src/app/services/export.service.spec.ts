@@ -29,7 +29,7 @@ import {StudyServiceMock} from './mocks/study.service.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
-  let queryService: CohortService;
+  let cohortService: CohortService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -63,7 +63,7 @@ describe('ExportService', () => {
       ]
     });
     exportService = TestBed.get(ExportService);
-    queryService = TestBed.get(CohortService);
+    cohortService = TestBed.get(CohortService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {
@@ -83,16 +83,6 @@ describe('ExportService', () => {
     expect(result).toBe(false);
     let exportDataType = new ExportDataType('test data type', true);
     exportService.exportDataTypes = [exportDataType];
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    let fileFormat = new ExportFileFormat('tsv', true);
-    exportDataType.fileFormats.push(fileFormat);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    queryService.counts_2 = new CountItem(1, 1);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(true);
-    queryService.counts_2 = new CountItem(0, 0);
     result = exportService.validateExportJob('test job name 1');
     expect(result).toBe(false);
   });
