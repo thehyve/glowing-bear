@@ -85,13 +85,12 @@ describe('CohortService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should handle loaded queries', () => {
+  it('should handle loaded cohorts', () => {
     let q = new Cohort('test query id', 'test query name');
     q.createDate = '2015-03-25';
     q.updateDate = '2015-03-26';
     q.subscribed = true;
     q.bookmarked = true;
-    q.subscriptionFreq = null;
     let q1 = new Cohort('test query id 1', 'test query name 1');
     q1.createDate = null;
     q1.updateDate = null;
@@ -112,9 +111,10 @@ describe('CohortService', () => {
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(q.subscriptionFreq).toBe(CohortSubscriptionFrequency.WEEKLY);
-    expect(cohortService.cohorts[0].id).toBe(q.id);
-    expect(cohortService.cohorts[1].id).toBe(q2.id);
-    expect(cohortService.cohorts[2].id).toBe(q1.id);
+    expect(cohortService.cohorts[0].id).toBe('');
+    expect(cohortService.cohorts[1].id).toBe(q.id);
+    expect(cohortService.cohorts[2].id).toBe(q2.id);
+    expect(cohortService.cohorts[3].id).toBe(q1.id);
   });
 
   it('should delete a query', () => {
