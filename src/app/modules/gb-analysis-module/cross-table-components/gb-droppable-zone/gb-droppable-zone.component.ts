@@ -7,13 +7,13 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Constraint} from '../../../models/constraint-models/constraint';
-import {CrossTableService} from '../../../services/cross-table.service';
-import {TreeNodeService} from '../../../services/tree-node.service';
-import {ConstraintService} from '../../../services/constraint.service';
-import {DropMode} from '../../../models/drop-mode';
-import {MessageHelper} from '../../../utilities/message-helper';
-import {AxisType} from '../../../models/table-models/axis-type';
+import {Constraint} from '../../../../models/constraint-models/constraint';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {DropMode} from '../../../../models/drop-mode';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {AxisType} from '../../../../models/table-models/axis-type';
 
 @Component({
   selector: 'gb-droppable-zone',

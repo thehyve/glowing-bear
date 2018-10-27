@@ -9,12 +9,12 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDraggableCellComponent} from './gb-draggable-cell.component';
-import {CrossTableServiceMock} from '../../../services/mocks/cross-table.service.mock';
-import {CrossTableService} from '../../../services/cross-table.service';
-import {ConceptConstraint} from '../../../models/constraint-models/concept-constraint';
-import {Concept} from '../../../models/constraint-models/concept';
-import {CategoricalAggregate} from '../../../models/aggregate-models/categorical-aggregate';
-import {ConceptType} from '../../../models/constraint-models/concept-type';
+import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
+import {CrossTableService} from '../../../../services/cross-table.service';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {DragDropModule} from 'primeng/primeng';
 
 describe('GbDraggableCellComponent', () => {
