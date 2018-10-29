@@ -21,7 +21,7 @@ import {AppConfigMock} from '../app/config/app.config.mock';
 import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
 import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
 import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
-import {TransmartExternalJobResourceService} from '../app/services/transmart-services/transmart-external-job-resource.service';
+import {TransmartPackerHttpService} from '../app/services/transmart-services/transmart-packer-http.service';
 import {HttpService} from '../app/services/http-service';
 import {HttpClient} from '@angular/common/http';
 
@@ -179,7 +179,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         },
         ResourceService,
         TransmartResourceService,
-        TransmartExternalJobResourceService,
+        TransmartPackerHttpService,
         StudyService,
         DataTableService
       ]

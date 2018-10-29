@@ -17,8 +17,8 @@ import {inject} from '@angular/core';
 import {Study} from '../../models/constraint-models/study';
 import {TransmartHttpService} from './transmart-http.service';
 import {TransmartHttpServiceMock} from '../mocks/transmart-http.service.mock';
-import {TransmartExternalJobResourceService} from './transmart-external-job-resource.service';
-import {TransmartExternalJobResourceServiceMock} from '../mocks/transmart-external-job-resource.service.mock';
+import {TransmartPackerHttpService} from './transmart-packer-http.service';
+import {TransmartPackerHttpServiceMock} from '../mocks/transmart-packer-http.service.mock';
 
 describe('TransmartResourceService', () => {
 
@@ -38,8 +38,8 @@ describe('TransmartResourceService', () => {
           useClass: TransmartHttpServiceMock
         },
         {
-          provide: TransmartExternalJobResourceService,
-          useClass: TransmartExternalJobResourceServiceMock
+          provide: TransmartPackerHttpService,
+          useClass: TransmartPackerHttpServiceMock
         },
       ]
     });

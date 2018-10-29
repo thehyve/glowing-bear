@@ -22,7 +22,7 @@ import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/tra
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 
-export class TransmartExternalJobResourceServiceMock {
+export class TransmartPackerHttpServiceMock {
   private exportJobs: ExportJob[];
 
   constructor() {

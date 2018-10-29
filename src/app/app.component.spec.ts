@@ -46,8 +46,8 @@ import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
-import {TransmartExternalJobResourceService} from './services/transmart-services/transmart-external-job-resource.service';
-import {TransmartExternalJobResourceServiceMock} from './services/mocks/transmart-external-job-resource.service.mock';
+import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
+import {TransmartPackerHttpServiceMock} from './services/mocks/transmart-packer-http.service.mock';
 import {HttpService} from './services/http-service';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
@@ -109,8 +109,8 @@ describe('AppComponent', () => {
           useClass: TransmartHttpServiceMock
         },
         {
-          provide: TransmartExternalJobResourceService,
-          useClass: TransmartExternalJobResourceServiceMock
+          provide: TransmartPackerHttpService,
+          useClass: TransmartPackerHttpServiceMock
         },
         {
           provide: ResourceService,

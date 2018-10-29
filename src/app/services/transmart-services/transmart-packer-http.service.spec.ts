@@ -12,13 +12,13 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {TransmartExternalJobResourceService} from './transmart-external-job-resource.service';
+import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {HttpService} from '../http-service';
 
-describe('TransmartExternalJobResourceService', () => {
+describe('TransmartPackerHttpService', () => {
 
-  let transmartExternalJobResourceService: TransmartExternalJobResourceService;
+  let transmartPackerHttpService: TransmartPackerHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -27,7 +27,7 @@ describe('TransmartExternalJobResourceService', () => {
         HttpClientTestingModule
       ],
       providers: [
-        TransmartExternalJobResourceService,
+        TransmartPackerHttpService,
         {
           provide: AppConfig,
           useClass: AppConfigMock
@@ -35,7 +35,7 @@ describe('TransmartExternalJobResourceService', () => {
         HttpService
       ]
     });
-    transmartExternalJobResourceService = TestBed.get(TransmartExternalJobResourceService);
+    transmartPackerHttpService = TestBed.get(TransmartPackerHttpService);
   });
 
   afterEach(inject([HttpTestingController], (httpMock: HttpTestingController) => {
@@ -43,13 +43,13 @@ describe('TransmartExternalJobResourceService', () => {
   }));
 
   it('should be injected',
-    inject([TransmartExternalJobResourceService], (service: TransmartExternalJobResourceService) => {
+    inject([TransmartPackerHttpService], (service: TransmartPackerHttpService) => {
       expect(service).toBeTruthy();
     }));
 
   it('should get export jobs',
-    inject([HttpTestingController, TransmartExternalJobResourceService],
-      (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         const mockData = {
           jobs: {
             foo: 'bar'
@@ -65,8 +65,8 @@ describe('TransmartExternalJobResourceService', () => {
       }));
 
   it('should get export data types',
-    inject([HttpTestingController, TransmartExternalJobResourceService],
-      (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         service.getExportDataTypes().subscribe((res: ExportDataType[]) => {
           expect(res.length).toBe(1);
           expect(res[0].name).toBe('clinical');
@@ -76,8 +76,8 @@ describe('TransmartExternalJobResourceService', () => {
       }));
 
   it('should download export job data',
-    inject([HttpTestingController, TransmartExternalJobResourceService],
-      (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         const jobId = 'anid';
         const mockData: Blob = new Blob([]);
         service.downloadJobData(jobId).subscribe(res => {
@@ -91,8 +91,8 @@ describe('TransmartExternalJobResourceService', () => {
       }));
 
   it('should cancel export job',
-    inject([HttpTestingController, TransmartExternalJobResourceService],
-      (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         const mockData = {
           exportJob: {
             foo: 'bar'
@@ -109,8 +109,8 @@ describe('TransmartExternalJobResourceService', () => {
       }));
 
   it('should run external export job',
-    inject([HttpTestingController, TransmartExternalJobResourceService],
-      (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         // scenario 1: no auto saved subject set
         const jobName = 'custom_name';
         let mockConstraint = new TrueConstraint();

@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class TransmartExternalJob {
+export class TransmartPackerJob {
 
   // The unique job id
   public task_id: string;

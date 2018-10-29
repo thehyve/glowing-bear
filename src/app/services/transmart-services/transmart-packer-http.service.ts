@@ -12,16 +12,14 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ErrorHelper} from '../../utilities/error-helper';
-import {catchError} from 'rxjs/operators';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
-import {TransmartExternalJob} from '../../models/transmart-models/transmart-external-job';
+import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
 import {HttpService} from '../http-service';
 
 
 @Injectable()
-export class TransmartExternalJobResourceService {
+export class TransmartPackerHttpService {
 
   private _customExportJobName: string;
 
@@ -54,7 +52,7 @@ export class TransmartExternalJobResourceService {
    * Get the current user's existing export jobs
    * @returns {Observable<any[]>}
    */
-  getAllJobs(): Observable<TransmartExternalJob[]> {
+  getAllJobs(): Observable<TransmartPackerJob[]> {
     const urlPart = 'jobs';
     const responseField = 'jobs';
     return this.httpService.getCall(urlPart, responseField);
@@ -65,7 +63,7 @@ export class TransmartExternalJobResourceService {
    * @param jobId
    * @returns {Observable<ExportJob>}
    */
-  getJobStatus(jobId: string): Observable<TransmartExternalJob> {
+  getJobStatus(jobId: string): Observable<TransmartPackerJob> {
     const urlPart = `jobs/status/${jobId}`;
     const responseField = 'exportJob';
     return this.httpService.getCall(urlPart, responseField);
@@ -78,7 +76,7 @@ export class TransmartExternalJobResourceService {
    * @param {Constraint} targetConstraint
    * @returns {Observable<ExportJob>}
    */
-  runJob(jobName: string, targetConstraint: Constraint): Observable<TransmartExternalJob> {
+  runJob(jobName: string, targetConstraint: Constraint): Observable<TransmartPackerJob> {
     const urlPart = `jobs/create`;
     const responseField = 'job';
 

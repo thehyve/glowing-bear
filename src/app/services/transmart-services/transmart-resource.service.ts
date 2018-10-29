@@ -29,12 +29,12 @@ import {ExportDataType} from '../../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
 import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
 import {TransmartHttpService} from './transmart-http.service';
-import {TransmartExternalJobMapper} from '../../utilities/transmart-utilities/transmart-external-job-mapper';
-import {TransmartExternalJob} from '../../models/transmart-models/transmart-external-job';
+import {TransmartPackerMapper} from '../../utilities/transmart-utilities/transmart-packer-mapper';
+import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
 import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {TransmartExternalJobResourceService} from './transmart-external-job-resource.service';
+import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {Study} from '../../models/constraint-models/study';
 
 
@@ -60,7 +60,7 @@ export class TransmartResourceService {
 
   constructor(private appConfig: AppConfig,
               private transmartHttpService: TransmartHttpService,
-              private transmartExternalJobResourceService: TransmartExternalJobResourceService) {
+              private transmartPackerHttpService: TransmartPackerHttpService) {
     this.exportDataView = appConfig.getConfig('export-data-view');
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
     this.useExternalExportJob = appConfig.getConfig('use-external-export-job');
@@ -373,7 +373,7 @@ export class TransmartResourceService {
 
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.getExportDataTypes()
+      return this.transmartPackerHttpService.getExportDataTypes()
     } else {
       return this.transmartHttpService.getExportFileFormats(this.exportDataView).pipe(
         switchMap(fileFormatNames => {
@@ -390,9 +390,9 @@ export class TransmartResourceService {
    */
   getExportJobs(): Observable<any[]> {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.getAllJobs().pipe(
-        map((tmExJobs: TransmartExternalJob[]) => {
-          return TransmartExternalJobMapper.mapCustomExportJobs(tmExJobs);
+      return this.transmartPackerHttpService.getAllJobs().pipe(
+        map((tmExJobs: TransmartPackerJob[]) => {
+          return TransmartPackerMapper.mapCustomExportJobs(tmExJobs);
         }));
     } else {
       return this.transmartHttpService.getExportJobs();
@@ -406,7 +406,7 @@ export class TransmartResourceService {
    */
   createExportJob(name: string): Observable<ExportJob> {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.createExportJob(name);
+      return this.transmartPackerHttpService.createExportJob(name);
     } else {
       return this.transmartHttpService.createExportJob(name);
     }
@@ -440,9 +440,9 @@ export class TransmartResourceService {
     }
 
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.runJob(jobName, targetConstraint).pipe(
-        map((tmExJob: TransmartExternalJob) => {
-          return TransmartExternalJobMapper.mapCustomExportJob(tmExJob);
+      return this.transmartPackerHttpService.runJob(jobName, targetConstraint).pipe(
+        map((tmExJob: TransmartPackerJob) => {
+          return TransmartPackerMapper.mapCustomExportJob(tmExJob);
         }));
     } else {
       let transmartTableState: TransmartTableState = null;
@@ -461,7 +461,7 @@ export class TransmartResourceService {
    */
   downloadExportJob(jobId: string) {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.downloadJobData(jobId);
+      return this.transmartPackerHttpService.downloadJobData(jobId);
     } else {
       return this.transmartHttpService.downloadExportJob(jobId);
     }
@@ -474,7 +474,7 @@ export class TransmartResourceService {
    */
   cancelExportJob(jobId: string): Observable<{}> {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.cancelJob(jobId);
+      return this.transmartPackerHttpService.cancelJob(jobId);
     } else {
       return this.transmartHttpService.cancelExportJob(jobId)
     }
@@ -487,7 +487,7 @@ export class TransmartResourceService {
    */
   archiveExportJob(jobId: string): Observable<{}> {
     if (this.useExternalExportJob) {
-      return this.transmartExternalJobResourceService.archiveJob(jobId);
+      return this.transmartPackerHttpService.archiveJob(jobId);
     } else {
       return this.transmartHttpService.archiveExportJob(jobId);
     }

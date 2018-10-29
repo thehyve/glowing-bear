@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {ExportJob} from '../../models/export-models/export-job';
-import {TransmartExternalJob} from '../../models/transmart-models/transmart-external-job';
+import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
 
 const statusDictionary: { [status: string]: string | undefined } = {
   REGISTERED: 'Created',
@@ -17,9 +17,9 @@ const statusDictionary: { [status: string]: string | undefined } = {
   FAILED: 'Error. Contact administrator.'
 };
 
-export class TransmartExternalJobMapper {
+export class TransmartPackerMapper {
 
-  static mapCustomExportJob(job: TransmartExternalJob): ExportJob {
+  static mapCustomExportJob(job: TransmartPackerJob): ExportJob {
     let ej = new ExportJob();
     if (job) {
       ej.id = job.task_id;
@@ -31,7 +31,7 @@ export class TransmartExternalJobMapper {
     return ej;
   }
 
-  static mapCustomExportJobs(exJobs: TransmartExternalJob[]): ExportJob[] {
+  static mapCustomExportJobs(exJobs: TransmartPackerJob[]): ExportJob[] {
     let jobs: ExportJob[] = [];
     exJobs.forEach(exJob => {
       try {
