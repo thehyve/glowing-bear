@@ -11,7 +11,7 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
 import {DropMode} from '../../models/drop-mode';
 import {Concept} from '../../models/constraint-models/concept';
-import {Study} from '../../models/constraint-models/study';
+import {Subject} from 'rxjs';
 
 export class ConstraintServiceMock {
 
@@ -23,6 +23,8 @@ export class ConstraintServiceMock {
   conceptConstraints: Constraint[] = [];
   conceptLabels: string[] = [];
   allConstraints: Constraint[] = [];
+  variables: Concept[] = [];
+  variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();

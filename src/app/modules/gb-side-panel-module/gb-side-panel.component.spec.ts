@@ -31,6 +31,7 @@ import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mo
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {MockComponent} from 'ng2-mock-component';
+import {MatExpansionModule} from '@angular/material';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -61,7 +62,8 @@ describe('GbSidePanelComponent', () => {
         ConfirmDialogModule,
         Md2AccordionModule,
         RadioButtonModule,
-        CheckboxModule
+        CheckboxModule,
+        MatExpansionModule
       ],
       providers: [
         {
