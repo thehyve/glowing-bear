@@ -39,6 +39,8 @@ import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
 import {StudyService} from './services/study.service';
 import {TransmartExternalJobResourceService} from './services/transmart-services/transmart-external-job-resource.service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {HttpService} from './services/http-service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -64,6 +66,8 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   ],
   providers: [
     ResourceService,
+    HttpService,
+    TransmartResourceService,
     TransmartHttpService,
     TransmartExternalJobResourceService,
     StudyService,

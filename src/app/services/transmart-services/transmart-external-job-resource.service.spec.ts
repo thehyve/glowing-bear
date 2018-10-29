@@ -12,12 +12,9 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {Concept} from '../../models/constraint-models/concept';
 import {TransmartExternalJobResourceService} from './transmart-external-job-resource.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {HttpService} from '../http-service';
 
 describe('TransmartExternalJobResourceService', () => {
 
@@ -34,7 +31,8 @@ describe('TransmartExternalJobResourceService', () => {
         {
           provide: AppConfig,
           useClass: AppConfigMock
-        }
+        },
+        HttpService
       ]
     });
     transmartExternalJobResourceService = TestBed.get(TransmartExternalJobResourceService);
@@ -110,7 +108,7 @@ describe('TransmartExternalJobResourceService', () => {
         req.flush(mockData);
       }));
 
-  it('should run export job',
+  it('should run external export job',
     inject([HttpTestingController, TransmartExternalJobResourceService],
       (httpMock: HttpTestingController, service: TransmartExternalJobResourceService) => {
         // scenario 1: no auto saved subject set
@@ -126,25 +124,6 @@ describe('TransmartExternalJobResourceService', () => {
         expect(req.request.body['job_parameters']['constraint']).toBeDefined();
         expect(req.request.body['job_parameters']['constraint']['type']).toBe('true');
         expect(req.request.body['job_parameters']['custom_name']).toBe('custom_name');
-
-        // scenario 2: with auto saved subject set
-        service.autosaveSubjectSets = true;
-        service.subjectSetConstraint = new SubjectSetConstraint();
-        service.subjectSetConstraint.subjectIds = ['id1', 'id2'];
-        mockConstraint = new CombinationConstraint();
-        let c1 = new ConceptConstraint();
-        c1.concept = new Concept();
-        let c2 = new ConceptConstraint();
-        c2.concept = new Concept();
-        (<CombinationConstraint>mockConstraint).addChild(c1);
-        (<CombinationConstraint>mockConstraint).addChild(c2);
-        service.runJob(jobName, mockConstraint).subscribe((res) => {
-          expect(res['foo']).toBe('bar');
-        });
-        req = httpMock.expectOne(url);
-        expect(req.request.body['job_parameters']['constraint']['type']).toBe('and');
-
-        console.log(req.request.body['job_parameters']['constraint'])
       }));
 
 });

@@ -15,6 +15,8 @@ import {QueryService} from '../../services/query.service';
 import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExternalJobResourceService} from '../../services/transmart-services/transmart-external-job-resource.service';
+import {HttpService} from '../../services/http-service';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 
 @Component({
   selector: 'gb-main',
@@ -26,6 +28,7 @@ export class GbMainComponent implements OnInit {
   constructor(private appConfig: AppConfig,
               private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
+              private transmartResourceService: TransmartResourceService,
               private transmartHttpService: TransmartHttpService,
               private transmartExternalJobResourceService: TransmartExternalJobResourceService,
               private treeNodeService: TreeNodeService,

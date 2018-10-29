@@ -7,8 +7,6 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
-import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
 import {ResourceService} from '../app/services/resource.service';
 import {of as observableOf} from 'rxjs';
 import Spy = jasmine.Spy;
@@ -18,10 +16,14 @@ import {DataTableService} from '../app/services/data-table.service';
 import {ConstraintServiceMock} from '../app/services/mocks/constraint.service.mock';
 import {ConstraintService} from '../app/services/constraint.service';
 import {StudyService} from '../app/services/study.service';
-import {TransmartExternalJobResourceService} from '../app/services/transmart-services/transmart-external-job-resource.service';
-import {TransmartExternalJobResourceServiceMock} from '../app/services/mocks/transmart-external-job-resource.service.mock';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
+import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
+import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
+import {TransmartExternalJobResourceService} from '../app/services/transmart-services/transmart-external-job-resource.service';
+import {HttpService} from '../app/services/http-service';
+import {HttpClient} from '@angular/common/http';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -156,7 +158,7 @@ const mockResponseData = {
  */
 describe('Integration test data table retrieval calls for TranSMART', () => {
   let dataTableService: DataTableService;
-  let resourceService: ResourceService;
+  let transmartResourceService: TransmartResourceService;
   let transmartHttpService: TransmartHttpService;
   let dataTableCall: Spy;
 
@@ -168,10 +170,6 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
           useClass: TransmartHttpServiceMock
         },
         {
-          provide: TransmartExternalJobResourceService,
-          useClass: TransmartExternalJobResourceServiceMock
-        },
-        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
@@ -180,12 +178,14 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
           useClass: AppConfigMock
         },
         ResourceService,
+        TransmartResourceService,
+        TransmartExternalJobResourceService,
         StudyService,
         DataTableService
       ]
     });
     transmartHttpService = TestBed.get(TransmartHttpService);
-    resourceService = TestBed.get(ResourceService);
+    transmartResourceService = TestBed.get(TransmartResourceService);
     dataTableService = TestBed.get(DataTableService);
   });
 
@@ -200,7 +200,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
     dataTableService.updateDataTable();
 
     // After the studies have been loaded, and the data table service has been initialised ...
-    resourceService.getStudies().subscribe(() => {
+    transmartResourceService.getStudies().subscribe(() => {
 
       // the table should be updated.
       expect(dataTableCall).toHaveBeenCalled();

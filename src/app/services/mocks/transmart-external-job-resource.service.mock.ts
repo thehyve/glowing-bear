@@ -25,9 +25,6 @@ import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 export class TransmartExternalJobResourceServiceMock {
   private exportJobs: ExportJob[];
 
-  private _autosaveSubjectSets: boolean;
-  private _subjectSetConstraint: SubjectSetConstraint;
-
   constructor() {
     this.exportJobs = [];
   }
@@ -36,24 +33,8 @@ export class TransmartExternalJobResourceServiceMock {
     return observableOf(this.exportJobs);
   }
 
-
   getExportDataTypes(): Observable<string[]> {
     return observableOf([]);
   }
 
-  get autosaveSubjectSets(): boolean {
-    return this._autosaveSubjectSets;
-  }
-
-  set autosaveSubjectSets(value: boolean) {
-    this._autosaveSubjectSets = value;
-  }
-
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
-  }
-
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
-  }
 }

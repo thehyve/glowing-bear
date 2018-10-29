@@ -21,12 +21,18 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {Study} from '../../models/constraint-models/study';
+import {DataTable} from '../../models/table-models/data-table';
 
-export class TransmartHttpServiceMock {
-  private _studies: TransmartStudy[];
+export class TransmartResourceServiceMock {
+  private _studies: Study[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
 
+  private _autosaveSubjectSets: boolean;
+  private _subjectSetConstraint: SubjectSetConstraint;
+  private _inclusionCounts: TransmartCountItem;
+  private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
 
   constructor() {
@@ -37,20 +43,20 @@ export class TransmartHttpServiceMock {
   }
 
   private mockStudies() {
-    let s1 = new TransmartStudy();
+    let s1 = new Study();
     s1.dimensions = ['study', 'cocnept', 'patient'];
-    s1.studyId = 'CATEGORICAL_VALUES';
-    let s2 = new TransmartStudy();
+    s1.id = 'CATEGORICAL_VALUES';
+    let s2 = new Study();
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
-    s2.studyId = 'EHR';
+    s2.id = 'EHR';
     this._studies = [s1, s2];
   }
 
-  getStudies(): Observable<TransmartStudy[]> {
+  getStudies(): Observable<Study[]> {
     return observableOf(this._studies);
   }
 
-  get studies(): Promise<TransmartStudy[]> {
+  get studies(): Promise<Study[]> {
     return observableOf(this._studies).toPromise();
   }
 
@@ -206,6 +212,92 @@ export class TransmartHttpServiceMock {
     return observableOf(this.exportJobs);
   }
 
+  logout() {
+    return observableOf({});
+  }
+
+  getStudyIds(constraint: Constraint): Observable<string[]> {
+    return observableOf([]);
+  }
+
+  getDataTable(dataTable: DataTable): Observable<TransmartDataTable> {
+    let dataTableResult = new TransmartDataTable();
+    return observableOf(dataTableResult);
+  }
+
+  getCrossTable(baseConstraint: Constraint,
+                rowConstraints: Constraint[],
+                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
+    let crossTableResult = new TransmartCrossTable();
+    crossTableResult.rows = [[0]];
+    return observableOf(crossTableResult);
+  }
+
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    let response = {
+      'EHR': {
+        'EHR:DEM:AGE': {
+          patientCount: 4,
+          observationCount: 30
+        },
+        'EHR:VSIGN:HR': {
+          patientCount: 6,
+          observationCount: 70
+        }
+      }
+    }
+    return observableOf(response);
+  }
+
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    let response = {
+      'CATEGORICAL_VALUES': {
+        patientCount: 20,
+        observationCount: 200
+      },
+      'EHR': {
+        patientCount: 10,
+        observationCount: 100
+      }
+    };
+    return observableOf(response);
+  }
+
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    let countsPerConcept = {
+      'EHR:DEM:AGE': {
+        patientCount: 4,
+        observationCount: 30
+      },
+      'EHR:VSIGN:HR': {
+        patientCount: 6,
+        observationCount: 70
+      }
+    }
+    return observableOf(countsPerConcept);
+  }
+
+  getCounts(constraint: Constraint): Observable<TransmartCountItem> {
+    let item = new TransmartCountItem();
+    item.patientCount = 23;
+    item.observationCount = 46;
+    return observableOf(item);
+  }
+
+  getAggregate(constraint: Constraint): Observable<object> {
+    let numAgg = {
+      'CV:DEM:AGE': {
+        numericalValueAggregates: {
+          avg: 23.33,
+          count: 3,
+          max: 26,
+          min: 20
+        }
+      }
+    };
+    return observableOf(numAgg);
+  }
+
   getExportFileFormats(): Observable<string[]> {
     return observableOf(['tsv', 'csv']);
   }
@@ -214,4 +306,69 @@ export class TransmartHttpServiceMock {
     return observableOf([]);
   }
 
+  get autosaveSubjectSets(): boolean {
+    return this._autosaveSubjectSets;
+  }
+
+  set autosaveSubjectSets(value: boolean) {
+    this._autosaveSubjectSets = value;
+  }
+
+  get subjectSetConstraint(): SubjectSetConstraint {
+    return this._subjectSetConstraint;
+  }
+
+  set subjectSetConstraint(value: SubjectSetConstraint) {
+    this._subjectSetConstraint = value;
+  }
+
+  get inclusionCounts(): TransmartCountItem {
+    return this._inclusionCounts;
+  }
+
+  set inclusionCounts(value: TransmartCountItem) {
+    this._inclusionCounts = value;
+  }
+
+  get exclusionCounts(): TransmartCountItem {
+    return this._exclusionCounts;
+  }
+
+  set exclusionCounts(value: TransmartCountItem) {
+    this._exclusionCounts = value;
+  }
+
+  get studyConceptCountObject(): object {
+    return this._studyConceptCountObject;
+  }
+
+  set studyConceptCountObject(value: object) {
+    this._studyConceptCountObject = value;
+  }
+
+  updateInclusionExclusionCounts(constraint: Constraint,
+                                 inclusionConstraint: Constraint,
+                                 exclusionConstraint?: Constraint): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.inclusionCounts = new TransmartCountItem();
+      this.inclusionCounts.patientCount = 10;
+      this.inclusionCounts.observationCount = 100;
+      this.exclusionCounts = new TransmartCountItem();
+      this.exclusionCounts.patientCount = 0;
+      this.exclusionCounts.observationCount = 0;
+      this.studyConceptCountObject = {
+        EHR: {
+          'EHR:DEM:AGE': {
+            patientCount: 4,
+            observationCount: 30
+          },
+          'EHR:VSIGN:HR': {
+            patientCount: 6,
+            observationCount: 70
+          }
+        }
+      }
+      resolve(true);
+    });
+  }
 }

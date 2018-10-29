@@ -6,12 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
+import {AsyncSubject, Observable, of as observableOf} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
@@ -25,12 +23,10 @@ import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {catchError, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
+import {HttpService} from '../http-service';
 
 
 @Injectable()
@@ -40,51 +36,16 @@ export class TransmartHttpService {
     'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
   ]);
 
-  // the export data view, either 'dataTable' or 'surveyTable'.
-  private _exportDataView: string;
   private _dateColumnsIncluded = true;
-  private _endpointUrl: string;
 
   private _studiesLock: boolean;
   private _studies: TransmartStudy[] = null;
   private _studiesSubject: AsyncSubject<TransmartStudy[]>;
 
-  /*
-   * Flag indicating if the subject selection of step 1 should be automatically
-   * saved as subject set in the backend. If true, that subject set is used as the subject constraint
-   * for step 2.
-   */
-  private _autosaveSubjectSets: boolean;
-  private _subjectSetConstraint: SubjectSetConstraint;
-  private _inclusionCounts: TransmartCountItem;
-  private _exclusionCounts: TransmartCountItem;
-  private _studyConceptCountObject: object;
-  private _conceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
-              private http: HttpClient) {
-    this.exportDataView = appConfig.getConfig('export-data-view');
+              private httpService: HttpService) {
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
-    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
-    this.subjectSetConstraint = new SubjectSetConstraint();
-    this.inclusionCounts = new TransmartCountItem();
-    this.exclusionCounts = new TransmartCountItem();
-  }
-
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
-  }
-
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
-  }
-
-  get exportDataView(): string {
-    return this._exportDataView;
-  }
-
-  set exportDataView(value: string) {
-    this._exportDataView = value;
   }
 
   get dateColumnsIncluded(): boolean {
@@ -96,136 +57,13 @@ export class TransmartHttpService {
   }
 
   get endpointUrl(): string {
-    return this._endpointUrl;
+    return this.httpService.endpointUrl;
   }
 
   set endpointUrl(value: string) {
-    this._endpointUrl = value;
+    this.httpService.endpointUrl = value;
   }
 
-  get autosaveSubjectSets(): boolean {
-    return this._autosaveSubjectSets;
-  }
-
-  set autosaveSubjectSets(value: boolean) {
-    this._autosaveSubjectSets = value;
-  }
-
-  get inclusionCounts(): TransmartCountItem {
-    return this._inclusionCounts;
-  }
-
-  set inclusionCounts(value: TransmartCountItem) {
-    this._inclusionCounts = value;
-  }
-
-  get exclusionCounts(): TransmartCountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: TransmartCountItem) {
-    this._exclusionCounts = value;
-  }
-
-  get studyConceptCountObject(): object {
-    return this._studyConceptCountObject;
-  }
-
-  set studyConceptCountObject(value: object) {
-    this._studyConceptCountObject = value;
-  }
-
-  get conceptCountObject(): object {
-    return this._conceptCountObject;
-  }
-
-  set conceptCountObject(value: object) {
-    this._conceptCountObject = value;
-  }
-
-  /**
-   * Make a post http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param body
-   * @param responseField
-   * @returns {Observable<any | any>}
-   */
-  private postCall(urlPart, body, responseField) {
-    const url = `${this.endpointUrl}/${urlPart}`;
-    if (responseField) {
-      return this.http.post(url, body).pipe(
-        map(res => res[responseField]),
-        catchError(error => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    } else {
-      return this.http.post(url, body).pipe(
-        catchError(error => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    }
-  }
-
-  /**
-   * Make a get http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param responseField
-   * @returns {Observable<any | any>}
-   */
-  private getCall(urlPart, responseField) {
-    const url = `${this.endpointUrl}/${urlPart}`;
-    if (responseField) {
-      return this.http.get(url).pipe(
-        map((res) => res[responseField]),
-        catchError((error: HttpErrorResponse) => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    } else {
-      return this.http.get(url).pipe(
-        catchError((error: HttpErrorResponse) => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    }
-  }
-
-  /**
-   * Make a put http request
-   * @param urlPart
-   * @param body
-   * @returns {Observable<any | any>}
-   */
-  private putCall(urlPart, body) {
-    let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.put(url, body).pipe(
-      catchError(error => {
-        ErrorHelper.handleError(error);
-        return observableOf(error);
-      })
-    );
-  }
-
-  /**
-   * Make a delete http request
-   * @param urlPart
-   * @returns {Observable<any | any>}
-   */
-  private deleteCall(urlPart) {
-    let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.delete(url).pipe(
-      catchError(error => {
-        ErrorHelper.handleError(error);
-        return observableOf(error);
-      })
-    );
-  }
 
   // -------------------------------------- tree node calls --------------------------------------
   /**
@@ -235,7 +73,7 @@ export class TransmartHttpService {
   getStudies(): Observable<TransmartStudy[]> {
     const urlPart = 'studies';
     const responseField = 'studies';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   /**
@@ -294,137 +132,10 @@ export class TransmartHttpService {
       urlPart += '&tags=true';
     }
     const responseField = 'tree_nodes';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- count calls --------------------------------------
-  /**
-   * Update the inclusion and exclusion counts in subject selection
-   * in an economical way.
-   * Order of updates: study-concept-count object update -> exclusion count update -> inclusion count update
-   * @param {Constraint} constraint
-   * @param {Constraint} inclusionConstraint
-   * @param {Constraint} exclusionConstraint
-   * @returns {Promise<any>}
-   */
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      if (this.autosaveSubjectSets) {
-        this.savePatientSet('temp', constraint)
-          .subscribe((subjectSet: SubjectSet) => {
-            this.subjectSetConstraint.id = subjectSet.id;
-            this.subjectSetConstraint.setSize = subjectSet.setSize;
-            this.updateStudyConceptCountObject(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
-              .then(() => {
-                resolve(true);
-              })
-              .catch(err => {
-                reject(false)
-              });
-          }, err => {
-            reject(err)
-          });
-      } else {
-        this.updateStudyConceptCountObject(constraint, inclusionConstraint, exclusionConstraint)
-          .then(() => {
-            resolve(true);
-          })
-          .catch(err => {
-            reject(err)
-          });
-      }
-    });
-  }
-
-  updateStudyConceptCountObject(constraint: Constraint,
-                                inclusionConstraint: Constraint,
-                                exclusionConstraint?: Constraint): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.getCountsPerStudyAndConcept(constraint)
-        .subscribe((studyConceptCountObj: object) => {
-          this.studyConceptCountObject = studyConceptCountObj;
-          let totalCountItem: TransmartCountItem = new TransmartCountItem();
-          // if in autosaveSubjectSets mode, need to calculate total observation count
-          if (this.autosaveSubjectSets) {
-            let totalObservationCount = 0;
-            for (let studyId in studyConceptCountObj) {
-              let conceptCount: object = studyConceptCountObj[studyId];
-              for (let conceptCode in conceptCount) {
-                let countItem: TransmartCountItem = conceptCount[conceptCode];
-                totalObservationCount += countItem.observationCount;
-              }
-            }
-            totalCountItem.patientCount = this.subjectSetConstraint.setSize;
-            totalCountItem.observationCount = totalObservationCount;
-          }
-          this.getCountsPerConcept(constraint)
-            .subscribe((conceptCountObj: object) => {
-              this.conceptCountObject = conceptCountObj;
-              this.updateExclusionCounts(exclusionConstraint)
-                .then(() => {
-                  this.updateInclusionCounts(inclusionConstraint, totalCountItem)
-                    .then(() => {
-                      resolve(true);
-                    })
-                    .catch(err => {
-                      reject('Fail to update transmart inclusion counts.');
-                    })
-                })
-                .catch(err => {
-                  reject('Fail to update transmart exclusion counts.')
-                })
-            }, err => {
-              reject('Fail to retrieve concept-count object from transmart.')
-            });
-        }, err => {
-          reject('Fail to retrieve study-concept-count object from transmart.')
-        });
-    });
-  }
-
-  updateExclusionCounts(constraint?: Constraint): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      if (constraint) {
-        this.getCounts(constraint)
-          .subscribe((countItem: TransmartCountItem) => {
-            this.exclusionCounts.patientCount = countItem.patientCount;
-            this.exclusionCounts.observationCount = countItem.observationCount;
-            resolve(true);
-          }, err => {
-            reject(err);
-          });
-      } else {
-        this.exclusionCounts.patientCount = 0;
-        this.exclusionCounts.observationCount = 0;
-        resolve(true);
-      }
-    });
-  }
-
-  updateInclusionCounts(constraint: Constraint, totalCountItem?: TransmartCountItem): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      if (this.autosaveSubjectSets) {
-        if (totalCountItem) {
-          this.inclusionCounts.patientCount = totalCountItem.patientCount + this.exclusionCounts.patientCount;
-          this.inclusionCounts.observationCount = totalCountItem.observationCount + this.exclusionCounts.observationCount;
-          resolve(true);
-        } else {
-          reject('Missing transmart total-count item to calculate inclusion counts.');
-        }
-      } else {
-        this.getCounts(constraint)
-          .subscribe((countItem: TransmartCountItem) => {
-            this.inclusionCounts.patientCount = countItem.patientCount;
-            this.inclusionCounts.observationCount = countItem.observationCount;
-            resolve(true);
-          }, err => {
-            reject(err);
-          })
-      }
-    });
-  }
 
   /**
    * Given a constraint, get the patient counts and observation counts
@@ -439,7 +150,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_study_and_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -452,7 +163,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_study';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -464,7 +175,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -476,7 +187,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = false;
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -490,14 +201,14 @@ export class TransmartHttpService {
     const urlPart = 'observations/aggregates_per_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   getCategoricalAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_categorical_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerCategoricalConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- trial visit calls --------------------------------------
@@ -510,7 +221,7 @@ export class TransmartHttpService {
     const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
     const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
     const responseField = 'elements';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
@@ -521,7 +232,7 @@ export class TransmartHttpService {
   getPedigrees(): Observable<Pedigree[]> {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- export calls --------------------------------------
@@ -534,14 +245,13 @@ export class TransmartHttpService {
     const urlPart = 'export/data_formats';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'dataFormats';
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
-  getExportFileFormats(): Observable<string[]> {
-    const dataView = this.exportDataView;
+  getExportFileFormats(dataView: string): Observable<string[]> {
     const urlPart = `export/file_formats?dataView=${dataView}`;
     const responseField = 'fileFormats';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   /**
@@ -551,7 +261,7 @@ export class TransmartHttpService {
   getExportJobs(): Observable<any[]> {
     const urlPart = 'export/jobs';
     const responseField = 'exportJobs';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   /**
@@ -562,7 +272,7 @@ export class TransmartHttpService {
   createExportJob(name: string): Observable<ExportJob> {
     const urlPart = `export/job?name=${name}`;
     const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    return this.httpService.postCall(urlPart, {}, responseField);
   }
 
   /**
@@ -581,21 +291,11 @@ export class TransmartHttpService {
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
-               constraint: Constraint,
+               targetConstraint: Constraint,
                elements: TransmartExportElement[],
                tableState?: TransmartTableState): Observable<ExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
-    let targetConstraint = constraint;
-    if (this.autosaveSubjectSets &&
-      constraint.className === 'CombinationConstraint' &&
-      (<CombinationConstraint>constraint).children[1].mark === ConstraintMark.OBSERVATION) {
-      let combo = new CombinationConstraint();
-      combo.addChild(this.subjectSetConstraint);
-      combo.addChild((<CombinationConstraint>constraint).children[1]);
-      targetConstraint = combo;
-    }
-
     let body = {
       constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
       elements: elements,
@@ -604,7 +304,7 @@ export class TransmartHttpService {
     if (tableState) {
       body['tableConfig'] = tableState;
     }
-    return this.postCall(urlPart, body, responseField);
+    return this.httpService.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -613,9 +313,8 @@ export class TransmartHttpService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let url = `${this.endpointUrl}/export/${jobId}/download`;
-    return this.http.get(url, {responseType: 'blob'}).pipe(
-      catchError(ErrorHelper.handleError.bind(this)));
+    let url = `export/${jobId}/download`;
+    return this.httpService.downloadData(url);
   }
 
   /**
@@ -626,7 +325,7 @@ export class TransmartHttpService {
   cancelExportJob(jobId: string): Observable<{}> {
     const urlPart = `export/${jobId}/cancel`;
     const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    return this.httpService.postCall(urlPart, {}, responseField);
   }
 
   /**
@@ -636,7 +335,7 @@ export class TransmartHttpService {
    */
   archiveExportJob(jobId: string): Observable<{}> {
     const urlPart = `export/${jobId}`;
-    return this.deleteCall(urlPart);
+    return this.httpService.deleteCall(urlPart);
   }
 
   // -------------------------------------- query calls --------------------------------------
@@ -647,7 +346,7 @@ export class TransmartHttpService {
   getQueries(): Observable<TransmartQuery[]> {
     const urlPart = `queries`;
     const responseField = 'queries';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   /**
@@ -679,7 +378,7 @@ export class TransmartHttpService {
     if (transmartQuery.queryBlob) {
       queryBody['queryBlob'] = transmartQuery.queryBlob;
     }
-    return this.postCall(urlPart, queryBody, null);
+    return this.httpService.postCall(urlPart, queryBody, null);
   }
 
   /**
@@ -690,7 +389,7 @@ export class TransmartHttpService {
    */
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
     const urlPart = `queries/${queryId}`;
-    return this.putCall(urlPart, queryBody);
+    return this.httpService.putCall(urlPart, queryBody);
   }
 
   /**
@@ -700,21 +399,21 @@ export class TransmartHttpService {
    */
   deleteQuery(queryId: string): Observable<{}> {
     const urlPart = `queries/${queryId}`;
-    return this.deleteCall(urlPart);
+    return this.httpService.deleteCall(urlPart);
   }
 
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = TransmartConstraintMapper.mapConstraint(constraint);
-    return this.postCall(urlPart, body, null);
+    return this.httpService.postCall(urlPart, body, null);
   }
 
   // -------------------------------------- query differences --------------------------------------
   diffQuery(queryId: string): Observable<object[]> {
     const urlPart = `queries/${queryId}/sets`;
     const responseField = 'querySets';
-    return this.getCall(urlPart, responseField);
+    return this.httpService.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- data table ---------------------------------------------
@@ -732,20 +431,16 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
-    return this.postCall(urlPart, body, null);
+    return this.httpService.postCall(urlPart, body, null);
   }
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
     const urlPart = `dimensions/study/elements`;
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
-    return this.postCall(urlPart, body, responseField).pipe(map(
+    return this.httpService.postCall(urlPart, body, responseField).pipe(map(
       (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
     ));
-  }
-
-  get sortableDimensions(): Set<string> {
-    return TransmartHttpService.sortableDimensions;
   }
 
   getCrossTable(baseConstraint: Constraint,
@@ -757,7 +452,7 @@ export class TransmartHttpService {
       rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)),
       columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint))
     };
-    return this.postCall(urlPart, body, null);
+    return this.httpService.postCall(urlPart, body, null);
   }
 
 }

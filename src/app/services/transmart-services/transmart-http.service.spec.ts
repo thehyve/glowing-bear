@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {TransmartHttpService} from './transmart-http.service';
 import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
@@ -17,13 +17,9 @@ import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {Concept} from '../../models/constraint-models/concept';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {of as observableOf} from 'rxjs';
+import {HttpService} from '../http-service';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 
 describe('TransmartHttpService', () => {
 
@@ -40,7 +36,8 @@ describe('TransmartHttpService', () => {
         {
           provide: AppConfig,
           useClass: AppConfigMock
-        }
+        },
+        HttpService
       ]
     });
     transmartHttpService = TestBed.get(TransmartHttpService);
@@ -132,7 +129,8 @@ describe('TransmartHttpService', () => {
             foo: 'bar'
           }
         };
-        service.getExportFileFormats().subscribe((res) => {
+        let dataView = 'dataTable';
+        service.getExportFileFormats(dataView).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
         const url = service.endpointUrl + '/export/file_formats?dataView=dataTable';
@@ -190,7 +188,7 @@ describe('TransmartHttpService', () => {
         req.flush(mockData);
       }));
 
-  it('should run export job',
+  it('should run transmart export job',
     inject([HttpTestingController, TransmartHttpService],
       (httpMock: HttpTestingController, service: TransmartHttpService) => {
         // scenario 1: no auto saved subject set, no table state
@@ -215,34 +213,6 @@ describe('TransmartHttpService', () => {
         expect(req.request.body['constraint']['type']).toBe('true');
         expect(req.request.body['elements']).toBeDefined();
         expect(req.request.body['includeMeasurementDateColumns']).toBeDefined();
-
-        // scenario 2: with auto saved subject set, no table state
-        service.autosaveSubjectSets = true;
-        service.subjectSetConstraint = new SubjectSetConstraint();
-        service.subjectSetConstraint.subjectIds = ['id1', 'id2'];
-        mockConstraint = new CombinationConstraint();
-        let c1 = new ConceptConstraint();
-        c1.concept = new Concept();
-        let c2 = new ConceptConstraint();
-        c2.concept = new Concept();
-        (<CombinationConstraint>mockConstraint).addChild(c1);
-        (<CombinationConstraint>mockConstraint).addChild(c2);
-        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
-          expect(res['foo']).toBe('bar');
-        });
-        req = httpMock.expectOne(url);
-        expect(req.request.body['constraint']['type']).toBe('and');
-
-        // scenario 2: with auto saved subject set, with table state
-        tableState = new TransmartTableState(['row1'], []);
-        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
-          expect(res['foo']).toBe('bar');
-        });
-        req = httpMock.expectOne(url);
-        expect(req.request.body['tableConfig']).toBeDefined();
-        expect(req.request.body['tableConfig']['rowDimensions'][0]).toBe('row1');
-
-        console.log(req.request.body['constraint'])
       }));
 
   it('should get trial visits',

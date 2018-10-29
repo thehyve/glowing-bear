@@ -17,7 +17,9 @@ export class AppConfigMock {
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'authentication-service-type': 'transmart',
-      'export-data-view': 'dataTable'
+      'export-data-view': 'dataTable',
+      'export-service-url': 'https://transmart-packer.example.com',
+      'custom-export-job-name': 'test_external_export_job_name'
     };
   }
 

@@ -48,6 +48,9 @@ import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
 import {TransmartExternalJobResourceService} from './services/transmart-services/transmart-external-job-resource.service';
 import {TransmartExternalJobResourceServiceMock} from './services/mocks/transmart-external-job-resource.service.mock';
+import {HttpService} from './services/http-service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -96,6 +99,10 @@ describe('AppComponent', () => {
         {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
+        },
+        {
+          provide: TransmartResourceService,
+          useClass: TransmartResourceServiceMock
         },
         {
           provide: TransmartHttpService,

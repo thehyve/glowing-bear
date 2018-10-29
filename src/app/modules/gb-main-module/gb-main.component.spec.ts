@@ -45,6 +45,8 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {TransmartExternalJobResourceService} from '../../services/transmart-services/transmart-external-job-resource.service';
 import {TransmartExternalJobResourceServiceMock} from '../../services/mocks/transmart-external-job-resource.service.mock';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from '../../services/mocks/transmart-resource.service.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -80,6 +82,10 @@ describe('GbMainComponent', () => {
         {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
+        },
+        {
+          provide: TransmartResourceService,
+          useClass: TransmartResourceServiceMock
         },
         {
           provide: TransmartHttpService,

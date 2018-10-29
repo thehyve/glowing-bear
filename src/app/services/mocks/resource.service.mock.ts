@@ -80,8 +80,7 @@ export class ResourceServiceMock {
     return observableOf(this.exportJobs);
   }
 
-  getDataTable(dataTable: DataTable,
-               offset: number, limit: number): Observable<DataTable> {
+  getDataTable(dataTable: DataTable): Observable<DataTable> {
     return observableOf(this.dataTable);
   }
 

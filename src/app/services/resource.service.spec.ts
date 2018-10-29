@@ -6,11 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {ResourceService} from './resource.service';
-import {TransmartHttpService} from './transmart-services/transmart-http.service';
-import {TransmartHttpServiceMock} from './mocks/transmart-http.service.mock';
 import {Study} from '../models/constraint-models/study';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
@@ -21,26 +19,22 @@ import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {Query} from '../models/query-models/query';
-import {TransmartExternalJobResourceService} from './transmart-services/transmart-external-job-resource.service';
-import {TransmartExternalJobResourceServiceMock} from './mocks/transmart-external-job-resource.service.mock';
 import {AppConfigMock} from '../config/app.config.mock';
 import {AppConfig} from '../config/app.config';
+import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
-  let transmartHttpService: TransmartHttpService;
+  let transmartResourceService: TransmartResourceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         ResourceService,
         {
-          provide: TransmartHttpService,
-          useClass: TransmartHttpServiceMock
-        },
-        {
-          provide: TransmartExternalJobResourceService,
-          useClass: TransmartExternalJobResourceServiceMock
+          provide: TransmartResourceService,
+          useClass: TransmartResourceServiceMock
         },
         {
           provide: AppConfig,
@@ -49,7 +43,7 @@ describe('ResourceService', () => {
       ]
     });
     resourceService = TestBed.get(ResourceService);
-    transmartHttpService = TestBed.get(TransmartHttpService);
+    transmartResourceService = TestBed.get(TransmartResourceService);
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -166,7 +160,7 @@ describe('ResourceService', () => {
         }
       }
     };
-    spyOn(transmartHttpService, 'getAggregate').and.callFake(() => {
+    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
       return observableOf(catAgg);
     });
     dummy.concept.code = 'CV:DEM:RACE';
@@ -185,7 +179,7 @@ describe('ResourceService', () => {
   });
 
   it('should handle empty aggregate object', () => {
-    spyOn(transmartHttpService, 'getAggregate').and.callFake(() => {
+    spyOn(transmartResourceService, 'getAggregate').and.callFake(() => {
       return observableOf({});
     });
     let dummy = new ConceptConstraint();
