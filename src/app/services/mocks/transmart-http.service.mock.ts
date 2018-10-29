@@ -214,4 +214,10 @@ export class TransmartHttpServiceMock {
     return observableOf([]);
   }
 
+  runExportJob(): Observable<ExportJob[]> {
+    return observableOf(
+      new ExportJob();
+    );
+  }
+
 }

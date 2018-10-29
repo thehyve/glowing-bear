@@ -7,25 +7,15 @@
  */
 
 import {catchError, map} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {ErrorHelper} from '../utilities/error-helper';
+import {HttpClient, HttpErrorResponse, HttpHandler} from '@angular/common/http';
+import {ErrorHelper} from './error-helper';
 import {Observable, of as observableOf} from 'rxjs';
 
-@Injectable()
-export class HttpService {
 
-  private _endpointUrl: string;
+export class HttpHelper {
 
-  constructor(private http: HttpClient) {
-  }
 
-  get endpointUrl(): string {
-    return this._endpointUrl;
-  }
-
-  set endpointUrl(value: string) {
-    this._endpointUrl = value;
+  constructor(private endpointUrl: string, private http: HttpClient) {
   }
 
   /**

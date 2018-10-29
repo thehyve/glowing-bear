@@ -18,7 +18,6 @@ import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {of as observableOf} from 'rxjs';
-import {HttpService} from '../http-service';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 
 describe('TransmartHttpService', () => {
@@ -36,8 +35,7 @@ describe('TransmartHttpService', () => {
         {
           provide: AppConfig,
           useClass: AppConfigMock
-        },
-        HttpService
+        }
       ]
     });
     transmartHttpService = TestBed.get(TransmartHttpService);

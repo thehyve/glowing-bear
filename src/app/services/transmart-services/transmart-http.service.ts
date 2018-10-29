@@ -26,7 +26,8 @@ import {TransmartCountItem} from '../../models/transmart-models/transmart-count-
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {catchError, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
-import {HttpService} from '../http-service';
+import {HttpHelper} from '../../utilities/http-helper';
+import {HttpClient} from '@angular/common/http';
 
 
 @Injectable()
@@ -35,7 +36,9 @@ export class TransmartHttpService {
   static sortableDimensions = new Set<string>([
     'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
   ]);
+  private httpHelper: HttpHelper;
 
+  private _endpointUrl: string;
   private _dateColumnsIncluded = true;
 
   private _studiesLock: boolean;
@@ -43,9 +46,9 @@ export class TransmartHttpService {
   private _studiesSubject: AsyncSubject<TransmartStudy[]>;
 
 
-  constructor(private appConfig: AppConfig,
-              private httpService: HttpService) {
+  constructor(private appConfig: AppConfig, httpClient: HttpClient) {
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
+    this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
   }
 
   get dateColumnsIncluded(): boolean {
@@ -57,12 +60,13 @@ export class TransmartHttpService {
   }
 
   get endpointUrl(): string {
-    return this.httpService.endpointUrl;
+    return this._endpointUrl;
   }
 
   set endpointUrl(value: string) {
-    this.httpService.endpointUrl = value;
+    this._endpointUrl = value;
   }
+
 
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -73,7 +77,7 @@ export class TransmartHttpService {
   getStudies(): Observable<TransmartStudy[]> {
     const urlPart = 'studies';
     const responseField = 'studies';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -132,7 +136,7 @@ export class TransmartHttpService {
       urlPart += '&tags=true';
     }
     const responseField = 'tree_nodes';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- count calls --------------------------------------
@@ -150,7 +154,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_study_and_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -163,7 +167,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_study';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerStudy';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -175,7 +179,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts_per_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'countsPerConcept';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -187,7 +191,7 @@ export class TransmartHttpService {
     const urlPart = 'observations/counts';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = false;
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -201,14 +205,14 @@ export class TransmartHttpService {
     const urlPart = 'observations/aggregates_per_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerConcept';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   getCategoricalAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_categorical_concept';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'aggregatesPerCategoricalConcept';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- trial visit calls --------------------------------------
@@ -221,7 +225,7 @@ export class TransmartHttpService {
     const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
     const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
     const responseField = 'elements';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
@@ -232,7 +236,7 @@ export class TransmartHttpService {
   getPedigrees(): Observable<Pedigree[]> {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- export calls --------------------------------------
@@ -245,13 +249,13 @@ export class TransmartHttpService {
     const urlPart = 'export/data_formats';
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'dataFormats';
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   getExportFileFormats(dataView: string): Observable<string[]> {
     const urlPart = `export/file_formats?dataView=${dataView}`;
     const responseField = 'fileFormats';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -261,7 +265,7 @@ export class TransmartHttpService {
   getExportJobs(): Observable<any[]> {
     const urlPart = 'export/jobs';
     const responseField = 'exportJobs';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -272,7 +276,7 @@ export class TransmartHttpService {
   createExportJob(name: string): Observable<ExportJob> {
     const urlPart = `export/job?name=${name}`;
     const responseField = 'exportJob';
-    return this.httpService.postCall(urlPart, {}, responseField);
+    return this.httpHelper.postCall(urlPart, {}, responseField);
   }
 
   /**
@@ -304,7 +308,7 @@ export class TransmartHttpService {
     if (tableState) {
       body['tableConfig'] = tableState;
     }
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -313,8 +317,8 @@ export class TransmartHttpService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let url = `export/${jobId}/download`;
-    return this.httpService.downloadData(url);
+    let urlPart = `export/${jobId}/download`;
+    return this.httpHelper.downloadData(urlPart);
   }
 
   /**
@@ -325,7 +329,7 @@ export class TransmartHttpService {
   cancelExportJob(jobId: string): Observable<{}> {
     const urlPart = `export/${jobId}/cancel`;
     const responseField = 'exportJob';
-    return this.httpService.postCall(urlPart, {}, responseField);
+    return this.httpHelper.postCall(urlPart, {}, responseField);
   }
 
   /**
@@ -335,7 +339,7 @@ export class TransmartHttpService {
    */
   archiveExportJob(jobId: string): Observable<{}> {
     const urlPart = `export/${jobId}`;
-    return this.httpService.deleteCall(urlPart);
+    return this.httpHelper.deleteCall(urlPart);
   }
 
   // -------------------------------------- query calls --------------------------------------
@@ -346,7 +350,7 @@ export class TransmartHttpService {
   getQueries(): Observable<TransmartQuery[]> {
     const urlPart = `queries`;
     const responseField = 'queries';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -378,7 +382,7 @@ export class TransmartHttpService {
     if (transmartQuery.queryBlob) {
       queryBody['queryBlob'] = transmartQuery.queryBlob;
     }
-    return this.httpService.postCall(urlPart, queryBody, null);
+    return this.httpHelper.postCall(urlPart, queryBody, null);
   }
 
   /**
@@ -389,7 +393,7 @@ export class TransmartHttpService {
    */
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
     const urlPart = `queries/${queryId}`;
-    return this.httpService.putCall(urlPart, queryBody);
+    return this.httpHelper.putCall(urlPart, queryBody);
   }
 
   /**
@@ -399,21 +403,21 @@ export class TransmartHttpService {
    */
   deleteQuery(queryId: string): Observable<{}> {
     const urlPart = `queries/${queryId}`;
-    return this.httpService.deleteCall(urlPart);
+    return this.httpHelper.deleteCall(urlPart);
   }
 
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = TransmartConstraintMapper.mapConstraint(constraint);
-    return this.httpService.postCall(urlPart, body, null);
+    return this.httpHelper.postCall(urlPart, body, null);
   }
 
   // -------------------------------------- query differences --------------------------------------
   diffQuery(queryId: string): Observable<object[]> {
     const urlPart = `queries/${queryId}/sets`;
     const responseField = 'querySets';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- data table ---------------------------------------------
@@ -431,14 +435,14 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
-    return this.httpService.postCall(urlPart, body, null);
+    return this.httpHelper.postCall(urlPart, body, null);
   }
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
     const urlPart = `dimensions/study/elements`;
     const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
-    return this.httpService.postCall(urlPart, body, responseField).pipe(map(
+    return this.httpHelper.postCall(urlPart, body, responseField).pipe(map(
       (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
     ));
   }
@@ -452,7 +456,7 @@ export class TransmartHttpService {
       rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)),
       columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint))
     };
-    return this.httpService.postCall(urlPart, body, null);
+    return this.httpHelper.postCall(urlPart, body, null);
   }
 
 }

@@ -37,8 +37,8 @@ export class ApiHttpInterceptor implements HttpInterceptor {
     // skip if request is for config, or if not for API and not for external job service
     if (  req.url.includes(AppConfig.path) ||
       (  !req.url.includes(this.appConfig.getConfig('api-url')) &&
-         !(this.appConfig.getConfig('use-external-job') ?
-           req.url.includes(this.appConfig.getConfig('export-service-url')) : false)
+         !(this.appConfig.getConfig('export-mode')['name'] !== 'transmart' ?
+           req.url.includes(this.appConfig.getConfig('export-mode')['export-url']) : false)
       ) || req.url.endsWith('/oauth/token')
     ) {
       return next.handle(req);

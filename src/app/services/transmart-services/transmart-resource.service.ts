@@ -41,7 +41,7 @@ import {Study} from '../../models/constraint-models/study';
 @Injectable()
 export class TransmartResourceService {
 
-  // the export data view, either 'dataTable' or 'surveyTable'.
+  // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
   private _dateColumnsIncluded = true;
 
@@ -61,9 +61,9 @@ export class TransmartResourceService {
   constructor(private appConfig: AppConfig,
               private transmartHttpService: TransmartHttpService,
               private transmartPackerHttpService: TransmartPackerHttpService) {
-    this.exportDataView = appConfig.getConfig('export-data-view');
+    this.exportDataView = appConfig.getConfig('export-mode')['data-view'];
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
-    this.useExternalExportJob = appConfig.getConfig('use-external-export-job');
+    this.useExternalExportJob = appConfig.getConfig('export-mode')['name'] !== 'transmart';
     this.subjectSetConstraint = new SubjectSetConstraint();
     this.inclusionCounts = new TransmartCountItem();
     this.exclusionCounts = new TransmartCountItem();

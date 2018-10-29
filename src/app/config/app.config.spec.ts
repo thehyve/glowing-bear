@@ -146,7 +146,8 @@ describe('AppConfig', () => {
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
     expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
-    expect(appConfig.getConfig('export-data-view')).toBe(AppConfig.DEFAULT_EXPORT_DATA_VIEW);
+    expect(appConfig.getConfig('export-mode')['name']).toBe(AppConfig.DEFAULT_EXPORT_MODE['name']);
+    expect(appConfig.getConfig('export-mode')['data-view']).toBe(AppConfig.DEFAULT_EXPORT_MODE['data-view']);
     expect(appConfig.getConfig('show-observation-counts')).toBe(AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS);
     expect(appConfig.getConfig('instant-counts-update-1')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1);
     expect(appConfig.getConfig('instant-counts-update-2')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2);

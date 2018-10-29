@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
@@ -48,7 +48,6 @@ import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
 import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
 import {TransmartPackerHttpServiceMock} from './services/mocks/transmart-packer-http.service.mock';
-import {HttpService} from './services/http-service';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 

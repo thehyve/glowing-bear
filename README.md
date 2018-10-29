@@ -142,10 +142,7 @@ Supported properties in the `config.*.json` files:
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
-| `use-external-job`        | `false`   | Use an external tool that handles the export. Otherwise the dataView will be used. |
-| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`).
-| `export-service-url`      |           | URL of the external tool that handles the export, if the `use-external-job` is set to `true`. |
-| `custom-export-job-name`  |           | Name of the export job that will be triggered in the external tool, if the `use-external-job` is set to `true`. |
+| `export-mode`             |           | JSON object. Data export configuration. When using tranSMART directly, use: `export-mode`: { `name`: `transmart`, `data-view`: `export-data-view` }, where `export-data-view` defines a shape of the export (`dataTable`, `surveyTable`). When using external tool called `transmart-packer`, use: `export-mode`: { `name`: `packer`, `data-view`: `packer-job-name`, `export-url`:`http://example.com`, where `packer-job-name` is a name of the job in `transmart-packer` and `export-url` is an URL of `transmart-packer` } |
 
 
 ## License

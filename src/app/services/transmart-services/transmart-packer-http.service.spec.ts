@@ -9,12 +9,11 @@
 import {inject, TestBed} from '@angular/core/testing';
 import {HttpClientModule} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
-import {AppConfigMock} from '../../config/app.config.mock';
+import {AppConfigPackerMock} from '../../config/app.config.mock';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
-import {HttpService} from '../http-service';
 
 describe('TransmartPackerHttpService', () => {
 
@@ -30,9 +29,8 @@ describe('TransmartPackerHttpService', () => {
         TransmartPackerHttpService,
         {
           provide: AppConfig,
-          useClass: AppConfigMock
-        },
-        HttpService
+          useClass: AppConfigPackerMock
+        }
       ]
     });
     transmartPackerHttpService = TestBed.get(TransmartPackerHttpService);

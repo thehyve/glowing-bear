@@ -40,7 +40,6 @@ import {TransmartHttpService} from './services/transmart-services/transmart-http
 import {StudyService} from './services/study.service';
 import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
 import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {HttpService} from './services/http-service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -66,7 +65,6 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   ],
   providers: [
     ResourceService,
-    HttpService,
     TransmartResourceService,
     TransmartHttpService,
     TransmartPackerHttpService,

@@ -15,7 +15,6 @@ import {QueryService} from '../../services/query.service';
 import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {AppConfig} from '../../config/app.config';
 import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
-import {HttpService} from '../../services/http-service';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 
 @Component({

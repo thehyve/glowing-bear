@@ -15,18 +15,21 @@ import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/tra
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
-import {HttpService} from '../http-service';
+import {HttpHelper} from '../../utilities/http-helper';
+import {HttpClient} from '@angular/common/http';
 
 
 @Injectable()
 export class TransmartPackerHttpService {
 
   private _customExportJobName: string;
+  private _endpointUrl: string;
+  private httpHelper: HttpHelper;
 
-  constructor(private appConfig: AppConfig,
-              private httpService: HttpService) {
-    this.customExportJobName = this.appConfig.getConfig('custom-export-job-name');
-    this.endpointUrl = this.appConfig.getConfig('export-service-url');
+  constructor(private appConfig: AppConfig, private httpClient: HttpClient) {
+    this.customExportJobName = this.appConfig.getConfig('export-mode')['data-view'];
+    this.endpointUrl = this.appConfig.getConfig('export-mode')['export-url'];
+    this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
   }
 
   get customExportJobName(): string {
@@ -38,11 +41,11 @@ export class TransmartPackerHttpService {
   }
 
   get endpointUrl(): string {
-    return this.httpService.endpointUrl;
+    return this._endpointUrl;
   }
 
   set endpointUrl(value: string) {
-    this.httpService.endpointUrl = value;
+    this._endpointUrl = value;
   }
 
 
@@ -55,7 +58,7 @@ export class TransmartPackerHttpService {
   getAllJobs(): Observable<TransmartPackerJob[]> {
     const urlPart = 'jobs';
     const responseField = 'jobs';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -66,7 +69,7 @@ export class TransmartPackerHttpService {
   getJobStatus(jobId: string): Observable<TransmartPackerJob> {
     const urlPart = `jobs/status/${jobId}`;
     const responseField = 'exportJob';
-    return this.httpService.getCall(urlPart, responseField);
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   /**
@@ -88,7 +91,7 @@ export class TransmartPackerHttpService {
       }
     };
 
-    return this.httpService.postCall(urlPart, body, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -98,7 +101,7 @@ export class TransmartPackerHttpService {
    */
   downloadJobData(jobId: string) {
     let url = `jobs/data/${jobId}`;
-    return this.httpService.downloadData(url);
+    return this.httpHelper.downloadData(url);
   }
 
   /**
@@ -108,7 +111,7 @@ export class TransmartPackerHttpService {
    */
   cancelJob(jobId: string): Observable<{}> {
     const urlPart = `jobs/cancel/${jobId}`;
-    return this.httpService.getCall(urlPart, null);
+    return this.httpHelper.getCall(urlPart, null);
   }
 
 

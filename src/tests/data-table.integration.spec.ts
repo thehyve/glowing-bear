@@ -9,7 +9,6 @@
 import {TestBed} from '@angular/core/testing';
 import {ResourceService} from '../app/services/resource.service';
 import {of as observableOf} from 'rxjs';
-import Spy = jasmine.Spy;
 import {TransmartTableState} from '../app/models/transmart-models/transmart-table-state';
 import {Constraint} from '../app/models/constraint-models/constraint';
 import {DataTableService} from '../app/services/data-table.service';
@@ -22,8 +21,7 @@ import {TransmartHttpService} from '../app/services/transmart-services/transmart
 import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
 import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
 import {TransmartPackerHttpService} from '../app/services/transmart-services/transmart-packer-http.service';
-import {HttpService} from '../app/services/http-service';
-import {HttpClient} from '@angular/common/http';
+import Spy = jasmine.Spy;
 
 const mockResponseData = {
   'columnDimensions': [{

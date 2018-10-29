@@ -19,7 +19,6 @@ export class AppConfig {
   public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
-  public static DEFAULT_EXPORT_DATA_VIEW = 'dataTable';
   public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
   public static DEFAULT_INSTANT_COUNTS_UPDATE_1 = false;
   public static DEFAULT_INSTANT_COUNTS_UPDATE_2 = false;
@@ -30,7 +29,10 @@ export class AppConfig {
   public static DEFAULT_OIDC_SERVER_URL =
     'https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect';
   public static DEFAULT_OIDC_CLIENT_ID = 'transmart-client';
-  public static DEFAULT_USE_EXTERNAL_JOB = false;
+  public static DEFAULT_EXPORT_MODE = {
+    'name': 'transmart',
+    'data-view': 'dataTable'
+  };
 
   static path = 'app/config/';
   config: Object = null;
@@ -68,9 +70,6 @@ export class AppConfig {
         case 'autosave-subject-sets': {
           value = AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS; break;
         }
-        case 'export-data-view': {
-          value = AppConfig.DEFAULT_EXPORT_DATA_VIEW; break;
-        }
         case 'show-observation-counts': {
           value = AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS; break;
         }
@@ -98,14 +97,8 @@ export class AppConfig {
         case 'oidc-client-id': {
           value = AppConfig.DEFAULT_OIDC_CLIENT_ID; break;
         }
-        case 'use-external-job': {
-          value = AppConfig.DEFAULT_USE_EXTERNAL_JOB; break;
-        }
-        case 'export-service-url': {
-          throw Error('The Export Service URL is unspecified in the configuration.')
-        }
-        case 'custom-export-job-name': {
-          throw Error('The name of the custom export job is unspecified in the configuration.')
+        case 'export-mode': {
+          value = AppConfig.DEFAULT_EXPORT_MODE; break;
         }
         default: {
           value = null; break;
