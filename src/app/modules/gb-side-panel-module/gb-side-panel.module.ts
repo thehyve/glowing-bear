@@ -29,7 +29,8 @@ import {
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {Md2AccordionModule} from 'md2';
-import { GbVariablesComponent } from './accordion-components/gb-variables/gb-variables.component';
+import {GbVariablesComponent} from './accordion-components/gb-variables/gb-variables.component';
+import {MatExpansionModule} from '@angular/material';
 
 @NgModule({
   imports: [
@@ -48,7 +49,8 @@ import { GbVariablesComponent } from './accordion-components/gb-variables/gb-var
     ConfirmDialogModule,
     Md2AccordionModule,
     RadioButtonModule,
-    ToggleButtonModule
+    ToggleButtonModule,
+    MatExpansionModule
   ],
   declarations: [
     GbSidePanelComponent,

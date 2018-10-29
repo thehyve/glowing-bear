@@ -30,6 +30,8 @@ import {StudyService} from './study.service';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {Subject} from 'rxjs';
 
 /**
  * This service concerns with
@@ -117,6 +119,12 @@ export class ConstraintService {
   * when user defines a cohort or a combination of cohorts.
   */
   private _variables: Concept[] = [];
+  // The async alerter that tells if variables are updated
+  private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  // The scope identifier used by primeng for drag and drop
+  // [pDraggable] in gb-variables.component
+  // [pDroppable] in gb-fractalis-control.component
+  public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
@@ -242,7 +250,7 @@ export class ConstraintService {
   }
 
   /*
-   * ------------ constraint generation in the 1st step ------------
+   * ------------------------------------------------------------------------ constraint generation
    */
   /**
    * In the 1st step,
@@ -281,7 +289,6 @@ export class ConstraintService {
   }
 
   /**
-   * In the 1st step,
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
@@ -353,9 +360,6 @@ export class ConstraintService {
     }
   }
 
-  /*
-   * ------------ constraint generation in the 2nd step ------------
-   */
   public constraint_2() {
     // return this.generateProjectionConstraint();
     // TODO: generate constraint based on the variables selected in the Variables panel
@@ -412,6 +416,9 @@ export class ConstraintService {
     return constraint;
   }
 
+  /*
+   * ------------------------------------------------------------------------- countMap-related methods
+   */
   loadCountMaps(): Promise<any> {
     return new Promise((resolve, reject) => {
       let promise1 = this.updateConceptCountMap();
@@ -469,9 +476,13 @@ export class ConstraintService {
     });
   }
 
+  /*
+   * ------------------------------------------------------------------------- variables-related methods
+   */
   public updateVariables() {
     this.variables.length = 0;
     this.updateVariablesIterative(this.treeNodeService.treeNodes, []);
+    this.variablesUpdated.next([...this.variables]);
   }
 
   private updateVariablesIterative(nodes: TreeNode[], existingConceptCodes: string[]) {
@@ -492,6 +503,7 @@ export class ConstraintService {
           let concept = new Concept();
           concept.name = node['name'];
           concept.code = code;
+          concept.type = <ConceptType>node['type'];
           this.variables.push(concept);
         }
       } else if (node['children']) { // if the node is an intermediate node
@@ -500,6 +512,9 @@ export class ConstraintService {
     }
   }
 
+  /*
+   * ------------------------------------------------------------------------- getters and setters
+   */
   get isTreeNodesLoading(): boolean {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
@@ -622,5 +637,13 @@ export class ConstraintService {
 
   set selectedConceptCountMap(value: Map<string, CountItem>) {
     this._selectedConceptCountMap = value;
+  }
+
+  get variablesUpdated(): Subject<Concept[]> {
+    return this._variablesUpdated;
+  }
+
+  set variablesUpdated(value: Subject<Concept[]>) {
+    this._variablesUpdated = value;
   }
 }
