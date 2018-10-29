@@ -3,6 +3,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbVariablesComponent} from './gb-variables.component';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {MatExpansionModule} from '@angular/material';
+import {DragDropModule} from 'primeng/primeng';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -12,6 +14,10 @@ describe('GbVariablesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbVariablesComponent
+      ],
+      imports: [
+        DragDropModule,
+        MatExpansionModule
       ],
       providers: [
         {
