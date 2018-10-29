@@ -150,8 +150,6 @@ export class CohortService {
             }
             this.constraintService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
             this.constraintService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
-            this.isUpdating = false;
-            this.isDirty = false;
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.prepareVariables(resolve);
@@ -172,6 +170,8 @@ export class CohortService {
       }).bind(this), 500);
     } else {
       this.constraintService.updateVariables();
+      this.isUpdating = false;
+      this.isDirty = false;
       resolve(true);
     }
   }
