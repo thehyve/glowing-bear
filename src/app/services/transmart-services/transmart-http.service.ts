@@ -289,7 +289,7 @@ export class TransmartHttpService {
    * }]
    *
    * @param {string} jobId
-   * @param {Constraint} constraint
+   * @param {Constraint} targetConstraint
    * @param {TransmartExportElement[]} elements
    * @param {TransmartTableState} tableState - included only, if at least one of the formats of elements is 'TSV'
    * @returns {Observable<ExportJob>}

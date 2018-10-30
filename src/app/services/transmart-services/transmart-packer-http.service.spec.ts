@@ -109,7 +109,6 @@ describe('TransmartPackerHttpService', () => {
   it('should run external export job',
     inject([HttpTestingController, TransmartPackerHttpService],
       (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
-        // scenario 1: no auto saved subject set
         const jobName = 'custom_name';
         let mockConstraint = new TrueConstraint();
         service.runJob(jobName, mockConstraint).subscribe((res) => {

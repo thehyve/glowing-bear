@@ -22,6 +22,7 @@ import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.ser
 import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
 import {TransmartPackerHttpService} from '../app/services/transmart-services/transmart-packer-http.service';
 import Spy = jasmine.Spy;
+import {TransmartPackerHttpServiceMock} from '../app/services/mocks/transmart-packer-http.service.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -156,6 +157,7 @@ const mockResponseData = {
  */
 describe('Integration test data table retrieval calls for TranSMART', () => {
   let dataTableService: DataTableService;
+  let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
   let transmartHttpService: TransmartHttpService;
   let dataTableCall: Spy;
@@ -168,6 +170,10 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
           useClass: TransmartHttpServiceMock
         },
         {
+          provide: TransmartPackerHttpService,
+          useClass: TransmartPackerHttpServiceMock
+        },
+        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
@@ -177,11 +183,11 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         },
         ResourceService,
         TransmartResourceService,
-        TransmartPackerHttpService,
         StudyService,
         DataTableService
       ]
     });
+    resourceService = TestBed.get(ResourceService);
     transmartHttpService = TestBed.get(TransmartHttpService);
     transmartResourceService = TestBed.get(TransmartResourceService);
     dataTableService = TestBed.get(DataTableService);
@@ -194,13 +200,18 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
                      offset: number, limit: number) => {
         return observableOf(mockResponseData);
       });
+    let studyIdsCall = spyOn(transmartHttpService, 'getStudyIds')
+      .and.callFake((constraint: Constraint) => {
+        return observableOf(['s1', 's2'])
+      });
 
     dataTableService.updateDataTable();
 
     // After the studies have been loaded, and the data table service has been initialised ...
-    transmartResourceService.getStudies().subscribe(() => {
+    resourceService.getStudies().subscribe(() => {
 
       // the table should be updated.
+      expect(studyIdsCall).toHaveBeenCalled();
       expect(dataTableCall).toHaveBeenCalled();
       expect(dataTableService.rows.length).toEqual(5);
     });

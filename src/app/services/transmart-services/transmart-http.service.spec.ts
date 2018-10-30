@@ -19,6 +19,7 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {of as observableOf} from 'rxjs';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 
 describe('TransmartHttpService', () => {
 
@@ -186,16 +187,12 @@ describe('TransmartHttpService', () => {
         req.flush(mockData);
       }));
 
-  it('should run transmart export job',
+  it('should run export job',
     inject([HttpTestingController, TransmartHttpService],
       (httpMock: HttpTestingController, service: TransmartHttpService) => {
-        // scenario 1: no auto saved subject set, no table state
+        // scenario 1: no table state
         const jobId = 'an-id';
-        const mockData = {
-          exportJob: {
-            foo: 'bar'
-          }
-        };
+
         let mockConstraint = new TrueConstraint();
         const el1 = new TransmartExportElement();
         const el2 = new TransmartExportElement();
@@ -211,6 +208,16 @@ describe('TransmartHttpService', () => {
         expect(req.request.body['constraint']['type']).toBe('true');
         expect(req.request.body['elements']).toBeDefined();
         expect(req.request.body['includeMeasurementDateColumns']).toBeDefined();
+
+        // scenario 2: with table state
+        tableState = new TransmartTableState(['row1'], []);
+        service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body['tableConfig']).toBeDefined();
+        expect(req.request.body['tableConfig']['rowDimensions'][0]).toBe('row1');
       }));
 
   it('should get trial visits',

@@ -7,20 +7,16 @@
  */
 
 
-import {of as observableOf, Observable} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
-import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {SubjectSet} from '../../models/constraint-models/subject-set';
-import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 
 export class TransmartHttpServiceMock {
   private _studies: TransmartStudy[];
@@ -38,7 +34,7 @@ export class TransmartHttpServiceMock {
 
   private mockStudies() {
     let s1 = new TransmartStudy();
-    s1.dimensions = ['study', 'cocnept', 'patient'];
+    s1.dimensions = ['study', 'concept', 'patient'];
     s1.studyId = 'CATEGORICAL_VALUES';
     let s2 = new TransmartStudy();
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
@@ -214,10 +210,30 @@ export class TransmartHttpServiceMock {
     return observableOf([]);
   }
 
-  runExportJob(): Observable<ExportJob[]> {
-    return observableOf(
-      new ExportJob();
-    );
+  runExportJob(jobId: string,
+               targetConstraint: Constraint,
+               elements: TransmartExportElement[],
+               tableState?: TransmartTableState): Observable<ExportJob> {
+    return observableOf(null);
+  }
+
+  getStudyIds(constraint: Constraint): Observable<string[]> {
+    return observableOf([]);
+  }
+
+  getDataTable(tableState: TransmartTableState,
+               constraint: Constraint,
+               offset: number, limit: number): Observable<TransmartDataTable> {
+    let dataTableResult = new TransmartDataTable();
+    return Observable.of(dataTableResult);
+  }
+
+  getCrossTable(baseConstraint: Constraint,
+                rowConstraints: Constraint[],
+                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
+    let crossTableResult = new TransmartCrossTable();
+    crossTableResult.rows = [[0]];
+    return Observable.of(crossTableResult);
   }
 
 }
