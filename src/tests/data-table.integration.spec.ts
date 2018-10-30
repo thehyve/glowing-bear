@@ -7,17 +7,22 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from '../app/services/mocks/transmart-resource.service.mock';
 import {ResourceService} from '../app/services/resource.service';
 import {of as observableOf} from 'rxjs';
-import Spy = jasmine.Spy;
 import {TransmartTableState} from '../app/models/transmart-models/transmart-table-state';
 import {Constraint} from '../app/models/constraint-models/constraint';
 import {DataTableService} from '../app/services/data-table.service';
 import {ConstraintServiceMock} from '../app/services/mocks/constraint.service.mock';
 import {ConstraintService} from '../app/services/constraint.service';
 import {StudyService} from '../app/services/study.service';
+import {AppConfig} from '../app/config/app.config';
+import {AppConfigMock} from '../app/config/app.config.mock';
+import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
+import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
+import {TransmartPackerHttpService} from '../app/services/transmart-services/transmart-packer-http.service';
+import Spy = jasmine.Spy;
+import {TransmartPackerHttpServiceMock} from '../app/services/mocks/transmart-packer-http.service.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -154,35 +159,50 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
+  let transmartHttpService: TransmartHttpService;
   let dataTableCall: Spy;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
+          provide: TransmartHttpService,
+          useClass: TransmartHttpServiceMock
+        },
+        {
+          provide: TransmartPackerHttpService,
+          useClass: TransmartPackerHttpServiceMock
         },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         ResourceService,
+        TransmartResourceService,
         StudyService,
         DataTableService
       ]
     });
-    transmartResourceService = TestBed.get(TransmartResourceService);
     resourceService = TestBed.get(ResourceService);
+    transmartHttpService = TestBed.get(TransmartHttpService);
+    transmartResourceService = TestBed.get(TransmartResourceService);
     dataTableService = TestBed.get(DataTableService);
   });
 
   it('should load data table data on initialisation', () => {
-    dataTableCall = spyOn(transmartResourceService, 'getDataTable')
+    dataTableCall = spyOn(transmartHttpService, 'getDataTable')
       .and.callFake((tableState: TransmartTableState,
                      constraint: Constraint,
                      offset: number, limit: number) => {
         return observableOf(mockResponseData);
+      });
+    let studyIdsCall = spyOn(transmartHttpService, 'getStudyIds')
+      .and.callFake((constraint: Constraint) => {
+        return observableOf(['s1', 's2'])
       });
 
     dataTableService.updateDataTable();
@@ -191,6 +211,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
     resourceService.getStudies().subscribe(() => {
 
       // the table should be updated.
+      expect(studyIdsCall).toHaveBeenCalled();
       expect(dataTableCall).toHaveBeenCalled();
       expect(dataTableService.rows.length).toEqual(5);
     });

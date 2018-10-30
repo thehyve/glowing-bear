@@ -7,9 +7,9 @@
  */
 
 
-import {of as observableOf, from as observableFrom, throwError as observableThrowError, Observable} from 'rxjs';
+import {Observable, of as observableOf, throwError as observableThrowError} from 'rxjs';
 
-import {switchMap, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
@@ -18,15 +18,10 @@ import {ExportJob} from '../models/export-models/export-job';
 import {Query} from '../models/query-models/query';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
-import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {ExportDataType} from '../models/export-models/export-data-type';
-import {Dimension} from '../models/table-models/dimension';
-import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {Aggregate} from '../models/aggregate-models/aggregate';
 import {CrossTable} from '../models/table-models/cross-table';
@@ -34,12 +29,11 @@ import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-ta
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TransmartCrossTableMapper} from '../utilities/transmart-utilities/transmart-cross-table-mapper';
-import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 import {EndpointMode} from '../models/endpoint-mode';
-import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
+import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 
 @Injectable()
 export class ResourceService {
@@ -68,10 +62,7 @@ export class ResourceService {
   getStudies(): Observable<Study[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return observableFrom(this.transmartResourceService.studies).pipe(
-          map((tmStudies: TransmartStudy[]) => {
-            return TransmartMapper.mapTransmartStudies(tmStudies);
-          }));
+        return this.transmartResourceService.getStudies();
       }
       default: {
         return this.handleEndpointModeError();
@@ -282,12 +273,7 @@ export class ResourceService {
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportFileFormats().pipe(
-          switchMap(fileFormatNames => {
-            return this.transmartResourceService.getExportDataFormats(constraint)
-          }, (fileFormatNames, dataFormatNames) => {
-            return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
-          }));
+        return this.transmartResourceService.getExportDataTypes(constraint);
       }
       default: {
         return this.handleEndpointModeError();
@@ -355,12 +341,7 @@ export class ResourceService {
     if (hasSelectedFormat) {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          let transmartTableState: TransmartTableState = null;
-          if (includeDataTable) {
-            transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
-          }
-          const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.transmartResourceService.exportDataView);
-          return this.transmartResourceService.runExportJob(job.id, constraint, elements, transmartTableState);
+          return this.transmartResourceService.runExportJob(job.id, job.jobName, constraint, dataTypes, includeDataTable, dataTable);
         }
         default: {
           return this.handleEndpointModeError();
@@ -519,22 +500,7 @@ export class ResourceService {
   getDataTable(dataTable: DataTable): Observable<DataTable> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        let offset = dataTable.offset;
-        let limit = dataTable.limit;
-
-        // Fetch dimensions for the data matching the constraint
-        return this.getDimensions(dataTable.constraint).pipe(
-          switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
-            // Merge available dimensions and current table state
-            let tableState: TransmartTableState =
-              TransmartDataTableMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
-            const constraint: Constraint = dataTable.constraint;
-            return this.transmartResourceService.getDataTable(tableState, constraint, offset, limit)
-          }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
-            let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
-            newDataTable.constraint = dataTable.constraint;
-            return newDataTable;
-          }));
+        return this.transmartResourceService.getDataTable(dataTable);
       }
       default: {
         return this.handleEndpointModeError();
@@ -551,27 +517,6 @@ export class ResourceService {
         this.handleEndpointModeError();
       }
     }
-  }
-
-  /**
-   * Gets available dimensions for step 3
-   * @param {Constraint} constraint
-   * @returns {Observable<Dimension[]>}
-   */
-  private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
-    // Fetch study names for the constraint
-    return this.transmartResourceService.getStudyIds(constraint).pipe(
-      switchMap(() => {
-        // Fetch study details, including dimensions, for these studies
-        return this.transmartResourceService.studies;
-      }, (studyIds: string[], studies: TransmartStudy[]) => {
-        if (studyIds && studies) {
-          let selectedStudies = studies.filter(study => studyIds.includes(study.studyId));
-          return TransmartMapper.mergeStudyDimensions(selectedStudies);
-        } else {
-          return new TransmartStudyDimensions();
-        }
-      }));
   }
 
   // TODO: refactor transmart speciic variables here, hide them from glowing bear
@@ -646,4 +591,5 @@ export class ResourceService {
   set endpointMode(value: EndpointMode) {
     this._endpointMode = value;
   }
+
 }

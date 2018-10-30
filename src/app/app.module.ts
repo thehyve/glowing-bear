@@ -36,8 +36,10 @@ import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
 import {StudyService} from './services/study.service';
+import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -64,6 +66,8 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
   providers: [
     ResourceService,
     TransmartResourceService,
+    TransmartHttpService,
+    TransmartPackerHttpService,
     StudyService,
     TreeNodeService,
     ConstraintService,

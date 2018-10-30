@@ -41,7 +41,7 @@ describe('FormatHelper.formatDateSemantics', () => {
     expected.set(59 * 60 + 45, '59 minutes ago');
     expected.set(2 * 60, '2 minutes ago');
     expected.set(2 * 60 + 14, '2 minutes ago');
-    expected.set(3 * 60 * 60 * 24 + 2000, '3 days ago');
+    expected.set(3 * 60 * 60 * 24 + 6000, '3 days ago');
     expected.set(-60 * 60, 'in 1 hour');
     expected.set(0, 'now');
 
