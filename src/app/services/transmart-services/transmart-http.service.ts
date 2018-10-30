@@ -11,7 +11,6 @@ import {Injectable} from '@angular/core';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
