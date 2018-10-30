@@ -7,8 +7,7 @@ ENV NG_BIN="$GB_SRC/node_modules/@angular/cli/bin/ng"
 
 COPY . $GB_SRC
 RUN cd $GB_SRC && \
-    npm install @angular/cli@^6 @angular-devkit/build-angular@~0.5.0 && \
-    npm install --production && \
+    npm install && \
     $NG_BIN build --prod && \
     mv $GB_SRC/dist $GB_DIST && \
     rm -rf $GB_SRC
