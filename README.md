@@ -87,7 +87,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-0.8.0.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/0.8.0/glowing-bear-0.8.0.tar).
+The latest release is [glowing-bear-1.0.0.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/1.0.0/glowing-bear-1.0.0.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -137,7 +137,6 @@ Supported properties in the `config.*.json` files:
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
-| `export-data-view`        | `default` | Shape of the export (`default`, `surveyTable`). |
 | `show-observation-counts` | `true`    | |
 | `instant-counts-update-1` | `false`   | |
 | `instant-counts-update-2` | `false`   | |
@@ -145,6 +144,7 @@ Supported properties in the `config.*.json` files:
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
+| `export-mode`             |           | JSON object. Data export configuration. When using tranSMART directly, use: `export-mode`: { `name`: `transmart`, `data-view`: `export-data-view` }, where `export-data-view` defines a shape of the export (`dataTable`, `surveyTable`). When using external tool called `transmart-packer`, use: `export-mode`: { `name`: `packer`, `data-view`: `packer-job-name`, `export-url`:`http://example.com`, where `packer-job-name` is a name of the job in `transmart-packer` and `export-url` is an URL of `transmart-packer` } |
 
 
 ## License

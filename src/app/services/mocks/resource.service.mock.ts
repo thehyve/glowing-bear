@@ -18,7 +18,7 @@ import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
-import {TransmartResourceService} from '../transmart-services/transmart-resource.service';
+import {TransmartHttpService} from '../transmart-services/transmart-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 
@@ -80,13 +80,12 @@ export class ResourceServiceMock {
     return observableOf(this.exportJobs);
   }
 
-  getDataTable(dataTable: DataTable,
-               offset: number, limit: number): Observable<DataTable> {
+  getDataTable(dataTable: DataTable): Observable<DataTable> {
     return observableOf(this.dataTable);
   }
 
   get sortableDimensions(): Set<string> {
-    return TransmartResourceService.sortableDimensions;
+    return TransmartHttpService.sortableDimensions;
   }
 
   getCrossTable(crossTable: CrossTable): Observable<CrossTable> {

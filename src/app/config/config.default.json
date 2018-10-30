@@ -2,10 +2,9 @@
   "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
   "app-url": "http://localhost:4200",
-  "app-version": "0.8.0",
+  "app-version": "1.0.0",
   "doc-url": "https://glowingbear.app",
   "autosave-subject-sets": false,
-  "export-data-view": "dataTable",
   "show-observation-counts": true,
   "instant-counts-update-1": false,
   "instant-counts-update-2": false,
@@ -14,5 +13,9 @@
   "include-query-subscription": false,
   "authentication-service-type": "oidc",
   "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
-  "oidc-client-id": "transmart-client"
+  "oidc-client-id": "transmart-client",
+  "export-mode": {
+    "name": "transmart",
+    "data-view": "dataTable"
+  }
 }

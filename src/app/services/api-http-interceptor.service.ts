@@ -34,10 +34,12 @@ export class ApiHttpInterceptor implements HttpInterceptor {
       this.appConfig = this.injector.get(AppConfig);
     }
 
-    // skip if request is for config, or if not for API
+    // skip if request is for config, or if not for API and not for external job service
     if (  req.url.includes(AppConfig.path) ||
-          !req.url.includes(this.appConfig.getConfig('api-url')) ||
-          req.url.endsWith('/oauth/token')
+      (  !req.url.includes(this.appConfig.getConfig('api-url')) &&
+         !(this.appConfig.getConfig('export-mode')['name'] !== 'transmart' ?
+           req.url.includes(this.appConfig.getConfig('export-mode')['export-url']) : false)
+      ) || req.url.endsWith('/oauth/token')
     ) {
       return next.handle(req);
     }
