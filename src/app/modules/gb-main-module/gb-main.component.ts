@@ -12,8 +12,10 @@ import {ResourceService} from '../../services/resource.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
-import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {AppConfig} from '../../config/app.config';
+import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
+import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 
 @Component({
   selector: 'gb-main',
@@ -26,6 +28,8 @@ export class GbMainComponent implements OnInit {
               private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
               private transmartResourceService: TransmartResourceService,
+              private transmartHttpService: TransmartHttpService,
+              private transmartPackerHttpService: TransmartPackerHttpService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService) {

@@ -7,32 +7,22 @@
  */
 
 
-import {of as observableOf, Observable} from 'rxjs';
+import {Observable, of as observableOf} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
-import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {SubjectSet} from '../../models/constraint-models/subject-set';
-import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {Study} from '../../models/constraint-models/study';
-import {DataTable} from '../../models/table-models/data-table';
+import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
+import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
+import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 
-export class TransmartResourceServiceMock {
-  private _studies: Study[];
+export class TransmartHttpServiceMock {
+  private _studies: TransmartStudy[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
 
-  private _autosaveSubjectSets: boolean;
-  private _subjectSetConstraint: SubjectSetConstraint;
-  private _inclusionCounts: TransmartCountItem;
-  private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
 
   constructor() {
@@ -43,20 +33,20 @@ export class TransmartResourceServiceMock {
   }
 
   private mockStudies() {
-    let s1 = new Study();
-    s1.dimensions = ['study', 'cocnept', 'patient'];
-    s1.id = 'CATEGORICAL_VALUES';
-    let s2 = new Study();
+    let s1 = new TransmartStudy();
+    s1.dimensions = ['study', 'concept', 'patient'];
+    s1.studyId = 'CATEGORICAL_VALUES';
+    let s2 = new TransmartStudy();
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
-    s2.id = 'EHR';
+    s2.studyId = 'EHR';
     this._studies = [s1, s2];
   }
 
-  getStudies(): Observable<Study[]> {
+  getStudies(): Observable<TransmartStudy[]> {
     return observableOf(this._studies);
   }
 
-  get studies(): Promise<Study[]> {
+  get studies(): Promise<TransmartStudy[]> {
     return observableOf(this._studies).toPromise();
   }
 
@@ -212,92 +202,6 @@ export class TransmartResourceServiceMock {
     return observableOf(this.exportJobs);
   }
 
-  logout() {
-    return observableOf({});
-  }
-
-  getStudyIds(constraint: Constraint): Observable<string[]> {
-    return observableOf([]);
-  }
-
-  getDataTable(dataTable: DataTable): Observable<TransmartDataTable> {
-    let dataTableResult = new TransmartDataTable();
-    return observableOf(dataTableResult);
-  }
-
-  getCrossTable(baseConstraint: Constraint,
-                rowConstraints: Constraint[],
-                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
-    let crossTableResult = new TransmartCrossTable();
-    crossTableResult.rows = [[0]];
-    return observableOf(crossTableResult);
-  }
-
-  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
-    let response = {
-      'EHR': {
-        'EHR:DEM:AGE': {
-          patientCount: 4,
-          observationCount: 30
-        },
-        'EHR:VSIGN:HR': {
-          patientCount: 6,
-          observationCount: 70
-        }
-      }
-    }
-    return observableOf(response);
-  }
-
-  getCountsPerStudy(constraint: Constraint): Observable<object> {
-    let response = {
-      'CATEGORICAL_VALUES': {
-        patientCount: 20,
-        observationCount: 200
-      },
-      'EHR': {
-        patientCount: 10,
-        observationCount: 100
-      }
-    };
-    return observableOf(response);
-  }
-
-  getCountsPerConcept(constraint: Constraint): Observable<object> {
-    let countsPerConcept = {
-      'EHR:DEM:AGE': {
-        patientCount: 4,
-        observationCount: 30
-      },
-      'EHR:VSIGN:HR': {
-        patientCount: 6,
-        observationCount: 70
-      }
-    }
-    return observableOf(countsPerConcept);
-  }
-
-  getCounts(constraint: Constraint): Observable<TransmartCountItem> {
-    let item = new TransmartCountItem();
-    item.patientCount = 23;
-    item.observationCount = 46;
-    return observableOf(item);
-  }
-
-  getAggregate(constraint: Constraint): Observable<object> {
-    let numAgg = {
-      'CV:DEM:AGE': {
-        numericalValueAggregates: {
-          avg: 23.33,
-          count: 3,
-          max: 26,
-          min: 20
-        }
-      }
-    };
-    return observableOf(numAgg);
-  }
-
   getExportFileFormats(): Observable<string[]> {
     return observableOf(['tsv', 'csv']);
   }
@@ -306,69 +210,30 @@ export class TransmartResourceServiceMock {
     return observableOf([]);
   }
 
-  get autosaveSubjectSets(): boolean {
-    return this._autosaveSubjectSets;
+  runExportJob(jobId: string,
+               targetConstraint: Constraint,
+               elements: TransmartExportElement[],
+               tableState?: TransmartTableState): Observable<ExportJob> {
+    return observableOf(null);
   }
 
-  set autosaveSubjectSets(value: boolean) {
-    this._autosaveSubjectSets = value;
+  getStudyIds(constraint: Constraint): Observable<string[]> {
+    return observableOf([]);
   }
 
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
+  getDataTable(tableState: TransmartTableState,
+               constraint: Constraint,
+               offset: number, limit: number): Observable<TransmartDataTable> {
+    let dataTableResult = new TransmartDataTable();
+    return Observable.of(dataTableResult);
   }
 
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
+  getCrossTable(baseConstraint: Constraint,
+                rowConstraints: Constraint[],
+                columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
+    let crossTableResult = new TransmartCrossTable();
+    crossTableResult.rows = [[0]];
+    return Observable.of(crossTableResult);
   }
 
-  get inclusionCounts(): TransmartCountItem {
-    return this._inclusionCounts;
-  }
-
-  set inclusionCounts(value: TransmartCountItem) {
-    this._inclusionCounts = value;
-  }
-
-  get exclusionCounts(): TransmartCountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: TransmartCountItem) {
-    this._exclusionCounts = value;
-  }
-
-  get studyConceptCountObject(): object {
-    return this._studyConceptCountObject;
-  }
-
-  set studyConceptCountObject(value: object) {
-    this._studyConceptCountObject = value;
-  }
-
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new TransmartCountItem();
-      this.inclusionCounts.patientCount = 10;
-      this.inclusionCounts.observationCount = 100;
-      this.exclusionCounts = new TransmartCountItem();
-      this.exclusionCounts.patientCount = 0;
-      this.exclusionCounts.observationCount = 0;
-      this.studyConceptCountObject = {
-        EHR: {
-          'EHR:DEM:AGE': {
-            patientCount: 4,
-            observationCount: 30
-          },
-          'EHR:VSIGN:HR': {
-            patientCount: 6,
-            observationCount: 70
-          }
-        }
-      }
-      resolve(true);
-    });
-  }
 }

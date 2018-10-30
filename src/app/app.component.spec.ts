@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AppComponent} from './app.component';
 import {routing} from './app.routing';
@@ -34,8 +34,8 @@ import {QueryService} from './services/query.service';
 import {QueryServiceMock} from './services/mocks/query.service.mock';
 import {DataTableService} from './services/data-table.service';
 import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
+import {TransmartHttpServiceMock} from './services/mocks/transmart-http.service.mock';
 import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
 import {NavbarService} from './services/navbar.service';
@@ -46,6 +46,10 @@ import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
+import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
+import {TransmartPackerHttpServiceMock} from './services/mocks/transmart-packer-http.service.mock';
+import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -98,6 +102,14 @@ describe('AppComponent', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: TransmartHttpService,
+          useClass: TransmartHttpServiceMock
+        },
+        {
+          provide: TransmartPackerHttpService,
+          useClass: TransmartPackerHttpServiceMock
         },
         {
           provide: ResourceService,

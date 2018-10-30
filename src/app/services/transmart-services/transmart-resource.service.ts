@@ -6,48 +6,44 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
+import {Observable, from as observableFrom} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Query} from '../../models/query-models/query';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
-import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
 import {AppConfig} from '../../config/app.config';
-import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ErrorHelper} from '../../utilities/error-helper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {catchError, map} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
+import {ExportDataType} from '../../models/export-models/export-data-type';
+import {switchMap} from 'rxjs/internal/operators';
+import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
+import {TransmartHttpService} from './transmart-http.service';
+import {TransmartPackerMapper} from '../../utilities/transmart-utilities/transmart-packer-mapper';
+import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
+import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
+import {DataTable} from '../../models/table-models/data-table';
+import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
+import {TransmartPackerHttpService} from './transmart-packer-http.service';
+import {Study} from '../../models/constraint-models/study';
 
 
 @Injectable()
 export class TransmartResourceService {
 
-  static sortableDimensions = new Set<string>([
-    'patient', 'concept', 'start time', 'end time', 'visit', 'location', 'provider', 'study', 'trial visit'
-  ]);
-
-  // the export data view, either 'dataTable' or 'surveyTable'.
+  // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
   private _dateColumnsIncluded = true;
-  private _endpointUrl: string;
-
-  private _studiesLock: boolean;
-  private _studies: TransmartStudy[] = null;
-  private _studiesSubject: AsyncSubject<TransmartStudy[]>;
 
   /*
    * Flag indicating if the subject selection of step 1 should be automatically
@@ -55,6 +51,7 @@ export class TransmartResourceService {
    * for step 2.
    */
   private _autosaveSubjectSets: boolean;
+  private _useExternalExportJob: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
@@ -62,21 +59,14 @@ export class TransmartResourceService {
   private _conceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
-              private http: HttpClient) {
-    this.exportDataView = appConfig.getConfig('export-data-view');
-    this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
+              private transmartHttpService: TransmartHttpService,
+              private transmartPackerHttpService: TransmartPackerHttpService) {
+    this.exportDataView = appConfig.getConfig('export-mode')['data-view'];
     this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
+    this.useExternalExportJob = appConfig.getConfig('export-mode')['name'] !== 'transmart';
     this.subjectSetConstraint = new SubjectSetConstraint();
     this.inclusionCounts = new TransmartCountItem();
     this.exclusionCounts = new TransmartCountItem();
-  }
-
-  get subjectSetConstraint(): SubjectSetConstraint {
-    return this._subjectSetConstraint;
-  }
-
-  set subjectSetConstraint(value: SubjectSetConstraint) {
-    this._subjectSetConstraint = value;
   }
 
   get exportDataView(): string {
@@ -87,6 +77,14 @@ export class TransmartResourceService {
     this._exportDataView = value;
   }
 
+  get subjectSetConstraint(): SubjectSetConstraint {
+    return this._subjectSetConstraint;
+  }
+
+  set subjectSetConstraint(value: SubjectSetConstraint) {
+    this._subjectSetConstraint = value;
+  }
+
   get dateColumnsIncluded(): boolean {
     return this._dateColumnsIncluded;
   }
@@ -95,12 +93,12 @@ export class TransmartResourceService {
     this._dateColumnsIncluded = value;
   }
 
-  get endpointUrl(): string {
-    return this._endpointUrl;
+  get useExternalExportJob(): boolean {
+    return this._useExternalExportJob;
   }
 
-  set endpointUrl(value: string) {
-    this._endpointUrl = value;
+  set useExternalExportJob(value: boolean) {
+    this._useExternalExportJob = value;
   }
 
   get autosaveSubjectSets(): boolean {
@@ -143,138 +141,16 @@ export class TransmartResourceService {
     this._conceptCountObject = value;
   }
 
-  /**
-   * Make a post http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param body
-   * @param responseField
-   * @returns {Observable<any | any>}
-   */
-  private postCall(urlPart, body, responseField) {
-    const url = `${this.endpointUrl}/${urlPart}`;
-    if (responseField) {
-      return this.http.post(url, body).pipe(
-        map(res => res[responseField]),
-        catchError(error => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    } else {
-      return this.http.post(url, body).pipe(
-        catchError(error => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    }
-  }
-
-  /**
-   * Make a get http request
-   * @param urlPart - the part used in baseUrl/urlPart
-   * @param responseField
-   * @returns {Observable<any | any>}
-   */
-  private getCall(urlPart, responseField) {
-    const url = `${this.endpointUrl}/${urlPart}`;
-    if (responseField) {
-      return this.http.get(url).pipe(
-        map((res) => res[responseField]),
-        catchError((error: HttpErrorResponse) => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    } else {
-      return this.http.get(url).pipe(
-        catchError((error: HttpErrorResponse) => {
-          ErrorHelper.handleError(error);
-          return observableOf(error);
-        })
-      );
-    }
-  }
-
-  /**
-   * Make a put http request
-   * @param urlPart
-   * @param body
-   * @returns {Observable<any | any>}
-   */
-  private putCall(urlPart, body) {
-    let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.put(url, body).pipe(
-      catchError(error => {
-        ErrorHelper.handleError(error);
-        return observableOf(error);
-      })
-    );
-  }
-
-  /**
-   * Make a delete http request
-   * @param urlPart
-   * @returns {Observable<any | any>}
-   */
-  private deleteCall(urlPart) {
-    let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.delete(url).pipe(
-      catchError(error => {
-        ErrorHelper.handleError(error);
-        return observableOf(error);
-      })
-    );
-  }
-
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
    * @returns {Observable<Study[]>}
    */
-  getStudies(): Observable<TransmartStudy[]> {
-    const urlPart = 'studies';
-    const responseField = 'studies';
-    return this.getCall(urlPart, responseField);
-  }
-
-  /**
-   * Returns the list of all studies (and related dimensions) that
-   * the user has access to.
-   *
-   * Fetch the studies once and caches them. Subsequent calls will
-   * get the list of studies from the cache.
-   *
-   * @return {Promise<Study[]>}
-   */
-  get studies(): Promise<TransmartStudy[]> {
-    if (this._studies != null) {
-      return observableOf(this._studies).toPromise();
-    }
-    if (this._studiesLock) {
-      return this._studiesSubject.toPromise();
-    }
-    this._studiesLock = true;
-    this._studiesSubject = new AsyncSubject<TransmartStudy[]>();
-
-    return new Promise((resolve, reject) => {
-      this.getStudies()
-        .subscribe((studies: TransmartStudy[]) => {
-          resolve(studies);
-          this._studies = studies;
-          this._studiesSubject.next(this._studies);
-          this._studiesSubject.complete();
-          this._studiesLock = false;
-        }, (error: any) => {
-          ErrorHelper.handleError(error);
-          console.error(`Error retrieving studies: ${error}`);
-          reject(error);
-          this._studies = [];
-          this._studiesSubject.next(this._studies);
-          this._studiesSubject.complete();
-          this._studiesLock = false;
-        });
-    });
+  getStudies(): Observable<Study[]> {
+    return observableFrom(this.transmartHttpService.studies).pipe(
+      map((tmStudies: TransmartStudy[]) => {
+        return TransmartMapper.mapTransmartStudies(tmStudies);
+      }));
   }
 
   /**
@@ -286,15 +162,7 @@ export class TransmartResourceService {
    * @returns {Observable<Object>}
    */
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    let urlPart = `tree_nodes?root=${root}&depth=${depth}`;
-    if (hasCounts) {
-      urlPart += '&counts=true';
-    }
-    if (hasTags) {
-      urlPart += '&tags=true';
-    }
-    const responseField = 'tree_nodes';
-    return this.getCall(urlPart, responseField);
+    return this.transmartHttpService.getTreeNodes(root, depth, hasCounts, hasTags);
   }
 
   // -------------------------------------- count calls --------------------------------------
@@ -436,10 +304,7 @@ export class TransmartResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_study_and_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getCountsPerStudyAndConcept(constraint);
   }
 
   /**
@@ -449,10 +314,7 @@ export class TransmartResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudy(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_study';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'countsPerStudy';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getCountsPerStudy(constraint);
   }
 
   /**
@@ -461,10 +323,7 @@ export class TransmartResourceService {
    * @returns {Observable<any>}
    */
   getCountsPerConcept(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/counts_per_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'countsPerConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getCountsPerConcept(constraint);
   }
 
   /**
@@ -473,10 +332,7 @@ export class TransmartResourceService {
    * @returns {Observable<Object>}
    */
   getCounts(constraint: Constraint): Observable<TransmartCountItem> {
-    const urlPart = 'observations/counts';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = false;
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getCounts(constraint);
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -487,17 +343,11 @@ export class TransmartResourceService {
    * @returns {Observable<object>}
    */
   getAggregate(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/aggregates_per_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'aggregatesPerConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getAggregate(constraint);
   }
 
   getCategoricalAggregate(constraint: Constraint): Observable<object> {
-    const urlPart = 'observations/aggregates_per_categorical_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'aggregatesPerCategoricalConcept';
-    return this.postCall(urlPart, body, responseField);
+    return this.transmartHttpService.getCategoricalAggregate(constraint);
   }
 
   // -------------------------------------- trial visit calls --------------------------------------
@@ -507,10 +357,7 @@ export class TransmartResourceService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
-    const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
-    const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
-    const responseField = 'elements';
-    return this.getCall(urlPart, responseField);
+    return this.transmartHttpService.getTrialVisits(constraint);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
@@ -519,29 +366,22 @@ export class TransmartResourceService {
    * @returns {Observable<Object[]>}
    */
   getPedigrees(): Observable<Pedigree[]> {
-    const urlPart = 'pedigree/relation_types';
-    const responseField = 'relationTypes';
-    return this.getCall(urlPart, responseField);
+    return this.transmartHttpService.getPedigrees();
   }
 
   // -------------------------------------- export calls --------------------------------------
-  /**
-   * Given a list of patient set ids as strings, get the corresponding data formats available for download
-   * @param constraint
-   * @returns {Observable<string[]>}
-   */
-  getExportDataFormats(constraint: Constraint): Observable<string[]> {
-    const urlPart = 'export/data_formats';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'dataFormats';
-    return this.postCall(urlPart, body, responseField);
-  }
 
-  getExportFileFormats(): Observable<string[]> {
-    const dataView = this.exportDataView;
-    const urlPart = `export/file_formats?dataView=${dataView}`;
-    const responseField = 'fileFormats';
-    return this.getCall(urlPart, responseField);
+  getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.getExportDataTypes()
+    } else {
+      return this.transmartHttpService.getExportFileFormats(this.exportDataView).pipe(
+        switchMap(fileFormatNames => {
+          return this.transmartHttpService.getExportDataFormats(constraint)
+        }, (fileFormatNames, dataFormatNames) => {
+          return TransmartMapper.mapTransmartExportFormats(fileFormatNames, dataFormatNames);
+        }));
+    }
   }
 
   /**
@@ -549,9 +389,14 @@ export class TransmartResourceService {
    * @returns {Observable<ExportJob[]>}
    */
   getExportJobs(): Observable<any[]> {
-    const urlPart = 'export/jobs';
-    const responseField = 'exportJobs';
-    return this.getCall(urlPart, responseField);
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.getAllJobs().pipe(
+        map((tmExJobs: TransmartPackerJob[]) => {
+          return TransmartPackerMapper.mapCustomExportJobs(tmExJobs);
+        }));
+    } else {
+      return this.transmartHttpService.getExportJobs();
+    }
   }
 
   /**
@@ -560,32 +405,30 @@ export class TransmartResourceService {
    * @returns {Observable<ExportJob>}
    */
   createExportJob(name: string): Observable<ExportJob> {
-    const urlPart = `export/job?name=${name}`;
-    const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.createExportJob(name);
+    } else {
+      return this.transmartHttpService.createExportJob(name);
+    }
   }
 
   /**
-   * Run an export job:
-   * the elements should be an array of objects like this -
-   * [{
-   *    dataType: 'clinical',
-   *    format: 'TSV',
-   *    dataView: 'default' | 'surveyTable', // NTR specific
-   * }]
-   *
+   * Run an export job
    * @param {string} jobId
+   * @param {string} jobName
    * @param {Constraint} constraint
-   * @param {TransmartExportElement[]} elements
-   * @param {TransmartTableState} tableState - included only, if at least one of the formats of elements is 'TSV'
+   * @param {ExportDataType[]} dataTypes
+   * @param {boolean} includeDataTable
+   * @param {DataTable} dataTable
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
+               jobName: string,
                constraint: Constraint,
-               elements: TransmartExportElement[],
-               tableState?: TransmartTableState): Observable<ExportJob> {
-    const urlPart = `export/${jobId}/run`;
-    const responseField = 'exportJob';
+               dataTypes: ExportDataType[],
+               includeDataTable: boolean,
+               dataTable: DataTable): Observable<ExportJob> {
+
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
       constraint.className === 'CombinationConstraint' &&
@@ -596,15 +439,19 @@ export class TransmartResourceService {
       targetConstraint = combo;
     }
 
-    let body = {
-      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
-      elements: elements,
-      includeMeasurementDateColumns: this.dateColumnsIncluded
-    };
-    if (tableState) {
-      body['tableConfig'] = tableState;
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.runJob(jobName, targetConstraint).pipe(
+        map((tmExJob: TransmartPackerJob) => {
+          return TransmartPackerMapper.mapCustomExportJob(tmExJob);
+        }));
+    } else {
+      let transmartTableState: TransmartTableState = null;
+      if (includeDataTable) {
+        transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
+      }
+      const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.exportDataView);
+      return this.transmartHttpService.runExportJob(jobId, targetConstraint, elements, transmartTableState);
     }
-    return this.postCall(urlPart, body, responseField);
   }
 
   /**
@@ -613,9 +460,11 @@ export class TransmartResourceService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string) {
-    let url = `${this.endpointUrl}/export/${jobId}/download`;
-    return this.http.get(url, {responseType: 'blob'}).pipe(
-      catchError(ErrorHelper.handleError.bind(this)));
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.downloadJobData(jobId);
+    } else {
+      return this.transmartHttpService.downloadExportJob(jobId);
+    }
   }
 
   /**
@@ -624,9 +473,11 @@ export class TransmartResourceService {
    * @returns {Observable<blob>}
    */
   cancelExportJob(jobId: string): Observable<{}> {
-    const urlPart = `export/${jobId}/cancel`;
-    const responseField = 'exportJob';
-    return this.postCall(urlPart, {}, responseField);
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.cancelJob(jobId);
+    } else {
+      return this.transmartHttpService.cancelExportJob(jobId)
+    }
   }
 
   /**
@@ -635,8 +486,11 @@ export class TransmartResourceService {
    * @returns {Observable<blob>}
    */
   archiveExportJob(jobId: string): Observable<{}> {
-    const urlPart = `export/${jobId}`;
-    return this.deleteCall(urlPart);
+    if (this.useExternalExportJob) {
+      return this.transmartPackerHttpService.archiveJob(jobId);
+    } else {
+      return this.transmartHttpService.archiveExportJob(jobId);
+    }
   }
 
   // -------------------------------------- query calls --------------------------------------
@@ -645,9 +499,7 @@ export class TransmartResourceService {
    * @returns {Observable<Query[]>}
    */
   getQueries(): Observable<TransmartQuery[]> {
-    const urlPart = `queries`;
-    const responseField = 'queries';
-    return this.getCall(urlPart, responseField);
+    return this.transmartHttpService.getQueries();
   }
 
   /**
@@ -656,30 +508,7 @@ export class TransmartResourceService {
    * @returns {Observable<TransmartQuery>}
    */
   saveQuery(transmartQuery: TransmartQuery): Observable<TransmartQuery> {
-    const urlPart = `queries`;
-    const queryBody = {};
-    if (transmartQuery.name) {
-      queryBody['name'] = transmartQuery.name;
-    }
-    if (transmartQuery.patientsQuery) {
-      queryBody['patientsQuery'] = transmartQuery.patientsQuery;
-    }
-    if (transmartQuery.observationsQuery) {
-      queryBody['observationsQuery'] = transmartQuery.observationsQuery;
-    }
-    if (transmartQuery.bookmarked) {
-      queryBody['bookmarked'] = transmartQuery.bookmarked;
-    }
-    if (transmartQuery.subscribed) {
-      queryBody['subscribed'] = transmartQuery.subscribed;
-    }
-    if (transmartQuery.subscriptionFreq) {
-      queryBody['subscriptionFreq'] = transmartQuery.subscriptionFreq;
-    }
-    if (transmartQuery.queryBlob) {
-      queryBody['queryBlob'] = transmartQuery.queryBlob;
-    }
-    return this.postCall(urlPart, queryBody, null);
+    return this.transmartHttpService.saveQuery(transmartQuery);
   }
 
   /**
@@ -689,8 +518,7 @@ export class TransmartResourceService {
    * @returns {Observable<Query>}
    */
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.putCall(urlPart, queryBody);
+    return this.transmartHttpService.updateQuery(queryId, queryBody);
   }
 
   /**
@@ -699,65 +527,72 @@ export class TransmartResourceService {
    * @returns {Observable<any>}
    */
   deleteQuery(queryId: string): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.deleteCall(urlPart);
+    return this.transmartHttpService.deleteQuery(queryId);
   }
 
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
-    const urlPart = `patient_sets?name=${name}&reuse=true`;
-    const body = TransmartConstraintMapper.mapConstraint(constraint);
-    return this.postCall(urlPart, body, null);
+    return this.transmartHttpService.savePatientSet(name, constraint);
   }
 
   // -------------------------------------- query differences --------------------------------------
   diffQuery(queryId: string): Observable<object[]> {
-    const urlPart = `queries/${queryId}/sets`;
-    const responseField = 'querySets';
-    return this.getCall(urlPart, responseField);
+    return this.transmartHttpService.diffQuery(queryId);
   }
 
   // -------------------------------------- data table ---------------------------------------------
-  getDataTable(tableState: TransmartTableState,
-               constraint: Constraint,
-               offset: number, limit: number): Observable<TransmartDataTable> {
-    const urlPart = `observations/table`;
-    let body = {
-      type: 'clinical',
-      constraint: TransmartConstraintMapper.mapConstraint(constraint),
-      rowDimensions: tableState.rowDimensions,
-      columnDimensions: tableState.columnDimensions,
-      offset: offset,
-      limit: limit,
-      rowSort: tableState.rowSort,
-      columnSort: tableState.columnSort
-    };
-    return this.postCall(urlPart, body, null);
+  getDataTable(dataTable: DataTable): Observable<DataTable> {
+    let offset = dataTable.offset;
+    let limit = dataTable.limit;
+
+    // Fetch dimensions for the data matching the constraint
+    return this.getDimensions(dataTable.constraint).pipe(
+      switchMap((transmartStudyDimensions: TransmartStudyDimensions) => {
+        // Merge available dimensions and current table state
+        let tableState: TransmartTableState =
+          TransmartDataTableMapper.mapStudyDimensionsToTableState(transmartStudyDimensions, dataTable);
+        const constraint: Constraint = dataTable.constraint;
+        return this.transmartHttpService.getDataTable(tableState, constraint, offset, limit)
+      }, (transmartStudyDimensions: TransmartStudyDimensions, transmartTable: TransmartDataTable) => {
+        let newDataTable: DataTable = TransmartDataTableMapper.mapTransmartDataTable(transmartTable, offset, limit);
+        newDataTable.constraint = dataTable.constraint;
+        return newDataTable;
+      }));
+  }
+
+  /**
+   * Gets available dimensions for step 3
+   * @param {Constraint} constraint
+   * @returns {Observable<Dimension[]>}
+   */
+  private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
+    // Fetch study names for the constraint
+    return this.getStudyIds(constraint).pipe(
+      switchMap(() => {
+        // Fetch study details, including dimensions, for these studies
+        return this.transmartHttpService.studies;
+      }, (studyIds: string[], studies: TransmartStudy[]) => {
+        if (studyIds && studies) {
+          let selectedStudies = studies.filter(study => studyIds.includes(study.studyId));
+          return TransmartMapper.mergeStudyDimensions(selectedStudies);
+        } else {
+          return new TransmartStudyDimensions();
+        }
+      }));
   }
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
-    const urlPart = `dimensions/study/elements`;
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
-    const responseField = 'elements';
-    return this.postCall(urlPart, body, responseField).pipe(map(
-      (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
-    ));
+    return this.transmartHttpService.getStudyIds(constraint);
   }
 
   get sortableDimensions(): Set<string> {
-    return TransmartResourceService.sortableDimensions;
+    return TransmartHttpService.sortableDimensions;
   }
 
   getCrossTable(baseConstraint: Constraint,
                 rowConstraints: Constraint[],
                 columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
-    const urlPart = 'observations/crosstable';
-    const body = {
-      subjectConstraint: TransmartConstraintMapper.mapConstraint(baseConstraint),
-      rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)),
-      columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint))
-    };
-    return this.postCall(urlPart, body, null);
+    return this.transmartHttpService.getCrossTable(baseConstraint, rowConstraints, columnConstraints);
   }
 
 }

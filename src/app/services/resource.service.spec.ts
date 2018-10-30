@@ -6,11 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {ResourceService} from './resource.service';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
-import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 import {Study} from '../models/constraint-models/study';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
@@ -21,6 +19,10 @@ import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {Query} from '../models/query-models/query';
+import {AppConfigMock} from '../config/app.config.mock';
+import {AppConfig} from '../config/app.config';
+import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -33,6 +35,10 @@ describe('ResourceService', () => {
         {
           provide: TransmartResourceService,
           useClass: TransmartResourceServiceMock
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         }
       ]
     });
