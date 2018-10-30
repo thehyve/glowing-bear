@@ -2,12 +2,8 @@
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
-A frontend application for clinical data selection and analysis 
+An [Angular](https://github.com/angular/angular)-based frontend application for clinical data selection and analysis 
 based on [TranSMART]. Visit https://glowingbear.app for more information.
-
-This project is based on [Angular 6](https://github.com/angular/angular), 
-[Angular CLI 6](https://github.com/angular/angular-cli) and 
-[Yarn 1.9.4](https://github.com/yarnpkg/yarn/releases)
 
 
 ### How to install
