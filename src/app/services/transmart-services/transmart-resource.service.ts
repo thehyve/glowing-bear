@@ -39,7 +39,9 @@ import {Study} from '../../models/constraint-models/study';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartResourceService {
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.

@@ -15,7 +15,9 @@ import {AppConfig} from '../config/app.config';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthorizationResult} from './authentication/authorization-result';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ApiHttpInterceptor implements HttpInterceptor {
   private authenticationService: AuthenticationService;
   private appConfig: AppConfig;

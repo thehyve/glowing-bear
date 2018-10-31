@@ -16,7 +16,9 @@ import {AccessLevel} from './access-level';
 import * as jwt_decode from 'jwt-decode';
 import {Subject} from 'rxjs/Rx';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthenticationService implements OnDestroy {
 
   private config: AppConfig;
