@@ -11,7 +11,9 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppConfig {
 
   public static DEFAULT_API_VERSION = 'v2';
