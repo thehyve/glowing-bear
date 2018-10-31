@@ -70,7 +70,6 @@ describe('ResourceService', () => {
       .then(() => {
         expect(resourceService.inclusionCounts.subjectCount).toEqual(10);
         expect(resourceService.exclusionCounts.subjectCount).toEqual(0);
-        expect(resourceService.selectedStudyConceptCountMap.size).toEqual(1);
       });
     resourceService.endpointMode = null;
     resourceService.updateInclusionExclusionCounts(dummy, dummy, dummy)

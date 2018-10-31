@@ -296,7 +296,7 @@ describe('GbCohortsComponent', () => {
   })
 
   it('check subscription frequency radio button', () => {
-    let spy1 = spyOn(cohortService, 'updateCohort').and.stub();
+    let spy1 = spyOn(cohortService, 'editCohort').and.stub();
     component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Cohort('id', 'name'));
     expect(spy1).toHaveBeenCalled();
   })

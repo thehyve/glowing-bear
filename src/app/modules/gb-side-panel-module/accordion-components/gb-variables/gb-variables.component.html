@@ -11,7 +11,7 @@
         <div *ngFor="let concept of categorizedVariables.get(type)"
              [pDraggable]="variablesDragDropScope"
              class="variable">
-          {{concept.name}}
+          {{concept.name}} ({{concept.counts.subjectCount}})
         </div>
       </div>
     </mat-expansion-panel>
