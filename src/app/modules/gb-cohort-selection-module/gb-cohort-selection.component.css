@@ -101,6 +101,14 @@
   display: inline-flex;
 }
 
+/*
+ * Change the primeng confirmation dialog of deleting the cohort
+ */
+:host >>> .ui-confirmdialog.ui-dialog .ui-dialog-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 .criteria-box {
   margin-bottom: 2em;
 }

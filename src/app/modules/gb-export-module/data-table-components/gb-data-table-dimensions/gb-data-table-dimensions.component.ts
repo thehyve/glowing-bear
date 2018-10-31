@@ -9,7 +9,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Dimension} from '../../../../models/table-models/dimension';
 import {DataTableService} from '../../../../services/data-table.service';
-import {CohortService} from '../../../../services/cohort.service';
 
 @Component({
   selector: 'gb-data-table-dimensions',
@@ -18,8 +17,7 @@ import {CohortService} from '../../../../services/cohort.service';
 })
 export class GbDataTableDimensionsComponent implements OnInit {
 
-  constructor(private dataTableService: DataTableService,
-              private queryService: CohortService) {
+  constructor(private dataTableService: DataTableService) {
   }
 
   ngOnInit() {

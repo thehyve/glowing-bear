@@ -32,7 +32,7 @@ export class GbMainComponent implements OnInit {
               private transmartPackerHttpService: TransmartPackerHttpService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private queryService: CohortService) {
+              private cohortService: CohortService) {
   }
 
   ngOnInit() {
