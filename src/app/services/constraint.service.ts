@@ -223,21 +223,21 @@ export class ConstraintService {
   }
 
   /**
-   * Returns a list of all constraints that match the query string.
+   * Returns a list of all constraints that match the search word.
    * The constraints should be copied when editing them.
-   * @param query
+   * @param searchWord
    * @returns {Array}
    */
-  public searchAllConstraints(query: string): Constraint[] {
-    query = query.toLowerCase();
+  public searchAllConstraints(searchWord: string): Constraint[] {
+    searchWord = searchWord.toLowerCase();
     let results = [];
-    if (query === '') {
+    if (searchWord === '') {
       results = [].concat(this.allConstraints.slice(0, this.maxNumSearchResults));
-    } else if (query && query.length > 0) {
+    } else if (searchWord && searchWord.length > 0) {
       let count = 0;
       this.allConstraints.forEach((constraint: Constraint) => {
         let text = constraint.textRepresentation.toLowerCase();
-        if (text.indexOf(query) > -1) {
+        if (text.indexOf(searchWord) > -1) {
           results.push(constraint);
           count++;
           if (count >= this.maxNumSearchResults) {

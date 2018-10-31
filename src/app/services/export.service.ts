@@ -252,8 +252,8 @@ export class ExportService {
     }
     // 5. Validate if at least one observation is included
     // TODO: update counts when a subset of variables is selected
-    // let queryService = this.injector.get(CohortService);
-    // if (queryService.counts_2.observationCount < 1) {
+    // let cohortService = this.injector.get(CohortService);
+    // if (cohortService.counts_2.observationCount < 1) {
     //   const summary = 'No observation included to be exported.';
     //   MessageHelper.alert('warn', summary);
     //   return false;

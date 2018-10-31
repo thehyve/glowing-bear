@@ -192,33 +192,6 @@ body .hline {
   color: white;
 }
 
-/*
- * Change the primeng data table border to lightgrey
- */
-.ui-datatable .ui-datatable-thead > tr > th,
-.ui-datatable .ui-datatable-tfoot > tr > td,
-.ui-datatable .ui-datatable-data > tr > td {
-  border-color: lightgrey;
-}
-
-/*
- * Change the primeng confirmation dialog of deleting the query
- */
-.ui-confirmdialog.ui-dialog .ui-dialog-content {
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-/*
- * Change the primeng tooltip for data table cells
- */
-.ui-tooltip.ui-widget.ui-tooltip-right,
-.ui-tooltip.ui-widget.ui-tooltip-left {
-  font-size: x-small;
-  width: 300px;
-  min-width: 300px;
-}
-
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;

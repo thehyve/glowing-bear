@@ -72,7 +72,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     StudyService,
     TreeNodeService,
     ConstraintService,
-    CohortService,
+    // CohortService,
     DataTableService,
     CrossTableService,
     NavbarService,

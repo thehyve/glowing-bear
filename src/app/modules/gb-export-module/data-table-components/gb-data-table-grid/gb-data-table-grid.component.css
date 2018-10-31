@@ -35,3 +35,22 @@
   min-width: 30px;
   width: 100px;
 }
+
+/*
+ * Change the primeng data table border to lightgrey
+ */
+.ui-datatable .ui-datatable-thead > tr > th,
+.ui-datatable .ui-datatable-tfoot > tr > td,
+.ui-datatable .ui-datatable-data > tr > td {
+  border-color: lightgrey;
+}
+
+/*
+ * Change the primeng tooltip for data table cells
+ */
+.ui-tooltip.ui-widget.ui-tooltip-right,
+.ui-tooltip.ui-widget.ui-tooltip-left {
+  font-size: x-small;
+  width: 300px;
+  min-width: 300px;
+}
