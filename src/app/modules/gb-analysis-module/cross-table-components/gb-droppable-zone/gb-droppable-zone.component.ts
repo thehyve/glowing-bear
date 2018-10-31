@@ -11,7 +11,6 @@ import {Constraint} from '../../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../../services/cross-table.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
-import {DropMode} from '../../../../models/drop-mode';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {AxisType} from '../../../../models/table-models/axis-type';
 
@@ -63,8 +62,7 @@ export class GbDroppableZoneComponent implements OnInit {
     // try to create a new one based on the (possible) tree node drop
     if (!constraint) {
       if (this.treeNodeService.selectedTreeNode) {
-        constraint = this.constraintService
-          .generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode, DropMode.TreeNode);
+        constraint = this.constraintService.generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode);
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
           constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);

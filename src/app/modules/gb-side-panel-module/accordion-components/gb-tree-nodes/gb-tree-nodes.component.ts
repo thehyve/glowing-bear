@@ -10,7 +10,6 @@ import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecke
 import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
-import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 
 @Component({
@@ -113,7 +112,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       let treeNodeElmLabel = elm.querySelector('li.ui-treenode .ui-treenode-label');
       let handleDragstart = (function (event) {
         event.stopPropagation();
-        dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 

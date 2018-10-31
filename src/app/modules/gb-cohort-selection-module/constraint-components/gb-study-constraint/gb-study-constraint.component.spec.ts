@@ -105,24 +105,21 @@ describe('GbStudyConstraintComponent', () => {
     let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];
     let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
-    treeNodeService.selectedTreeNode = {}
-    treeNodeService.selectedTreeNode['dropMode'] = '';
+    treeNodeService.selectedTreeNode = {};
     component.constraint = studyConstraint2;
     let e = new DragEvent('drag');
     component.onDrop(e);
     expect(spy1).toHaveBeenCalled();
     expect((<StudyConstraint>component.constraint).studies.length).toEqual(2);
 
-    treeNodeService.selectedTreeNode = {}
-    treeNodeService.selectedTreeNode['dropMode'] = '';
+    treeNodeService.selectedTreeNode = {};
     component.onDrop(e);
     expect((<StudyConstraint>component.constraint).studies.length).toEqual(2);
   })
 
   it('should handle dropped constraint being null', () => {
     let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(null);
-    treeNodeService.selectedTreeNode = {}
-    treeNodeService.selectedTreeNode['dropMode'] = '';
+    treeNodeService.selectedTreeNode = {};
     let studyConstraint2 = new StudyConstraint();
     let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];

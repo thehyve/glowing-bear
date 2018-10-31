@@ -9,7 +9,6 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
-import {DropMode} from '../../models/drop-mode';
 import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
 
@@ -58,7 +57,7 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
-  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
     return this._constraint;
   }
 
