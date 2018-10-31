@@ -101,8 +101,7 @@ describe('TreeNodesComponent', () => {
       metadata: {
         key: 'foo',
         val: 'bar'
-      },
-      dropMode: 'a-mode'
+      }
     };
     let treeNodeElements = [elm];
     let treeNodes = [node];
@@ -127,8 +126,7 @@ describe('TreeNodesComponent', () => {
       }
     };
     let node = {
-      type: 'type-A',
-      dropMode: 'a-mode'
+      type: 'type-A'
     };
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
