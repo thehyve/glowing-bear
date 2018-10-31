@@ -13,7 +13,6 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ResourceService} from '../../../../services/resource.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {CohortService} from '../../../../services/cohort.service';
-import {Step} from '../../../../models/cohort-models/step';
 import {StudyService} from '../../../../services/study.service';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 
@@ -32,7 +31,7 @@ export class GbConstraintComponent implements OnInit {
               protected treeNodeService: TreeNodeService,
               protected resourceService: ResourceService,
               protected constraintService: ConstraintService,
-              protected queryService: CohortService,
+              protected cohortService: CohortService,
               protected studyService: StudyService,
               public element: ElementRef) {
   }
@@ -81,10 +80,10 @@ export class GbConstraintComponent implements OnInit {
   }
 
   update() {
-    if (this.queryService.instantCohortCountsUpdate) {
-      this.queryService.update();
+    if (this.cohortService.instantCohortCountsUpdate) {
+      this.cohortService.update();
     } else {
-      this.queryService.isDirty = true;
+      this.cohortService.isDirty = true;
     }
   }
 

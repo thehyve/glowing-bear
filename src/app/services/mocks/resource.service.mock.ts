@@ -65,7 +65,7 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  getQueries(): Observable<Cohort[]> {
+  getCohorts(): Observable<Cohort[]> {
     return observableOf(this.queries);
   }
 
@@ -149,11 +149,11 @@ export class ResourceServiceMock {
     return observableOf({});
   }
 
-  diffQuery(queryId: string): Observable<object[]> {
+  diffCohort(id: string): Observable<object[]> {
     return observableOf([{}]);
   }
 
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     return observableOf({});
   }
 
@@ -161,7 +161,7 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  saveQuery(query: Cohort): Observable<Cohort> {
+  saveCohort(target: Cohort): Observable<Cohort> {
     return observableOf(new Cohort('id', 'name'));
   }
 

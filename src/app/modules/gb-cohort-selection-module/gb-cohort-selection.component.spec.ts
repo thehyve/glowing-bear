@@ -92,11 +92,11 @@ describe('GbCohortSelectionComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should save query', () => {
+  it('should save a cohort', () => {
     spyOn(component, 'saveCohort').and.callThrough();
     component.saveCohort();
     expect(component.saveCohort).toHaveBeenCalled();
-    // when queryName is defined
+    // when name is defined
     component.cohortName = 'test name';
     spyOn(cohortService, 'saveCohortByName').and.callThrough();
     component.saveCohort();

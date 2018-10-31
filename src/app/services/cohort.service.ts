@@ -88,7 +88,7 @@ export class CohortService {
    * ----------------------------- Update the queries on the left-side panel -----------------------------
    */
   loadCohorts() {
-    this.resourceService.getQueries()
+    this.resourceService.getCohorts()
       .subscribe(
         (cohorts: Cohort[]) => {
           this.handleLoadedCohorts(cohorts);
@@ -112,7 +112,7 @@ export class CohortService {
     cohorts.forEach(c => {
       if (c.subscribed) {
         // load cohort diff records for this cohort
-        this.resourceService.diffQuery(c.id)
+        this.resourceService.diffCohort(c.id)
           .subscribe(
             (records) => {
               c.diffRecords = this.parseCohortDiffRecords(records);
@@ -189,7 +189,7 @@ export class CohortService {
 
   public saveCohort(target: Cohort) {
     this.isSavingCohortCompleted = false;
-    this.resourceService.saveQuery(target)
+    this.resourceService.saveCohort(target)
       .subscribe(
         (newlySaved: Cohort) => {
           newlySaved.collapsed = true;
@@ -238,11 +238,11 @@ export class CohortService {
   }
 
   public updateCohort(target: Cohort, obj: object) {
-    this.resourceService.updateQuery(target.id, obj)
+    this.resourceService.updateCohort(target.id, obj)
       .subscribe(
         () => {
           if (target.subscribed) {
-            this.resourceService.diffQuery(target.id)
+            this.resourceService.diffCohort(target.id)
               .subscribe(
                 records => {
                   target.diffRecords = this.parseCohortDiffRecords(records);
@@ -254,11 +254,11 @@ export class CohortService {
       );
   }
 
-  public deleteCohort(query: Cohort) {
-    this.resourceService.deleteQuery(query['id'])
+  public deleteCohort(target: Cohort) {
+    this.resourceService.deleteCohort(target['id'])
       .subscribe(
         () => {
-          const index = this.cohorts.indexOf(query);
+          const index = this.cohorts.indexOf(target);
           if (index > -1) {
             this.cohorts.splice(index, 1);
           }

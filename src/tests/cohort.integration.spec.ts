@@ -175,7 +175,7 @@ describe('Integration test for cohort saving and restoring', () => {
     });
 
 
-    let spySave = spyOn(resourceService, 'saveQuery').and.callThrough();
+    let spySave = spyOn(resourceService, 'saveCohort').and.callThrough();
     cohortService.saveCohortByName('test-name');
     expect(cohortService.cohorts.length).toBe(2);
     expect(cohortService.isSavingCohortCompleted).toBe(true);

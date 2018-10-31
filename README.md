@@ -132,9 +132,7 @@ Supported properties in the `config.*.json` files:
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `show-observation-counts` | `true`    | |
-| `instant-counts-update-1` | `false`   | |
-| `instant-counts-update-2` | `false`   | |
-| `instant-counts-update-3` | `false`   | |
+| `instant-counts-update` | `false`   | |
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |
