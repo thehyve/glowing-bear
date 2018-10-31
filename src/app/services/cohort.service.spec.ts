@@ -103,7 +103,7 @@ describe('CohortService', () => {
     q2.subscribed = false;
     q2.bookmarked = true;
     q2.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
-    let spy1 = spyOn(resourceService, 'diffQuery').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'diffCohort').and.callFake(() => {
       return observableOf(['foo']);
     });
     let spy2 = spyOn(cohortService, 'parseCohortDiffRecords').and.stub();
@@ -117,8 +117,8 @@ describe('CohortService', () => {
     expect(cohortService.cohorts[3].id).toBe(q1.id);
   });
 
-  it('should delete a query', () => {
-    let spy = spyOn(resourceService, 'deleteQuery').and.callThrough();
+  it('should delete a cohort', () => {
+    let spy = spyOn(resourceService, 'deleteCohort').and.callThrough();
     let query = new Cohort('test-id', 'test-name');
     cohortService.cohorts = [query];
     cohortService.deleteCohort(query);
@@ -131,8 +131,8 @@ describe('CohortService', () => {
     expect(cohortService.cohorts.length).toEqual(1);
   })
 
-  it('should handle query deletion error', () => {
-    let spy = spyOn(resourceService, 'deleteQuery').and.callFake(() => {
+  it('should handle cohort deletion error', () => {
+    let spy = spyOn(resourceService, 'deleteCohort').and.callFake(() => {
       return throwError(null);
     })
     let spy1 = spyOn(ErrorHelper, 'handleError').and.stub();

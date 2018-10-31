@@ -207,14 +207,14 @@ describe('ResourceService', () => {
   });
 
   it('should get queries', () => {
-    resourceService.getQueries()
+    resourceService.getCohorts()
       .subscribe((res: Cohort[]) => {
         expect(res.length).toBe(2);
         expect(res[0].constraint.className).toBe('TrueConstraint');
         expect(res[1].constraint.className).toBe('CombinationConstraint');
       });
     resourceService.endpointMode = null;
-    resourceService.getQueries()
+    resourceService.getCohorts()
       .subscribe(res => {
       }, err => {
         expect(err).toBeDefined();

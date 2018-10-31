@@ -18,7 +18,6 @@ import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 
 describe('NavbarService', () => {
-  let queryService: CohortService;
   let navbarService: NavbarService;
   let exportService: ExportService;
   let authService: AuthenticationService;
@@ -32,17 +31,12 @@ describe('NavbarService', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: CohortService,
-          useClass: CohortServiceMock
-        },
-        {
           provide: ExportService,
           useClass: ExportServiceMock
         },
         NavbarService
       ]
     });
-    queryService = TestBed.get(CohortService);
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
     exportEnabled = false;
@@ -57,7 +51,7 @@ describe('NavbarService', () => {
 
   it('should add export item when access level is full', () => {
     exportEnabled = true;
-    navbarService = new NavbarService(authService, exportService, queryService);
+    navbarService = new NavbarService(authService, exportService);
     expect(navbarService.items.length).toBe(3);
   });
 

@@ -400,12 +400,12 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query calls --------------------------------------
+  // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Cohort[]> {
+  getCohorts(): Observable<Cohort[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getQueries().pipe(
@@ -424,10 +424,10 @@ export class ResourceService {
    * @param {Cohort} query
    * @returns {Observable<Cohort>}
    */
-  saveQuery(query: Cohort): Observable<Cohort> {
+  saveCohort(cohort: Cohort): Observable<Cohort> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
+        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(cohort);
         return this.transmartResourceService.saveQuery(transmartQuery).pipe(
           map((savedTransmartQuery: TransmartQuery) => {
             return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
@@ -440,15 +440,15 @@ export class ResourceService {
   }
 
   /**
-   * Modify an existing query.
-   * @param {string} queryId
-   * @param {Object} queryBody
+   * Modify an existing cohort.
+   * @param {string} id
+   * @param {Object} body
    * @returns {Observable<{}>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+  updateCohort(id: string, body: object): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.updateQuery(queryId, queryBody);
+        return this.transmartResourceService.updateQuery(id, body);
       }
       default: {
         return this.handleEndpointModeError();
@@ -457,14 +457,14 @@ export class ResourceService {
   }
 
   /**
-   * Delete an existing query.
-   * @param {string} queryId
+   * Delete an existing cohort.
+   * @param {string} id
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.deleteQuery(queryId);
+        return this.transmartResourceService.deleteQuery(id);
       }
       default: {
         return this.handleEndpointModeError();
@@ -484,11 +484,11 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query differences --------------------------------------
-  diffQuery(queryId: string): Observable<object[]> {
+  // -------------------------------------- cohort differences --------------------------------------
+  diffCohort(id: string): Observable<object[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.diffQuery(queryId);
+        return this.transmartResourceService.diffQuery(id);
       }
       default: {
         return this.handleEndpointModeError();
