@@ -5,6 +5,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {MatExpansionModule} from '@angular/material';
 import {DragDropModule} from 'primeng/primeng';
+import {NavbarService} from '../../../../services/navbar.service';
+import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -24,6 +26,10 @@ describe('GbVariablesComponent', () => {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        }
       ]
     })
       .compileComponents();
