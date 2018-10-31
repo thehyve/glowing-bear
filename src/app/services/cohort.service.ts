@@ -20,6 +20,10 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {ConstraintMark} from '../models/constraint-models/constraint-mark';
+import {forkJoin} from 'rxjs';
 
 /**
  * This service concerns with
@@ -34,18 +38,25 @@ export class CohortService {
   private _currentCohort: Cohort;
   // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
-  // The total numbers of subjects & observations
+  // The total numbers of subjects & observations for the current cohort
   private _totalCounts: CountItem;
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
+  // The total numbers of subjects & observations for all the cohorts
+  private _allCounts: CountItem;
   // indicate when constraints are changed, whether to update counts immediately,
   // used in gb-constraint-component
   private _instantCohortCountsUpdate: boolean;
-  // flag indicating if cohort counts are being updated
-  private _isUpdating = false;
-  // flag indicating if the cohort constraint in Cohort Selection has been changed
+  // flag indicating if the current cohort is being updated (gb-cohort-selection)
+  private _isUpdatingCurrent = false;
+  // flag indicating if all the cohorts are being updated (gb-cohorts)
+  private _isUpdatingAll = false;
+  // flag indicating if the variables are being updated (gb-variables)
+  private _isUpdatingVariables = false;
+
+  // flag indicating if the current cohort constraint in gb-cohort-selection has been changed
   private _isDirty = true;
-  // the counts in the first step
+  // the counts in the gb-cohort-selection
   private _counts: CountItem;
 
   /*
@@ -68,10 +79,11 @@ export class CohortService {
     this.initializeCounts();
     this.loadCohorts();
     // initial updates
-    this.update(true);
+    this.updateCurrent(true);
   }
 
   initializeCounts() {
+    this.allCounts = new CountItem(0, 0);
     this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
@@ -81,7 +93,7 @@ export class CohortService {
   clearAll(): Promise<any> {
     this.constraintService.clearCohortConstraint();
     this.isDirty = true;
-    return this.update(true);
+    return this.updateCurrent(true);
   }
 
   /**
@@ -128,10 +140,10 @@ export class CohortService {
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
-  public update(initialUpdate?: boolean): Promise<any> {
+  public updateCurrent(initialUpdate?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.isDirty) {
-        this.isUpdating = true;
+        this.isUpdatingCurrent = true;
         let constraint = this.constraintService.cohortConstraint();
         let inclusionConstraint = this.constraintService.inclusionConstraint();
         let exclusionConstraint = this.constraintService.exclusionConstraint();
@@ -148,11 +160,22 @@ export class CohortService {
               this.totalCounts.subjectCount = this.counts.subjectCount;
               this.totalCounts.observationCount = this.counts.observationCount;
             }
-            this.constraintService.selectedStudyConceptCountMap = this.resourceService.selectedStudyConceptCountMap;
-            this.constraintService.selectedConceptCountMap = this.resourceService.selectedConceptCountMap;
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
-            this.prepareVariables(resolve);
+            this.isUpdatingCurrent = false;
+            this.isDirty = false;
+
+            if (this.currentCohort.selected) {
+              this.updateAll()
+                .then(() => {
+                  resolve(true)
+                })
+                .catch(err => {
+                  reject(err);
+                })
+            } else {
+              resolve(true);
+            }
           })
           .catch(err => {
             reject(err);
@@ -163,19 +186,44 @@ export class CohortService {
     });
   }
 
-  prepareVariables(resolve) {
+  public updateAll(): Promise<any> {
+    this.isUpdatingAll = true;
+    let combination: CombinationConstraint = new CombinationConstraint();
+    combination.combinationState = CombinationState.Or;
+    combination.mark = ConstraintMark.SUBJECT;
+    this.cohorts.forEach((cohort: Cohort) => {
+      if (cohort.selected) {
+        combination.addChild(cohort.constraint);
+      }
+    });
+
+    return new Promise((resolve, reject) => {
+      forkJoin(
+        this.resourceService.getCounts(combination),
+        this.resourceService.getCountsPerConcept(combination)
+      ).subscribe(res => {
+        this.allCounts = res[0];
+        this.constraintService.selectedConceptCountMap = res[1];
+        this.isUpdatingAll = false;
+        this.updateVariables(resolve);
+      }, (err) => {
+        reject(err);
+      })
+    });
+  }
+
+  private updateVariables(resolve) {
+    this.isUpdatingVariables = true;
     if (this.constraintService.isTreeNodesLoading) {
       window.setTimeout((function () {
-        this.prepareVariables(resolve);
+        this.updateVariables(resolve);
       }).bind(this), 500);
     } else {
       this.constraintService.updateVariables();
-      this.isUpdating = false;
-      this.isDirty = false;
+      this.isUpdatingVariables = false;
       resolve(true);
     }
   }
-
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
@@ -222,7 +270,7 @@ export class CohortService {
         this.constraintService.clearCohortConstraint();
         this.constraintService.restoreCohortConstraint(cohort.constraint);
         this.isDirty = true;
-        this.update()
+        this.updateCurrent()
           .then(() => {
             MessageHelper.alert('info', 'Success', `Cohort ${cohort.name} is successfully imported.`);
             resolve(true);
@@ -237,8 +285,8 @@ export class CohortService {
     });
   }
 
-  public updateCohort(target: Cohort, obj: object) {
-    this.resourceService.updateCohort(target.id, obj)
+  public editCohort(target: Cohort, obj: object) {
+    this.resourceService.editCohort(target.id, obj)
       .subscribe(
         () => {
           if (target.subscribed) {
@@ -315,7 +363,7 @@ export class CohortService {
         target.subscriptionFreq ? target.subscriptionFreq : CohortSubscriptionFrequency.WEEKLY;
       target.subscriptionFreq = obj['subscriptionFreq'];
     }
-    this.updateCohort(target, obj);
+    this.editCohort(target, obj);
   }
 
   public toggleCohortBookmark(target: Cohort) {
@@ -323,7 +371,7 @@ export class CohortService {
     let obj = {
       bookmarked: target.bookmarked
     };
-    this.updateCohort(target, obj);
+    this.editCohort(target, obj);
   }
 
   get inclusionCounts(): CountItem {
@@ -390,12 +438,28 @@ export class CohortService {
     this._isDirty = value;
   }
 
-  get isUpdating(): boolean {
-    return this._isUpdating;
+  get isUpdatingCurrent(): boolean {
+    return this._isUpdatingCurrent;
   }
 
-  set isUpdating(value: boolean) {
-    this._isUpdating = value;
+  set isUpdatingCurrent(value: boolean) {
+    this._isUpdatingCurrent = value;
+  }
+
+  get isUpdatingAll(): boolean {
+    return this._isUpdatingAll;
+  }
+
+  set isUpdatingAll(value: boolean) {
+    this._isUpdatingAll = value;
+  }
+
+  get isUpdatingVariables(): boolean {
+    return this._isUpdatingVariables;
+  }
+
+  set isUpdatingVariables(value: boolean) {
+    this._isUpdatingVariables = value;
   }
 
   get showObservationCounts(): boolean {
@@ -420,5 +484,13 @@ export class CohortService {
 
   set isCohortSubscriptionIncluded(value: boolean) {
     this._isCohortSubscriptionIncluded = value;
+  }
+
+  get allCounts(): CountItem {
+    return this._allCounts;
+  }
+
+  set allCounts(value: CountItem) {
+    this._allCounts = value;
   }
 }

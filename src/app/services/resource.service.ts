@@ -8,7 +8,6 @@
 
 
 import {Observable, of as observableOf, throwError as observableThrowError} from 'rxjs';
-
 import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Study} from '../models/constraint-models/study';
@@ -43,8 +42,6 @@ export class ResourceService {
   private _endpointMode: EndpointMode;
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  private _selectedConceptCountMap: Map<string, CountItem>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
@@ -98,16 +95,13 @@ export class ResourceService {
     return new Promise<any>((resolve, reject) => {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+          this.transmartResourceService
+            .updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
             .then(() => {
               this.inclusionCounts =
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
               this.exclusionCounts =
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
-              this.selectedStudyConceptCountMap =
-                TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
-              this.selectedConceptCountMap =
-                TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
               resolve(true);
             })
             .catch(err => {
@@ -445,7 +439,7 @@ export class ResourceService {
    * @param {Object} body
    * @returns {Observable<{}>}
    */
-  updateCohort(id: string, body: object): Observable<{}> {
+  editCohort(id: string, body: object): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.updateQuery(id, body);
@@ -530,8 +524,11 @@ export class ResourceService {
         return this.transmartResourceService
           .getCrossTable(
             crossTable.constraint,
-            crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints))).pipe(
+            crossTable.rowHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+            crossTable.columnHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
+          .pipe(
             map((tmCrossTable: TransmartCrossTable) => {
               return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
             }));
@@ -557,22 +554,6 @@ export class ResourceService {
 
   set exclusionCounts(value: CountItem) {
     this._exclusionCounts = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
-  }
-
-  get selectedConceptCountMap(): Map<string, CountItem> {
-    return this._selectedConceptCountMap;
-  }
-
-  set selectedConceptCountMap(value: Map<string, CountItem>) {
-    this._selectedConceptCountMap = value;
   }
 
   get endpointMode(): EndpointMode {
