@@ -81,7 +81,7 @@ export class GbConstraintComponent implements OnInit {
 
   update() {
     if (this.cohortService.instantCohortCountsUpdate) {
-      this.cohortService.update();
+      this.cohortService.updateCurrent();
     } else {
       this.cohortService.isDirty = true;
     }

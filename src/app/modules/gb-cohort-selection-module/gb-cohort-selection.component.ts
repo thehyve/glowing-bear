@@ -92,7 +92,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get isUpdating(): boolean {
-    return this.cohortService.isUpdating;
+    return this.cohortService.isUpdatingCurrent;
   }
 
   get isDirty(): boolean {
@@ -121,7 +121,6 @@ export class GbCohortSelectionComponent implements OnInit {
 
   update(event) {
     event.stopPropagation();
-    this.cohortService.update();
+    this.cohortService.updateCurrent();
   }
-
 }

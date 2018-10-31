@@ -247,7 +247,6 @@ describe('TreeNodeService', () => {
     expect(node['constraint']['valueType']).toEqual('type');
     expect(constraintService.concepts.length).toBe(1);
     expect(constraintService.conceptConstraints.length).toBe(1);
-    expect(constraintService.conceptLabels.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(1);
 
     node.type = 'NUMERIC';
@@ -266,7 +265,6 @@ describe('TreeNodeService', () => {
     treeNodeService.processTreeNode(node, constraintService);
     expect(node['icon']).toBeDefined();
 
-    constraintService.conceptLabels = ['label'];
     constraintService.concepts.length = 0;
     constraintService.conceptConstraints.length = 0;
     constraintService.allConstraints.length = 0;
@@ -277,7 +275,6 @@ describe('TreeNodeService', () => {
     expect(node.constraint).not.toBeDefined();
     expect(constraintService.concepts.length).toBe(0);
     expect(constraintService.conceptConstraints.length).toBe(0);
-    expect(constraintService.conceptLabels.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(0);
 
     node['studyId'] = 'study2';
@@ -290,7 +287,6 @@ describe('TreeNodeService', () => {
     expect(node.constraint).not.toBeDefined();
     expect(constraintService.concepts.length).toBe(0);
     expect(constraintService.conceptConstraints.length).toBe(0);
-    expect(constraintService.conceptLabels.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(0);
     expect(node['label']).not.toContain('ⓘ');
 

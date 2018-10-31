@@ -32,7 +32,6 @@ export class GbVariablesComponent implements OnInit {
         this.categorizedVariables.get(variable.type).push(variable);
       }
     });
-    console.log('categorized variables: ', this.categorizedVariables);
   }
 
   get availableVariableTypes(): ConceptType[] {
