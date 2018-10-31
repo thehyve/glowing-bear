@@ -152,7 +152,8 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
         field: {
           pui: encPath,
           dataType: 'ENC_CONCEPT'
-        }
+        },
+        logicalOperator: 'OR'
       }
     });
   }
