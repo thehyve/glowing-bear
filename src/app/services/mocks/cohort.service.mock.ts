@@ -15,6 +15,7 @@ export class CohortServiceMock {
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
   counts: CountItem;
+  allCounts: CountItem;
 
 
   constructor() {
@@ -22,13 +23,14 @@ export class CohortServiceMock {
   }
 
   initializeCounts() {
+    this.allCounts = new CountItem(0, 0);
     this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
     this.counts = new CountItem(0, 0);
   }
 
-  public update(initialUpdate?: boolean): Promise<any> {
+  public updateCurrent(initialUpdate?: boolean): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });
@@ -64,7 +66,7 @@ export class CohortServiceMock {
   deleteCohort(target: Cohort) {
   }
 
-  updateCohort(target: Cohort, obj: object) {
+  editCohort(target: Cohort, obj: object) {
   }
 
 }

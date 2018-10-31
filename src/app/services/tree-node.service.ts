@@ -37,6 +37,9 @@ export class TreeNodeService {
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
 
+  // This field holds the processed concept codes during tree loading, not used anywhere else
+  private processedConceptCodes: string[] = [];
+
   public selectedTreeNode: TreeNode = null;
 
   constructor(private appConfig: AppConfig,
@@ -74,7 +77,6 @@ export class TreeNodeService {
   loadTreeNodes(): Promise<any> {
     return new Promise((resolve, reject) => {
       let constraintService: ConstraintService = this.injector.get(ConstraintService);
-      constraintService.conceptLabels = [];
       // Retrieve all tree nodes and extract the concepts iteratively
       this.resourceService.getTreeNodes('\\', 2, false, true)
         .subscribe(
@@ -175,9 +177,10 @@ export class TreeNodeService {
     // Extract concept
     if (node['visualAttributes'].includes('LEAF')) {
       let concept = this.getConceptFromTreeNode(node);
-      if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
+      let code = concept.code;
+      if (typeof code === 'string' && this.processedConceptCodes.indexOf(code) === -1) {
         constraintService.concepts.push(concept);
-        constraintService.conceptLabels.push(concept.label);
+        this.processedConceptCodes.push(code);
         let constraint = new ConceptConstraint();
         constraint.concept = concept;
         constraintService.conceptConstraints.push(constraint);

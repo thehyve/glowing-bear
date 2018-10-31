@@ -202,3 +202,15 @@ md2-accordion-header .ui-button-secondary:hover {
   display: flow-root;
   padding-bottom: 0.1em;
 }
+
+.counts-info {
+  font-weight: bold;
+  font-size: small;
+  color: grey;
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+.counts-info hr {
+  background-color: var(--gb-clinical-green-light);
+}
