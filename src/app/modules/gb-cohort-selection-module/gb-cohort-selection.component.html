@@ -1,0 +1,62 @@
+<div>
+  <!-- top panel -->
+  <div class="container form-inline top-panel">
+    <input id="cohortName" type="text"
+           class="form-control save-input"
+           placeholder="Specify cohort name"
+           (drop)="preventNodeDrop($event)"
+           [(ngModel)]="cohortName">
+    <button class="btn btn-outline-primary btn-sm save-btn"
+            (click)="saveCohort()"
+            type="button">
+      <span *ngIf="isSavingCohortCompleted">Save cohort</span>
+      <span *ngIf="!isSavingCohortCompleted">Saving...</span>
+    </button>
+
+    <button type="button"
+            (click)="update($event)"
+            class="btn btn-outline-primary btn-sm update-btn
+                      {{isDirty? 'update-btn-dirty' : ''}}">
+      <span *ngIf="isUpdating">Updating cohort...</span>
+      <span *ngIf="!isUpdating">Update cohort</span>
+    </button>
+
+  </div>
+
+
+  <!-- cohort query composer -->
+  <div>
+    <!-- Inclusion criteria -->
+    <div #inclusionCriteriaBox class="criteria-box">
+
+      <div class="subject-count-box">
+        <span><b>Inclusion</b> criteria: </span>
+        <span>{{inclusionSubjectCount}} subjects included.</span>
+      </div>
+      <gb-constraint #rootInclusionConstraintComponent
+                     [constraint]="rootInclusionConstraint"
+                     [isRoot]="true"></gb-constraint>
+    </div>
+
+    <!-- Exclusion criteria -->
+    <div #exclusionCriteriaBox class="criteria-box">
+      <div class="subject-count-box">
+        <span><b>Exclusion</b> criteria: </span>
+        <span>{{exclusionSubjectCount}} subjects excluded.</span>
+      </div>
+      <gb-constraint #rootExclusionConstraintComponent
+                     [constraint]="rootExclusionConstraint"
+                     [isRoot]="true"></gb-constraint>
+    </div>
+
+
+    <!-- Intersection calculation -->
+    <div class="subject-count-box">
+      <span><b>Total: </b></span>
+      <span>{{subjectCount}} subjects match your selection.</span>
+    </div>
+
+  </div>
+
+
+</div>

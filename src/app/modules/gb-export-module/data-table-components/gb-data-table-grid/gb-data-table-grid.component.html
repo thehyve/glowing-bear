@@ -1,0 +1,45 @@
+<div class="grid-container">
+  <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
+    <!-- header using individual cell headers -->
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th *ngFor="let col of columns" class="table-header" pResizableColumn
+            style="color: transparent">
+          <span>
+            {{col.header}}
+          </span>
+        </th>
+      </tr>
+    </ng-template>
+
+    <!-- table body -->
+    <ng-template pTemplate="body" let-row let-columns="columns">
+      <tr>
+        <td *ngFor="let col of columns" class="ui-resizable-column">
+          <span *ngIf="!row.metadata[col.field]; else withTooltip">
+            {{row.data[col.field]}}
+          </span>
+          <ng-template #withTooltip>
+            <span pTooltip="{{row.metadataText[col.field]}}"
+                  appendTo="body" style="position: relative">
+              {{row.data[col.field]}}
+            </span>
+          </ng-template>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- pagination buttons -->
+  <div class="pagination-container">
+    <button type="button" class="btn-outline-secondary" (click)="previousPage()">
+      previous <i class="fa fa-angle-left"></i>
+    </button>
+
+    {{currentPage}}
+
+    <button type="button" class="btn-outline-secondary" (click)="nextPage()">
+      <i class="fa fa-angle-right"></i> next
+    </button>
+  </div>
+</div>

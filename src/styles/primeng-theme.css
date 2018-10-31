@@ -142,7 +142,7 @@ body .ui-togglebutton:not(.ui-state-disabled):not(.ui-state-active):hover {
   background-color: var(--gb-clinical-green);
 }
 body .ui-togglebutton:not(.ui-state-disabled).ui-state-active {
-  background-color: #025aa5;
+  background-color: var(--gb-clinical-green);
 }
 body .ui-chips .ui-chips-token .ui-chips-token-label {
   padding: 0.125em;
@@ -580,10 +580,10 @@ body .ui-slider .ui-slider-range {
   background: #43a7fd;
 }
 body .ui-buttonset.ui-selectbutton .ui-button:first-child {
-  border-right: none;
+  /*border-right: none;*/
 }
 body .ui-buttonset.ui-selectbutton .ui-button:last-child {
-  border-left: none;
+  /*border-left: none;*/
 }
 body .ui-buttonset .ui-button {
   background-color: #e6e6e6;
@@ -894,7 +894,7 @@ body .ui-accordion .ui-accordion-header.ui-tabview-outline.ui-state-active {
   background-color: #2c877c;
 }
 body .ui-accordion .ui-accordion-content {
-  padding: 1.25em;
+  padding: 0.75em !important;
 }
 body .ui-tabview {
   padding: 0;

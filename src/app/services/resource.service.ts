@@ -15,7 +15,7 @@ import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
@@ -35,7 +35,9 @@ import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-vi
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ResourceService {
 
   private _endpointMode: EndpointMode;
@@ -400,12 +402,12 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query calls --------------------------------------
+  // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Query[]> {
+  getCohorts(): Observable<Cohort[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getQueries().pipe(
@@ -421,13 +423,13 @@ export class ResourceService {
 
   /**
    * Save a new query.
-   * @param {Query} query
-   * @returns {Observable<Query>}
+   * @param {Cohort} query
+   * @returns {Observable<Cohort>}
    */
-  saveQuery(query: Query): Observable<Query> {
+  saveCohort(cohort: Cohort): Observable<Cohort> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
+        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(cohort);
         return this.transmartResourceService.saveQuery(transmartQuery).pipe(
           map((savedTransmartQuery: TransmartQuery) => {
             return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
@@ -440,15 +442,15 @@ export class ResourceService {
   }
 
   /**
-   * Modify an existing query.
-   * @param {string} queryId
-   * @param {Object} queryBody
+   * Modify an existing cohort.
+   * @param {string} id
+   * @param {Object} body
    * @returns {Observable<{}>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+  updateCohort(id: string, body: object): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.updateQuery(queryId, queryBody);
+        return this.transmartResourceService.updateQuery(id, body);
       }
       default: {
         return this.handleEndpointModeError();
@@ -457,14 +459,14 @@ export class ResourceService {
   }
 
   /**
-   * Delete an existing query.
-   * @param {string} queryId
+   * Delete an existing cohort.
+   * @param {string} id
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.deleteQuery(queryId);
+        return this.transmartResourceService.deleteQuery(id);
       }
       default: {
         return this.handleEndpointModeError();
@@ -484,11 +486,11 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query differences --------------------------------------
-  diffQuery(queryId: string): Observable<object[]> {
+  // -------------------------------------- cohort differences --------------------------------------
+  diffCohort(id: string): Observable<object[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.diffQuery(queryId);
+        return this.transmartResourceService.diffQuery(id);
       }
       default: {
         return this.handleEndpointModeError();

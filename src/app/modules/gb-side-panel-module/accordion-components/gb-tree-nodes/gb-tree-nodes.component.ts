@@ -10,9 +10,7 @@ import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecke
 import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
-import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {QueryService} from '../../../../services/query.service';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -56,7 +54,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
-              private queryService: QueryService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
@@ -115,11 +112,15 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       let treeNodeElmLabel = elm.querySelector('li.ui-treenode .ui-treenode-label');
       let handleDragstart = (function (event) {
         event.stopPropagation();
-        dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
       let showInfo = (function (event: MouseEvent) {
+        this.updateMetadataContent(metadata);
+        this.treeNodeMetadataPanel.show(event);
+      }).bind(this);
+
+      let showInfo1 = ((event: MouseEvent) => {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
@@ -204,8 +205,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (treeNodes) {
       // if there is a filter word
       if (filterWord.length > 0) {
-        for (let node of treeNodes) {
-          node['expanded'] = false;
+        treeNodes.forEach((node: TreeNode) => {
+          let expanded = false;
           node['styleClass'] = undefined;
           let fieldString = node[field].toLowerCase();
           if (fieldString.includes(filterWord)) { // if there is a hit
@@ -225,12 +226,18 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
             if (subResult.hasMatching) {
               result.hasMatching = true;
               if (this.numExpandedNodes < this.maxNumExpandedNodes) {
-                node['expanded'] = true;
+                expanded = true;
                 this.numExpandedNodes++;
               }
             }
           }
-        }
+          /*
+           * for some funny reason, typescript considers false and true as their own types
+           * thus directly assigning node['expanded'] with true or false values results in conflict
+           */
+          node['expanded'] = expanded;
+        });
+
       } else { // if the filter word is empty
         for (let node of treeNodes) {
           node['expanded'] = false;
@@ -306,7 +313,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   }
 
   get isLoading(): boolean {
-    return !this.treeNodeService.isTreeNodeLoadingCompleted;
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
 }

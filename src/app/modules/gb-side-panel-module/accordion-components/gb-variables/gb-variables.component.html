@@ -1,0 +1,19 @@
+<div>
+  <mat-accordion [multi]="true">
+    <mat-expansion-panel *ngFor="let type of availableVariableTypes" expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{type}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div>
+        <div *ngFor="let concept of categorizedVariables.get(type)"
+             [pDraggable]="variablesDragDropScope"
+             class="variable">
+          {{concept.name}}
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

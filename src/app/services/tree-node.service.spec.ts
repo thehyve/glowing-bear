@@ -203,10 +203,10 @@ describe('TreeNodeService', () => {
 
   it('should process a single tree node', () => {
     // construct the maps
-    treeNodeService.conceptCountMap = new Map<string, CountItem>();
-    treeNodeService.conceptCountMap.set('concept1', new CountItem(10, 20));
-    treeNodeService.conceptCountMap.set('concept2', new CountItem(30, 110));
-    treeNodeService.conceptCountMap.set('concept3', new CountItem(70, 90));
+    constraintService.conceptCountMap = new Map<string, CountItem>();
+    constraintService.conceptCountMap.set('concept1', new CountItem(10, 20));
+    constraintService.conceptCountMap.set('concept2', new CountItem(30, 110));
+    constraintService.conceptCountMap.set('concept3', new CountItem(70, 90));
 
     let map1 = new Map<string, CountItem>();
     let item1 = new CountItem(10, 20);
@@ -216,13 +216,13 @@ describe('TreeNodeService', () => {
     let item3 = new CountItem(70, 90);
     map2.set('concept2', item2);
     map2.set('concept3', item3);
-    treeNodeService.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    treeNodeService.studyConceptCountMap.set('study1', map1);
-    treeNodeService.studyConceptCountMap.set('study2', map2);
+    constraintService.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    constraintService.studyConceptCountMap.set('study1', map1);
+    constraintService.studyConceptCountMap.set('study2', map2);
 
-    treeNodeService.studyCountMap = new Map<string, CountItem>();
-    treeNodeService.studyCountMap.set('study1', new CountItem(10, 20));
-    treeNodeService.studyCountMap.set('study2', new CountItem(100, 200));
+    constraintService.studyCountMap = new Map<string, CountItem>();
+    constraintService.studyCountMap.set('study1', new CountItem(10, 20));
+    constraintService.studyCountMap.set('study2', new CountItem(100, 200));
 
     let node = {
       label: 'label',
@@ -386,216 +386,6 @@ describe('TreeNodeService', () => {
     expect(desc.length).toBe(0);
   })
 
-  it('should update projection tree data', () => {
-    let dummyTreeNodes = [{}];
-    let checklist = [
-      'code1'
-    ];
-    let spy1 = spyOn(treeNodeService, 'copyTreeNodes').and.returnValue(dummyTreeNodes);
-    let spy2 = spyOn(treeNodeService, 'updateProjectionTreeDataIterative').and.stub();
-    let spy3 = spyOn(treeNodeService, 'checkProjectionTreeDataIterative').and.stub();
-    treeNodeService.treeNodesCopy = dummyTreeNodes;
-    treeNodeService.updateProjectionTreeData(checklist);
-    expect(spy1).not.toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalled();
-
-    treeNodeService.treeNodesCopy = [];
-    treeNodeService.updateProjectionTreeData(checklist);
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalled();
-  })
-
-  it('should update final tree nodes for summary', () => {
-    let dummy = [{}];
-    let spy = spyOn(treeNodeService, 'copySelectedTreeNodes').and.returnValue(dummy);
-    treeNodeService.updateFinalTreeNodes();
-    expect(treeNodeService.finalTreeNodes).toBe(dummy);
-  })
-
-  it('should copy tree nodes', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
-    node_1.children = [node_1_1];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node.children = [node_1];
-    let result = treeNodeService.copyTreeNodes([node]);
-    expect(result[0].children[0].type).toEqual('node_1_type');
-    expect(result[0].children[0].children[0].type).toEqual('node_1_1_type');
-  })
-
-  it('should copy selected tree nodes', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_1_3: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_2.parent = node_1;
-    node_1_3.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
-    node_1_2['type'] = 'node_1_2_type';
-    node_1_3['type'] = 'node_1_3_type';
-    node_1.children = [node_1_1, node_1_2, node_1_3];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node_1.partialSelected = true;
-    node.children = [node_1];
-    node.partialSelected = true;
-    treeNodeService.selectedProjectionTreeData = [node_1_3];
-    let result = treeNodeService.copySelectedTreeNodes([node]);
-    expect(result[0].children[0].children[0].type).toEqual('node_1_3_type');
-  })
-
-  it('should copy tree nodes upwards', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
-    node_1.children = [node_1_1];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node.children = [node_1];
-    node.type = 'node_type';
-    let result = treeNodeService.copyTreeNodeUpward(node_1);
-    expect(result.type).toEqual('node_1_type');
-    expect(result.children).not.toBeDefined();
-    expect(result.parent.type).toBe('node_type');
-  })
-
-  it('should iteratively check the projection tree data', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_1_3: TreeNode = {};
-    node_1_1['type'] = 'node_1_1_type';
-    node_1_1['fullName'] = 'node_1_1_fullname';
-    node_1_2['type'] = 'node_1_2_type';
-    node_1_2['fullName'] = 'node_1_2_fullname';
-    node_1_3['type'] = 'node_1_3_type';
-    node_1_3['fullName'] = 'node_1_3_fullname';
-    node_1.children = [node_1_1, node_1_2, node_1_3];
-    node_1.type = 'node_1_type';
-    node_1['fullName'] = 'node_1_fullname';
-    node.children = [node_1];
-    treeNodeService.selectedProjectionTreeData = [];
-    treeNodeService.checkProjectionTreeDataIterative([node], ['node_1_fullname', 'node_1_3_fullname']);
-    expect(treeNodeService.selectedProjectionTreeData.length).toBe(2);
-    expect(treeNodeService.selectedProjectionTreeData.includes(node_1)).toBe(true);
-    expect(treeNodeService.selectedProjectionTreeData.includes(node_1_3)).toBe(true);
-  })
-
-  it('should check all projection tree data', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_1_3: TreeNode = {};
-    node_1_1['fullName'] = 'node_1_1_fullname';
-    node_1_2['fullName'] = 'node_1_2_fullname';
-    node_1_3['fullName'] = 'node_1_3_fullname';
-    node_1.children = [node_1_1, node_1_2, node_1_3];
-    node_1['fullName'] = 'node_1_fullname';
-    node.children = [node_1];
-    treeNodeService.selectedProjectionTreeData = [];
-    treeNodeService.checkAllProjectionTreeDataIterative([node]);
-    expect(treeNodeService.selectedProjectionTreeData.length).toBe(5);
-  })
-
-  it('should get parent tree node paths', () => {
-    let path = '\\a\\test\\path\\';
-    let result = treeNodeService.getParentTreeNodePaths(path);
-    expect(result.length).toBe(2);
-    expect(result[0]).toEqual('\\a\\');
-    expect(result[1]).toEqual('\\a\\test\\');
-
-    path = '\\a\\';
-    result = treeNodeService.getParentTreeNodePaths(path);
-    expect(result.length).toBe(0);
-  })
-
-  it('should expand or collapse tree nodes iteratively', () => {
-    let node_1: TreeNode = {};
-    let node: TreeNode = {};
-    node.children = [node_1];
-    treeNodeService.expandProjectionTreeDataIterative([node], true);
-    expect(node['expanded']).toBe(true);
-    window.setTimeout(() => {
-      expect(node_1['expanded']).toBe(true);
-    }, 110)
-    treeNodeService.expandProjectionTreeDataIterative([node], false);
-    expect(node['expanded']).toBe(false);
-    expect(node_1['expanded']).toBe(false);
-  })
-
-  it('should get top tree nodes', () => {
-    let nodeABC: TreeNode = {};
-    nodeABC['fullName'] = 'A\\B\\C';
-    let nodeAB: TreeNode = {};
-    nodeAB['fullName'] = 'A\\B';
-    let nodeADE: TreeNode = {};
-    nodeADE['fullName'] = 'A\\D\\E';
-    let nodeADEF: TreeNode = {};
-    nodeADEF['fullName'] = 'A\\D\\E\\F';
-    let nodeAE: TreeNode = {};
-    nodeAE['fullName'] = 'A\\E';
-    let nodes = [nodeABC, nodeAB, nodeADE, nodeADEF, nodeAE];
-    let result = treeNodeService.getTopTreeNodes(nodes);
-    expect(result.length).toBe(3);
-    expect(result.includes(nodeAB)).toBe(true);
-    expect(result.includes(nodeADE)).toBe(true);
-    expect(result.includes(nodeAE)).toBe(true);
-  })
-
-  it('should find tree nodes by paths', () => {
-    let nodeABC: TreeNode = {};
-    nodeABC['fullName'] = 'A\\B\\C';
-    let nodeAB: TreeNode = {};
-    nodeAB['fullName'] = 'A\\B';
-    let nodeADE: TreeNode = {};
-    nodeADE['fullName'] = 'A\\D\\E';
-    let nodeADEF: TreeNode = {};
-    nodeADEF['fullName'] = 'A\\D\\E\\F';
-    nodeADE.children = [nodeADEF];
-    let nodeAE: TreeNode = {};
-    nodeAE['fullName'] = 'A\\E';
-    let nodes = [nodeABC, nodeAB, nodeADE, nodeADEF, nodeAE];
-    let paths = ['A\\B', 'A\\D\\E'];
-    let found = [];
-    treeNodeService.findTreeNodesByPaths(nodes, paths, found)
-    expect(found.length).toBe(2);
-    expect(found.includes(nodeAB)).toBe(true);
-    expect(found.includes(nodeADE)).toBe(true);
-  })
-
-  it('should find tree node ancestors', () => {
-    let nodeABC: TreeNode = {};
-    nodeABC['fullName'] = '\\A\\B\\C\\';
-    let nodeAB: TreeNode = {};
-    nodeAB['fullName'] = '\\A\\B\\';
-    nodeAB.children = [nodeABC];
-    let nodeADE: TreeNode = {};
-    nodeADE['fullName'] = '\\A\\D\\E\\';
-    let nodeADEF: TreeNode = {};
-    nodeADEF['fullName'] = '\\A\\D\\E\\F\\';
-    nodeADE.children = [nodeADEF];
-    let nodeAD: TreeNode = {};
-    nodeAD['fullName'] = '\\A\\D\\';
-    nodeAD.children = [nodeADE];
-    let nodeA: TreeNode = {};
-    nodeA['fullName'] = '\\A\\';
-    nodeA.children = [nodeAB, nodeAD];
-    treeNodeService.treeNodes = [nodeA];
-    let found = treeNodeService.findTreeNodeAncestors(nodeABC);
-    expect(found.length).toBe(2);
-  })
 
   it('should convert tree nodes to paths', () => {
     let nodeABC: TreeNode = {};
@@ -661,49 +451,5 @@ describe('TreeNodeService', () => {
     node['visualAttributes'] = ['bar', 'foo', 'LEAF'];
     let is = treeNodeService.isTreeNodeLeaf(node);
     expect(is).toBe(true);
-  })
-
-  it('should update projection tree data iteratively', () => {
-    let studyId = 'an-id';
-    let conceptCode = 'a-code';
-    let studyId1 = 'an-id-1';
-    let conceptCode1 = 'a-code-1';
-    let conceptCode2 = 'a-code-2';
-    let conceptMap = new Map<string, CountItem>();
-    conceptMap.set(conceptCode, new CountItem(10, 20));
-    treeNodeService.selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    treeNodeService.selectedStudyConceptCountMap.set(studyId, conceptMap);
-    let conceptMap1 = new Map<string, CountItem>();
-    conceptMap1.set(conceptCode1, new CountItem(100, 200));
-    treeNodeService.selectedStudyConceptCountMap.set(studyId1, conceptMap1);
-    treeNodeService.selectedConceptCountMap = new Map<string, CountItem>();
-    treeNodeService.selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
-    let node1: TreeNode = {};
-    let node2: TreeNode = {};
-    let node2a: TreeNode = {};
-    let node3: TreeNode = {};
-    let node4: TreeNode = {};
-    let node5: TreeNode = {};
-    let node6: TreeNode = {};
-    node1['visualAttributes'] = ['bar', 'foo', 'LEAF'];
-    node2['children'] = [node2a];
-    node4['visualAttributes'] = ['LEAF'];
-    node4['studyId'] = studyId;
-    node4['conceptCode'] = conceptCode;
-    node4['name'] = 'a-name';
-    node2a['visualAttributes'] = ['LEAF'];
-    node2a['studyId'] = studyId1;
-    node2a['conceptCode'] = conceptCode1;
-    node5['children'] = [{}];
-    node6['name'] = 'node6';
-    node6['studyId'] = undefined;
-    node6['conceptCode'] = conceptCode2;
-    node6['visualAttributes'] = ['LEAF'];
-    let nodes = [node1, node2, node3, node4, node5, node6];
-    let resultNodes = treeNodeService.updateProjectionTreeDataIterative(nodes);
-    expect(node4['expanded']).toBe(false);
-    expect(resultNodes.length).toEqual(3);
-    expect(resultNodes[0]['label']).toBeUndefined();
-    expect(resultNodes[1]['label']).toBeDefined();
   })
 });

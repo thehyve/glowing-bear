@@ -13,12 +13,12 @@ import {Routes, RouterModule} from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/data-selection',
+    redirectTo: '/cohort-selection',
     pathMatch: 'full'
   },
   {
-    path: 'data-selection',
-    loadChildren: '../gb-data-selection-module/gb-data-selection.module#GbDataSelectionModule'
+    path: 'cohort-selection',
+    loadChildren: '../gb-cohort-selection-module/gb-cohort-selection.module#GbCohortSelectionModule'
   },
   {
     path: 'analysis',

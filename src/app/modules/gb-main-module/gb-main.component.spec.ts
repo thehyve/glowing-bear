@@ -11,8 +11,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {APP_BASE_HREF} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {GbMainComponent} from './gb-main.component';
@@ -23,7 +23,7 @@ import {GrowlModule} from 'primeng/growl';
 import {GbAnalysisModule} from '../gb-analysis-module/gb-analysis.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
-import {GbDataSelectionModule} from '../gb-data-selection-module/gb-data-selection.module';
+import {GbCohortSelectionModule} from '../gb-cohort-selection-module/gb-cohort-selection.module';
 import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {DataTableService} from '../../services/data-table.service';
 import {ExportService} from '../../services/export.service';
@@ -66,7 +66,7 @@ describe('GbMainComponent', () => {
         GrowlModule,
         GbNavBarModule,
         GbSidePanelModule,
-        GbDataSelectionModule,
+        GbCohortSelectionModule,
         GbAnalysisModule,
         routing
       ],
@@ -108,8 +108,8 @@ describe('GbMainComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: DataTableService,

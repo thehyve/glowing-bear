@@ -16,7 +16,6 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
@@ -27,13 +26,20 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
 import {StudyService} from './study.service';
+import {CountItem} from '../models/aggregate-models/count-item';
+import {HttpErrorResponse} from '@angular/common/http';
+import {ErrorHelper} from '../utilities/error-helper';
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {Subject} from 'rxjs';
 
 /**
  * This service concerns with
  * (1) translating string or JSON objects into Constraint class instances
  * (2) clear or restore constraints
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ConstraintService {
 
   private _rootInclusionConstraint: CombinationConstraint;
@@ -57,6 +63,68 @@ export class ConstraintService {
    */
   private _maxNumSearchResults = 100;
 
+  /**
+   * The map that holds the conceptCode -> count item relations
+   *  e.g.
+   * "EHR:DEM:AGE": {
+   *   "observationCount": 3,
+   *   "subjectCount": 3
+   *  },
+   * "EHR:VSIGN:HR": {
+   *  "observationCount": 9,
+   *  "subjectCount": 3
+   * }
+   */
+  private _conceptCountMap: Map<string, CountItem>;
+  /**
+   * The map that holds the studyId -> count item relations
+   * e.g.
+   * "MIX_HD": {
+   *   "observationCount": 12,
+   *   "subjectCount": 3
+   * }
+   */
+  private _studyCountMap: Map<string, CountItem>;
+  /**
+   * The map that holds the studyId -> conceptCode -> count item relations
+   * e.g.
+   * "SHARED_CONCEPTS_STUDY_A": {
+   *    "DEMO:POB": {
+   *        "observationCount": 2,
+   *        "subjectCount": 2
+   *    },
+   *    "VSIGN:HR": {
+   *        "observationCount": 3,
+   *        "subjectCount": 3
+   *    }
+   * }
+   */
+  private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
+
+  // the subset of _studyConceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _conceptCountMap that holds the selected maps
+  // based on the constraint in step 1
+  private _selectedConceptCountMap: Map<string, CountItem>;
+
+  public conceptCountMapCompleted = false;
+  public studyCountMapCompleted = false;
+  public studyConceptCountMapCompleted = false;
+
+  /*
+  * The list of concepts that correspond to
+  * the leaf/concept tree nodes that are narrowed down
+  * when user defines a cohort or a combination of cohorts.
+  */
+  private _variables: Concept[] = [];
+  // The async alerter that tells if variables are updated
+  private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  // The scope identifier used by primeng for drag and drop
+  // [pDraggable] in gb-variables.component
+  // [pDroppable] in gb-fractalis-control.component
+  public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
+
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
     if (constraint.parentConstraint !== null) {
@@ -67,7 +135,7 @@ export class ConstraintService {
   }
 
   public constraint_1_2(): Constraint {
-    const c1 = this.constraint_1();
+    const c1 = this.cohortConstraint();
     const c2 = this.constraint_2();
     let combo = new CombinationConstraint();
     combo.addChild(c1);
@@ -97,8 +165,14 @@ export class ConstraintService {
     this.loadStudiesConstraints();
     // create the pedigree-related constraints
     this.loadPedigrees();
-    // construct concepts while loading the tree nodes
-    this.treeNodeService.load();
+    // construct concepts from loading the tree nodes
+    this.loadCountMaps()
+      .then(() => {
+        this.treeNodeService.load();
+      })
+      .catch(err => {
+        console.error(err);
+      });
   }
 
   private loadEmptyConstraints() {
@@ -148,21 +222,21 @@ export class ConstraintService {
   }
 
   /**
-   * Returns a list of all constraints that match the query string.
+   * Returns a list of all constraints that match the search word.
    * The constraints should be copied when editing them.
-   * @param query
+   * @param searchWord
    * @returns {Array}
    */
-  public searchAllConstraints(query: string): Constraint[] {
-    query = query.toLowerCase();
+  public searchAllConstraints(searchWord: string): Constraint[] {
+    searchWord = searchWord.toLowerCase();
     let results = [];
-    if (query === '') {
+    if (searchWord === '') {
       results = [].concat(this.allConstraints.slice(0, this.maxNumSearchResults));
-    } else if (query && query.length > 0) {
+    } else if (searchWord && searchWord.length > 0) {
       let count = 0;
       this.allConstraints.forEach((constraint: Constraint) => {
         let text = constraint.textRepresentation.toLowerCase();
-        if (text.indexOf(query) > -1) {
+        if (text.indexOf(searchWord) > -1) {
           results.push(constraint);
           count++;
           if (count >= this.maxNumSearchResults) {
@@ -175,14 +249,14 @@ export class ConstraintService {
   }
 
   /*
-   * ------------ constraint generation in the 1st step ------------
+   * ------------------------------------------------------------------------ constraint generation
    */
   /**
    * In the 1st step,
    * Generate the constraint for retrieving the patients with only the inclusion criteria
    * @returns {Constraint}
    */
-  public generateInclusionConstraint(): Constraint {
+  public inclusionConstraint(): Constraint {
     let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
     return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
       inclusionConstraint : new TrueConstraint();
@@ -198,10 +272,10 @@ export class ConstraintService {
    * but also in the inclusion set
    * @returns {CombinationConstraint}
    */
-  public generateExclusionConstraint(): Constraint {
+  public exclusionConstraint(): Constraint {
     if (this.hasExclusionConstraint()) {
       // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.generateInclusionConstraint();
+      let inclusionConstraint = this.inclusionConstraint();
       let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
 
       let combination = new CombinationConstraint();
@@ -213,16 +287,11 @@ export class ConstraintService {
     }
   }
 
-  public constraint_1(): Constraint {
-    return this.generateSelectionConstraint();
-  }
-
   /**
-   * In the 1st step,
    * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
    * @returns {Constraint}
    */
-  private generateSelectionConstraint(): Constraint {
+  public cohortConstraint(): Constraint {
     let resultConstraint: Constraint;
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
@@ -260,12 +329,12 @@ export class ConstraintService {
   /**
    * Clear the patient constraints
    */
-  public clearConstraint_1() {
+  public clearCohortConstraint() {
     this.rootInclusionConstraint.children.length = 0;
     this.rootExclusionConstraint.children.length = 0;
   }
 
-  public restoreConstraint_1(constraint: Constraint) {
+  public restoreCohortConstraint(constraint: Constraint) {
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
@@ -276,7 +345,7 @@ export class ConstraintService {
         this.rootExclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreConstraint_1(remainingConstraint);
+        this.restoreCohortConstraint(remainingConstraint);
       } else {
         for (let child of children) {
           this.rootInclusionConstraint.addChild(child);
@@ -290,97 +359,160 @@ export class ConstraintService {
     }
   }
 
-  /*
-   * ------------ constraint generation in the 2nd step ------------
-   */
   public constraint_2() {
-    return this.generateProjectionConstraint();
+    // return this.generateProjectionConstraint();
+    // TODO: generate constraint based on the variables selected in the Variables panel
+    return null;
   }
 
-  public clearConstraint_2() {
-    this.treeNodeService.selectedProjectionTreeData.length = 0;
-  }
-
-  /**
-   * Get the constraint of selected concept variables in the 2nd step
-   * @returns {any}
-   */
-  private generateProjectionConstraint(): Constraint {
-    let constraint = null;
-    let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
-    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
-      let leaves = [];
-      constraint = new CombinationConstraint();
-      constraint.combinationState = CombinationState.Or;
-
-      for (let selectedTreeNode of selectedTreeNodes) {
-        let visualAttributes = selectedTreeNode['visualAttributes'];
-        if (visualAttributes && visualAttributes.includes('LEAF')) {
-          leaves.push(selectedTreeNode);
-        }
-      }
-      for (let leaf of leaves) {
-        const leafConstraint = TransmartConstraintMapper.generateConstraintFromObject(leaf['constraint']);
-        if (leafConstraint) {
-          constraint.addChild(leafConstraint);
-        } else {
-          console.error('Failed to create constrain from: ', leaf);
-        }
-      }
-    } else {
-      constraint = new NegationConstraint(new TrueConstraint());
-    }
-
-    return constraint;
-  }
 
   // generate the constraint instance based on given node (e.g. tree node)
-  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
     let constraint: Constraint = null;
-    // if the dropped node is a tree node
-    if (dropMode === DropMode.TreeNode) {
-      let treeNode = selectedNode;
-      let treeNodeType = treeNode['type'];
-      if (treeNodeType === 'STUDY') {
-        let study: Study = new Study();
-        study.id = treeNode['constraint']['studyId'];
-        constraint = new StudyConstraint();
-        (<StudyConstraint>constraint).studies.push(study);
-      } else if (treeNodeType === 'NUMERIC' ||
-        treeNodeType === 'CATEGORICAL' ||
-        treeNodeType === 'CATEGORICAL_OPTION' ||
-        treeNodeType === 'DATE' ||
-        treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT') {
-        if (treeNode['constraint']) {
-          constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
-        } else {
-          let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-          constraint = new ConceptConstraint();
-          (<ConceptConstraint>constraint).concept = concept;
+    let treeNode = selectedNode;
+    let treeNodeType = treeNode['type'];
+    if (treeNodeType === 'STUDY') {
+      let study: Study = new Study();
+      study.id = treeNode['constraint']['studyId'];
+      constraint = new StudyConstraint();
+      (<StudyConstraint>constraint).studies.push(study);
+    } else if (treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL' ||
+      treeNodeType === 'CATEGORICAL_OPTION' ||
+      treeNodeType === 'DATE' ||
+      treeNodeType === 'HIGH_DIMENSIONAL' ||
+      treeNodeType === 'TEXT') {
+      if (treeNode['constraint']) {
+        constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
+      } else {
+        let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
+        constraint = new ConceptConstraint();
+        (<ConceptConstraint>constraint).concept = concept;
+      }
+    } else if (treeNodeType === 'UNKNOWN') {
+      let descendants = [];
+      this.treeNodeService
+        .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
+          ['UNKNOWN'], descendants);
+      if (descendants.length < 6) {
+        constraint = new CombinationConstraint();
+        (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
+        for (let descendant of descendants) {
+          let dConstraint = this.generateConstraintFromTreeNode(descendant);
+          if (dConstraint) {
+            (<CombinationConstraint>constraint).addChild(dConstraint);
+          }
         }
-      } else if (treeNodeType === 'UNKNOWN') {
-        let descendants = [];
-        this.treeNodeService
-          .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
-            ['UNKNOWN'], descendants);
-        if (descendants.length < 6) {
-          constraint = new CombinationConstraint();
-          (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
-          for (let descendant of descendants) {
-            let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
-            if (dConstraint) {
-              (<CombinationConstraint>constraint).addChild(dConstraint);
-            }
-          }
-          if ((<CombinationConstraint>constraint).children.length === 0) {
-            constraint = null;
-          }
+        if ((<CombinationConstraint>constraint).children.length === 0) {
+          constraint = null;
         }
       }
     }
 
     return constraint;
+  }
+
+  /*
+   * ------------------------------------------------------------------------- countMap-related methods
+   */
+  loadCountMaps(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let promise1 = this.updateConceptCountMap();
+      let promise2 = this.updateStudyCountMap();
+      let promise3 = this.updateStudyConceptCountMap();
+      Promise.all([promise1, promise2, promise3])
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    });
+  }
+
+  updateConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerConcept(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.conceptCountMap = map;
+          this.conceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load concept count map from server.');
+        });
+    });
+  }
+
+  updateStudyCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudy(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.studyCountMap = map;
+          this.studyCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study count map from server.');
+        });
+    });
+  }
+
+  updateStudyConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
+        .subscribe((map: Map<string, Map<string, CountItem>>) => {
+          this.studyConceptCountMap = map;
+          this.studyConceptCountMapCompleted = true;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study-concept count map from server.');
+        });
+    });
+  }
+
+  /*
+   * ------------------------------------------------------------------------- variables-related methods
+   */
+  public updateVariables() {
+    this.variables.length = 0;
+    this.updateVariablesIterative(this.treeNodeService.treeNodes, []);
+    this.variablesUpdated.next([...this.variables]);
+  }
+
+  private updateVariablesIterative(nodes: TreeNode[], existingConceptCodes: string[]) {
+    for (let node of nodes) {
+      if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
+        const code = node['conceptCode'];
+        let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
+        if (conceptMap && conceptMap.size > 0) {
+          node['expanded'] = false;
+          countItem = conceptMap.get(code);
+        } else {
+          countItem = this.selectedConceptCountMap.get(code);
+        }
+
+        if (countItem && !existingConceptCodes.includes(code)) {
+          existingConceptCodes.push(code);
+          let concept = new Concept();
+          concept.name = node['name'];
+          concept.code = code;
+          concept.type = <ConceptType>node['type'];
+          this.variables.push(concept);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
+        this.updateVariablesIterative(node['children'], existingConceptCodes);
+      }
+    }
+  }
+
+  /*
+   * ------------------------------------------------------------------------- getters and setters
+   */
+  get isTreeNodesLoading(): boolean {
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
@@ -453,5 +585,61 @@ export class ConstraintService {
 
   set maxNumSearchResults(value: number) {
     this._maxNumSearchResults = value;
+  }
+
+  get variables(): Concept[] {
+    return this._variables;
+  }
+
+  set variables(value: Concept[]) {
+    this._variables = value;
+  }
+
+  get conceptCountMap(): Map<string, CountItem> {
+    return this._conceptCountMap;
+  }
+
+  set conceptCountMap(value: Map<string, CountItem>) {
+    this._conceptCountMap = value;
+  }
+
+  get studyCountMap(): Map<string, CountItem> {
+    return this._studyCountMap;
+  }
+
+  set studyCountMap(value: Map<string, CountItem>) {
+    this._studyCountMap = value;
+  }
+
+  get studyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._studyConceptCountMap;
+  }
+
+  set studyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._studyConceptCountMap = value;
+  }
+
+  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._selectedStudyConceptCountMap;
+  }
+
+  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedConceptCountMap(): Map<string, CountItem> {
+    return this._selectedConceptCountMap;
+  }
+
+  set selectedConceptCountMap(value: Map<string, CountItem>) {
+    this._selectedConceptCountMap = value;
+  }
+
+  get variablesUpdated(): Subject<Concept[]> {
+    return this._variablesUpdated;
+  }
+
+  set variablesUpdated(value: Subject<Concept[]>) {
+    this._variablesUpdated = value;
   }
 }

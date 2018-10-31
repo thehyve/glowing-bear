@@ -1,0 +1,39 @@
+.table-container {
+  font-size: small;
+  margin-right: 1em;
+  margin-top: 0.5em;
+}
+
+.top-header {
+  border-left: 3px var(--gb-clinical-green-dark) solid;
+  border-right: 3px var(--gb-clinical-green-dark) solid;
+  border-top: transparent;
+  background-color: transparent;
+}
+
+.header {
+  background-color: var(--gb-clinical-green-light-light);
+  font-weight: bold;
+  color: #2d353c;
+}
+
+.description {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bold;
+  color: darkgray;
+}
+
+.info-text {
+  color: white;
+  font-size: medium;
+}
+
+
+:host >>> .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}

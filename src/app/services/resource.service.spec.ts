@@ -18,7 +18,7 @@ import {Concept} from '../models/constraint-models/concept';
 import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {AppConfigMock} from '../config/app.config.mock';
 import {AppConfig} from '../config/app.config';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
@@ -207,16 +207,14 @@ describe('ResourceService', () => {
   });
 
   it('should get queries', () => {
-    resourceService.getQueries()
-      .subscribe((queries: Query[]) => {
-        expect(queries.length).toBe(2);
-        expect(queries[0].subjectQuery.className).toBe('TrueConstraint');
-        expect(queries[0].observationQuery.data.length).toBe(1);
-        expect(queries[1].subjectQuery.className).toBe('CombinationConstraint');
-        expect(queries[1].observationQuery.data.length).toBe(3);
+    resourceService.getCohorts()
+      .subscribe((res: Cohort[]) => {
+        expect(res.length).toBe(2);
+        expect(res[0].constraint.className).toBe('TrueConstraint');
+        expect(res[1].constraint.className).toBe('CombinationConstraint');
       });
     resourceService.endpointMode = null;
-    resourceService.getQueries()
+    resourceService.getCohorts()
       .subscribe(res => {
       }, err => {
         expect(err).toBeDefined();

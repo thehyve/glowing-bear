@@ -2,12 +2,8 @@
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
-A frontend application for clinical data selection and analysis 
+An [Angular](https://github.com/angular/angular)-based frontend application for clinical data selection and analysis 
 based on [TranSMART]. Visit https://glowingbear.app for more information.
-
-This project is based on [Angular 6](https://github.com/angular/angular), 
-[Angular CLI 6](https://github.com/angular/angular-cli) and 
-[Yarn 1.9.4](https://github.com/yarnpkg/yarn/releases)
 
 
 ### How to install
@@ -136,9 +132,7 @@ Supported properties in the `config.*.json` files:
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `show-observation-counts` | `true`    | |
-| `instant-counts-update-1` | `false`   | |
-| `instant-counts-update-2` | `false`   | |
-| `instant-counts-update-3` | `false`   | |
+| `instant-counts-update` | `false`   | |
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `glowingbear-js` | |

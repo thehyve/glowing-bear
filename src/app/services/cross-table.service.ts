@@ -10,7 +10,7 @@ import {ApplicationRef, Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
-import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
+import {GbDraggableCellComponent} from '../modules/gb-analysis-module/cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
@@ -24,7 +24,9 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CrossTableService {
 
   /*
