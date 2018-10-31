@@ -37,14 +37,6 @@ export class ConstraintServiceMock {
     return 1;
   }
 
-  public constraint_1(): Constraint {
-    return this._constraint;
-  }
-
-  public constraint_2(): Constraint {
-    return this._constraint;
-  }
-
   public generateInclusionConstraint(): Constraint {
     return this._constraint;
   }

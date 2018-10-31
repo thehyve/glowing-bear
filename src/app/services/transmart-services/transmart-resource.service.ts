@@ -38,7 +38,9 @@ import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {Study} from '../../models/constraint-models/study';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartResourceService {
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.

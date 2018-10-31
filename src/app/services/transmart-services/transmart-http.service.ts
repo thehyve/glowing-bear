@@ -29,7 +29,9 @@ import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartHttpService {
 
   static sortableDimensions = new Set<string>([
