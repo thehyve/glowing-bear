@@ -141,20 +141,24 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
       return [];
     }
 
-    let whereClauses: WhereClause[] = [];
-    return constraint.variantIds.map((variantId) => {
+    return constraint.variantIds.map((variantId, idx: number) => {
       // let encId = this.medcoService.encryptInteger(variantId);
       let splitPath = constraint.annotation.path.split('/');
       let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${variantId}/`;
 
-      return {
+      let whereClause = {
         predicate: 'CONTAINS',
         field: {
           pui: encPath,
           dataType: 'ENC_CONCEPT'
         },
         logicalOperator: 'OR'
+      };
+
+      if (idx === 0) {
+        delete whereClause.logicalOperator;
       }
+      return whereClause;
     });
   }
 
@@ -253,6 +257,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
    * @returns {WhereClause[]}
    */
   visitCombinationConstraint(constraint: CombinationConstraint): WhereClause[] {
+    // assume that all constraint (not combination) that generate several where clauses will leave first logical operator empty
     if (constraint.children.length === 0) {
       return [];
     } else if (constraint.children.length === 1) {
@@ -264,13 +269,16 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
       for (let childIdx in constraint.children) {
         let childClauses: WhereClause[] = this.visit(constraint.children[childIdx]);
 
-        if (Number(childIdx) > 0 && constraint.children[childIdx].className !== 'CombinationConstraint') {
-          childClauses.forEach((clause) => clause.logicalOperator = logicalOp);
-
-        } else if (constraint.children[childIdx].className === 'CombinationConstraint') {
+        //if (Number(childIdx) > 0 && constraint.children[childIdx].className !== 'CombinationConstraint') {
+        if (Number(childIdx) > 0) {
+          //childClauses.forEach((clause) => clause.logicalOperator = logicalOp);
           childClauses[0].logicalOperator = logicalOp;
 
         }
+        //else if (constraint.children[childIdx].className === 'CombinationConstraint') {
+        //  childClauses[0].logicalOperator = logicalOp;
+
+        //}
         queryObj.push(...childClauses);
       }
       return queryObj;
