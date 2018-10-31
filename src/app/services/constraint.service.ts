@@ -16,7 +16,6 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
@@ -365,47 +364,44 @@ export class ConstraintService {
 
 
   // generate the constraint instance based on given node (e.g. tree node)
-  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
     let constraint: Constraint = null;
-    // if the dropped node is a tree node
-    if (dropMode === DropMode.TreeNode) {
-      let treeNode = selectedNode;
-      let treeNodeType = treeNode['type'];
-      if (treeNodeType === 'STUDY') {
-        let study: Study = new Study();
-        study.id = treeNode['constraint']['studyId'];
-        constraint = new StudyConstraint();
-        (<StudyConstraint>constraint).studies.push(study);
-      } else if (treeNodeType === 'NUMERIC' ||
-        treeNodeType === 'CATEGORICAL' ||
-        treeNodeType === 'CATEGORICAL_OPTION' ||
-        treeNodeType === 'DATE' ||
-        treeNodeType === 'HIGH_DIMENSIONAL' ||
-        treeNodeType === 'TEXT') {
-        if (treeNode['constraint']) {
-          constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
-        } else {
-          let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-          constraint = new ConceptConstraint();
-          (<ConceptConstraint>constraint).concept = concept;
+    let treeNode = selectedNode;
+    let treeNodeType = treeNode['type'];
+    if (treeNodeType === 'STUDY') {
+      let study: Study = new Study();
+      study.id = treeNode['constraint']['studyId'];
+      constraint = new StudyConstraint();
+      (<StudyConstraint>constraint).studies.push(study);
+    } else if (treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL' ||
+      treeNodeType === 'CATEGORICAL_OPTION' ||
+      treeNodeType === 'DATE' ||
+      treeNodeType === 'HIGH_DIMENSIONAL' ||
+      treeNodeType === 'TEXT') {
+      if (treeNode['constraint']) {
+        constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
+      } else {
+        let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
+        constraint = new ConceptConstraint();
+        (<ConceptConstraint>constraint).concept = concept;
+      }
+    } else if (treeNodeType === 'UNKNOWN') {
+      let descendants = [];
+      this.treeNodeService
+        .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
+          ['UNKNOWN'], descendants);
+      if (descendants.length < 6) {
+        constraint = new CombinationConstraint();
+        (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
+        for (let descendant of descendants) {
+          let dConstraint = this.generateConstraintFromTreeNode(descendant);
+          if (dConstraint) {
+            (<CombinationConstraint>constraint).addChild(dConstraint);
+          }
         }
-      } else if (treeNodeType === 'UNKNOWN') {
-        let descendants = [];
-        this.treeNodeService
-          .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
-            ['UNKNOWN'], descendants);
-        if (descendants.length < 6) {
-          constraint = new CombinationConstraint();
-          (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
-          for (let descendant of descendants) {
-            let dConstraint = this.generateConstraintFromTreeNode(descendant, DropMode.TreeNode);
-            if (dConstraint) {
-              (<CombinationConstraint>constraint).addChild(dConstraint);
-            }
-          }
-          if ((<CombinationConstraint>constraint).children.length === 0) {
-            constraint = null;
-          }
+        if ((<CombinationConstraint>constraint).children.length === 0) {
+          constraint = null;
         }
       }
     }
