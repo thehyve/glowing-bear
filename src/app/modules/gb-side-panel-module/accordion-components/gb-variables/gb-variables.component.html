@@ -1,7 +1,8 @@
 <div>
 
   <div *ngIf="isExport" class="checkAllText">
-    <p-checkbox [(ngModel)]="allChecked" binary="true" (onChange)="onCheckAll($event)"></p-checkbox>
+    <p-checkbox [(ngModel)]="allChecked" binary="true"
+                (onChange)="checkAll($event)"></p-checkbox>
     {{checkAllText}}
   </div>
 
@@ -17,7 +18,8 @@
         <div *ngFor="let concept of categorizedVariables.get(type)"
              [pDraggable]="variablesDragDropScope"
              class="variable">
-          <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected" binary="true"></p-checkbox>
+          <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected"
+                      binary="true" (onChange)="updateCheckAllText()"></p-checkbox>
           {{concept.name}} ({{concept.counts.subjectCount}})
         </div>
       </div>
