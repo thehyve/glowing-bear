@@ -51,7 +51,7 @@ export class GbVariablesComponent implements OnInit {
         }
       });
     });
-    this.checkAllText = `${numSelected} variables selected`;
+    this.checkAllText = numSelected > 1 ? `${numSelected} variables selected` : `${numSelected} variable selected`;
   }
 
   checkAll(b: boolean) {
