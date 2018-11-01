@@ -29,7 +29,6 @@ import {StudyService} from './study.service';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
-import {ConceptType} from '../models/constraint-models/concept-type';
 import {Subject} from 'rxjs';
 
 /**
@@ -55,7 +54,6 @@ export class ConstraintService {
   private _studyConstraints: Constraint[] = [];
   private _validPedigreeTypes: object[] = [];
   private _concepts: Concept[] = [];
-  private _conceptLabels: string[] = [];
   private _conceptConstraints: Constraint[] = [];
 
   /*
@@ -101,16 +99,9 @@ export class ConstraintService {
    */
   private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
 
-  // the subset of _studyConceptCountMap that holds the selected maps
-  // based on the constraint in step 1
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  // the subset of _conceptCountMap that holds the selected maps
-  // based on the constraint in step 1
+  // the subset of _conceptCountMap that holds the selected maps,
+  // which corresponds to the selected cohort(s)
   private _selectedConceptCountMap: Map<string, CountItem>;
-
-  public conceptCountMapCompleted = false;
-  public studyCountMapCompleted = false;
-  public studyConceptCountMapCompleted = false;
 
   /*
   * The list of concepts that correspond to
@@ -221,6 +212,63 @@ export class ConstraintService {
       );
   }
 
+  /*
+   * ------------------------------------------------------------------------- countMap-related methods
+   */
+  loadCountMaps(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      let promise1 = this.loadConceptCountMap();
+      let promise2 = this.loadStudyCountMap();
+      let promise3 = this.loadStudyConceptCountMap();
+      Promise.all([promise1, promise2, promise3])
+        .then(() => {
+          resolve(true);
+        })
+        .catch((err) => {
+          reject(err);
+        })
+    });
+  }
+
+  loadConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerConcept(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.conceptCountMap = map;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load concept count map from server.');
+        });
+    });
+  }
+
+  loadStudyCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudy(new TrueConstraint())
+        .subscribe((map: Map<string, CountItem>) => {
+          this.studyCountMap = map;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study count map from server.');
+        });
+    });
+  }
+
+  loadStudyConceptCountMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
+        .subscribe((map: Map<string, Map<string, CountItem>>) => {
+          this.studyConceptCountMap = map;
+          resolve(true);
+        }, (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          reject('Fail to load study-concept count map from server.');
+        });
+    });
+  }
+
   /**
    * Returns a list of all constraints that match the search word.
    * The constraints should be copied when editing them.
@@ -252,7 +300,6 @@ export class ConstraintService {
    * ------------------------------------------------------------------------ constraint generation
    */
   /**
-   * In the 1st step,
    * Generate the constraint for retrieving the patients with only the inclusion criteria
    * @returns {Constraint}
    */
@@ -267,7 +314,6 @@ export class ConstraintService {
   }
 
   /**
-   * In the 1st step,
    * Generate the constraint for retrieving the patients with the exclusion criteria,
    * but also in the inclusion set
    * @returns {CombinationConstraint}
@@ -412,100 +458,20 @@ export class ConstraintService {
     return constraint;
   }
 
-  /*
-   * ------------------------------------------------------------------------- countMap-related methods
-   */
-  loadCountMaps(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let promise1 = this.updateConceptCountMap();
-      let promise2 = this.updateStudyCountMap();
-      let promise3 = this.updateStudyConceptCountMap();
-      Promise.all([promise1, promise2, promise3])
-        .then(() => {
-          resolve(true);
-        })
-        .catch((err) => {
-          reject(err);
-        })
-    });
-  }
-
-  updateConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerConcept(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.conceptCountMap = map;
-          this.conceptCountMapCompleted = true;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load concept count map from server.');
-        });
-    });
-  }
-
-  updateStudyCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudy(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.studyCountMap = map;
-          this.studyCountMapCompleted = true;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study count map from server.');
-        });
-    });
-  }
-
-  updateStudyConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
-        .subscribe((map: Map<string, Map<string, CountItem>>) => {
-          this.studyConceptCountMap = map;
-          this.studyConceptCountMapCompleted = true;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study-concept count map from server.');
-        });
-    });
-  }
 
   /*
    * ------------------------------------------------------------------------- variables-related methods
    */
   public updateVariables() {
     this.variables.length = 0;
-    this.updateVariablesIterative(this.treeNodeService.treeNodes, []);
-    this.variablesUpdated.next([...this.variables]);
-  }
-
-  private updateVariablesIterative(nodes: TreeNode[], existingConceptCodes: string[]) {
-    for (let node of nodes) {
-      if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
-        let countItem: CountItem = null;
-        const code = node['conceptCode'];
-        let conceptMap = this.selectedStudyConceptCountMap.get(node['studyId']);
-        if (conceptMap && conceptMap.size > 0) {
-          node['expanded'] = false;
-          countItem = conceptMap.get(code);
-        } else {
-          countItem = this.selectedConceptCountMap.get(code);
-        }
-
-        if (countItem && !existingConceptCodes.includes(code)) {
-          existingConceptCodes.push(code);
-          let concept = new Concept();
-          concept.name = node['name'];
-          concept.code = code;
-          concept.type = <ConceptType>node['type'];
-          this.variables.push(concept);
-        }
-      } else if (node['children']) { // if the node is an intermediate node
-        this.updateVariablesIterative(node['children'], existingConceptCodes);
+    const codes: Array<string> = Array.from(this.selectedConceptCountMap.keys());
+    this.concepts.forEach((concept: Concept) => {
+      if (codes.includes(concept.code)) {
+        concept.counts = this.selectedConceptCountMap.get(concept.code);
+        this.variables.push(concept);
       }
-    }
+    });
+    this.variablesUpdated.next(this.variables);
   }
 
   /*
@@ -571,14 +537,6 @@ export class ConstraintService {
     this._concepts = value;
   }
 
-  get conceptLabels(): string[] {
-    return this._conceptLabels;
-  }
-
-  set conceptLabels(value: string[]) {
-    this._conceptLabels = value;
-  }
-
   get maxNumSearchResults(): number {
     return this._maxNumSearchResults;
   }
@@ -617,14 +575,6 @@ export class ConstraintService {
 
   set studyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._studyConceptCountMap = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
   }
 
   get selectedConceptCountMap(): Map<string, CountItem> {

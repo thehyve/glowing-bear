@@ -20,7 +20,6 @@ export class ConstraintServiceMock {
   validPedigreeTypes = [];
   concepts: Concept[] = [];
   conceptConstraints: Constraint[] = [];
-  conceptLabels: string[] = [];
   allConstraints: Constraint[] = [];
   variables: Concept[] = [];
   variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();

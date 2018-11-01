@@ -16,6 +16,7 @@ import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import {FormatHelper} from '../../../../utilities/format-helper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -144,7 +145,7 @@ export class GbCohortsComponent implements OnInit {
     let obj = {
       subscriptionFreq: target.subscriptionFreq
     };
-    this.cohortService.updateCohort(target, obj);
+    this.cohortService.editCohort(target, obj);
   }
 
   downloadSubscriptionRecord(target: Cohort, record: CohortDiffRecord) {
@@ -224,12 +225,20 @@ export class GbCohortsComponent implements OnInit {
     });
   }
 
+  onCohortCheckClick(e: MouseEvent) {
+    e.stopPropagation();
+    this.cohortService.updateAll();
+  }
+
   get isCohortSubscriptionIncluded(): boolean {
     return this.cohortService.isCohortSubscriptionIncluded;
   }
 
-  onCohortCheckClick(e: MouseEvent) {
-    e.stopPropagation();
-    // TODO: handle the inclusion/exclusion of cohorts, adjust the scope of variables
+  get subjectAllCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.allCounts.subjectCount);
+  }
+
+  get observationAllCount(): string {
+    return FormatHelper.formatCountNumber(this.cohortService.allCounts.observationCount);
   }
 }

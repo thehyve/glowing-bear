@@ -71,16 +71,8 @@ export class GbCohortSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  get totalSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.subjectCount);
-  }
-
   get subjectCount(): string {
     return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
-  }
-
-  get totalObservationCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.observationCount);
   }
 
   get observationCount(): string {
@@ -92,7 +84,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get isUpdating(): boolean {
-    return this.cohortService.isUpdating;
+    return this.cohortService.isUpdatingCurrent;
   }
 
   get isDirty(): boolean {
@@ -121,7 +113,6 @@ export class GbCohortSelectionComponent implements OnInit {
 
   update(event) {
     event.stopPropagation();
-    this.cohortService.update();
+    this.cohortService.updateCurrent();
   }
-
 }

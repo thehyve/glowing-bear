@@ -33,7 +33,6 @@ export class ResourceServiceMock {
 
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
-  selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
 
   constructor() {
     this.studies = [];
@@ -51,7 +50,6 @@ export class ResourceServiceMock {
     return new Promise<any>((resolve, reject) => {
       this.inclusionCounts = new CountItem(200, 1000);
       this.exclusionCounts = new CountItem(30, 200);
-      this.selectedStudyConceptCountMap = null;
       resolve(true);
     });
   }
