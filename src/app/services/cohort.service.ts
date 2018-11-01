@@ -38,8 +38,9 @@ export class CohortService {
   private _currentCohort: Cohort;
   // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
-  // The total numbers of subjects & observations for the current cohort
-  private _totalCounts: CountItem;
+  // the counts in the gb-cohort-selection,
+  // which is, roughly speaking, inclusionCounts - exclusionCounts
+  private _counts: CountItem;
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
   // The total numbers of subjects & observations for all the cohorts
@@ -56,8 +57,6 @@ export class CohortService {
 
   // flag indicating if the current cohort constraint in gb-cohort-selection has been changed
   private _isDirty = true;
-  // the counts in the gb-cohort-selection
-  private _counts: CountItem;
 
   /*
    * ------ other variables ------
@@ -79,12 +78,11 @@ export class CohortService {
     this.initializeCounts();
     this.loadCohorts();
     // initial updates
-    this.updateCurrent(true);
+    this.updateCurrent();
   }
 
   initializeCounts() {
     this.allCounts = new CountItem(0, 0);
-    this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
     this.counts = new CountItem(0, 0);
@@ -93,7 +91,7 @@ export class CohortService {
   clearAll(): Promise<any> {
     this.constraintService.clearCohortConstraint();
     this.isDirty = true;
-    return this.updateCurrent(true);
+    return this.updateCurrent();
   }
 
   /**
@@ -140,7 +138,7 @@ export class CohortService {
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
-  public updateCurrent(initialUpdate?: boolean): Promise<any> {
+  public updateCurrent(): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.isDirty) {
         this.isUpdatingCurrent = true;
@@ -156,10 +154,6 @@ export class CohortService {
             this.exclusionCounts = exCounts;
             this.counts.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
             this.counts.observationCount = inCounts.observationCount - exCounts.observationCount;
-            if (initialUpdate) {
-              this.totalCounts.subjectCount = this.counts.subjectCount;
-              this.totalCounts.observationCount = this.counts.observationCount;
-            }
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.isUpdatingCurrent = false;
@@ -388,14 +382,6 @@ export class CohortService {
 
   set exclusionCounts(value: CountItem) {
     this._exclusionCounts = value;
-  }
-
-  get totalCounts(): CountItem {
-    return this._totalCounts;
-  }
-
-  set totalCounts(value: CountItem) {
-    this._totalCounts = value;
   }
 
   get counts(): CountItem {
