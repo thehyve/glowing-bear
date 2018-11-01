@@ -11,7 +11,6 @@ import {CountItem} from '../../models/aggregate-models/count-item';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
-  totalCounts: CountItem;
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
   counts: CountItem;
@@ -24,7 +23,6 @@ export class CohortServiceMock {
 
   initializeCounts() {
     this.allCounts = new CountItem(0, 0);
-    this.totalCounts = new CountItem(0, 0);
     this.inclusionCounts = new CountItem(0, 0);
     this.exclusionCounts = new CountItem(0, 0);
     this.counts = new CountItem(0, 0);
