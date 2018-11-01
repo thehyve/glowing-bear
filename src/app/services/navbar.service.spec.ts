@@ -40,13 +40,12 @@ describe('NavbarService', () => {
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
     exportEnabled = false;
-    spyOn(exportService, 'isExportEnabled').and.callFake(() => observableOf(exportEnabled));
     navbarService = TestBed.get(NavbarService);
   });
 
   it('should be injected', inject([NavbarService], (service: NavbarService) => {
     expect(service).toBeTruthy();
-    expect(service.items.length).toBe(2);
+    expect(service.items.length).toBe(3);
   }));
 
   it('should add export item when access level is full', () => {

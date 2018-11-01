@@ -105,12 +105,13 @@ body .hline {
 }
 
 .loading-blink {
-  text-align: center;
-  font-size: 3em;
+  margin-left: 0.5em;
   padding-right: 3em;
 }
 
 .loading-blink span {
+  font-size: 2em;
+  vertical-align: middle;
   /**
    * Use the blink animation, which is defined above
    */

@@ -23,6 +23,7 @@ import {AppConfigMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
 import {MockComponent} from 'ng2-mock-component';
+import {MatExpansionModule} from '@angular/material';
 
 describe('GbExportComponent', () => {
   let component: GbExportComponent;
@@ -45,7 +46,8 @@ describe('GbExportComponent', () => {
         DataTableModule,
         PanelModule,
         DropdownModule,
-        MessagesModule
+        MessagesModule,
+        MatExpansionModule
       ],
       providers: [
         {

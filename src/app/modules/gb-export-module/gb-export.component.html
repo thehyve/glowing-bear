@@ -1,131 +1,148 @@
 <div class="gb-export-container">
-  <!---------------------- data table ---------------------->
-  <div class="gb-export-section-banner">
-    <h5>View and arrange data</h5>
-  </div>
-  <gb-data-table></gb-data-table>
-  <hr>
+  <mat-accordion [multi]="true">
+    <!---------------------- data table ---------------------->
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="gb-export-section-banner">
+            <h5>View and arrange data</h5>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
 
-  <!---------------------- create new export ---------------------->
-  <div *ngIf="!isLoadingExportDataTypes && exportDataTypes.length > 0">
-    <div class="gb-export-section-banner">
-      <h5>Create new export for the currently selected data</h5>
-    </div>
+      <gb-data-table></gb-data-table>
+    </mat-expansion-panel>
 
-    <div class="gb-export-format-container">
+    <!---------------------- create new export ---------------------->
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="gb-export-section-banner">
+            <h5>New export</h5>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
 
-      <!-- area to indicate which data formats to export -->
-      <div class="gb-export-format-header">Select data types and formats to export:</div>
-      <div *ngFor="let dataType of exportDataTypes">
-      <span class="row">
-        <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
-          <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
-          {{dataType.name}}
-        </span>
-        (&nbsp;
-        <span *ngFor="let fileFormat of dataType.fileFormats">
-          <p-checkbox [(ngModel)]="fileFormat.checked" binary="true"></p-checkbox>
-          {{fileFormat.name}} &nbsp;
-        </span>
-        )
-      </span>
-      </div>
-
-      <!-- export name input and button -->
-      <div class="form-inline gb-export-btn-container">
-        <input id="exportJobNameInput" type="text" class="form-text"
-               placeholder="Export job name"
-               (drop)="onExportJobNameInputDrop($event)"
-               [(ngModel)]="exportJobName">
-        <span>&nbsp;</span>
-        <button type="button" class="btn btn-primary btn-sm"
-                (click)="createExportJob()">Create Export</button>
-        <span>&nbsp;</span>
-        <!-- show the date column checkbox if the export data view is 'surveyTable' -->
-        <div *ngIf="isTransmartSurveyTableDataView">
-          <p-checkbox class="gb-include-date-columns-checkbox"
-                      [(ngModel)]="isTransmartDateColumnIncluded"
-                      binary="true"></p-checkbox>
-          Include measurement date columns
+      <div *ngIf="isDataTableUpdating || isDataTypesUpdating; else showDataTypes">
+        <div class="loading-text">
+          <span class="loading-blink">
+            <span>•</span><span>•</span><span>•</span>
+          </span>
         </div>
       </div>
-    </div>
-  </div>
 
+      <ng-template #showDataTypes>
+        <div class="gb-export-format-container">
+          <!-- area to indicate which data formats to export -->
+          <div class="gb-export-format-header">Select data types and formats to export:</div>
+          <div *ngFor="let dataType of exportDataTypes">
+            <span class="row">
+              <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
+                <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
+                {{dataType.name}}
+              </span>
+              (&nbsp;
+              <span *ngFor="let fileFormat of dataType.fileFormats">
+                <p-checkbox [(ngModel)]="fileFormat.checked" binary="true"></p-checkbox>
+                {{fileFormat.name}} &nbsp;
+              </span>
+              )
+            </span>
+          </div>
 
-  <!-- the spinning icon -->
-  <div *ngIf="isLoadingExportDataTypes">
-    <div class="gb-export-section-banner">
-      <h5>Loading export data types</h5>
-    </div>
-    <p class="loading center">
-      <span>•</span><span>•</span><span>•</span>
-    </p>
-  </div>
-
-  <hr>
-
-  <!---------------------- previous exports ---------------------->
-  <div class="gb-export-section-banner">
-    <h5>Previous Exports</h5>
-  </div>
-
-  <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
-    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-    <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
-  </div>
-  <p-dataTable #dt
-               sortField="timeDescription"
-               sortOrder="-1"
-               [value]="exportJobs"
-               [rows]="10" [paginator]="true"
-               [globalFilter]="globalFilter">
-    <p-column field="name" header="Name"
-              [sortable]="true"
-              [filter]="true" filterPlaceholder="Filter column">
-
-    </p-column>
-    <p-column field="status" header="Status"
-              [sortable]="true"
-              [filter]="true" filterPlaceholder="Filter column">
-
-    </p-column>
-    <p-column field="timeDescription" header="Last updated"
-              [sortable]="true"
-              [filter]="true" filterPlaceholder="Filter Column">
-    </p-column>
-    <p-column>
-      <ng-template pTemplate="header">
+          <!-- export name input and button -->
+          <div class="form-inline gb-export-btn-container">
+            <input id="exportJobNameInput" type="text" class="form-text"
+                   placeholder="Export job name"
+                   (drop)="onExportJobNameInputDrop($event)"
+                   [(ngModel)]="exportJobName">
+            <span>&nbsp;</span>
+            <button type="button" class="btn btn-primary btn-sm"
+                    (click)="createExportJob()">Create Export
+            </button>
+            <span>&nbsp;</span>
+            <!-- show the date column checkbox if the resource service is in transmart mode -->
+            <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
+            <div *ngIf="isTransmartEnv">
+              <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
+                <p-checkbox class="gb-include-date-columns-checkbox"
+                            [(ngModel)]="resourceService.transmartDateColumnIncluded"
+                            binary="true"></p-checkbox>
+                Include measurement date columns
+              </div>
+            </div>
+          </div>
+        </div>
       </ng-template>
-      <ng-template let-job="rowData" pTemplate="body">
-        <button type="button"
-                *ngIf="job.status === 'Completed'"
-                class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.disabled"
-                (click)="downloadExportJob(job)">
-          <span class="fa fa-download"></span>
-          Download
-        </button>
-        <button type="button"
-                *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
-                class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.disabled"
-                (click)="cancelExportJob(job)">
-          <span class="fa fa-times"></span>
-          Cancel
-        </button>
-        <ng-template #archive>
-          <button type="button"
-                  *ngIf="!isExternalExportAvailable"
-                  class="btn btn-outline-primary btn-sm"
-                  [disabled] = "job.disabled"
-                  (click)="archiveExportJob(job)">
-            <span class="fa fa-archive"></span>
-            Archive
-          </button>
-        </ng-template>
-      </ng-template>
-    </p-column>
-  </p-dataTable>
+    </mat-expansion-panel>
+
+    <!---------------------- previous exports ---------------------->
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="gb-export-section-banner">
+            <h5>Export history</h5>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
+      </div>
+      <p-dataTable #dt
+                   sortField="timeDescription"
+                   sortOrder="-1"
+                   [value]="exportJobs"
+                   [rows]="10" [paginator]="true"
+                   [globalFilter]="globalFilter">
+        <p-column field="name" header="Name"
+                  [sortable]="true"
+                  [filter]="true" filterPlaceholder="Filter column">
+
+        </p-column>
+        <p-column field="status" header="Status"
+                  [sortable]="true"
+                  [filter]="true" filterPlaceholder="Filter column">
+        </p-column>
+        <p-column field="timeDescription" header="Last updated"
+                  [sortable]="true"
+                  [filter]="true" filterPlaceholder="Filter Column">
+        </p-column>
+        <p-column>
+          <ng-template pTemplate="header">
+          </ng-template>
+          <ng-template let-job="rowData" pTemplate="body">
+            <button type="button"
+                    *ngIf="job.status === 'Completed'"
+                    class="btn btn-outline-primary btn-sm"
+                    [disabled]="job.disabled"
+                    (click)="downloadExportJob(job)">
+              <span class="fa fa-download"></span>
+              Download
+            </button>
+            <button type="button"
+                    *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
+                    class="btn btn-outline-primary btn-sm"
+                    [disabled]="job.disabled"
+                    (click)="cancelExportJob(job)">
+              <span class="fa fa-times"></span>
+              Cancel
+            </button>
+            <ng-template #archive>
+              <button type="button"
+                      *ngIf="!isExternalExportAvailable"
+                      class="btn btn-outline-primary btn-sm"
+                      [disabled]="job.disabled"
+                      (click)="archiveExportJob(job)">
+                <span class="fa fa-archive"></span>
+                Archive
+              </button>
+            </ng-template>
+          </ng-template>
+        </p-column>
+      </p-dataTable>
+    </mat-expansion-panel>
+  </mat-accordion>
 
 </div>

@@ -30,11 +30,12 @@ export class NavbarService {
       {label: 'Cohort Selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
-    this.exportService.isExportEnabled().subscribe((exportEnabled) => {
-      if (exportEnabled) {
-        this.items.push({label: 'Data Table & Export', routerLink: '/export'});
-      }
-    });
+    this.exportService.exportEnabled.asObservable()
+      .subscribe((exportEnabled) => {
+        if (exportEnabled) {
+          this.items.push({label: 'Data View & Export', routerLink: '/export'});
+        }
+      });
   }
 
   updateNavbar(whichStep: string) {
@@ -47,7 +48,6 @@ export class NavbarService {
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
     } else if (this.isExport) {
-      // TODO: update cohort and variables before export
       this.activeItem = this._items[2];
     }
   }

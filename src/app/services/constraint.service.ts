@@ -127,7 +127,7 @@ export class ConstraintService {
 
   public constraint_1_2(): Constraint {
     const c1 = this.cohortConstraint();
-    const c2 = this.constraint_2();
+    const c2 = this.variableConstraint();
     let combo = new CombinationConstraint();
     combo.addChild(c1);
     combo.addChild(c2);
@@ -402,10 +402,11 @@ export class ConstraintService {
     }
   }
 
-  public constraint_2() {
-    // return this.generateProjectionConstraint();
-    // TODO: generate constraint based on the variables selected in the Variables panel
-    return null;
+  /**
+   * Generate the constraint based on the variables selected in the Variables panel
+   */
+  public variableConstraint(): Constraint {
+    return new TrueConstraint();
   }
 
 

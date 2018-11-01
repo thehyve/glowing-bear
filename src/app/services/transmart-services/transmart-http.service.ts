@@ -60,7 +60,6 @@ export class TransmartHttpService {
   }
 
 
-
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
@@ -448,7 +447,9 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
-
+    // TODO: temporary solution, remember to include visit dimension after tranmsart is fixed
+    body.rowDimensions.splice(body.rowDimensions.indexOf('visit'), 1);
+    body.columnDimensions.splice(body.columnDimensions.indexOf('visit'), 1);
     return this.httpHelper.postCall(urlPart, body, null);
   }
 
