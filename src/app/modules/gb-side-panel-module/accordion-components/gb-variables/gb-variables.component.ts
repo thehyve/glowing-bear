@@ -24,7 +24,6 @@ export class GbVariablesComponent implements OnInit {
         this.categorizeVariables(variables);
       });
     this.allChecked = true;
-    this.checkAllText = 'All selected';
   }
 
   ngOnInit() {
@@ -40,26 +39,32 @@ export class GbVariablesComponent implements OnInit {
         this.categorizedVariables.get(variable.type).push(variable);
       }
     });
-<<<<<<< HEAD
-=======
+    this.updateCheckAllText();
   }
 
-  onCheckAll(e) {
-    this.checkAllText = e ? 'All selected' : 'None selected';
-    this.checkAll(e);
+  updateCheckAllText() {
+    let numSelected = 0;
+    this.categorizedVariables.forEach((list: Array<Concept>) => {
+      list.forEach((c: Concept) => {
+        if (c.selected) {
+          numSelected++;
+        }
+      });
+    });
+    this.checkAllText = `${numSelected} variables selected`;
   }
 
-  private checkAll(b: boolean) {
+  checkAll(b: boolean) {
     this.categorizedVariables.forEach((list: Array<Concept>) => {
       list.forEach((c: Concept) => {
         c.selected = b;
       })
     });
+    this.updateCheckAllText();
   }
 
   get isExport(): boolean {
     return this.navbarService.isExport;
->>>>>>> add checkboxes to variables when in export
   }
 
   get availableVariableTypes(): ConceptType[] {
