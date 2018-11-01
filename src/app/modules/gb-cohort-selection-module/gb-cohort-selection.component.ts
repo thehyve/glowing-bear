@@ -71,16 +71,8 @@ export class GbCohortSelectionComponent implements OnInit {
     return this.constraintService.rootExclusionConstraint;
   }
 
-  get totalSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.subjectCount);
-  }
-
   get subjectCount(): string {
     return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
-  }
-
-  get totalObservationCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.totalCounts.observationCount);
   }
 
   get observationCount(): string {
