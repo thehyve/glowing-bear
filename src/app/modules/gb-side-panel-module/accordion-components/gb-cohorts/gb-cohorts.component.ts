@@ -234,11 +234,9 @@ export class GbCohortsComponent implements OnInit {
     return this.cohortService.isCohortSubscriptionIncluded;
   }
 
-  get subjectAllCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.allCounts.subjectCount);
-  }
-
-  get observationAllCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.allCounts.observationCount);
+  get subjectCountText(): string {
+    const count = this.cohortService.allCounts.subjectCount;
+    const countString = FormatHelper.formatCountNumber(this.cohortService.allCounts.subjectCount)
+    return count > 1 ? countString + ' subjects selected' : countString + ' subject selected';
   }
 }

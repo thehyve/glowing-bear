@@ -24,11 +24,19 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {forkJoin} from 'rxjs';
+import {DataTableService} from './data-table.service';
 
 /**
  * This service concerns with
  * (1) Updating subject and observation counts Cohort Selection
  * (2) Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
+ *
+ * workflow:
+ * - when the user changes the constraint(s) inside gb-cohort-selection:
+ *        updateCurrent() -> updateAll() -> updateVariables() -> updateDataTable()
+ *
+ * - when the user changes cohort selection inside gb-cohorts:
+ *        updateAll() -> updateVariables() -> updateDataTable()
  */
 @Injectable({
   providedIn: 'root',
@@ -70,6 +78,7 @@ export class CohortService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
+              private dataTableService: DataTableService,
               private constraintService: ConstraintService) {
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
@@ -181,6 +190,7 @@ export class CohortService {
   }
 
   public updateAll(): Promise<any> {
+    console.log('Updating counts from all cohorts...');
     this.isUpdatingAll = true;
     let combination: CombinationConstraint = new CombinationConstraint();
     combination.combinationState = CombinationState.Or;
@@ -199,14 +209,15 @@ export class CohortService {
         this.allCounts = res[0];
         this.constraintService.selectedConceptCountMap = res[1];
         this.isUpdatingAll = false;
-        this.updateVariables(resolve);
+        this.updateVariables(resolve, reject);
       }, (err) => {
         reject(err);
       })
     });
   }
 
-  private updateVariables(resolve) {
+  private updateVariables(resolve, reject) {
+    console.log('Updating variables...');
     this.isUpdatingVariables = true;
     if (this.constraintService.isTreeNodesLoading) {
       window.setTimeout((function () {
@@ -215,9 +226,22 @@ export class CohortService {
     } else {
       this.constraintService.updateVariables();
       this.isUpdatingVariables = false;
-      resolve(true);
+      this.updateDataTable(resolve, reject);
     }
   }
+
+  private updateDataTable(resolve, reject) {
+    console.log('Updating data table...');
+    this.dataTableService.updateDataTable()
+      .then(() => {
+        console.log('data table updated');
+        resolve(true);
+      })
+      .catch(err => {
+        reject(err);
+      });
+  }
+
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
@@ -479,4 +503,5 @@ export class CohortService {
   set allCounts(value: CountItem) {
     this._allCounts = value;
   }
+
 }

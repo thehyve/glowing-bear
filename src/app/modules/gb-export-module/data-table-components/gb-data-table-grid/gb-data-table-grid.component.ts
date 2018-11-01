@@ -43,4 +43,8 @@ export class GbDataTableGridComponent implements OnInit {
   previousPage() {
     this.dataTableService.previousPage();
   }
+
+  get isUpdating(): boolean {
+    return this.dataTableService.isUpdating;
+  }
 }

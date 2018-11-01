@@ -28,9 +28,8 @@ export class AppConfigMock {
     return this.config[key];
   }
 
-
   public getEnv(key: any) {
-    return this.env[key];
+    return 'default';
   }
 
   load() {}
