@@ -208,7 +208,7 @@ md2-accordion-header .ui-button-secondary:hover {
   font-size: small;
   color: grey;
   margin-bottom: 1em;
-  text-align: center;
+  text-align: left;
 }
 
 .counts-info hr {

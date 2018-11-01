@@ -16,6 +16,7 @@ import {GbDataTableComponent} from './data-table-components/gb-data-table/gb-dat
 import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
 import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
 import {TableModule} from 'primeng/table';
+import {MatExpansionModule} from '@angular/material';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import {TableModule} from 'primeng/table';
     MessagesModule,
     PickListModule,
     TableModule,
-    TooltipModule
+    TooltipModule,
+    MatExpansionModule
   ],
   declarations: [
     GbExportComponent,

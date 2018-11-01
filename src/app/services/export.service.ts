@@ -30,8 +30,8 @@ export class ExportService {
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
-  private _isLoadingExportDataTypes = false;
   private _isTransmartDateColumnsIncluded = false;
+  private _isDataTypesUpdating = false;
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
@@ -42,47 +42,43 @@ export class ExportService {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
-          this._exportEnabled.next(true);
-          this._exportEnabled.complete();
+          this.exportEnabled.next(true);
+          this.exportEnabled.complete();
         } else {
           this.studyService.existsPublicStudy
             .subscribe((existsPublicStudy) => {
-              this._exportEnabled.next(existsPublicStudy);
-              this._exportEnabled.complete();
+              this.exportEnabled.next(existsPublicStudy);
+              this.exportEnabled.complete();
             });
         }
       });
+    this.dataTableService.dataTableUpdated.asObservable()
+      .subscribe(() => {
+        this.updateExportDataTypes();
+      });
   }
 
-  public isExportEnabled(): Observable<boolean> {
-    return this._exportEnabled.asObservable();
-  }
-
-  public updateExports() {
-    this.isExportEnabled().subscribe((exportEnabled) => {
-      if (exportEnabled) {
-        let combo = this.constraintService.constraint_1_2();
-        // update the export info
-        this.isLoadingExportDataTypes = true;
-        this.resourceService.getExportDataTypes(combo)
-          .subscribe(dataTypes => {
-              this.exportDataTypes = dataTypes;
-              this.isLoadingExportDataTypes = false;
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              this.exportDataTypes = [];
-              this.isLoadingExportDataTypes = false;
-            }
-          );
-      }
-    });
+  private updateExportDataTypes() {
+    let combo = this.constraintService.constraint_1_2();
+    // update the export info
+    this.isDataTypesUpdating = true;
+    this.resourceService.getExportDataTypes(combo)
+      .subscribe(dataTypes => {
+          this.exportDataTypes = dataTypes;
+          this.isDataTypesUpdating = false;
+        },
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          this.exportDataTypes = [];
+          this.isDataTypesUpdating = false;
+        }
+      );
   }
 
   /**
    * Create the export job when the user clicks the 'Export selected sets' button
    */
-  createExportJob(): Promise<any> {
+  public createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
       let name = this.exportJobName.trim();
 
@@ -154,7 +150,7 @@ export class ExportService {
    * then the files of that job can be downloaded
    * @param job
    */
-  downloadExportJob(job: ExportJob) {
+  public downloadExportJob(job: ExportJob) {
     job.isInDisabledState = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
@@ -172,7 +168,7 @@ export class ExportService {
       );
   }
 
-  cancelExportJob(job) {
+  public cancelExportJob(job) {
     job.isInDisabledState = true;
     this.resourceService.cancelExportJob(job.id)
       .subscribe(
@@ -185,7 +181,7 @@ export class ExportService {
       );
   }
 
-  archiveExportJob(job) {
+  public archiveExportJob(job) {
     job.isInDisabledState = true;
     this.resourceService.archiveExportJob(job.id)
       .subscribe(
@@ -198,7 +194,7 @@ export class ExportService {
       );
   }
 
-  updateExportJobs(): Promise<any> {
+  public updateExportJobs(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.resourceService.getExportJobs()
         .subscribe(
@@ -222,7 +218,7 @@ export class ExportService {
    * @param {string} name
    * @returns {boolean}
    */
-  validateExportJob(name: string): boolean {
+  public validateExportJob(name: string): boolean {
     let validName = name !== '';
     // 1. Validate if job name is specified
     if (!validName) {
@@ -274,12 +270,12 @@ export class ExportService {
     this._exportDataTypes = value;
   }
 
-  get isLoadingExportDataTypes(): boolean {
-    return this._isLoadingExportDataTypes;
+  get isDataTypesUpdating(): boolean {
+    return this._isDataTypesUpdating;
   }
 
-  set isLoadingExportDataTypes(value: boolean) {
-    this._isLoadingExportDataTypes = value;
+  set isDataTypesUpdating(value: boolean) {
+    this._isDataTypesUpdating = value;
   }
 
   get exportJobs(): ExportJob[] {
@@ -298,11 +294,24 @@ export class ExportService {
     this._exportJobName = value;
   }
 
+<<<<<<< HEAD
   get isTransmartDateColumnsIncluded(): boolean {
     return this._isTransmartDateColumnsIncluded;
   }
 
   set isTransmartDateColumnsIncluded(value: boolean) {
     this._isTransmartDateColumnsIncluded = value;
+=======
+  get isDataTableUpdating(): boolean {
+    return this.dataTableService.isUpdating;
+  }
+
+  get exportEnabled(): AsyncSubject<boolean> {
+    return this._exportEnabled;
+  }
+
+  set exportEnabled(value: AsyncSubject<boolean>) {
+    this._exportEnabled = value;
+>>>>>>> redefine export workflow
   }
 }

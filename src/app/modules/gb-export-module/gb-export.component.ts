@@ -22,12 +22,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
 
   private timer: Timer;
 
-  // TODO: fix export workflow:
   // 1. user defines cohort in cohort selection
-  // 2. user goes to export tab, variables on the left are selectable
-  // 3. based on cohort and variables, compose combination constraint to get data table
-  // 4. user arranges data table
-  // 5. user selects export data type, defines export job
+  // 2. user goes to export tab, the variables the left become selectable
+  // 3. user arranges data table dimensions, retrieve the new data table
+  // 4. retrieve export data types
+  // 5. user create export job based on arranged data table and selected export data types
   constructor(private appConfig: AppConfig,
               private exportService: ExportService) {
   }
@@ -95,7 +94,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
     return this.exportService.exportJobs;
   }
 
-  get isLoadingExportDataTypes(): boolean {
-    return this.exportService.isLoadingExportDataTypes;
+  get isDataTypesUpdating(): boolean {
+    return this.exportService.isDataTypesUpdating;
+  }
+
+  get isDataTableUpdating(): boolean {
+    return this.exportService.isDataTableUpdating;
   }
 }

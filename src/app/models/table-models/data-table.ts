@@ -29,10 +29,6 @@ export class DataTable {
   private _rows: Array<Row>;
   // The index header row, used when headerRows are not used
   private _cols: Array<Col>;
-  // Indicate if the current data table is dirty
-  private _isDirty: boolean;
-  // Indicate if the current data table is updating
-  private _isUpdating: boolean;
   // Indicate if there is no more data to get from the back-end
   private _isLastPage: boolean;
   // The offset and limit used to make table calls with pagination
@@ -43,7 +39,6 @@ export class DataTable {
 
   constructor() {
     this.constraint = new TrueConstraint();
-    this.isDirty = true;
     this.isLastPage = false;
     this.currentPage = 1;
     this.offset = 0;
@@ -104,22 +99,6 @@ export class DataTable {
 
   set constraint(value: Constraint) {
     this._constraint = value;
-  }
-
-  get isDirty(): boolean {
-    return this._isDirty;
-  }
-
-  set isDirty(value: boolean) {
-    this._isDirty = value;
-  }
-
-  get isUpdating(): boolean {
-    return this._isUpdating;
-  }
-
-  set isUpdating(value: boolean) {
-    this._isUpdating = value;
   }
 
   get offset(): number {

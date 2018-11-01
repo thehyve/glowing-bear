@@ -2,33 +2,33 @@
   font-size: small;
 }
 
-.table-header {
-  border-left: 3px var(--gb-clinical-green-dark) solid;
-  border-right: 3px var(--gb-clinical-green-dark) solid;
-  background-color: var(--gb-clinical-green-light-light);
+:host >>> .grid-container .table-header {
+  border-left: 3px var(--gb-clinical-green-dark) solid !important;
+  border-right: 3px var(--gb-clinical-green-dark) solid !important;
+  background-color: var(--gb-clinical-green-light-light) !important;
 }
 
-.pagination-container {
+:host >>> .grid-container .pagination-container {
   margin: 10px 0px 0px 0px;
   text-align: center;
 }
 
-.pagination-container .btn-outline-secondary {
+:host >>> .grid-container .pagination-container .btn-outline-secondary {
   color: GrayText;
   border: none;
 }
 
-.pagination-container .btn-outline-secondary:hover {
+:host >>> .grid-container .pagination-container .btn-outline-secondary:hover {
   background-color: var(--gb-clinical-green-light-light);
 }
 
-.pagination-container .btn-outline-secondary:active {
+:host >>> .grid-container .pagination-container .btn-outline-secondary:active {
   font-weight: bolder;
   background-color: var(--gb-clinical-green-light-light);
 }
 
 
-:host >>> .ui-resizable-column {
+:host >>> .grid-container .ui-resizable-column {
   background-color: white;
   border: solid lightgray 1px;
   text-align: center;
