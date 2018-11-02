@@ -25,7 +25,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
 
   constructor(private appConfig: AppConfig,
               private exportService: ExportService,
-              public resourceService: ResourceService) {
+              private resourceService: ResourceService) {
   }
 
   ngOnInit() {
@@ -66,13 +66,21 @@ export class GbExportComponent implements OnInit, OnDestroy {
     this.exportService.exportJobName = value;
   }
 
-  get isTransmartEnv(): boolean {
-    let env = this.appConfig.getEnv();
-    return (env === 'default') || (env === 'transmart');
-  }
-
   get isExternalExportAvailable(): boolean {
     return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+  }
+
+  get isTransmartSurveyTableDataView(): boolean {
+    let exportMode =  this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  }
+
+  get isTransmartDateColumnIncluded(): boolean {
+    return this.resourceService.transmartDateColumnIncluded;
+  }
+
+  set isTransmartDateColumnIncluded(value: boolean) {
+    this.resourceService.transmartDateColumnIncluded = value;
   }
 
   get exportDataTypes(): ExportDataType[] {
