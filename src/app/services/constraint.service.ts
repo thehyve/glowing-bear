@@ -125,15 +125,6 @@ export class ConstraintService {
     return depth;
   }
 
-  public constraint_1_2(): Constraint {
-    const c1 = this.cohortConstraint();
-    const c2 = this.variableConstraint();
-    let combo = new CombinationConstraint();
-    combo.addChild(c1);
-    combo.addChild(c2);
-    return combo;
-  }
-
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
               private resourceService: ResourceService) {
@@ -406,7 +397,22 @@ export class ConstraintService {
    * Generate the constraint based on the variables selected in the Variables panel
    */
   public variableConstraint(): Constraint {
-    return new TrueConstraint();
+    const hasUnselected = this.variables.some((variable: Concept) => {
+      return !variable.selected;
+    });
+    if (hasUnselected) {
+      let result: CombinationConstraint = new CombinationConstraint();
+      result.combinationState = CombinationState.Or;
+      result.mark = ConstraintMark.OBSERVATION;
+      this.variables.forEach((variable: Concept) => {
+        let c = new ConceptConstraint();
+        c.concept = variable;
+        result.addChild(c)
+      });
+      return result;
+    } else {
+      return new TrueConstraint();
+    }
   }
 
 
@@ -475,6 +481,15 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
+  // get the combination of cohort constraint and variable constraint
+  get combination(): CombinationConstraint {
+    return new CombinationConstraint(
+      [this.cohortConstraint(), this.variableConstraint()],
+      CombinationState.And,
+      ConstraintMark.OBSERVATION
+    );
+  }
+
   get isTreeNodesLoading(): boolean {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }

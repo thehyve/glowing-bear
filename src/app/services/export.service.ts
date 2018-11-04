@@ -59,10 +59,9 @@ export class ExportService {
   }
 
   private updateExportDataTypes() {
-    let combo = this.constraintService.constraint_1_2();
     // update the export info
     this.isDataTypesUpdating = true;
-    this.resourceService.getExportDataTypes(combo)
+    this.resourceService.getExportDataTypes(this.constraintService.combination)
       .subscribe(dataTypes => {
           this.exportDataTypes = dataTypes;
           this.isDataTypesUpdating = false;
@@ -116,13 +115,13 @@ export class ExportService {
    */
   public runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
-      let constraint = this.constraintService.constraint_1_2();
-      this.resourceService
-        .runExportJob(job,
-          this.exportDataTypes,
-          constraint,
-          this.dataTableService.dataTable,
-          this.isTransmartDateColumnsIncluded)
+      this.resourceService.runExportJob(
+        job,
+        this.exportDataTypes,
+        this.constraintService.combination,
+        this.dataTableService.dataTable,
+        this.isTransmartDateColumnsIncluded
+      )
         .subscribe(
           returnedExportJob => {
             if (returnedExportJob) {

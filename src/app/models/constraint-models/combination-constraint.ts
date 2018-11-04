@@ -10,6 +10,7 @@ import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {PedigreeConstraint} from './pedigree-constraint';
 import {TrueConstraint} from './true-constraint';
+import {ConstraintMark} from './constraint-mark';
 
 export class CombinationConstraint extends Constraint {
 
@@ -17,12 +18,20 @@ export class CombinationConstraint extends Constraint {
   private _combinationState: CombinationState;
   private _isRoot: boolean;
 
-  constructor() {
+  constructor(children?: Constraint[],
+              state?: CombinationState,
+              mark?: ConstraintMark) {
     super();
-    this._children = [];
-    this.combinationState = CombinationState.And;
+    this.children = [];
     this.isRoot = false;
     this.textRepresentation = 'Group';
+    if (children) {
+      children.forEach((child: Constraint) => {
+        this.addChild(child);
+      });
+    }
+    this.combinationState = state ? state : CombinationState.And;
+    this.mark = mark ? mark : ConstraintMark.OBSERVATION;
   }
 
   get className(): string {
