@@ -25,7 +25,6 @@ export class GbDataTableDimensionsComponent implements OnInit {
 
   onChange() {
     this.dataTableService.validateDimensions();
-    this.dataTableService.isDirty = true;
     this.dataTableService.updateDataTable();
   }
 
