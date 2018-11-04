@@ -23,7 +23,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   private timer: Timer;
 
   // 1. user defines cohort in cohort selection
-  // 2. user goes to export tab, the variables the left become selectable
+  // 2. user goes to export tab, the variables on the left become selectable
   // 3. user arranges data table dimensions, retrieve the new data table
   // 4. retrieve export data types
   // 5. user create export job based on arranged data table and selected export data types

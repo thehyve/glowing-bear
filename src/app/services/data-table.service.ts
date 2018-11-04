@@ -17,6 +17,7 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Subject} from 'rxjs';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 
 @Injectable({
   providedIn: 'root',
@@ -63,13 +64,12 @@ export class DataTableService {
   }
 
   public updateDataTable(targetDataTable?: DataTable): Promise<any> {
-    this.isUpdating = true;
+
     return new Promise((resolve, reject) => {
       this.isDirty = true;
       this.isUpdating = true;
       this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
-      const constraint_1_2 = this.constraintService.constraint_1_2();
-      this.dataTable.constraint = constraint_1_2;
+      this.dataTable.constraint = this.constraintService.combination;
 
       this.resourceService.getDataTable(this.dataTable)
         .subscribe(

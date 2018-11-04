@@ -44,7 +44,7 @@ export class ConstraintServiceMock {
     return false;
   }
 
-  public constraint_1_2(): Constraint {
+  get combination(): Constraint {
     return this._constraint;
   }
 
