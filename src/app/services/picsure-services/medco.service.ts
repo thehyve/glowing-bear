@@ -60,13 +60,12 @@ export class MedcoService {
     }
   }
 
+  /**
+   * Generates a random pair of keys for the user to be used during this instance.
+   */
   loadUserKeyPair() {
-    // todo: they are hardcoded! should be either generated at runtime, or fetched for a specific user
-    // (but not implemented yet in medco cell)
-    this.publicKey = 'eQviK90cvJ2lRx8ox6GgQKFmOtbgoG9RXa7UnmemtRA=';
-    this.privateKey = 'iqLQz3zMlRjCyBrg4+303hsxL7F5vDtIaBxO0oc7gQA=';
-    // [this.publicKey, this.privateKey] = GenKey(); // if they should be randomly generated at runtime
-    console.log(`Generated the MedCo pair of keys: ${this.privateKey} -- ${this.publicKey}`);
+    [this.publicKey, this.privateKey] = GenKey();
+    console.log(`Generated the MedCo pair of keys (public: -- ${this.publicKey})`);
   }
 
   /**
