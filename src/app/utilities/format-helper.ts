@@ -41,6 +41,11 @@ export class FormatHelper {
     return 'now';
   }
 
+  public static formatDateString(s: string): string {
+    // TODO: make it more readable, e.g. 2018-10-23T11:26:02Z -> 2018-10-23, 11:26:02
+    return s;
+  }
+
   public static percentage(part: number, total: number): string {
     if (total === null || total === 0 || part === null || part < 0) {
       return '';

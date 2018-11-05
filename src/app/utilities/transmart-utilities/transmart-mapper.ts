@@ -29,8 +29,16 @@ import {Concept} from '../../models/constraint-models/concept';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
+import {ExportJob} from '../../models/export-models/export-job';
 
 export class TransmartMapper {
+
+  public static mapTransmartExportJobs(exportJobs: ExportJob[]): ExportJob[] {
+    exportJobs.forEach((exportJob: ExportJob) => {
+      exportJob.jobStatusTime = FormatHelper.formatDateString(exportJob.jobStatusTime);
+    })
+    return exportJobs;
+  }
 
   public static mapTransmartStudies(transmartStudies: TransmartStudy[]): Study[] {
     let studies: Study[] = [];

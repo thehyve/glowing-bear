@@ -13,7 +13,6 @@ import {ResourceService} from './resource.service';
 import {ExportJob} from '../models/export-models/export-job';
 import {DataTableService} from './data-table.service';
 import {saveAs} from 'file-saver';
-import {DatePipe} from '@angular/common';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -37,8 +36,7 @@ export class ExportService {
               private authService: AuthenticationService,
               private studyService: StudyService,
               private dataTableService: DataTableService,
-              private injector: Injector,
-              private datePipe: DatePipe) {
+              private injector: Injector) {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
@@ -84,8 +82,7 @@ export class ExportService {
    */
   createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
-      let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
+      let name = this.exportJobName.trim();
 
       if (this.validateExportJob(name)) {
         let summary = 'Running export job "' + name + '".';
@@ -155,8 +152,9 @@ export class ExportService {
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (data) => {
-          let blob = new Blob([data], {type: 'application/zip'});
-          saveAs(blob, `${job.jobName}.zip`, true);
+          const blob = new Blob([data], {type: 'application/zip'});
+          const filename = job.jobName + ' ' + job.jobStatusTime;
+          saveAs(blob, `${filename}.zip`, true);
         },
         (err: HttpErrorResponse) => {
           ErrorHelper.handleError(err);
