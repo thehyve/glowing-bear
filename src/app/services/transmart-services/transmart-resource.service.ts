@@ -386,7 +386,10 @@ export class TransmartResourceService {
           return TransmartPackerMapper.mapCustomExportJobs(tmExJobs);
         }));
     } else {
-      return this.transmartHttpService.getExportJobs();
+      return this.transmartHttpService.getExportJobs().pipe(
+        map((tmExJobs: ExportJob[]) => {
+          return TransmartMapper.mapTransmartExportJobs(tmExJobs);
+        }));
     }
   }
 

@@ -7,6 +7,7 @@
  */
 import {ExportJob} from '../../models/export-models/export-job';
 import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
+import {FormatHelper} from '../format-helper';
 
 const statusDictionary: { [status: string]: string | undefined } = {
   REGISTERED: 'Created',
@@ -25,7 +26,7 @@ export class TransmartPackerMapper {
       ej.id = job.task_id;
       ej.jobName = job.job_parameters['custom_name'] ? job.job_parameters['custom_name'] : job.task_id;
       ej.jobStatus = statusDictionary[job.status];
-      ej.jobStatusTime = job.created_at;
+      ej.jobStatusTime = FormatHelper.formatDateString(job.created_at);
       ej.userId = job.user;
     }
     return ej;

@@ -15,7 +15,6 @@ import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
-import {DatePipe} from '@angular/common';
 import {ExportJob} from '../models/export-models/export-job';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
@@ -58,8 +57,7 @@ describe('ExportService', () => {
           provide: QueryService,
           useClass: QueryServiceMock
         },
-        ExportService,
-        DatePipe
+        ExportService
       ]
     });
     exportService = TestBed.get(ExportService);

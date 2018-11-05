@@ -445,6 +445,7 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
+
     return this.httpHelper.postCall(urlPart, body, null);
   }
 
