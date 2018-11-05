@@ -74,7 +74,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   get isTransmartSurveyTableDataView(): boolean {
-    let exportMode =  this.appConfig.getConfig('export-mode');
+    let exportMode = this.appConfig.getConfig('export-mode');
     return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
   }
 
