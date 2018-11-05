@@ -21,7 +21,7 @@ export class MedcoService {
 
   private _results: BehaviorSubject<MedcoResult[]>;
 
-  private publicKey: string;
+  private _publicKey: string;
   private privateKey: string;
 
   private cothorityKey: string;
@@ -64,8 +64,8 @@ export class MedcoService {
    * Generates a random pair of keys for the user to be used during this instance.
    */
   loadUserKeyPair() {
-    [this.publicKey, this.privateKey] = GenKey();
-    console.log(`Generated the MedCo pair of keys (public: -- ${this.publicKey})`);
+    [this._publicKey, this.privateKey] = GenKey();
+    console.log(`Generated the MedCo pair of keys (public: -- ${this._publicKey})`);
   }
 
   /**
@@ -102,7 +102,7 @@ export class MedcoService {
       let b64EncodedResultObject = data[k][`medco_results_${k}`];
       let resultObject = JSON.parse(atob(b64EncodedResultObject));
 
-      if (this.publicKey !== resultObject['pub_key']) {
+      if (this._publicKey !== resultObject['pub_key']) {
         console.warn(`Returned public key is different from public key, expect problems (${resultObject['pub_key']})`);
       }
 
@@ -139,6 +139,10 @@ export class MedcoService {
 
   get results(): BehaviorSubject<MedcoResult[]> {
     return this._results;
+  }
+
+  get publicKey(): string {
+    return this._publicKey;
   }
 
 }

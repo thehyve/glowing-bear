@@ -144,7 +144,7 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
     return constraint.variantIds.map((variantId, idx: number) => {
       // let encId = this.medcoService.encryptInteger(variantId);
       let splitPath = constraint.annotation.path.split('/');
-      let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${variantId}/`;
+      let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${variantId}/${this.medcoService.publicKey}/`;
 
       let whereClause = {
         predicate: 'CONTAINS',
@@ -191,10 +191,10 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
           throw new Error(`MedCo service should be loaded`);
         }
 
-        // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/
+        // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/<b64-encoded user's public key>/
         let encId = this.medcoService.encryptInteger(constraint.concept.code.split(':')[1]);
         let splitPath = constraint.concept.path.split('/');
-        let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/`;
+        let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/${this.medcoService.publicKey}/`;
 
         whereClauses.push({
           predicate: 'CONTAINS',
