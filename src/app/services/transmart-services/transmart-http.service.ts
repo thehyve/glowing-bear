@@ -435,13 +435,6 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
-    // TODO: remove this
-    tableState.rowDimensions = tableState.rowDimensions.filter( d => {
-      return d !== 'visit';
-    });
-    tableState.columnDimensions = tableState.columnDimensions.filter( d => {
-      return d !== 'visit';
-    });
 
     return this.httpHelper.postCall(urlPart, body, null);
   }
