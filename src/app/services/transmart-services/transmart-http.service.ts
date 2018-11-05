@@ -39,8 +39,6 @@ export class TransmartHttpService {
   private httpHelper: HttpHelper;
 
   private _endpointUrl: string;
-  private _dateColumnsIncluded = true;
-
   private _studiesLock: boolean;
   private _studies: TransmartStudy[] = null;
   private _studiesSubject: AsyncSubject<TransmartStudy[]>;
@@ -49,14 +47,6 @@ export class TransmartHttpService {
   constructor(private appConfig: AppConfig, httpClient: HttpClient) {
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
     this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
-  }
-
-  get dateColumnsIncluded(): boolean {
-    return this._dateColumnsIncluded;
-  }
-
-  set dateColumnsIncluded(value: boolean) {
-    this._dateColumnsIncluded = value;
   }
 
   get endpointUrl(): string {
@@ -302,12 +292,32 @@ export class TransmartHttpService {
     const responseField = 'exportJob';
     let body = {
       constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
-      elements: elements,
-      includeMeasurementDateColumns: this.dateColumnsIncluded
+      elements: elements
     };
     if (tableState) {
       body['tableConfig'] = tableState;
     }
+    return this.httpHelper.postCall(urlPart, body, responseField);
+  }
+
+  /**
+   * Run an export specific for the surveyTable mode
+   * @param jobId
+   * @param targetConstraint
+   * @param elements
+   * @param dateColumnsIncluded
+   */
+  runSurveyTableExportJob(jobId: string,
+                          targetConstraint: Constraint,
+                          elements: TransmartExportElement[],
+                          dateColumnsIncluded: boolean) {
+    const urlPart = `export/${jobId}/run`;
+    const responseField = 'exportJob';
+    let body = {
+      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+      elements: elements,
+      includeMeasurementDateColumns: dateColumnsIncluded
+    };
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
 

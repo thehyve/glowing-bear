@@ -217,6 +217,13 @@ export class TransmartHttpServiceMock {
     return observableOf(null);
   }
 
+  runSurveyTableExportJob(jobId: string,
+                          targetConstraint: Constraint,
+                          elements: TransmartExportElement[],
+                          dateColumnsIncluded: boolean) {
+    return observableOf(null);
+  }
+
   getStudyIds(constraint: Constraint): Observable<string[]> {
     return observableOf([]);
   }

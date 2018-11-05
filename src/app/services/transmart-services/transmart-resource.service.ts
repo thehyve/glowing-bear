@@ -43,7 +43,6 @@ export class TransmartResourceService {
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
-  private _dateColumnsIncluded = true;
 
   /*
    * Flag indicating if the subject selection of step 1 should be automatically
@@ -83,14 +82,6 @@ export class TransmartResourceService {
 
   set subjectSetConstraint(value: SubjectSetConstraint) {
     this._subjectSetConstraint = value;
-  }
-
-  get dateColumnsIncluded(): boolean {
-    return this._dateColumnsIncluded;
-  }
-
-  set dateColumnsIncluded(value: boolean) {
-    this._dateColumnsIncluded = value;
   }
 
   get useExternalExportJob(): boolean {
@@ -418,16 +409,28 @@ export class TransmartResourceService {
    * @param {string} jobName
    * @param {Constraint} constraint
    * @param {ExportDataType[]} dataTypes
-   * @param {boolean} includeDataTable
    * @param {DataTable} dataTable
+   * @param {boolean} dateColumnsIncluded
    * @returns {Observable<ExportJob>}
    */
   runExportJob(jobId: string,
                jobName: string,
                constraint: Constraint,
                dataTypes: ExportDataType[],
-               includeDataTable: boolean,
-               dataTable: DataTable): Observable<ExportJob> {
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<ExportJob> {
+    let includeDataTable = false;
+    for (let dataType of dataTypes) {
+      if (dataType.checked) {
+        for (let fileFormat of dataType.fileFormats) {
+          if (fileFormat.checked) {
+            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
+              includeDataTable = true;
+            }
+          }
+        }
+      }
+    }
 
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
@@ -446,11 +449,16 @@ export class TransmartResourceService {
         }));
     } else {
       let transmartTableState: TransmartTableState = null;
-      if (includeDataTable) {
-        transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
-      }
       const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.exportDataView);
-      return this.transmartHttpService.runExportJob(jobId, targetConstraint, elements, transmartTableState);
+      if (this.exportDataView === 'surveyTable') {
+        return this.transmartHttpService
+          .runSurveyTableExportJob(jobId, targetConstraint, elements, dateColumnsIncluded);
+      } else {
+        transmartTableState =
+          includeDataTable ? TransmartDataTableMapper.mapDataTableToTableState(dataTable) : null;
+        return this.transmartHttpService
+          .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+      }
     }
   }
 

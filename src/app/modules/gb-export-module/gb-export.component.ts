@@ -7,7 +7,6 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ResourceService} from '../../services/resource.service';
 import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
@@ -24,8 +23,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   private timer: Timer;
 
   constructor(private appConfig: AppConfig,
-              private exportService: ExportService,
-              private resourceService: ResourceService) {
+              private exportService: ExportService) {
   }
 
   ngOnInit() {
@@ -76,11 +74,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   get isTransmartDateColumnIncluded(): boolean {
-    return this.resourceService.transmartDateColumnIncluded;
+    return this.exportService.isTransmartDateColumnsIncluded;
   }
 
   set isTransmartDateColumnIncluded(value: boolean) {
-    this.resourceService.transmartDateColumnIncluded = value;
+    this.exportService.isTransmartDateColumnsIncluded = value;
   }
 
   get exportDataTypes(): ExportDataType[] {
