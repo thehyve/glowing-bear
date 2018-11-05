@@ -207,7 +207,6 @@ describe('TransmartHttpService', () => {
         expect(req.request.body['constraint']).toBeDefined();
         expect(req.request.body['constraint']['type']).toBe('true');
         expect(req.request.body['elements']).toBeDefined();
-        expect(req.request.body['includeMeasurementDateColumns']).toBeDefined();
 
         // scenario 2: with table state
         tableState = new TransmartTableState(['row1'], []);

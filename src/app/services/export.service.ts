@@ -31,6 +31,7 @@ export class ExportService {
   private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
   private _isLoadingExportDataTypes = false;
+  private _isTransmartDateColumnsIncluded = false;
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
@@ -122,7 +123,12 @@ export class ExportService {
   public runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
       let constraint = this.constraintService.constraint_1_2();
-      this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
+      this.resourceService
+        .runExportJob(job,
+          this.exportDataTypes,
+          constraint,
+          this.dataTableService.dataTable,
+          this.isTransmartDateColumnsIncluded)
         .subscribe(
           returnedExportJob => {
             if (returnedExportJob) {
@@ -290,5 +296,13 @@ export class ExportService {
 
   set exportJobName(value: string) {
     this._exportJobName = value;
+  }
+
+  get isTransmartDateColumnsIncluded(): boolean {
+    return this._isTransmartDateColumnsIncluded;
+  }
+
+  set isTransmartDateColumnsIncluded(value: boolean) {
+    this._isTransmartDateColumnsIncluded = value;
   }
 }

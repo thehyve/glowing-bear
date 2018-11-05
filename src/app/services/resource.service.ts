@@ -323,16 +323,13 @@ export class ResourceService {
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
                constraint: Constraint,
-               dataTable: DataTable): Observable<ExportJob> {
-    let includeDataTable = false;
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<ExportJob> {
     let hasSelectedFormat = false;
     for (let dataType of dataTypes) {
       if (dataType.checked) {
         for (let fileFormat of dataType.fileFormats) {
           if (fileFormat.checked) {
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              includeDataTable = true;
-            }
             hasSelectedFormat = true;
           }
         }
@@ -341,7 +338,8 @@ export class ResourceService {
     if (hasSelectedFormat) {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          return this.transmartResourceService.runExportJob(job.id, job.jobName, constraint, dataTypes, includeDataTable, dataTable);
+          return this.transmartResourceService
+            .runExportJob(job.id, job.jobName, constraint, dataTypes, dataTable, dateColumnsIncluded);
         }
         default: {
           return this.handleEndpointModeError();
@@ -519,17 +517,8 @@ export class ResourceService {
     }
   }
 
-  // TODO: refactor transmart speciic variables here, hide them from glowing bear
   get transmartExportDataView(): string {
     return this.transmartResourceService.exportDataView;
-  }
-
-  get transmartDateColumnIncluded(): boolean {
-    return this.transmartResourceService.dateColumnsIncluded;
-  }
-
-  set transmartDateColumnIncluded(value: boolean) {
-    this.transmartResourceService.dateColumnsIncluded = value;
   }
 
   // -------------------------------------- cross table ---------------------------------------------

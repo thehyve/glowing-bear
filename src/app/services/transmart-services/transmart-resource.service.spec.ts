@@ -44,9 +44,10 @@ describe('TransmartResourceService', () => {
     transmartPackerHttpService = TestBed.get(TransmartPackerHttpService);
   });
 
-  it('should be injected', inject([TransmartResourceService], (service: TransmartResourceService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be injected',
+    inject([TransmartResourceService], (service: TransmartResourceService) => {
+      expect(service).toBeTruthy();
+    }));
 
   it('should run transmart export job', () => {
     transmartResourceService.useExternalExportJob = false;
@@ -65,13 +66,19 @@ describe('TransmartResourceService', () => {
     c2.concept = new Concept();
     (<CombinationConstraint>mockConstraint).addChild(c1);
     (<CombinationConstraint>mockConstraint).addChild(c2);
+    let exportSurveyTableSpy = spyOn(transmartHttpService, 'runSurveyTableExportJob').and.callFake(() => {
+      return observableOf(null);
+    });
+    transmartResourceService.exportDataView = 'surveyTable';
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], table, false);
+    expect(exportSurveyTableSpy).toHaveBeenCalled();
+
     let exportSpy = spyOn(transmartHttpService, 'runExportJob').and.callFake(() => {
       return observableOf(null);
     });
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], false, table);
-
-    expect(exportSpy).toHaveBeenCalledWith(jobId, jasmine.any(Constraint), [], null);
-
+    transmartResourceService.exportDataView = 'dataTable';
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], table, false);
+    expect(exportSpy).toHaveBeenCalled();
   });
 
   it('should run external export job', () => {
@@ -82,7 +89,7 @@ describe('TransmartResourceService', () => {
     let exportSpy = spyOn(transmartPackerHttpService, 'runJob').and.callFake(() => {
       return observableOf(null);
     });
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], false, null);
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], null, false);
     expect(exportSpy).toHaveBeenCalledWith(jobName, mockConstraint);
   });
 });
