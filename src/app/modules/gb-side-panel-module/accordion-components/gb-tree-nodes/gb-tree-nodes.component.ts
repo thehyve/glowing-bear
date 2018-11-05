@@ -205,7 +205,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       // if there is a filter word
       if (filterWord.length > 0) {
         for (let node of treeNodes) {
-          let expanded = false;
+          node['expanded'] = false;
           node['styleClass'] = undefined;
           let fieldString = node[field].toLowerCase();
           if (fieldString.includes(filterWord)) { // if there is a hit
@@ -225,12 +225,11 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
             if (subResult.hasMatching) {
               result.hasMatching = true;
               if (this.numExpandedNodes < this.maxNumExpandedNodes) {
-                expanded = true;
+                node['expanded'] = true;
                 this.numExpandedNodes++;
               }
             }
           }
-          node['expanded'] = expanded;
         }
       } else { // if the filter word is empty
         for (let node of treeNodes) {

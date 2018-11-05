@@ -448,13 +448,12 @@ export class TransmartResourceService {
           return TransmartPackerMapper.mapCustomExportJob(tmExJob);
         }));
     } else {
-      let transmartTableState: TransmartTableState = null;
       const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.exportDataView);
       if (this.exportDataView === 'surveyTable') {
         return this.transmartHttpService
           .runSurveyTableExportJob(jobId, targetConstraint, elements, dateColumnsIncluded);
       } else {
-        transmartTableState =
+        let transmartTableState =
           includeDataTable ? TransmartDataTableMapper.mapDataTableToTableState(dataTable) : null;
         return this.transmartHttpService
           .runExportJob(jobId, targetConstraint, elements, transmartTableState);
