@@ -19,7 +19,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
-import {Observable, AsyncSubject} from 'rxjs';
+import {AsyncSubject} from 'rxjs';
+import {AppConfig} from '../config/app.config';
 
 @Injectable({
   providedIn: 'root',
@@ -33,12 +34,12 @@ export class ExportService {
   private _isTransmartDateColumnsIncluded = false;
   private _isDataTypesUpdating = false;
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private appConfig: AppConfig,
+              private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
               private studyService: StudyService,
-              private dataTableService: DataTableService,
-              private injector: Injector) {
+              private dataTableService: DataTableService) {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
@@ -52,10 +53,28 @@ export class ExportService {
             });
         }
       });
-    this.dataTableService.dataTableUpdated.asObservable()
-      .subscribe(() => {
-        this.updateExportDataTypes();
-      });
+
+    /**
+     * If the export-mode's name is 'transmart' and data-view is 'dataTable',
+     *        is data table used for export job creation, which means
+     *        updating data table first, then exprot data types, i.e.
+     *        dataTableService.dataTableUpdated -> updateExportDataTypes()
+     * Else, there is no need to wait for data table to complete,
+     *        directly update export data types whenever the variables are updated, i.e.
+     *        constraintService.variablesUpdated -> updateExportDataTypes()
+     */
+    if (this.isTransmartDataTable) {
+      this.dataTableService.dataTableUpdated.asObservable()
+        .subscribe(() => {
+          this.updateExportDataTypes();
+        });
+    } else {
+      this.constraintService.variablesUpdated.asObservable()
+        .subscribe(() => {
+          this.updateExportDataTypes();
+        });
+    }
+
   }
 
   private updateExportDataTypes() {
@@ -260,6 +279,28 @@ export class ExportService {
     return true;
   }
 
+  get isExternalExportAvailable(): boolean {
+    return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+  }
+
+  get isTransmartSurveyTable(): boolean {
+    let exportMode = this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  }
+
+  get isTransmartDataTable(): boolean {
+    let exportMode = this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'dataTable';
+  }
+
+  get isTransmartDateColumnsIncluded(): boolean {
+    return this._isTransmartDateColumnsIncluded;
+  }
+
+  set isTransmartDateColumnsIncluded(value: boolean) {
+    this._isTransmartDateColumnsIncluded = value;
+  }
+
   get exportDataTypes(): ExportDataType[] {
     return this._exportDataTypes;
   }
@@ -290,14 +331,6 @@ export class ExportService {
 
   set exportJobName(value: string) {
     this._exportJobName = value;
-  }
-
-  get isTransmartDateColumnsIncluded(): boolean {
-    return this._isTransmartDateColumnsIncluded;
-  }
-
-  set isTransmartDateColumnsIncluded(value: boolean) {
-    this._isTransmartDateColumnsIncluded = value;
   }
 
   get isDataTableUpdating(): boolean {
