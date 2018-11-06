@@ -102,8 +102,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   get isExportCreationUIShown(): boolean {
-    const isDataTableExportAllowed = !(this.isExternalExportAvailable || this.isTransmartSurveyTable);
-    return (isDataTableExportAllowed && !this.isDataTableUpdating && !this.isDataTypesUpdating) ||
-      (!isDataTableExportAllowed && !this.isDataTypesUpdating);
+    return (this.exportService.isTransmartDataTable && !this.isDataTableUpdating && !this.isDataTypesUpdating) ||
+      (!this.exportService.isTransmartDataTable && !this.isDataTypesUpdating);
   }
 }
