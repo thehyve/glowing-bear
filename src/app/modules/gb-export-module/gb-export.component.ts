@@ -70,12 +70,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   get isExternalExportAvailable(): boolean {
-    return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+    return this.exportService.isExternalExportAvailable;
   }
 
-  get isTransmartSurveyTableDataView(): boolean {
-    let exportMode = this.appConfig.getConfig('export-mode');
-    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  get isTransmartSurveyTable(): boolean {
+    return this.exportService.isTransmartSurveyTable;
   }
 
   get isTransmartDateColumnIncluded(): boolean {
@@ -100,5 +99,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
 
   get isDataTableUpdating(): boolean {
     return this.exportService.isDataTableUpdating;
+  }
+
+  get isExportCreationUIShown(): boolean {
+    const isDataTableExportAllowed = !(this.isExternalExportAvailable || this.isTransmartSurveyTable);
+    return (isDataTableExportAllowed && !this.isDataTableUpdating && !this.isDataTypesUpdating) ||
+      (!isDataTableExportAllowed && !this.isDataTypesUpdating);
   }
 }

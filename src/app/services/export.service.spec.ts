@@ -17,15 +17,15 @@ import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {ExportJob} from '../models/export-models/export-job';
 import {ExportDataType} from '../models/export-models/export-data-type';
-import {ExportFileFormat} from '../models/export-models/export-file-format';
 import {CohortService} from './cohort.service';
 import {CohortServiceMock} from './mocks/cohort.service.mock';
-import {CountItem} from '../models/aggregate-models/count-item';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 import {StudyService} from './study.service';
 import {StudyServiceMock} from './mocks/study.service.mock';
 import {Observable} from 'rxjs';
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock} from '../config/app.config.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -36,6 +36,10 @@ describe('ExportService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
