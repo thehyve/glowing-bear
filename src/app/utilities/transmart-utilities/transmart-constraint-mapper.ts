@@ -203,7 +203,6 @@ export class TransmartConstraintMapper {
     let constraint: Constraint;
     constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
     (<PedigreeConstraint>constraint).biological = constraintObject['biological'];
-    (<PedigreeConstraint>constraint).symmetrical = constraintObject['symmetrical'];
     (<PedigreeConstraint>constraint).shareHousehold = constraintObject['shareHousehold'];
     let rightHandSide = this.generateConstraintFromObject(constraintObject['relatedSubjectsConstraint']);
     (<PedigreeConstraint>constraint).rightHandSideConstraint.children.length = 0;
