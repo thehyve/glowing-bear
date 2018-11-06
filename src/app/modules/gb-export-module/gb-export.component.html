@@ -5,7 +5,7 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <div class="gb-export-section-banner">
-            <h5 *ngIf="">View and arrange data</h5>
+            <h5>Data Table</h5>
           </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -23,7 +23,7 @@
         </mat-panel-title>
       </mat-expansion-panel-header>
 
-      <div *ngIf="isDataTableUpdating || isDataTypesUpdating; else showDataTypes">
+      <div *ngIf="!isExportCreationUIShown; else showExportCreationUI">
         <div class="loading-text">
           <span class="loading-blink">
             <span>•</span><span>•</span><span>•</span>
@@ -31,7 +31,7 @@
         </div>
       </div>
 
-      <ng-template #showDataTypes>
+      <ng-template #showExportCreationUI>
         <div class="gb-export-format-container">
           <!-- area to indicate which data formats to export -->
           <div class="gb-export-format-header">Select data types and formats to export:</div>
@@ -62,7 +62,7 @@
             </button>
             <span>&nbsp;</span>
             <!-- show the date column checkbox if the export data view is 'surveyTable' -->
-            <div *ngIf="isTransmartSurveyTableDataView">
+            <div *ngIf="isTransmartSurveyTable">
               <p-checkbox class="gb-include-date-columns-checkbox"
                           [(ngModel)]="isTransmartDateColumnIncluded"
                           binary="true"></p-checkbox>
