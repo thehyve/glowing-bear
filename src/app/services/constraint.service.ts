@@ -133,9 +133,6 @@ export class ConstraintService {
         (pedigrees: Pedigree[]) => {
           for (let p of pedigrees) {
             let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(p.label);
-            pedigreeConstraint.description = p.description;
-            pedigreeConstraint.biological = p.biological;
-            pedigreeConstraint.symmetrical = p.symmetrical;
             this.allConstraints.push(pedigreeConstraint);
             this.validPedigreeTypes.push({
               type: pedigreeConstraint.relationType,

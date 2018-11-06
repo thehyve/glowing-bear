@@ -140,10 +140,10 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         [DateOperatorState.AFTER]: '>='
       }[constraint.dateOperator];
       // Values (dates)
-      let values = [constraint.date1.toISOString()];
+      let values = [constraint.date1.getTime()];
       if (constraint.dateOperator === DateOperatorState.BETWEEN ||
         constraint.dateOperator === DateOperatorState.NOT_BETWEEN) {
-        values.push(constraint.date2.toISOString());
+        values.push(constraint.date2.getTime());
       }
       // Construct the date constraint
       // if it is observation date, then the dimension is 'start time', otherwise 'value'
@@ -328,7 +328,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
           args.push(this.visit(constraint.valDateConstraint));
         }
         if (constraint.applyObsDateConstraint) {
-          args.push(this.visit(constraint.obsDateConstraint));
+          let arg = this.visit(constraint.obsDateConstraint);
+          if (this._full) {
+            arg['isObservationDate'] = true;
+          }
+          args.push(arg);
         }
         if (constraint.applyTrialVisitConstraint) {
           args.push(this.visit(constraint.trialVisitConstraint));
