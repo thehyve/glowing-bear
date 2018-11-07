@@ -58,7 +58,6 @@
 
 :host >>> .ui-togglebutton {
   padding: 0.1em;
-  border-radius: 0.5em;
   background-color: transparent;
   border: 1px solid var(--gb-clinical-green-light-light);
   color: var(--gb-clinical-green);

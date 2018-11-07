@@ -3,6 +3,8 @@ import {AuthenticationService} from './authentication/authentication.service';
 import * as fjs from 'fractalis';
 import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
+import {Chart} from '../models/chart-models/chart';
+import {Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,10 @@ import {ChartType} from '../models/chart-models/chart-type';
 export class FractalisService {
 
   public fractalis: any;
+  private _availableChartTypes: ChartType[] = [];
+  private _selectedChartType: ChartType = null;
+  private _charts: Chart[] = [];
+  private _chartAdded: Subject<Chart> = new Subject<Chart>();
 
   constructor(private authService: AuthenticationService) {
     let token = this.authService.token;
@@ -50,19 +56,65 @@ export class FractalisService {
           console.log('cannot load data: ');
           console.log(err)
         });
+      this.retrieveAvailableChartTypes();
 
     } else {
       MessageHelper.alert('error', 'Fail to import Fractalis.');
     }
   }
 
-  get availableChartTypes(): ChartType[] {
+  private retrieveAvailableChartTypes() {
     let fChartTypes: string[] = this.fractalis.getAvailableCharts();
     let chartTypes = [];
     fChartTypes.forEach((t: string) => {
       chartTypes.push(<ChartType>t.toLowerCase());
     });
     chartTypes.push(ChartType.CROSSTABLE);
-    return chartTypes;
+    this.availableChartTypes = chartTypes;
   }
+
+  public addChart() {
+    if (this.selectedChartType) {
+      let chart = new Chart(this.selectedChartType);
+      this.charts.push(chart);
+      this.chartAdded.next(chart);
+    }
+  }
+
+  public removeChart(chart: Chart) {
+    this.charts.splice(this.charts.indexOf(chart), 1);
+  }
+
+  get availableChartTypes(): ChartType[] {
+    return this._availableChartTypes;
+  }
+
+  set availableChartTypes(value: ChartType[]) {
+    this._availableChartTypes = value;
+  }
+
+  get selectedChartType(): ChartType {
+    return this._selectedChartType;
+  }
+
+  set selectedChartType(value: ChartType) {
+    this._selectedChartType = value;
+  }
+
+  get charts(): Chart[] {
+    return this._charts;
+  }
+
+  set charts(value: Chart[]) {
+    this._charts = value;
+  }
+
+  get chartAdded(): Subject<Chart> {
+    return this._chartAdded;
+  }
+
+  set chartAdded(value: Subject<Chart>) {
+    this._chartAdded = value;
+  }
+
 }

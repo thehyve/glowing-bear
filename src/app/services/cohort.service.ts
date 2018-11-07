@@ -291,6 +291,7 @@ export class CohortService {
         this.updateCurrent()
           .then(() => {
             MessageHelper.alert('info', 'Success', `Cohort ${cohort.name} is successfully imported.`);
+            this.currentCohort.selected = true;
             resolve(true);
           })
           .catch(err => {

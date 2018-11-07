@@ -10,6 +10,14 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbAnalysisComponent} from './gb-analysis.component';
 import {MockComponent} from 'ng2-mock-component';
+import {FormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {routing} from './gb-analysis.routing';
+import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
+import {TableModule} from 'primeng/table';
+import {GridsterModule} from 'angular-gridster2';
+import {MatButtonModule, MatExpansionModule, MatIconModule} from '@angular/material';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('GbAnalysisComponent', () => {
   let component: GbAnalysisComponent;
@@ -21,6 +29,20 @@ describe('GbAnalysisComponent', () => {
         GbAnalysisComponent,
         MockComponent({selector: 'gb-fractalis-control'}),
         MockComponent({selector: 'gb-fractalis-visual'})
+      ],
+      imports: [
+        BrowserAnimationsModule,
+        FormsModule,
+        CommonModule,
+        routing,
+        DragDropModule,
+        TableModule,
+        OverlayPanelModule,
+        SelectButtonModule,
+        GridsterModule,
+        MatIconModule,
+        MatButtonModule,
+        MatExpansionModule
       ]
     })
       .compileComponents();

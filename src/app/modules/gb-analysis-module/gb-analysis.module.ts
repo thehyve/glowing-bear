@@ -7,6 +7,7 @@
  */
 
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {GbAnalysisComponent} from './gb-analysis.component';
 import {routing} from './gb-analysis.routing';
@@ -17,16 +18,25 @@ import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-ce
 import {GbDroppableZoneComponent} from './cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
 import {TableModule} from 'primeng/table';
 import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-control/gb-fractalis-control.component';
-import { GbFractalisVisualComponent } from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
+import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
+import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
+import {GridsterModule} from 'angular-gridster2';
+import {MatIconModule, MatButtonModule, MatExpansionModule} from '@angular/material';
+
 
 @NgModule({
   imports: [
+    FormsModule,
     CommonModule,
     routing,
     DragDropModule,
     TableModule,
     OverlayPanelModule,
-    SelectButtonModule
+    SelectButtonModule,
+    GridsterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatExpansionModule
   ],
   exports: [
     RouterModule
@@ -35,7 +45,8 @@ import { GbFractalisVisualComponent } from './fractalis-components/gb-fractalis-
     GbAnalysisComponent, GbCrossTableComponent,
     GbDraggableCellComponent, GbDroppableZoneComponent,
     GbFractalisControlComponent,
-    GbFractalisVisualComponent
+    GbFractalisVisualComponent,
+    GbFractalisChartComponent
   ]
 })
 export class GbAnalysisModule {

@@ -1,4 +1,12 @@
 /* top, right, bottom, left */
 .analysis-container {
-  margin: var(--gb-navbar-height-extra) 0.5em 1em 0.5em;
+  margin-top: var(--gb-navbar-height-extra);
+  padding: 0.5em;
+}
+
+.section-banner {
+  color: darkgray;
+  padding: 0px;
+  margin-bottom: 10px;
+  text-align: left;
 }

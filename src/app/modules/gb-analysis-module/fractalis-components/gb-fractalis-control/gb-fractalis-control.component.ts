@@ -11,7 +11,6 @@ import {ChartType} from '../../../../models/chart-models/chart-type';
 export class GbFractalisControlComponent implements OnInit {
 
   public availableChartTypes: SelectItem[];
-  public selectedChartType: string;
 
   // TODO: accept drag & drop of variables
   constructor(private fractalisService: FractalisService) {
@@ -31,5 +30,25 @@ export class GbFractalisControlComponent implements OnInit {
   onChartTypeSelection(e) {
     this.selectedChartType = <ChartType>e.value;
     console.log(e, this.selectedChartType);
+  }
+
+  onAddChart() {
+    this.fractalisService.addChart();
+  }
+
+  get selectedChartType(): ChartType {
+    return this.fractalisService.selectedChartType;
+  }
+
+  set selectedChartType(value: ChartType) {
+    this.fractalisService.selectedChartType = value;
+  }
+
+  get isDropZoneShown() {
+    return (this.selectedChartType && this.selectedChartType !== ChartType.CROSSTABLE);
+  }
+
+  get isAddButtonShown() {
+    return this.selectedChartType;
   }
 }

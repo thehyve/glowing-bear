@@ -3,7 +3,10 @@
 @import "../../node_modules/roboto-fontface/css/roboto/roboto-fontface.css";
 @import "../../node_modules/primeicons/primeicons.css";
 @import "./primeng-theme.css";
+/*@import "~@angular/material/prebuilt-themes/indigo-pink.css";*/
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
 @import "./bootstrap.css";
+
 
 /*
   custom variables
