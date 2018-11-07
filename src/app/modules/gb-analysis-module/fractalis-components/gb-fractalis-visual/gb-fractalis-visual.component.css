@@ -1,0 +1,26 @@
+.fractalis-visual-container {
+  margin-top: 0.5em;
+  margin-bottom: 2em;
+}
+
+.clear-btn-container {
+  margin-bottom: 0.5em;
+}
+.clear-btn-container button {
+  min-width: 6em;
+}
+
+.close-btn-row {
+  margin: 0.1em;
+}
+.close-btn-row .mat-icon-button {
+  width: 2em;
+  height: 2em;
+}
+.close-btn-row .mat-icon-button:hover {
+  background-color: lightgray;
+}
+.close-btn-row mat-icon {
+  vertical-align: baseline;
+  font-size: 1.5em;
+}

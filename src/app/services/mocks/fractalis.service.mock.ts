@@ -1,5 +1,3 @@
-import {ChartType} from '../../models/chart-models/chart-type';
-
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
@@ -8,18 +6,35 @@ import {ChartType} from '../../models/chart-models/chart-type';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class FractalisServiceMock {
+import {ChartType} from '../../models/chart-models/chart-type';
+import {Chart} from '../../models/chart-models/chart';
+import {Subject} from 'rxjs';
 
-  get availableChartTypes(): ChartType[] {
-    return [
-      ChartType.CROSSTABLE,
-      ChartType.HEATMAP,
-      ChartType.BOXPLOT,
-      ChartType.HISTOGRAM,
-      ChartType.PCA,
-      ChartType.SCATTERPLOT,
-      ChartType.SURVIVALPLOT,
-      ChartType.VOLCANOPLOT
-    ]
+export class FractalisServiceMock {
+  charts: Chart[] = [];
+  selectedChartType: ChartType = null;
+  availableChartTypes: ChartType[] = [
+    ChartType.CROSSTABLE,
+    ChartType.HEATMAP,
+    ChartType.BOXPLOT,
+    ChartType.HISTOGRAM,
+    ChartType.PCA,
+    ChartType.SCATTERPLOT,
+    ChartType.SURVIVALPLOT,
+    ChartType.VOLCANOPLOT
+  ];
+  chartAdded: Subject<Chart> = new Subject();
+
+
+  public addChart() {
+    if (this.selectedChartType) {
+      let chart = new Chart(this.selectedChartType);
+      this.charts.push(chart);
+      this.chartAdded.next(chart);
+    }
+  }
+
+  public removeChart(chart: Chart) {
+    this.charts.splice(this.charts.indexOf(chart), 1);
   }
 }

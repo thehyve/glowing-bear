@@ -1,7 +1,31 @@
 <div class="analysis-container">
 
-  <gb-fractalis-control></gb-fractalis-control>
+  <mat-accordion [multi]="true">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="section-banner">
+            <h5>New chart</h5>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
 
-  <gb-fractalis-visual></gb-fractalis-visual>
+      <gb-fractalis-control></gb-fractalis-control>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+  <mat-accordion [multi]="true">
+    <mat-expansion-panel expanded="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <div class="section-banner">
+            <h5>Charts</h5>
+          </div>
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <gb-fractalis-visual></gb-fractalis-visual>
+    </mat-expansion-panel>
+  </mat-accordion>
 
 </div>

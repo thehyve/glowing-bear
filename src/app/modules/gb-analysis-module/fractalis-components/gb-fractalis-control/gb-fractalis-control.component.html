@@ -1,9 +1,13 @@
 <div class="fractalis-control-container">
-  <div class="instruction">Choose a chart:</div>
+
   <p-selectButton [options]="availableChartTypes"
                   (onChange)="onChartTypeSelection($event)"></p-selectButton>
 
-  <div class="variable-drop-zone">
+  <div *ngIf="isDropZoneShown" class="drop-zone">
     Drop variable(s) here
+  </div>
+
+  <div *ngIf="isAddButtonShown" class="add-btn-container">
+    <button type="button" class="btn btn-primary btn-sm" (click)="onAddChart()">Add</button>
   </div>
 </div>

@@ -2,10 +2,9 @@
   color: white;
 }
 
-.gb-export-container {
+.export-container {
   margin-top: var(--gb-navbar-height-extra);
-  margin-left: 10px;
-  padding: 10px;
+  padding: 0.5em;
   text-align: center;
   font-size: small;
 }
@@ -40,14 +39,14 @@
   margin-top: 0px;
 }
 
-.gb-export-section-banner {
+.section-banner {
   color: darkgray;
   padding: 0px;
   margin-bottom: 10px;
   text-align: left;
 }
 
-.gb-export-container .loading-text {
+.export-container .loading-text {
   font-size: medium;
   color: darkgray;
   text-align: left;

@@ -1,7 +1,11 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbFractalisVisualComponent} from './gb-fractalis-visual.component';
-import {SelectButtonModule} from 'primeng/primeng';
+import {MockComponent} from 'ng2-mock-component';
+import {GridsterModule} from 'angular-gridster2';
+import {MatIconModule} from '@angular/material';
+import {FractalisService} from '../../../../services/fractalis.service';
+import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
 
 describe('GbFractalisVisualComponent', () => {
   let component: GbFractalisVisualComponent;
@@ -9,9 +13,19 @@ describe('GbFractalisVisualComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbFractalisVisualComponent],
+      declarations: [
+        GbFractalisVisualComponent,
+        MockComponent({selector: 'gb-fractalis-chart', inputs: ['chart']})
+      ],
+      providers: [
+        {
+          provide: FractalisService,
+          useClass: FractalisServiceMock
+        }
+      ],
       imports: [
-        SelectButtonModule
+        GridsterModule,
+        MatIconModule,
       ]
     })
       .compileComponents();

@@ -27,6 +27,7 @@
             ],
             "styles": [
               "src/assets/icons/icons.style.css",
+              "src/styles/material-theme.scss",
               "src/styles/styles.css"
             ],
             "scripts": []
@@ -78,6 +79,7 @@
             "scripts": [],
             "styles": [
               "src/assets/icons/icons.style.css",
+              "src/styles/material-theme.scss",
               "src/styles/styles.css"
             ],
             "assets": [

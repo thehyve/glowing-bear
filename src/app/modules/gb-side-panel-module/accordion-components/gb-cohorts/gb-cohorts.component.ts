@@ -236,7 +236,8 @@ export class GbCohortsComponent implements OnInit {
 
   get subjectCountText(): string {
     const count = this.cohortService.allCounts.subjectCount;
-    const countString = FormatHelper.formatCountNumber(count)
+    const countString = (this.cohortService.isUpdatingCurrent || this.cohortService.isUpdatingAll) ?
+      '...' : FormatHelper.formatCountNumber(count);
     return count === 1 ? countString + ' subject selected' : countString + ' subjects selected';
   }
 }
