@@ -75,7 +75,7 @@ export class ResourceServiceMock {
   getExportJobs(): Observable<ExportJob[]> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
-    newExportJob.jobName = 'test job name';
+    newExportJob.name = 'test job name';
     this.exportJobs = [newExportJob];
     return observableOf(this.exportJobs);
   }
@@ -167,7 +167,7 @@ export class ResourceServiceMock {
   createExportJob(name: string): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
-    newExportJob.jobName = 'test job name';
+    newExportJob.name = 'test job name';
     return observableOf(newExportJob);
   }
 
@@ -177,7 +177,7 @@ export class ResourceServiceMock {
                dataTable: DataTable): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
-    newExportJob.jobName = 'test job name';
+    newExportJob.name = 'test job name';
     return observableOf(newExportJob);
   }
 }

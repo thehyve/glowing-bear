@@ -34,6 +34,7 @@ import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 
 @Injectable()
 export class ResourceService {
@@ -285,10 +286,14 @@ export class ResourceService {
    * Get the current user's existing export jobs
    * @returns {Observable<ExportJob[]>}
    */
-  getExportJobs(): Observable<any[]> {
+  getExportJobs(): Observable<ExportJob[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportJobs();
+        return this.transmartResourceService.getExportJobs().pipe(
+          map((tmExportJobs: TransmartExportJob[]) => {
+            return TransmartMapper.mapTransmartExportJobs(tmExportJobs);
+          })
+        );
       }
       default: {
         return this.handleEndpointModeError();
@@ -304,7 +309,11 @@ export class ResourceService {
   createExportJob(name: string): Observable<ExportJob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.createExportJob(name);
+        return this.transmartResourceService.createExportJob(name).pipe(
+          map((tmExportJob: TransmartExportJob) => {
+            return TransmartMapper.mapTransmartExportJob(tmExportJob);
+          })
+        );
       }
       default: {
         return this.handleEndpointModeError();
@@ -339,7 +348,11 @@ export class ResourceService {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           return this.transmartResourceService
-            .runExportJob(job.id, job.jobName, constraint, dataTypes, dataTable, dateColumnsIncluded);
+            .runExportJob(job.id, job.name, constraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
+              map((tmExportJob: TransmartExportJob) => {
+                return TransmartMapper.mapTransmartExportJob(tmExportJob);
+              })
+            );
         }
         default: {
           return this.handleEndpointModeError();

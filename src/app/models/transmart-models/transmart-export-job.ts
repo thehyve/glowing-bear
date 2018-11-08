@@ -6,14 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {FormatHelper} from '../../utilities/format-helper';
-
-export class ExportJob {
+export class TransmartExportJob {
   private _id: string;
-  private _name: string;
-  private _status: string;
-  private _time: Date;
-  private _timeDescription: string;
+  private _jobName: string;
+  private _jobStatus: string;
+  private _jobStatusTime: string;
   private _userId: string;
   private _viewerURL: string;
   private _isInDisabledState: boolean;
@@ -26,37 +23,28 @@ export class ExportJob {
     this._id = value;
   }
 
-  get name(): string {
-    return this._name;
+  get jobName(): string {
+    return this._jobName;
   }
 
-  set name(value: string) {
-    this._name = value;
+  set jobName(value: string) {
+    this._jobName = value;
   }
 
-  get status(): string {
-    return this._status;
+  get jobStatus(): string {
+    return this._jobStatus;
   }
 
-  set status(value: string) {
-    this._status = value;
+  set jobStatus(value: string) {
+    this._jobStatus = value;
   }
 
-  get time(): Date {
-    return this._time;
+  get jobStatusTime(): string {
+    return this._jobStatusTime;
   }
 
-  set time(value: Date) {
-    this._time = value;
-    this.timeDescription = FormatHelper.formatDateSemantics(value);
-  }
-
-  get timeDescription(): string {
-    return this._timeDescription;
-  }
-
-  set timeDescription(value: string) {
-    this._timeDescription = value;
+  set jobStatusTime(value: string) {
+    this._jobStatusTime = value;
   }
 
   get userId(): string {

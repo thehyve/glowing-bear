@@ -69,22 +69,22 @@
     <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
   </div>
   <p-dataTable #dt
-               sortField="jobStatusTime"
+               sortField="timeDescription"
                sortOrder="-1"
                [value]="exportJobs"
                [rows]="10" [paginator]="true"
                [globalFilter]="globalFilter">
-    <p-column field="jobName" header="Name"
+    <p-column field="name" header="Name"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatus" header="Status"
+    <p-column field="status" header="Status"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatusTime" header="Last updated"
+    <p-column field="timeDescription" header="Last updated"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter Column">
     </p-column>

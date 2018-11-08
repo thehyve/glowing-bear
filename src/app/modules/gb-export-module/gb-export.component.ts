@@ -85,7 +85,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
     return this.exportService.exportDataTypes;
   }
 
-  get exportJobs(): ExportJob[] {
+  get exportJobs(): ExportJob[] { console.log('jobs', this.exportService.exportJobs);
     return this.exportService.exportJobs;
   }
 

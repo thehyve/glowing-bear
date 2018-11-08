@@ -36,6 +36,7 @@ import {DataTable} from '../../models/table-models/data-table';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
 import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {Study} from '../../models/constraint-models/study';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
 @Injectable()
@@ -377,19 +378,16 @@ export class TransmartResourceService {
 
   /**
    * Get the current user's existing export jobs
-   * @returns {Observable<ExportJob[]>}
+   * @returns {Observable<TransmartExportJob[]>}
    */
-  getExportJobs(): Observable<any[]> {
+  getExportJobs(): Observable<TransmartExportJob[]> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.getAllJobs().pipe(
         map((tmExJobs: TransmartPackerJob[]) => {
           return TransmartPackerMapper.mapCustomExportJobs(tmExJobs);
         }));
     } else {
-      return this.transmartHttpService.getExportJobs().pipe(
-        map((tmExJobs: ExportJob[]) => {
-          return TransmartMapper.mapTransmartExportJobs(tmExJobs);
-        }));
+      return this.transmartHttpService.getExportJobs();
     }
   }
 
@@ -398,7 +396,7 @@ export class TransmartResourceService {
    * @param name
    * @returns {Observable<ExportJob>}
    */
-  createExportJob(name: string): Observable<ExportJob> {
+  createExportJob(name: string): Observable<TransmartExportJob> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.createExportJob(name);
     } else {
@@ -414,14 +412,14 @@ export class TransmartResourceService {
    * @param {ExportDataType[]} dataTypes
    * @param {DataTable} dataTable
    * @param {boolean} dateColumnsIncluded
-   * @returns {Observable<ExportJob>}
+   * @returns {Observable<TransmartExportJob>}
    */
   runExportJob(jobId: string,
                jobName: string,
                constraint: Constraint,
                dataTypes: ExportDataType[],
                dataTable: DataTable,
-               dateColumnsIncluded: boolean): Observable<ExportJob> {
+               dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
     let includeDataTable = false;
     for (let dataType of dataTypes) {
       if (dataType.checked) {

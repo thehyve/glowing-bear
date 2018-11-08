@@ -17,6 +17,7 @@ import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
 import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
 @Injectable()
@@ -121,10 +122,10 @@ export class TransmartPackerHttpService {
    * Creates export job,
    * when the external job handler has one method to both create and run the job
    * @param {string} name
-   * @returns {Observable<ExportJob>}
+   * @returns {Observable<TransmartExportJob>}
    */
-  createExportJob(name: string): Observable<ExportJob> {
-    let newExportJob = new ExportJob();
+  createExportJob(name: string): Observable<TransmartExportJob> {
+    let newExportJob = new TransmartExportJob();
     newExportJob.id = name;
     newExportJob.jobName = name;
     return observableOf(newExportJob);

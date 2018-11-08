@@ -137,12 +137,12 @@ export class ExportService {
                   reject(err);
                 });
             } else {
-              reject(`Fail to run export job ${job.jobName}, server returns undefined job.`);
+              reject(`Fail to run export job ${job.name}, server returns undefined job.`);
             }
           },
           (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
-            reject(`Fail to run export job ${job.jobName}.`);
+            reject(`Fail to run export job ${job.name}.`);
           }
         );
     });
@@ -159,14 +159,14 @@ export class ExportService {
       .subscribe(
         (data) => {
           const blob = new Blob([data], {type: 'application/zip'});
-          const filename = job.jobName + ' ' + job.jobStatusTime;
+          const filename = job.name + ' ' + job.time.toISOString();
           saveAs(blob, `${filename}.zip`, true);
         },
         (err: HttpErrorResponse) => {
           ErrorHelper.handleError(err);
         },
         () => {
-          MessageHelper.alert('success', `Export ${job.jobName} download completed`);
+          MessageHelper.alert('success', `Export ${job.name} download completed`);
         }
       );
   }
@@ -201,7 +201,7 @@ export class ExportService {
     return new Promise((resolve, reject) => {
       this.resourceService.getExportJobs()
         .subscribe(
-          jobs => {
+          (jobs: ExportJob[]) => {
             jobs.forEach(job => {
               job.isInDisabledState = false
             });
