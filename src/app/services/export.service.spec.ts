@@ -71,7 +71,7 @@ describe('ExportService', () => {
   it('should validate export job name', () => {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
-    newExportJob.jobName = 'test job name';
+    newExportJob.name = 'test job name';
     exportService.exportJobs = [newExportJob];
     let result = exportService.validateExportJob('');
     expect(result).toBe(false);
