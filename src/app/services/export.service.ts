@@ -137,12 +137,12 @@ export class ExportService {
                   reject(err);
                 });
             } else {
-              reject(`Fail to run export job ${job.jobName}, server returns undefined job.`);
+              reject(`Fail to run export job ${job.name}, server returns undefined job.`);
             }
           },
           (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
-            reject(`Fail to run export job ${job.jobName}.`);
+            reject(`Fail to run export job ${job.name}.`);
           }
         );
     });
@@ -154,56 +154,71 @@ export class ExportService {
    * @param job
    */
   downloadExportJob(job: ExportJob) {
-    job.isInDisabledState = true;
+    job.disabled = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (data) => {
           const blob = new Blob([data], {type: 'application/zip'});
-          const filename = job.jobName + ' ' + job.jobStatusTime;
+          const filename = job.name + ' ' + job.time.toISOString();
           saveAs(blob, `${filename}.zip`, true);
         },
         (err: HttpErrorResponse) => {
           ErrorHelper.handleError(err);
         },
         () => {
-          MessageHelper.alert('success', `Export ${job.jobName} download completed`);
+          MessageHelper.alert('success', `Export ${job.name} download completed`);
+          job.disabled = false;
         }
       );
   }
 
-  cancelExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.cancelExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  cancelExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.cancelExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
-  archiveExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.archiveExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  archiveExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.archiveExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
   updateExportJobs(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.resourceService.getExportJobs()
         .subscribe(
-          jobs => {
+          (jobs: ExportJob[]) => {
             jobs.forEach(job => {
-              job.isInDisabledState = false
+              job.disabled = false
             });
             this.exportJobs = jobs;
             resolve(true);

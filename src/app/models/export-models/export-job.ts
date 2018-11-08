@@ -6,14 +6,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import {FormatHelper} from '../../utilities/format-helper';
+
 export class ExportJob {
   private _id: string;
-  private _jobName: string;
-  private _jobStatus: string;
-  private _jobStatusTime: string;
+  private _name: string;
+  private _status: string;
+  private _time: Date;
+  private _timeDescription: string;
   private _userId: string;
   private _viewerURL: string;
-  private _isInDisabledState: boolean;
+  private _disabled: boolean;
 
   get id(): string {
     return this._id;
@@ -23,28 +26,37 @@ export class ExportJob {
     this._id = value;
   }
 
-  get jobName(): string {
-    return this._jobName;
+  get name(): string {
+    return this._name;
   }
 
-  set jobName(value: string) {
-    this._jobName = value;
+  set name(value: string) {
+    this._name = value;
   }
 
-  get jobStatus(): string {
-    return this._jobStatus;
+  get status(): string {
+    return this._status;
   }
 
-  set jobStatus(value: string) {
-    this._jobStatus = value;
+  set status(value: string) {
+    this._status = value;
   }
 
-  get jobStatusTime(): string {
-    return this._jobStatusTime;
+  get time(): Date {
+    return this._time;
   }
 
-  set jobStatusTime(value: string) {
-    this._jobStatusTime = value;
+  set time(value: Date) {
+    this._time = value;
+    this.timeDescription = FormatHelper.formatDateSemantics(value);
+  }
+
+  get timeDescription(): string {
+    return this._timeDescription;
+  }
+
+  set timeDescription(value: string) {
+    this._timeDescription = value;
   }
 
   get userId(): string {
@@ -63,11 +75,11 @@ export class ExportJob {
     this._viewerURL = value;
   }
 
-  get isInDisabledState(): boolean {
-    return this._isInDisabledState;
+  get disabled(): boolean {
+    return this._disabled;
   }
 
-  set isInDisabledState(value: boolean) {
-    this._isInDisabledState = value;
+  set disabled(value: boolean) {
+    this._disabled = value;
   }
 }

@@ -5,9 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 import {ExportJob} from '../../models/export-models/export-job';
 import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
-import {FormatHelper} from '../format-helper';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 const statusDictionary: { [status: string]: string | undefined } = {
   REGISTERED: 'Created',
@@ -20,20 +21,20 @@ const statusDictionary: { [status: string]: string | undefined } = {
 
 export class TransmartPackerMapper {
 
-  static mapCustomExportJob(job: TransmartPackerJob): ExportJob {
-    let ej = new ExportJob();
+  static mapCustomExportJob(job: TransmartPackerJob): TransmartExportJob {
+    let ej = new TransmartExportJob();
     if (job) {
       ej.id = job.task_id;
       ej.jobName = job.job_parameters['custom_name'] ? job.job_parameters['custom_name'] : job.task_id;
       ej.jobStatus = statusDictionary[job.status];
-      ej.jobStatusTime = FormatHelper.formatDateString(job.created_at);
+      ej.jobStatusTime = job.created_at;
       ej.userId = job.user;
     }
     return ej;
   }
 
-  static mapCustomExportJobs(exJobs: TransmartPackerJob[]): ExportJob[] {
-    let jobs: ExportJob[] = [];
+  static mapCustomExportJobs(exJobs: TransmartPackerJob[]): TransmartExportJob[] {
+    let jobs: TransmartExportJob[] = [];
     exJobs.forEach(exJob => {
       try {
         let job = this.mapCustomExportJob(exJob);

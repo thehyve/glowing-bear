@@ -69,22 +69,22 @@
     <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
   </div>
   <p-dataTable #dt
-               sortField="jobStatusTime"
+               sortField="timeDescription"
                sortOrder="-1"
                [value]="exportJobs"
                [rows]="10" [paginator]="true"
                [globalFilter]="globalFilter">
-    <p-column field="jobName" header="Name"
+    <p-column field="name" header="Name"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatus" header="Status"
+    <p-column field="status" header="Status"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatusTime" header="Last updated"
+    <p-column field="timeDescription" header="Last updated"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter Column">
     </p-column>
@@ -93,17 +93,17 @@
       </ng-template>
       <ng-template let-job="rowData" pTemplate="body">
         <button type="button"
-                *ngIf="job.jobStatus === 'Completed'"
+                *ngIf="job.status === 'Completed'"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="downloadExportJob(job)">
           <span class="fa fa-download"></span>
           Download
         </button>
         <button type="button"
-                *ngIf="['Completed','Error','Cancelled'].indexOf(job.jobStatus) < 0;else archive"
+                *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="cancelExportJob(job)">
           <span class="fa fa-times"></span>
           Cancel
@@ -112,7 +112,7 @@
           <button type="button"
                   *ngIf="!isExternalExportAvailable"
                   class="btn btn-outline-primary btn-sm"
-                  [disabled] = "job.isInDisabledState"
+                  [disabled] = "job.disabled"
                   (click)="archiveExportJob(job)">
             <span class="fa fa-archive"></span>
             Archive
