@@ -117,7 +117,7 @@ export class GbFractalisVisualComponent implements OnInit {
     this.itemChartMap.delete(item);
   }
 
-  clearCharts() {
+  clearItems() {
     this.fractalisService.charts.length = 0;
     this.items.length = 0;
     this.itemChartMap.clear();
