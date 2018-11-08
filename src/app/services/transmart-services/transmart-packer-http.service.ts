@@ -100,7 +100,7 @@ export class TransmartPackerHttpService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadJobData(jobId: string) {
+  downloadJobData(jobId: string): Observable<Blob> {
     let url = `jobs/data/${jobId}`;
     return this.httpHelper.downloadData(url);
   }

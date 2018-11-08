@@ -467,7 +467,7 @@ export class TransmartResourceService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.downloadJobData(jobId);
     } else {

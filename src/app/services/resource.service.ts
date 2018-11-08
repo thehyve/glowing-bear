@@ -368,7 +368,7 @@ export class ResourceService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.downloadExportJob(jobId);

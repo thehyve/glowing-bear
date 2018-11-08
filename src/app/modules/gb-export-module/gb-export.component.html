@@ -93,17 +93,17 @@
       </ng-template>
       <ng-template let-job="rowData" pTemplate="body">
         <button type="button"
-                *ngIf="job.jobStatus === 'Completed'"
+                *ngIf="job.status === 'Completed'"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="downloadExportJob(job)">
           <span class="fa fa-download"></span>
           Download
         </button>
         <button type="button"
-                *ngIf="['Completed','Error','Cancelled'].indexOf(job.jobStatus) < 0;else archive"
+                *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="cancelExportJob(job)">
           <span class="fa fa-times"></span>
           Cancel
@@ -112,7 +112,7 @@
           <button type="button"
                   *ngIf="!isExternalExportAvailable"
                   class="btn btn-outline-primary btn-sm"
-                  [disabled] = "job.isInDisabledState"
+                  [disabled] = "job.disabled"
                   (click)="archiveExportJob(job)">
             <span class="fa fa-archive"></span>
             Archive

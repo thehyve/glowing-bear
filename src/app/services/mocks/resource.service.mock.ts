@@ -21,6 +21,7 @@ import {CountItem} from '../../models/aggregate-models/count-item';
 import {TransmartHttpService} from '../transmart-services/transmart-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
+import {EndpointMode} from '../../models/endpoint-mode';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -179,5 +180,17 @@ export class ResourceServiceMock {
     newExportJob.id = 'id';
     newExportJob.name = 'test job name';
     return observableOf(newExportJob);
+  }
+
+  downloadExportJob(jobId: string): Observable<Blob> {
+    return Observable.of(new Blob());
+  }
+
+  cancelExportJob(jobId: string): Observable<{}> {
+    return Observable.of({});
+  }
+
+  archiveExportJob(jobId: string): Observable<{}> {
+    return Observable.of({});
   }
 }

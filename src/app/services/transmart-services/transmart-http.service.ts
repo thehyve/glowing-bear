@@ -328,7 +328,7 @@ export class TransmartHttpService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     let urlPart = `export/${jobId}/download`;
     return this.httpHelper.downloadData(urlPart);
   }

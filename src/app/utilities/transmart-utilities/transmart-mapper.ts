@@ -43,7 +43,7 @@ export class TransmartMapper {
     job.time = new Date(tmExportJob.jobStatusTime);
     job.userId = tmExportJob.userId;
     job.viewerURL = tmExportJob.viewerURL;
-    job.isInDisabledState = tmExportJob.isInDisabledState;
+    job.disabled = tmExportJob.isInDisabledState;
     return job;
   }
 

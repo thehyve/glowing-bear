@@ -154,7 +154,7 @@ export class ExportService {
    * @param job
    */
   downloadExportJob(job: ExportJob) {
-    job.isInDisabledState = true;
+    job.disabled = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (data) => {
@@ -167,34 +167,49 @@ export class ExportService {
         },
         () => {
           MessageHelper.alert('success', `Export ${job.name} download completed`);
+          job.disabled = false;
         }
       );
   }
 
-  cancelExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.cancelExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  cancelExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.cancelExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
-  archiveExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.archiveExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  archiveExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.archiveExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
   updateExportJobs(): Promise<any> {
@@ -203,7 +218,7 @@ export class ExportService {
         .subscribe(
           (jobs: ExportJob[]) => {
             jobs.forEach(job => {
-              job.isInDisabledState = false
+              job.disabled = false
             });
             this.exportJobs = jobs;
             resolve(true);
