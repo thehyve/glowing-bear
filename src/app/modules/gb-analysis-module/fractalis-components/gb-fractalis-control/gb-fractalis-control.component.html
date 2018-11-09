@@ -3,7 +3,13 @@
   <p-selectButton [options]="availableChartTypes"
                   [(ngModel)]="selectedChartType"></p-selectButton>
 
-  <div *ngIf="isDropZoneShown" class="drop-zone">
+  <div *ngIf="isDropZoneShown"
+       class="drop-zone"
+       [pDroppable]="variablesDragDropScope"
+       [ngClass]="{'drop-zone-highlight': dragCounter > 0}"
+       (onDragEnter)="onDragEnter($event)"
+       (onDragLeave)="onDragLeave($event)"
+       (drop)="onDrop()">
     Drop variable(s) here
   </div>
 

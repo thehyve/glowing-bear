@@ -14,7 +14,6 @@ import {GbDraggableCellComponent} from '../modules/gb-analysis-module/cross-tabl
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Aggregate} from '../models/aggregate-models/aggregate';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
@@ -314,7 +313,6 @@ export class CrossTableService {
   get rowHeaderConstraints(): Constraint[][] {
     return this.crossTable.rowHeaderConstraints;
   }
-
 
   get crossTable(): CrossTable {
     return this._crossTable;

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {SelectItem} from 'primeng/api';
 import {ChartType} from '../../../../models/chart-models/chart-type';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 @Component({
   selector: 'gb-fractalis-control',
@@ -10,8 +11,11 @@ import {ChartType} from '../../../../models/chart-models/chart-type';
 })
 export class GbFractalisControlComponent implements OnInit {
 
+  dragCounter = 0;
+
   // TODO: accept drag & drop of variables
-  constructor(private fractalisService: FractalisService) {
+  constructor(private fractalisService: FractalisService,
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
@@ -19,6 +23,23 @@ export class GbFractalisControlComponent implements OnInit {
 
   onAddChart() {
     this.fractalisService.addChart();
+  }
+
+  onDragEnter(e: DragEvent) {
+    if (this.dragCounter < 0) {
+      this.dragCounter = 0;
+    }
+    this.dragCounter++;
+  }
+
+  onDragLeave(e: DragEvent) {
+    e.preventDefault();
+    this.dragCounter--;
+  }
+
+  onDrop() {
+    console.log('drop', this.constraintService.draggedVariable);
+    this.dragCounter = 0;
   }
 
   get selectedChartType(): ChartType {
@@ -39,5 +60,9 @@ export class GbFractalisControlComponent implements OnInit {
 
   get isAddButtonShown() {
     return this.selectedChartType;
+  }
+
+  get variablesDragDropScope(): string {
+    return this.constraintService.variablesDragDropScope;
   }
 }
