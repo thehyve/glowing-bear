@@ -10,6 +10,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDataTableComponent} from './gb-data-table.component';
 import {MockComponent} from 'ng2-mock-component';
+import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
+import {DataTableService} from '../../../../services/data-table.service';
 
 describe('GbDataTableComponent', () => {
   let component: GbDataTableComponent;
@@ -21,6 +23,12 @@ describe('GbDataTableComponent', () => {
         GbDataTableComponent,
         MockComponent({selector: 'gb-data-table-dimensions'}),
         MockComponent({selector: 'gb-data-table-grid'})
+      ],
+      providers: [
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        }
       ]
     })
       .compileComponents();

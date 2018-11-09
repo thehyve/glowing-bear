@@ -102,6 +102,9 @@ export class ConstraintService {
   // the subset of _conceptCountMap that holds the selected maps,
   // which corresponds to the selected cohort(s)
   private _selectedConceptCountMap: Map<string, CountItem>;
+  // the async subject telling if the selectedConceptCountMap is updated
+  private _selectedConceptCountMapUpdated: Subject<Map<string, CountItem>>
+    = new Subject<Map<string, CountItem>>();
 
   /*
   * The list of concepts that correspond to
@@ -109,8 +112,10 @@ export class ConstraintService {
   * when user defines a cohort or a combination of cohorts.
   */
   private _variables: Concept[] = [];
-  // The async alerter that tells if variables are updated
+  // The async subject that tells if variables are updated according to the selectedConceptCountMap
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  // Flag indicating if the variables are being updated (gb-variables)
+  private _isUpdatingVariables = false;
   // The scope identifier used by primeng for drag and drop
   // [pDraggable] in gb-variables.component
   // [pDroppable] in gb-fractalis-control.component
@@ -154,6 +159,12 @@ export class ConstraintService {
       })
       .catch(err => {
         console.error(err);
+      });
+
+    // When the selectedConceptCountMap is updated, update the corresponding variable list
+    this.selectedConceptCountMapUpdated.asObservable()
+      .subscribe(() => {
+        this.updateVariables();
       });
   }
 
@@ -404,11 +415,15 @@ export class ConstraintService {
       let result: CombinationConstraint = new CombinationConstraint();
       result.combinationState = CombinationState.Or;
       result.mark = ConstraintMark.OBSERVATION;
-      this.variables.forEach((variable: Concept) => {
-        let c = new ConceptConstraint();
-        c.concept = variable;
-        result.addChild(c)
-      });
+      this.variables
+        .filter((variable: Concept) => {
+          return variable.selected;
+        })
+        .forEach((variable: Concept) => {
+          let c = new ConceptConstraint();
+          c.concept = variable;
+          result.addChild(c)
+        });
       return result;
     } else {
       return new TrueConstraint();
@@ -466,21 +481,33 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- variables-related methods
    */
-  public updateVariables() {
-    this.variables.length = 0;
-    const codes: Array<string> = Array.from(this.selectedConceptCountMap.keys());
-    this.concepts.forEach((concept: Concept) => {
-      if (codes.includes(concept.code)) {
-        concept.counts = this.selectedConceptCountMap.get(concept.code);
-        this.variables.push(concept);
+  private updateVariables(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.isUpdatingVariables = true;
+      if (this.isTreeNodesLoading) {
+        window.setTimeout((function () {
+          this.updateVariables(resolve);
+        }).bind(this), 500);
+      } else {
+        this.variables.length = 0;
+        const codes: Array<string> = Array.from(this.selectedConceptCountMap.keys());
+        this.concepts.forEach((concept: Concept) => {
+          if (codes.includes(concept.code)) {
+            concept.counts = this.selectedConceptCountMap.get(concept.code);
+            this.variables.push(concept);
+          }
+        });
+        this.variablesUpdated.next(this.variables);
+        this.isUpdatingVariables = false;
+        resolve(true);
       }
     });
-    this.variablesUpdated.next(this.variables);
   }
 
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
+
   // get the combination of cohort constraint and variable constraint
   get combination(): CombinationConstraint {
     return new CombinationConstraint(
@@ -596,6 +623,15 @@ export class ConstraintService {
 
   set selectedConceptCountMap(value: Map<string, CountItem>) {
     this._selectedConceptCountMap = value;
+    this.selectedConceptCountMapUpdated.next(value);
+  }
+
+  get selectedConceptCountMapUpdated(): Subject<Map<string, CountItem>> {
+    return this._selectedConceptCountMapUpdated;
+  }
+
+  set selectedConceptCountMapUpdated(value: Subject<Map<string, CountItem>>) {
+    this._selectedConceptCountMapUpdated = value;
   }
 
   get variablesUpdated(): Subject<Concept[]> {
@@ -604,5 +640,13 @@ export class ConstraintService {
 
   set variablesUpdated(value: Subject<Concept[]>) {
     this._variablesUpdated = value;
+  }
+
+  get isUpdatingVariables(): boolean {
+    return this._isUpdatingVariables;
+  }
+
+  set isUpdatingVariables(value: boolean) {
+    this._isUpdatingVariables = value;
   }
 }

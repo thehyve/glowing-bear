@@ -3,6 +3,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {NavbarService} from '../../../../services/navbar.service';
+import {DataTableService} from '../../../../services/data-table.service';
 
 @Component({
   selector: 'gb-variables',
@@ -17,6 +18,7 @@ export class GbVariablesComponent implements OnInit {
   public checkAllText: string;
 
   constructor(private constraintService: ConstraintService,
+              private dataTableService: DataTableService,
               private navbarService: NavbarService) {
     this.categorizedVariables = new Map<ConceptType, Array<Concept>>();
     this.constraintService.variablesUpdated.asObservable()
@@ -51,7 +53,13 @@ export class GbVariablesComponent implements OnInit {
         }
       });
     });
-    this.checkAllText = numSelected === 1 ? `${numSelected} variable selected` : `${numSelected} variables selected`;
+    this.checkAllText = numSelected === 1 ?
+      `${numSelected} variable selected` : `${numSelected} variables selected`;
+  }
+
+  checkVariables() {
+    this.dataTableService.isDirty = true;
+    this.updateCheckAllText();
   }
 
   checkAll(b: boolean) {
@@ -60,7 +68,7 @@ export class GbVariablesComponent implements OnInit {
         c.selected = b;
       })
     });
-    this.updateCheckAllText();
+    this.checkVariables();
   }
 
   get isExport(): boolean {
