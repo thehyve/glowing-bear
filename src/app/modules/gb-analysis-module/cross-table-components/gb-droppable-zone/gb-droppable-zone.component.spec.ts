@@ -13,18 +13,16 @@ import {MockComponent} from 'ng2-mock-component';
 import {CrossTableService} from '../../../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
 import {DragDropModule} from 'primeng/primeng';
-import {TreeNodeService} from '../../../../services/tree-node.service';
-import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {TrueConstraint} from '../../../../models/constraint-models/true-constraint';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import {Concept} from '../../../../models/constraint-models/concept';
 
 describe('GbDroppableZoneComponent', () => {
   let component: GbDroppableZoneComponent;
   let fixture: ComponentFixture<GbDroppableZoneComponent>;
   let crossTableService: CrossTableService;
-  let treeNodeService: TreeNodeService;
   let constraintService: ConstraintService;
 
   beforeEach(async(() => {
@@ -42,10 +40,6 @@ describe('GbDroppableZoneComponent', () => {
           useClass: CrossTableServiceMock
         },
         {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
-        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         }
@@ -58,7 +52,6 @@ describe('GbDroppableZoneComponent', () => {
     fixture = TestBed.createComponent(GbDroppableZoneComponent);
     component = fixture.componentInstance;
     crossTableService = TestBed.get(CrossTableService);
-    treeNodeService = TestBed.get(TreeNodeService);
     constraintService = TestBed.get(ConstraintService);
     fixture.detectChanges();
   });
@@ -100,18 +93,15 @@ describe('GbDroppableZoneComponent', () => {
   it('should conditionally update cross table when a constraint cell is dropped', () => {
     let mockEvent = new DragEvent('drop');
     crossTableService.selectedConstraintCell = null;
-    treeNodeService.selectedTreeNode = null;
+    constraintService.draggedVariable = null;
     component.onDrop(mockEvent);
     expect(component.dragCounter).toEqual(0);
     expect(crossTableService.selectedConstraintCell).toBe(null);
 
-    treeNodeService.selectedTreeNode = {};
-    let dummy = new TrueConstraint();
-    let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(dummy);
-    let spy2 = spyOn(MessageHelper, 'alert').and.stub();
+    constraintService.draggedVariable = new Concept();
+    let spy = spyOn(MessageHelper, 'alert').and.stub();
     component.onDrop(mockEvent);
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(1);
 
     let spy3 = spyOn(crossTableService, 'isValidConstraint').and.returnValue(true);
     let dummyText = 'dummy text';
@@ -119,9 +109,8 @@ describe('GbDroppableZoneComponent', () => {
     component.onDrop(mockEvent);
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
-    expect(dummy.textRepresentation).toBe(dummyText);
-    expect(component.constraints).toContain(dummy);
 
+    let dummy = new TrueConstraint();
     let dummySelectedCell = {
       constraint: dummy,
       remove: function () {

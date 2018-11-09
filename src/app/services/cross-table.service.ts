@@ -37,9 +37,6 @@ export class CrossTableService {
    *    first update the header constraints, which form the headers of the table,
    *    and are used for backend calls, then update the cells by making the getCrossTable call
    */
-  // the drag and drop context used by primeng library to associate draggable and droppable items
-  // this constant is used by gb-draggable-cell and gb-droppable-zone
-  public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 

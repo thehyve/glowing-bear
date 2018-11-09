@@ -116,9 +116,12 @@ export class ConstraintService {
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
+
+  private _draggedVariable: Concept = null;
   // The scope identifier used by primeng for drag and drop
   // [pDraggable] in gb-variables.component
   // [pDroppable] in gb-fractalis-control.component
+  // [pDroppable] in gb-cross-table.component
   public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
 
   public static depthOfConstraint(constraint: Constraint): number {
@@ -648,5 +651,13 @@ export class ConstraintService {
 
   set isUpdatingVariables(value: boolean) {
     this._isUpdatingVariables = value;
+  }
+
+  get draggedVariable(): Concept {
+    return this._draggedVariable;
+  }
+
+  set draggedVariable(value: Concept) {
+    this._draggedVariable = value;
   }
 }

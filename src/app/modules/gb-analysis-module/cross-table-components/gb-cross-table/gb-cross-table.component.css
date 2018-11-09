@@ -19,7 +19,7 @@
 
 .description {
   text-align: center;
-  font-size: x-large;
+  font-size: medium;
   font-weight: bold;
   color: darkgray;
 }
@@ -36,4 +36,8 @@
   text-align: center;
   min-width: 30px;
   width: 100px;
+}
+
+.mat-tooltip {
+  font-size: medium;
 }

@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {CrossTableService} from '../../../../services/cross-table.service';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {Row} from '../../../../models/table-models/row';
@@ -16,7 +16,10 @@ import {FormatHelper} from '../../../../utilities/format-helper';
 @Component({
   selector: 'gb-cross-table',
   templateUrl: './gb-cross-table.component.html',
-  styleUrls: ['./gb-cross-table.component.css']
+  styleUrls: ['./gb-cross-table.component.css'],
+  // Need to remove view encapsulation so that the custom tooltip style defined in
+  // `tooltip-custom-class-example.css` will not be scoped to this component's view.
+  encapsulation: ViewEncapsulation.None
 })
 export class GbCrossTableComponent implements OnInit {
 

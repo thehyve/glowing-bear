@@ -3,8 +3,10 @@
   <!-- Header and description -->
   <div class="description">
     Cross Table
-    <i class="fa fa-info" (mouseenter)="gb_cross_table_info.show($event)"
-       (mouseleave)="gb_cross_table_info.hide($event)"></i>
+    <i class="fa fa-info"
+       matTooltip='Drag categorical variables from the "Variables" section on the left
+       into the "drop zones" below to see the intersection counts.'
+       aria-label="Tooltip on how to use Cross Table"></i>
   </div>
 
   <p-overlayPanel #gb_cross_table_info

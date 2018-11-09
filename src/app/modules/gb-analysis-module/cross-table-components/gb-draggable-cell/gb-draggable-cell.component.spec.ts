@@ -16,6 +16,8 @@ import {Concept} from '../../../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {DragDropModule} from 'primeng/primeng';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 
 describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
@@ -33,6 +35,10 @@ describe('GbDraggableCellComponent', () => {
         {
           provide: CrossTableService,
           useClass: CrossTableServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
         }
       ]
     })

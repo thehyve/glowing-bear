@@ -89,8 +89,9 @@ export class GbFractalisVisualComponent implements OnInit {
 
   private addItem(chart: Chart) {
     const cols = chart.type === ChartType.CROSSTABLE ? 3 : 1;
-    const rows = chart.type === ChartType.CROSSTABLE ? 2 : 1;
-    let item = {x: 0, y: 0, cols: cols, rows: rows};
+    const rows = 1;
+    const dragEnabled = chart.type === ChartType.CROSSTABLE ? false : true;
+    let item = {x: 0, y: 0, cols: cols, rows: rows, dragEnabled: dragEnabled};
     this.itemChartMap.set(item, chart);
     this.items.push(item);
   }

@@ -17,6 +17,7 @@
       <div>
         <div *ngFor="let concept of categorizedVariables.get(type)"
              [pDraggable]="variablesDragDropScope"
+             (onDragStart)="onDragStart($event, concept)"
              class="variable">
           <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected"
                       binary="true" (onChange)="checkVariables()"></p-checkbox>

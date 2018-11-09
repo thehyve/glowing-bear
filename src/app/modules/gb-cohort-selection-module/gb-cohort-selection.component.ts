@@ -30,7 +30,7 @@ export class GbCohortSelectionComponent implements OnInit {
   private isUploadListenerNotAdded: boolean;
   public cohortName: string;
 
-  constructor(public cohortService: CohortService,
+  constructor(private cohortService: CohortService,
               private constraintService: ConstraintService) {
     this.cohortName = '';
     this.isUploadListenerNotAdded = true;

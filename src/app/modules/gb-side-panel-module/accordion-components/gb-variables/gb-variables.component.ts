@@ -71,6 +71,10 @@ export class GbVariablesComponent implements OnInit {
     this.checkVariables();
   }
 
+  onDragStart(e, concept) {
+    this.constraintService.draggedVariable = concept;
+  }
+
   get isExport(): boolean {
     return this.navbarService.isExport;
   }
