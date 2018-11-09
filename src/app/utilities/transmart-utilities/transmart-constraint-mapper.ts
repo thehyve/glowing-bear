@@ -207,10 +207,11 @@ export class TransmartConstraintMapper {
     let rightHandSide = this.generateConstraintFromObject(constraintObject['relatedSubjectsConstraint']);
     (<PedigreeConstraint>constraint).rightHandSideConstraint.children.length = 0;
     if (rightHandSide.className === 'CombinationConstraint') {
-      let children = (<CombinationConstraint>rightHandSide).children;
-      for (let child of children) {
+      const combiRhs =  <CombinationConstraint>rightHandSide;
+      for (let child of combiRhs.children) {
         (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(child);
       }
+      (<PedigreeConstraint>constraint).rightHandSideConstraint.combinationState = combiRhs.combinationState;
     } else {
       if (rightHandSide.className !== 'TrueConstraint') {
         (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(rightHandSide);
