@@ -1,7 +1,7 @@
 <div class="fractalis-control-container">
 
   <p-selectButton [options]="availableChartTypes"
-                  (onChange)="onChartTypeSelection($event)"></p-selectButton>
+                  [(ngModel)]="selectedChartType"></p-selectButton>
 
   <div *ngIf="isDropZoneShown" class="drop-zone">
     Drop variable(s) here

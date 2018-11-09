@@ -5,6 +5,8 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
 import {Subject} from 'rxjs';
+import {SelectItem} from 'primeng/api';
+import {GridsterItem} from 'angular-gridster2';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +14,7 @@ import {Subject} from 'rxjs';
 export class FractalisService {
 
   public fractalis: any;
-  private _availableChartTypes: ChartType[] = [];
+  private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
   private _chartAdded: Subject<Chart> = new Subject<Chart>();
@@ -64,13 +66,18 @@ export class FractalisService {
   }
 
   private retrieveAvailableChartTypes() {
-    let fChartTypes: string[] = this.fractalis.getAvailableCharts();
-    let chartTypes = [];
-    fChartTypes.forEach((t: string) => {
-      chartTypes.push(<ChartType>t.toLowerCase());
+    const types: string[] = this.fractalis.getAvailableCharts();
+    types.forEach((t: string) => {
+      const type = <ChartType>t.toLowerCase();
+      this.availableChartTypes.push({
+        label: type,
+        value: type
+      });
     });
-    chartTypes.push(ChartType.CROSSTABLE);
-    this.availableChartTypes = chartTypes;
+    this.availableChartTypes.push({
+      label: ChartType.CROSSTABLE,
+      value: ChartType.CROSSTABLE
+    });
   }
 
   public addChart() {
@@ -85,11 +92,16 @@ export class FractalisService {
     this.charts.splice(this.charts.indexOf(chart), 1);
   }
 
-  get availableChartTypes(): ChartType[] {
+  public clearCharts() {
+    this.selectedChartType = null;
+    this.charts.length = 0;
+  }
+
+  get availableChartTypes(): SelectItem[] {
     return this._availableChartTypes;
   }
 
-  set availableChartTypes(value: ChartType[]) {
+  set availableChartTypes(value: SelectItem[]) {
     this._availableChartTypes = value;
   }
 

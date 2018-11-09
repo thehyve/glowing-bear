@@ -4,6 +4,7 @@ import {GbFractalisControlComponent} from './gb-fractalis-control.component';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
 import {SelectButtonModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
@@ -13,6 +14,7 @@ describe('GbFractalisControlComponent', () => {
     TestBed.configureTestingModule({
       declarations: [GbFractalisControlComponent],
       imports: [
+        FormsModule,
         SelectButtonModule
       ],
       providers: [

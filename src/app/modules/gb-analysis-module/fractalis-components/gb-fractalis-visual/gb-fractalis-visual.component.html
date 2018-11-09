@@ -4,14 +4,14 @@
   </div>
 
   <gridster [options]="options">
-    <gridster-item [item]="item" *ngFor="let item of items">
+    <gridster-item [item]="chart.gridsterItem" *ngFor="let chart of charts">
       <div>
         <span class="close-btn-row float-right">
-          <button mat-icon-button color="primary" (click)="removeItem($event, item)">
+          <button mat-icon-button color="primary" (click)="removeItem($event, chart)">
             <mat-icon aria-label="Close the chart">close</mat-icon>
           </button>
         </span>
-        <gb-fractalis-chart [chart]="getChart(item)"></gb-fractalis-chart>
+        <gb-fractalis-chart [chart]="chart"></gb-fractalis-chart>
       </div>
     </gridster-item>
   </gridster>
