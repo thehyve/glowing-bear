@@ -42,9 +42,14 @@ export class DataTableService {
     this.isDirty = false;
     this.isUpdating = false;
     this.dataTableUpdated = new Subject();
+    this.constraintService.variablesUpdated.asObservable()
+      .subscribe(() => {
+        this.updateDataTable();
+      });
   }
 
   public validateDimensions() {
+    this.isDirty = true;
     let sortableDimensions = this.resourceService.sortableDimensions;
     let invalidRowDimensions = this.rowDimensions.filter(dimension =>
       !sortableDimensions.has(dimension.name)

@@ -1,0 +1,10 @@
+.update-btn {
+  margin-left: 1em;
+  margin-right: 0.5em;
+  border: 1px dashed;
+}
+
+.update-btn-dirty {
+  border: 2px solid;
+  font-weight: bolder;
+}

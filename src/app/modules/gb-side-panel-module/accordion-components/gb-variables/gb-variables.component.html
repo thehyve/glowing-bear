@@ -19,7 +19,7 @@
              [pDraggable]="variablesDragDropScope"
              class="variable">
           <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected"
-                      binary="true" (onChange)="updateCheckAllText()"></p-checkbox>
+                      binary="true" (onChange)="checkVariables()"></p-checkbox>
           {{concept.name}} ({{concept.counts.subjectCount}})
         </div>
       </div>

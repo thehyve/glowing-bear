@@ -9,6 +9,8 @@ import {NavbarService} from '../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
 import {FormsModule} from '@angular/forms';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {DataTableService} from '../../../../services/data-table.service';
+import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -29,6 +31,10 @@ describe('GbVariablesComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
         },
         {
           provide: NavbarService,

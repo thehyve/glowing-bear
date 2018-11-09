@@ -32,11 +32,8 @@ import {DataTableService} from './data-table.service';
  * (2) Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
  *
  * workflow:
- * - when the user changes the constraint(s) inside gb-cohort-selection:
- *        updateCurrent() -> updateAll() -> updateVariables() -> updateDataTable()
- *
- * - when the user changes cohort selection inside gb-cohorts:
- *        updateAll() -> updateVariables() -> updateDataTable()
+ * - when the user changes the constraint(s) inside gb-cohort-selection: updateCurrent() -> updateAll()
+ * - when the user changes cohort selection inside gb-cohorts: updateAll()
  */
 @Injectable({
   providedIn: 'root',
@@ -60,9 +57,6 @@ export class CohortService {
   private _isUpdatingCurrent = false;
   // flag indicating if all the cohorts are being updated (gb-cohorts)
   private _isUpdatingAll = false;
-  // flag indicating if the variables are being updated (gb-variables)
-  private _isUpdatingVariables = false;
-
   // flag indicating if the current cohort constraint in gb-cohort-selection has been changed
   private _isDirty = true;
 
@@ -209,39 +203,12 @@ export class CohortService {
         this.allCounts = res[0];
         this.constraintService.selectedConceptCountMap = res[1];
         this.isUpdatingAll = false;
-        this.updateVariables(resolve, reject);
+        resolve(true);
       }, (err) => {
         reject(err);
       })
     });
   }
-
-  private updateVariables(resolve, reject) {
-    console.log('Updating variables...');
-    this.isUpdatingVariables = true;
-    if (this.constraintService.isTreeNodesLoading) {
-      window.setTimeout((function () {
-        this.updateVariables(resolve);
-      }).bind(this), 500);
-    } else {
-      this.constraintService.updateVariables();
-      this.isUpdatingVariables = false;
-      this.updateDataTable(resolve, reject);
-    }
-  }
-
-  private updateDataTable(resolve, reject) {
-    console.log('Updating data table...');
-    this.dataTableService.updateDataTable()
-      .then(() => {
-        console.log('data table updated');
-        resolve(true);
-      })
-      .catch(err => {
-        reject(err);
-      });
-  }
-
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
@@ -463,14 +430,6 @@ export class CohortService {
 
   set isUpdatingAll(value: boolean) {
     this._isUpdatingAll = value;
-  }
-
-  get isUpdatingVariables(): boolean {
-    return this._isUpdatingVariables;
-  }
-
-  set isUpdatingVariables(value: boolean) {
-    this._isUpdatingVariables = value;
   }
 
   get showObservationCounts(): boolean {

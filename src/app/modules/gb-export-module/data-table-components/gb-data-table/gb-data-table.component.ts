@@ -6,7 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {DataTableService} from '../../../../services/data-table.service';
 
 @Component({
   selector: 'gb-data-table',
@@ -15,9 +16,23 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GbDataTableComponent implements OnInit {
 
-  constructor() { }
+  constructor(private dataTableService: DataTableService) {
+  }
 
   ngOnInit() {
   }
 
+  update() {
+    if (!this.dataTableService.isUpdating) {
+      this.dataTableService.updateDataTable();
+    }
+  }
+
+  get isDirty(): boolean {
+    return this.dataTableService.isDirty;
+  }
+
+  get isUpdating(): boolean {
+    return this.dataTableService.isUpdating;
+  }
 }
