@@ -3,8 +3,10 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbFractalisControlComponent} from './gb-fractalis-control.component';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
-import {SelectButtonModule} from 'primeng/primeng';
+import {DragDropModule, SelectButtonModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
@@ -15,12 +17,17 @@ describe('GbFractalisControlComponent', () => {
       declarations: [GbFractalisControlComponent],
       imports: [
         FormsModule,
-        SelectButtonModule
+        SelectButtonModule,
+        DragDropModule
       ],
       providers: [
         {
           provide: FractalisService,
           useClass: FractalisServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
         }
       ]
     })

@@ -17,8 +17,8 @@ import {FormatHelper} from '../../../../utilities/format-helper';
   selector: 'gb-cross-table',
   templateUrl: './gb-cross-table.component.html',
   styleUrls: ['./gb-cross-table.component.css'],
-  // Need to remove view encapsulation so that the custom tooltip style defined in
-  // `tooltip-custom-class-example.css` will not be scoped to this component's view.
+  // Need to remove view encapsulation so that
+  // the custom tooltip style will not be scoped to this component's view.
   encapsulation: ViewEncapsulation.None
 })
 export class GbCrossTableComponent implements OnInit {
