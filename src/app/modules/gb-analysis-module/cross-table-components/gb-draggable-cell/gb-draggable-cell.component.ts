@@ -9,6 +9,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../../services/cross-table.service';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 @Component({
   selector: 'gb-draggable-cell',
@@ -20,7 +21,8 @@ export class GbDraggableCellComponent implements OnInit {
   @Input() constraint: Constraint;
   @Output() constraintCellRemoved: EventEmitter<any> = new EventEmitter();
 
-  constructor(private crossTableService: CrossTableService) { }
+  constructor(private crossTableService: CrossTableService,
+              private constraintService: ConstraintService) { }
 
   ngOnInit() {
   }
@@ -29,11 +31,12 @@ export class GbDraggableCellComponent implements OnInit {
     this.constraintCellRemoved.emit();
   }
 
-  onDragStart(e) {
+  onDragStart(e: MouseEvent) {
+    e.stopPropagation();
     this.crossTableService.selectedConstraintCell = this;
   }
 
-  get dragDropContext(): string {
-    return this.crossTableService.PrimeNgDragAndDropContext;
+  get variablesDragDropScope(): string {
+    return this.constraintService.variablesDragDropScope;
   }
 }

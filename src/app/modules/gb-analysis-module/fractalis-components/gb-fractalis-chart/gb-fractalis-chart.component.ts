@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Chart} from '../../../../models/chart-models/chart';
+import {ChartType} from '../../../../models/chart-models/chart-type';
 
 @Component({
   selector: 'gb-fractalis-chart',
@@ -14,6 +15,10 @@ export class GbFractalisChartComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  get ChartType() {
+    return ChartType;
   }
 
 }

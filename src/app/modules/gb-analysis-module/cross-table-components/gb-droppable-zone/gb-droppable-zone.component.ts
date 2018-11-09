@@ -9,10 +9,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../../services/cross-table.service';
-import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {AxisType} from '../../../../models/table-models/axis-type';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -26,7 +26,6 @@ export class GbDroppableZoneComponent implements OnInit {
   public dragCounter = 0;
 
   constructor(private crossTableService: CrossTableService,
-              private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService) {
   }
 
@@ -59,10 +58,11 @@ export class GbDroppableZoneComponent implements OnInit {
     const selectedConstraintCell = this.crossTableService.selectedConstraintCell;
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
     // if no existing constraint (from one of the already created draggable cells) is used,
-    // try to create a new one based on the (possible) tree node drop
+    // try to create a new one based on the (possible) variable drop
     if (!constraint) {
-      if (this.treeNodeService.selectedTreeNode) {
-        constraint = this.constraintService.generateConstraintFromTreeNode(this.treeNodeService.selectedTreeNode);
+      if (this.constraintService.draggedVariable) {
+        constraint = new ConceptConstraint();
+        (<ConceptConstraint>constraint).concept = this.constraintService.draggedVariable;
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
           constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);
@@ -105,8 +105,8 @@ export class GbDroppableZoneComponent implements OnInit {
     this.crossTableService.updateCells();
   }
 
-  get dragDropContext(): string {
-    return this.crossTableService.PrimeNgDragAndDropContext;
+  get variablesDragDropScope(): string {
+    return this.constraintService.variablesDragDropScope;
   }
 
 }

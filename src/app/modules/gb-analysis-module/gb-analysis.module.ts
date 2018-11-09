@@ -21,7 +21,7 @@ import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-c
 import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
 import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
 import {GridsterModule} from 'angular-gridster2';
-import {MatIconModule, MatButtonModule, MatExpansionModule} from '@angular/material';
+import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule} from '@angular/material';
 
 
 @NgModule({
@@ -36,7 +36,8 @@ import {MatIconModule, MatButtonModule, MatExpansionModule} from '@angular/mater
     GridsterModule,
     MatIconModule,
     MatButtonModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTooltipModule
   ],
   exports: [
     RouterModule

@@ -10,26 +10,26 @@ import {ChartType} from '../../../../models/chart-models/chart-type';
 })
 export class GbFractalisControlComponent implements OnInit {
 
-  public availableChartTypes: SelectItem[];
+  public availableChartTypes: SelectItem[] = [];
 
   // TODO: accept drag & drop of variables
   constructor(private fractalisService: FractalisService) {
   }
 
   ngOnInit() {
-    this.availableChartTypes = [];
-    this.fractalisService.availableChartTypes
-      .forEach((type: ChartType) => {
-        this.availableChartTypes.push({
-          label: type,
-          value: type
+    if (this.availableChartTypes.length === 0) {
+      this.fractalisService.availableChartTypes
+        .forEach((type: ChartType) => {
+          this.availableChartTypes.push({
+            label: type,
+            value: type
+          });
         });
-      });
+    }
   }
 
   onChartTypeSelection(e) {
     this.selectedChartType = <ChartType>e.value;
-    console.log(e, this.selectedChartType);
   }
 
   onAddChart() {

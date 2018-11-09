@@ -36,26 +36,26 @@
     <div class="float-right">
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by cohort name"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
+              tooltipPosition="top" placeholder="Top"
               (click)="sortByName()"
               icon="icon-sort-alphabet">
       </button>
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by importance"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
+              tooltipPosition="top" placeholder="Top"
               (click)="sortByBookmark()"
               icon="icon-sort-star">
       </button>
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by last edit date"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
+              tooltipPosition="top" placeholder="Top"
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
       <button *ngIf="isCohortSubscriptionIncluded"
               pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by active subscriptions"
-              tooltipPosition="top" placeholder="Top" tooltipStyleClass="cohort-tooltip"
+              tooltipPosition="top" placeholder="Top"
               (click)="sortBySubscription()"
               icon="icon-sort-subscription">
       </button>
