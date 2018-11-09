@@ -2,7 +2,6 @@ import {Component, ElementRef, OnInit} from '@angular/core';
 import {CompactType, DisplayGrid, GridsterConfig, GridsterItem, GridType} from 'angular-gridster2';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {Chart} from '../../../../models/chart-models/chart';
-import {ChartType} from '../../../../models/chart-models/chart-type';
 
 @Component({
   selector: 'gb-fractalis-visual',
@@ -15,18 +14,12 @@ export class GbFractalisVisualComponent implements OnInit {
   cellHeight = 300;
   margin = 10;
   options: GridsterConfig;
-  items: Array<GridsterItem> = [];
-  itemChartMap: Map<GridsterItem, Chart> = new Map<GridsterItem, Chart>();
 
   /*
    * TODO: create fractalis charts or cross table
    * based on the user input of chart type and variables in the gb-fractalis-control component
    */
   constructor(private fractalisService: FractalisService, private el: ElementRef) {
-    this.fractalisService.chartAdded.asObservable()
-      .subscribe((newChart: Chart) => {
-        this.addItem(newChart);
-      });
   }
 
   ngOnInit() {
@@ -83,22 +76,13 @@ export class GbFractalisVisualComponent implements OnInit {
       scrollToNewItems: false,
       itemChangeCallback: this.adjustHeight.bind(this)
     };
-
     this.adjustHeight();
-  }
-
-  private addItem(chart: Chart) {
-    const cols = chart.type === ChartType.CROSSTABLE ? 3 : 1;
-    const rows = 1;
-    const dragEnabled = chart.type === ChartType.CROSSTABLE ? false : true;
-    let item = {x: 0, y: 0, cols: cols, rows: rows, dragEnabled: dragEnabled};
-    this.itemChartMap.set(item, chart);
-    this.items.push(item);
   }
 
   private adjustHeight() {
     let numRows = 0;
-    this.items.forEach(item => {
+    this.charts.forEach((chart: Chart) => {
+      const item = chart.gridsterItem;
       const row = item.y + item.rows - 1;
       numRows = item.y > numRows ? item.y : numRows;
     });
@@ -108,25 +92,19 @@ export class GbFractalisVisualComponent implements OnInit {
       .querySelector('.fractalis-visual-container').style['height'] = h + 'px';
   }
 
-  removeItem($event, item) {
-    $event.preventDefault();
-    $event.stopPropagation();
-
-    const chart = this.itemChartMap.get(item);
+  removeItem(e, chart: Chart) {
+    e.preventDefault();
+    e.stopPropagation();
     this.fractalisService.removeChart(chart);
-    this.items.splice(this.items.indexOf(item), 1);
-    this.itemChartMap.delete(item);
   }
 
   clearItems() {
-    this.fractalisService.charts.length = 0;
-    this.items.length = 0;
-    this.itemChartMap.clear();
+    this.fractalisService.clearCharts();
     this.adjustHeight();
   }
 
-  getChart(item: GridsterItem): Chart {
-    return this.itemChartMap.get(item);
+  get charts(): Chart[] {
+    return this.fractalisService.charts;
   }
 
 }
