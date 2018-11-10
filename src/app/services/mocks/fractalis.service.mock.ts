@@ -9,6 +9,7 @@
 import {ChartType} from '../../models/chart-models/chart-type';
 import {Chart} from '../../models/chart-models/chart';
 import {Subject} from 'rxjs';
+import {Concept} from '../../models/constraint-models/concept';
 
 export class FractalisServiceMock {
   charts: Chart[] = [];
@@ -23,14 +24,19 @@ export class FractalisServiceMock {
     ChartType.SURVIVALPLOT,
     ChartType.VOLCANOPLOT
   ];
-  chartAdded: Subject<Chart> = new Subject();
+  selectedVariables: Concept[] = [];
+  F: any; // The fractalis object
 
+  constructor() {
+    this.F = {
+      setChart: () => {}
+    }
+  }
 
   public addChart() {
     if (this.selectedChartType) {
       let chart = new Chart(this.selectedChartType);
       this.charts.push(chart);
-      this.chartAdded.next(chart);
     }
   }
 
