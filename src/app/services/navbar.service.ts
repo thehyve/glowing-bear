@@ -33,7 +33,7 @@ export class NavbarService {
     this.exportService.exportEnabled.asObservable()
       .subscribe((exportEnabled) => {
         if (exportEnabled) {
-          this.items.push({label: 'Data View & Export', routerLink: '/export'});
+          this.items.push({label: 'Data Export', routerLink: '/export'});
         }
       });
   }

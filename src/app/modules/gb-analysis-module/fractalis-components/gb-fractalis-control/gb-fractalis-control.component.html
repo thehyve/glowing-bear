@@ -9,11 +9,32 @@
        [ngClass]="{'drop-zone-highlight': dragCounter > 0}"
        (onDragEnter)="onDragEnter($event)"
        (onDragLeave)="onDragLeave($event)"
-       (drop)="onDrop()">
-    Drop variable(s) here
+       (drop)="onDropVariable()">
+    <span *ngIf="selectedVariables.length === 0; else showDroppedVariables">
+      Drop variable(s) here
+    </span>
   </div>
 
-  <div *ngIf="isAddButtonShown" class="add-btn-container">
-    <button type="button" class="btn btn-primary btn-sm" (click)="onAddChart()">Add</button>
+  <ng-template #showDroppedVariables>
+    <mat-chip-list>
+      <mat-chip
+        *ngFor="let variable of selectedVariables"
+        removable="true"
+        selectable="false"
+        (removed)="onRemoveVariable(variable)">
+        {{variable.name}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+  </ng-template>
+
+  <div class="btn-container">
+    <span *ngIf="isClearButtonShown">
+       <button type="button" class="btn btn-primary btn-sm" (click)="clearControl()">Clear</button>
+    </span>
+    <span *ngIf="isAddButtonShown">
+      <button type="button" class="btn btn-primary btn-sm" (click)="onAddChart()">Add</button>
+    </span>
   </div>
+
 </div>
