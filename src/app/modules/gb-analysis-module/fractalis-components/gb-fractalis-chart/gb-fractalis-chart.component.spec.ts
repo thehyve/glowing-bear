@@ -3,6 +3,8 @@ import {Chart} from '../../../../models/chart-models/chart';
 import {GbFractalisChartComponent} from './gb-fractalis-chart.component';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {MockComponent} from 'ng2-mock-component';
+import {FractalisService} from '../../../../services/fractalis.service';
+import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
 
 describe('GbFractalisChartComponent', () => {
   let component: GbFractalisChartComponent;
@@ -13,6 +15,12 @@ describe('GbFractalisChartComponent', () => {
       declarations: [
         GbFractalisChartComponent,
         MockComponent({selector: 'gb-cross-table'})
+      ],
+      providers: [
+        {
+          provide: FractalisService,
+          useClass: FractalisServiceMock
+        }
       ]
     })
       .compileComponents();

@@ -4,20 +4,19 @@ import * as fjs from 'fractalis';
 import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
-import {Subject} from 'rxjs';
 import {SelectItem} from 'primeng/api';
-import {GridsterItem} from 'angular-gridster2';
+import {Concept} from '../models/constraint-models/concept';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FractalisService {
 
-  public fractalis: any;
+  private _F: any; // The fractalis object
   private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
-  private _chartAdded: Subject<Chart> = new Subject<Chart>();
+  private _selectedVariables: Concept[] = [];
 
   constructor(private authService: AuthenticationService) {
     let token = this.authService.token;
@@ -47,10 +46,10 @@ export class FractalisService {
     };
 
     if (fjs.fractalis) {
-      this.fractalis = fjs.fractalis.init(config);
+      this.F = fjs.fractalis.init(config);
       console.log('Fratalis imported: ', this.availableChartTypes);
 
-      this.fractalis.loadData([descriptor])
+      this.F.loadData([descriptor])
         .then(res => {
           console.log('response here', res);
         })
@@ -66,7 +65,7 @@ export class FractalisService {
   }
 
   private retrieveAvailableChartTypes() {
-    const types: string[] = this.fractalis.getAvailableCharts();
+    const types: string[] = this.F.getAvailableCharts();
     types.forEach((t: string) => {
       const type = <ChartType>t.toLowerCase();
       this.availableChartTypes.push({
@@ -83,18 +82,13 @@ export class FractalisService {
   public addChart() {
     if (this.selectedChartType) {
       let chart = new Chart(this.selectedChartType);
+      chart.variables = [...this.selectedVariables]; // clone a new array
       this.charts.push(chart);
-      this.chartAdded.next(chart);
     }
   }
 
   public removeChart(chart: Chart) {
     this.charts.splice(this.charts.indexOf(chart), 1);
-  }
-
-  public clearCharts() {
-    this.selectedChartType = null;
-    this.charts.length = 0;
   }
 
   get availableChartTypes(): SelectItem[] {
@@ -121,12 +115,19 @@ export class FractalisService {
     this._charts = value;
   }
 
-  get chartAdded(): Subject<Chart> {
-    return this._chartAdded;
+  get selectedVariables(): Concept[] {
+    return this._selectedVariables;
   }
 
-  set chartAdded(value: Subject<Chart>) {
-    this._chartAdded = value;
+  set selectedVariables(value: Concept[]) {
+    this._selectedVariables = value;
   }
 
+  get F(): any {
+    return this._F;
+  }
+
+  set F(value: any) {
+    this._F = value;
+  }
 }

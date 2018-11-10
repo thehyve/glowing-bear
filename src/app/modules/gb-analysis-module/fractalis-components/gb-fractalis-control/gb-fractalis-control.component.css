@@ -23,10 +23,11 @@
   fill-opacity: .6;
 }
 
-.add-btn-container {
+.btn-container {
   margin-top: 0.5em;
 }
 
-.add-btn-container button {
+.btn-container button {
   min-width: 6em;
+  margin-right: 1em;
 }

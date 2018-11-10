@@ -1,13 +1,14 @@
 <div class="fractalis-visual-container">
+
   <div class="clear-btn-container">
-    <button type="button" class="btn btn-primary btn-sm" (click)="clearItems()">Clear</button>
+    <button type="button" class="btn btn-primary btn-sm" (click)="clearCharts()">Clear</button>
   </div>
 
   <gridster [options]="options">
     <gridster-item [item]="chart.gridsterItem" *ngFor="let chart of charts">
       <div>
         <span class="close-btn-row float-right">
-          <button mat-icon-button color="primary" (click)="removeItem($event, chart)">
+          <button mat-icon-button color="primary" (click)="removeChart($event, chart)">
             <mat-icon aria-label="Close the chart">close</mat-icon>
           </button>
         </span>

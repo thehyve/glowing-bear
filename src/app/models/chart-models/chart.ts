@@ -1,11 +1,16 @@
 import {ChartType} from './chart-type';
 import {GridsterItem} from 'angular-gridster2';
+import {FormatHelper} from '../../utilities/format-helper';
+import {Concept} from '../constraint-models/concept';
 
 export class Chart {
+  public readonly id: string;
   private _gridsterItem: GridsterItem;
   private _type: ChartType;
+  private _variables: Concept[] = [];
 
   constructor(type: ChartType) {
+    this.id = FormatHelper.generateId();
     this.type = type;
     const cols = type === ChartType.CROSSTABLE ? 3 : 1;
     const rows = 1;
@@ -33,5 +38,13 @@ export class Chart {
 
   set gridsterItem(value: GridsterItem) {
     this._gridsterItem = value;
+  }
+
+  get variables(): Concept[] {
+    return this._variables;
+  }
+
+  set variables(value: Concept[]) {
+    this._variables = value;
   }
 }

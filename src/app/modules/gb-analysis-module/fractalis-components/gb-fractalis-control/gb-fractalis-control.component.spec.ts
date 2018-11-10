@@ -7,6 +7,7 @@ import {DragDropModule, SelectButtonModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
+import {MatChipsModule, MatIconModule} from '@angular/material';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
@@ -18,7 +19,9 @@ describe('GbFractalisControlComponent', () => {
       imports: [
         FormsModule,
         SelectButtonModule,
-        DragDropModule
+        DragDropModule,
+        MatIconModule,
+        MatChipsModule
       ],
       providers: [
         {
