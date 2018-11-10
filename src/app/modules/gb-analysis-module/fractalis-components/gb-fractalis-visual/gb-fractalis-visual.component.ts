@@ -92,13 +92,13 @@ export class GbFractalisVisualComponent implements OnInit {
       .querySelector('.fractalis-visual-container').style['height'] = h + 'px';
   }
 
-  removeChart(e, chart: Chart) {
+  onRemoveChart(e, chart: Chart) {
     e.preventDefault();
     e.stopPropagation();
     this.fractalisService.removeChart(chart);
   }
 
-  clearCharts() {
+  onClearCharts() {
     this.fractalisService.charts.length = 0;
     this.adjustHeight();
   }
