@@ -50,8 +50,8 @@ export class GbFractalisControlComponent implements OnInit {
     }
   }
 
-  clearControl() {
-    this.fractalisService.selectedChartType = null;
+  onClearControl() {
+    this.selectedChartType = null;
     this.selectedVariables.length = 0;
   }
 
