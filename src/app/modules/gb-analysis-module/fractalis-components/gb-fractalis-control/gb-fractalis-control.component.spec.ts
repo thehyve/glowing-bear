@@ -86,8 +86,12 @@ describe('GbFractalisControlComponent', () => {
   it('should remove variable', () => {
     const dummy = new Concept();
     const dummy1 = new Concept();
+    const dummy2 = new Concept();
     component.selectedVariables.push(dummy);
     component.selectedVariables.push(dummy1);
+    component.onRemoveVariable(dummy2);
+    expect(component.selectedVariables.length).toBe(2);
+
     component.onRemoveVariable(dummy1);
     expect(component.selectedVariables.length).toBe(1);
     expect(component.selectedVariables[0]).toBe(dummy);
