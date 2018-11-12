@@ -59,9 +59,9 @@
 
   <hr>
 
-  <!---------------------- previous exports ---------------------->
+  <!---------------------- recent exports ---------------------->
   <div class="gb-export-section-banner">
-    <h5>Previous Exports</h5>
+    <h5>Recent Exports</h5>
   </div>
 
   <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
@@ -85,7 +85,7 @@
 
     </p-column>
     <p-column field="timeDescription" header="Last updated"
-              [sortable]="true"
+              [sortable]="true" sortField="time"
               [filter]="true" filterPlaceholder="Filter Column">
     </p-column>
     <p-column>
