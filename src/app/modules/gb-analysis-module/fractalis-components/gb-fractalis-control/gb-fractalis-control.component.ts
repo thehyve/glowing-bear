@@ -13,7 +13,7 @@ import {Concept} from '../../../../models/constraint-models/concept';
 export class GbFractalisControlComponent implements OnInit {
 
   dragCounter = 0;
-  
+
   constructor(private fractalisService: FractalisService,
               private constraintService: ConstraintService) {
   }
