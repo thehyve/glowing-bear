@@ -28,6 +28,7 @@ import {catchError, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
 @Injectable()
@@ -39,8 +40,6 @@ export class TransmartHttpService {
   private httpHelper: HttpHelper;
 
   private _endpointUrl: string;
-  private _dateColumnsIncluded = true;
-
   private _studiesLock: boolean;
   private _studies: TransmartStudy[] = null;
   private _studiesSubject: AsyncSubject<TransmartStudy[]>;
@@ -49,14 +48,6 @@ export class TransmartHttpService {
   constructor(private appConfig: AppConfig, httpClient: HttpClient) {
     this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
     this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
-  }
-
-  get dateColumnsIncluded(): boolean {
-    return this._dateColumnsIncluded;
-  }
-
-  set dateColumnsIncluded(value: boolean) {
-    this._dateColumnsIncluded = value;
   }
 
   get endpointUrl(): string {
@@ -260,9 +251,9 @@ export class TransmartHttpService {
 
   /**
    * Get the current user's existing export jobs
-   * @returns {Observable<ExportJob[]>}
+   * @returns {Observable<TransmartExportJob[]>}
    */
-  getExportJobs(): Observable<any[]> {
+  getExportJobs(): Observable<TransmartExportJob[]> {
     const urlPart = 'export/jobs';
     const responseField = 'exportJobs';
     return this.httpHelper.getCall(urlPart, responseField);
@@ -271,9 +262,9 @@ export class TransmartHttpService {
   /**
    * Create a new export job for the current user, with a given name
    * @param name
-   * @returns {Observable<ExportJob>}
+   * @returns {Observable<TransmartExportJob>}
    */
-  createExportJob(name: string): Observable<ExportJob> {
+  createExportJob(name: string): Observable<TransmartExportJob> {
     const urlPart = `export/job?name=${name}`;
     const responseField = 'exportJob';
     return this.httpHelper.postCall(urlPart, {}, responseField);
@@ -292,18 +283,17 @@ export class TransmartHttpService {
    * @param {Constraint} targetConstraint
    * @param {TransmartExportElement[]} elements
    * @param {TransmartTableState} tableState - included only, if at least one of the formats of elements is 'TSV'
-   * @returns {Observable<ExportJob>}
+   * @returns {Observable<TransmartExportJob>}
    */
   runExportJob(jobId: string,
                targetConstraint: Constraint,
                elements: TransmartExportElement[],
-               tableState?: TransmartTableState): Observable<ExportJob> {
+               tableState?: TransmartTableState): Observable<TransmartExportJob> {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {
       constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
-      elements: elements,
-      includeMeasurementDateColumns: this.dateColumnsIncluded
+      elements: elements
     };
     if (tableState) {
       body['tableConfig'] = tableState;
@@ -312,11 +302,33 @@ export class TransmartHttpService {
   }
 
   /**
+   * Run an export specific for the surveyTable mode
+   * @param jobId
+   * @param targetConstraint
+   * @param elements
+   * @param dateColumnsIncluded
+   * @returns {Observable<TransmartExportJob>}
+   */
+  runSurveyTableExportJob(jobId: string,
+                          targetConstraint: Constraint,
+                          elements: TransmartExportElement[],
+                          dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
+    const urlPart = `export/${jobId}/run`;
+    const responseField = 'exportJob';
+    let body = {
+      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+      elements: elements,
+      includeMeasurementDateColumns: dateColumnsIncluded
+    };
+    return this.httpHelper.postCall(urlPart, body, responseField);
+  }
+
+  /**
    * Given an export job id, return the blob (zipped file) ready to be used on frontend
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     let urlPart = `export/${jobId}/download`;
     return this.httpHelper.downloadData(urlPart);
   }
@@ -435,6 +447,7 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
+
     return this.httpHelper.postCall(urlPart, body, null);
   }
 

@@ -29,8 +29,32 @@ import {Concept} from '../../models/constraint-models/concept';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
+import {ExportJob} from '../../models/export-models/export-job';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 export class TransmartMapper {
+
+
+  public static mapTransmartExportJob(tmExportJob: TransmartExportJob): ExportJob {
+    let job = new ExportJob();
+    job.id = tmExportJob.id;
+    job.name = tmExportJob.jobName;
+    job.status = tmExportJob.jobStatus;
+    job.time = new Date(tmExportJob.jobStatusTime);
+    job.userId = tmExportJob.userId;
+    job.viewerURL = tmExportJob.viewerURL;
+    job.disabled = tmExportJob.isInDisabledState;
+    return job;
+  }
+
+  public static mapTransmartExportJobs(tmExportJobs: TransmartExportJob[]): ExportJob[] {
+    let exportJobs: ExportJob[] = [];
+    tmExportJobs.forEach((tmExportJob: TransmartExportJob) => {
+      let job = TransmartMapper.mapTransmartExportJob(tmExportJob);
+      exportJobs.push(job);
+    });
+    return exportJobs;
+  }
 
   public static mapTransmartStudies(transmartStudies: TransmartStudy[]): Study[] {
     let studies: Study[] = [];
@@ -66,13 +90,13 @@ export class TransmartMapper {
     query.createDate = transmartQuery.createDate;
     query.updateDate = transmartQuery.updateDate;
     query.bookmarked = transmartQuery.bookmarked;
-    query.subjectQuery = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
+    query.subjectQuery =
+      TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
     query.observationQuery = transmartQuery.observationsQuery;
     query.apiVersion = transmartQuery.apiVersion;
     query.subscribed = transmartQuery.subscribed;
     query.subscriptionFreq = transmartQuery.subscriptionFreq;
     query.dataTable = this.parseTransmartQueryBlobDataTable(transmartQuery.queryBlob);
-
     return query;
   }
 

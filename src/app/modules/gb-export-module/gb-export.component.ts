@@ -7,7 +7,6 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ResourceService} from '../../services/resource.service';
 import {ExportJob} from '../../models/export-models/export-job';
 import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
@@ -24,8 +23,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   private timer: Timer;
 
   constructor(private appConfig: AppConfig,
-              private exportService: ExportService,
-              public resourceService: ResourceService) {
+              private exportService: ExportService) {
   }
 
   ngOnInit() {
@@ -66,13 +64,21 @@ export class GbExportComponent implements OnInit, OnDestroy {
     this.exportService.exportJobName = value;
   }
 
-  get isTransmartEnv(): boolean {
-    let env = this.appConfig.getEnv();
-    return (env === 'default') || (env === 'transmart');
-  }
-
   get isExternalExportAvailable(): boolean {
     return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+  }
+
+  get isTransmartSurveyTableDataView(): boolean {
+    let exportMode =  this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  }
+
+  get isTransmartDateColumnIncluded(): boolean {
+    return this.exportService.isTransmartDateColumnsIncluded;
+  }
+
+  set isTransmartDateColumnIncluded(value: boolean) {
+    this.exportService.isTransmartDateColumnsIncluded = value;
   }
 
   get exportDataTypes(): ExportDataType[] {

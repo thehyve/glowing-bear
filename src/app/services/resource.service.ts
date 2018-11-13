@@ -34,6 +34,7 @@ import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 
 @Injectable()
 export class ResourceService {
@@ -285,10 +286,14 @@ export class ResourceService {
    * Get the current user's existing export jobs
    * @returns {Observable<ExportJob[]>}
    */
-  getExportJobs(): Observable<any[]> {
+  getExportJobs(): Observable<ExportJob[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportJobs();
+        return this.transmartResourceService.getExportJobs().pipe(
+          map((tmExportJobs: TransmartExportJob[]) => {
+            return TransmartMapper.mapTransmartExportJobs(tmExportJobs);
+          })
+        );
       }
       default: {
         return this.handleEndpointModeError();
@@ -304,7 +309,11 @@ export class ResourceService {
   createExportJob(name: string): Observable<ExportJob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.createExportJob(name);
+        return this.transmartResourceService.createExportJob(name).pipe(
+          map((tmExportJob: TransmartExportJob) => {
+            return TransmartMapper.mapTransmartExportJob(tmExportJob);
+          })
+        );
       }
       default: {
         return this.handleEndpointModeError();
@@ -323,16 +332,13 @@ export class ResourceService {
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
                constraint: Constraint,
-               dataTable: DataTable): Observable<ExportJob> {
-    let includeDataTable = false;
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<ExportJob> {
     let hasSelectedFormat = false;
     for (let dataType of dataTypes) {
       if (dataType.checked) {
         for (let fileFormat of dataType.fileFormats) {
           if (fileFormat.checked) {
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              includeDataTable = true;
-            }
             hasSelectedFormat = true;
           }
         }
@@ -341,7 +347,12 @@ export class ResourceService {
     if (hasSelectedFormat) {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          return this.transmartResourceService.runExportJob(job.id, job.jobName, constraint, dataTypes, includeDataTable, dataTable);
+          return this.transmartResourceService
+            .runExportJob(job.id, job.name, constraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
+              map((tmExportJob: TransmartExportJob) => {
+                return TransmartMapper.mapTransmartExportJob(tmExportJob);
+              })
+            );
         }
         default: {
           return this.handleEndpointModeError();
@@ -357,7 +368,7 @@ export class ResourceService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.downloadExportJob(jobId);
@@ -519,17 +530,8 @@ export class ResourceService {
     }
   }
 
-  // TODO: refactor transmart speciic variables here, hide them from glowing bear
   get transmartExportDataView(): string {
     return this.transmartResourceService.exportDataView;
-  }
-
-  get transmartDateColumnIncluded(): boolean {
-    return this.transmartResourceService.dateColumnsIncluded;
-  }
-
-  set transmartDateColumnIncluded(value: boolean) {
-    this.transmartResourceService.dateColumnsIncluded = value;
   }
 
   // -------------------------------------- cross table ---------------------------------------------

@@ -35,15 +35,12 @@
         <button type="button" class="btn btn-primary btn-sm"
                 (click)="createExportJob()">Create Export</button>
         <span>&nbsp;</span>
-        <!-- show the date column checkbox if the resource service is in transmart mode -->
-        <!-- and the transmart resource service has the export data view as 'surveyTable' (NTR specific) -->
-        <div *ngIf="isTransmartEnv">
-          <div *ngIf="resourceService.transmartExportDataView === 'surveyTable'">
-            <p-checkbox class="gb-include-date-columns-checkbox"
-                        [(ngModel)]="resourceService.transmartDateColumnIncluded"
-                        binary="true"></p-checkbox>
-            Include measurement date columns
-          </div>
+        <!-- show the date column checkbox if the export data view is 'surveyTable' -->
+        <div *ngIf="isTransmartSurveyTableDataView">
+          <p-checkbox class="gb-include-date-columns-checkbox"
+                      [(ngModel)]="isTransmartDateColumnIncluded"
+                      binary="true"></p-checkbox>
+          Include measurement date columns
         </div>
       </div>
     </div>
@@ -62,9 +59,9 @@
 
   <hr>
 
-  <!---------------------- previous exports ---------------------->
+  <!---------------------- recent exports ---------------------->
   <div class="gb-export-section-banner">
-    <h5>Previous Exports</h5>
+    <h5>Recent Exports</h5>
   </div>
 
   <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
@@ -72,23 +69,23 @@
     <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
   </div>
   <p-dataTable #dt
-               sortField="jobStatusTime"
+               sortField="time"
                sortOrder="-1"
                [value]="exportJobs"
                [rows]="10" [paginator]="true"
                [globalFilter]="globalFilter">
-    <p-column field="jobName" header="Name"
+    <p-column field="name" header="Name"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatus" header="Status"
+    <p-column field="status" header="Status"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
 
     </p-column>
-    <p-column field="jobStatusTime" header="Time"
-              [sortable]="true"
+    <p-column field="timeDescription" header="Last updated"
+              [sortable]="true" sortField="time"
               [filter]="true" filterPlaceholder="Filter Column">
     </p-column>
     <p-column>
@@ -96,17 +93,17 @@
       </ng-template>
       <ng-template let-job="rowData" pTemplate="body">
         <button type="button"
-                *ngIf="job.jobStatus === 'Completed'"
+                *ngIf="job.status === 'Completed'"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="downloadExportJob(job)">
           <span class="fa fa-download"></span>
           Download
         </button>
         <button type="button"
-                *ngIf="['Completed','Error','Cancelled'].indexOf(job.jobStatus) < 0;else archive"
+                *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
                 class="btn btn-outline-primary btn-sm"
-                [disabled] = "job.isInDisabledState"
+                [disabled] = "job.disabled"
                 (click)="cancelExportJob(job)">
           <span class="fa fa-times"></span>
           Cancel
@@ -115,7 +112,7 @@
           <button type="button"
                   *ngIf="!isExternalExportAvailable"
                   class="btn btn-outline-primary btn-sm"
-                  [disabled] = "job.isInDisabledState"
+                  [disabled] = "job.disabled"
                   (click)="archiveExportJob(job)">
             <span class="fa fa-archive"></span>
             Archive
