@@ -36,6 +36,7 @@ import {DataTable} from '../../models/table-models/data-table';
 import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
 import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {Study} from '../../models/constraint-models/study';
+import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
 @Injectable()
@@ -43,7 +44,6 @@ export class TransmartResourceService {
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
-  private _dateColumnsIncluded = true;
 
   /*
    * Flag indicating if the subject selection of step 1 should be automatically
@@ -83,14 +83,6 @@ export class TransmartResourceService {
 
   set subjectSetConstraint(value: SubjectSetConstraint) {
     this._subjectSetConstraint = value;
-  }
-
-  get dateColumnsIncluded(): boolean {
-    return this._dateColumnsIncluded;
-  }
-
-  set dateColumnsIncluded(value: boolean) {
-    this._dateColumnsIncluded = value;
   }
 
   get useExternalExportJob(): boolean {
@@ -386,9 +378,9 @@ export class TransmartResourceService {
 
   /**
    * Get the current user's existing export jobs
-   * @returns {Observable<ExportJob[]>}
+   * @returns {Observable<TransmartExportJob[]>}
    */
-  getExportJobs(): Observable<any[]> {
+  getExportJobs(): Observable<TransmartExportJob[]> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.getAllJobs().pipe(
         map((tmExJobs: TransmartPackerJob[]) => {
@@ -404,7 +396,7 @@ export class TransmartResourceService {
    * @param name
    * @returns {Observable<ExportJob>}
    */
-  createExportJob(name: string): Observable<ExportJob> {
+  createExportJob(name: string): Observable<TransmartExportJob> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.createExportJob(name);
     } else {
@@ -418,16 +410,28 @@ export class TransmartResourceService {
    * @param {string} jobName
    * @param {Constraint} constraint
    * @param {ExportDataType[]} dataTypes
-   * @param {boolean} includeDataTable
    * @param {DataTable} dataTable
-   * @returns {Observable<ExportJob>}
+   * @param {boolean} dateColumnsIncluded
+   * @returns {Observable<TransmartExportJob>}
    */
   runExportJob(jobId: string,
                jobName: string,
                constraint: Constraint,
                dataTypes: ExportDataType[],
-               includeDataTable: boolean,
-               dataTable: DataTable): Observable<ExportJob> {
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
+    let includeDataTable = false;
+    for (let dataType of dataTypes) {
+      if (dataType.checked) {
+        for (let fileFormat of dataType.fileFormats) {
+          if (fileFormat.checked) {
+            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
+              includeDataTable = true;
+            }
+          }
+        }
+      }
+    }
 
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
@@ -445,12 +449,16 @@ export class TransmartResourceService {
           return TransmartPackerMapper.mapCustomExportJob(tmExJob);
         }));
     } else {
-      let transmartTableState: TransmartTableState = null;
-      if (includeDataTable) {
-        transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
-      }
       const elements = TransmartMapper.mapExportDataTypes(dataTypes, this.exportDataView);
-      return this.transmartHttpService.runExportJob(jobId, targetConstraint, elements, transmartTableState);
+      if (this.exportDataView === 'surveyTable') {
+        return this.transmartHttpService
+          .runSurveyTableExportJob(jobId, targetConstraint, elements, dateColumnsIncluded);
+      } else {
+        let transmartTableState =
+          includeDataTable ? TransmartDataTableMapper.mapDataTableToTableState(dataTable) : null;
+        return this.transmartHttpService
+          .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+      }
     }
   }
 
@@ -459,7 +467,7 @@ export class TransmartResourceService {
    * @param jobId
    * @returns {Observable<blob>}
    */
-  downloadExportJob(jobId: string) {
+  downloadExportJob(jobId: string): Observable<Blob> {
     if (this.useExternalExportJob) {
       return this.transmartPackerHttpService.downloadJobData(jobId);
     } else {

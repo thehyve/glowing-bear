@@ -7,6 +7,6 @@
  */
 
 export enum CombinationState {
-  And,
-  Or
+  And = 'And',
+  Or = 'Or'
 }

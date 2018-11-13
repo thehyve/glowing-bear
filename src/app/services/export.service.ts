@@ -13,7 +13,6 @@ import {ResourceService} from './resource.service';
 import {ExportJob} from '../models/export-models/export-job';
 import {DataTableService} from './data-table.service';
 import {saveAs} from 'file-saver';
-import {DatePipe} from '@angular/common';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -31,14 +30,14 @@ export class ExportService {
   private _exportJobs: ExportJob[] = [];
   private _exportJobName: string;
   private _isLoadingExportDataTypes = false;
+  private _isTransmartDateColumnsIncluded = false;
 
   constructor(private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
               private studyService: StudyService,
               private dataTableService: DataTableService,
-              private injector: Injector,
-              private datePipe: DatePipe) {
+              private injector: Injector) {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
@@ -84,8 +83,7 @@ export class ExportService {
    */
   createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let exportDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd HH.mm');
-      let name = this.exportJobName ? this.exportJobName.trim() + ' ' + exportDate : '';
+      let name = this.exportJobName.trim();
 
       if (this.validateExportJob(name)) {
         let summary = 'Running export job "' + name + '".';
@@ -122,7 +120,12 @@ export class ExportService {
   public runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
       let constraint = this.constraintService.constraint_1_2();
-      this.resourceService.runExportJob(job, this.exportDataTypes, constraint, this.dataTableService.dataTable)
+      this.resourceService
+        .runExportJob(job,
+          this.exportDataTypes,
+          constraint,
+          this.dataTableService.dataTable,
+          this.isTransmartDateColumnsIncluded)
         .subscribe(
           returnedExportJob => {
             if (returnedExportJob) {
@@ -134,12 +137,12 @@ export class ExportService {
                   reject(err);
                 });
             } else {
-              reject(`Fail to run export job ${job.jobName}, server returns undefined job.`);
+              reject(`Fail to run export job ${job.name}, server returns undefined job.`);
             }
           },
           (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
-            reject(`Fail to run export job ${job.jobName}.`);
+            reject(`Fail to run export job ${job.name}.`);
           }
         );
     });
@@ -151,55 +154,71 @@ export class ExportService {
    * @param job
    */
   downloadExportJob(job: ExportJob) {
-    job.isInDisabledState = true;
+    job.disabled = true;
     this.resourceService.downloadExportJob(job.id)
       .subscribe(
         (data) => {
-          let blob = new Blob([data], {type: 'application/zip'});
-          saveAs(blob, `${job.jobName}.zip`, true);
+          const blob = new Blob([data], {type: 'application/zip'});
+          const filename = job.name + ' ' + job.time.toISOString();
+          saveAs(blob, `${filename}.zip`, true);
         },
         (err: HttpErrorResponse) => {
           ErrorHelper.handleError(err);
         },
         () => {
-          MessageHelper.alert('success', `Export ${job.jobName} download completed`);
+          MessageHelper.alert('success', `Export ${job.name} download completed`);
+          job.disabled = false;
         }
       );
   }
 
-  cancelExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.cancelExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  cancelExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.cancelExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
-  archiveExportJob(job) {
-    job.isInDisabledState = true;
-    this.resourceService.archiveExportJob(job.id)
-      .subscribe(
-        response => {
-          this.updateExportJobs();
-        },
-        (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-        }
-      );
+  archiveExportJob(job: ExportJob): Promise<any> {
+    return new Promise((resolve, reject) => {
+      job.disabled = true;
+      this.resourceService.archiveExportJob(job.id)
+        .subscribe(
+          response => {
+            this.updateExportJobs().then(() => {
+              resolve(true);
+            }).catch(err => {
+              reject(err);
+            })
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err);
+          }
+        );
+    });
   }
 
   updateExportJobs(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.resourceService.getExportJobs()
         .subscribe(
-          jobs => {
+          (jobs: ExportJob[]) => {
             jobs.forEach(job => {
-              job.isInDisabledState = false
+              job.disabled = false
             });
             this.exportJobs = jobs;
             resolve(true);
@@ -290,5 +309,13 @@ export class ExportService {
 
   set exportJobName(value: string) {
     this._exportJobName = value;
+  }
+
+  get isTransmartDateColumnsIncluded(): boolean {
+    return this._isTransmartDateColumnsIncluded;
+  }
+
+  set isTransmartDateColumnsIncluded(value: boolean) {
+    this._isTransmartDateColumnsIncluded = value;
   }
 }
