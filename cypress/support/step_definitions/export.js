@@ -27,12 +27,12 @@ given("there are no export jobs pending", () => {
 
 when('I select all data', () => {
   cy.get('.gb-data-selection-accordion-sub-header-2').eq(1).click();
-  cy.contains('Check All').click();
+  cy.contains('Check all').click();
   cy.get('.gb-data-selection-accordion-sub-header-2').eq(1).contains('Update').click();
 })
 
 when('I export this data with the name {string}', (jobName) => {
-  cy.get('.ui-tabmenuitem').contains('Export').click();
+  cy.get('.gb-nav').contains('Export').click();
   cy.get('#exportJobNameInput').type(jobName);
   cy.contains('Create Export').click();
 });
