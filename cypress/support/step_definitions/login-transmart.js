@@ -10,8 +10,9 @@ when("I login with user {string} using transmart", (user) => {
 });
 
 then("I am logged in using transmart", () => {
-  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
-  cy.contains("Step 1").should('be.visible');
+  cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
+    cy.contains("Inclusion criteria").should('be.visible');
+    cy.contains("Exclusion criteria").should('be.visible');
 });
 
 then("I am not logged in using transmart", () => {

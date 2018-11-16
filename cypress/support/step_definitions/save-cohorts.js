@@ -1,10 +1,10 @@
-given("Cohort {string} is saved", (queryName) => {
+given("Cohort {string} is saved", (cohortName) => {
   cy.server();
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
     cy.getToken(userData.username, userData.password)
       .then((token) => {
-        // get query list
+        // get cohort list
         cy.request({
           'url': Cypress.env('apiUrl') + '/v2/queries',
           'method': 'GET',
@@ -26,7 +26,7 @@ given("Cohort {string} is saved", (queryName) => {
             'method': 'POST',
             'auth': {'bearer': token},
             'body': {
-              "name": queryName,
+              "name": cohortName,
               "patientsQuery": {
                 "type": "subselection",
                 "dimension": "patient",
@@ -64,13 +64,13 @@ given("Cohort {string} is saved", (queryName) => {
   });
 });
 
-given("there are no queries saved", () => {
+given("there are no cohorts saved", () => {
   cy.server();
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
     cy.getToken(userData.username, userData.password)
       .then((token) => {
-        // get query list
+        // get cohort list
         cy.request({
           'url': Cypress.env('apiUrl') + '/v2/queries',
           'method': 'GET',
@@ -88,24 +88,24 @@ given("there are no queries saved", () => {
   });
 });
 
-when("I restore the query {string}", (queryName) => {
-  cy.contains(queryName).parent().find('.fa-arrow-right').click();
+when("I restore the cohort {string}", (cohortName) => {
+  cy.contains(cohortName).parent().parent().parent().parent().find('.fa-arrow-right').click();
 });
 
-when("I delete the query {string}", (queryName) => {
-  cy.contains(queryName).parent().find('.fa-times').click();
+when("I delete the cohort {string}", (cohortName) => {
+  cy.contains(cohortName).parent().parent().parent().parent().find('.fa-times').click();
   cy.contains('Yes').click();
 });
 
-when('I save the Cohort with name {string}', (queryName) => {
-  cy.get('#queryName').type(queryName);
-  cy.contains('Save query').click();
+when('I save the Cohort with name {string}', (cohortName) => {
+  cy.get('#cohortName').type(cohortName);
+  cy.contains('Save cohort').click();
 });
 
-then('the query {string} is saved', (queryName) => {
-  cy.get('.ng-trigger-tabContent').eq(2).contains(queryName);
+then('the cohort {string} is saved', (cohortName) => {
+  cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName);
 });
 
-then('the query {string} is deleted', (queryName) => {
-  cy.get('.ng-trigger-tabContent').eq(2).contains(queryName).should('not.be.visible');
+then('the cohort {string} is deleted', (cohortName) => {
+  cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).should('not.be.visible');
 });
