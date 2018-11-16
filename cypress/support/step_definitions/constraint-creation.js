@@ -4,12 +4,11 @@ when("I use public study {string} as a constraint", (studyName) => {
   cy.toggleNode('Public Studies ');
   cy.drag(studyName).drop(0);
 
-  cy.get('.gb-data-selection-update-btn').eq(0).click();
+  cy.get('.update-btn').eq(0).click();
 });
 
-then("there are {string} patients and {string} observations", (patients, observations) => {
-  cy.get('.gb-data-selection-emphasis-text', {timeout: 100000}).eq(0).should('contain', patients);
-  cy.get('.gb-data-selection-emphasis-text', {timeout: 100000}).eq(2).should('contain', observations);
+then("there are {string} subjects", (subjects) => {
+  cy.get('.subject-count-box', {timeout: 100000}).eq(2).should('contain', subjects);
 });
 
 when("I select all female patients from CATEGORICAL_VALUES", () => {
@@ -18,7 +17,7 @@ when("I select all female patients from CATEGORICAL_VALUES", () => {
     .toggleNode('Demography ')
     .toggleNode('Gender ');
   cy.drag('Female ').drop(0);
-  cy.get('.gb-data-selection-update-btn').eq(0).click();
+  cy.get('.update-btn').eq(0).click();
 });
 
 when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomach, Lung, Head, Liver", () => {
@@ -42,7 +41,7 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
   cy.get('label').contains('4 items selected').should('be.visible');
   cy.get('label').contains('4 items selected').click();
 
-  cy.get('.gb-data-selection-update-btn').eq(0).click();
+  cy.get('.update-btn').eq(0).click();
 });
 
 when("I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TRIAL or EHR", () => {
@@ -54,7 +53,7 @@ when("I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TR
   cy.contains('i', 'and').click();
   cy.contains('i', 'or').should('be.visible');
 
-  cy.get('.gb-data-selection-update-btn').eq(0).click();
+  cy.get('.update-btn').eq(0).click();
 });
 
 when("I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10", () => {
@@ -71,5 +70,5 @@ when("I select patients that are part of study Oracle_1000_Patient with age betw
   cy.get('input[placeholder="add criterion"]').eq(1).trigger('drop');
   cy.get('input[placeholder="min:-5.76679"]').type('0');
   cy.get('input[placeholder="max:29.79301"]').type('10');
-  cy.get('.gb-data-selection-update-btn').eq(0).click();
+  cy.get('.update-btn').eq(0).click();
 });

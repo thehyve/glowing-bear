@@ -12,14 +12,15 @@ given("I am logged in as {string}", (user) => {
       cy.transmartLogin(userData.username, userData.password, userData.valid);
     }
   });
-  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
-  cy.contains("Step 1").should('be.visible');
+  cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
+  cy.contains("Inclusion criteria").should('be.visible');
+  cy.contains("Exclusion criteria").should('be.visible');
 });
 
-given("I am on the data-selection tab", () => {
+given("I am on the cohort-selection tab", () => {
   cy.server();
   cy.route('POST', '**/v2/observations/counts_per_study').as('getCounts');
-  cy.visit('/data-selection');
+  cy.visit('/cohort-selection');
   cy.fixture('admin').as("user");
   cy.get('@user').then((userData) => {
       if(Cypress.env('authentication-service-type') == 'oidc'){
@@ -28,7 +29,7 @@ given("I am on the data-selection tab", () => {
         cy.transmartLogin(userData.username, userData.password, userData.valid);
       }
   });
-  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
+  cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
   cy.get('input[placeholder="add criterion"]').eq(0).should('be.visible');
 
   cy.wait('@getCounts', {timeout: 10000});
