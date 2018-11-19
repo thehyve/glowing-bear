@@ -19,7 +19,7 @@ export class AppConfigMock {
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',
-        'data-view': 'surveyTable'
+        'data-view': 'dataTable'
       },
     };
   }
@@ -78,6 +78,36 @@ export class AppConfigPackerMock {
         'name': 'packer',
         'export-url': 'http://foo.bar',
         'data-view': 'basic-packer-export'
+      },
+    };
+  }
+
+  public getConfig(key: any) {
+    return this.config[key];
+  }
+
+
+  public getEnv(key: any) {
+    return this.env[key];
+  }
+
+  load() {}
+}
+
+export class AppConfigSurveyExportMock {
+  private config: Object = null;
+  private env: Object = null;
+
+  constructor() {
+    this.config = {
+      'app-version': '0.0.1-test',
+      'api-version': 'v2',
+      'api-url': 'https://transmart.example.com',
+      'app-url': 'https://glowingbear.example.com',
+      'authentication-service-type': 'transmart',
+      'export-mode': {
+        'name': 'transmart',
+        'data-view': 'surveyTable'
       },
     };
   }
