@@ -22,47 +22,62 @@ export class FractalisService {
     let token = this.authService.token;
     // TODO: dynamically get the endpoints
     const config = {
-      handler: 'transmart',
-      dataSource: 'http://192.168.178.24:8081',
-      fractalisNode: 'http://localhost',
+      // handler: 'transmart',
+      // dataSource: 'http://192.168.178.24:8081',
+      // fractalisNode: 'http://localhost',
+      handler: 'demo_tcga_coad',
+      dataSource: location.protocol + '//' + window.location.host,
+      fractalisNode: 'http://localhost:5000',
       getAuth() {
         return {token: token}
       },
       options: {
         controlPanelPosition: 'right',
-        controlPanelExpanded: true,
-        showDataBox: true
+        controlPanelExpanded: true
+        // controlPanelHidden: false,
+        // showDataBox: true
       }
     };
-
-    const constraint = {
-      type: 'concept',
-      conceptCode: 'O1KP:NUM1'
-    }
-    const descriptor = {
-      constraint: JSON.stringify(constraint),
-      data_type: 'numerical',
-      label: 'This is a test'
-    };
-
     if (fjs.fractalis) {
+
+      // this.F.loadData([descriptor])
+      //   .then(res => {
+      //     console.log('response here', res);
+      //   })
+      //   .catch(err => {
+      //     console.log('cannot load data: ');
+      //     console.log(err)
+      //   });
       this.F = fjs.fractalis.init(config);
-      console.log('Fratalis imported: ', this.availableChartTypes);
-
-      this.F.loadData([descriptor])
-        .then(res => {
-          console.log('response here', res);
-        })
-        .catch(err => {
-          console.log('cannot load data: ');
-          console.log(err)
-        });
+      this.setSubsets();
+      this.clearData();
+      this.loadData();
+      console.log('Fractalis imported: ', this.availableChartTypes);
       this.retrieveAvailableChartTypes();
-
     } else {
       MessageHelper.alert('error', 'Fail to import Fractalis.');
     }
   }
+  //
+  // private loadData() {
+  //   const constraint = {
+  //     type: 'concept',
+  //     conceptCode: 'O1KP:NUM1'
+  //   };
+  //   const descriptor = {
+  //     constraint: JSON.stringify(constraint),
+  //     data_type: 'numerical',
+  //     label: 'This is a test'
+  //   };
+  //   this.F.loadData([descriptor])
+  //     .then(res => {
+  //       console.log('response here', res);
+  //     })
+  //     .catch(err => {
+  //       console.log('cannot load data: ');
+  //       console.log(err)
+  //     });
+  // }
 
   private retrieveAvailableChartTypes() {
     const types: string[] = this.F.getAvailableCharts();
@@ -80,11 +95,19 @@ export class FractalisService {
   }
 
   public addChart() {
-    if (this.selectedChartType) {
-      let chart = new Chart(this.selectedChartType);
-      chart.variables = [...this.selectedVariables]; // clone a new array
-      this.charts.push(chart);
-    }
+    // if (this.selectedChartType) {
+    //   let chart = new Chart(this.selectedChartType);
+    //   chart.variables = [...this.selectedVariables]; // clone a new array
+    //   this.charts.push(chart);
+    // }
+    const container = document.querySelector('.charts');
+    const chartDiv = document.createElement('div');
+    chartDiv.style.width = '30vw';
+    chartDiv.style.height = '30vw';
+    container.appendChild(chartDiv);
+    chartDiv.id = `chart-${container.childNodes.length}`;
+    this.F.setChart(this.selectedChartType, '#' + chartDiv.id);
+    console.log('Chart set');
   }
 
   public removeChart(chart: Chart) {
@@ -129,5 +152,48 @@ export class FractalisService {
 
   set F(value: any) {
     this._F = value;
+  }
+
+  setSubsets() {
+    // this.F.setSubsets([])
+  }
+
+  loadData () {
+    this.F.loadData([
+      {
+        dataType: 'categorical',
+        field: 'gender'
+      },
+      {
+        dataType: 'categorical',
+        field: 'race'
+      },
+      {
+        dataType: 'categorical',
+        field: 'tumor_stage'
+      },
+
+      {
+        dataType: 'categorical',
+        field: 'miR1269a_expression'
+      },
+      {
+        dataType: 'numerical',
+        field: 'year_of_birth'
+      },
+      {
+        dataType: 'numerical',
+        field: 'days_to_death'
+      },
+      {
+        dataType: 'numerical_array',
+        field: 'miRNA'
+      }
+    ])
+
+  }
+
+  clearData() {
+    this.F.clearCache()
   }
 }

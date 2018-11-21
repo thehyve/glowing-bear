@@ -76,9 +76,9 @@ describe('GbVariablesComponent', () => {
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();
-    c1.selected = false;
+    c2.selected = false;
     let c3 = new Concept();
-    c1.selected = true;
+    c3.selected = true;
     categorizedVars.set('cat1', [c1, c2]);
     categorizedVars.set('cat2', [c3]);
     let spy1 = spyOnProperty(component, 'categorizedVariables', 'get')

@@ -17,14 +17,14 @@ export class GbFractalisChartComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initializeChart();
+    // this.initializeChart();
   }
 
   initializeChart() {
     // TODO 1: modify fractalis.js so that it is responsive to gridster layout
     // TODO 2: figure out an async detector
     // that detects when the chart div is available to fractalis, ngOnInit is still too early
-    this.fractalisService.F.setChart('histogram', '#' + this.chart.id);
+    // this.fractalisService.F.setChart('histogram', '#' + this.chart.id);
     // fractal.getChartParameterDescriptions(this.myChart1, (v) => {
     //   console.log('v', v)
     //   // fractal.setChartParameters(myChart1, v);
