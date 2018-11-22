@@ -1,51 +1,91 @@
 <div class="gb-export-container">
 
   <!---------------------- create new export ---------------------->
-  <div *ngIf="!isLoadingExportDataTypes && exportDataTypes.length > 0">
+  <div *ngIf="!isLoadingExportDataTypes && exportDataTypes && exportDataTypes.length > 0 && isExportDataAvailable">
     <div class="gb-export-section-banner">
       <h5>Create new export for the currently selected data</h5>
     </div>
 
     <div class="gb-export-format-container">
+      <form novalidate #exportJobForm="ngForm">
 
-      <!-- area to indicate which data formats to export -->
-      <div class="gb-export-format-header">Select data types and formats to export:</div>
-      <div *ngFor="let dataType of exportDataTypes">
-      <span class="row">
-        <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
-          <p-checkbox [(ngModel)]="dataType.checked" binary="true"></p-checkbox>
-          {{dataType.name}}
+      <div class="container-fluid">
+        <!-- area to indicate which data formats to export -->
+        <div class="gb-export-format-header row">Select data types and formats to export:</div>
+        <span *ngFor="let dataType of exportDataTypes" class="row">
+          <span class="ui-grid ui-grid-responsive ui-fluid gb-export-format-item">
+            <p-checkbox [(ngModel)]="dataType.checked" name="dataTypes" binary="true"></p-checkbox>
+            {{dataType.name}}
+          </span>
+          (&nbsp;
+          <span *ngFor="let fileFormat of dataType.fileFormats">
+            <p-checkbox [(ngModel)]="fileFormat.checked" name="fileFormats" binary="true"></p-checkbox>
+            {{fileFormat.name}} &nbsp;
+          </span>
+          )
         </span>
-        (&nbsp;
-        <span *ngFor="let fileFormat of dataType.fileFormats">
-          <p-checkbox [(ngModel)]="fileFormat.checked" binary="true"></p-checkbox>
-          {{fileFormat.name}} &nbsp;
-        </span>
-        )
-      </span>
+        <div>
+          <small class="form-text text-danger" *ngIf="!isFileFormatSelected">
+            No data type or file format selected.
+          </small>
+        </div>
       </div>
 
       <!-- export name input and button -->
       <div class="form-inline gb-export-btn-container">
-        <input id="exportJobNameInput" type="text" class="form-text"
-               placeholder="Export job name"
-               (drop)="onExportJobNameInputDrop($event)"
-               [(ngModel)]="exportJobName">
-        <span>&nbsp;</span>
-        <button type="button" class="btn btn-primary btn-sm"
-                (click)="createExportJob()">Create Export</button>
-        <span>&nbsp;</span>
+        <div>
+          <input id="exportJobNameInput" type="text" class="form-control"
+                 name="exportJobNameInput"
+                 #exportJobNameInput="ngModel"
+                 placeholder="Export job name"
+                 (drop)="onExportJobNameInputDrop($event)"
+                 required
+                 minlength="1"
+                 maxlength="200"
+                 gbNonEmpty
+                 [gbExcludeValues]="jobNames"
+                 [(ngModel)]="exportJobName">
+          <span>&nbsp;</span>
+          <button type="button" class="btn btn-primary btn-sm"
+                  id="create-export-job"
+                  [disabled]="!exportJobForm.form.valid || !isFileFormatSelected"
+                  (click)="createExportJob(exportJobForm)">Create export</button>
+          <span>&nbsp;</span>
+        </div>
         <!-- show the date column checkbox if the export data view is 'surveyTable' -->
         <div *ngIf="isTransmartSurveyTableDataView">
           <p-checkbox class="gb-include-date-columns-checkbox"
+                      name="isTransmartDateColumnIncluded"
                       [(ngModel)]="isTransmartDateColumnIncluded"
                       binary="true"></p-checkbox>
           Include measurement date columns
         </div>
       </div>
+      <!-- Validation error messages -->
+      <div *ngIf="exportJobNameInput.dirty && exportJobNameInput.invalid">
+        <small class="form-text text-danger" *ngIf="exportJobNameInput.errors.required || exportJobNameInput.errors.gbNonEmpty">
+          A job name is required.
+        </small>
+        <small class="form-text text-danger" *ngIf="exportJobNameInput.errors.minlength">
+          The job name has to be at least 1 character long.
+        </small>
+        <small class="form-text text-danger" *ngIf="exportJobNameInput.errors.maxlength">
+          The job name cannot be longer than 200 characters.
+        </small>
+        <small class="form-text text-danger" *ngIf="exportJobNameInput.errors.gbExcludeValues">
+          The job name has already been used.
+        </small>
+      </div>
+
+      </form>
     </div>
   </div>
 
+  <div *ngIf="!isExportDataAvailable">
+    <div class="gb-export-section-banner">
+      <h5 class="alert alert-warning" role="alert">No data selected</h5>
+    </div>
+  </div>
 
   <!-- the spinning icon -->
   <div *ngIf="isLoadingExportDataTypes">
@@ -61,7 +101,7 @@
 
   <!---------------------- recent exports ---------------------->
   <div class="gb-export-section-banner">
-    <h5>Recent Exports</h5>
+    <h5>Recent exports</h5>
   </div>
 
   <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
@@ -76,17 +116,14 @@
                [globalFilter]="globalFilter">
     <p-column field="name" header="Name"
               [sortable]="true"
-              [filter]="true" filterPlaceholder="Filter column">
-
+              [filter]="true" filterPlaceholder="Filter column" filterMatchMode="contains">
     </p-column>
     <p-column field="status" header="Status"
               [sortable]="true"
               [filter]="true" filterPlaceholder="Filter column">
-
     </p-column>
     <p-column field="timeDescription" header="Last updated"
-              [sortable]="true" sortField="time"
-              [filter]="true" filterPlaceholder="Filter Column">
+              [sortable]="true" sortField="time">
     </p-column>
     <p-column>
       <ng-template pTemplate="header">
@@ -100,6 +137,7 @@
           <span class="fa fa-download"></span>
           Download
         </button>
+        <span>&nbsp;</span>
         <button type="button"
                 *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
                 class="btn btn-outline-primary btn-sm"

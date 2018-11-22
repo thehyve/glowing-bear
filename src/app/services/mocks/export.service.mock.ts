@@ -27,6 +27,14 @@ export class ExportServiceMock {
     })
   }
 
+  /**
+   * Checks if data is available for export.
+   * @returns {boolean}
+   */
+  get isDataAvailable(): boolean {
+    return true;
+  }
+
   get exportDataTypes(): ExportDataType[] {
     return this._exportDataTypes;
   }

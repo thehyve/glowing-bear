@@ -28,7 +28,7 @@ export class ExportService {
   private _exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[] = [];
-  private _exportJobName: string;
+  private _exportJobName = '';
   private _isLoadingExportDataTypes = false;
   private _isTransmartDateColumnsIncluded = false;
 
@@ -83,33 +83,32 @@ export class ExportService {
    */
   createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let name = this.exportJobName.trim();
+      let name = this.exportJobName === null ? '' : this.exportJobName.trim();
 
-      if (this.validateExportJob(name)) {
-        let summary = 'Running export job "' + name + '".';
-        MessageHelper.alert('info', summary);
-        this.resourceService.createExportJob(name)
-          .subscribe(
-            (newJob: ExportJob) => {
-              summary = 'Export job "' + name + '" is created.';
-              MessageHelper.alert('success', summary);
-              this.exportJobName = '';
-              this.runExportJob(newJob)
-                .then(() => {
-                  resolve(true);
-                })
-                .catch(err => {
-                  reject(err)
-                });
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              reject(`Fail to create export job ${name}.`);
-            }
-          );
-      } else {
-        reject(`Invalid export job ${name}`);
+      if (!this.isDataAvailable) {
+        return reject(`No data is available for exporting`);
       }
+      let summary = 'Running export job "' + name + '".';
+      MessageHelper.alert('info', summary);
+      this.resourceService.createExportJob(name)
+        .subscribe(
+          (newJob: ExportJob) => {
+            summary = 'Export job "' + name + '" is created.';
+            MessageHelper.alert('success', summary);
+            this.exportJobName = '';
+            this.runExportJob(newJob)
+              .then(() => {
+                resolve(true);
+              })
+              .catch(err => {
+                reject(err)
+              });
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(`Fail to create export job ${name}.`);
+          }
+        );
     });
   }
 
@@ -177,7 +176,7 @@ export class ExportService {
       job.disabled = true;
       this.resourceService.cancelExportJob(job.id)
         .subscribe(
-          response => {
+          () => {
             this.updateExportJobs().then(() => {
               resolve(true);
             }).catch(err => {
@@ -197,7 +196,7 @@ export class ExportService {
       job.disabled = true;
       this.resourceService.archiveExportJob(job.id)
         .subscribe(
-          response => {
+          () => {
             this.updateExportJobs().then(() => {
               resolve(true);
             }).catch(err => {
@@ -232,51 +231,13 @@ export class ExportService {
   }
 
   /**
-   * Validate a new exportJob
-   * @param {string} name
+   * Checks if data is available for export.
    * @returns {boolean}
    */
-  validateExportJob(name: string): boolean {
-    let validName = name !== '';
-    // 1. Validate if job name is specified
-    if (!validName) {
-      const summary = 'Please specify the job name.';
-      MessageHelper.alert('warn', summary);
-      return false;
-    }
-    // 2. Validate if job name is not duplicated
-    for (let job of this.exportJobs) {
-      if (job['jobName'] === name) {
-        const summary = 'Duplicate job name, choose a new name.';
-        MessageHelper.alert('warn', summary);
-        return false;
-      }
-    }
-    // 3. Validate if at least one data type is selected
-    if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
-      const summary = 'Please select at least one data type.';
-      MessageHelper.alert('warn', summary);
-      return false;
-    }
-    // 4. Validate if at least one file format is selected for checked data formats
-    for (let dataFormat of this.exportDataTypes) {
-      if (dataFormat['checked'] === true) {
-        if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
-          const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
-          MessageHelper.alert('warn', summary);
-          return false;
-        }
-      }
-    }
-    // 5. Validate if at least one observation is included
+  get isDataAvailable(): boolean {
+    // Validate if at least one observation is included
     let queryService = this.injector.get(QueryService);
-    if (queryService.counts_2.observationCount < 1) {
-      const summary = 'No observation included to be exported.';
-      MessageHelper.alert('warn', summary);
-      return false;
-    }
-
-    return true;
+    return queryService.counts_2.observationCount >= 1;
   }
 
   get exportDataTypes(): ExportDataType[] {
