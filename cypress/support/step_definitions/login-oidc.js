@@ -12,11 +12,11 @@ then("I am logged in using oidc", () => {
 
 then("I am not logged in using oidc", () => {
     cy.get('div').should('have.class', 'alert alert-error');
-    cy.get('span').should('have.text', 'Invalid username or password.');
+    cy.get('span').should('contain', 'Invalid username or password.');
 });
 
 when("I log out", () => {
-    cy.get('.gb-top-panel').find('button[id=logout]').click();
+    cy.get('.fa-sign-out').click();
 });
 
 then("I am redirected to the login page", () => {

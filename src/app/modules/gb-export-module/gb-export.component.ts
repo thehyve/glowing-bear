@@ -12,6 +12,7 @@ import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import Timer = NodeJS.Timer;
+import {NgForm} from '@angular/forms';
 
 @Component({
   selector: 'gb-export',
@@ -35,8 +36,10 @@ export class GbExportComponent implements OnInit, OnDestroy {
     clearInterval(this.timer);
   }
 
-  createExportJob() {
-    this.exportService.createExportJob();
+  createExportJob(exportJobForm: NgForm) {
+    this.exportService.createExportJob()
+      .then(() => exportJobForm.form.markAsPristine())
+      .catch((error) => { console.error(error); });
   }
 
   downloadExportJob(job) {
@@ -81,8 +84,24 @@ export class GbExportComponent implements OnInit, OnDestroy {
     this.exportService.isTransmartDateColumnsIncluded = value;
   }
 
+  get isFileFormatSelected(): boolean {
+    return this.exportService.exportDataTypes.some(dataType =>
+      dataType.checked && dataType.fileFormats.some(format => format.checked));
+  }
+
   get exportDataTypes(): ExportDataType[] {
     return this.exportService.exportDataTypes;
+  }
+
+  get isExportDataAvailable(): boolean {
+    return this.exportService.isDataAvailable;
+  }
+
+  get jobNames(): string[] {
+    if (!this.exportJobs) {
+      return [];
+    }
+    return this.exportJobs.map(job => job.name);
   }
 
   get exportJobs(): ExportJob[] {
@@ -92,4 +111,5 @@ export class GbExportComponent implements OnInit, OnDestroy {
   get isLoadingExportDataTypes(): boolean {
     return this.exportService.isLoadingExportDataTypes;
   }
+
 }

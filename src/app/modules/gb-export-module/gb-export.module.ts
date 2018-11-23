@@ -12,6 +12,7 @@ import {GbExportComponent} from './gb-export.component';
 import {FormsModule} from '@angular/forms';
 import {CheckboxModule, DataTableModule, MessagesModule} from 'primeng/primeng';
 import {routing} from './gb-export.routing';
+import {GbValidatorsModule} from '../../validators/gb-validators.module';
 
 @NgModule({
   imports: [
@@ -20,7 +21,8 @@ import {routing} from './gb-export.routing';
     FormsModule,
     CheckboxModule,
     DataTableModule,
-    MessagesModule
+    MessagesModule,
+    GbValidatorsModule
   ],
   declarations: [GbExportComponent],
   exports: [GbExportComponent]

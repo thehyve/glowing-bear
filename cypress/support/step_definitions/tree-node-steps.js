@@ -21,7 +21,7 @@ when("I reveal a date node", () => {
 });
 
 then("the node has the date icon", () => {
-  cy.contains('Birth Date ').parent().parent().children('.ui-treenode-icon').should('have.class', 'fa-calendar');
+  cy.contains('Birth Date ').parent().parent().children('.ui-treenode-icon').should('have.class', 'fa-calendar-o');
 });
 
 when("I reveal a text node", () => {
