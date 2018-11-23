@@ -23,7 +23,7 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {map} from 'rxjs/operators';
+import {map, flatMap} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
@@ -420,19 +420,6 @@ export class TransmartResourceService {
                dataTypes: ExportDataType[],
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
-    let includeDataTable = false;
-    for (let dataType of dataTypes) {
-      if (dataType.checked) {
-        for (let fileFormat of dataType.fileFormats) {
-          if (fileFormat.checked) {
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              includeDataTable = true;
-            }
-          }
-        }
-      }
-    }
-
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
       constraint.className === 'CombinationConstraint' &&
@@ -454,10 +441,26 @@ export class TransmartResourceService {
         return this.transmartHttpService
           .runSurveyTableExportJob(jobId, targetConstraint, elements, dateColumnsIncluded);
       } else {
-        let transmartTableState =
-          includeDataTable ? TransmartDataTableMapper.mapDataTableToTableState(dataTable) : null;
-        return this.transmartHttpService
-          .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+        const includeDataTable = elements.some(element =>
+          element.dataType === 'clinical' && element.format === 'TSV'
+        );
+        if (includeDataTable) {
+          if (dataTable.rowDimensions.length === 0 && dataTable.columnDimensions.length === 0) {
+            // Data table has not been properly initialised, first fetch dimensions
+            return this.getDimensions(targetConstraint).pipe(flatMap(dimensions => {
+              const transmartTableState = TransmartDataTableMapper.mapStudyDimensionsToTableState(dimensions, dataTable);
+              return this.transmartHttpService
+                .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+            }));
+          } else {
+            const transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
+            return this.transmartHttpService
+              .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+          }
+        } else {
+          return this.transmartHttpService
+            .runExportJob(jobId, targetConstraint, elements, null);
+        }
       }
     }
   }
@@ -573,7 +576,7 @@ export class TransmartResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Dimension[]>}
    */
-  private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
+  getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     // Fetch study names for the constraint
     return this.getStudyIds(constraint).pipe(
       switchMap(() => {

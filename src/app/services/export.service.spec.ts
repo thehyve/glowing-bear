@@ -75,30 +75,6 @@ describe('ExportService', () => {
     expect(service).toBeTruthy();
   }));
 
-  it('should validate export job name', () => {
-    exportService.exportJobs = [exportJob];
-    let result = exportService.validateExportJob('');
-    expect(result).toBe(false);
-    result = exportService.validateExportJob('test job name');
-    expect(result).toBe(false);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    let exportDataType = new ExportDataType('test data type', true);
-    exportService.exportDataTypes = [exportDataType];
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    let fileFormat = new ExportFileFormat('tsv', true);
-    exportDataType.fileFormats.push(fileFormat);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    queryService.counts_2 = new CountItem(1, 1);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(true);
-    queryService.counts_2 = new CountItem(0, 0);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-  });
-
   it('should cancel export job', () => {
     let spy = spyOn(resourceService, 'cancelExportJob').and.callThrough();
     let spy1 = spyOn(exportService, 'updateExportJobs').and.callThrough();

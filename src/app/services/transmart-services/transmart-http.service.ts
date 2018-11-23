@@ -265,7 +265,7 @@ export class TransmartHttpService {
    * @returns {Observable<TransmartExportJob>}
    */
   createExportJob(name: string): Observable<TransmartExportJob> {
-    const urlPart = `export/job?name=${name}`;
+    const urlPart = `export/job?name=${encodeURIComponent(name)}`;
     const responseField = 'exportJob';
     return this.httpHelper.postCall(urlPart, {}, responseField);
   }

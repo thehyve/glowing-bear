@@ -89,11 +89,11 @@ given("there are no queries saved", () => {
 });
 
 when("I restore the query {string}", (queryName) => {
-  cy.contains(queryName).parent().find('button[icon=fa-arrow-right]').click();
+  cy.contains(queryName).parent().find('.fa-arrow-right').click();
 });
 
 when("I delete the query {string}", (queryName) => {
-  cy.contains(queryName).parent().find('button[icon=fa-times]').click();
+  cy.contains(queryName).parent().find('.fa-times').click();
   cy.contains('Yes').click();
 });
 
