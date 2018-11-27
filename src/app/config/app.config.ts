@@ -18,12 +18,9 @@ export class AppConfig {
   static path = 'app/config/';
   config: Object = null;
   env: Object = null;
-  envs: Array<string> = null;
 
   // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
-  constructor(public http: HttpClient) {
-    this.envs = ['default', 'dev', 'transmart', 'picsure-i2b2', 'picsure-medco', 'docker-deployment'];
-  }
+  constructor(public http: HttpClient) { }
 
   /**
    * Use to get the data found in the second file (config file)
@@ -55,26 +52,19 @@ export class AppConfig {
         .subscribe((envResponse) => {
           this.env = envResponse;
           const envString = this.getEnv();
-          let request = this.envs.includes(envString) ?
-            this.http.get(AppConfig.path + 'config.' + envString + '.json') : null;
-          if (request) {
-            request
-              .subscribe((responseData) => {
-                this.config = responseData;
-                console.log('Successfully retrieved config: ', this.config);
-                resolve(true);
-              }, (err) => {
-                ErrorHelper.handleError(err);
-                const summary = 'Error reading ' + envString + ' configuration file';
-                console.error(summary);
-                resolve(err);
-              });
-          } else {
-            const summary = 'Env config file "env.json" is  invalid';
-            MessageHelper.alert('error', summary);
-            console.error(summary);
-            resolve(true);
-          }
+
+          this.http.get(AppConfig.path + 'config.' + envString + '.json')
+            .subscribe((responseData) => {
+              this.config = responseData;
+              console.log('Successfully retrieved config: ', this.config);
+              resolve(true);
+            }, (err) => {
+              ErrorHelper.handleError(err);
+              const summary = 'Error reading ' + envString + ' configuration file';
+              console.error(summary);
+              resolve(err);
+            });
+
         }, (err) => {
           ErrorHelper.handleError(err);
           const summary = 'Configuration environment could not be read.';
