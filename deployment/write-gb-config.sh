@@ -31,14 +31,11 @@ cat > "$NGINX_ROOT/app/config/config.docker-deployment.json" <<EOL
   "force-i2b2-nesting-style": true,
   "enable-greedy-tree-loading": false,
 
-  "medco-cothority-key-url": "app/config/medco-cothority-key.toml",
+  "medco-cothority-key-url": "$GB_COTHORITY_KEY_URL",
   "medco-genomic-annotations-url": "$GB_GENOMIC_ANNOTATIONS_URL"
 
 }
 EOL
-
-# todo: key hard coded! do with docker secrets secrets
-#ln -s /dev/secrets/ app/aaaaa
 
 cat > /etc/nginx/conf.d/default.conf <<EOL
 server {

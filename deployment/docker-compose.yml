@@ -9,6 +9,8 @@ services:
       target: dev
     ports:
       - "4200:4200"
+    volumes:
+      - ..:/glowing-bear-src
 
   gb-nginx:
     image: medco/glowing-bear:latest
@@ -19,9 +21,10 @@ services:
     ports:
       - "82:80"
     environment:
-      - GB_API_URL=http://iccluster046.iccluster.epfl.ch:8082/IRCT-CL/rest
-      - GB_URL=http://localhost:82
-      - GB_OIDC_URL=http://iccluster046.iccluster.epfl.ch:8081/auth/realms/master/protocol/openid-connect
-      - GB_OIDC_CLIENT_ID=i2b2
-      - GB_PICSURE_RES_NAME=i2b2-medco-icclusters
-      - GB_GENOMIC_ANNOTATIONS_URL=http://iccluster046.iccluster.epfl.ch/php
+      - GB_API_URL=http://pic-sure.localhost/IRCT-CL/rest
+      - GB_URL=http://localhost:81
+      - GB_OIDC_URL=http://keycloak.localhost/auth/realms/master/protocol/openid-connect
+      - GB_OIDC_CLIENT_ID=i2b2-local
+      - GB_PICSURE_RES_NAME=i2b2-medco-local
+      - GB_COTHORITY_KEY_URL=http://localhost/cothority-key.pub.toml
+      - GB_GENOMIC_ANNOTATIONS_URL=http://localhost/genomicAnnotations

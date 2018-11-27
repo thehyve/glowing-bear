@@ -15,7 +15,7 @@ RUN cd $GB_SRC && \
 VOLUME $GB_SRC
 EXPOSE 4200
 WORKDIR $GB_SRC
-ENTRYPOINT npm install && exec $NG_BIN serve --aot
+ENTRYPOINT npm install && exec $NG_BIN serve --aot --port 4200 --host 0.0.0.0
 
 
 # -------------------------------------------
@@ -35,6 +35,7 @@ ENV GB_API_URL="http://localhost:8082/IRCT-CL/rest" \
     GB_OIDC_URL="http://localhost:8081/auth/realms/master/protocol/openid-connect" \
     GB_OIDC_CLIENT_ID="i2b2" \
     GB_PICSURE_RES_NAME="i2b2-medco" \
+    GB_COTHORITY_KEY_URL="http://localhost/cothority-key.pub.toml" \
     GB_GENOMIC_ANNOTATIONS_URL="http://localhost/php"
 
 ENTRYPOINT /bin/bash -c "/write-gb-config.sh && exec nginx -g 'daemon off;'"
