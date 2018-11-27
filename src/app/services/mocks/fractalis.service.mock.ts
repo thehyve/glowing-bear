@@ -8,7 +8,6 @@
 
 import {ChartType} from '../../models/chart-models/chart-type';
 import {Chart} from '../../models/chart-models/chart';
-import {Subject} from 'rxjs';
 import {Concept} from '../../models/constraint-models/concept';
 
 export class FractalisServiceMock {
@@ -43,4 +42,19 @@ export class FractalisServiceMock {
   public removeChart(chart: Chart) {
     this.charts.splice(this.charts.indexOf(chart), 1);
   }
+
+  public addOrRecreateChart() {
+    if (this.previousChart && !this.previousChart.isValid) {
+      this.removeChart(this.previousChart);
+    }
+    this.addChart();
+  }
+
+  public clearValidation() {
+  }
+
+  get previousChart(): Chart {
+    return this.charts[this.charts.length - 1];
+  }
+
 }

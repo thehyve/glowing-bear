@@ -6,6 +6,8 @@ import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
 import {SelectItem} from 'primeng/api';
 import {Concept} from '../models/constraint-models/concept';
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {ConstraintService} from './constraint.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,67 +19,86 @@ export class FractalisService {
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
+  private _isPreparingCache = true;
+  private _variablesInvalid = false;
+  private _variablesValidationMessage: string;
 
-  constructor(private authService: AuthenticationService) {
+  constructor(private authService: AuthenticationService,
+              private constraintService: ConstraintService) {
+    if (fjs.fractalis) {
+      this.setupFractalis();
+      this.retrieveAvailableChartTypes();
+      this.constraintService.variablesUpdated.asObservable()
+        .subscribe((variables: Concept[]) => {
+          this.clearData();
+          this.prepareCache(variables);
+        });
+    } else {
+      MessageHelper.alert('error', 'Failed to import Fractalis.');
+    }
+  }
+
+  private setupFractalis() {
     let token = this.authService.token;
-    // TODO: dynamically get the endpoints
     const config = {
-      // handler: 'transmart',
-      // dataSource: 'http://192.168.178.24:8081',
-      // fractalisNode: 'http://localhost',
-      handler: 'demo_tcga_coad',
-      dataSource: location.protocol + '//' + window.location.host,
+      handler: 'transmart',
+      dataSource: 'http://172.19.0.1:8081',
       fractalisNode: 'http://localhost:5000',
       getAuth() {
         return {token: token}
       },
       options: {
         controlPanelPosition: 'right',
-        controlPanelExpanded: true
-        // controlPanelHidden: false,
-        // showDataBox: true
+        controlPanelExpanded: true,
+        controlPanelHidden: false,
+        showDataBox: false
       }
     };
-    if (fjs.fractalis) {
+    this.F = fjs.fractalis.init(config);
+    console.log('Fractalis imported: ', this.availableChartTypes);
 
-      // this.F.loadData([descriptor])
-      //   .then(res => {
-      //     console.log('response here', res);
-      //   })
-      //   .catch(err => {
-      //     console.log('cannot load data: ');
-      //     console.log(err)
-      //   });
-      this.F = fjs.fractalis.init(config);
-      this.setSubsets();
-      this.clearData();
-      this.loadData();
-      console.log('Fractalis imported: ', this.availableChartTypes);
-      this.retrieveAvailableChartTypes();
-    } else {
-      MessageHelper.alert('error', 'Fail to import Fractalis.');
-    }
+    this.clearData();
+    this.prepareCache(this.constraintService.variables);
   }
-  //
-  // private loadData() {
-  //   const constraint = {
-  //     type: 'concept',
-  //     conceptCode: 'O1KP:NUM1'
-  //   };
-  //   const descriptor = {
-  //     constraint: JSON.stringify(constraint),
-  //     data_type: 'numerical',
-  //     label: 'This is a test'
-  //   };
-  //   this.F.loadData([descriptor])
-  //     .then(res => {
-  //       console.log('response here', res);
-  //     })
-  //     .catch(err => {
-  //       console.log('cannot load data: ');
-  //       console.log(err)
-  //     });
-  // }
+
+  private prepareCache(variables: Concept[]) {
+    this.isPreparingCache = true;
+    variables.forEach((variable: Concept) => {
+        const constraint = {
+          type: 'concept',
+          conceptCode: variable.code
+        };
+        const descriptor = {
+          constraint: JSON.stringify(constraint),
+          data_type: variable.type === ConceptType.NUMERICAL ? 'numerical' : 'categorical',
+          label: variable.name
+        };
+
+        this.F.loadData([descriptor])
+          .then(res => {
+            // TODO proper loading status update
+          })
+          .catch(err => {
+            console.log(`Failed to load variable: ${variable.code}`);
+            console.log(err)
+          });
+      }
+    );
+    this.isPreparingCache = false;
+  }
+
+  setSubsets() {
+    // TODO make use of this function
+    // this.F.setSubsets([])
+  }
+
+  private clearData() {
+    this.F.clearCache();
+  }
+
+  setChart(chartId: string): object {
+    return this.F.setChart(this.selectedChartType, chartId);
+  }
 
   private retrieveAvailableChartTypes() {
     const types: string[] = this.F.getAvailableCharts();
@@ -94,24 +115,37 @@ export class FractalisService {
     });
   }
 
+  public addOrRecreateChart() {
+    if (this.previousChart && !this.previousChart.isValid) {
+      this.removeChart(this.previousChart);
+    }
+    this.addChart();
+  }
+
   public addChart() {
-    // if (this.selectedChartType) {
-    //   let chart = new Chart(this.selectedChartType);
-    //   chart.variables = [...this.selectedVariables]; // clone a new array
-    //   this.charts.push(chart);
-    // }
-    const container = document.querySelector('.charts');
-    const chartDiv = document.createElement('div');
-    chartDiv.style.width = '30vw';
-    chartDiv.style.height = '30vw';
-    container.appendChild(chartDiv);
-    chartDiv.id = `chart-${container.childNodes.length}`;
-    this.F.setChart(this.selectedChartType, '#' + chartDiv.id);
-    console.log('Chart set');
+    if (this.selectedChartType) {
+      let chart = new Chart(this.selectedChartType);
+      chart.variables = [...this.selectedVariables]; // clone a new array
+      this.charts.push(chart);
+    }
   }
 
   public removeChart(chart: Chart) {
     this.charts.splice(this.charts.indexOf(chart), 1);
+  }
+
+  public setVariablesInvalid(errorMessage: string) {
+    this.variablesValidationMessage = errorMessage;
+    this.variablesInvalid = true;
+  }
+
+  public clearValidation() {
+    this.variablesValidationMessage = '';
+    this.variablesInvalid = false;
+  }
+
+  get previousChart(): Chart {
+    return this.charts[this.charts.length - 1];
   }
 
   get availableChartTypes(): SelectItem[] {
@@ -138,14 +172,6 @@ export class FractalisService {
     this._charts = value;
   }
 
-  get selectedVariables(): Concept[] {
-    return this._selectedVariables;
-  }
-
-  set selectedVariables(value: Concept[]) {
-    this._selectedVariables = value;
-  }
-
   get F(): any {
     return this._F;
   }
@@ -154,46 +180,35 @@ export class FractalisService {
     this._F = value;
   }
 
-  setSubsets() {
-    // this.F.setSubsets([])
+  get isPreparingCache(): boolean {
+    return this._isPreparingCache;
   }
 
-  loadData () {
-    this.F.loadData([
-      {
-        dataType: 'categorical',
-        field: 'gender'
-      },
-      {
-        dataType: 'categorical',
-        field: 'race'
-      },
-      {
-        dataType: 'categorical',
-        field: 'tumor_stage'
-      },
-
-      {
-        dataType: 'categorical',
-        field: 'miR1269a_expression'
-      },
-      {
-        dataType: 'numerical',
-        field: 'year_of_birth'
-      },
-      {
-        dataType: 'numerical',
-        field: 'days_to_death'
-      },
-      {
-        dataType: 'numerical_array',
-        field: 'miRNA'
-      }
-    ])
-
+  set isPreparingCache(value: boolean) {
+    this._isPreparingCache = value;
   }
 
-  clearData() {
-    this.F.clearCache()
+  get selectedVariables(): Concept[] {
+    return this._selectedVariables;
   }
+
+  set selectedVariables(value: Concept[]) {
+    this._selectedVariables = value;
+  }
+
+  get variablesValidationMessage(): string {
+    return this._variablesValidationMessage;
+  }
+
+  set variablesValidationMessage(value: string) {
+    this._variablesValidationMessage = value;
+  }
+  get variablesInvalid(): boolean {
+    return this._variablesInvalid;
+  }
+
+  set variablesInvalid(value: boolean) {
+    this._variablesInvalid = value;
+  }
+
 }

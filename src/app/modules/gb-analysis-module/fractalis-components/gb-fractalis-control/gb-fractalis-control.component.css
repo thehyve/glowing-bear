@@ -2,6 +2,12 @@
   padding-top: 0.5em;
 }
 
+.validation-error-message {
+  color: red;
+  text-align: left;
+  padding-left: 10px;
+}
+
 .drop-zone {
   background-color: #f2f2f2;
   border: 1px solid lightgray;
@@ -20,6 +26,11 @@
 
 .drop-zone-highlight {
   background-color: var(--gb-orange-light-light);
+  fill-opacity: .6;
+}
+
+.drop-zone-highlight-invalid {
+  background-color: #ffdddd;
   fill-opacity: .6;
 }
 

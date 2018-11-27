@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 - 2018  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {CompactType, DisplayGrid, GridsterConfig, GridsterItem, GridType} from 'angular-gridster2';
 import {FractalisService} from '../../../../services/fractalis.service';
@@ -16,8 +23,7 @@ export class GbFractalisVisualComponent implements OnInit {
   options: GridsterConfig;
 
   /*
-   * TODO: create fractalis charts or cross table
-   * based on the user input of chart type and variables in the gb-fractalis-control component
+   * TODO: modify fractalis.js so that it is responsive to gridster layout
    */
   constructor(private fractalisService: FractalisService, private el: ElementRef) {
   }
@@ -89,7 +95,7 @@ export class GbFractalisVisualComponent implements OnInit {
     numRows += 2;
     const h = numRows * (this.cellHeight + this.margin) + 20;
     this.el.nativeElement
-      .querySelector('.fractalis-visual-container').style['height'] = h + 'px';
+      .querySelector('.fractalis-visual-container').style['height'] = 'auto';
   }
 
   onRemoveChart(e, chart: Chart) {

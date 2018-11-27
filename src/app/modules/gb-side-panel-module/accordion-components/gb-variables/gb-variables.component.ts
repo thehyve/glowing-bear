@@ -34,7 +34,7 @@ export class GbVariablesComponent implements OnInit {
   private categorizeVariables(variables: Concept[]) {
     this.categorizedVariables.length = 0;
     variables.forEach((variable: Concept) => {
-      let existingVariable = this.categorizedVariables.filter(x => x.type == variable.type)[0];
+      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
       if (existingVariable) {
         existingVariable.elements.push(variable);
       } else {
