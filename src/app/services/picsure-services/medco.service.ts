@@ -9,7 +9,7 @@
 
 import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {GenerateKeyPair, AgggregateKeys, EncryptInt, DecryptInt} from '@medco/medco-unlynx-js'
+import {GenerateKeyPair, AggregateKeys, EncryptInt, DecryptInt} from '@medco/medco-unlynx-js'
 import {HttpClient} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {NavbarService} from "../navbar.service";
@@ -45,12 +45,11 @@ export class MedcoService {
       this.http
         .get(cothorityKeyUrl, {responseType: 'text'})
         .subscribe((keyResp) => {
-          this.cothorityKey = AgggregateKeys(String(keyResp));
-          console.log(this.cothorityKey);
+          this.cothorityKey = String(AggregateKeys(String(keyResp)));
           if (this.cothorityKey) {
-            console.log(`Loaded the MedCo cothority key ${cothorityKeyUrl}`);
+            console.log(`Loaded the MedCo cothority key from ${cothorityKeyUrl}`);
           } else {
-            throw new Error(`Failed to load the MedCo cothority key ${cothorityKeyUrl}`);
+            ErrorHelper.handleError(`Failed to load the MedCo cothority key ${cothorityKeyUrl}`);
           }
         },
         (err) => ErrorHelper.handleError(err)
@@ -64,8 +63,8 @@ export class MedcoService {
    * Generates a random pair of keys for the user to be used during this instance.
    */
   loadUserKeyPair() {
-    [this._publicKey, this.privateKey] = GenerateKeyPair();
-    console.log(`Generated the MedCo pair of keys (public: -- ${this._publicKey})`);
+    [this.privateKey, this._publicKey] = GenerateKeyPair();
+    console.log(`Generated the MedCo pair of keys (public: ${this._publicKey})`);
   }
 
   /**
