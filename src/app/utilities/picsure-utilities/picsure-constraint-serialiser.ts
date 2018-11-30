@@ -16,6 +16,7 @@ import {MedcoService} from '../../services/picsure-services/medco.service';
 import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
 import {Injector} from "@angular/core";
 import {GenomicAnnotationsService} from "../../services/picsure-services/genomic-annotations.service";
+import {EncryptIdsAggregate} from "../../models/aggregate-models/encrypt-ids-aggregate";
 
 /**
  * Serialisation class for serialising constraint objects for use in the PIC-SURE API.
@@ -192,7 +193,8 @@ export class PicsureConstraintSerialiser extends AbstractConstraintVisitor<Where
         }
 
         // format: /<pic-sure resource>/<i2b2 project>/ENCRYPTED_KEY/<b64-encoded encryption>/<b64-encoded user's public key>/
-        let encId = this.medcoService.encryptInteger(constraint.concept.code.split(':')[1]);
+        let id = (constraint.concept.aggregate as EncryptIdsAggregate).ownId;
+        let encId = this.medcoService.encryptInteger(id);
         let splitPath = constraint.concept.path.split('/');
         let encPath = `/${splitPath[1]}/${splitPath[2]}/ENCRYPTED_KEY/${encId}/${this.medcoService.publicKey}/`;
 

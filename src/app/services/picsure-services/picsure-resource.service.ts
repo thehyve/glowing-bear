@@ -16,6 +16,8 @@ import {Concept} from '../../models/constraint-models/concept';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {MedcoService} from './medco.service';
 import {GenomicAnnotationsService} from "./genomic-annotations.service";
+import {TreeNodeService} from "../tree-node.service";
+import {EncryptIdsAggregate} from "../../models/aggregate-models/encrypt-ids-aggregate";
 
 @Injectable()
 export class PicSureResourceService {
@@ -216,31 +218,61 @@ export class PicSureResourceService {
 
   /**
    * Get aggregate (i.e. metadata) about a concept.
-   * Is set to support from PIC-SURE only NUMERICAL and CATEGORICAL aggregates.
+   * Is set to support from PIC-SURE only NUMERICAL, CATEGORICAL and ENCRYPTED aggregates.
    * @param {Concept} concept
    * @returns {Observable<Aggregate>}
    */
   getAggregate(concept: Concept): Observable<Aggregate> {
-    if (concept.type !== ConceptType.CATEGORICAL) {
-      return Observable.of(new Aggregate());
+    // todo: numerical implementation
+
+    switch (concept.type) {
+      case ConceptType.ENCRYPTED:
+
+        // find tree node from the concept
+        let treeNode = [];
+        this.injector.get(TreeNodeService).findTreeNodesByPaths(
+          this.injector.get(TreeNodeService).treeNodes,
+          [concept.fullName],
+          treeNode
+        );
+
+        if (treeNode.length !== 1) {
+          console.warn(`Expected 1 tree node, got ${treeNode}`);
+          return Observable.of(new Aggregate());
+        }
+
+        // embed the values in aggregate
+        if (treeNode[0] && treeNode[0].metadata['encrypt.nodeid']) {
+          let agg = new EncryptIdsAggregate();
+          agg.ownId = treeNode[0].metadata['encrypt.nodeid'];
+          agg.childrenIds = []; // todo: implement children querying
+          return Observable.of(agg);
+        }
+
+        console.warn(`No encrypt ID found for ${concept.name}`);
+        return Observable.of(new Aggregate());
+
+      case ConceptType.CATEGORICAL:
+        return this.getTreeNodes(concept.path, 'AGGREGATE').map((picsureTreeNodes) => {
+
+          let attributeKeys: string[] = Object.keys(picsureTreeNodes[0].metadata);
+          switch (concept.type) {
+            case ConceptType.CATEGORICAL:
+              let agg = new CategoricalAggregate();
+              attributeKeys
+                .filter((attrKey) => attrKey.startsWith('aggregate.categorical'))
+                .forEach((catAggKey) => agg.valueCounts.set(picsureTreeNodes[0].metadata[catAggKey], -1));
+              return agg;
+
+            default:
+              console.warn(`Returning empty aggregate for ${concept.path}, problem?`);
+              return new Aggregate();
+          }
+        });
+
+      default:
+        return Observable.of(new Aggregate());
     }
-
-    return this.getTreeNodes(concept.path, 'AGGREGATE').map((picsureTreeNodes) => {
-
-      let attributeKeys: string[] = Object.keys(picsureTreeNodes[0].metadata);
-      switch (concept.type) {
-        case ConceptType.CATEGORICAL:
-          let agg = new CategoricalAggregate();
-          attributeKeys
-            .filter((attrKey) => attrKey.startsWith('aggregate.categorical'))
-            .forEach((catAggKey) => agg.valueCounts.set(picsureTreeNodes[0].metadata[catAggKey], -1));
-          return agg;
-
-        default:
-          console.warn(`Returning empty aggregate for ${concept.path}, problem?`);
-          return new Aggregate();
-      }
-    });
   }
 
   getPatientsCounts(constraint: Constraint): Observable<CountItem> {
