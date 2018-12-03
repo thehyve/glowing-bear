@@ -96,6 +96,10 @@ export class FractalisService {
     this.F.clearCache();
   }
 
+  getLoadedVariables(): Promise<object> {
+    return this.F.getTrackedVariables();
+  }
+
   setChart(chartId: string): object {
     return this.F.setChart(this.selectedChartType, chartId);
   }

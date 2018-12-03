@@ -65,8 +65,8 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   onSelectedChartTypeChange() {
-    this.fractalisService.clearValidation();
     this.selectedVariables.length = 0;
+    this.fractalisService.clearValidation();
   }
 
   get isDropZoneShown(): boolean {

@@ -9,7 +9,7 @@ import {FractalisChartVariable} from '../models/fractalis-models/fractalis-chart
 import {Chart} from '../models/chart-models/chart';
 
 
-export class ChartValidationHelper {
+export class ChartValidator {
 
   private minCatVarLength: number;
   private maxCatVarLength: number;

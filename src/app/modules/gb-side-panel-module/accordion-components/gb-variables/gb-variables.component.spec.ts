@@ -11,6 +11,8 @@ import {FormsModule} from '@angular/forms';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {DataTableService} from '../../../../services/data-table.service';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
+import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -56,15 +58,17 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should give correct number of checked variables', () => {
-    let categorizedVars = new Map<string, Array<Concept>>();
+    let categorizedVars: Array<CategorizedVariable> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();
     c1.selected = false;
     let c3 = new Concept();
     c1.selected = true;
-    categorizedVars.set('cat1', [c1, c2]);
-    categorizedVars.set('cat2', [c3]);
+    const catVar1: CategorizedVariable = { type: ConceptType.CATEGORICAL, elements: [c1, c2] };
+    const catVar2: CategorizedVariable = { type: ConceptType.CATEGORICAL, elements: [c3] };
+    categorizedVars.push(catVar1);
+    categorizedVars.push(catVar2);
     let spy1 = spyOnProperty(component, 'categorizedVariables', 'get')
       .and.returnValue(categorizedVars);
     component.updateCheckAllText();
@@ -72,15 +76,17 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should check all the variables', () => {
-    let categorizedVars = new Map<string, Array<Concept>>();
+    let categorizedVars: Array<CategorizedVariable> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();
     c2.selected = false;
     let c3 = new Concept();
     c3.selected = true;
-    categorizedVars.set('cat1', [c1, c2]);
-    categorizedVars.set('cat2', [c3]);
+    const catVar1: CategorizedVariable = { type: ConceptType.CATEGORICAL, elements: [c1, c2] };
+    const catVar2: CategorizedVariable = { type: ConceptType.CATEGORICAL, elements: [c3] };
+    categorizedVars.push(catVar1);
+    categorizedVars.push(catVar2);
     let spy1 = spyOnProperty(component, 'categorizedVariables', 'get')
       .and.returnValue(categorizedVars);
     component.checkAll(true);

@@ -13,6 +13,8 @@ import {Concept} from '../../models/constraint-models/concept';
 export class FractalisServiceMock {
   charts: Chart[] = [];
   selectedChartType: ChartType = null;
+  variablesValidationMessage: string;
+  variablesInvalid: boolean;
   availableChartTypes: ChartType[] = [
     ChartType.CROSSTABLE,
     ChartType.HEATMAP,
@@ -51,6 +53,18 @@ export class FractalisServiceMock {
   }
 
   public clearValidation() {
+    this.variablesValidationMessage = '';
+    this.variablesInvalid = false;
+  }
+
+  public setVariablesInvalid() {
+
+  }
+
+  public getLoadedVariables(): Promise<object> {
+    return new Promise(function(resolve, reject) {
+      resolve({});
+    });
   }
 
   get previousChart(): Chart {

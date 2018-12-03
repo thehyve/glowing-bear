@@ -12,7 +12,7 @@ import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisChartDescription} from '../../../../models/fractalis-models/fractalis-chart-description';
 import {FractalisData} from '../../../../models/fractalis-models/fractalis-data';
 import {Concept} from '../../../../models/constraint-models/concept';
-import {ChartValidationHelper} from '../../../../utilities/chart-validation-helper';
+import {ChartValidator} from '../../../../utilities/chart-validator';
 
 @Component({
   selector: 'gb-fractalis-chart',
@@ -24,10 +24,10 @@ export class GbFractalisChartComponent implements AfterViewInit {
   @Input() chart: Chart;
   private fractalisChartDescription: FractalisChartDescription;
   private fractalisChart: object;
-  private chartValidator: ChartValidationHelper;
+  private chartValidator: ChartValidator;
 
   constructor(private fractalisService: FractalisService) {
-    this.chartValidator = new ChartValidationHelper();
+    this.chartValidator = new ChartValidator();
   }
 
   ngAfterViewInit() {
@@ -49,14 +49,14 @@ export class GbFractalisChartComponent implements AfterViewInit {
     console.log(`Added a new chart with id ${this.chart.id}`);
   }
 
-  private setVariablesIfValid() {
-    if (this.chartValidator.isNumberOfVariablesValid(this.chart)) {
-      if (this.fractalisChartVariablesNotSet()) {
+  setVariablesIfValid() {
+    if (this.fractalisChartVariablesNotSet()) {
+      if (this.chartValidator.isNumberOfVariablesValid(this.chart)) {
         this.setVariables();
+      } else {
+        this.chart.isValid = false;
+        this.fractalisService.setVariablesInvalid(this.chartValidator.errorMessage);
       }
-    } else {
-      this.chart.isValid = false;
-      this.fractalisService.setVariablesInvalid(this.chartValidator.errorMessage);
     }
   }
 
@@ -64,18 +64,22 @@ export class GbFractalisChartComponent implements AfterViewInit {
     this.getLoadedVariables().then(data => {
       if (data) {
         let selectedVariablesMap: Map<string, string[]> = this.prepareVariables(data['data']['data_states']);
-        if (selectedVariablesMap !== null) {
-          this.fractalisService.F.setChartParameters(this.fractalisChart, (
-            {
-              ['numVars']: selectedVariablesMap.get('numVars'),
-              ['catVars']: selectedVariablesMap.get('catVars')
-            }));
-        }
+        this.setFractalisChartParameters(selectedVariablesMap);
       }
     })
       .catch(err => {
         console.log(`Failed to set variables for a chart with id ${this.chart.id}. ${err}`);
       });
+  }
+
+  private setFractalisChartParameters(selectedVariablesMap: Map<string, string[]>) {
+    if (selectedVariablesMap !== null) {
+      this.fractalisService.F.setChartParameters(this.fractalisChart, (
+        {
+          ['numVars']: selectedVariablesMap.get('numVars'),
+          ['catVars']: selectedVariablesMap.get('catVars')
+        }));
+    }
   }
 
   private fractalisChartVariablesNotSet() {
@@ -84,7 +88,7 @@ export class GbFractalisChartComponent implements AfterViewInit {
   }
 
   private getLoadedVariables(): Promise<object> {
-    return this.fractalisService.F.getTrackedVariables()
+    return this.fractalisService.getLoadedVariables();
   }
 
   private prepareVariables(fractalisVariables: FractalisData[]): Map<string, string[]> {
