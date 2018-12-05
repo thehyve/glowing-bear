@@ -17,6 +17,9 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
+import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 export class TransmartHttpServiceMock {
   private _studies: TransmartStudy[];
@@ -241,6 +244,58 @@ export class TransmartHttpServiceMock {
     let crossTableResult = new TransmartCrossTable();
     crossTableResult.rows = [[0]];
     return Observable.of(crossTableResult);
+  }
+
+  savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
+    const result = new SubjectSet();
+    result.description = name;
+    result.id = 2345;
+    result.setSize = 100;
+    return Observable.of(result);
+  }
+
+  getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({
+      STUDY1: {
+        Foo: {
+          patientCount: 40,
+          observationCount: 400
+        },
+        Bar: {
+          patientCount: 30,
+          observationCount: 300
+        }
+      }
+    })
+  }
+
+  getCountsPerStudy(constraint: Constraint): Observable<object> {
+    return Observable.of({
+      STUDY1: {
+        patientCount: 50,
+        observationCount: 700
+      }
+    })
+  }
+
+  getCountsPerConcept(constraint: Constraint): Observable<object> {
+    return Observable.of({
+      Foo: {
+        patientCount: 40,
+        observationCount: 400
+      },
+      Bar: {
+        patientCount: 30,
+        observationCount: 300
+      }
+    })
+  }
+
+  getCounts(constraint: Constraint): Observable<TransmartCountItem> {
+    const result = new TransmartCountItem();
+    result.patientCount = 100;
+    result.observationCount = 1000;
+    return Observable.of(result);
   }
 
 }

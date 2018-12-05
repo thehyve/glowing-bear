@@ -259,7 +259,11 @@ export class QueryService {
             this.inclusionCounts = inCounts;
             this.exclusionCounts = exCounts;
             this.counts_1.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
-            this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
+            if (inCounts.observationCount > -1 && exCounts.observationCount > -1) {
+              this.counts_1.observationCount = inCounts.observationCount - exCounts.observationCount;
+            } else {
+              this.counts_1.observationCount = -1;
+            }
             if (initialUpdate) {
               this.counts_0.subjectCount = this.counts_1.subjectCount;
               this.counts_0.observationCount = this.counts_1.observationCount;
