@@ -85,6 +85,36 @@ describe('QueryService', () => {
     expect(service).toBeTruthy();
   }));
 
+  it('should update counts without autosave subject sets', (done) => {
+    queryService.autosaveSubjectSets = false;
+    queryService.updateAll()
+      .then(() => {
+        expect(queryService).toBeTruthy();
+        expect(queryService.counts_1).toBeDefined();
+        expect(queryService.counts_2).toBeDefined();
+        done();
+      })
+      .catch((error) => {
+        fail('Unexpected error: ' + error);
+        done();
+      });
+  });
+
+  it('should update counts with autosave subject sets', (done) => {
+    queryService.autosaveSubjectSets = true;
+    queryService.updateAll()
+      .then(() => {
+        expect(queryService).toBeTruthy();
+        expect(queryService.counts_1).toBeDefined();
+        expect(queryService.counts_2).toBeDefined();
+        done();
+      })
+      .catch((error) => {
+        fail('Unexpected error: ' + error);
+        done();
+      });
+  });
+
   it('should handle loaded queries', () => {
     let q = new Query('test query id', 'test query name');
     q.createDate = '2015-03-25';

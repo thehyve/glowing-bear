@@ -17,6 +17,9 @@ import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-
 import {Dimension} from '../../models/table-models/dimension';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
+import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
+import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 
 describe('TransmartResourceService', () => {
 
@@ -167,4 +170,113 @@ describe('TransmartResourceService', () => {
     transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], null, false);
     expect(exportSpy).toHaveBeenCalledWith(jobName, mockConstraint);
   });
+
+  const createMockConstraints = () => {
+    const inclusionConstraint = new ConceptConstraint();
+    inclusionConstraint.concept = new Concept();
+    inclusionConstraint.concept.code = 'Foo';
+    const exclusionConstraint = new ConceptConstraint();
+    exclusionConstraint.concept = new Concept();
+    exclusionConstraint.concept.code = 'Bar';
+    const excludedConstraint = new CombinationConstraint();
+    excludedConstraint.addChild(inclusionConstraint);
+    excludedConstraint.addChild(exclusionConstraint);
+    const constraint = new CombinationConstraint();
+    constraint.addChild(inclusionConstraint);
+    constraint.addChild(new NegationConstraint(exclusionConstraint));
+    return {
+      inclusionConstraint: inclusionConstraint,
+      excludedConstraint: excludedConstraint,
+      constraint: constraint
+    }
+  };
+
+  it('should compute counts for a query without exclusion constraint', (done) => {
+    const constraints = createMockConstraints();
+    transmartResourceService.autosaveSubjectSets = false;
+    transmartResourceService.updateInclusionExclusionCounts(
+      constraints.inclusionConstraint, constraints.inclusionConstraint, null)
+      .then((response) => {
+        expect(response).toBe(true);
+        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(100);
+        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(1000);
+        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(0);
+        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(0);
+        done();
+      })
+  });
+
+  it('should compute counts for a query', (done) => {
+    const constraints = createMockConstraints();
+    transmartResourceService.autosaveSubjectSets = false;
+    spyOn(transmartHttpService, 'getCounts').and.callFake((constraint) => {
+      const result = new TransmartCountItem();
+      switch (constraint) {
+        case constraints.inclusionConstraint:
+          result.patientCount = 400;
+          result.observationCount = 4000;
+          break;
+        case constraints.excludedConstraint:
+          result.patientCount = 150;
+          result.observationCount = 1500;
+          break;
+        default:
+          throw Error('Unexpected query');
+      }
+      return observableOf(result);
+    });
+
+    transmartResourceService.updateInclusionExclusionCounts(
+      constraints.constraint, constraints.inclusionConstraint, constraints.excludedConstraint)
+      .then((response) => {
+        expect(response).toBe(true);
+        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(400);
+        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(4000);
+        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(150);
+        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(1500);
+        done();
+      })
+  });
+
+  it('should compute counts for a query with autosave subjects setting', (done) => {
+    transmartResourceService.autosaveSubjectSets = true;
+    const constraints = createMockConstraints();
+    spyOn(transmartHttpService, 'savePatientSet').and.callFake((name, constraint) => {
+      const result = new SubjectSet();
+      switch (constraint) {
+        case constraints.constraint:
+          // selected subjects: included subjects minus excluded subjects
+          result.id = 123;
+          result.setSize = 250;
+          break;
+        case constraints.excludedConstraint:
+          // intersection between included subjects and excluded subjects
+          result.id = 789;
+          result.setSize = 150;
+          break;
+        default:
+          throw new Error('Unexpected query');
+      }
+      return observableOf(result);
+    });
+
+    transmartResourceService.updateInclusionExclusionCounts(
+      constraints.constraint, constraints.inclusionConstraint, constraints.excludedConstraint)
+      .then((response) => {
+        expect(response).toBe(true);
+        // included subjects (including excluded subjects)
+        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(400);
+        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(-1);
+        // number of subjects excluded from the set of included subjects
+        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(150);
+        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(-1);
+        done();
+      })
+      .catch((error) => {
+        console.error('Unexpected error', error);
+        fail('Unexpected error');
+        done();
+      })
+  });
+
 });

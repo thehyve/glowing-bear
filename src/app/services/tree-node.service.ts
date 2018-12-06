@@ -86,6 +86,8 @@ export class TreeNodeService {
   // the subset of _studyConceptCountMap that holds the selected maps
   // based on the constraint in step 1
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _studyCountMap that holds the selected studies based on the constraint in step 1
+  private _selectedStudyCountMap: Map<string, CountItem>;
   // the subset of _conceptCountMap that holds the selected maps
   // based on the constraint in step 1
   private _selectedConceptCountMap: Map<string, CountItem>;
@@ -436,7 +438,7 @@ export class TreeNodeService {
   /**
    * Update the tree table data for rendering the tree table in step 2, projection
    * based on a given set of concept codes as filtering criteria.
-   * @param {Object} conceptCountMap
+   * @param checklist
    */
   public updateProjectionTreeData(checklist: Array<string>) {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
@@ -518,6 +520,14 @@ export class TreeNodeService {
     return nodeCopy;
   }
 
+  formatNodeWithCounts(node: TreeNode, countItem: CountItem): void {
+    let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
+    if (this.showObservationCounts) {
+      countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
+    }
+    node['label'] = `${node['name']} (${countsText})`;
+  }
+
   updateProjectionTreeDataIterative(nodes: TreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
@@ -530,12 +540,8 @@ export class TreeNodeService {
         } else {
           countItem = this.selectedConceptCountMap.get(node['conceptCode']);
         }
-        if (countItem) {
-          let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
-          if (this.showObservationCounts) {
-            countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
-          }
-          node['label'] = `${node['name']} (${countsText})`;
+        if (countItem && countItem.subjectCount > 0) {
+          this.formatNodeWithCounts(node, countItem);
           nodesWithCodes.push(node);
         }
       } else if (node['children']) { // if the node is an intermediate node
@@ -545,7 +551,16 @@ export class TreeNodeService {
           let nodeCopy = this.copyTreeNodeUpward(node);
           nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
           nodeCopy['children'] = newNodeChildren;
-          nodesWithCodes.push(nodeCopy);
+          if (nodeCopy['type'] === 'STUDY') {
+            const countItem = this.selectedStudyCountMap.get(nodeCopy['studyId']);
+            if (countItem && countItem.subjectCount > 0) {
+              this.formatNodeWithCounts(node, countItem);
+              nodesWithCodes.push(nodeCopy);
+            }
+          } else {
+            // Always add intermediate nodes
+            nodesWithCodes.push(nodeCopy);
+          }
         }
       }
     }
@@ -904,6 +919,14 @@ export class TreeNodeService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedStudyCountMap(): Map<string, CountItem> {
+    return this._selectedStudyCountMap;
+  }
+
+  set selectedStudyCountMap(value: Map<string, CountItem>) {
+    this._selectedStudyCountMap = value;
   }
 
   get selectedConceptCountMap(): Map<string, CountItem> {
