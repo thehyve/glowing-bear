@@ -21,6 +21,10 @@ export class ExportServiceMock {
     return observableOf(true);
   }
 
+  public updateExports() {
+
+  }
+
   updateExportJobs(): Promise<any> {
     return new Promise<any>((resolve) => {
       resolve(true);
