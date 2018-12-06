@@ -13,6 +13,8 @@ import {DataTableService} from '../../../../services/data-table.service';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -41,6 +43,10 @@ describe('GbVariablesComponent', () => {
         {
           provide: NavbarService,
           useClass: NavbarServiceMock
+        },
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
         }
       ]
     })

@@ -33,3 +33,9 @@
   padding: 0.5em;
   color: grey;
 }
+
+.import-btn {
+  font-size: small;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}

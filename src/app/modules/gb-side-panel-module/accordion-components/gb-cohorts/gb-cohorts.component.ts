@@ -17,6 +17,7 @@ import {UIHelper} from '../../../../utilities/ui-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
+import {FileImportHelper} from '../../../../utilities/file-import-helper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -25,6 +26,7 @@ import {FormatHelper} from '../../../../utilities/format-helper';
 })
 export class GbCohortsComponent implements OnInit {
 
+  public readonly fileElementId: string = 'cohortFileUpload';
   searchTerm = '';
   isUploadListenerNotAdded: boolean;
   file: File; // holds the uploaded cohort file
@@ -40,27 +42,15 @@ export class GbCohortsComponent implements OnInit {
   }
 
   importCohort() {
-    let uploadElm = document.getElementById('cohortFileUpload');
-    if (this.isUploadListenerNotAdded) {
-      uploadElm
-        .addEventListener('change', this.cohortFileUpload.bind(this), false);
-      this.isUploadListenerNotAdded = false;
-    }
-    // reset the input path so that it will take the same file again
-    uploadElm['value'] = '';
-    uploadElm.click();
-  }
-
-  cohortFileUpload(event) {
-    MessageHelper.alert('info', 'Cohort file is being processed, waiting for response.');
     let reader = new FileReader();
-    this.file = event.target.files[0];
     reader.onload = this.handleCohortFileUploadEvent.bind(this);
-    reader.readAsText(this.file);
+    FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
+    this.isUploadListenerNotAdded = false;
   }
 
   handleCohortFileUploadEvent(e) {
     let data = e.target['result'];
+    this.file = FileImportHelper.getFile(this.fileElementId);
     let obj = this.verifyFile(this.file, data);
     this.cohortService.saveCohortByObject(obj);
   }
@@ -68,7 +58,7 @@ export class GbCohortsComponent implements OnInit {
   // verify the uploaded cohort file
   verifyFile(file: File, data: any) {
     // file.type is empty for some browsers and Windows OS
-    if (file.type === 'application/json' || file.name.split('.').pop() === 'json') {
+    if (FileImportHelper.isJsonFile(file)) {
       let _json = JSON.parse(data);
       // If the json is of standard format
       if (_json['constraint']) {

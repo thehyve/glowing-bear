@@ -10,8 +10,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbCohortSelectionComponent} from './gb-cohort-selection.component';
 import {
-  AutoCompleteModule, CalendarModule, CheckboxModule, TreeModule, MessagesModule,
-  TooltipModule, OverlayPanelModule
+  AutoCompleteModule,
+  CalendarModule,
+  CheckboxModule,
+  MessagesModule,
+  OverlayPanelModule,
+  TooltipModule,
+  TreeModule
 } from 'primeng/primeng';
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
@@ -29,6 +34,7 @@ import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {MockComponent} from 'ng2-mock-component';
+import {Cohort} from '../../models/cohort-models/cohort';
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
@@ -117,6 +123,25 @@ describe('GbCohortSelectionComponent', () => {
     expect(component.preventNodeDrop).toHaveBeenCalled();
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(event.preventDefault).toHaveBeenCalled();
+  });
+
+  it('should process uploaded subject ids', () => {
+    let fileContents = 'id123\nid456\n';
+    let spy = spyOn(cohortService, 'restoreCohort').and.stub();
+
+    component['processSubjectIdsUpload'](fileContents, 'testName');
+    expect(spy).toHaveBeenCalledWith(jasmine.any(Cohort));
+    expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({name: 'testName'}));
+  });
+
+  it('should import subjects criteria', () => {
+    let uploadElm = document.createElement('a');
+    spyOn(document, 'getElementById').and.returnValue(uploadElm);
+    let spy1 = spyOn(uploadElm, 'click').and.stub();
+    component['isUploadListenerNotAdded'] = true;
+    component.importCriteria();
+    expect(component['isUploadListenerNotAdded']).toBe(false);
+    expect(spy1).toHaveBeenCalled();
   });
 
 });
