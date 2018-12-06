@@ -56,6 +56,7 @@ export class TransmartResourceService {
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
   private _studyConceptCountObject: object;
+  private _studyCountObject: object;
   private _conceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
@@ -125,6 +126,14 @@ export class TransmartResourceService {
     this._studyConceptCountObject = value;
   }
 
+  get studyCountObject(): object {
+    return this._studyCountObject;
+  }
+
+  set studyCountObject(value: object) {
+    this._studyCountObject = value;
+  }
+
   get conceptCountObject(): object {
     return this._conceptCountObject;
   }
@@ -176,6 +185,7 @@ export class TransmartResourceService {
           .subscribe((subjectSet: SubjectSet) => {
             this.subjectSetConstraint.id = subjectSet.id;
             this.subjectSetConstraint.setSize = subjectSet.setSize;
+
             this.updateStudyConceptCountObject(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
               .then(() => {
                 resolve(true);
@@ -220,8 +230,9 @@ export class TransmartResourceService {
             totalCountItem.patientCount = this.subjectSetConstraint.setSize;
             totalCountItem.observationCount = totalObservationCount;
           }
-          this.getCountsPerConcept(constraint)
-            .subscribe((conceptCountObj: object) => {
+          this.getCountsPerStudy(constraint).subscribe((studyCountObj: object) => {
+            this.studyCountObject = studyCountObj;
+            this.getCountsPerConcept(constraint).subscribe((conceptCountObj: object) => {
               this.conceptCountObject = conceptCountObj;
               this.updateExclusionCounts(exclusionConstraint)
                 .then(() => {
@@ -236,8 +247,11 @@ export class TransmartResourceService {
                 .catch(err => {
                   reject('Fail to update transmart exclusion counts.')
                 })
+              }, err => {
+                reject('Fail to retrieve concept-count object from transmart.')
+              });
             }, err => {
-              reject('Fail to retrieve concept-count object from transmart.')
+              reject('Fail to retrieve study-count object from transmart.')
             });
         }, err => {
           reject('Fail to retrieve study-concept-count object from transmart.')

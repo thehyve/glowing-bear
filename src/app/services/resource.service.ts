@@ -43,6 +43,7 @@ export class ResourceService {
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
   private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  private _selectedStudyCountMap: Map<string, CountItem>;
   private _selectedConceptCountMap: Map<string, CountItem>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
@@ -105,6 +106,8 @@ export class ResourceService {
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
               this.selectedStudyConceptCountMap =
                 TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
+              this.selectedStudyCountMap =
+                TransmartMapper.mapStudyCountObject(this.transmartResourceService.studyCountObject);
               this.selectedConceptCountMap =
                 TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
               resolve(true);
@@ -576,6 +579,14 @@ export class ResourceService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get selectedStudyCountMap(): Map<string, CountItem> {
+    return this._selectedStudyCountMap;
+  }
+
+  set selectedStudyCountMap(value: Map<string, CountItem>) {
+    this._selectedStudyCountMap = value;
   }
 
   get selectedConceptCountMap(): Map<string, CountItem> {
