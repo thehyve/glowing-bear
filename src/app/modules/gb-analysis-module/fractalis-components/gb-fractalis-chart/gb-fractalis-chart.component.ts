@@ -23,8 +23,12 @@ export class GbFractalisChartComponent implements AfterViewInit {
 
   @Input() chart: Chart;
   private fractalisChartDescription: FractalisChartDescription;
-  private fractalisChart: object;
   private chartValidator: ChartValidator;
+  /**
+   * Chart instance retrieved when setting a fractalis chart
+   * To be passed to fractalis chart related functions
+    */
+  private fractalisChartObj: object;
 
   constructor(private fractalisService: FractalisService) {
     this.chartValidator = new ChartValidator();
@@ -36,26 +40,27 @@ export class GbFractalisChartComponent implements AfterViewInit {
 
   private initializeChart() {
     if (this.chart.type !== ChartType.CROSSTABLE) {
-      this.fractalisChart = this.fractalisService.setChart('#' + this.chart.id);
-      this.fractalisService.F.getChartParameterDescriptions(this.fractalisChart, (description: FractalisChartDescription) => {
+      this.fractalisChartObj = this.fractalisService.setChart('#' + this.chart.id);
+      this.fractalisService.F.getChartParameterDescriptions(this.fractalisChartObj,
+        (description: FractalisChartDescription) => {
           this.fractalisChartDescription = description;
           this.chartValidator.updateValidationCriteria(description.catVars, description.numVars);
           console.log(`Chart ${this.chart.id}`, this.fractalisChartDescription);
           this.setVariablesIfValid();
         },
-        (err) => console.log(`Failed to add a chart with id ${this.chart.id}. ${err}`)
+        (err) => console.error(`Failed to add a chart with id ${this.chart.id}. ${err}`)
       );
     }
     console.log(`Added a new chart with id ${this.chart.id}`);
   }
 
   setVariablesIfValid() {
-    if (this.fractalisChartVariablesNotSet()) {
+    if (this.fractalisChartVariablesNotSet) {
       if (this.chartValidator.isNumberOfVariablesValid(this.chart)) {
         this.setVariables();
       } else {
         this.chart.isValid = false;
-        this.fractalisService.setVariablesInvalid(this.chartValidator.errorMessage);
+        this.fractalisService.invalidateVariables(this.chartValidator.errorMessage);
       }
     }
   }
@@ -68,13 +73,13 @@ export class GbFractalisChartComponent implements AfterViewInit {
       }
     })
       .catch(err => {
-        console.log(`Failed to set variables for a chart with id ${this.chart.id}. ${err}`);
+        console.error(`Failed to set variables for a chart with id ${this.chart.id}. ${err}`);
       });
   }
 
   private setFractalisChartParameters(selectedVariablesMap: Map<string, string[]>) {
     if (selectedVariablesMap !== null) {
-      this.fractalisService.F.setChartParameters(this.fractalisChart, (
+      this.fractalisService.F.setChartParameters(this.fractalisChartObj, (
         {
           ['numVars']: selectedVariablesMap.get('numVars'),
           ['catVars']: selectedVariablesMap.get('catVars')
@@ -82,7 +87,7 @@ export class GbFractalisChartComponent implements AfterViewInit {
     }
   }
 
-  private fractalisChartVariablesNotSet() {
+  private get fractalisChartVariablesNotSet(): boolean {
     return (!this.fractalisChartDescription.catVars || this.fractalisChartDescription.catVars.value.length === 0) &&
       (!this.fractalisChartDescription.numVars || this.fractalisChartDescription.numVars.value.length === 0);
   }

@@ -58,7 +58,7 @@ describe('GbFractalisChartComponent', () => {
   it('should not set variables if invalid', () => {
     component['fractalisChartDescription'] = new FractalisChartDescription();
     let spy = spyOn(component['chartValidator'], 'isNumberOfVariablesValid').and.returnValue(false);
-    let spy1 = spyOn(fractalisService, 'setVariablesInvalid').and.stub();
+    let spy1 = spyOn(fractalisService, 'invalidateVariables').and.stub();
 
     component.setVariablesIfValid();
 
@@ -82,7 +82,7 @@ describe('GbFractalisChartComponent', () => {
     let spy = spyOn(component['chartValidator'], 'isNumberOfVariablesValid').and.returnValue(true);
     let spy1 = spyOn(fractalisService, 'getLoadedVariables').and.returnValue(
       (Promise.resolve({data: {state: 'SUCCESS', task_id: 123, label: variableName}})));
-    let spy2 = spyOn(fractalisService, 'setVariablesInvalid').and.callThrough();
+    let spy2 = spyOn(fractalisService, 'invalidateVariables').and.callThrough();
     let spy3 = spyOn<any>(component, 'setFractalisChartParameters').and.callThrough();
 
     component.setVariablesIfValid();

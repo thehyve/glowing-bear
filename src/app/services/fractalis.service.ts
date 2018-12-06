@@ -138,7 +138,7 @@ export class FractalisService {
     this.charts.splice(this.charts.indexOf(chart), 1);
   }
 
-  public setVariablesInvalid(errorMessage: string) {
+  public invalidateVariables(errorMessage: string) {
     this.variablesValidationMessage = errorMessage;
     this.variablesInvalid = true;
   }

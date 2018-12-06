@@ -57,7 +57,7 @@ export class FractalisServiceMock {
     this.variablesInvalid = false;
   }
 
-  public setVariablesInvalid() {
+  public invalidateVariables() {
 
   }
 

@@ -62,7 +62,7 @@ describe('FractalisService', () => {
 
   it('should set variables invalid', () => {
     let errorMessage = 'Invalid variable';
-    fractalisService.setVariablesInvalid(errorMessage);
+    fractalisService.invalidateVariables(errorMessage);
     expect(fractalisService.variablesValidationMessage).toEqual(errorMessage);
     expect(fractalisService.variablesInvalid).toEqual(true);
   });
