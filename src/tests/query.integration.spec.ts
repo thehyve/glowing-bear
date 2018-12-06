@@ -166,6 +166,7 @@ describe('Integration test for query saving and restoring', () => {
   });
 
   it('should restore and save query in relation to other dependent services', () => {
+    queryService.autosaveSubjectSets = false;
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(queryService, 'update_1').and.callThrough();
@@ -196,6 +197,45 @@ describe('Integration test for query saving and restoring', () => {
       expect(queryService.isDirty_3).toBe(false);
     });
 
+
+    let spySaveQuery = spyOn(resourceService, 'saveQuery').and.callThrough();
+    queryService.saveQueryByName('test-name');
+    expect(queryService.queries.length).toBe(1);
+    expect(queryService.isSavingQueryCompleted).toBe(true);
+    expect(spySaveQuery).toHaveBeenCalled();
+  });
+
+  it('should restore and save query in relation to other dependent services with autosave subject sets', () => {
+    queryService.autosaveSubjectSets = true;
+    treeNodeService.treeNodeCallsSent = 10;
+    treeNodeService.treeNodeCallsReceived = 10;
+    let spy1 = spyOn(queryService, 'update_1').and.callThrough();
+    let spy2 = spyOn(queryService, 'update_2').and.callThrough();
+    let spy3 = spyOn(queryService, 'update_3').and.callThrough();
+    let promise = queryService.restoreQuery(q0);
+    expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
+    let child0 = constraintService.rootInclusionConstraint.children[0];
+    expect(child0.className).toEqual('ConceptConstraint');
+    expect(child0['concept']).toBeDefined();
+    expect(child0['concept']['code']).toEqual('SHDCSCP:DEM:AGE');
+    let child1 = constraintService.rootInclusionConstraint.children[1];
+    expect(child1.className).toEqual('ConceptConstraint');
+    expect(child1['concept']).toBeDefined();
+    expect(child1['concept']['code']).toEqual('O1KP:CAT8');
+    expect(constraintService.rootExclusionConstraint.children.length).toEqual(1);
+    let child3 = constraintService.rootExclusionConstraint.children[0];
+    expect(child3['concept']).toBeDefined();
+    expect(child3['concept']['code']).toEqual('VSIGN:HR');
+    expect(queryService.query.observationQuery).toBeDefined();
+    expect(queryService.query.observationQuery.data.length).toBe(3);
+    promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalled();
+      expect(spy3).toHaveBeenCalled();
+      expect(queryService.isDirty_1).toBe(false);
+      expect(queryService.isDirty_2).toBe(false);
+      expect(queryService.isDirty_3).toBe(false);
+    });
 
     let spySaveQuery = spyOn(resourceService, 'saveQuery').and.callThrough();
     queryService.saveQueryByName('test-name');

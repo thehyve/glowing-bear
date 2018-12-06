@@ -21,6 +21,7 @@ import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
 import {Observable, AsyncSubject} from 'rxjs';
+import {TreeNodeService} from './tree-node.service';
 
 @Injectable()
 export class ExportService {
@@ -235,9 +236,10 @@ export class ExportService {
    * @returns {boolean}
    */
   get isDataAvailable(): boolean {
-    // Validate if at least one observation is included
+    // Validate if at least one subject is included and variable nodes are selected
     let queryService = this.injector.get(QueryService);
-    return queryService.counts_2.observationCount >= 1;
+    let treeNodeService = this.injector.get(TreeNodeService);
+    return queryService.counts_2.subjectCount > 0 && treeNodeService.finalTreeNodes.length > 0;
   }
 
   get exportDataTypes(): ExportDataType[] {

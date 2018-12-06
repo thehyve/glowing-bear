@@ -112,6 +112,8 @@ export class QueryService {
    */
   // Flag indicating if the query subscription optioin for each query in the query panel should be included
   private _isQuerySubscriptionIncluded = false;
+  // Flag indicating if direct counts calls should be avoided (for large data sets)
+  private _autosaveSubjectSets: boolean;
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
   // Flag indicating if saving a query is finished
@@ -127,6 +129,7 @@ export class QueryService {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1');
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2');
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3');
+    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
     let includeDataTable = this.appConfig.getConfig('include-data-table');
     if (!includeDataTable) {
@@ -322,41 +325,50 @@ export class QueryService {
     }
   }
 
+  complete_update_2b() {
+    // update counts and flags
+    this.isUpdating_2 = false;
+    this.isDirty_2 = false;
+    this.isDirty_3 = true;
+    // update the export variables
+    this.exportService.updateExports();
+    // update the final tree nodes in the summary panel
+    if (this.counts_2.subjectCount > 0) {
+      this.treeNodeService.updateFinalTreeNodes();
+    } else {
+      this.treeNodeService.finalTreeNodes = [];
+    }
+    // update the cross table baseline constraint
+    this.crossTableService.constraint = this.constraintService.constraint_1();
+  }
+
   update_2b(): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.isUpdating_1 && !this.isPreparing_2) {
-        this.isUpdating_2 = true;
-        this.query = null; // clear query
-        // update the subject count and observation count in the 2nd step
-        const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
-        this.resourceService.getCounts(constraint_1_2)
-          .subscribe(
-            (countItem: CountItem) => {
-              // update counts and flags
-              this.counts_2 = countItem;
-              this.isUpdating_2 = false;
-              this.isDirty_2 = false;
-              this.isDirty_3 = true;
-              // update the export variables
-              this.exportService.updateExports();
-              // update the final tree nodes in the summary panel
-              if (this.counts_2.subjectCount > 0) {
-                this.treeNodeService.updateFinalTreeNodes();
-              } else {
-                this.treeNodeService.finalTreeNodes = [];
-              }
-              // update the cross table baseline constraint
-              this.crossTableService.constraint = this.constraintService.constraint_1();
-              resolve(true);
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              reject(err.message);
-            }
-          );
-      } else {
-        resolve(true);
+      if (this.isUpdating_1 || this.isPreparing_2) {
+        return resolve(true);
       }
+      this.isUpdating_2 = true;
+      this.query = null; // clear query
+      if (this.autosaveSubjectSets) {
+        // Avoid doing a (possibly expensive) call for accurate counts
+        this.counts_2 = new CountItem(this.counts_1.subjectCount, this.counts_1.observationCount);
+        this.complete_update_2b();
+        return resolve(true);
+      }
+      // update the subject count and observation count in the 2nd step
+      const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
+      this.resourceService.getCounts(constraint_1_2)
+        .subscribe(
+          (countItem: CountItem) => {
+            this.counts_2 = countItem;
+            this.complete_update_2b();
+            resolve(true);
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(err.message);
+          }
+        );
     });
   }
 
@@ -711,6 +723,14 @@ export class QueryService {
 
   set isDirty_3(value: boolean) {
     this.dataTableService.dataTable.isDirty = value;
+  }
+
+  get autosaveSubjectSets(): boolean {
+    return this._autosaveSubjectSets;
+  }
+
+  set autosaveSubjectSets(value: boolean) {
+    this._autosaveSubjectSets = value;
   }
 
   get showObservationCounts(): boolean {
