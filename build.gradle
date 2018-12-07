@@ -86,14 +86,23 @@ clean {
 
 distributions {
     main {
+        baseName = 'glowing-bear'
         contents {
             from 'dist'
+            include '**'
+        }
+    }
+    cypress {
+        baseName = 'glowing-bear-cypress-tests'
+        contents {
+            from 'cypress'
             include '**'
         }
     }
 }
 
 distZip.enabled = false
+cypressDistTar.enabled = false
 
 publishing {
     repositories {
@@ -103,13 +112,15 @@ publishing {
         }
     }
     publications {
-        maven(MavenPublication) {
+        app(MavenPublication) {
             artifactId 'glowing-bear'
             artifact distTar // Publish the output of the distTar task
+        }
+        cypressTests(MavenPublication) {
+            artifactId 'glowing-bear-cypress-tests'
+            artifact cypressDistZip
         }
     }
 }
 publishToMavenLocal.dependsOn 'distTar'
 publish.dependsOn 'distTar'
-distTar.baseName = 'glowing-bear'
-
