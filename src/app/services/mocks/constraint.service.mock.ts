@@ -48,6 +48,10 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
+  public generateExclusionConstraint(): Constraint {
+    return this._constraint;
+  }
+
   public hasExclusionConstraint(): Boolean {
     return false;
   }
