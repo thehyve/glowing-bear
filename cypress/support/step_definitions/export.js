@@ -34,7 +34,7 @@ when('I select all data', () => {
 when('I export this data with the name {string}', (jobName) => {
   cy.get('.gb-nav').contains('Export').click();
   cy.get('#exportJobNameInput').type(jobName);
-  cy.contains('Create Export').click();
+  cy.contains('Create export').click();
 });
 
 then('then the job {string} has status {string}', (jobName, status) => {
