@@ -53,11 +53,13 @@ export class Chart {
   }
 
   get categoricalVariables(): Concept[] {
-    return this.variables.filter( variable => variable.type !== ConceptType.NUMERICAL);
+    return this.variables.filter( variable => variable.type !== ConceptType.NUMERICAL &&
+      variable.type !== ConceptType.HIGH_DIMENSIONAL);
   }
 
   get numericalVariables(): Concept[] {
-    return this.variables.filter( variable => variable.type === ConceptType.NUMERICAL);
+    return this.variables.filter( variable => variable.type === ConceptType.NUMERICAL ||
+      variable.type === ConceptType.HIGH_DIMENSIONAL);
   }
 
   get isValid(): boolean {

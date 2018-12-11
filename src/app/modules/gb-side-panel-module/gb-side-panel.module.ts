@@ -19,18 +19,25 @@ import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.c
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
   AutoCompleteModule,
-  ButtonModule, CheckboxModule,
+  ButtonModule,
+  CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
   InputTextModule,
   PanelModule,
-  RadioButtonModule, ToggleButtonModule,
+  RadioButtonModule,
+  SelectButtonModule,
+  ToggleButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {Md2AccordionModule} from 'md2';
 import {GbVariablesComponent} from './accordion-components/gb-variables/gb-variables.component';
 import {MatExpansionModule} from '@angular/material';
+import {
+  GbCategorizedVariablesComponent
+} from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
+import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
 
 @NgModule({
   imports: [
@@ -51,13 +58,16 @@ import {MatExpansionModule} from '@angular/material';
     RadioButtonModule,
     ToggleButtonModule,
     CheckboxModule,
-    MatExpansionModule
+    MatExpansionModule,
+    SelectButtonModule
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
     GbCohortsComponent,
-    GbVariablesComponent
+    GbVariablesComponent,
+    GbCategorizedVariablesComponent,
+    GbVariablesTreeComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]

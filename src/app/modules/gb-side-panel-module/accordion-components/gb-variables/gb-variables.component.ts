@@ -1,12 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {Concept} from '../../../../models/constraint-models/concept';
-import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
-import {NavbarService} from '../../../../services/navbar.service';
-import {DataTableService} from '../../../../services/data-table.service';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import {VariablesViewMode} from '../../../../models/variables-view-mode';
+import {SelectItem} from 'primeng/api';
+import {NavbarService} from '../../../../services/navbar.service';
+import {ConstraintService} from '../../../../services/constraint.service';
 
 @Component({
   selector: 'gb-variables',
@@ -15,72 +14,22 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 })
 export class GbVariablesComponent implements OnInit {
 
+  public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
 
-  private _categorizedVariables: Array<CategorizedVariable> = [];
-
-  public allChecked: boolean;
-  public checkAllText: string;
   private isUploadListenerNotAdded: boolean;
-  file: File; // holds the uploaded cohort file
+  private file: File; // holds the uploaded cohort file
 
-  constructor(private constraintService: ConstraintService,
-              private dataTableService: DataTableService,
-              private navbarService: NavbarService,
-              private treeNodeService: TreeNodeService) {
-    this.constraintService.variablesUpdated.asObservable()
-      .subscribe((variables: Concept[]) => {
-        this.categorizeVariables(variables);
-      });
+  private _availableViewModes: SelectItem[];
 
-    this.allChecked = true;
+  constructor(private treeNodeService: TreeNodeService,
+              private constraintService: ConstraintService,
+              private navbarService: NavbarService) {
+    this.viewMode = VariablesViewMode.TREE_VIEW;
+    this.availableViewModes = this.listAvailableViewModes();
   }
 
   ngOnInit() {
-  }
-
-  private categorizeVariables(variables: Concept[]) {
-    this.categorizedVariables.length = 0;
-    variables.forEach((variable: Concept) => {
-      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
-      if (existingVariable) {
-        existingVariable.elements.push(variable);
-      } else {
-        this.categorizedVariables.push({type: variable.type, elements: [variable]});
-      }
-    });
-    this.updateCheckAllText();
-  }
-
-  updateCheckAllText() {
-    let numSelected = 0;
-    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
-      catVar.elements.forEach((c: Concept) => {
-        if (c.selected) {
-          numSelected++;
-        }
-      });
-    });
-    this.checkAllText = numSelected === 1 ?
-      `${numSelected} variable selected` : `${numSelected} variables selected`;
-  }
-
-  checkVariables() {
-    this.dataTableService.isDirty = true;
-    this.updateCheckAllText();
-  }
-
-  checkAll(b: boolean) {
-    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
-      catVar.elements.forEach((c: Concept) => {
-        c.selected = b;
-      })
-    });
-    this.checkVariables();
-  }
-
-  onDragStart(e, concept) {
-    this.constraintService.draggedVariable = concept;
   }
 
   importVariables() {
@@ -121,22 +70,35 @@ export class GbVariablesComponent implements OnInit {
       return;
     }
     MessageHelper.alert('info', 'File upload finished successfully!');
+  }
 
+
+  private listAvailableViewModes(): SelectItem[] {
+    return Object.keys(VariablesViewMode).map(c => {
+      return {
+        label: VariablesViewMode[c],
+        value: VariablesViewMode[c]}
+    }) as SelectItem[];
+  }
+
+  get viewMode(): VariablesViewMode {
+    return this.constraintService.variablesViewMode;
+  }
+
+  set viewMode(value: VariablesViewMode) {
+    this.constraintService.variablesViewMode = value;
+  }
+
+  get availableViewModes(): SelectItem[] {
+    return this._availableViewModes;
+  }
+
+  set availableViewModes(value: SelectItem[]) {
+    this._availableViewModes = value;
   }
 
   get isExport(): boolean {
     return this.navbarService.isExport;
   }
 
-  get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
-  }
-
-  get categorizedVariables(): Array<CategorizedVariable> {
-    return this._categorizedVariables;
-  }
-
-  set categorizedVariables(value: Array<CategorizedVariable>) {
-    this._categorizedVariables = value;
-  }
 }

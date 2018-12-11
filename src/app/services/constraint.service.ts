@@ -30,6 +30,7 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Subject} from 'rxjs';
+import {VariablesViewMode} from '../models/variables-view-mode';
 
 /**
  * This service concerns with
@@ -99,6 +100,12 @@ export class ConstraintService {
    */
   private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
 
+  // the subset of _studyConceptCountMap that holds the selected maps,
+  // which corresponds to the selected cohort(s)
+  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _studyCountMap that holds the selected studies,
+  // which corresponds to the selected cohort(s)
+  private _selectedStudyCountMap: Map<string, CountItem>;
   // the subset of _conceptCountMap that holds the selected maps,
   // which corresponds to the selected cohort(s)
   private _selectedConceptCountMap: Map<string, CountItem>;
@@ -123,6 +130,8 @@ export class ConstraintService {
   // [pDroppable] in gb-fractalis-control.component
   // [pDroppable] in gb-cross-table.component
   public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
+
+  private _variablesViewMode: VariablesViewMode;
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
@@ -164,10 +173,11 @@ export class ConstraintService {
         console.error(err);
       });
 
-    // When the selectedConceptCountMap is updated, update the corresponding variable list
+    // When the selectedConceptCountMap is updated, update the corresponding variable list and tree
     this.selectedConceptCountMapUpdated.asObservable()
       .subscribe(() => {
         this.updateVariables();
+        this.updateVariablesTreeData();
       });
   }
 
@@ -407,10 +417,33 @@ export class ConstraintService {
     }
   }
 
+  public isVariableNode(treeNodeType: string): boolean {
+    return (treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL' ||
+      treeNodeType === 'CATEGORICAL_OPTION' ||
+      treeNodeType === 'DATE' ||
+      treeNodeType === 'HIGH_DIMENSIONAL' ||
+      treeNodeType === 'TEXT')
+  }
+
   /**
    * Generate the constraint based on the variables selected in the Variables panel
    */
   public variableConstraint(): Constraint {
+    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
+      return this.generateVariablesTreeConstraint();
+    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
+      return this.generateCategorizedVariablesConstraint();
+    } else {
+      return new TrueConstraint();
+    }
+  }
+
+  /**
+   * Generate the constraint based on the variables selected in the categorized view of the variables panel
+   * @returns {Constraint}
+   */
+  private generateCategorizedVariablesConstraint(): Constraint {
     const hasUnselected = this.variables.some((variable: Concept) => {
       return !variable.selected;
     });
@@ -433,6 +466,39 @@ export class ConstraintService {
     }
   }
 
+  /**
+   * Generate the constraint based on the variables selected in the tree view of the variables panel
+   * @returns {Constraint}
+   */
+  private generateVariablesTreeConstraint(): Constraint {
+    let constraint = null;
+    let selectedTreeNodes = this.treeNodeService.selectedVariablesTreeData;
+    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
+      let leaves = [];
+      constraint = new CombinationConstraint();
+      constraint.combinationState = CombinationState.Or;
+
+      for (let selectedTreeNode of selectedTreeNodes) {
+        let visualAttributes = selectedTreeNode['visualAttributes'];
+        if (visualAttributes && visualAttributes.includes('LEAF')) {
+          leaves.push(selectedTreeNode);
+        }
+      }
+      for (let leaf of leaves) {
+        const leafConstraint = TransmartConstraintMapper.generateConstraintFromObject(leaf['constraint']);
+        if (leafConstraint) {
+          constraint.addChild(leafConstraint);
+        } else {
+          console.error('Failed to create constrain from: ', leaf);
+        }
+      }
+    } else {
+      constraint = new NegationConstraint(new TrueConstraint());
+    }
+
+    return constraint;
+  }
+
 
   // generate the constraint instance based on given node (e.g. tree node)
   public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
@@ -444,12 +510,7 @@ export class ConstraintService {
       study.id = treeNode['constraint']['studyId'];
       constraint = new StudyConstraint();
       (<StudyConstraint>constraint).studies.push(study);
-    } else if (treeNodeType === 'NUMERIC' ||
-      treeNodeType === 'CATEGORICAL' ||
-      treeNodeType === 'CATEGORICAL_OPTION' ||
-      treeNodeType === 'DATE' ||
-      treeNodeType === 'HIGH_DIMENSIONAL' ||
-      treeNodeType === 'TEXT') {
+    } else if (this.isVariableNode) {
       if (treeNode['constraint']) {
         constraint = TransmartConstraintMapper.generateConstraintFromObject(treeNode['constraint']);
       } else {
@@ -484,7 +545,7 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- variables-related methods
    */
-  private updateVariables(): Promise<any> {
+  public updateVariables(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.isUpdatingVariables = true;
       if (this.isTreeNodesLoading) {
@@ -505,6 +566,10 @@ export class ConstraintService {
         resolve(true);
       }
     });
+  }
+
+  updateVariablesTreeData() {
+    this.treeNodeService.updateVariablesTreeData(this.selectedStudyConceptCountMap, this.selectedConceptCountMap);
   }
 
   /*
@@ -637,6 +702,22 @@ export class ConstraintService {
     this._selectedConceptCountMapUpdated = value;
   }
 
+  get selectedStudyCountMap(): Map<string, CountItem> {
+    return this._selectedStudyCountMap;
+  }
+
+  set selectedStudyCountMap(value: Map<string, CountItem>) {
+    this._selectedStudyCountMap = value;
+  }
+
+  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._selectedStudyConceptCountMap;
+  }
+
+  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._selectedStudyConceptCountMap = value;
+  }
+
   get variablesUpdated(): Subject<Concept[]> {
     return this._variablesUpdated;
   }
@@ -659,5 +740,13 @@ export class ConstraintService {
 
   set draggedVariable(value: Concept) {
     this._draggedVariable = value;
+  }
+
+  get variablesViewMode(): VariablesViewMode {
+    return this._variablesViewMode;
+  }
+
+  set variablesViewMode(value: VariablesViewMode) {
+    this._variablesViewMode = value;
   }
 }

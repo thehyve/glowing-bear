@@ -66,13 +66,18 @@ export class FractalisService {
   private prepareCache(variables: Concept[]) {
     this.isPreparingCache = true;
     variables.forEach((variable: Concept) => {
-        const constraint = {
+        const fractalisConstraint = {
           type: 'concept',
           conceptCode: variable.code
         };
+        const type = this.mapConceptTypeToFractalisVariableType(variable.type);
+        if (!type) {
+          console.error(`Failed to load variable: ${variable.code}. Invalid type: ${variable.type}.`);
+          return;
+        }
         const descriptor = {
-          constraint: JSON.stringify(constraint),
-          data_type: variable.type === ConceptType.NUMERICAL ? 'numerical' : 'categorical',
+          constraint: JSON.stringify(fractalisConstraint),
+          data_type: type,
           label: variable.name
         };
 
@@ -81,14 +86,17 @@ export class FractalisService {
             // TODO proper loading status update
           })
           .catch(err => {
-            console.log(`Failed to load variable: ${variable.code}`);
-            console.log(err)
+            console.error(`Failed to load variable: ${variable.code}`);
+            console.error(err)
           });
       }
     );
     this.isPreparingCache = false;
   }
 
+  getLoadedVariables(): Promise<object> {
+    return this.F.getTrackedVariables();
+  }
   setSubsets() {
     // TODO make use of this function
     // this.F.setSubsets([])
@@ -98,9 +106,25 @@ export class FractalisService {
     this.F.clearCache();
   }
 
-  getLoadedVariables(): Promise<object> {
-    return this.F.getTrackedVariables();
+  private mapConceptTypeToFractalisVariableType(type: ConceptType): string {
+    switch (type) {
+      case ConceptType.NUMERICAL: {
+        return 'numerical';
+      }
+      case ConceptType.HIGH_DIMENSIONAL: {
+        return 'numerical_array';
+      }
+      case ConceptType.CATEGORICAL:
+      case ConceptType.DATE: {
+        return 'categorical';
+      }
+      default: {
+        return ''
+      }
+    }
   }
+
+
 
   setChart(chartId: string): object {
     return this.F.setChart(this.selectedChartType, chartId);

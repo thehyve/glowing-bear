@@ -20,7 +20,7 @@
          [ngClass]="{'drop-zone-highlight': dragCounter > 0, 'drop-zone-highlight-invalid': isValidationError}"
          (onDragEnter)="onDragEnter($event)"
          (onDragLeave)="onDragLeave($event)"
-         (drop)="onDropVariable()">
+         (drop)="onDropVariable($event)">
     <span *ngIf="selectedVariables.length === 0; else showDroppedVariables">
       Drop variable(s) here
     </span>

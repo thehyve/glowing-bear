@@ -77,7 +77,8 @@ export class ExportService {
 
   }
 
-  private updateExportDataTypes() { console.log('update export data types');
+  private updateExportDataTypes() {
+    console.log('update export data types');
     // update the export info
     this.isDataTypesUpdating = true;
     this.resourceService.getExportDataTypes(this.constraintService.combination)

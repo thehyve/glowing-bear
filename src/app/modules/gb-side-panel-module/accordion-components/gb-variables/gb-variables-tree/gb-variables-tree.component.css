@@ -1,0 +1,26 @@
+.checkAllText {
+    font-size: small;
+    padding: 0.5em;
+    color: grey;
+}
+
+/*Make the font size in the tree smaller*/
+:host >>> p-treenode {
+    font-size: small;
+}
+
+:host >>> .gb-variables-tree-container {
+    width: auto;
+    background-color: transparent;
+    border: none;
+}
+
+:host >>> .gb-variables-tree-container.ui-tree-container {
+    width: 100%;
+}
+
+:host >>> .gb-variables-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+    padding: 1px 6px 1px 6px !important;
+    background-color: #67a2cf !important;
+}
+

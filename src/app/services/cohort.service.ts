@@ -72,7 +72,6 @@ export class CohortService {
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
-              private dataTableService: DataTableService,
               private constraintService: ConstraintService) {
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
@@ -187,7 +186,7 @@ export class CohortService {
     console.log('Updating counts from all cohorts...');
     this.isUpdatingAll = true;
     let combination: CombinationConstraint = new CombinationConstraint();
-    combination.combinationState = CombinationState.Or;
+    combination.combinationState = CombinationState.And;
     combination.mark = ConstraintMark.SUBJECT;
     this.cohorts.forEach((cohort: Cohort) => {
       if (cohort.selected) {
@@ -198,10 +197,12 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       forkJoin(
         this.resourceService.getCounts(combination),
-        this.resourceService.getCountsPerConcept(combination)
+        this.resourceService.getCountsPerConcept(combination),
+        this.resourceService.getCountsPerStudyAndConcept(combination)
       ).subscribe(res => {
         this.allCounts = res[0];
         this.constraintService.selectedConceptCountMap = res[1];
+        this.constraintService.selectedStudyConceptCountMap = res[2];
         this.isUpdatingAll = false;
         resolve(true);
       }, (err) => {

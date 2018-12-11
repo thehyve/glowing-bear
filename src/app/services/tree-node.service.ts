@@ -27,6 +27,12 @@ export class TreeNodeService {
 
   // the variable that holds the entire tree structure, used by the tree on the left side bar
   private _treeNodes: TreeNode[] = [];
+  // the copy of the tree nodes that is used for constructing the tree in the variables panel
+  private _treeNodesCopy: TreeNode[] = [];
+  // the tree data that is rendered in the variables panel
+  private _variablesTreeData: TreeNode[] = [];
+  // the selected tree data in the variables panel
+  private _selectedVariablesTreeData: TreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -311,6 +317,108 @@ export class TreeNodeService {
     }
   }
 
+  /**
+   * Update the tree table data for rendering the tree table in variables panel,
+   * based on a given set of concept codes as filtering criteria.
+   * @param {Map<string, Map<string, CountItem>>} selectedStudyConceptCountMap
+   * @param {Map<string, CountItem>} selectedConceptCountMap
+   */
+  public updateVariablesTreeData(selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
+                                 selectedConceptCountMap: Map<string, CountItem>) {
+    // If the tree nodes copy is empty, create it by duplicating the tree nodes
+    if (this.treeNodesCopy.length === 0) {
+      this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
+    }
+    this.variablesTreeData =
+      this.updateVariablesTreeDataIterative(this.treeNodesCopy, selectedStudyConceptCountMap, selectedConceptCountMap);
+    this.selectedVariablesTreeData = [];
+  }
+
+  private updateVariablesTreeDataIterative(nodes: TreeNode[],
+                                           selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
+                                           selectedConceptCountMap: Map<string, CountItem>) {
+    let nodesWithCodes = [];
+    for (let node of nodes) {
+      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
+        let countItem: CountItem = null;
+        let conceptMap = selectedStudyConceptCountMap ? selectedStudyConceptCountMap.get(node['studyId']) : null;
+        if (conceptMap && conceptMap.size > 0) {
+          node['expanded'] = false;
+          countItem = conceptMap.get(node['conceptCode']);
+        } else {
+          countItem = selectedConceptCountMap ? selectedConceptCountMap.get(node['conceptCode']) : null;
+        }
+        if (countItem) {
+          let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
+          if (this.showObservationCounts) {
+            countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
+          }
+          node['label'] = `${node['name']} (${countsText})`;
+          nodesWithCodes.push(node);
+        }
+      } else if (node['children']) { // if the node is an intermediate node
+        let newNodeChildren =
+          this.updateVariablesTreeDataIterative(node['children'], selectedStudyConceptCountMap, selectedConceptCountMap);
+        if (newNodeChildren.length > 0) {
+          let nodeCopy = this.copyTreeNodeUpward(node);
+          nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
+          nodeCopy['children'] = newNodeChildren;
+          nodesWithCodes.push(nodeCopy);
+        }
+      }
+    }
+    return nodesWithCodes;
+  }
+
+  public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
+    for (let node of nodes) {
+      this.selectedVariablesTreeData.push(node);
+      if (node['children']) {
+        this.checkAllVariablesTreeDataIterative(node['children']);
+      }
+    }
+  }
+
+  copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    let nodesCopy = [];
+    for (let node of nodes) {
+      let parent = node['parent'];
+      let children = node['children'];
+      node['parent'] = null;
+      node['children'] = null;
+      let nodeCopy = JSON.parse(JSON.stringify(node));
+      if (children) {
+        let childrenCopy = this.copyTreeNodes(children);
+        nodeCopy['children'] = childrenCopy;
+      }
+      nodesCopy.push(nodeCopy);
+      node['parent'] = parent;
+      node['children'] = children;
+    }
+    return nodesCopy;
+  }
+
+  /**
+   * Copy the given treenode upward, i.e. excluding its children
+   * @param {TreeNode} node
+   * @returns {TreeNode}
+   */
+  copyTreeNodeUpward(node: TreeNode): TreeNode {
+    let nodeCopy = {};
+    let parentCopy = null;
+    for (let key in node) {
+      if (key === 'parent') {
+        parentCopy = this.copyTreeNodeUpward(node[key]);
+      } else if (key !== 'children') {
+        nodeCopy[key] = JSON.parse(JSON.stringify(node[key]));
+      }
+    }
+    if (parentCopy) {
+      nodeCopy['parent'] = parentCopy;
+    }
+    return nodeCopy;
+  }
+
   private depthOfTreeNode(node: TreeNode): number {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
@@ -393,6 +501,30 @@ export class TreeNodeService {
 
   set treeNodes(value: TreeNode[]) {
     this._treeNodes = value;
+  }
+
+  get treeNodesCopy(): TreeNode[] {
+    return this._treeNodesCopy;
+  }
+
+  set treeNodesCopy(value: TreeNode[]) {
+    this._treeNodesCopy = value;
+  }
+
+  get variablesTreeData(): TreeNode[] {
+    return this._variablesTreeData;
+  }
+
+  set variablesTreeData(value: TreeNode[]) {
+    this._variablesTreeData = value;
+  }
+
+  get selectedVariablesTreeData(): TreeNode[] {
+    return this._selectedVariablesTreeData;
+  }
+
+  set selectedVariablesTreeData(value: TreeNode[]) {
+    this._selectedVariablesTreeData = value;
   }
 
   get validTreeNodeTypes(): string[] {

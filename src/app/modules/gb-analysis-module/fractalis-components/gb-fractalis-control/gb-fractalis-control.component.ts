@@ -7,10 +7,11 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {FractalisService} from '../../../../services/fractalis.service';
-import {SelectItem} from 'primeng/api';
+import {SelectItem, TreeNode} from 'primeng/api';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {TreeNodeService} from '../../../../services/tree-node.service';
 
 @Component({
   selector: 'gb-fractalis-control',
@@ -22,7 +23,8 @@ export class GbFractalisControlComponent implements OnInit {
   dragCounter = 0;
 
   constructor(private fractalisService: FractalisService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private treeNodeService: TreeNodeService) {
   }
 
   ngOnInit() {
@@ -44,10 +46,14 @@ export class GbFractalisControlComponent implements OnInit {
     this.dragCounter--;
   }
 
-  onDropVariable() {
+  onDropVariable(e: DragEvent) {
+    e.preventDefault();
     this.dragCounter = 0;
     this.fractalisService.clearValidation();
-    this.selectedVariables.push(this.constraintService.draggedVariable);
+    let variable = this.identifyDraggedElement();
+    if (variable) {
+      this.selectedVariables.push(variable);
+    }
   }
 
   onRemoveVariable(variable) {
@@ -69,6 +75,15 @@ export class GbFractalisControlComponent implements OnInit {
     this.fractalisService.clearValidation();
   }
 
+  private identifyDraggedElement(): Concept {
+    if (this.constraintService.draggedVariable) {
+      return this.constraintService.draggedVariable;
+    } else if (this.treeNodeService.selectedTreeNode) {
+      return this.treeNodeService.getConceptFromTreeNode(this.treeNodeService.selectedTreeNode);
+    }
+    return null;
+  }
+
   get isDropZoneShown(): boolean {
     return (this.selectedChartType && this.selectedChartType !== ChartType.CROSSTABLE);
   }
@@ -82,7 +97,6 @@ export class GbFractalisControlComponent implements OnInit {
         shown = true;
       }
     }
-
     return shown;
   }
 
