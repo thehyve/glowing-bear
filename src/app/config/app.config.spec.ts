@@ -141,6 +141,12 @@ describe('AppConfig', () => {
     } catch (e) {
       expect(e.message).toBeDefined();
     }
+    try {
+      appConfig.getConfig('fractalis-url');
+      fail('The call to get fractalis-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
     expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
     expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);

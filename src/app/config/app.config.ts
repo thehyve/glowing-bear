@@ -64,6 +64,9 @@ export class AppConfig {
         case 'app-version': {
           value = AppConfig.DEFAULT_APP_VERSION; break;
         }
+        case 'fractalis-url': {
+          throw Error('Fractalis URL is unspecified in the configuration.')
+        }
         case 'doc-url': {
           value = AppConfig.DEFAULT_DOC_URL; break;
         }
