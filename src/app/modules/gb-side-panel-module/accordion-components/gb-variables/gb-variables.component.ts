@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
 import {NavbarService} from '../../../../services/navbar.service';
 import {DataTableService} from '../../../../services/data-table.service';
 
@@ -12,7 +12,7 @@ import {DataTableService} from '../../../../services/data-table.service';
 })
 export class GbVariablesComponent implements OnInit {
 
-  private _categorizedVariables: Map<ConceptType, Array<Concept>>;
+  private _categorizedVariables: Array<CategorizedVariable> = [];
 
   public allChecked: boolean;
   public checkAllText: string;
@@ -20,11 +20,11 @@ export class GbVariablesComponent implements OnInit {
   constructor(private constraintService: ConstraintService,
               private dataTableService: DataTableService,
               private navbarService: NavbarService) {
-    this.categorizedVariables = new Map<ConceptType, Array<Concept>>();
     this.constraintService.variablesUpdated.asObservable()
       .subscribe((variables: Concept[]) => {
         this.categorizeVariables(variables);
       });
+
     this.allChecked = true;
   }
 
@@ -32,13 +32,13 @@ export class GbVariablesComponent implements OnInit {
   }
 
   private categorizeVariables(variables: Concept[]) {
-    this.categorizedVariables.clear();
+    this.categorizedVariables.length = 0;
     variables.forEach((variable: Concept) => {
-      if (this.categorizedVariables.has(variable.type)) {
-        this.categorizedVariables.get(variable.type).push(variable);
+      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
+      if (existingVariable) {
+        existingVariable.elements.push(variable);
       } else {
-        this.categorizedVariables.set(variable.type, []);
-        this.categorizedVariables.get(variable.type).push(variable);
+        this.categorizedVariables.push({type: variable.type, elements: [variable]});
       }
     });
     this.updateCheckAllText();
@@ -46,8 +46,8 @@ export class GbVariablesComponent implements OnInit {
 
   updateCheckAllText() {
     let numSelected = 0;
-    this.categorizedVariables.forEach((list: Array<Concept>) => {
-      list.forEach((c: Concept) => {
+    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
+      catVar.elements.forEach((c: Concept) => {
         if (c.selected) {
           numSelected++;
         }
@@ -63,8 +63,8 @@ export class GbVariablesComponent implements OnInit {
   }
 
   checkAll(b: boolean) {
-    this.categorizedVariables.forEach((list: Array<Concept>) => {
-      list.forEach((c: Concept) => {
+    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
+      catVar.elements.forEach((c: Concept) => {
         c.selected = b;
       })
     });
@@ -79,19 +79,15 @@ export class GbVariablesComponent implements OnInit {
     return this.navbarService.isExport;
   }
 
-  get availableVariableTypes(): ConceptType[] {
-    return Array.from(this.categorizedVariables.keys());
-  }
-
   get variablesDragDropScope(): string {
     return this.constraintService.variablesDragDropScope;
   }
 
-  get categorizedVariables(): Map<ConceptType, Array<Concept>> {
+  get categorizedVariables(): Array<CategorizedVariable> {
     return this._categorizedVariables;
   }
 
-  set categorizedVariables(value: Map<ConceptType, Array<Concept>>) {
+  set categorizedVariables(value: Array<CategorizedVariable>) {
     this._categorizedVariables = value;
   }
 }

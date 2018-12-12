@@ -8,12 +8,13 @@
 
 import {ChartType} from '../../models/chart-models/chart-type';
 import {Chart} from '../../models/chart-models/chart';
-import {Subject} from 'rxjs';
 import {Concept} from '../../models/constraint-models/concept';
 
 export class FractalisServiceMock {
   charts: Chart[] = [];
   selectedChartType: ChartType = null;
+  variablesValidationMessage: string;
+  variablesInvalid: boolean;
   availableChartTypes: ChartType[] = [
     ChartType.CROSSTABLE,
     ChartType.HEATMAP,
@@ -43,4 +44,31 @@ export class FractalisServiceMock {
   public removeChart(chart: Chart) {
     this.charts.splice(this.charts.indexOf(chart), 1);
   }
+
+  public addOrRecreateChart() {
+    if (this.previousChart && !this.previousChart.isValid) {
+      this.removeChart(this.previousChart);
+    }
+    this.addChart();
+  }
+
+  public clearValidation() {
+    this.variablesValidationMessage = '';
+    this.variablesInvalid = false;
+  }
+
+  public invalidateVariables() {
+
+  }
+
+  public getLoadedVariables(): Promise<object> {
+    return new Promise(function(resolve, reject) {
+      resolve({});
+    });
+  }
+
+  get previousChart(): Chart {
+    return this.charts[this.charts.length - 1];
+  }
+
 }

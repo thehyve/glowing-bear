@@ -195,6 +195,18 @@ body .hline {
   color: white;
 }
 
+/*
+ * Fractalis chart settings panel
+ * to be removed after replacing default panel with one
+ */
+.fjs-control-panel {
+  margin-top: 50px !important;
+  background-color: var(--gb-clinical-green-light-light) !important;
+  opacity: 0.9;
+  color: rgba(0, 0, 0, 0.87) !important;
+}
+
+
 /* Change input placeholder text color */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: lightgray;

@@ -47,6 +47,8 @@ describe('GbFractalisControlComponent', () => {
     fixture = TestBed.createComponent(GbFractalisControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    fractalisService.variablesInvalid = true;
+    fractalisService.variablesValidationMessage = 'Variables are invalid';
   });
 
   it('should create', () => {
@@ -81,6 +83,8 @@ describe('GbFractalisControlComponent', () => {
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
     expect(component.selectedVariables[0]).toBe(dummy);
+    expect(component.isValidationError).toBe(false);
+    expect(component.validationErrorMessage.length).toBe(0);
   });
 
   it('should remove variable', () => {
@@ -91,6 +95,8 @@ describe('GbFractalisControlComponent', () => {
     component.selectedVariables.push(dummy1);
     component.onRemoveVariable(dummy2);
     expect(component.selectedVariables.length).toBe(2);
+    expect(component.isValidationError).toBe(false);
+    expect(component.validationErrorMessage.length).toBe(0);
 
     component.onRemoveVariable(dummy1);
     expect(component.selectedVariables.length).toBe(1);
@@ -103,5 +109,16 @@ describe('GbFractalisControlComponent', () => {
     component.onClearControl();
     expect(component.selectedChartType).toBe(null);
     expect(component.selectedVariables.length).toBe(0);
+    expect(component.isValidationError).toBe(false);
+    expect(component.validationErrorMessage.length).toBe(0);
   });
+
+  it('should change on select chart', () => {
+    component.selectedChartType = ChartType.BOXPLOT;
+    component.selectedVariables.push(new Concept());
+    component.onSelectedChartTypeChange();
+    expect(component.selectedVariables.length).toBe(0);
+    expect(component.isValidationError).toBe(false);
+    expect(component.validationErrorMessage.length).toBe(0);
+  })
 });

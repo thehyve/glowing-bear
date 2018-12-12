@@ -6,11 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum ConceptType {
-  CATEGORICAL = 'CATEGORICAL',
-  CATEGORICAL_OPTION = 'CATEGORICAL_OPTION',
-  NUMERICAL = 'NUMERIC',
-  DATE = 'DATE',
-  TEXT = 'TEXT',
-  HIGH_DIMENSIONAL = 'HIGH_DIMENSIONAL'
+export class FractalisChartVariable {
+  minLength?: number;
+  maxLength?: number;
+  value: string[];
 }

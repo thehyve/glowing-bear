@@ -3,6 +3,10 @@
   margin-bottom: 2em;
 }
 
+.fractatis-chart-hidden {
+  display: none;
+}
+
 .clear-btn-container {
   margin-bottom: 0.5em;
 }
