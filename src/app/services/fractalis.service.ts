@@ -8,6 +8,7 @@ import {SelectItem} from 'primeng/api';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {ConstraintService} from './constraint.service';
+import {AppConfig} from '../config/app.config';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class FractalisService {
   private _variablesInvalid = false;
   private _variablesValidationMessage: string;
 
-  constructor(private authService: AuthenticationService,
+  constructor(private appConfig: AppConfig,
+              private authService: AuthenticationService,
               private constraintService: ConstraintService) {
     if (fjs.fractalis) {
       this.setupFractalis();
@@ -42,8 +44,8 @@ export class FractalisService {
     let token = this.authService.token;
     const config = {
       handler: 'transmart',
-      dataSource: 'http://172.19.0.1:8081',
-      fractalisNode: 'http://localhost:5000',
+      dataSource: this.appConfig.getConfig('api-url'),
+      fractalisNode: this.appConfig.getConfig('fractalis-url'),
       getAuth() {
         return {token: token}
       },

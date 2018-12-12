@@ -7,6 +7,8 @@ import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {ConstraintService} from './constraint.service';
 import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock} from '../config/app.config.mock';
 
 describe('FractalisService', () => {
 
@@ -22,6 +24,10 @@ describe('FractalisService', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         FractalisService
       ]
