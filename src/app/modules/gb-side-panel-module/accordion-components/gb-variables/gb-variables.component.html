@@ -1,9 +1,23 @@
 <div>
+  <!--Import criteria -->
 
-  <div *ngIf="isExport" class="checkAllText">
-    <p-checkbox [(ngModel)]="allChecked" binary="true"
-                (onChange)="checkAll($event)"></p-checkbox>
-    {{checkAllText}}
+  <div *ngIf="isExport">
+    <div class="pull-right">
+      <button class="btn btn-outline-primary import-btn"
+              (click)="importVariables()"
+              type="button">
+        <span>import</span>
+        <input [id]="fileElementId"
+               type="file"
+               style="display: none"/>
+      </button>
+    </div>
+
+    <div class="checkAllText">
+      <p-checkbox [(ngModel)]="allChecked" binary="true"
+                  (onChange)="checkAll($event)"></p-checkbox>
+      {{checkAllText}}
+    </div>
   </div>
 
   <mat-accordion [multi]="true">

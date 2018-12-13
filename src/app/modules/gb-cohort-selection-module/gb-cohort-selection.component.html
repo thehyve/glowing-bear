@@ -23,6 +23,15 @@
 
   </div>
 
+  <div class="float-right" style="margin-right: 2em">
+    <button type="button" (click)="importCriteria()"
+            class="btn btn-primary btn-sm gb-data-selection-control-btn">Import Criteria
+    </button>
+    <input [id]="fileElementId"
+           type="file"
+           style="display: none"/>
+  </div>
+
   <!-- cohort query composer -->
   <div>
     <!-- Inclusion criteria -->

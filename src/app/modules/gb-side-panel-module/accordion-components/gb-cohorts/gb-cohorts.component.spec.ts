@@ -34,6 +34,7 @@ import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-rec
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
+import {FileImportHelper} from '../../../../utilities/file-import-helper';
 
 describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
@@ -128,7 +129,8 @@ describe('GbCohortsComponent', () => {
     let spy2 = spyOn(cohortService, 'saveCohortByObject').and.stub();
     let spy3 = spyOn(component, 'verifyFile').and.stub();
 
-    component.cohortFileUpload(event);
+    let reader = new FileReader();
+    FileImportHelper.fileUpload(event, reader);
     fixture.whenStable().then(() => {
       FileReader.prototype.onload.bind(component);
       expect(spy1).toHaveBeenCalled();
