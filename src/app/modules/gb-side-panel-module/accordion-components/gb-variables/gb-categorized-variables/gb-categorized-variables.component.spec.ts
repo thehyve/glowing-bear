@@ -4,6 +4,15 @@ import { GbCategorizedVariablesComponent } from './gb-categorized-variables.comp
 import {CategorizedVariable} from '../../../../../models/constraint-models/categorized-variable';
 import {Concept} from '../../../../../models/constraint-models/concept';
 import {ConceptType} from '../../../../../models/constraint-models/concept-type';
+import {CheckboxModule, DragDropModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule, MatExpansionModule} from '@angular/material';
+import {NavbarService} from '../../../../../services/navbar.service';
+import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
+import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
+import {ConstraintService} from '../../../../../services/constraint.service';
+import {DataTableService} from '../../../../../services/data-table.service';
+import {DataTableServiceMock} from '../../../../../services/mocks/data-table.service.mock';
 
 describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;
@@ -13,6 +22,27 @@ describe('GbCategorizedVariablesComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbCategorizedVariablesComponent
+      ],
+      imports: [
+        FormsModule,
+        CheckboxModule,
+        MatButtonModule,
+        MatExpansionModule,
+        DragDropModule
+      ],
+      providers: [
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        }
       ]
     })
     .compileComponents();
@@ -42,7 +72,6 @@ describe('GbCategorizedVariablesComponent', () => {
     categorizedVars.push(catVar2);
     let spy1 = spyOnProperty(component, 'categorizedVariables', 'get')
       .and.returnValue(categorizedVars);
-    component.updateCheckAllText();
     expect(component.checkAllText.includes('2'));
   });
 
@@ -61,10 +90,8 @@ describe('GbCategorizedVariablesComponent', () => {
     let spy1 = spyOnProperty(component, 'categorizedVariables', 'get')
       .and.returnValue(categorizedVars);
     component.checkAll(true);
-    component.updateCheckAllText();
     expect(component.checkAllText.includes('3'));
     component.checkAll(false);
-    component.updateCheckAllText();
     expect(component.checkAllText.includes('0'));
   });
 });

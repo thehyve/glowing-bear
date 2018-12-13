@@ -1,17 +1,14 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {MatExpansionModule} from '@angular/material';
-import {CheckboxModule, DragDropModule} from 'primeng/primeng';
+import {CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
+import {FormsModule} from '@angular/forms';
+import {MockComponent} from 'ng2-mock-component';
 import {NavbarService} from '../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
-import {FormsModule} from '@angular/forms';
-import {DataTableService} from '../../../../services/data-table.service';
-import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
-import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
-import {TreeNodeService} from '../../../../services/tree-node.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -20,18 +17,25 @@ describe('GbVariablesComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbVariablesComponent
+        GbVariablesComponent,
+        MockComponent({selector: 'gb-variables-tree'}),
+        MockComponent({selector: 'gb-categorized-variables'})
       ],
       imports: [
         FormsModule,
         DragDropModule,
         MatExpansionModule,
-        CheckboxModule
+        CheckboxModule,
+        SelectButtonModule
       ],
       providers: [
         {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
         }
       ]
     })

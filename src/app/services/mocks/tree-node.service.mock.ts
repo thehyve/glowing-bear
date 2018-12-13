@@ -8,6 +8,7 @@
 
 import {TreeNode} from 'primeng/primeng';
 import {CountItem} from '../../models/aggregate-models/count-item';
+import {Concept} from '../../models/constraint-models/concept';
 
 export class TreeNodeServiceMock {
   // the variable that holds the entire tree structure, used by the tree on the left
@@ -78,11 +79,11 @@ export class TreeNodeServiceMock {
     this._projectionTreeData = value;
   }
 
-  get selectedProjectionTreeData(): TreeNode[] {
+  get selectedVariablesTreeData(): TreeNode[] {
     return this._selectedProjectionTreeData;
   }
 
-  set selectedProjectionTreeData(value: TreeNode[]) {
+  set selectedVariablesTreeData(value: TreeNode[]) {
     this._selectedProjectionTreeData = value;
   }
 
@@ -98,7 +99,7 @@ export class TreeNodeServiceMock {
     return true;
   }
 
-  public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
+  public updateVariablesTreeData(conceptCountMap: object, checklist: Array<string>) {
   }
 
   get finalTreeNodes(): TreeNode[] {
@@ -107,6 +108,14 @@ export class TreeNodeServiceMock {
 
   set finalTreeNodes(value: TreeNode[]) {
     this._finalTreeNodes = value;
+  }
+
+  public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
+
+  }
+
+  public getConceptFromTreeNode(treeNode: TreeNode): Concept {
+    return new Concept();
   }
 
 }

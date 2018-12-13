@@ -6,6 +6,13 @@ import {MatExpansionModule} from '@angular/material';
 import {CheckboxModule, DragDropModule} from 'primeng/primeng';
 import {TreeNodeServiceMock} from '../../../../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
+import {NavbarService} from '../../../../../services/navbar.service';
+import {DataTableService} from '../../../../../services/data-table.service';
+import {DataTableServiceMock} from '../../../../../services/mocks/data-table.service.mock';
+import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
+import {ConstraintService} from '../../../../../services/constraint.service';
+import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
+import {TreeModule} from 'primeng/tree';
 
 describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;
@@ -20,12 +27,25 @@ describe('GbVariablesTreeComponent', () => {
         FormsModule,
         DragDropModule,
         MatExpansionModule,
-        CheckboxModule
+        CheckboxModule,
+        TreeModule
       ],
       providers: [
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
+        },
+        {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
         }
       ]
     })

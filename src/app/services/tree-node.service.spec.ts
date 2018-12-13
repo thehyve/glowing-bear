@@ -346,7 +346,7 @@ describe('TreeNodeService', () => {
     expect(desc.length).toBe(2);
   })
 
-  it('should get tree ndoe descendants with given excluded types', () => {
+  it('should get tree nodes descendants with given excluded types', () => {
     let node_1_1 = {
       type: 'node_1_1_type'
     }
@@ -380,7 +380,7 @@ describe('TreeNodeService', () => {
     desc = [];
     treeNodeService.getTreeNodeDescendantsWithExcludedTypes(node, types, desc);
     expect(desc.length).toBe(0);
-  })
+  });
 
 
   it('should convert tree nodes to paths', () => {
@@ -430,7 +430,7 @@ describe('TreeNodeService', () => {
     node['type'] = undefined;
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(false);
-  })
+  });
 
   it('should verify if a tree node is study node', () => {
     let node: TreeNode = {};
@@ -440,12 +440,122 @@ describe('TreeNodeService', () => {
     node['type'] = undefined;
     isStudy = treeNodeService.isTreeNodeStudy(node);
     expect(isStudy).toBe(false);
-  })
+  });
 
   it('should verify if a tree node is leaf node', () => {
     let node: TreeNode = {};
     node['visualAttributes'] = ['bar', 'foo', 'LEAF'];
     let is = treeNodeService.isTreeNodeLeaf(node);
     expect(is).toBe(true);
-  })
+  });
+
+  it('should update variables tree data', () => {
+    let dummyTreeNodes = [{}];
+    let spy1 = spyOn(treeNodeService, 'copyTreeNodes').and.returnValue(dummyTreeNodes);
+    let spy2 = spyOn<any>(treeNodeService, 'updateVariablesTreeDataIterative').and.stub();
+    treeNodeService.treeNodesCopy = dummyTreeNodes;
+    treeNodeService.updateVariablesTreeData(new Map(), new Map());
+    expect(spy1).not.toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+
+    treeNodeService.treeNodesCopy = [];
+    treeNodeService.updateVariablesTreeData(new Map(), new Map());
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  });
+
+  it('should update variables tree data iteratively', () => {
+    let studyId = 'an-id';
+    let conceptCode = 'a-code';
+    let studyId1 = 'an-id-1';
+    let conceptCode1 = 'a-code-1';
+    let conceptCode2 = 'a-code-2';
+    let conceptMap = new Map<string, CountItem>();
+    conceptMap.set(conceptCode, new CountItem(10, 20));
+    let selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    selectedStudyConceptCountMap.set(studyId, conceptMap);
+    let conceptMap1 = new Map<string, CountItem>();
+    conceptMap1.set(conceptCode1, new CountItem(100, 200));
+    selectedStudyConceptCountMap.set(studyId1, conceptMap1);
+    let selectedConceptCountMap = new Map<string, CountItem>();
+    selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
+    let node1: TreeNode = {};
+    let node2: TreeNode = {};
+    let node2a: TreeNode = {};
+    let node3: TreeNode = {};
+    let node4: TreeNode = {};
+    let node5: TreeNode = {};
+    let node6: TreeNode = {};
+    node1['visualAttributes'] = ['bar', 'foo', 'LEAF'];
+    node2['children'] = [node2a];
+    node4['visualAttributes'] = ['LEAF'];
+    node4['studyId'] = studyId;
+    node4['conceptCode'] = conceptCode;
+    node4['name'] = 'a-name';
+    node2a['visualAttributes'] = ['LEAF'];
+    node2a['studyId'] = studyId1;
+    node2a['conceptCode'] = conceptCode1;
+    node5['children'] = [{}];
+    node6['name'] = 'node6';
+    node6['studyId'] = undefined;
+    node6['conceptCode'] = conceptCode2;
+    node6['visualAttributes'] = ['LEAF'];
+    let nodes = [node1, node2, node3, node4, node5, node6];
+    let resultNodes = treeNodeService['updateVariablesTreeDataIterative'](nodes, selectedStudyConceptCountMap, selectedConceptCountMap);
+    expect(node4['expanded']).toBe(false);
+    expect(resultNodes.length).toEqual(3);
+    expect(resultNodes[0]['label']).toBeUndefined();
+    expect(resultNodes[1]['label']).toBeDefined();
+  });
+
+
+  it('should check all variables tree data', () => {
+    let node: TreeNode = {};
+    let node_1: TreeNode = {};
+    let node_1_1: TreeNode = {};
+    let node_1_2: TreeNode = {};
+    let node_1_3: TreeNode = {};
+    node_1_1['fullName'] = 'node_1_1_fullname';
+    node_1_2['fullName'] = 'node_1_2_fullname';
+    node_1_3['fullName'] = 'node_1_3_fullname';
+    node_1.children = [node_1_1, node_1_2, node_1_3];
+    node_1['fullName'] = 'node_1_fullname';
+    node.children = [node_1];
+    treeNodeService.selectedVariablesTreeData = [];
+    treeNodeService.checkAllVariablesTreeDataIterative([node]);
+    expect(treeNodeService.selectedVariablesTreeData.length).toBe(5);
+  });
+
+  it('should copy tree nodes', () => {
+    let node: TreeNode = {};
+    let node_1: TreeNode = {};
+    let node_1_1: TreeNode = {};
+    node_1_1.parent = node_1;
+    node_1_1['type'] = 'node_1_1_type';
+    node_1.children = [node_1_1];
+    node_1.type = 'node_1_type';
+    node_1.parent = node;
+    node.children = [node_1];
+    let result = treeNodeService.copyTreeNodes([node]);
+    expect(result[0].children[0].type).toEqual('node_1_type');
+    expect(result[0].children[0].children[0].type).toEqual('node_1_1_type');
+  });
+
+  it('should copy tree nodes upwards', () => {
+    let node: TreeNode = {};
+    let node_1: TreeNode = {};
+    let node_1_1: TreeNode = {};
+    node_1_1.parent = node_1;
+    node_1_1['type'] = 'node_1_1_type';
+    node_1.children = [node_1_1];
+    node_1.type = 'node_1_type';
+    node_1.parent = node;
+    node.children = [node_1];
+    node.type = 'node_type';
+    let result = treeNodeService.copyTreeNodeUpward(node_1);
+    expect(result.type).toEqual('node_1_type');
+    expect(result.children).not.toBeDefined();
+    expect(result.parent.type).toBe('node_type');
+  });
+
 });
