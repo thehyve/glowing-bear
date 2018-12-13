@@ -5,7 +5,7 @@ export class FileImportHelper {
   static importCriteria(elementId: string, reader: FileReader, isUploadListenerNotAdded: boolean) {
     let uploadElm = document.getElementById(elementId);
     if (isUploadListenerNotAdded) {
-      uploadElm.addEventListener('change', (event) => this.fileUpload(event, reader), false);
+      uploadElm.addEventListener('change', (event) => FileImportHelper.fileUpload(event, reader), false);
     }
     // reset the input path so that it will take the same file again
     uploadElm['value'] = '';
@@ -13,7 +13,6 @@ export class FileImportHelper {
   }
 
   static fileUpload(event, reader: FileReader) {
-    MessageHelper.alert('info', 'File is being processed, waiting for response.');
     let file = event.target.files[0];
     reader.readAsText(file);
   }

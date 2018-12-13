@@ -120,6 +120,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   importCriteria() {
+    MessageHelper.alert('info', 'File upload started. Processing...');
     let reader = new FileReader();
     reader.onload = this.handleCriteriaFileUploadEvent.bind(this);
     FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
@@ -138,6 +139,7 @@ export class GbCohortSelectionComponent implements OnInit {
       MessageHelper.alert('error', 'Invalid file format for subjects import.');
       return;
     }
+    MessageHelper.alert('info', 'File upload finished successfully!');
   }
 
   /**
