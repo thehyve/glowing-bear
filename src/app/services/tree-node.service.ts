@@ -479,6 +479,35 @@ export class TreeNodeService {
     });
   }
 
+  selectVariablesTreeNodesByPaths(nodes: TreeNode[], values: string[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node) {
+        const itemPath = node['fullName'];
+        if (values.indexOf(itemPath) > -1 && this.selectedVariablesTreeData.indexOf(node) < 0) {
+          this.selectedVariablesTreeData.push(node);
+        }
+        if (node['children']) {
+          this.selectVariablesTreeNodesByPaths(node['children'], values);
+        }
+      }
+    });
+  }
+
+  selectVariablesTreeNodesByNames(nodes: TreeNode[], values: string[]) {
+    nodes.forEach((node: TreeNode) => {
+      if (node) {
+        const itemName = (node['metadata'] || {})['item_name'];
+        if (values.indexOf(itemName) > -1 && this.selectedVariablesTreeData.indexOf(node) < 0) {
+          this.selectedVariablesTreeData.push(node);
+        }
+        if (node['children']) {
+          this.selectVariablesTreeNodesByNames(node['children'], values);
+        }
+      }
+    });
+  }
+
+
   public updateTreeNodeCounts() {
     this.updateTreeNodeCountsIterative(this.treeNodes);
   }

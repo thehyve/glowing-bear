@@ -13,7 +13,6 @@ import {DataTableService} from '../../../../../services/data-table.service';
 export class GbCategorizedVariablesComponent implements OnInit {
 
   public allChecked: boolean;
-  public checkAllText: string;
 
   private _categorizedVariables: Array<CategorizedVariable> = [];
 
@@ -43,29 +42,14 @@ export class GbCategorizedVariablesComponent implements OnInit {
         this.categorizedVariables.push({type: variable.type, elements: [variable]});
       }
     });
-    this.updateCheckAllText();
   }
 
   onDragStart(e, concept) {
     this.constraintService.draggedVariable = concept;
   }
 
-  updateCheckAllText() {
-    let numSelected = 0;
-    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
-      catVar.elements.forEach((c: Concept) => {
-        if (c.selected) {
-          numSelected++;
-        }
-      });
-    });
-    this.checkAllText = numSelected === 1 ?
-      `${numSelected} variable selected` : `${numSelected} variables selected`;
-  }
-
   checkVariables() {
     this.dataTableService.isDirty = true;
-    this.updateCheckAllText();
   }
 
   checkAll(b: boolean) {
@@ -91,5 +75,16 @@ export class GbCategorizedVariablesComponent implements OnInit {
 
   set categorizedVariables(value: Array<CategorizedVariable>) {
     this._categorizedVariables = value;
+  }
+
+  get checkAllText(): string {
+    let numSelected = this.numberOfSelected;
+    return numSelected === 1 ?
+      `${numSelected} variable selected` : `${numSelected} variables selected`;
+  }
+
+  get numberOfSelected(): number {
+    return this.constraintService.variables.filter(v =>
+      v.selected === true).length;
   }
 }

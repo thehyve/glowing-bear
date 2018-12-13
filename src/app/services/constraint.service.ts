@@ -572,6 +572,29 @@ export class ConstraintService {
     this.treeNodeService.updateVariablesTreeData(this.selectedStudyConceptCountMap, this.selectedConceptCountMap);
   }
 
+  importVariablesByNames(names: string[]) {
+    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
+      return this.treeNodeService.selectVariablesTreeNodesByNames(this.treeNodeService.variablesTreeData, names);
+    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
+      return this.selectVariablesByProperty(names, 'name');
+    }
+  }
+
+  importVariablesByPaths(paths: string[]) {
+    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
+      return this.treeNodeService.selectVariablesTreeNodesByPaths(this.treeNodeService.variablesTreeData, paths);
+    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
+      return this.selectVariablesByProperty(paths, 'path');
+    }
+  }
+
+  selectVariablesByProperty(values: string[], property: string) {
+    this.variables.forEach((c: Concept) => {
+      if (values.indexOf(c[property]) > -1) {
+        c.selected = true;
+      }
+    });
+  }
   /*
    * ------------------------------------------------------------------------- getters and setters
    */

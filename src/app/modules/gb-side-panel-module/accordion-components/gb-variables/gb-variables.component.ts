@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
-import {TreeNodeService} from '../../../../services/tree-node.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {VariablesViewMode} from '../../../../models/variables-view-mode';
 import {SelectItem} from 'primeng/api';
@@ -18,13 +17,13 @@ export class GbVariablesComponent implements OnInit {
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
 
   private isUploadListenerNotAdded: boolean;
-  private file: File; // holds the uploaded cohort file
+  file: File; // holds the uploaded cohort file
 
   private _availableViewModes: SelectItem[];
 
-  constructor(private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
+  constructor(private constraintService: ConstraintService,
               private navbarService: NavbarService) {
+    this.isUploadListenerNotAdded = true;
     this.viewMode = VariablesViewMode.TREE_VIEW;
     this.availableViewModes = this.listAvailableViewModes();
   }
@@ -45,33 +44,21 @@ export class GbVariablesComponent implements OnInit {
     this.file = FileImportHelper.getFile(this.fileElementId);
     // file.type is empty for some browsers and Windows OS
     if (FileImportHelper.isJsonFile(this.file)) {
-      let observationQuery = {};
       let _json = JSON.parse(data);
       if (_json['names']) {
-        let pathArray = [];
-        this.treeNodeService.convertItemsToPaths(this.treeNodeService.treeNodes, _json['names'], pathArray);
-        observationQuery = {
-          data: pathArray
-        };
+        this.constraintService.importVariablesByNames(_json['names']);
       } else if (_json['paths']) {
-        observationQuery = {
-          data: _json['paths']
-        };
+        this.constraintService.importVariablesByPaths(_json['paths']);
       } else {
         MessageHelper.alert('error', 'Invalid file content for variables import.');
         return;
       }
-      return {
-        'name': this.file.name.substr(0, this.file.name.indexOf('.')),
-        'observationsQuery': observationQuery
-      };
     } else {
       MessageHelper.alert('error', 'Invalid file format for variables import.');
       return;
     }
     MessageHelper.alert('info', 'File upload finished successfully!');
   }
-
 
   private listAvailableViewModes(): SelectItem[] {
     return Object.keys(VariablesViewMode).map(c => {
