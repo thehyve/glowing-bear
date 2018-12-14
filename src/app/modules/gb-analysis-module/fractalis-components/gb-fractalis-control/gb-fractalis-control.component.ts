@@ -52,7 +52,11 @@ export class GbFractalisControlComponent implements OnInit {
     this.fractalisService.clearValidation();
     let variable = this.identifyDraggedElement();
     if (variable) {
-      this.selectedVariables.push(variable);
+      this.fractalisService.validateVariableUploadStatus(variable).then(valid => {
+        if (valid) {
+          this.selectedVariables.push(variable);
+        }
+      });
     }
   }
 

@@ -58,6 +58,7 @@ describe('GbFractalisControlComponent', () => {
     fixture.detectChanges();
     fractalisService.variablesInvalid = true;
     fractalisService.variablesValidationMessage = 'Variables are invalid';
+    fractalisService.selectedVariables = [];
   });
 
   it('should create', () => {
@@ -88,12 +89,40 @@ describe('GbFractalisControlComponent', () => {
   it('should drop variable', () => {
     const dummy = new Concept();
     constraintService.draggedVariable = dummy;
+    let spy = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
+      return {
+        then: function (callback) {
+          return callback(true);
+        }
+      };
+    });
+
     component.onDropVariable(new DragEvent(''));
+
+    expect(spy).toHaveBeenCalledWith(dummy);
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
     expect(component.selectedVariables[0]).toBe(dummy);
     expect(component.isValidationError).toBe(false);
     expect(component.validationErrorMessage.length).toBe(0);
+  });
+
+  it('should not drop variable if invalid', () => {
+    const dummy = new Concept();
+    constraintService.draggedVariable = dummy;
+    let spy = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
+      return {
+        then: function (callback) {
+          return callback(false);
+        }
+      };
+    });
+
+    component.onDropVariable(new DragEvent(''));
+
+    expect(spy).toHaveBeenCalledWith(dummy);
+    expect(component.dragCounter).toBe(0);
+    expect(component.selectedVariables.length).toBe(0);
   });
 
   it('should remove variable', () => {
@@ -137,6 +166,13 @@ describe('GbFractalisControlComponent', () => {
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
     let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.stub();
+    let spy3 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
+      return {
+        then: function (callback) {
+          return callback(true);
+        }
+      };
+    });
 
     component.onDropVariable(new DragEvent(''));
 
@@ -153,6 +189,13 @@ describe('GbFractalisControlComponent', () => {
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
     let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
+    let spy3 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
+      return {
+        then: function (callback) {
+          return callback(true);
+        }
+      };
+    });
 
     component.onDropVariable(new DragEvent(''));
 

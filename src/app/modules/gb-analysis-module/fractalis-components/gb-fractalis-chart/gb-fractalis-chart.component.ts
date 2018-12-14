@@ -106,16 +106,16 @@ export class GbFractalisChartComponent implements AfterViewInit {
   }
 
   private getVariablesOfType(fractalisVariables: FractalisData[], selectedVariables: Concept[]) {
-    let selectedVariableNames = selectedVariables.map((variable: Concept) => variable.name);
-    return this.namesToFractalisVariableId(fractalisVariables, selectedVariableNames);
+    let selectedVariableCodes = selectedVariables.map((variable: Concept) => variable.code);
+    return this.namesToFractalisVariableId(fractalisVariables, selectedVariableCodes);
   }
 
   private namesToFractalisVariableId(fractalisVariables: FractalisData[], selectedVars: string[]): string[] {
     let fractalisVariableIds: string[] = [];
     selectedVars.forEach(varLabel => {
       let validSelectedVariableIds = fractalisVariables
-        .filter(x => x.label === varLabel && x.task_id !== null)
-        .map(v => this.toExternalVariableId(v.task_id));
+        .filter(fVar => fVar.label === varLabel && fVar.task_id !== null)
+        .map(fVar => this.toExternalVariableId(fVar.task_id));
       fractalisVariableIds.push(...validSelectedVariableIds);
     });
     return fractalisVariableIds;
