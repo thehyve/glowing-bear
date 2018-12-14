@@ -114,6 +114,12 @@ export class TreeNodeServiceMock {
 
   }
 
+  public selectVariablesTreeNodesByNames(names: string[]) {
+  }
+
+  public selectVariablesTreeNodesByPaths(paths: string[]) {
+  }
+
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
     return new Concept();
   }

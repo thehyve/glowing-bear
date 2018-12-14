@@ -408,7 +408,7 @@ describe('TreeNodeService', () => {
     treeNodeService.convertItemsToPaths([nodeA, null], ['name1'], paths);
     expect(paths.length).toBe(1);
     expect(paths[0]).toBe('\\A\\D\\E\\');
-  })
+  });
 
   it('should verify if a tree node is concept node', () => {
     let node: TreeNode = {};
@@ -556,6 +556,51 @@ describe('TreeNodeService', () => {
     expect(result.type).toEqual('node_1_type');
     expect(result.children).not.toBeDefined();
     expect(result.parent.type).toBe('node_type');
+  });
+
+  it('should select variables tree nodes by paths', () => {
+    let node: TreeNode = {};
+    let node_1: TreeNode = {};
+    let node_1_1: TreeNode = {};
+    let node_1_2: TreeNode = {};
+    let node_2: TreeNode = {};
+    node_1_1.parent = node_1;
+    node_1_2.parent = node_1;
+    node_1_1['fullName'] = '\\foo\\bar\\node_1_1\\';
+    node_1_2['fullName'] = '\\foo\\bar\\node_1_2\\';
+    node_1.children = [node_1_1, node_1_2];
+    node_1.parent = node;
+    node_2.parent = node;
+    node_2['fullName'] = '\\foo\\node_2\\';
+    node.children = [node_1, node_2];
+
+    treeNodeService.selectVariablesTreeNodesByPaths([node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\']);
+
+    expect(treeNodeService.selectedVariablesTreeData.length).toBe(2);
+    expect(treeNodeService.selectedVariablesTreeData).toContain(node_1_2);
+    expect(treeNodeService.selectedVariablesTreeData).toContain(node_2);
+  });
+
+  it('should select variables tree nodes by names', () => {
+    let nodeABC: TreeNode = {};
+    nodeABC['metadata'] = {};
+    nodeABC['metadata']['item_name'] = 'name3';
+    let nodeAB: TreeNode = {};
+    nodeAB.children = [nodeABC];
+    let nodeADE: TreeNode = {};
+    nodeADE['metadata'] = {};
+    nodeADE['metadata']['item_name'] = 'name1';
+    let nodeADEF: TreeNode = {};
+    nodeADE.children = [nodeADEF];
+    let nodeAD: TreeNode = {};
+    nodeAD.children = [nodeADE];
+    let nodeA: TreeNode = {};
+    nodeA.children = [nodeAB, nodeAD];
+
+    treeNodeService.selectVariablesTreeNodesByNames([nodeA], ['name1']);
+
+    expect(treeNodeService.selectedVariablesTreeData.length).toBe(1);
+    expect(treeNodeService.selectedVariablesTreeData).toContain(nodeADE);
   });
 
 });
