@@ -55,18 +55,6 @@ describe('CohortService', () => {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
-        {
-          provide: DataTableService,
-          useClass: DataTableServiceMock
-        },
-        {
-          provide: CrossTableService,
-          useClass: CrossTableServiceMock
-        },
-        {
-          provide: ExportService,
-          useClass: ExportServiceMock
-        },
         CohortService
       ]
     });

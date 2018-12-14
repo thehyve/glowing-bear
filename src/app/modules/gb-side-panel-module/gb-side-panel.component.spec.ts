@@ -13,7 +13,7 @@ import {CommonModule} from '@angular/common';
 import {
   AccordionModule, AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, DataListModule,
   DragDropModule, InputTextModule, OverlayPanelModule, PanelModule,
-  TooltipModule, TreeModule, RadioButtonModule, CheckboxModule
+  TooltipModule, TreeModule, RadioButtonModule, CheckboxModule, SelectButtonModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {ConstraintService} from '../../services/constraint.service';
@@ -63,7 +63,8 @@ describe('GbSidePanelComponent', () => {
         Md2AccordionModule,
         RadioButtonModule,
         CheckboxModule,
-        MatExpansionModule
+        MatExpansionModule,
+        SelectButtonModule
       ],
       providers: [
         {

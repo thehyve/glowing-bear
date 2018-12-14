@@ -1,0 +1,22 @@
+<div>
+  <div *ngIf="isExport">
+    <div class="checkAllText">
+      <p-checkbox [ngModel]="allChecked" binary="true"
+                  (onChange)="checkAll($event)"></p-checkbox>
+      {{checkAllText}}
+    </div>
+  </div>
+
+  <p-tree [value]="variablesTreeData"
+          [selectionMode]="treeNodeSelectionMode"
+          [(selection)]="selectedVariablesTreeData"
+          draggableNodes="true"
+          styleClass="gb-variables-tree-container">
+  </p-tree>
+
+  <!-- the loading indicator -->
+  <div *ngIf="!isTreeNodeLoadingCompleted" style="margin: auto;">
+    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+  </div>
+
+</div>

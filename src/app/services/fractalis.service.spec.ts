@@ -18,16 +18,16 @@ describe('FractalisService', () => {
     TestBed.configureTestingModule({
       providers: [
         {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
+        {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
         },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
-        },
-        {
-          provide: AppConfig,
-          useClass: AppConfigMock
         },
         FractalisService
       ]

@@ -1,4 +1,3 @@
-import {MessageHelper} from './message-helper';
 
 export class FileImportHelper {
 

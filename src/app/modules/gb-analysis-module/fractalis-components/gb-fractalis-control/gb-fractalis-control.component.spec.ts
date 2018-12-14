@@ -10,12 +10,16 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {MatChipsModule, MatIconModule} from '@angular/material';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ChartType} from '../../../../models/chart-models/chart-type';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNode} from 'primeng/api';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
   let fixture: ComponentFixture<GbFractalisControlComponent>;
   let fractalisService: FractalisService;
   let constraintService: ConstraintService;
+  let treeNodeService: TreeNodeService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -35,7 +39,11 @@ describe('GbFractalisControlComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
-        }
+        },
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
+        },
       ]
     })
       .compileComponents();
@@ -44,6 +52,7 @@ describe('GbFractalisControlComponent', () => {
   beforeEach(() => {
     fractalisService = TestBed.get(FractalisService);
     constraintService = TestBed.get(ConstraintService);
+    treeNodeService = TestBed.get(TreeNodeService);
     fixture = TestBed.createComponent(GbFractalisControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -79,7 +88,7 @@ describe('GbFractalisControlComponent', () => {
   it('should drop variable', () => {
     const dummy = new Concept();
     constraintService.draggedVariable = dummy;
-    component.onDropVariable();
+    component.onDropVariable(new DragEvent(''));
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
     expect(component.selectedVariables[0]).toBe(dummy);
@@ -120,5 +129,36 @@ describe('GbFractalisControlComponent', () => {
     expect(component.selectedVariables.length).toBe(0);
     expect(component.isValidationError).toBe(false);
     expect(component.validationErrorMessage.length).toBe(0);
-  })
+  });
+
+  it('should identify categorized variable dragged', () => {
+    const dummy = new Concept();
+    constraintService.draggedVariable = dummy;
+    component.selectedChartType = ChartType.BOXPLOT;
+    let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
+    let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.stub();
+
+    component.onDropVariable(new DragEvent(''));
+
+    expect(component.dragCounter).toBe(0);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).not.toHaveBeenCalled();
+    expect(component.selectedVariables.length).toBe(1);
+    expect(component.selectedVariables[0]).toBe(dummy);
+  });
+
+  it('should identify tree node dragged', () => {
+    constraintService.draggedVariable = null;
+    treeNodeService.selectedTreeNode = {} as TreeNode;
+    component.selectedChartType = ChartType.BOXPLOT;
+    let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
+    let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
+
+    component.onDropVariable(new DragEvent(''));
+
+    expect(component.dragCounter).toBe(0);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect(component.selectedVariables.length).toBe(1);
+  });
 });
