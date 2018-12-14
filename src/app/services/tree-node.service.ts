@@ -483,7 +483,7 @@ export class TreeNodeService {
     nodes.forEach((node: TreeNode) => {
       if (node) {
         const itemPath = node['fullName'];
-        if (values.indexOf(itemPath) > -1 && this.selectedVariablesTreeData.indexOf(node) < 0) {
+        if (values.includes(itemPath) && !this.selectedVariablesTreeData.includes(node)) {
           this.selectedVariablesTreeData.push(node);
         }
         if (node['children']) {
@@ -497,7 +497,7 @@ export class TreeNodeService {
     nodes.forEach((node: TreeNode) => {
       if (node) {
         const itemName = (node['metadata'] || {})['item_name'];
-        if (values.indexOf(itemName) > -1 && this.selectedVariablesTreeData.indexOf(node) < 0) {
+        if (values.includes(itemName) && !this.selectedVariablesTreeData.includes(node)) {
           this.selectedVariablesTreeData.push(node);
         }
         if (node['children']) {

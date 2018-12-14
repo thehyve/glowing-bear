@@ -54,12 +54,12 @@ export class Chart {
 
   get categoricalVariables(): Concept[] {
     return this.variables.filter(variable =>
-      [ConceptType.CATEGORICAL, ConceptType.DATE].indexOf(variable.type) > -1);
+      [ConceptType.CATEGORICAL, ConceptType.DATE].includes(variable.type));
   }
 
   get numericalVariables(): Concept[] {
     return this.variables.filter(variable =>
-      [ConceptType.NUMERICAL, ConceptType.HIGH_DIMENSIONAL].indexOf(variable.type) > -1);
+      [ConceptType.NUMERICAL, ConceptType.HIGH_DIMENSIONAL].includes(variable.type));
   }
 
   get isValid(): boolean {

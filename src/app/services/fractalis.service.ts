@@ -76,7 +76,7 @@ export class FractalisService {
           return;
         }
         const descriptor = {
-          constraint: JSON.stringify(fractalisConstraint),
+          constraint: fractalisConstraint,
           data_type: type,
           label: variable.name
         };

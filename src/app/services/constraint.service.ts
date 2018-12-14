@@ -590,7 +590,7 @@ export class ConstraintService {
 
   selectVariablesByProperty(values: string[], property: string) {
     this.variables.forEach((c: Concept) => {
-      if (values.indexOf(c[property]) > -1) {
+      if (values.includes(c[property])) {
         c.selected = true;
       }
     });
