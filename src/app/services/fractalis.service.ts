@@ -44,7 +44,7 @@ export class FractalisService {
     let token = this.authService.token;
     const config = {
       handler: 'transmart',
-      dataSource: this.appConfig.getConfig('api-url'),
+      dataSource: this.appConfig.getConfig('fractalis-datasource-url'),
       fractalisNode: this.appConfig.getConfig('fractalis-url'),
       getAuth() {
         return {token: token}

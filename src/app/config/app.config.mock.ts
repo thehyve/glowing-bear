@@ -17,6 +17,7 @@ export class AppConfigMock {
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
       'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-url': 'https://transmart.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',

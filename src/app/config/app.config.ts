@@ -67,6 +67,10 @@ export class AppConfig {
         case 'fractalis-url': {
           throw Error('Fractalis URL is unspecified in the configuration.')
         }
+        case 'fractalis-datasource-url': {
+          // Use the API URL by default.
+          return this.getConfig('api-url');
+        }
         case 'doc-url': {
           value = AppConfig.DEFAULT_DOC_URL; break;
         }
