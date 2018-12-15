@@ -7,6 +7,7 @@
  */
 
 export class FractalisChartVariable {
+  label?: string;
   minLength?: number;
   maxLength?: number;
   value: string[];

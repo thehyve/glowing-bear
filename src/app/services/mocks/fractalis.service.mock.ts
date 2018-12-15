@@ -9,13 +9,18 @@
 import {ChartType} from '../../models/chart-models/chart-type';
 import {Chart} from '../../models/chart-models/chart';
 import {Concept} from '../../models/constraint-models/concept';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {FractalisChart} from '../../models/fractalis-models/fractalis-chart';
 
 export class FractalisServiceMock {
-  charts: Chart[] = [];
-  selectedChartType: ChartType = null;
-  variablesValidationMessage: string;
-  variablesInvalid: boolean;
-  availableChartTypes: ChartType[] = [
+
+  private _charts: Chart[] = [];
+  private _selectedVariables: Concept[] = [];
+  private _isPreparingCache = true;
+  private _variablesInvalid = false;
+  private _variablesValidationMessages: string[];
+  private _selectedChartType: ChartType = null;
+  private _availableChartTypes: ChartType[] = [
     ChartType.CROSSTABLE,
     ChartType.HEATMAP,
     ChartType.BOXPLOT,
@@ -25,13 +30,20 @@ export class FractalisServiceMock {
     ChartType.SURVIVALPLOT,
     ChartType.VOLCANOPLOT
   ];
-  private _selectedVariables: Concept[] = [];
-  F: any; // The fractalis object
 
   constructor() {
-    this.F = {
-      setChart: () => {}
-    }
+  }
+
+  initChart(chartType: ChartType, chartId: string): Observable<FractalisChart> {
+    const chartSubject = new BehaviorSubject<FractalisChart>({
+      type: chartType,
+      chartObject: {},
+      description: null
+    });
+    return chartSubject.asObservable();
+  }
+
+  setChartParameters(chartObject: any, parameters: object) {
   }
 
   public addChart() {
@@ -52,18 +64,23 @@ export class FractalisServiceMock {
     this.addChart();
   }
 
-  public clearValidation() {
-    this.variablesValidationMessage = '';
-    this.variablesInvalid = false;
+  public invalidateVariables(errorMessages: string[]) {
+    this.variablesValidationMessages = errorMessages;
+    this.variablesInvalid = true;
   }
 
-  public invalidateVariables() {
-
+  public clearValidation() {
+    this.variablesValidationMessages = [];
+    this.variablesInvalid = false;
   }
 
   public getLoadedVariables(): Promise<object> {
     return new Promise(function(resolve, reject) {
-      resolve({});
+      resolve({
+        data: {
+          data_states: []
+        }
+      });
     });
   }
 
@@ -77,12 +94,61 @@ export class FractalisServiceMock {
     return this.charts[this.charts.length - 1];
   }
 
+
+  get charts(): Chart[] {
+    return this._charts;
+  }
+
+  set charts(value: Chart[]) {
+    this._charts = value;
+  }
+
   get selectedVariables(): Concept[] {
     return this._selectedVariables;
   }
 
   set selectedVariables(value: Concept[]) {
     this._selectedVariables = value;
+  }
+
+  get isPreparingCache(): boolean {
+    return this._isPreparingCache;
+  }
+
+  set isPreparingCache(value: boolean) {
+    this._isPreparingCache = value;
+  }
+
+  get variablesInvalid(): boolean {
+    return this._variablesInvalid;
+  }
+
+  set variablesInvalid(value: boolean) {
+    this._variablesInvalid = value;
+  }
+
+  get variablesValidationMessages(): string[] {
+    return this._variablesValidationMessages;
+  }
+
+  set variablesValidationMessages(value: string[]) {
+    this._variablesValidationMessages = value;
+  }
+
+  get selectedChartType(): ChartType {
+    return this._selectedChartType;
+  }
+
+  set selectedChartType(value: ChartType) {
+    this._selectedChartType = value;
+  }
+
+  get availableChartTypes(): ChartType[] {
+    return this._availableChartTypes;
+  }
+
+  set availableChartTypes(value: ChartType[]) {
+    this._availableChartTypes = value;
   }
 
 }

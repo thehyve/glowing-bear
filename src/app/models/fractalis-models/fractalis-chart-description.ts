@@ -11,4 +11,7 @@ import {FractalisChartVariable} from './fractalis-chart-variable';
 export class FractalisChartDescription {
   catVars?: FractalisChartVariable;
   numVars?: FractalisChartVariable;
+  durationVars?: FractalisChartVariable;
+  observedVars?: FractalisChartVariable;
+  groupVars?: FractalisChartVariable;
 }
