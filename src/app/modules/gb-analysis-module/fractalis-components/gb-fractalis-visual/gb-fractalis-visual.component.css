@@ -1,6 +1,7 @@
 .fractalis-visual-container {
   margin-top: 0.5em;
   margin-bottom: 2em;
+  height: auto;
 }
 
 .fractatis-chart-hidden {

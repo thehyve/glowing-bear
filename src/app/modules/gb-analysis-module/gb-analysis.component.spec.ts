@@ -15,7 +15,6 @@ import {CommonModule} from '@angular/common';
 import {routing} from './gb-analysis.routing';
 import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
 import {TableModule} from 'primeng/table';
-import {GridsterModule} from 'angular-gridster2';
 import {MatButtonModule, MatExpansionModule, MatIconModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
@@ -39,7 +38,6 @@ describe('GbAnalysisComponent', () => {
         TableModule,
         OverlayPanelModule,
         SelectButtonModule,
-        GridsterModule,
         MatIconModule,
         MatButtonModule,
         MatExpansionModule

@@ -2,7 +2,6 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbFractalisVisualComponent} from './gb-fractalis-visual.component';
 import {MockComponent} from 'ng2-mock-component';
-import {GridsterModule} from 'angular-gridster2';
 import {MatIconModule} from '@angular/material';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
@@ -26,7 +25,6 @@ describe('GbFractalisVisualComponent', () => {
         }
       ],
       imports: [
-        GridsterModule,
         MatIconModule,
       ]
     })
