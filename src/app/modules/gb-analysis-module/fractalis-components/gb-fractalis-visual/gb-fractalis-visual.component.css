@@ -8,11 +8,19 @@
   display: none;
 }
 
-.clear-btn-container {
+.settings-container {
   margin-bottom: 0.5em;
+  font-size: small;
+  color: grey;
 }
-.clear-btn-container button {
+.settings-container button {
   min-width: 6em;
+}
+
+:host >>> .settings-slider {
+  width: 16em;
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 .close-btn-row {

@@ -130,4 +130,8 @@ export class GbFractalisChartComponent implements AfterViewInit {
     return ChartType;
   }
 
+  get chartSize(): string {
+    return this.fractalisService.chartDivSize + 'em';
+  }
+
 }

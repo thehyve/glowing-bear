@@ -1,7 +1,9 @@
 <div class="fractalis-visual-container">
 
-  <div class="clear-btn-container">
+  <div class="settings-container form-inline">
     <button type="button" class="btn btn-primary btn-sm" (click)="onClearCharts()">Clear</button>
+    <p-slider [(ngModel)]="chartSize" styleClass="settings-slider" [animate]="true"></p-slider>
+    <h6>Size: {{chartSize}}</h6>
   </div>
 
   <div class="charts">

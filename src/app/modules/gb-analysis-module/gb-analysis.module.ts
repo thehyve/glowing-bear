@@ -21,6 +21,7 @@ import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-c
 import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
 import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
 import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
+import {SliderModule} from 'primeng/slider';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, Ma
     MatButtonModule,
     MatExpansionModule,
     MatTooltipModule,
-    MatChipsModule
+    MatChipsModule,
+    SliderModule
   ],
   exports: [
     RouterModule
