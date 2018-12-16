@@ -10,7 +10,10 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GbExportComponent} from './gb-export.component';
 import {FormsModule} from '@angular/forms';
-import {CheckboxModule, DataTableModule, MessagesModule, PickListModule, TooltipModule} from 'primeng/primeng';
+import {
+  CheckboxModule, DataTableModule, MessagesModule, OverlayPanelModule, PickListModule,
+  TooltipModule
+} from 'primeng/primeng';
 import {routing} from './gb-export.routing';
 import {GbDataTableComponent} from './data-table-components/gb-data-table/gb-data-table.component';
 import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
@@ -29,7 +32,8 @@ import {MatExpansionModule} from '@angular/material';
     PickListModule,
     TableModule,
     TooltipModule,
-    MatExpansionModule
+    MatExpansionModule,
+    OverlayPanelModule
   ],
   declarations: [
     GbExportComponent,
