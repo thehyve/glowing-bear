@@ -25,7 +25,7 @@ export class FractalisServiceMock {
     ChartType.SURVIVALPLOT,
     ChartType.VOLCANOPLOT
   ];
-  selectedVariables: Concept[] = [];
+  private _selectedVariables: Concept[] = [];
   F: any; // The fractalis object
 
   constructor() {
@@ -67,8 +67,22 @@ export class FractalisServiceMock {
     });
   }
 
+  public validateVariableUploadStatus(): Promise<boolean> {
+    return new Promise(function(resolve, reject) {
+      resolve(true);
+    });
+  }
+
   get previousChart(): Chart {
     return this.charts[this.charts.length - 1];
+  }
+
+  get selectedVariables(): Concept[] {
+    return this._selectedVariables;
+  }
+
+  set selectedVariables(value: Concept[]) {
+    this._selectedVariables = value;
   }
 
 }

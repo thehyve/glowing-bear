@@ -9,6 +9,8 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
+import {FractalisData} from '../models/fractalis-models/fractalis-data';
+import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +25,11 @@ export class FractalisService {
   private _isPreparingCache = true;
   private _variablesInvalid = false;
   private _variablesValidationMessage: string;
+  private _conceptCodeToFractalisTaskId: Map<string, string>;
+
+  static dataObjectToFractalisDataList(data: any):  FractalisData[] {
+    return data['data']['data_states'];
+  }
 
   constructor(private appConfig: AppConfig,
               private authService: AuthenticationService,
@@ -78,7 +85,7 @@ export class FractalisService {
         const descriptor = {
           constraint: fractalisConstraint,
           data_type: type,
-          label: variable.name
+          label: variable.code
         };
 
         this.F.loadData([descriptor])
@@ -123,8 +130,6 @@ export class FractalisService {
       }
     }
   }
-
-
 
   setChart(chartId: string): object {
     return this.F.setChart(this.selectedChartType, chartId);
@@ -172,6 +177,45 @@ export class FractalisService {
   public clearValidation() {
     this.variablesValidationMessage = '';
     this.variablesInvalid = false;
+  }
+
+  public validateVariableUploadStatus(variable: Concept): Promise<boolean> {
+    return new Promise<boolean>((resolve, reject) => {
+      this.getLoadedVariables().then(dataObj => {
+        let message = '';
+        if (dataObj) {
+          let fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
+          let fractalisVars = fractalisDataList.filter(data => data.label === variable.code);
+          if (fractalisVars) {
+            switch (fractalisVars[0].etl_state) {
+              case FractalisEtlState.SUCCESS: {
+                resolve(true);
+                return;
+              }
+              case FractalisEtlState.SUBMITTED: {
+                message = 'Uploading into Fractalis in progress. Please try again later.';
+                break;
+              }
+              case FractalisEtlState.FAILURE: {
+                message =  'Variable was not loaded correctly into Fractalis.';
+                break;
+              }
+              default:
+                message = 'Invalid variable upload status: ' + fractalisVars[0].etl_state;
+                break;
+            }
+          } else {
+            message = 'Variable was not loaded into Fractalis.';
+          }
+        } else {
+          message = 'No data loaded into Fractalis.';
+        }
+        MessageHelper.alert('error', 'The variable cannot be selected. ' + message);
+        resolve(false);
+      }).catch(err => {
+        reject(err);
+      })
+    });
   }
 
   get previousChart(): Chart {
@@ -239,6 +283,14 @@ export class FractalisService {
 
   set variablesInvalid(value: boolean) {
     this._variablesInvalid = value;
+  }
+
+  get conceptCodeToFractalisTaskId(): Map<string, string> {
+    return this._conceptCodeToFractalisTaskId;
+  }
+
+  set conceptCodeToFractalisTaskId(value: Map<string, string>) {
+    this._conceptCodeToFractalisTaskId = value;
   }
 
 }
