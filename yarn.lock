@@ -1453,13 +1453,6 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-angular-gridster2@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/angular-gridster2/-/angular-gridster2-7.0.0.tgz#13b73125c62633062510ba156bbbc45383124990"
-  integrity sha512-glv0VsB//NAngdw+BQjPnuz4CVjHBTivlh1xqA9eu6cZlMxcC/uX4aexkzNJpPmehgu48HAsOb8jFiyk2ZrvaQ==
-  dependencies:
-    tslib "^1.9.0"
-
 angular-split@^1.0.0-rc.3:
   version "1.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/angular-split/-/angular-split-1.0.0-rc.3.tgz#eb63fd60d8fd94587d75c19524d90d8712f136e0"
@@ -4638,10 +4631,10 @@ forwarded@~0.1.2:
   resolved "https://registry.yarnpkg.com/forwarded/-/forwarded-0.1.2.tgz#98c23dab1175657b8c0573e8ceccd91b0ff18c84"
   integrity sha1-mMI9qxF1ZXuMBXPozszZGw/xjIQ=
 
-fractalis@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/fractalis/-/fractalis-1.3.0.tgz#ceae474ded69b54ba64b96d1c55977810bae74ed"
-  integrity sha512-wvOTHbvHq1J7JxnOgPi2bQfSJadFCuVEBCnmDDEdiJvRCRfhjYTSx9tPrHzmRph7esnkgApe29e67xBji569Xg==
+fractalis@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/fractalis/-/fractalis-1.4.0.tgz#8780b6906a7ce0fabf38bd56f220b6db95d70241"
+  integrity sha512-ZJxp3+NYT6G0ux4dKdvmn0+kZUxymH/t/YkkAhwuFWu11rE+MuNYLAacpMyj4HIfTYUgFLujhV3qGmyIM+4jNA==
   dependencies:
     "@babel/runtime" "7.0.0-beta.46"
     axios "0.16.1"
@@ -4650,7 +4643,7 @@ fractalis@^1.3.0:
     html2canvas "1.0.0-alpha.12"
     lodash "4.17.5"
     resize-observer-polyfill "1.5.0"
-    tippy.js "2.2.2"
+    tippy.js "3.0.6"
     uuid "3.2.1"
     vue "2.5.13"
     vue-async-computed "3.3.1"
@@ -7627,10 +7620,10 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-popper.js@^1.12.9:
-  version "1.14.4"
-  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.4.tgz#8eec1d8ff02a5a3a152dd43414a15c7b79fd69b6"
-  integrity sha1-juwdj/AqWjoVLdQ0FKFce3n9abY=
+popper.js@^1.14.4:
+  version "1.14.6"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.6.tgz#ab20dd4edf9288b8b3b6531c47c361107b60b4b0"
+  integrity sha512-AGwHGQBKumlk/MDfrSOf0JHhJCImdDMcGNoqKmKkU+68GFazv3CQ6q9r7Ja1sKDZmYWTckY/uLyEznheTDycnA==
 
 portfinder@1.0.17, portfinder@^1.0.9:
   version "1.0.17"
@@ -9487,12 +9480,12 @@ timers-browserify@^2.0.4:
   dependencies:
     setimmediate "^1.0.4"
 
-tippy.js@2.2.2:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-2.2.2.tgz#a35ec19e45cf32ee020e6f477dec59d3ea3d4a33"
-  integrity sha512-3m3AgK8Hfgz2Yk/qcF090YSj3XsTSeOulE1botaN/ZLLE8YkSbdHqvCJiTMlA8EURyFi3JrReCD54E7ei3HwZQ==
+tippy.js@3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-3.0.6.tgz#ad29361e96129de582bf4088f00ea8413632ceb4"
+  integrity sha512-/paH+Kf3Caj0J+AlB1Kdg2KFAZ8yJeXZ8hPiwDBfxOLZg3YxDUa2OpMi3ODK8TXSMoPqcGUExCVcc46AmGCxjQ==
   dependencies:
-    popper.js "^1.12.9"
+    popper.js "^1.14.4"
 
 title-case@^2.1.1:
   version "2.1.1"
