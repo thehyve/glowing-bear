@@ -68,10 +68,23 @@ The build artifacts will be stored in the `dist/` directory.
 Run `yarn test` to execute the unit tests via [Karma], 
 the generated coverage documents can be found in the `coverage/` folder.
 
+#### e2e
 For e2e test we use [Cypress] in combination with the [cypress-cucumber-preprocessor].
 [Cypress] is install as part of the your `npm install` command. 
 To run the tests using the headless browser `npm run e2e` or `npm run cypress` to launch the GUI.
-by default the tests expect a glowing bear instance to be running at http://localhost:4200/. This can be changed in cypress.json
+
+On which envirounment to run the tests can be changed in cypress.json
+Here are settings you would need to modify for that:
+
+| Option | Description |
+|:-------|:------------|
+| `baseUrl` | URL of the glowingbear to run tests against |
+| `fixturesFolder` | Folder with envirounment specific configurations (e.g. test users credentials), so-called fixtures. e.g. `dev`, `test`. |
+| `env.apiUrl` | A transmart backend. It has to be the same that the glowingbear (specified in `baseUrl`) is communicating with. It is used by tests as shortcuts for data preparation and cleaning (e.g. remove export jobs). |
+| `env.authentication-service-type` | When set to `oidc` expects keycloak interface to provide user credentials. Otherwise, the old transmart login page. Please note that for the [transmart-api-server] `oidc` is the only valid option. |
+| `env.oidc-server-url` | URL of the identity provider that is used by the glowingbear and transmart. |
+| `env.oidc-client-id` | The OpenID Connect Client name. |
+
 WARNING: tests alter state. All saved queries are deleted.
 
 
@@ -165,3 +178,4 @@ If not, see https://opensource.org/licenses/MPL-2.0.
 [Apache]: https://httpd.apache.org
 [Cypress]: https://www.cypress.io/
 [cypress-cucumber-preprocessor]: https://github.com/TheBrainFamily/cypress-cucumber-preprocessor
+[transmart-api-server]: https://github.com/thehyve/transmart-core/tree/dev/transmart-api-server
