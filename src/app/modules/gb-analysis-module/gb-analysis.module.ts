@@ -20,8 +20,8 @@ import {TableModule} from 'primeng/table';
 import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-control/gb-fractalis-control.component';
 import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
 import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
-import {GridsterModule} from 'angular-gridster2';
 import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
+import {SliderModule} from 'primeng/slider';
 
 
 @NgModule({
@@ -33,12 +33,12 @@ import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, Ma
     TableModule,
     OverlayPanelModule,
     SelectButtonModule,
-    GridsterModule,
     MatIconModule,
     MatButtonModule,
     MatExpansionModule,
     MatTooltipModule,
-    MatChipsModule
+    MatChipsModule,
+    SliderModule
   ],
   exports: [
     RouterModule

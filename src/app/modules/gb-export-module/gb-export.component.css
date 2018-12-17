@@ -40,10 +40,15 @@
 }
 
 .section-banner {
-  color: darkgray;
+  color: gray;
   padding: 0px;
   margin-bottom: 10px;
   text-align: left;
+  font-size: large;
+  font-weight: 500;
+}
+.section-banner i {
+  text-align: center;
 }
 
 .export-container .loading-text {
@@ -55,4 +60,10 @@
 
 .gb-include-date-columns-checkbox {
   padding-left: 10px;
+}
+
+.gb-data-table-information-text {
+  color: white;
+  font-size: medium;
+  text-align: left;
 }

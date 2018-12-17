@@ -1,5 +1,4 @@
 import {ChartType} from './chart-type';
-import {GridsterItem} from 'angular-gridster2';
 import {FormatHelper} from '../../utilities/format-helper';
 import {Concept} from '../constraint-models/concept';
 import {ConceptType} from '../constraint-models/concept-type';
@@ -7,7 +6,6 @@ import {ConceptType} from '../constraint-models/concept-type';
 export class Chart {
 
   public readonly id: string;
-  private _gridsterItem: GridsterItem;
   private _type: ChartType;
   private _variables: Concept[] = [];
   private _isValid: boolean;
@@ -16,16 +14,6 @@ export class Chart {
     this.id = FormatHelper.generateId();
     this.type = type;
     this.isValid = true;
-    const cols = type === ChartType.CROSSTABLE ? 3 : 1;
-    const rows = 1;
-    const dragEnabled = type !== ChartType.CROSSTABLE;
-    this.gridsterItem = {
-      x: 0,
-      y: 0,
-      cols: cols,
-      rows: rows,
-      dragEnabled: dragEnabled
-    }
   }
 
   get type(): ChartType {
@@ -34,14 +22,6 @@ export class Chart {
 
   set type(value: ChartType) {
     this._type = value;
-  }
-
-  get gridsterItem(): GridsterItem {
-    return this._gridsterItem;
-  }
-
-  set gridsterItem(value: GridsterItem) {
-    this._gridsterItem = value;
   }
 
   get variables(): Concept[] {

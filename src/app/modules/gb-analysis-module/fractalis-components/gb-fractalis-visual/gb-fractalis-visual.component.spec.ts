@@ -2,11 +2,12 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbFractalisVisualComponent} from './gb-fractalis-visual.component';
 import {MockComponent} from 'ng2-mock-component';
-import {GridsterModule} from 'angular-gridster2';
 import {MatIconModule} from '@angular/material';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
 import {ChartType} from '../../../../models/chart-models/chart-type';
+import {SliderModule} from 'primeng/slider';
+import {FormsModule} from '@angular/forms';
 
 describe('GbFractalisVisualComponent', () => {
   let component: GbFractalisVisualComponent;
@@ -26,8 +27,9 @@ describe('GbFractalisVisualComponent', () => {
         }
       ],
       imports: [
-        GridsterModule,
+        FormsModule,
         MatIconModule,
+        SliderModule
       ]
     })
       .compileComponents();

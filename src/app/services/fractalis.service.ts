@@ -27,6 +27,8 @@ export class FractalisService {
   private _variablesValidationMessage: string;
   private _conceptCodeToFractalisTaskId: Map<string, string>;
 
+  private _chartDivSize: number;
+
   static dataObjectToFractalisDataList(data: any):  FractalisData[] {
     return data['data']['data_states'];
   }
@@ -35,6 +37,7 @@ export class FractalisService {
               private authService: AuthenticationService,
               private constraintService: ConstraintService) {
     if (fjs.fractalis) {
+      this.chartDivSize = 35;
       this.setupFractalis();
       this.retrieveAvailableChartTypes();
       this.constraintService.variablesUpdated.asObservable()
@@ -291,6 +294,14 @@ export class FractalisService {
 
   set conceptCodeToFractalisTaskId(value: Map<string, string>) {
     this._conceptCodeToFractalisTaskId = value;
+  }
+
+  get chartDivSize(): number {
+    return this._chartDivSize;
+  }
+
+  set chartDivSize(value: number) {
+    this._chartDivSize = value;
   }
 
 }

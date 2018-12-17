@@ -11,6 +11,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbExportComponent} from './gb-export.component';
 import {
   AutoCompleteModule, CheckboxModule, DataListModule, DataTableModule, DropdownModule, FieldsetModule, MessagesModule,
+  OverlayPanelModule,
   PanelModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -47,7 +48,8 @@ describe('GbExportComponent', () => {
         PanelModule,
         DropdownModule,
         MessagesModule,
-        MatExpansionModule
+        MatExpansionModule,
+        OverlayPanelModule
       ],
       providers: [
         {

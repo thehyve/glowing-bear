@@ -5,7 +5,8 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <div class="section-banner">
-            <h5>Data Table</h5>
+            Data Table
+            <i class="fa fa-info" (mouseenter)="op_data_table.show($event)" (mouseleave)="op_data_table.hide($event)"></i>
           </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -18,7 +19,7 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <div class="section-banner">
-            <h5>New export</h5>
+            New export
           </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -78,7 +79,7 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <div class="section-banner">
-            <h5>Recent Exports</h5>
+            Recent Exports
           </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
@@ -141,5 +142,18 @@
       </p-dataTable>
     </mat-expansion-panel>
   </mat-accordion>
+
+  <p-overlayPanel #op_data_table
+                  [dismissable]="true"
+                  [showCloseIcon]="false"
+                  [style]="{'background':'#339C90', 'width': '50%'}">
+    <div class="gb-data-table-information-text">
+      To preview the data you selected, click the "Update table" button on the right. A table appears with a
+      preview of your data. You can alter the table by switching key variables from the row or column position with the
+      tool above the table. Click the "Update table" button to update your data representation. The first 10 rows
+      of your data selection are displayed in the table. Use the previous and next buttons beneath the table to scroll
+      through the rest of the data.
+    </div>
+  </p-overlayPanel>
 
 </div>

@@ -1,7 +1,9 @@
 <div class="fractalis-visual-container">
 
-  <div class="clear-btn-container">
+  <div class="settings-container form-inline">
     <button type="button" class="btn btn-primary btn-sm" (click)="onClearCharts()">Clear</button>
+    <p-slider [(ngModel)]="chartSize" styleClass="settings-slider" [animate]="true"></p-slider>
+    <h6>Size: {{chartSize}}</h6>
   </div>
 
   <div class="charts">
@@ -15,16 +17,4 @@
     </div>
   </div>
 
-  <!--<gridster [options]="options">-->
-    <!--<gridster-item [item]="chart.gridsterItem" *ngFor="let chart of charts">-->
-      <!--<div>-->
-        <!--<span class="close-btn-row float-right">-->
-          <!--<button mat-icon-button color="primary" (click)="onRemoveChart($event, chart)">-->
-            <!--<mat-icon aria-label="Close the chart">close</mat-icon>-->
-          <!--</button>-->
-        <!--</span>-->
-        <!--<gb-fractalis-chart [chart]="chart"></gb-fractalis-chart>-->
-      <!--</div>-->
-    <!--</gridster-item>-->
-  <!--</gridster>-->
 </div>
