@@ -52,12 +52,19 @@ export class FractalisService {
 
   private setupFractalis() {
     let token = this.authService.token;
+    let oidcClientId = this.appConfig.getConfig('oidc-client-id');
+    let oidcServerUrl = this.appConfig.getConfig('oidc-server-url');
     const config = {
       handler: 'transmart',
       dataSource: this.appConfig.getConfig('fractalis-datasource-url'),
       fractalisNode: this.appConfig.getConfig('fractalis-url'),
       getAuth() {
-        return {token: token}
+        return {
+          token: token,
+          authServiceType: 'oidc',
+          oidcClientId: oidcClientId,
+          oidcServerUrl: oidcServerUrl,
+        }
       },
       options: {
         controlPanelPosition: 'right',
