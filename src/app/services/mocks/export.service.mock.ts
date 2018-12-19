@@ -23,10 +23,22 @@ export class ExportServiceMock {
     this.exportEnabled.complete();
   }
 
+  public updateExports() {
+
+  }
+
   updateExportJobs(): Promise<any> {
     return new Promise<any>((resolve) => {
       resolve(true);
     })
+  }
+
+  /**
+   * Checks if data is available for export.
+   * @returns {boolean}
+   */
+  get isDataAvailable(): boolean {
+    return true;
   }
 
   get exportDataTypes(): ExportDataType[] {

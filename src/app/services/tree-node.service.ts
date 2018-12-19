@@ -322,21 +322,33 @@ export class TreeNodeService {
    * based on a given set of concept codes as filtering criteria.
    * @param {Map<string, Map<string, CountItem>>} selectedStudyConceptCountMap
    * @param {Map<string, CountItem>} selectedConceptCountMap
+   * @param {Map<string, CountItem>} selectedStudyCountMap
    */
   public updateVariablesTreeData(selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                 selectedConceptCountMap: Map<string, CountItem>) {
+                                 selectedConceptCountMap: Map<string, CountItem>,
+                                 selectedStudyCountMap: Map<string, CountItem>) {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
     if (this.treeNodesCopy.length === 0) {
       this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
     }
     this.variablesTreeData =
-      this.updateVariablesTreeDataIterative(this.treeNodesCopy, selectedStudyConceptCountMap, selectedConceptCountMap);
+      this.updateVariablesTreeDataIterative(this.treeNodesCopy,
+        selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
     this.selectedVariablesTreeData = [];
+  }
+
+  formatNodeWithCounts(node: TreeNode, countItem: CountItem): void {
+    let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
+    if (this.showObservationCounts) {
+      countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
+    }
+    node['label'] = `${node['name']} (${countsText})`;
   }
 
   private updateVariablesTreeDataIterative(nodes: TreeNode[],
                                            selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                           selectedConceptCountMap: Map<string, CountItem>) {
+                                           selectedConceptCountMap: Map<string, CountItem>,
+                                           selectedStudyCountMap: Map<string, CountItem>) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
@@ -348,22 +360,28 @@ export class TreeNodeService {
         } else {
           countItem = selectedConceptCountMap ? selectedConceptCountMap.get(node['conceptCode']) : null;
         }
-        if (countItem) {
-          let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
-          if (this.showObservationCounts) {
-            countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
-          }
-          node['label'] = `${node['name']} (${countsText})`;
+        if (countItem && countItem.subjectCount > 0) {
+          this.formatNodeWithCounts(node, countItem);
           nodesWithCodes.push(node);
         }
       } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
-          this.updateVariablesTreeDataIterative(node['children'], selectedStudyConceptCountMap, selectedConceptCountMap);
+          this.updateVariablesTreeDataIterative(node['children'],
+            selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
         if (newNodeChildren.length > 0) {
           let nodeCopy = this.copyTreeNodeUpward(node);
           nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
           nodeCopy['children'] = newNodeChildren;
-          nodesWithCodes.push(nodeCopy);
+          if (nodeCopy['type'] === 'STUDY') {
+            const countItem = selectedStudyCountMap ? selectedStudyCountMap.get(nodeCopy['studyId']) : null;
+            if (countItem && countItem.subjectCount > 0) {
+              this.formatNodeWithCounts(node, countItem);
+              nodesWithCodes.push(nodeCopy);
+            }
+          } else {
+            // Always add intermediate nodes
+            nodesWithCodes.push(nodeCopy);
+          }
         }
       }
     }

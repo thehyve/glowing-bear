@@ -569,7 +569,9 @@ export class ConstraintService {
   }
 
   updateVariablesTreeData() {
-    this.treeNodeService.updateVariablesTreeData(this.selectedStudyConceptCountMap, this.selectedConceptCountMap);
+    this.treeNodeService.updateVariablesTreeData(this.selectedStudyConceptCountMap,
+      this.selectedConceptCountMap,
+      this.selectedStudyCountMap);
   }
 
   importVariablesByNames(names: string[]) {

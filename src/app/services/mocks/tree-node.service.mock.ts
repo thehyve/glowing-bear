@@ -71,6 +71,10 @@ export class TreeNodeServiceMock {
   public loadTreeNodes() {
   }
 
+  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
+    return [];
+  }
+
   get projectionTreeData(): TreeNode[] {
     return this._projectionTreeData;
   }
@@ -100,6 +104,9 @@ export class TreeNodeServiceMock {
   }
 
   public updateVariablesTreeData(conceptCountMap: object, checklist: Array<string>) {
+  }
+
+  public updateFinalTreeNodes() {
   }
 
   get finalTreeNodes(): TreeNode[] {

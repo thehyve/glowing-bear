@@ -23,7 +23,7 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {map} from 'rxjs/operators';
+import {map, flatMap} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
@@ -165,7 +165,7 @@ export class TransmartResourceService {
                 resolve(true);
               })
               .catch(err => {
-                reject(false)
+                reject(err)
               });
           }, err => {
             reject(err)
@@ -183,14 +183,15 @@ export class TransmartResourceService {
   }
 
   updateStudyConceptCounts(constraint: Constraint,
-                                inclusionConstraint: Constraint,
-                                exclusionConstraint?: Constraint): Promise<any> {
+                           inclusionConstraint: Constraint,
+                           exclusionConstraint?: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.getCountsPerStudyAndConcept(constraint)
         .subscribe((studyConceptCountObj: object) => {
-          let totalCountItem: TransmartCountItem = new TransmartCountItem();
+          let totalCountItem: TransmartCountItem = null;
           // if in autosaveSubjectSets mode, need to calculate total observation count
           if (this.autosaveSubjectSets) {
+            totalCountItem = new TransmartCountItem();
             let totalObservationCount = 0;
             for (let studyId in studyConceptCountObj) {
               let conceptCount: object = studyConceptCountObj[studyId];
@@ -202,8 +203,6 @@ export class TransmartResourceService {
             totalCountItem.patientCount = this.subjectSetConstraint.setSize;
             totalCountItem.observationCount = totalObservationCount;
           }
-          this.getCountsPerConcept(constraint)
-            .subscribe((conceptCountObj: object) => {
               this.updateExclusionCounts(exclusionConstraint)
                 .then(() => {
                   this.updateInclusionCounts(inclusionConstraint, totalCountItem)
@@ -217,9 +216,7 @@ export class TransmartResourceService {
                 .catch(err => {
                   reject('Fail to update transmart exclusion counts.')
                 })
-            }, err => {
-              reject('Fail to retrieve concept-count object from transmart.')
-            });
+
         }, err => {
           reject('Fail to retrieve study-concept-count object from transmart.')
         });
@@ -227,8 +224,23 @@ export class TransmartResourceService {
   }
 
   updateExclusionCounts(constraint?: Constraint): Promise<any> {
+    if (!constraint) {
+      this.exclusionCounts.patientCount = 0;
+      this.exclusionCounts.observationCount = 0;
+      return Promise.resolve(true);
+    }
     return new Promise<any>((resolve, reject) => {
-      if (constraint) {
+      if (this.autosaveSubjectSets) {
+        this.savePatientSet('temp', constraint)
+          .subscribe((subjectSet: SubjectSet) => {
+            this.subjectSetConstraint.id = subjectSet.id;
+            this.exclusionCounts.patientCount = subjectSet.setSize;
+            this.exclusionCounts.observationCount = -1;
+            resolve(true);
+          }, err => {
+            reject(err)
+          });
+      } else {
         this.getCounts(constraint)
           .subscribe((countItem: TransmartCountItem) => {
             this.exclusionCounts.patientCount = countItem.patientCount;
@@ -237,10 +249,6 @@ export class TransmartResourceService {
           }, err => {
             reject(err);
           });
-      } else {
-        this.exclusionCounts.patientCount = 0;
-        this.exclusionCounts.observationCount = 0;
-        resolve(true);
       }
     });
   }
@@ -248,13 +256,18 @@ export class TransmartResourceService {
   updateInclusionCounts(constraint: Constraint, totalCountItem?: TransmartCountItem): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       if (this.autosaveSubjectSets) {
-        if (totalCountItem) {
-          this.inclusionCounts.patientCount = totalCountItem.patientCount + this.exclusionCounts.patientCount;
-          this.inclusionCounts.observationCount = totalCountItem.observationCount + this.exclusionCounts.observationCount;
-          resolve(true);
-        } else {
-          reject('Missing transmart total-count item to calculate inclusion counts.');
+        if (!totalCountItem) {
+          return reject('Missing transmart total-count item to calculate inclusion counts.');
         }
+        // Inclusion count represents selected subjects including the subjects that are excluded by exclusion criteria
+        this.inclusionCounts.patientCount = totalCountItem.patientCount + this.exclusionCounts.patientCount;
+        if (this.exclusionCounts.observationCount === 0) {
+          this.inclusionCounts.observationCount = totalCountItem.observationCount;
+        } else {
+          // Observation count not available, because counts are being retrieved by creating patient sets.
+          this.inclusionCounts.observationCount = -1;
+        }
+        resolve(true);
       } else {
         this.getCounts(constraint)
           .subscribe((countItem: TransmartCountItem) => {
@@ -402,19 +415,6 @@ export class TransmartResourceService {
                dataTypes: ExportDataType[],
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
-    let includeDataTable = false;
-    for (let dataType of dataTypes) {
-      if (dataType.checked) {
-        for (let fileFormat of dataType.fileFormats) {
-          if (fileFormat.checked) {
-            if (fileFormat.name === 'TSV' && dataType.name === 'clinical') {
-              includeDataTable = true;
-            }
-          }
-        }
-      }
-    }
-
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
       constraint.className === 'CombinationConstraint' &&
@@ -436,10 +436,26 @@ export class TransmartResourceService {
         return this.transmartHttpService
           .runSurveyTableExportJob(jobId, targetConstraint, elements, dateColumnsIncluded);
       } else {
-        let transmartTableState =
-          includeDataTable ? TransmartDataTableMapper.mapDataTableToTableState(dataTable) : null;
-        return this.transmartHttpService
-          .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+        const includeDataTable = elements.some(element =>
+          element.dataType === 'clinical' && element.format === 'TSV'
+        );
+        if (includeDataTable) {
+          if (dataTable.rowDimensions.length === 0 && dataTable.columnDimensions.length === 0) {
+            // Data table has not been properly initialised, first fetch dimensions
+            return this.getDimensions(targetConstraint).pipe(flatMap(dimensions => {
+              const transmartTableState = TransmartDataTableMapper.mapStudyDimensionsToTableState(dimensions, dataTable);
+              return this.transmartHttpService
+                .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+            }));
+          } else {
+            const transmartTableState = TransmartDataTableMapper.mapDataTableToTableState(dataTable);
+            return this.transmartHttpService
+              .runExportJob(jobId, targetConstraint, elements, transmartTableState);
+          }
+        } else {
+          return this.transmartHttpService
+            .runExportJob(jobId, targetConstraint, elements, null);
+        }
       }
     }
   }
@@ -555,7 +571,7 @@ export class TransmartResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Dimension[]>}
    */
-  private getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
+  getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     // Fetch study names for the constraint
     return this.getStudyIds(constraint).pipe(
       switchMap(() => {

@@ -155,7 +155,11 @@ export class CohortService {
             this.inclusionCounts = inCounts;
             this.exclusionCounts = exCounts;
             this.counts.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
-            this.counts.observationCount = inCounts.observationCount - exCounts.observationCount;
+            if (inCounts.observationCount > -1 && exCounts.observationCount > -1) {
+              this.counts.observationCount = inCounts.observationCount - exCounts.observationCount;
+            } else {
+              this.counts.observationCount = -1;
+            }
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.isUpdatingCurrent = false;
@@ -198,11 +202,13 @@ export class CohortService {
       forkJoin(
         this.resourceService.getCounts(combination),
         this.resourceService.getCountsPerConcept(combination),
-        this.resourceService.getCountsPerStudyAndConcept(combination)
+        this.resourceService.getCountsPerStudyAndConcept(combination),
+        this.resourceService.getCountsPerStudy(combination)
       ).subscribe(res => {
         this.allCounts = res[0];
         this.constraintService.selectedConceptCountMap = res[1];
         this.constraintService.selectedStudyConceptCountMap = res[2];
+        this.constraintService.selectedStudyCountMap = res[3];
         this.isUpdatingAll = false;
         resolve(true);
       }, (err) => {

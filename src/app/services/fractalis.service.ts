@@ -216,7 +216,7 @@ export class FractalisService {
         if (dataObj) {
           let fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
           let fractalisVars = fractalisDataList.filter(data => data.label === variable.code);
-          if (fractalisVars) {
+          if (fractalisVars && fractalisVars.length > 0) {
             switch (fractalisVars[0].etl_state) {
               case FractalisEtlState.SUCCESS: {
                 resolve(true);

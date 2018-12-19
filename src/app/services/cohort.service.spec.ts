@@ -73,6 +73,19 @@ describe('CohortService', () => {
     expect(service).toBeTruthy();
   }));
 
+  it('should update counts', (done) => {
+    cohortService.updateAll()
+      .then(() => {
+        expect(cohortService).toBeTruthy();
+        expect(cohortService.counts).toBeDefined();
+        done();
+      })
+      .catch((error) => {
+        fail('Unexpected error: ' + error);
+        done();
+      });
+  });
+
   it('should handle loaded cohorts', () => {
     let q = new Cohort('test query id', 'test query name');
     q.createDate = '2015-03-25';

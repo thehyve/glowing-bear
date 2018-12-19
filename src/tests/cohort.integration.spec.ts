@@ -150,7 +150,7 @@ describe('Integration test for cohort saving and restoring', () => {
     treeNodeService = TestBed.get(TreeNodeService);
   });
 
-  it('should restore and save cohort in relation to other dependent services', () => {
+  it('should restore and save query in relation to other dependent services', () => {
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(cohortService, 'updateCurrent').and.callThrough();

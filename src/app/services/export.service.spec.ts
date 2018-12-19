@@ -25,7 +25,7 @@ import {StudyService} from './study.service';
 import {StudyServiceMock} from './mocks/study.service.mock';
 import {Observable} from 'rxjs';
 import {AppConfig} from '../config/app.config';
-import {AppConfigMock} from '../config/app.config.mock';
+import {AppConfigMock, AppConfigSurveyExportMock} from '../config/app.config.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -78,20 +78,6 @@ describe('ExportService', () => {
   it('should be injected', inject([ExportService], (service: ExportService) => {
     expect(service).toBeTruthy();
   }));
-
-  it('should validate export job name', () => {
-    exportService.exportJobs = [exportJob];
-    let result = exportService.validateExportJob('');
-    expect(result).toBe(false);
-    result = exportService.validateExportJob('test job name');
-    expect(result).toBe(false);
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-    let exportDataType = new ExportDataType('test data type', true);
-    exportService.exportDataTypes = [exportDataType];
-    result = exportService.validateExportJob('test job name 1');
-    expect(result).toBe(false);
-  });
 
   it('should cancel export job', () => {
     let spy = spyOn(resourceService, 'cancelExportJob').and.callThrough();
@@ -172,4 +158,54 @@ describe('ExportService', () => {
         expect(spy).toHaveBeenCalled();
       })
   });
+});
+
+describe('ExportService with surveyTable', () => {
+  let exportService: ExportService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigSurveyExportMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
+        },
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        {
+          provide: StudyService,
+          useClass: StudyServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        ExportService
+      ]
+    });
+    exportService = TestBed.get(ExportService);
+  });
+
+  it('should be injected', inject([ExportService], (service: ExportService) => {
+    expect(service).toBeTruthy();
+  }));
+
+  it('should properly set surveyTable flag', () => {
+    expect(exportService.isTransmartSurveyTable).toEqual(true);
+  });
+
 });

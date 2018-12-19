@@ -15,6 +15,7 @@ import {
   TooltipModule
 } from 'primeng/primeng';
 import {routing} from './gb-export.routing';
+import {GbValidatorsModule} from '../../validators/gb-validators.module';
 import {GbDataTableComponent} from './data-table-components/gb-data-table/gb-data-table.component';
 import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
 import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
@@ -29,6 +30,7 @@ import {MatExpansionModule} from '@angular/material';
     CheckboxModule,
     DataTableModule,
     MessagesModule,
+    GbValidatorsModule,
     PickListModule,
     TableModule,
     TooltipModule,

@@ -28,6 +28,8 @@ describe('Integration test for data export', () => {
 
   let resourceService: ResourceService;
   let exportService: ExportService;
+  let cohortService: CohortService;
+  let treeNodeService: TreeNodeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -57,6 +59,8 @@ describe('Integration test for data export', () => {
     });
     resourceService = TestBed.get(ResourceService);
     exportService = TestBed.get(ExportService);
+    cohortService = TestBed.get(CohortService);
+    treeNodeService = TestBed.get(TreeNodeService);
   });
 
   it('should create and update an export job', () => {
@@ -67,19 +71,21 @@ describe('Integration test for data export', () => {
     // newExportJob.name = 'test job name 1';
     // exportService.exportJobName = 'test export name 1';
     // let spyCreate = spyOn(resourceService, 'createExportJob').and.callThrough();
-    // let spyValidate = spyOn(exportService, 'validateExportJob', ).and.returnValue(true);
     // let spyRun = spyOn(resourceService, 'runExportJob').and.callThrough();
     // let spyGet = spyOn(resourceService, 'getExportJobs').and.callThrough();
+    // queryService.counts_2.subjectCount = 1;
+    // queryService.counts_2.observationCount = 1;
+    // treeNodeService.finalTreeNodes = [{}];
     // exportService.createExportJob()
     //   .then(() => {
     //     expect(spyCreate).toHaveBeenCalled();
-    //     expect(spyValidate).toHaveBeenCalled();
     //     expect(spyRun).toHaveBeenCalled();
     //     expect(spyGet).toHaveBeenCalled();
     //     expect(exportService.exportJobs).toBeDefined();
     //     expect(exportService.exportJobs.length).toBe(1);
     //   })
     //   .catch(err => {
+    //     console.error(err);
     //     fail('should have created and updated the export job but failed to do so.');
     //   });
   });

@@ -19,8 +19,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
-import {AsyncSubject} from 'rxjs';
+import {Observable, AsyncSubject} from 'rxjs';
+import {TreeNodeService} from './tree-node.service';
 import {AppConfig} from '../config/app.config';
+import {CohortService} from './cohort.service';
 
 @Injectable({
   providedIn: 'root',
@@ -30,7 +32,7 @@ export class ExportService {
   private _exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[] = [];
-  private _exportJobName: string;
+  private _exportJobName = '';
   private _isTransmartDateColumnsIncluded = false;
   private _isDataTypesUpdating = false;
 
@@ -39,7 +41,8 @@ export class ExportService {
               private resourceService: ResourceService,
               private authService: AuthenticationService,
               private studyService: StudyService,
-              private dataTableService: DataTableService) {
+              private dataTableService: DataTableService,
+              private injector: Injector) {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
@@ -99,33 +102,32 @@ export class ExportService {
    */
   public createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let name = this.exportJobName.trim();
+      let name = this.exportJobName === null ? '' : this.exportJobName.trim();
 
-      if (this.validateExportJob(name)) {
-        let summary = 'Running export job "' + name + '".';
-        MessageHelper.alert('info', summary);
-        this.resourceService.createExportJob(name)
-          .subscribe(
-            (newJob: ExportJob) => {
-              summary = 'Export job "' + name + '" is created.';
-              MessageHelper.alert('success', summary);
-              this.exportJobName = '';
-              this.runExportJob(newJob)
-                .then(() => {
-                  resolve(true);
-                })
-                .catch(err => {
-                  reject(err)
-                });
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              reject(`Fail to create export job ${name}.`);
-            }
-          );
-      } else {
-        reject(`Invalid export job ${name}`);
+      if (!this.isDataAvailable) {
+        return reject(`No data is available for exporting`);
       }
+      let summary = 'Running export job "' + name + '".';
+      MessageHelper.alert('info', summary);
+      this.resourceService.createExportJob(name)
+        .subscribe(
+          (newJob: ExportJob) => {
+            summary = 'Export job "' + name + '" is created.';
+            MessageHelper.alert('success', summary);
+            this.exportJobName = '';
+            this.runExportJob(newJob)
+              .then(() => {
+                resolve(true);
+              })
+              .catch(err => {
+                reject(err)
+              });
+          },
+          (err: HttpErrorResponse) => {
+            ErrorHelper.handleError(err);
+            reject(`Fail to create export job ${name}.`);
+          }
+        );
     });
   }
 
@@ -193,7 +195,7 @@ export class ExportService {
       job.disabled = true;
       this.resourceService.cancelExportJob(job.id)
         .subscribe(
-          response => {
+          () => {
             this.updateExportJobs().then(() => {
               resolve(true);
             }).catch(err => {
@@ -213,7 +215,7 @@ export class ExportService {
       job.disabled = true;
       this.resourceService.archiveExportJob(job.id)
         .subscribe(
-          response => {
+          () => {
             this.updateExportJobs().then(() => {
               resolve(true);
             }).catch(err => {
@@ -228,7 +230,7 @@ export class ExportService {
     });
   }
 
-  public updateExportJobs(): Promise<any> {
+  updateExportJobs(): Promise<any> {
     return new Promise((resolve, reject) => {
       this.resourceService.getExportJobs()
         .subscribe(
@@ -248,51 +250,16 @@ export class ExportService {
   }
 
   /**
-   * Validate a new exportJob
-   * @param {string} name
+   * Checks if data is available for export.
    * @returns {boolean}
    */
-  public validateExportJob(name: string): boolean {
-    let validName = name !== '';
-    // 1. Validate if job name is specified
-    if (!validName) {
-      const summary = 'Please specify the job name.';
-      MessageHelper.alert('warn', summary);
-      return false;
-    }
-    // 2. Validate if job name is not duplicated
-    for (let job of this.exportJobs) {
-      if (job['jobName'] === name) {
-        const summary = 'Duplicate job name, choose a new name.';
-        MessageHelper.alert('warn', summary);
-        return false;
-      }
-    }
-    // 3. Validate if at least one data type is selected
-    if (!this.exportDataTypes.some(ef => ef['checked'] === true)) {
-      const summary = 'Please select at least one data type.';
-      MessageHelper.alert('warn', summary);
-      return false;
-    }
-    // 4. Validate if at least one file format is selected for checked data formats
-    for (let dataFormat of this.exportDataTypes) {
-      if (dataFormat['checked'] === true) {
-        if (!dataFormat['fileFormats'].some(ff => ff['checked'] === true)) {
-          const summary = 'Please select at least one file format for ' + dataFormat['name'] + ' data format.';
-          MessageHelper.alert('warn', summary);
-          return false;
-        }
-      }
-    }
-    // TODO: 5. Validate if at least one observation is included
-    // let cohortService = this.injector.get(CohortService);
-    // if (cohortService.counts_2.observationCount < 1) {
-    //   const summary = 'No observation included to be exported.';
-    //   MessageHelper.alert('warn', summary);
-    //   return false;
-    // }
-
-    return true;
+  get isDataAvailable(): boolean {
+    // Validate if at least one subject is included and variable nodes are selected
+    let cohortService = this.injector.get(CohortService);
+    let treeNodeService = this.injector.get(TreeNodeService);
+    return cohortService.counts.subjectCount > 0 &&
+      (treeNodeService.selectedVariablesTreeData.length > 0 ||
+        this.constraintService.variables.filter(v => v.selected === true).length > 0);
   }
 
   get isExternalExportAvailable(): boolean {

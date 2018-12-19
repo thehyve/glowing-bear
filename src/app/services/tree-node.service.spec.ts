@@ -454,12 +454,12 @@ describe('TreeNodeService', () => {
     let spy1 = spyOn(treeNodeService, 'copyTreeNodes').and.returnValue(dummyTreeNodes);
     let spy2 = spyOn<any>(treeNodeService, 'updateVariablesTreeDataIterative').and.stub();
     treeNodeService.treeNodesCopy = dummyTreeNodes;
-    treeNodeService.updateVariablesTreeData(new Map(), new Map());
+    treeNodeService.updateVariablesTreeData(new Map(), new Map(), new Map());
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
 
     treeNodeService.treeNodesCopy = [];
-    treeNodeService.updateVariablesTreeData(new Map(), new Map());
+    treeNodeService.updateVariablesTreeData(new Map(), new Map(), new Map());
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
   });
@@ -479,6 +479,8 @@ describe('TreeNodeService', () => {
     selectedStudyConceptCountMap.set(studyId1, conceptMap1);
     let selectedConceptCountMap = new Map<string, CountItem>();
     selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
+    let selectedStudyCountMap = new Map<string, CountItem>();
+    conceptMap1.set(studyId, new CountItem(1, 1));
     let node1: TreeNode = {};
     let node2: TreeNode = {};
     let node2a: TreeNode = {};
@@ -501,7 +503,8 @@ describe('TreeNodeService', () => {
     node6['conceptCode'] = conceptCode2;
     node6['visualAttributes'] = ['LEAF'];
     let nodes = [node1, node2, node3, node4, node5, node6];
-    let resultNodes = treeNodeService['updateVariablesTreeDataIterative'](nodes, selectedStudyConceptCountMap, selectedConceptCountMap);
+    let resultNodes = treeNodeService['updateVariablesTreeDataIterative'](nodes,
+      selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
     expect(node4['expanded']).toBe(false);
     expect(resultNodes.length).toEqual(3);
     expect(resultNodes[0]['label']).toBeUndefined();
