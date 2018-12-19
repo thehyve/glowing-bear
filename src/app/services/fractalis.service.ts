@@ -11,21 +11,23 @@ import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {FractalisData} from '../models/fractalis-models/fractalis-data';
 import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
+import {FractalisChartDescription} from '../models/fractalis-models/fractalis-chart-description';
+import {FractalisChart} from '../models/fractalis-models/fractalis-chart';
+import {BehaviorSubject, Observable} from 'rxjs/Rx';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FractalisService {
 
-  private _F: any; // The fractalis object
+  private F: any; // The fractalis object
   private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
   private _isPreparingCache = true;
   private _variablesInvalid = false;
-  private _variablesValidationMessage: string;
-  private _conceptCodeToFractalisTaskId: Map<string, string>;
+  private _variablesValidationMessages: string[];
 
   private _chartDivSize: number;
 
@@ -42,7 +44,7 @@ export class FractalisService {
       this.retrieveAvailableChartTypes();
       this.constraintService.variablesUpdated.asObservable()
         .subscribe((variables: Concept[]) => {
-          this.clearData();
+          this.clearData().catch(error => console.error(`Error clearing Fractalis cache: ${error}`));
           this.prepareCache(variables);
         });
     } else {
@@ -76,7 +78,7 @@ export class FractalisService {
     this.F = fjs.fractalis.init(config);
     console.log('Fractalis imported: ', this.availableChartTypes);
 
-    this.clearData();
+    this.clearData().catch(error => console.error(`Error clearing Fractalis cache: ${error}`));
     this.prepareCache(this.constraintService.variables);
   }
 
@@ -114,13 +116,14 @@ export class FractalisService {
   getLoadedVariables(): Promise<object> {
     return this.F.getTrackedVariables();
   }
+
   setSubsets() {
     // TODO make use of this function
     // this.F.setSubsets([])
   }
 
-  private clearData() {
-    this.F.clearCache();
+  private clearData(): Promise<object> {
+    return this.F.clearCache();
   }
 
   private mapConceptTypeToFractalisVariableType(type: ConceptType): string {
@@ -141,8 +144,25 @@ export class FractalisService {
     }
   }
 
-  setChart(chartId: string): object {
-    return this.F.setChart(this.selectedChartType, chartId);
+  initChart(chartType: ChartType, chartId: string): Observable<FractalisChart> {
+    const chartObject = this.F.setChart(chartType, chartId);
+    const chartSubject = new BehaviorSubject<FractalisChart>({
+      type: chartType,
+      chartObject: chartObject,
+      description: null
+    });
+    this.F.getChartParameterDescriptions(chartObject, (description: FractalisChartDescription) => {
+      chartSubject.next({
+        type: chartType,
+        chartObject: chartObject,
+        description: description
+      })
+    }, error => chartSubject.error(error));
+    return chartSubject.asObservable();
+  }
+
+  setChartParameters(chartObject: any, parameters: object) {
+    this.F.setChartParameters(chartObject, parameters);
   }
 
   private retrieveAvailableChartTypes() {
@@ -179,13 +199,13 @@ export class FractalisService {
     this.charts.splice(this.charts.indexOf(chart), 1);
   }
 
-  public invalidateVariables(errorMessage: string) {
-    this.variablesValidationMessage = errorMessage;
+  public invalidateVariables(errorMessages: string[]) {
+    this.variablesValidationMessages = errorMessages;
     this.variablesInvalid = true;
   }
 
   public clearValidation() {
-    this.variablesValidationMessage = '';
+    this.variablesValidationMessages = [];
     this.variablesInvalid = false;
   }
 
@@ -256,14 +276,6 @@ export class FractalisService {
     this._charts = value;
   }
 
-  get F(): any {
-    return this._F;
-  }
-
-  set F(value: any) {
-    this._F = value;
-  }
-
   get isPreparingCache(): boolean {
     return this._isPreparingCache;
   }
@@ -280,12 +292,12 @@ export class FractalisService {
     this._selectedVariables = value;
   }
 
-  get variablesValidationMessage(): string {
-    return this._variablesValidationMessage;
+  get variablesValidationMessages(): string[] {
+    return this._variablesValidationMessages;
   }
 
-  set variablesValidationMessage(value: string) {
-    this._variablesValidationMessage = value;
+  set variablesValidationMessages(value: string[]) {
+    this._variablesValidationMessages = value;
   }
   get variablesInvalid(): boolean {
     return this._variablesInvalid;
@@ -293,14 +305,6 @@ export class FractalisService {
 
   set variablesInvalid(value: boolean) {
     this._variablesInvalid = value;
-  }
-
-  get conceptCodeToFractalisTaskId(): Map<string, string> {
-    return this._conceptCodeToFractalisTaskId;
-  }
-
-  set conceptCodeToFractalisTaskId(value: Map<string, string>) {
-    this._conceptCodeToFractalisTaskId = value;
   }
 
   get chartDivSize(): number {

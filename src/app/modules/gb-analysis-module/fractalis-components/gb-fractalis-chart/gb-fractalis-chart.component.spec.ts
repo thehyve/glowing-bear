@@ -5,12 +5,21 @@ import {ChartType} from '../../../../models/chart-models/chart-type';
 import {MockComponent} from 'ng2-mock-component';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
-import {FractalisChartDescription} from '../../../../models/fractalis-models/fractalis-chart-description';
-import {FractalisData} from '../../../../models/fractalis-models/fractalis-data';
-import {Concept} from '../../../../models/constraint-models/concept';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {BehaviorSubject} from 'rxjs/Rx';
+import {FractalisChart} from '../../../../models/fractalis-models/fractalis-chart';
 import {FractalisDataType} from '../../../../models/fractalis-models/fractalis-data-type';
 import {FractalisEtlState} from '../../../../models/fractalis-models/fractalis-etl-state';
+import {FractalisData} from '../../../../models/fractalis-models/fractalis-data';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {Concept} from '../../../../models/constraint-models/concept';
+
+
+function createMockConcept(code: string, type: ConceptType): Concept {
+  const concept = new Concept();
+  concept.type = type;
+  concept.code = code;
+  return concept;
+}
 
 describe('GbFractalisChartComponent', () => {
   let component: GbFractalisChartComponent;
@@ -37,60 +46,96 @@ describe('GbFractalisChartComponent', () => {
     fractalisService = TestBed.get(FractalisService);
     fixture = TestBed.createComponent(GbFractalisChartComponent);
     component = fixture.componentInstance;
-    component.chart = new Chart(ChartType.CROSSTABLE);
-    fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create a cross table chart', () => {
+    component.chart = new Chart(ChartType.CROSSTABLE);
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
-  it('should not try to set variables if already set', () => {
-    component['fractalisChartDescription'] = new FractalisChartDescription();
-    component['fractalisChartDescription'].catVars = {maxLength: 2, value: ['catVar1']};
-    let spy = spyOn(component['chartValidator'], 'isNumberOfVariablesValid').and.stub();
+  const mockFractalisTaskData: FractalisData[] = [
+    {
+      data_type: FractalisDataType.NUMERICAL,
+      etl_message: '',
+      etl_state: FractalisEtlState.SUCCESS,
+      label: 'concept_num_1',
+      task_id: 'var_1'
+    },
+    {
+      data_type: FractalisDataType.NUMERICAL,
+      etl_message: '',
+      etl_state: FractalisEtlState.SUCCESS,
+      label: 'concept_num_2',
+      task_id: 'var_2'
+    },
+    {
+      data_type: FractalisDataType.CATEGORICAL,
+      etl_message: '',
+      etl_state: FractalisEtlState.SUCCESS,
+      label: 'concept_cat_1',
+      task_id: 'var_3'
+    }
+  ];
 
-    component.setVariablesIfValid();
-
-    expect(spy).not.toHaveBeenCalled();
+  it('should create a box plot chart', (done) => {
+    const chartSubject = new BehaviorSubject<FractalisChart>({
+      type: ChartType.BOXPLOT,
+      chartObject: {},
+      description: {
+        numVars: {
+          label: 'Numerical',
+          minLength: 1,
+          maxLength: 1,
+          value: []
+        }
+      }
+    });
+    spyOn(fractalisService, 'initChart').and.returnValue(chartSubject.asObservable());
+    spyOn(fractalisService, 'getLoadedVariables').and.returnValue(Promise.resolve({
+        data: {
+          data_states: mockFractalisTaskData
+        }
+    }));
+    fractalisService.selectedVariables = [createMockConcept('concept_num_1', ConceptType.NUMERICAL)];
+    component.chart = new Chart(ChartType.BOXPLOT);
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
+    setTimeout(() => {
+      expect(component.fractalisChart).not.toBeNull();
+      done();
+    }, 1000);
   });
 
-  it('should not set variables if invalid', () => {
-    component['fractalisChartDescription'] = new FractalisChartDescription();
-    let spy = spyOn(component['chartValidator'], 'isNumberOfVariablesValid').and.returnValue(false);
-    let spy1 = spyOn(fractalisService, 'invalidateVariables').and.stub();
-
-    component.setVariablesIfValid();
-
-    expect(spy1).toHaveBeenCalled();
-    expect(component['chart'].isValid).toEqual(false);
+  it('should validate parameters for a box plot chart', (done) => {
+    const chartSubject = new BehaviorSubject<FractalisChart>({
+      type: ChartType.BOXPLOT,
+      chartObject: {},
+      description: {
+        numVars: {
+          label: 'Numerical',
+          minLength: 1,
+          maxLength: 1,
+          value: []
+        }
+      }
+    });
+    spyOn(fractalisService, 'initChart').and.returnValue(chartSubject.asObservable());
+    spyOn(fractalisService, 'getLoadedVariables').and.returnValue(Promise.resolve({
+      data: {
+        data_states: mockFractalisTaskData
+      }
+    }));
+    fractalisService.selectedVariables = [];
+    component.chart = new Chart(ChartType.BOXPLOT);
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
+    setTimeout(() => {
+      expect(component.fractalisChart).not.toBeNull();
+      expect(fractalisService.variablesInvalid).toBeTruthy();
+      expect(fractalisService.variablesValidationMessages.length).toEqual(1);
+      done();
+    }, 1000);
   });
 
-  it('should set variables if valid', () => {
-    let variableName = 'var1';
-    let chartVariable = new Concept();
-    chartVariable.type = ConceptType.NUMERICAL;
-    chartVariable.name = variableName;
-    component['chart'].variables.push(chartVariable);
-    component['fractalisChartDescription'] = new FractalisChartDescription();
-    let fractalisData = new FractalisData();
-    fractalisData.label = variableName;
-    fractalisData.task_id = FractalisDataType.NUMERICAL;
-    fractalisData.etl_message = 'loaded';
-    fractalisData.etl_state = FractalisEtlState.SUCCESS;
-
-    let spy = spyOn(component['chartValidator'], 'isNumberOfVariablesValid').and.returnValue(true);
-    let spy1 = spyOn(fractalisService, 'getLoadedVariables').and.returnValue(
-      (Promise.resolve({data: {state: 'SUCCESS', task_id: 123, label: variableName}})));
-    let spy2 = spyOn(fractalisService, 'invalidateVariables').and.callThrough();
-    let spy3 = spyOn<any>(component, 'setFractalisChartParameters').and.callThrough();
-
-    component.setVariablesIfValid();
-
-    expect(spy2).not.toHaveBeenCalled();
-    let fractalisVariableIds = new Map<string, string[]>();
-    fractalisVariableIds.set('numVars', [`\${\"id\":\"${variableName}\",\"filters\":{}}\$`])
-    // TODO fix: expect(spy3).toHaveBeenCalledWith(fractalisVariableIds);
-    expect(component['chart'].isValid).toEqual(true);
-  });
 });

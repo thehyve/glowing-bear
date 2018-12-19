@@ -25,9 +25,9 @@
       Drop variable(s) here
     </span>
     </div>
-    <div *ngIf="isValidationError" class="validation-error-message" role="alert">
+    <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">
       <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-      {{validationErrorMessage}}
+      {{message}}
     </div>
 
     <ng-template #showDroppedVariables>

@@ -71,17 +71,19 @@ describe('FractalisService', () => {
   });
 
   it('should set variables invalid', () => {
-    let errorMessage = 'Invalid variable';
-    fractalisService.invalidateVariables(errorMessage);
-    expect(fractalisService.variablesValidationMessage).toEqual(errorMessage);
+    let errorMessages = ['Invalid variable'];
+    fractalisService.invalidateVariables(errorMessages);
+    expect(fractalisService.variablesValidationMessages).toEqual(errorMessages);
     expect(fractalisService.variablesInvalid).toEqual(true);
   });
 
   it('should clear validation', () => {
-    this.variablesValidationMessage = 'Some error message';
-    this.variablesInvalid = true;
+    let errorMessages = ['Invalid variable'];
+    fractalisService.invalidateVariables(errorMessages);
+    expect(fractalisService.variablesValidationMessages).toEqual(errorMessages);
+    expect(fractalisService.variablesInvalid).toEqual(true);
     fractalisService.clearValidation();
-    expect(fractalisService.variablesValidationMessage).toEqual('');
+    expect(fractalisService.variablesValidationMessages).toEqual([]);
     expect(fractalisService.variablesInvalid).toEqual(false);
   });
 
