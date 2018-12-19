@@ -16,6 +16,7 @@
 
     <div *ngIf="isDropZoneShown"
          class="drop-zone"
+         name="drop-zone"
          [pDroppable]="variablesDragDropScope"
          [ngClass]="{'drop-zone-highlight': dragCounter > 0, 'drop-zone-highlight-invalid': isValidationError}"
          (onDragEnter)="onDragEnter($event)"

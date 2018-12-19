@@ -8,7 +8,7 @@ import {ConstraintService} from './constraint.service';
 import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
 import {AppConfig} from '../config/app.config';
-import {AppConfigMock} from '../config/app.config.mock';
+import {AppConfigFractalisDisabledMock, AppConfigMock} from '../config/app.config.mock';
 import {FractalisDataType} from '../models/fractalis-models/fractalis-data-type';
 import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 import {Concept} from '../models/constraint-models/concept';
@@ -168,3 +168,55 @@ describe('FractalisService', () => {
   });
 
 });
+
+describe('FractalisService with analysis disabled', () => {
+
+  let fractalisService: FractalisService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigFractalisDisabledMock
+        },
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        FractalisService
+      ]
+    });
+    fractalisService = TestBed.get(FractalisService);
+  });
+
+  it('should be injected', inject([FractalisService], (service: FractalisService) => {
+    expect(service).toBeTruthy();
+  }));
+
+  it('should disable fractalis analysis', () => {
+    expect(fractalisService['F']).not.toBeTruthy();
+    expect(fractalisService.isFractalisAvailable).toBe(false);
+    expect(fractalisService.isPreparingCache).toBe(false);
+  });
+
+
+  it('should enable crosstable', () => {
+    expect(fractalisService.availableChartTypes.length).toEqual(1);
+    expect(fractalisService.availableChartTypes[0].label).toEqual(ChartType.CROSSTABLE);
+
+    fractalisService.selectedChartType = ChartType.CROSSTABLE;
+    expect(fractalisService.charts.length).toEqual(0);
+    fractalisService.addOrRecreateChart();
+    expect(fractalisService.charts.length).toEqual(1);
+    expect(fractalisService.charts[0].isValid).toEqual(true);
+    expect(fractalisService.charts[0].type).toEqual(ChartType.CROSSTABLE);
+  });
+
+});
+
+

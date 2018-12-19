@@ -52,6 +52,8 @@ describe('GbFractalisChartComponent', () => {
     component.chart = new Chart(ChartType.CROSSTABLE);
     fixture.detectChanges();
     expect(component).toBeTruthy();
+    expect(component.chartWidth).toEqual('35em');
+    expect(component.chartHeight).toEqual('17.5em');
   });
 
   const mockFractalisTaskData: FractalisData[] = [

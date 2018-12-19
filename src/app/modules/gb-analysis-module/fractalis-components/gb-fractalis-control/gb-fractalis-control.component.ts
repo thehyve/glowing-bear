@@ -143,4 +143,8 @@ export class GbFractalisControlComponent implements OnInit {
   get validationErrorMessages(): string[] {
     return this.fractalisService.variablesValidationMessages;
   }
+
+  get isFractalisAvailable(): boolean {
+    return this.fractalisService.isFractalisAvailable;
+  }
 }

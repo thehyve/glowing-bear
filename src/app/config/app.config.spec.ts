@@ -157,6 +157,7 @@ describe('AppConfig', () => {
     expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
+    expect(appConfig.getConfig('enable-fractalis-analysis')).toBe(AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS);
     expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
     expect(appConfig.getConfig('export-mode')['name']).toBe(AppConfig.DEFAULT_EXPORT_MODE['name']);
     expect(appConfig.getConfig('export-mode')['data-view']).toBe(AppConfig.DEFAULT_EXPORT_MODE['data-view']);

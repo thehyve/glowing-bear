@@ -25,7 +25,7 @@ export class FractalisService {
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
-  private _isPreparingCache = true;
+  private _isPreparingCache = false;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
 
@@ -38,18 +38,21 @@ export class FractalisService {
   constructor(private appConfig: AppConfig,
               private authService: AuthenticationService,
               private constraintService: ConstraintService) {
-    if (fjs.fractalis) {
-      this.chartDivSize = 35;
+    this.chartDivSize = 35;
+
+    if (!this.appConfig.getConfig('enable-fractalis-analysis')) {
+      MessageHelper.alert('warn', 'Fractalis analysis are not enabled.');
+    } else if (!fjs.fractalis) {
+      MessageHelper.alert('error', 'Failed to import Fractalis.');
+    } else {
       this.setupFractalis();
-      this.retrieveAvailableChartTypes();
       this.constraintService.variablesUpdated.asObservable()
         .subscribe((variables: Concept[]) => {
           this.clearData().catch(error => console.error(`Error clearing Fractalis cache: ${error}`));
           this.prepareCache(variables);
         });
-    } else {
-      MessageHelper.alert('error', 'Failed to import Fractalis.');
     }
+    this.retrieveAvailableChartTypes();
   }
 
   private setupFractalis() {
@@ -166,14 +169,16 @@ export class FractalisService {
   }
 
   private retrieveAvailableChartTypes() {
-    const types: string[] = this.F.getAvailableCharts();
-    types.forEach((t: string) => {
-      const type = <ChartType>t.toLowerCase();
-      this.availableChartTypes.push({
-        label: type,
-        value: type
+    if (this.isFractalisAvailable) {
+      const types: string[] = this.F.getAvailableCharts();
+      types.forEach((t: string) => {
+        const type = <ChartType>t.toLowerCase();
+        this.availableChartTypes.push({
+          label: type,
+          value: type
+        });
       });
-    });
+    }
     this.availableChartTypes.push({
       label: ChartType.CROSSTABLE,
       value: ChartType.CROSSTABLE
@@ -246,6 +251,10 @@ export class FractalisService {
         reject(err);
       })
     });
+  }
+
+  get isFractalisAvailable(): boolean {
+    return fjs.fractalis && this.appConfig.getConfig('enable-fractalis-analysis');
   }
 
   get previousChart(): Chart {

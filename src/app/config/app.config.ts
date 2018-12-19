@@ -20,6 +20,7 @@ export class AppConfig {
   public static DEFAULT_APP_URL = 'http://localhost:4200';
   public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
+  public static DEFAULT_ENABLE_FRACTALIS_ANALYSIS = false;
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
   public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
   public static DEFAULT_INSTANT_COUNTS_UPDATE = false;
@@ -73,6 +74,9 @@ export class AppConfig {
         }
         case 'doc-url': {
           value = AppConfig.DEFAULT_DOC_URL; break;
+        }
+        case 'enable-fractalis-analysis': {
+          value = AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS; break;
         }
         case 'autosave-subject-sets': {
           value = AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS; break;
