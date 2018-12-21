@@ -11,7 +11,7 @@ import {Injectable} from '@angular/core';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
@@ -39,7 +39,9 @@ import {Study} from '../../models/constraint-models/study';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartResourceService {
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
@@ -55,9 +57,6 @@ export class TransmartResourceService {
   private _subjectSetConstraint: SubjectSetConstraint;
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
-  private _studyConceptCountObject: object;
-  private _studyCountObject: object;
-  private _conceptCountObject: object;
 
   constructor(private appConfig: AppConfig,
               private transmartHttpService: TransmartHttpService,
@@ -118,30 +117,6 @@ export class TransmartResourceService {
     this._exclusionCounts = value;
   }
 
-  get studyConceptCountObject(): object {
-    return this._studyConceptCountObject;
-  }
-
-  set studyConceptCountObject(value: object) {
-    this._studyConceptCountObject = value;
-  }
-
-  get studyCountObject(): object {
-    return this._studyCountObject;
-  }
-
-  set studyCountObject(value: object) {
-    this._studyCountObject = value;
-  }
-
-  get conceptCountObject(): object {
-    return this._conceptCountObject;
-  }
-
-  set conceptCountObject(value: object) {
-    this._conceptCountObject = value;
-  }
-
   // -------------------------------------- tree node calls --------------------------------------
   /**
    * Returns the available studies.
@@ -185,8 +160,7 @@ export class TransmartResourceService {
           .subscribe((subjectSet: SubjectSet) => {
             this.subjectSetConstraint.id = subjectSet.id;
             this.subjectSetConstraint.setSize = subjectSet.setSize;
-
-            this.updateStudyConceptCountObject(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
+            this.updateStudyConceptCounts(this.subjectSetConstraint, inclusionConstraint, exclusionConstraint)
               .then(() => {
                 resolve(true);
               })
@@ -197,7 +171,7 @@ export class TransmartResourceService {
             reject(err)
           });
       } else {
-        this.updateStudyConceptCountObject(constraint, inclusionConstraint, exclusionConstraint)
+        this.updateStudyConceptCounts(constraint, inclusionConstraint, exclusionConstraint)
           .then(() => {
             resolve(true);
           })
@@ -208,13 +182,12 @@ export class TransmartResourceService {
     });
   }
 
-  updateStudyConceptCountObject(constraint: Constraint,
-                                inclusionConstraint: Constraint,
-                                exclusionConstraint?: Constraint): Promise<any> {
+  updateStudyConceptCounts(constraint: Constraint,
+                           inclusionConstraint: Constraint,
+                           exclusionConstraint?: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.getCountsPerStudyAndConcept(constraint)
         .subscribe((studyConceptCountObj: object) => {
-          this.studyConceptCountObject = studyConceptCountObj;
           let totalCountItem: TransmartCountItem = null;
           // if in autosaveSubjectSets mode, need to calculate total observation count
           if (this.autosaveSubjectSets) {
@@ -230,10 +203,6 @@ export class TransmartResourceService {
             totalCountItem.patientCount = this.subjectSetConstraint.setSize;
             totalCountItem.observationCount = totalObservationCount;
           }
-          this.getCountsPerStudy(constraint).subscribe((studyCountObj: object) => {
-            this.studyCountObject = studyCountObj;
-            this.getCountsPerConcept(constraint).subscribe((conceptCountObj: object) => {
-              this.conceptCountObject = conceptCountObj;
               this.updateExclusionCounts(exclusionConstraint)
                 .then(() => {
                   this.updateInclusionCounts(inclusionConstraint, totalCountItem)
@@ -247,12 +216,7 @@ export class TransmartResourceService {
                 .catch(err => {
                   reject('Fail to update transmart exclusion counts.')
                 })
-              }, err => {
-                reject('Fail to retrieve concept-count object from transmart.')
-              });
-            }, err => {
-              reject('Fail to retrieve study-count object from transmart.')
-            });
+
         }, err => {
           reject('Fail to retrieve study-concept-count object from transmart.')
         });
@@ -538,7 +502,7 @@ export class TransmartResourceService {
   // -------------------------------------- query calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<Query[]>}
+   * @returns {Observable<Cohort[]>}
    */
   getQueries(): Observable<TransmartQuery[]> {
     return this.transmartHttpService.getQueries();
@@ -557,7 +521,7 @@ export class TransmartResourceService {
    * Modify an existing query.
    * @param {string} queryId
    * @param {Object} queryBody
-   * @returns {Observable<Query>}
+   * @returns {Observable<Cohort>}
    */
   updateQuery(queryId: string, queryBody: object): Observable<{}> {
     return this.transmartHttpService.updateQuery(queryId, queryBody);

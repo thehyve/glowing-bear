@@ -13,26 +13,25 @@ import {CommonModule} from '@angular/common';
 import {
   AccordionModule, AutoCompleteModule, ButtonModule, ConfirmationService, ConfirmDialogModule, DataListModule,
   DragDropModule, InputTextModule, OverlayPanelModule, PanelModule,
-  TooltipModule, TreeModule, RadioButtonModule
+  TooltipModule, TreeModule, RadioButtonModule, CheckboxModule, SelectButtonModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {Md2AccordionModule} from 'md2';
-import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {CrossTableService} from '../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
+import {MockComponent} from 'ng2-mock-component';
+import {MatExpansionModule} from '@angular/material';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -42,9 +41,9 @@ describe('GbSidePanelComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbSidePanelComponent,
-        GbTreeNodesComponent,
-        GbQueriesComponent,
-        GbSummaryComponent
+        MockComponent({selector: 'gb-tree-nodes'}),
+        MockComponent({selector: 'gb-cohorts'}),
+        MockComponent({selector: 'gb-variables'})
       ],
       imports: [
         BrowserAnimationsModule,
@@ -62,7 +61,10 @@ describe('GbSidePanelComponent', () => {
         TooltipModule,
         ConfirmDialogModule,
         Md2AccordionModule,
-        RadioButtonModule
+        RadioButtonModule,
+        CheckboxModule,
+        MatExpansionModule,
+        SelectButtonModule
       ],
       providers: [
         {
@@ -78,8 +80,8 @@ describe('GbSidePanelComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: NavbarService,

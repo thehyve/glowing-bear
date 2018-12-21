@@ -9,8 +9,8 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
-import {QueryService} from './query.service';
-import {QueryServiceMock} from './mocks/query.service.mock';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
 import {of as observableOf} from 'rxjs';
@@ -18,7 +18,6 @@ import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 
 describe('NavbarService', () => {
-  let queryService: QueryService;
   let navbarService: NavbarService;
   let exportService: ExportService;
   let authService: AuthenticationService;
@@ -32,32 +31,26 @@ describe('NavbarService', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
-        },
-        {
           provide: ExportService,
           useClass: ExportServiceMock
         },
         NavbarService
       ]
     });
-    queryService = TestBed.get(QueryService);
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
     exportEnabled = false;
-    spyOn(exportService, 'isExportEnabled').and.callFake(() => observableOf(exportEnabled));
     navbarService = TestBed.get(NavbarService);
   });
 
   it('should be injected', inject([NavbarService], (service: NavbarService) => {
     expect(service).toBeTruthy();
-    expect(service.items.length).toBe(2);
+    expect(service.items.length).toBe(3);
   }));
 
   it('should add export item when access level is full', () => {
     exportEnabled = true;
-    navbarService = new NavbarService(authService, exportService, queryService);
+    navbarService = new NavbarService(authService, exportService);
     expect(navbarService.items.length).toBe(3);
   });
 
@@ -72,7 +65,7 @@ describe('NavbarService', () => {
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
-    which = 'data-selection';
+    which = 'cohort-selection';
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);

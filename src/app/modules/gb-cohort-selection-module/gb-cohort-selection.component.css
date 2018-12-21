@@ -1,0 +1,134 @@
+.gb-cohort-selection-header {
+  font-size: large;
+  color: gray;
+  margin-right: 0;
+  margin-left: 0.5em;
+  margin-bottom: 1em;
+  border-bottom: solid;
+  border-color: var(--gb-clinical-green);
+  padding-bottom: 0.3em;
+  font-weight: 500;
+}
+
+/*
+ * padding and margin: top, right, bottom, left
+ * shadow option: text-shadow: 1px 1px 3px black;
+ */
+.top-panel {
+  background-color: rgba(51, 156, 144, 0.1);
+  border-radius: 3px;
+  border: 1px solid lightgray;
+  padding: 0.5em 1em 0.5em 1em;
+  margin-top: var(--gb-navbar-height-extra);
+  margin-bottom: 1em;
+  color: darkslategrey;
+  overflow: hidden;
+  width: 100%;
+  font-size: 0.9em;
+}
+
+.save-input {
+  margin-bottom: 3px;
+  margin-right: 7px;
+  max-width: 100%;
+  font-size: small;
+  padding: 0.3em 0.3em 0.3em 0.5em;
+}
+
+/* save btn */
+.save-btn {
+  margin: .1em;
+}
+
+.update-btn {
+  margin-left: 1em;
+  margin-right: 0.5em;
+  border: 1px dashed;
+}
+
+.update-btn-dirty {
+  border: 2px solid;
+  font-weight: bolder;
+}
+
+
+.fa-circle-o-notch {
+  opacity: .5;
+}
+
+
+
+/*Style for the padding of the constraint*/
+:host >>> .ui-panel-titlebar {
+  padding: 1px !important;
+}
+
+/*
+ * style fix for a concept constraint input
+ * displayed text aligned from right to left
+ * text overflow is turned on
+ */
+:host >>> .gb-concept-constraint-input > input {
+  text-overflow: ellipsis;
+  direction: ltr;
+}
+
+/* Fix height of autocomplete dropdown button. Editing component css doesn't work. */
+:host >>> .ui-inputtext {
+  height: 2em;
+}
+
+/* Fix cutting off letters inside inputtext field.
+ Rendering engines of Firefox and Safari render line height slightly different than Chrome.
+ Editing component css doesn't work. */
+:host >>> .ui-inputtext.ui-widget.ui-state-default.ui-corner-all {
+  padding-bottom: 3px;
+}
+
+:host >>> .ui-autocomplete .ui-autocomplete-dropdown {
+  height: 2em;
+}
+
+:host >>> .ui-autocomplete.ui-autocomplete-multiple .ui-autocomplete-multiple-container {
+  padding: 0.1em;
+  height: 100%;
+}
+
+/*Fix the width of placeholder in multiple autocomplete input field*/
+:host >>> .ui-autocomplete-input-token {
+  width: 10em;
+}
+
+/*Style for the p-panel in a concept constraint*/
+:host >>> .gb-constraint-child-container p-panel .ui-panel {
+  margin-left: 5px;
+  padding: 0px;
+  background-color: transparent;
+  width: 90%;
+  border: none;
+}
+
+/* Fix multiple autocomplete dropdown button new line break */
+:host >>> .ui-autocomplete {
+  display: inline-flex;
+}
+
+/*
+ * Change the primeng confirmation dialog of deleting the cohort
+ */
+:host >>> .ui-confirmdialog.ui-dialog .ui-dialog-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.criteria-box {
+  margin-bottom: 2em;
+}
+
+.subject-count-box {
+  margin-left: 0.5em;
+}
+
+.gb-cohort-selection-information-text {
+  color: white;
+}

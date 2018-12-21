@@ -20,7 +20,9 @@ import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartPackerHttpService {
 
   private _customExportJobName: string;

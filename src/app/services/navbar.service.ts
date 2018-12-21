@@ -8,12 +8,12 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {QueryService} from './query.service';
-import {MessageHelper} from '../utilities/message-helper';
 import {ExportService} from './export.service';
 import {AuthenticationService} from './authentication/authentication.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class NavbarService {
 
   private _items: MenuItem[];
@@ -25,21 +25,21 @@ export class NavbarService {
 
 
   constructor(private authService: AuthenticationService,
-              private exportService: ExportService,
-              private queryService: QueryService) {
+              private exportService: ExportService) {
     this.items = [
-      {label: 'Data Selection', routerLink: '/data-selection'},
+      {label: 'Cohort Selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
-    this.exportService.isExportEnabled().subscribe((exportEnabled) => {
-      if (exportEnabled) {
-        this.items.push({label: 'Export', routerLink: '/export'});
-      }
-    });
+    this.exportService.exportEnabled.asObservable()
+      .subscribe((exportEnabled) => {
+        if (exportEnabled) {
+          this.items.push({label: 'Data Export', routerLink: '/export'});
+        }
+      });
   }
 
   updateNavbar(whichStep: string) {
-    this.isDataSelection = (whichStep === 'data-selection' || whichStep === '');
+    this.isDataSelection = (whichStep === 'cohort-selection' || whichStep === '');
     this.isAnalysis = (whichStep === 'analysis');
     this.isExport = (whichStep === 'export');
 
@@ -48,7 +48,6 @@ export class NavbarService {
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
     } else if (this.isExport) {
-      this.queryService.updateAll();
       this.activeItem = this._items[2];
     }
   }

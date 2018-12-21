@@ -16,6 +16,8 @@ export class AppConfigMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-url': 'https://transmart.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',
@@ -28,9 +30,8 @@ export class AppConfigMock {
     return this.config[key];
   }
 
-
   public getEnv(key: any) {
-    return this.env[key];
+    return 'default';
   }
 
   load() {}
@@ -46,6 +47,7 @@ export class OidcConfigMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'oidc',
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
       'oidc-client-id': 'transmart-client'
@@ -73,6 +75,7 @@ export class AppConfigPackerMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'packer',
@@ -104,6 +107,7 @@ export class AppConfigSurveyExportMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',

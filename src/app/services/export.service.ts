@@ -16,24 +16,28 @@ import {saveAs} from 'file-saver';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
-import {QueryService} from './query.service';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
 import {Observable, AsyncSubject} from 'rxjs';
 import {TreeNodeService} from './tree-node.service';
+import {AppConfig} from '../config/app.config';
+import {CohortService} from './cohort.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ExportService {
 
   private _exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[] = [];
   private _exportJobName = '';
-  private _isLoadingExportDataTypes = false;
   private _isTransmartDateColumnsIncluded = false;
+  private _isDataTypesUpdating = false;
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private appConfig: AppConfig,
+              private constraintService: ConstraintService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
               private studyService: StudyService,
@@ -42,47 +46,61 @@ export class ExportService {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
         if (level === AccessLevel.Full) {
-          this._exportEnabled.next(true);
-          this._exportEnabled.complete();
+          this.exportEnabled.next(true);
+          this.exportEnabled.complete();
         } else {
           this.studyService.existsPublicStudy
             .subscribe((existsPublicStudy) => {
-              this._exportEnabled.next(existsPublicStudy);
-              this._exportEnabled.complete();
+              this.exportEnabled.next(existsPublicStudy);
+              this.exportEnabled.complete();
             });
         }
       });
+
+    /**
+     * If the export-mode's name is 'transmart' and data-view is 'dataTable',
+     *        is data table used for export job creation, which means
+     *        updating data table first, then exprot data types, i.e.
+     *        dataTableService.dataTableUpdated -> updateExportDataTypes()
+     * Else, there is no need to wait for data table to complete,
+     *        directly update export data types whenever the variables are updated, i.e.
+     *        constraintService.variablesUpdated -> updateExportDataTypes()
+     */
+    if (this.isTransmartDataTable) {
+      this.dataTableService.dataTableUpdated.asObservable()
+        .subscribe(() => {
+          this.updateExportDataTypes();
+        });
+    } else {
+      this.constraintService.variablesUpdated.asObservable()
+        .subscribe(() => {
+          this.updateExportDataTypes();
+        });
+    }
+
   }
 
-  public isExportEnabled(): Observable<boolean> {
-    return this._exportEnabled.asObservable();
-  }
-
-  public updateExports() {
-    this.isExportEnabled().subscribe((exportEnabled) => {
-      if (exportEnabled) {
-        let combo = this.constraintService.constraint_1_2();
-        // update the export info
-        this.isLoadingExportDataTypes = true;
-        this.resourceService.getExportDataTypes(combo)
-          .subscribe(dataTypes => {
-              this.exportDataTypes = dataTypes;
-              this.isLoadingExportDataTypes = false;
-            },
-            (err: HttpErrorResponse) => {
-              ErrorHelper.handleError(err);
-              this.exportDataTypes = [];
-              this.isLoadingExportDataTypes = false;
-            }
-          );
-      }
-    });
+  private updateExportDataTypes() {
+    console.log('update export data types');
+    // update the export info
+    this.isDataTypesUpdating = true;
+    this.resourceService.getExportDataTypes(this.constraintService.combination)
+      .subscribe(dataTypes => {
+          this.exportDataTypes = dataTypes;
+          this.isDataTypesUpdating = false;
+        },
+        (err: HttpErrorResponse) => {
+          ErrorHelper.handleError(err);
+          this.exportDataTypes = [];
+          this.isDataTypesUpdating = false;
+        }
+      );
   }
 
   /**
    * Create the export job when the user clicks the 'Export selected sets' button
    */
-  createExportJob(): Promise<any> {
+  public createExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
       let name = this.exportJobName === null ? '' : this.exportJobName.trim();
 
@@ -119,13 +137,13 @@ export class ExportService {
    */
   public runExportJob(job: ExportJob): Promise<any> {
     return new Promise((resolve, reject) => {
-      let constraint = this.constraintService.constraint_1_2();
-      this.resourceService
-        .runExportJob(job,
-          this.exportDataTypes,
-          constraint,
-          this.dataTableService.dataTable,
-          this.isTransmartDateColumnsIncluded)
+      this.resourceService.runExportJob(
+        job,
+        this.exportDataTypes,
+        this.constraintService.combination,
+        this.dataTableService.dataTable,
+        this.isTransmartDateColumnsIncluded
+      )
         .subscribe(
           returnedExportJob => {
             if (returnedExportJob) {
@@ -237,9 +255,33 @@ export class ExportService {
    */
   get isDataAvailable(): boolean {
     // Validate if at least one subject is included and variable nodes are selected
-    let queryService = this.injector.get(QueryService);
+    let cohortService = this.injector.get(CohortService);
     let treeNodeService = this.injector.get(TreeNodeService);
-    return queryService.counts_2.subjectCount > 0 && treeNodeService.finalTreeNodes.length > 0;
+    return cohortService.counts.subjectCount > 0 &&
+      (treeNodeService.selectedVariablesTreeData.length > 0 ||
+        this.constraintService.variables.filter(v => v.selected === true).length > 0);
+  }
+
+  get isExternalExportAvailable(): boolean {
+    return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+  }
+
+  get isTransmartSurveyTable(): boolean {
+    let exportMode = this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  }
+
+  get isTransmartDataTable(): boolean {
+    let exportMode = this.appConfig.getConfig('export-mode');
+    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'dataTable';
+  }
+
+  get isTransmartDateColumnsIncluded(): boolean {
+    return this._isTransmartDateColumnsIncluded;
+  }
+
+  set isTransmartDateColumnsIncluded(value: boolean) {
+    this._isTransmartDateColumnsIncluded = value;
   }
 
   get exportDataTypes(): ExportDataType[] {
@@ -250,12 +292,12 @@ export class ExportService {
     this._exportDataTypes = value;
   }
 
-  get isLoadingExportDataTypes(): boolean {
-    return this._isLoadingExportDataTypes;
+  get isDataTypesUpdating(): boolean {
+    return this._isDataTypesUpdating;
   }
 
-  set isLoadingExportDataTypes(value: boolean) {
-    this._isLoadingExportDataTypes = value;
+  set isDataTypesUpdating(value: boolean) {
+    this._isDataTypesUpdating = value;
   }
 
   get exportJobs(): ExportJob[] {
@@ -274,11 +316,15 @@ export class ExportService {
     this._exportJobName = value;
   }
 
-  get isTransmartDateColumnsIncluded(): boolean {
-    return this._isTransmartDateColumnsIncluded;
+  get isDataTableUpdating(): boolean {
+    return this.dataTableService.isUpdating;
   }
 
-  set isTransmartDateColumnsIncluded(value: boolean) {
-    this._isTransmartDateColumnsIncluded = value;
+  get exportEnabled(): AsyncSubject<boolean> {
+    return this._exportEnabled;
+  }
+
+  set exportEnabled(value: AsyncSubject<boolean>) {
+    this._exportEnabled = value;
   }
 }

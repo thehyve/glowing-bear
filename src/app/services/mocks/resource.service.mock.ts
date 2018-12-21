@@ -10,7 +10,7 @@
 import {of as observableOf, Observable} from 'rxjs';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
@@ -25,7 +25,7 @@ import {EndpointMode} from '../../models/endpoint-mode';
 
 export class ResourceServiceMock {
   private studies: Study[];
-  private queries: Query[];
+  private queries: Cohort[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
   private dataTable: DataTable;
@@ -34,7 +34,6 @@ export class ResourceServiceMock {
 
   inclusionCounts: CountItem;
   exclusionCounts: CountItem;
-  selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
 
   constructor() {
     this.studies = [];
@@ -52,7 +51,6 @@ export class ResourceServiceMock {
     return new Promise<any>((resolve, reject) => {
       this.inclusionCounts = new CountItem(200, 1000);
       this.exclusionCounts = new CountItem(30, 200);
-      this.selectedStudyConceptCountMap = null;
       resolve(true);
     });
   }
@@ -65,7 +63,7 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  getQueries(): Observable<Query[]> {
+  getCohorts(): Observable<Cohort[]> {
     return observableOf(this.queries);
   }
 
@@ -149,11 +147,11 @@ export class ResourceServiceMock {
     return observableOf({});
   }
 
-  diffQuery(queryId: string): Observable<object[]> {
+  diffCohort(id: string): Observable<object[]> {
     return observableOf([{}]);
   }
 
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     return observableOf({});
   }
 
@@ -161,8 +159,8 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  saveQuery(query: Query): Observable<Query> {
-    return observableOf(new Query('id', 'name'));
+  saveCohort(target: Cohort): Observable<Cohort> {
+    return observableOf(new Cohort('id', 'name'));
   }
 
   createExportJob(name: string): Observable<ExportJob> {

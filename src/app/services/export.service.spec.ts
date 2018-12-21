@@ -17,25 +17,29 @@ import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {ExportJob} from '../models/export-models/export-job';
 import {ExportDataType} from '../models/export-models/export-data-type';
-import {ExportFileFormat} from '../models/export-models/export-file-format';
-import {QueryService} from './query.service';
-import {QueryServiceMock} from './mocks/query.service.mock';
-import {CountItem} from '../models/aggregate-models/count-item';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 import {StudyService} from './study.service';
 import {StudyServiceMock} from './mocks/study.service.mock';
 import {Observable} from 'rxjs';
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock, AppConfigSurveyExportMock} from '../config/app.config.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
+  let cohortService: CohortService;
   let resourceService: ResourceService;
-  let queryService: QueryService;
   let exportJob: ExportJob;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
+        },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
@@ -57,15 +61,15 @@ describe('ExportService', () => {
           useClass: DataTableServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         ExportService
       ]
     });
     resourceService = TestBed.get(ResourceService);
     exportService = TestBed.get(ExportService);
-    queryService = TestBed.get(QueryService);
+    cohortService = TestBed.get(CohortService);
     exportJob = new ExportJob();
     exportJob.id = 'id';
     exportJob.name = 'test job name';
@@ -154,4 +158,54 @@ describe('ExportService', () => {
         expect(spy).toHaveBeenCalled();
       })
   });
+});
+
+describe('ExportService with surveyTable', () => {
+  let exportService: ExportService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: AppConfig,
+          useClass: AppConfigSurveyExportMock
+        },
+        {
+          provide: ConstraintService,
+          useClass: ConstraintServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
+        },
+        {
+          provide: AuthenticationService,
+          useClass: AuthenticationServiceMock
+        },
+        {
+          provide: StudyService,
+          useClass: StudyServiceMock
+        },
+        {
+          provide: DataTableService,
+          useClass: DataTableServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        ExportService
+      ]
+    });
+    exportService = TestBed.get(ExportService);
+  });
+
+  it('should be injected', inject([ExportService], (service: ExportService) => {
+    expect(service).toBeTruthy();
+  }));
+
+  it('should properly set surveyTable flag', () => {
+    expect(exportService.isTransmartSurveyTable).toEqual(true);
+  });
+
 });

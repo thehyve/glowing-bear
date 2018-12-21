@@ -7,28 +7,49 @@
  */
 
 import {NgModule} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {GbAnalysisComponent} from './gb-analysis.component';
 import {routing} from './gb-analysis.routing';
 import {RouterModule} from '@angular/router';
-import {DragDropModule, OverlayPanelModule} from 'primeng/primeng';
-import {GbCrossTableComponent} from './gb-cross-table/gb-cross-table.component';
-import {GbDraggableCellComponent} from './gb-draggable-cell/gb-draggable-cell.component';
-import {GbDroppableZoneComponent} from './gb-droppable-zone/gb-droppable-zone.component';
+import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
+import {GbCrossTableComponent} from './cross-table-components/gb-cross-table/gb-cross-table.component';
+import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
+import {GbDroppableZoneComponent} from './cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
 import {TableModule} from 'primeng/table';
+import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-control/gb-fractalis-control.component';
+import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
+import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
+import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
+import {SliderModule} from 'primeng/slider';
+
 
 @NgModule({
   imports: [
+    FormsModule,
     CommonModule,
     routing,
     DragDropModule,
     TableModule,
-    OverlayPanelModule
+    OverlayPanelModule,
+    SelectButtonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatTooltipModule,
+    MatChipsModule,
+    SliderModule
   ],
   exports: [
     RouterModule
   ],
-  declarations: [GbAnalysisComponent, GbCrossTableComponent, GbDraggableCellComponent, GbDroppableZoneComponent]
+  declarations: [
+    GbAnalysisComponent, GbCrossTableComponent,
+    GbDraggableCellComponent, GbDroppableZoneComponent,
+    GbFractalisControlComponent,
+    GbFractalisVisualComponent,
+    GbFractalisChartComponent
+  ]
 })
 export class GbAnalysisModule {
 }

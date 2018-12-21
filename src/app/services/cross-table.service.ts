@@ -10,11 +10,10 @@ import {ApplicationRef, Injectable} from '@angular/core';
 import {CrossTable} from '../models/table-models/cross-table';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Constraint} from '../models/constraint-models/constraint';
-import {GbDraggableCellComponent} from '../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
+import {GbDraggableCellComponent} from '../modules/gb-analysis-module/cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {ValueConstraint} from '../models/constraint-models/value-constraint';
 import {ResourceService} from './resource.service';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Aggregate} from '../models/aggregate-models/aggregate';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
@@ -24,7 +23,9 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CrossTableService {
 
   /*
@@ -35,9 +36,6 @@ export class CrossTableService {
    *    first update the header constraints, which form the headers of the table,
    *    and are used for backend calls, then update the cells by making the getCrossTable call
    */
-  // the drag and drop context used by primeng library to associate draggable and droppable items
-  // this constant is used by gb-draggable-cell and gb-droppable-zone
-  public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
@@ -315,7 +313,6 @@ export class CrossTableService {
   get rowHeaderConstraints(): Constraint[][] {
     return this.crossTable.rowHeaderConstraints;
   }
-
 
   get crossTable(): CrossTable {
     return this._crossTable;

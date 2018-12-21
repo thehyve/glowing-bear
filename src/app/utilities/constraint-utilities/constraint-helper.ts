@@ -14,8 +14,8 @@ import {CombinationState} from '../../models/constraint-models/combination-state
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
-import {Query} from '../../models/query-models/query';
-import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
+import {Cohort} from '../../models/cohort-models/cohort';
+import {CohortSubscriptionFrequency} from '../../models/cohort-models/cohort-subscription-frequency';
 import {MessageHelper} from '../message-helper';
 import {DataTable} from '../../models/table-models/data-table';
 import {Dimension} from '../../models/table-models/dimension';
@@ -145,63 +145,43 @@ export class ConstraintHelper {
     return constraint;
   }
 
-  static mapQueryToObject(query: Query): object {
+  static mapCohortToObject(target: Cohort): object {
     let obj = {};
-    obj['id'] = query.id;
-    obj['name'] = query.name;
-    obj['bookmarked'] = query.bookmarked;
-    obj['subscribed'] = query.subscribed;
-    if (query.subscriptionFreq) {
-      obj['subscriptionFreq'] = query.subscriptionFreq;
+    obj['id'] = target.id;
+    obj['name'] = target.name;
+    obj['bookmarked'] = target.bookmarked;
+    obj['subscribed'] = target.subscribed;
+    if (target.subscriptionFreq) {
+      obj['subscriptionFreq'] = target.subscriptionFreq;
     }
-    if (query.description) {
-      obj['description'] = query.description;
+    if (target.description) {
+      obj['description'] = target.description;
     }
-    if (query.createDate) {
-      obj['createDate'] = query.createDate;
+    if (target.createDate) {
+      obj['createDate'] = target.createDate;
     }
-    if (query.updateDate) {
-      obj['updateDate'] = query.updateDate;
+    if (target.updateDate) {
+      obj['updateDate'] = target.updateDate;
     }
-    if (query.subjectQuery) {
-      obj['subjectQuery'] = ConstraintHelper.mapConstraintToObject(query.subjectQuery);
-    }
-    if (query.observationQuery) {
-      obj['observationQuery'] = query.observationQuery;
-    }
-    if (query.dataTable) {
-      obj['dataTable'] = ConstraintHelper.mapDataTabletoObject(query.dataTable);
+    if (target.constraint) {
+      obj['constraint'] = ConstraintHelper.mapConstraintToObject(target.constraint);
     }
     return obj;
   }
 
-  static mapObjectToQuery(obj: object): Query {
+  static mapObjectToCohort(obj: object): Cohort {
     try {
-      let query = new Query(obj['id'], obj['name']);
-      query.bookmarked = obj['bookmarked'] ? true : false;
-      query.subscribed = obj['subscribed'] ? true : false;
-      if (query.subscribed) {
-        query.subscriptionFreq = obj['subscriptionFreq'] ?
-          obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
+      let result = new Cohort(obj['id'], obj['name']);
+      result.bookmarked = obj['bookmarked'] ? true : false;
+      result.subscribed = obj['subscribed'] ? true : false;
+      if (result.subscribed) {
+        result.subscriptionFreq = obj['subscriptionFreq'] ?
+          obj['subscriptionFreq'] : CohortSubscriptionFrequency.WEEKLY;
       }
-      query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
-      query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
-      query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
-      query.observationQuery = obj['observationQuery'];
-      if (obj['dataTable']) {
-        query.dataTable = new DataTable();
-        if (obj['dataTable']['rowDimensions']) {
-          obj['dataTable']['rowDimensions'].forEach((name: string) => {
-            query.dataTable.rowDimensions.push(new Dimension(name));
-          });
-        }
-        if (obj['dataTable']['columnDimensions']) {
-          obj['dataTable']['columnDimensions'].forEach((name: string) => {
-            query.dataTable.columnDimensions.push(new Dimension(name));
-          });
-        }
-      }
-      return query;
+      result.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
+      result.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
+      result.constraint = ConstraintHelper.mapObjectToConstraint(obj['constraint']);
+      return result;
     } catch (e) {
       const message = 'Failed to convert to query.';
       console.error(message);

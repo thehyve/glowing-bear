@@ -9,7 +9,7 @@
 
 import {of as observableOf, Observable} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
@@ -33,7 +33,6 @@ export class TransmartResourceServiceMock {
   private _subjectSetConstraint: SubjectSetConstraint;
   private _inclusionCounts: TransmartCountItem;
   private _exclusionCounts: TransmartCountItem;
-  private _studyConceptCountObject: object;
 
   constructor() {
     this._studies = [];
@@ -338,14 +337,6 @@ export class TransmartResourceServiceMock {
     this._exclusionCounts = value;
   }
 
-  get studyConceptCountObject(): object {
-    return this._studyConceptCountObject;
-  }
-
-  set studyConceptCountObject(value: object) {
-    this._studyConceptCountObject = value;
-  }
-
   updateInclusionExclusionCounts(constraint: Constraint,
                                  inclusionConstraint: Constraint,
                                  exclusionConstraint?: Constraint): Promise<any> {
@@ -356,18 +347,6 @@ export class TransmartResourceServiceMock {
       this.exclusionCounts = new TransmartCountItem();
       this.exclusionCounts.patientCount = 0;
       this.exclusionCounts.observationCount = 0;
-      this.studyConceptCountObject = {
-        EHR: {
-          'EHR:DEM:AGE': {
-            patientCount: 4,
-            observationCount: 30
-          },
-          'EHR:VSIGN:HR': {
-            patientCount: 6,
-            observationCount: 70
-          }
-        }
-      }
       resolve(true);
     });
   }

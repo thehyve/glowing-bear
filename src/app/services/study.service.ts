@@ -16,7 +16,9 @@ import {map} from 'rxjs/operators';
  * This service loads all studies at startup and makes them available
  * for other components.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class StudyService {
 
   private _loaded: AsyncSubject<boolean> = new AsyncSubject<boolean>();

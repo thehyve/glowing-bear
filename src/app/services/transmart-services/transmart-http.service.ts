@@ -11,7 +11,6 @@ import {Injectable} from '@angular/core';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
@@ -31,7 +30,9 @@ import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class TransmartHttpService {
 
   static sortableDimensions = new Set<string>([
@@ -57,7 +58,6 @@ export class TransmartHttpService {
   set endpointUrl(value: string) {
     this._endpointUrl = value;
   }
-
 
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -447,7 +447,9 @@ export class TransmartHttpService {
       rowSort: tableState.rowSort,
       columnSort: tableState.columnSort
     };
-
+    // TODO: temporary solution, remember to include visit dimension after tranmsart is fixed
+    body.rowDimensions.splice(body.rowDimensions.indexOf('visit'), 1);
+    body.columnDimensions.splice(body.columnDimensions.indexOf('visit'), 1);
     return this.httpHelper.postCall(urlPart, body, null);
   }
 

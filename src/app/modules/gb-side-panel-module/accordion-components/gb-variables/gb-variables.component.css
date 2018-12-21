@@ -1,0 +1,10 @@
+.import-btn {
+  font-size: small;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+:host >>> .view-mode-button {
+  font-size: small !important;
+  margin-bottom: 3px !important;
+}

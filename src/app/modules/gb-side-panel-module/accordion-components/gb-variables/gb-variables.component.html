@@ -1,0 +1,21 @@
+<div>
+  <p-selectButton [options]="availableViewModes" [(ngModel)]="viewMode" styleClass="view-mode-button"></p-selectButton>
+
+  <!--Import criteria -->
+  <div *ngIf="isExport">
+    <div class="pull-right">
+      <button class="btn btn-outline-primary import-btn"
+              (click)="importVariables()"
+              type="button">
+        <span>import</span>
+        <input [id]="fileElementId"
+               type="file"
+               style="display: none"/>
+      </button>
+    </div>
+  </div>
+
+  <gb-variables-tree *ngIf="viewMode === VariablesViewMode.TREE_VIEW"></gb-variables-tree>
+  <gb-categorized-variables *ngIf="viewMode === VariablesViewMode.CATEGORIZED_VIEW"></gb-categorized-variables>
+
+</div>

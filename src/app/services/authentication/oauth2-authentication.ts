@@ -26,7 +26,9 @@ import {RedirectHelper} from '../../utilities/redirect-helper';
  * - Receive authorisation token via URL redirect
  * - Obtain access token using post with authorisation token
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class Oauth2Authentication implements AuthenticationMethod {
 
   private config: AppConfig;

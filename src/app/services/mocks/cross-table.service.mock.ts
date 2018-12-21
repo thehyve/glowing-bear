@@ -7,7 +7,9 @@
  */
 
 import {CrossTable} from '../../models/table-models/cross-table';
-import {GbDraggableCellComponent} from '../../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
+import {
+  GbDraggableCellComponent
+} from '../../modules/gb-analysis-module/cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {Concept} from '../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
@@ -385,6 +387,7 @@ export class CrossTableServiceMock {
     return false;
   }
 
-  clear() {}
+  clear() {
+  }
 
 }

@@ -26,17 +26,15 @@ given("there are no export jobs pending", () => {
 });
 
 when('I select all data', () => {
-  cy.get('.gb-data-selection-accordion-sub-header-2').eq(1).click();
-  cy.contains('Check all').click();
-  cy.get('.gb-data-selection-accordion-sub-header-2').eq(1).contains('Update').click();
-})
+  cy.get('.gb-nav').contains('Export').click();
+  cy.get('.checkAllText').find(".ui-chkbox-icon").eq(0).should('have.class', 'pi-check')
+});
 
 when('I export this data with the name {string}', (jobName) => {
-  cy.get('.gb-nav').contains('Export').click();
   cy.get('#exportJobNameInput').type(jobName);
   cy.contains('Create export').click();
 });
 
 then('then the job {string} has status {string}', (jobName, status) => {
-  cy.get('.ui-datatable-even').contains(jobName, {timeout: 2000000}).parent().parent().get('td').eq(1).contains(status);
+  cy.get('.ui-datatable-even', {timeout: 2000000}).contains(jobName, {timeout: 2500000}).parent().parent().find('td').eq(1).contains(status);
 });

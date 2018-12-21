@@ -8,6 +8,7 @@
 
 import * as moment from 'moment';
 import Diff = moment.unitOfTime.Diff;
+import {ChartType} from '../models/chart-models/chart-type';
 
 export class FormatHelper {
 
@@ -56,6 +57,14 @@ export class FormatHelper {
       metadataText += key + ': ' + value + '\n';
     });
     return metadataText;
+  }
+
+  /**
+   * Generate a unique identifier
+   * see https://gist.github.com/gordonbrander/2230317
+   */
+  public static generateId(): string {
+    return '_' + Math.random().toString(36).substr(2, 9);
   }
 
 }

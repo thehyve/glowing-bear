@@ -1,0 +1,56 @@
+<div class="fractalis-control-container">
+  <span *ngIf="isPreparingCache">
+    <div class="loading-text">
+      Preparing data, please wait <br/>
+      <span class="loading-blink">
+        <span>•</span><span>•</span><span>•</span>
+      </span>
+    </div>
+  </span>
+
+  <span *ngIf="!isPreparingCache">
+
+    <p-selectButton [options]="availableChartTypes"
+                    [(ngModel)]="selectedChartType"
+                    (onChange)="onSelectedChartTypeChange()"></p-selectButton>
+
+    <div *ngIf="isDropZoneShown"
+         class="drop-zone"
+         [pDroppable]="variablesDragDropScope"
+         [ngClass]="{'drop-zone-highlight': dragCounter > 0, 'drop-zone-highlight-invalid': isValidationError}"
+         (onDragEnter)="onDragEnter($event)"
+         (onDragLeave)="onDragLeave($event)"
+         (drop)="onDropVariable($event)">
+    <span *ngIf="selectedVariables.length === 0; else showDroppedVariables">
+      Drop variable(s) here
+    </span>
+    </div>
+    <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">
+      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+      {{message}}
+    </div>
+
+    <ng-template #showDroppedVariables>
+      <mat-chip-list>
+        <mat-chip
+            *ngFor="let variable of selectedVariables"
+            removable="true"
+            selectable="false"
+            (removed)="onRemoveVariable(variable)">
+          {{variable.name}}
+          <mat-icon matChipRemove>cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+    </ng-template>
+
+    <div class="btn-container">
+    <span *ngIf="isClearButtonShown">
+       <button type="button" class="btn btn-primary btn-sm" (click)="onClearControl()">Clear</button>
+    </span>
+      <span *ngIf="isAddButtonShown">
+        <button type="button" class="btn btn-primary btn-sm" (click)="onAddChart()">Add</button>
+      </span>
+    </div>
+  </span>
+
+</div>

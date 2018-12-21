@@ -8,14 +8,13 @@
 
 
 import {Observable, of as observableOf, throwError as observableThrowError} from 'rxjs';
-
 import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {TransmartQuery} from '../models/transmart-models/transmart-query';
@@ -36,15 +35,14 @@ import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggre
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ResourceService {
 
   private _endpointMode: EndpointMode;
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  private _selectedStudyCountMap: Map<string, CountItem>;
-  private _selectedConceptCountMap: Map<string, CountItem>;
 
   constructor(private transmartResourceService: TransmartResourceService) {
     this.endpointMode = EndpointMode.TRANSMART;
@@ -98,18 +96,13 @@ export class ResourceService {
     return new Promise<any>((resolve, reject) => {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+          this.transmartResourceService
+            .updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
             .then(() => {
               this.inclusionCounts =
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
               this.exclusionCounts =
                 TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
-              this.selectedStudyConceptCountMap =
-                TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
-              this.selectedStudyCountMap =
-                TransmartMapper.mapStudyCountObject(this.transmartResourceService.studyCountObject);
-              this.selectedConceptCountMap =
-                TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
               resolve(true);
             })
             .catch(err => {
@@ -414,12 +407,12 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query calls --------------------------------------
+  // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
    * @returns {Observable<TransmartQuery[]>}
    */
-  getQueries(): Observable<Query[]> {
+  getCohorts(): Observable<Cohort[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getQueries().pipe(
@@ -435,13 +428,13 @@ export class ResourceService {
 
   /**
    * Save a new query.
-   * @param {Query} query
-   * @returns {Observable<Query>}
+   * @param {Cohort} query
+   * @returns {Observable<Cohort>}
    */
-  saveQuery(query: Query): Observable<Query> {
+  saveCohort(cohort: Cohort): Observable<Cohort> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
+        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(cohort);
         return this.transmartResourceService.saveQuery(transmartQuery).pipe(
           map((savedTransmartQuery: TransmartQuery) => {
             return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
@@ -454,15 +447,15 @@ export class ResourceService {
   }
 
   /**
-   * Modify an existing query.
-   * @param {string} queryId
-   * @param {Object} queryBody
+   * Modify an existing cohort.
+   * @param {string} id
+   * @param {Object} body
    * @returns {Observable<{}>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
+  editCohort(id: string, body: object): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.updateQuery(queryId, queryBody);
+        return this.transmartResourceService.updateQuery(id, body);
       }
       default: {
         return this.handleEndpointModeError();
@@ -471,14 +464,14 @@ export class ResourceService {
   }
 
   /**
-   * Delete an existing query.
-   * @param {string} queryId
+   * Delete an existing cohort.
+   * @param {string} id
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.deleteQuery(queryId);
+        return this.transmartResourceService.deleteQuery(id);
       }
       default: {
         return this.handleEndpointModeError();
@@ -498,11 +491,11 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query differences --------------------------------------
-  diffQuery(queryId: string): Observable<object[]> {
+  // -------------------------------------- cohort differences --------------------------------------
+  diffCohort(id: string): Observable<object[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.diffQuery(queryId);
+        return this.transmartResourceService.diffQuery(id);
       }
       default: {
         return this.handleEndpointModeError();
@@ -544,8 +537,11 @@ export class ResourceService {
         return this.transmartResourceService
           .getCrossTable(
             crossTable.constraint,
-            crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints))).pipe(
+            crossTable.rowHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+            crossTable.columnHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
+          .pipe(
             map((tmCrossTable: TransmartCrossTable) => {
               return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
             }));
@@ -571,30 +567,6 @@ export class ResourceService {
 
   set exclusionCounts(value: CountItem) {
     this._exclusionCounts = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
-  }
-
-  get selectedStudyCountMap(): Map<string, CountItem> {
-    return this._selectedStudyCountMap;
-  }
-
-  set selectedStudyCountMap(value: Map<string, CountItem>) {
-    this._selectedStudyCountMap = value;
-  }
-
-  get selectedConceptCountMap(): Map<string, CountItem> {
-    return this._selectedConceptCountMap;
-  }
-
-  set selectedConceptCountMap(value: Map<string, CountItem>) {
-    this._selectedConceptCountMap = value;
   }
 
   get endpointMode(): EndpointMode {

@@ -8,6 +8,7 @@
 
 import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
+import {CountItem} from '../aggregate-models/count-item';
 
 export class Concept {
   private _path: string;
@@ -18,6 +19,9 @@ export class Concept {
   private _code: string;
   private _name: string;
   private _fullName: string;
+  private _counts: CountItem;
+  // a flag indicating if the concept is selected/checked/marked
+  private _selected = true;
 
   constructor() {
   }
@@ -76,5 +80,21 @@ export class Concept {
 
   set fullName(value: string) {
     this._fullName = value;
+  }
+
+  get selected(): boolean {
+    return this._selected;
+  }
+
+  set selected(value: boolean) {
+    this._selected = value;
+  }
+
+  get counts(): CountItem {
+    return this._counts;
+  }
+
+  set counts(value: CountItem) {
+    this._counts = value;
   }
 }

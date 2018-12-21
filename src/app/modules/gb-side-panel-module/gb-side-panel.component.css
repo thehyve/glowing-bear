@@ -30,10 +30,19 @@
   cursor: pointer;
 }
 
-.gb-side-accordion-container {
+.accordion-container {
   margin-top: var(--gb-navbar-height-extra);
 }
 
-.gb-side-panel-container {
+.side-panel-container {
   margin-bottom: 5em;
+}
+
+
+:host >>> .ui-accordion .ui-accordion-content {
+  padding: 1em;
+}
+
+:host >>> .ui-accordion .ui-accordion-header {
+  background-color: white;
 }

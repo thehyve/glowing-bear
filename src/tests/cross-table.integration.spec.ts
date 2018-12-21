@@ -9,7 +9,6 @@
 import {ResourceService} from '../app/services/resource.service';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
 import {TestBed} from '@angular/core/testing';
-import {DropMode} from '../app/models/drop-mode';
 import {CrossTableService} from '../app/services/cross-table.service';
 import {ConstraintService} from '../app/services/constraint.service';
 import {TreeNode} from 'primeng/api';
@@ -77,7 +76,6 @@ describe('Integration tests for cross table ', () => {
       valueType: 'CATEGORICAL'
     };
     selectedTreeNode['constraint'] = constraintObj;
-    selectedTreeNode['dropMode'] = DropMode.TreeNode;
     selectedTreeNode['fullName'] = '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_1\\';
     selectedTreeNode['icon'] = 'icon-abc';
     selectedTreeNode['label'] = 'categorical_1 (sub: 1200, obs: 1200)';
@@ -99,7 +97,7 @@ describe('Integration tests for cross table ', () => {
     let spy3 = spyOn(resourceService, 'getCrossTable').and.callFake(() => {
       return observableOf(crossTableService.crossTable);
     });
-    let conjunctiveCategorical = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
+    let conjunctiveCategorical = constraintService.generateConstraintFromTreeNode(selectedTreeNode);
     crossTableService.crossTable.rowConstraints.push(conjunctiveCategorical);
     let isValid = crossTableService.isValidConstraint(conjunctiveCategorical);
     conjunctiveCategorical.textRepresentation = CrossTableService.brief(conjunctiveCategorical);
@@ -124,7 +122,7 @@ describe('Integration tests for cross table ', () => {
     categorical.concept.code = 'ORACLE_1000_PATIENT_2';
     categorical.concept.label = 'categorical_2 (sub: 1200, obs: 1200)';
     categorical.concept.type = ConceptType.CATEGORICAL;
-    let conjunctiveCategorical: Constraint = constraintService.generateConstraintFromTreeNode(selectedTreeNode, DropMode.TreeNode);
+    let conjunctiveCategorical: Constraint = constraintService.generateConstraintFromTreeNode(selectedTreeNode);
     crossTableService.crossTable.rowConstraints.push(categorical);
     crossTableService.crossTable.columnConstraints.push(conjunctiveCategorical);
     expect(crossTableService.crossTable.rowHeaderConstraints).toBeUndefined();
