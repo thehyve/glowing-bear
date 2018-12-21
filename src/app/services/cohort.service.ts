@@ -201,14 +201,14 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       forkJoin(
         this.resourceService.getCounts(combination),
-        this.resourceService.getCountsPerConcept(combination),
+        this.resourceService.getCountsPerStudy(combination),
         this.resourceService.getCountsPerStudyAndConcept(combination),
-        this.resourceService.getCountsPerStudy(combination)
+        this.resourceService.getCountsPerConcept(combination)
       ).subscribe(res => {
         this.allCounts = res[0];
-        this.constraintService.selectedConceptCountMap = res[1];
+        this.constraintService.selectedStudyCountMap = res[1];
         this.constraintService.selectedStudyConceptCountMap = res[2];
-        this.constraintService.selectedStudyCountMap = res[3];
+        this.constraintService.selectedConceptCountMap = res[3];
         this.isUpdatingAll = false;
         resolve(true);
       }, (err) => {
