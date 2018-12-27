@@ -8,5 +8,6 @@
     "authentication-service-type": "oidc",
     "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
     "oidc-client-id": "transmart-client"
-  }
+  },
+  "defaultCommandTimeout": 30000
 }

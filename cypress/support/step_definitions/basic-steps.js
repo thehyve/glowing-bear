@@ -32,6 +32,6 @@ given("I am on the cohort-selection tab", () => {
   cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
   cy.get('input[placeholder="add criterion"]').eq(0).should('be.visible');
 
-  cy.wait('@getCounts', {timeout: 10000});
+  cy.wait('@getCounts');
 });
 

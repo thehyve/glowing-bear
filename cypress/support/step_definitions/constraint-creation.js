@@ -8,7 +8,7 @@ when("I use public study {string} as a constraint", (studyName) => {
 });
 
 then("there are {string} subjects", (subjects) => {
-  cy.get('.subject-count-box', {timeout: 100000}).eq(2).should('contain', subjects);
+  cy.get('.subject-count-box').eq(2).should('contain', subjects);
 });
 
 when("I select all female patients from CATEGORICAL_VALUES", () => {
