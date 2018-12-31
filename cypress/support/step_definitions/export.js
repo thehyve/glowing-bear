@@ -27,7 +27,7 @@ given("there are no export jobs pending", () => {
 
 when('I select all data', () => {
   cy.get('.gb-nav').contains('Export').click();
-  cy.get('.checkAllText').find(".ui-chkbox-icon").eq(0).should('have.class', 'pi-check')
+  cy.get('.checkAllText').find(".ui-chkbox-box").click()
 });
 
 when('I export this data with the name {string}', (jobName) => {
@@ -36,5 +36,5 @@ when('I export this data with the name {string}', (jobName) => {
 });
 
 then('then the job {string} has status {string}', (jobName, status) => {
-  cy.get('.ui-datatable-even', {timeout: 2000000}).contains(jobName, {timeout: 2500000}).parent().parent().find('td').eq(1).contains(status);
+  cy.get('.ui-datatable-even').contains(jobName).parent().parent().find('td').eq(1).contains(status);
 });

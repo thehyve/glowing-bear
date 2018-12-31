@@ -25,8 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
-  cy.contains(nodeName).parent().parent().children('.ui-tree-toggler').should('be.visible');
-  cy.contains(nodeName).parent().parent().children('.ui-tree-toggler').click();
+  cy.get('.ui-treenode :visible').contains(nodeName).parent().parent().children('.ui-tree-toggler').click();
 });
 
 Cypress.Commands.add('drag', (nodeName, options = {}) => {
@@ -38,7 +37,7 @@ Cypress.Commands.add('drop', (inputNum, options = {}) => {
 });
 
 Cypress.Commands.add('removeChip', (chipName, options = {}) => {
-  cy.get('li').contains(chipName).click();
+  cy.get('li.ui-multiselect-item').contains(chipName).click();
 });
 
 
