@@ -37,6 +37,7 @@
     "font-awesome": "^4.7.0",
     "fractalis": "^1.4.0",
     "jwt-decode": "^2.2.0",
+    "material-design-icons": "^3.0.1",
     "md2": "^0.0.29",
     "moment": "^2.22.2",
     "primeicons": "^1.0.0-beta.10",
