@@ -541,6 +541,15 @@ export class ConstraintService {
     return constraint;
   }
 
+  public identifyDraggedElement(): Concept {
+    if (this.draggedVariable) {
+      return this.draggedVariable;
+    } else if (this.treeNodeService.selectedTreeNode) {
+      return this.treeNodeService.getConceptFromTreeNode(this.treeNodeService.selectedTreeNode);
+    }
+    return null;
+  }
+
 
   /*
    * ------------------------------------------------------------------------- variables-related methods

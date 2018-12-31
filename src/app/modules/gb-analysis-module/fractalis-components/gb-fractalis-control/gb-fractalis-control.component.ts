@@ -7,11 +7,10 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {FractalisService} from '../../../../services/fractalis.service';
-import {SelectItem, TreeNode} from 'primeng/api';
+import {SelectItem} from 'primeng/api';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
-import {TreeNodeService} from '../../../../services/tree-node.service';
 
 @Component({
   selector: 'gb-fractalis-control',
@@ -23,8 +22,7 @@ export class GbFractalisControlComponent implements OnInit {
   dragCounter = 0;
 
   constructor(private fractalisService: FractalisService,
-              private constraintService: ConstraintService,
-              private treeNodeService: TreeNodeService) {
+              private constraintService: ConstraintService) {
   }
 
   ngOnInit() {
@@ -50,7 +48,7 @@ export class GbFractalisControlComponent implements OnInit {
     e.preventDefault();
     this.dragCounter = 0;
     this.fractalisService.clearValidation();
-    let variable = this.identifyDraggedElement();
+    let variable = this.constraintService.identifyDraggedElement();
     if (variable) {
       this.fractalisService.validateVariableUploadStatus(variable).then(valid => {
         if (valid) {
@@ -77,15 +75,6 @@ export class GbFractalisControlComponent implements OnInit {
   onSelectedChartTypeChange() {
     this.selectedVariables.length = 0;
     this.fractalisService.clearValidation();
-  }
-
-  private identifyDraggedElement(): Concept {
-    if (this.constraintService.draggedVariable) {
-      return this.constraintService.draggedVariable;
-    } else if (this.treeNodeService.selectedTreeNode) {
-      return this.treeNodeService.getConceptFromTreeNode(this.treeNodeService.selectedTreeNode);
-    }
-    return null;
   }
 
   get isDropZoneShown(): boolean {
