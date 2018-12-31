@@ -36,5 +36,5 @@ when('I export this data with the name {string}', (jobName) => {
 });
 
 then('then the job {string} has status {string}', (jobName, status) => {
-  cy.get('.ui-datatable-even').contains(jobName).parent().parent().find('td').eq(1).contains(status);
+  cy.get('tr.ui-datatable-even').should('contain', jobName).and('contain', status);
 });
