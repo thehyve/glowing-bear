@@ -102,7 +102,6 @@ describe('GbFractalisControlComponent', () => {
     expect(spy).toHaveBeenCalledWith(dummy);
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
-    expect(component.selectedVariables[0]).toBe(dummy);
     expect(component.isValidationError).toBe(false);
     expect(component.validationErrorMessages.length).toBe(0);
   });
@@ -165,8 +164,7 @@ describe('GbFractalisControlComponent', () => {
     constraintService.draggedVariable = dummy;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
-    let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.stub();
-    let spy3 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
+    let spy2 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
       return {
         then: function (callback) {
           return callback(true);
@@ -178,9 +176,7 @@ describe('GbFractalisControlComponent', () => {
 
     expect(component.dragCounter).toBe(0);
     expect(spy1).toHaveBeenCalled();
-    expect(spy2).not.toHaveBeenCalled();
     expect(component.selectedVariables.length).toBe(1);
-    expect(component.selectedVariables[0]).toBe(dummy);
   });
 
   it('should identify tree node dragged', () => {
@@ -188,7 +184,7 @@ describe('GbFractalisControlComponent', () => {
     treeNodeService.selectedTreeNode = {} as TreeNode;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
-    let spy2 = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
+    let spy2 = spyOn(constraintService, 'identifyDraggedElement').and.callThrough();
     let spy3 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
       return {
         then: function (callback) {

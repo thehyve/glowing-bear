@@ -60,9 +60,10 @@ export class GbDroppableZoneComponent implements OnInit {
     // if no existing constraint (from one of the already created draggable cells) is used,
     // try to create a new one based on the (possible) variable drop
     if (!constraint) {
-      if (this.constraintService.draggedVariable) {
+      let variable = this.constraintService.identifyDraggedElement();
+      if (variable) {
         constraint = new ConceptConstraint();
-        (<ConceptConstraint>constraint).concept = this.constraintService.draggedVariable;
+        (<ConceptConstraint>constraint).concept = variable;
         if (constraint && this.crossTableService.isValidConstraint(constraint)) {
           constraint.textRepresentation = CrossTableService.brief(constraint);
           this.constraints.push(constraint);

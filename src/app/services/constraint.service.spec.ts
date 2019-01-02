@@ -21,6 +21,7 @@ import {VariablesViewMode} from '../models/variables-view-mode';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
+import {TreeNode} from 'primeng/api';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
@@ -166,6 +167,28 @@ describe('ConstraintService', () => {
     let children = (result2 as CombinationConstraint).children.filter(c => c instanceof CombinationConstraint);
     expect(children.length).toBe(1);
     expect((children[0] as CombinationConstraint).children.filter(c => c instanceof ConceptConstraint).length).toBe(1);
+  });
+
+  it('should identify tree node variable dragged', () => {
+    constraintService.draggedVariable = null;
+    treeNodeService.selectedTreeNode = {} as TreeNode;
+    let spy = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
+
+    let element = constraintService.identifyDraggedElement();
+
+    expect(spy).toHaveBeenCalled();
+    expect(element).not.toBeNull();
+    expect(element).toEqual(jasmine.any(Concept));
+  });
+
+  it('should identify categorized variable dragged', () => {
+    constraintService.draggedVariable = new Concept();
+    treeNodeService.selectedTreeNode = null;
+
+    let element = constraintService.identifyDraggedElement();
+
+    expect(element).not.toBeNull();
+    expect(element).toEqual(jasmine.any(Concept));
   });
 
 });

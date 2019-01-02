@@ -59,4 +59,8 @@ export class ConstraintServiceMock {
   public searchAllConstraints(query: string): Constraint[] {
     return [];
   }
+
+  public identifyDraggedElement(): Concept {
+    return new Concept();
+  }
 }
