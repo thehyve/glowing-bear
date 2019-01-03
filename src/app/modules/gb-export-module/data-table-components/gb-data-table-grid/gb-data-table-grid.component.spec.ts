@@ -13,6 +13,7 @@ import {DataTableService} from '../../../../services/data-table.service';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 import {TableModule} from 'primeng/table';
 import {TooltipModule} from 'primeng/primeng';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('GbDataTableGridComponent', () => {
   let component: GbDataTableGridComponent;
@@ -23,7 +24,8 @@ describe('GbDataTableGridComponent', () => {
       declarations: [GbDataTableGridComponent],
       imports: [
         TableModule,
-        TooltipModule
+        TooltipModule,
+        GbGenericModule
       ],
       providers: [
         {

@@ -12,6 +12,7 @@ import {GbDataTableComponent} from './gb-data-table.component';
 import {MockComponent} from 'ng2-mock-component';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';
 import {DataTableService} from '../../../../services/data-table.service';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('GbDataTableComponent', () => {
   let component: GbDataTableComponent;
@@ -23,6 +24,9 @@ describe('GbDataTableComponent', () => {
         GbDataTableComponent,
         MockComponent({selector: 'gb-data-table-dimensions'}),
         MockComponent({selector: 'gb-data-table-grid'})
+      ],
+      imports: [
+        GbGenericModule
       ],
       providers: [
         {

@@ -28,6 +28,7 @@ import {GbValidatorsModule} from '../../validators/gb-validators.module';
 import {By} from '@angular/platform-browser';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 
 
 const createMockJob = (id: string, name: string) => {
@@ -76,7 +77,8 @@ describe('GbExportComponent (dataTable)', () => {
         MessagesModule,
         MatExpansionModule,
         OverlayPanelModule,
-        GbValidatorsModule
+        GbValidatorsModule,
+        GbGenericModule
       ],
       providers: [
         {
@@ -144,6 +146,7 @@ describe('GbExportComponent (surveyTable)', () => {
         MatExpansionModule,
         OverlayPanelModule,
         GbValidatorsModule,
+        GbGenericModule
       ],
       providers: [
         {

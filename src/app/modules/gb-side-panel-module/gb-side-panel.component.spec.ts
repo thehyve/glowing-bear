@@ -32,6 +32,7 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {MatExpansionModule} from '@angular/material';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -64,7 +65,8 @@ describe('GbSidePanelComponent', () => {
         RadioButtonModule,
         CheckboxModule,
         MatExpansionModule,
-        SelectButtonModule
+        SelectButtonModule,
+        GbGenericModule
       ],
       providers: [
         {

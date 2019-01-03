@@ -16,6 +16,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
 import {OverlayPanelModule} from 'primeng/primeng';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;
@@ -25,7 +26,8 @@ describe('GbCrossTableComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TableModule,
-        OverlayPanelModule
+        OverlayPanelModule,
+        GbGenericModule
       ],
       providers: [
         {

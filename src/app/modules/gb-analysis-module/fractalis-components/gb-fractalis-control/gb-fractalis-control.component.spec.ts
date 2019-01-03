@@ -14,6 +14,7 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {By} from '@angular/platform-browser';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
@@ -30,7 +31,8 @@ describe('GbFractalisControlComponent', () => {
         SelectButtonModule,
         DragDropModule,
         MatIconModule,
-        MatChipsModule
+        MatChipsModule,
+        GbGenericModule
       ],
       providers: [
         {
