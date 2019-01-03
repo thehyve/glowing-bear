@@ -254,7 +254,7 @@ export class TreeNodeService {
       let head = fullName.substring(0, fullName.length - tail.length);
       concept.label = treeNode['name'] + ' (' + head + ')';
       concept.path = treeNode['conceptPath'];
-      concept.type = <ConceptType> treeNode['type'];
+      concept.type = <ConceptType>treeNode['type'];
       concept.code = treeNode['conceptCode'];
       concept.fullName = treeNode['fullName'];
       concept.name = treeNode['name'];
@@ -398,6 +398,10 @@ export class TreeNodeService {
   }
 
   copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    return this.copyTreeNodesIterative(nodes);
+  }
+
+  copyTreeNodesIterative(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node['parent'];
@@ -406,7 +410,7 @@ export class TreeNodeService {
       node['children'] = null;
       let nodeCopy = JSON.parse(JSON.stringify(node));
       if (children) {
-        let childrenCopy = this.copyTreeNodes(children);
+        let childrenCopy = this.copyTreeNodesIterative(children);
         nodeCopy['children'] = childrenCopy;
       }
       nodesCopy.push(nodeCopy);

@@ -4,7 +4,7 @@
     <span class="gb-logo-text" (click)="goToDocUrl()">GLOWING BEAR</span>
   </div>
 
-  <div class="accordion-container">
+  <div class="accordion-container" *ngIf="isTreeNodesLoadingCompleted">
     <p-accordion [multiple]="true">
 
       <div *ngIf="isDataSelection">
@@ -23,4 +23,9 @@
 
     </p-accordion>
   </div>
+
+  <div style="top: 200px">
+    <gb-loading [loading]="!isTreeNodesLoadingCompleted"></gb-loading>
+  </div>
+
 </div>
