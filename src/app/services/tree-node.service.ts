@@ -398,10 +398,6 @@ export class TreeNodeService {
   }
 
   copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
-    return this.copyTreeNodesIterative(nodes);
-  }
-
-  copyTreeNodesIterative(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node['parent'];
@@ -410,7 +406,7 @@ export class TreeNodeService {
       node['children'] = null;
       let nodeCopy = JSON.parse(JSON.stringify(node));
       if (children) {
-        let childrenCopy = this.copyTreeNodesIterative(children);
+        let childrenCopy = this.copyTreeNodes(children);
         nodeCopy['children'] = childrenCopy;
       }
       nodesCopy.push(nodeCopy);
