@@ -15,8 +15,5 @@
   </p-tree>
 
   <!-- the loading indicator -->
-  <div *ngIf="!isTreeNodeLoadingCompleted" style="margin: auto;">
-    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
-  </div>
-
+  <gb-loading [loading]="!isTreeNodeLoadingCompleted"></gb-loading>
 </div>

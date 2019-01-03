@@ -26,11 +26,7 @@
       </mat-expansion-panel-header>
 
       <div *ngIf="!isExportCreationUIShown; else showExportCreationUI">
-        <div class="loading-text">
-          <span class="loading-blink">
-            <span>•</span><span>•</span><span>•</span>
-          </span>
-        </div>
+        <gb-loading></gb-loading>
       </div>
 
       <ng-template #showExportCreationUI>

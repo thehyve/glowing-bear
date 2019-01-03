@@ -230,4 +230,8 @@ export class GbCohortsComponent implements OnInit {
       '...' : FormatHelper.formatCountNumber(count);
     return count === 1 ? countString + ' subject selected' : countString + ' subjects selected';
   }
+
+  get isTreeNodesLoadingCompleted(): boolean {
+    return this.treeNodeService.isTreeNodesLoadingCompleted;
+  }
 }

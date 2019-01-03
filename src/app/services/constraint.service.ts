@@ -175,7 +175,7 @@ export class ConstraintService {
 
     // When the selectedConceptCountMap is updated, update the corresponding variable list and tree
     this.selectedConceptCountMapUpdated.asObservable()
-      .subscribe(() => {
+      .subscribe((val) => {
         this.updateVariables();
         this.updateVariablesTreeData();
       });

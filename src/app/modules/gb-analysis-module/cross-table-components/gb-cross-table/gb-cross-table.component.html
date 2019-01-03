@@ -33,9 +33,7 @@
     </div>
     <div class="col-md-9">
       <!-- when the table is still updating -->
-      <div *ngIf="isUpdating">
-        <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
-      </div>
+      <gb-loading [loading]="isUpdating"></gb-loading>
 
       <!-- when the table finished updating, the table content goes here -->
       <div *ngIf="!isUpdating">

@@ -38,6 +38,7 @@ import {
   GbCategorizedVariablesComponent
 } from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
 import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 
 @NgModule({
   imports: [
@@ -59,7 +60,8 @@ import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-v
     ToggleButtonModule,
     CheckboxModule,
     MatExpansionModule,
-    SelectButtonModule
+    SelectButtonModule,
+    GbGenericModule
   ],
   declarations: [
     GbSidePanelComponent,
