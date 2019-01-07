@@ -21,8 +21,7 @@ export class GbSidePanelComponent implements OnInit {
   docUrl: string;
 
   constructor(private appConfig: AppConfig,
-              private navbarService: NavbarService,
-              private treeNodeService: TreeNodeService) {
+              private navbarService: NavbarService) {
     this.docUrl = appConfig.getConfig('doc-url');
   }
 
@@ -35,9 +34,5 @@ export class GbSidePanelComponent implements OnInit {
 
   goToDocUrl() {
     window.open(this.docUrl);
-  }
-
-  get isTreeNodesLoadingCompleted(): boolean {
-    return this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 }

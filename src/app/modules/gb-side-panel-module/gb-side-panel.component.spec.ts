@@ -18,8 +18,6 @@ import {
 import {FormsModule} from '@angular/forms';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
-import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
-import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CohortService} from '../../services/cohort.service';
 import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
@@ -72,10 +70,6 @@ describe('GbSidePanelComponent', () => {
         {
           provide: AppConfig,
           useClass: AppConfigMock
-        },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

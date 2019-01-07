@@ -19,6 +19,7 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../config/app.config';
 import {FormatHelper} from '../utilities/format-helper';
+import {Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,7 @@ export class TreeNodeService {
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
+  public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
 
   // the status indicating the when the tree is being loaded or finished loading
   private _validTreeNodeTypes: string[] = [];
@@ -142,6 +144,7 @@ export class TreeNodeService {
             } else {
               resolve(true);
             }
+            this.treeNodesUpdated.next(this.isTreeNodesLoadingCompleted);
           },
           (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);

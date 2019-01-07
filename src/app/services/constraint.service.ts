@@ -29,8 +29,9 @@ import {StudyService} from './study.service';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
-import {Subject} from 'rxjs';
+import {Subject, forkJoin, Observable} from 'rxjs';
 import {VariablesViewMode} from '../models/variables-view-mode';
+import {map} from 'rxjs/operators';
 
 /**
  * This service concerns with
@@ -173,12 +174,18 @@ export class ConstraintService {
         console.error(err);
       });
 
-    // When the selectedConceptCountMap is updated, update the corresponding variable list and tree
-    this.selectedConceptCountMapUpdated.asObservable()
-      .subscribe((val) => {
+    // When the selectedConceptCountMap is updated and the tree is finished loading,
+    // update the corresponding variable list and tree
+    Observable.combineLatest(
+      this.selectedConceptCountMapUpdated.asObservable(),
+      this.treeNodeService.treeNodesUpdated.asObservable()
+    ).subscribe(res => {
+      const isTreeLoadingFinished = res[1];
+      if (isTreeLoadingFinished) {
         this.updateVariables();
         this.updateVariablesTreeData();
-      });
+      }
+    });
   }
 
   private loadEmptyConstraints() {
@@ -606,6 +613,7 @@ export class ConstraintService {
       }
     });
   }
+
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
