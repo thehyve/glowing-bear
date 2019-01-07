@@ -1,7 +1,5 @@
 <div *ngIf="isUpdating; else showDataTableGrid">
-  <span class="loading-blink">
-      <span>•</span><span>•</span><span>•</span>
-  </span>
+  <gb-loading></gb-loading>
 </div>
 
 <ng-template #showDataTableGrid>

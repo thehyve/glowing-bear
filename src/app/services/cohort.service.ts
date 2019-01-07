@@ -24,7 +24,6 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {forkJoin} from 'rxjs';
-import {DataTableService} from './data-table.service';
 
 /**
  * This service concerns with

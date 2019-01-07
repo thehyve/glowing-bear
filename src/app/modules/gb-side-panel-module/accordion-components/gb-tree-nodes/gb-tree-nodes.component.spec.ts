@@ -18,6 +18,7 @@ import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
 import {CohortService} from '../../../../services/cohort.service';
 import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('TreeNodesComponent', () => {
   let component: GbTreeNodesComponent;
@@ -33,7 +34,8 @@ describe('TreeNodesComponent', () => {
         OverlayPanelModule,
         DragDropModule,
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        GbGenericModule
       ],
       providers: [
         {

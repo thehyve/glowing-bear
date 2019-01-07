@@ -9,6 +9,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
 import {AppConfig} from '../../config/app.config';
+import {TreeNodeService} from '../../services/tree-node.service';
 
 @Component({
   selector: 'gb-side-panel',

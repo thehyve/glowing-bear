@@ -9,6 +9,7 @@
 import {TreeNode} from 'primeng/primeng';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Concept} from '../../models/constraint-models/concept';
+import {Subject} from 'rxjs';
 
 export class TreeNodeServiceMock {
   // the variable that holds the entire tree structure, used by the tree on the left
@@ -25,6 +26,7 @@ export class TreeNodeServiceMock {
   public selectedTreeNode;
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
+  public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
 
   public conceptCountMap: Map<string, CountItem>;
   public studyCountMap: Map<string, CountItem>;

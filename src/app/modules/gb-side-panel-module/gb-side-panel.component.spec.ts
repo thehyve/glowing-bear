@@ -18,8 +18,6 @@ import {
 import {FormsModule} from '@angular/forms';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
-import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
-import {TreeNodeService} from '../../services/tree-node.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CohortService} from '../../services/cohort.service';
 import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
@@ -32,6 +30,7 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {MatExpansionModule} from '@angular/material';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -64,16 +63,13 @@ describe('GbSidePanelComponent', () => {
         RadioButtonModule,
         CheckboxModule,
         MatExpansionModule,
-        SelectButtonModule
+        SelectButtonModule,
+        GbGenericModule
       ],
       providers: [
         {
           provide: AppConfig,
           useClass: AppConfigMock
-        },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
         },
         {
           provide: ConstraintService,

@@ -13,6 +13,7 @@ import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mo
 import {ConstraintService} from '../../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
 import {TreeModule} from 'primeng/tree';
+import {GbGenericModule} from '../../../../gb-generic-module/gb-generic.module';
 
 describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;
@@ -28,7 +29,8 @@ describe('GbVariablesTreeComponent', () => {
         DragDropModule,
         MatExpansionModule,
         CheckboxModule,
-        TreeModule
+        TreeModule,
+        GbGenericModule
       ],
       providers: [
         {

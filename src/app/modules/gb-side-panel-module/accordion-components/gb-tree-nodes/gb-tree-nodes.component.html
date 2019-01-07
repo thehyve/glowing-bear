@@ -1,45 +1,45 @@
 <div id="tree-nodes-component">
 
-  <!--the search/filter input-->
-  <div>
-    <p-autoComplete [(ngModel)]="searchTerm"
-                    styleClass="gb-tree-filter-input"
-                    placeholder="filter"
-                    (onClear)="onFiltering($event)"
-                    (completeMethod)="onFiltering($event)"></p-autoComplete>
-    <span>&nbsp;</span>
-    <button class="btn btn-secondary btn-sm filter-btn"
-            (click)="clearFilter()"
-            type="button">clear
-    </button>
-    <div *ngIf="hits > 0" class="filter-result">
-      {{hits}} results found
-    </div>
-  </div>
-
-
-  <!-- the tree itself -->
-  <p-tree [value]="treeNodeService.treeNodes"
-          (onNodeExpand)="expandNode($event)"
-          draggableNodes="true"
-          styleClass="gb-tree-container"></p-tree>
-
-  <!-- the metadata popup -->
-  <p-overlayPanel #treeNodeMetadataPanel
-                  [dismissable]="true"
-                  [showCloseIcon]="false">
-    <!--{{metadataContent}}-->
-    <div *ngFor="let item of metadataContent">
-      <div class="ui-grid-row metadata-row">
-        {{item.key}}: {{item.val}}
+  <div *ngIf="!isLoading">
+    <!--the search/filter input-->
+    <div>
+      <p-autoComplete [(ngModel)]="searchTerm"
+                      styleClass="gb-tree-filter-input"
+                      placeholder="filter"
+                      (onClear)="onFiltering($event)"
+                      (completeMethod)="onFiltering($event)"></p-autoComplete>
+      <span>&nbsp;</span>
+      <button class="btn btn-secondary btn-sm filter-btn"
+              (click)="clearFilter()"
+              type="button">clear
+      </button>
+      <div *ngIf="hits > 0" class="filter-result">
+        {{hits}} results found
       </div>
     </div>
-  </p-overlayPanel>
 
 
-  <!-- the loading indicator -->
-  <div *ngIf="isLoading" style="margin: auto;">
-    <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+    <!-- the tree itself -->
+    <p-tree [value]="treeNodeService.treeNodes"
+            (onNodeExpand)="expandNode($event)"
+            draggableNodes="true"
+            styleClass="gb-tree-container"></p-tree>
+
+    <!-- the metadata popup -->
+    <p-overlayPanel #treeNodeMetadataPanel
+                    [dismissable]="true"
+                    [showCloseIcon]="false">
+      <!--{{metadataContent}}-->
+      <div *ngFor="let item of metadataContent">
+        <div class="ui-grid-row metadata-row">
+          {{item.key}}: {{item.val}}
+        </div>
+      </div>
+    </p-overlayPanel>
   </div>
 
+
+  <div *ngIf="isLoading">
+    <gb-loading></gb-loading>
+  </div>
 </div>
