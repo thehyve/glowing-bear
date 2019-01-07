@@ -30,6 +30,7 @@ export class FractalisServiceMock {
     ChartType.SURVIVALPLOT,
     ChartType.VOLCANOPLOT
   ];
+  private chartDivSize = 35;
 
   constructor() {
   }

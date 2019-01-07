@@ -13,6 +13,7 @@ import {ChartType} from '../../../../models/chart-models/chart-type';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
+import {By} from '@angular/platform-browser';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
@@ -199,5 +200,11 @@ describe('GbFractalisControlComponent', () => {
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(component.selectedVariables.length).toBe(1);
+  });
+
+  it('should not show variables drop zone for cross table', () => {
+    component.selectedChartType = ChartType.CROSSTABLE;
+    let dateColumnSelector = fixture.debugElement.query(By.css('.drop-zone'));
+    expect(dateColumnSelector).toBeNull();
   });
 });
