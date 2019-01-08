@@ -2,7 +2,7 @@
   "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
   "app-url": "https://glowingbear-test.thehyve.net",
-  "app-version": "1.1.0",
+  "app-version": "1.1.1",
   "fractalis-url": "https://fractalis-test.thehyve.net",
   "fractalis-datasource-url": "https://transmart-dev.thehyve.net:8080",
   "doc-url": "https://glowingbear.app",
