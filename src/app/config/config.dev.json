@@ -3,7 +3,7 @@
   "api-version": "v2",
   "app-url": "http://localhost:4200",
   "app-version": "0.0.1-SNAPSHOT",
-  "fractalis-url": "http://localhost:5000",
+  "fractalis-url": "https://fractalis-dev.thehyve.net",
   "fractalis-datasource-url": "http://localhost:8080",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": true,
