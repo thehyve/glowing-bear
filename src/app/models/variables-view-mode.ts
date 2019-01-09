@@ -8,5 +8,5 @@
 
 export enum VariablesViewMode {
   TREE_VIEW = 'Tree view',
-  CATEGORIZED_VIEW = 'Categorized view'
+  CATEGORIZED_VIEW = 'Category view'
 }

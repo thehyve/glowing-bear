@@ -446,7 +446,7 @@ export class ConstraintService {
   }
 
   /**
-   * Generate the constraint based on the variables selected in the categorized view of the variables panel
+   * Generate the constraint based on the variables selected in the category view of the variables panel
    * @returns {Constraint}
    */
   private generateCategorizedVariablesConstraint(): Constraint {
