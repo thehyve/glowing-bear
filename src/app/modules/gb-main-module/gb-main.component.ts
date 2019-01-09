@@ -16,6 +16,7 @@ import {TransmartHttpService} from '../../services/transmart-services/transmart-
 import {AppConfig} from '../../config/app.config';
 import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {FractalisService} from '../../services/fractalis.service';
 
 @Component({
   selector: 'gb-main',
@@ -32,7 +33,8 @@ export class GbMainComponent implements OnInit {
               private transmartPackerHttpService: TransmartPackerHttpService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private cohortService: CohortService) {
+              private cohortService: CohortService,
+              private fractalisService: FractalisService) {
   }
 
   ngOnInit() {
