@@ -47,6 +47,8 @@ import {TransmartPackerHttpService} from '../../services/transmart-services/tran
 import {TransmartPackerHttpServiceMock} from '../../services/mocks/transmart-packer-http.service.mock';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from '../../services/mocks/transmart-resource.service.mock';
+import {FractalisService} from '../../services/fractalis.service';
+import {FractalisServiceMock} from '../../services/mocks/fractalis.service.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -110,6 +112,10 @@ describe('GbMainComponent', () => {
         {
           provide: CohortService,
           useClass: CohortServiceMock
+        },
+        {
+          provide: FractalisService,
+          useClass: FractalisServiceMock
         },
         {
           provide: DataTableService,
