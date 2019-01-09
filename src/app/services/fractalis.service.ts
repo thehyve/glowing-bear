@@ -31,7 +31,7 @@ export class FractalisService {
 
   private _chartDivSize: number;
 
-  static dataObjectToFractalisDataList(data: any):  FractalisData[] {
+  static dataObjectToFractalisDataList(data: any): FractalisData[] {
     return data['data']['data_states'];
   }
 
@@ -79,41 +79,37 @@ export class FractalisService {
       }
     };
     this.F = fjs.fractalis.init(config);
-    console.log('Fractalis imported: ', this.availableChartTypes);
-
-    this.clearData().catch(error => console.error(`Error clearing Fractalis cache: ${error}`));
-    this.prepareCache(this.constraintService.variables);
   }
 
   private prepareCache(variables: Concept[]) {
+    MessageHelper.alert('info', 'Fractalis starts preparing cache...');
     this.isPreparingCache = true;
+    let descriptors = [];
     variables.forEach((variable: Concept) => {
-        const fractalisConstraint = {
-          type: 'concept',
-          conceptCode: variable.code
-        };
         const type = this.mapConceptTypeToFractalisVariableType(variable.type);
-        if (!type) {
-          console.error(`Failed to load variable: ${variable.code}. Invalid type: ${variable.type}.`);
-          return;
+        if (type) {
+          const constraintObj = {
+            type: 'concept',
+            conceptCode: variable.code
+          };
+          const descriptor = {
+            constraint: constraintObj,
+            data_type: type,
+            label: variable.code
+          };
+          descriptors.push(descriptor);
         }
-        const descriptor = {
-          constraint: fractalisConstraint,
-          data_type: type,
-          label: variable.code
-        };
-
-        this.F.loadData([descriptor])
-          .then(res => {
-            // TODO proper loading status update
-          })
-          .catch(err => {
-            console.error(`Failed to load variable: ${variable.code}`);
-            console.error(err)
-          });
       }
     );
-    this.isPreparingCache = false;
+    this.F.loadData(descriptors)
+      .then(res => {
+        MessageHelper.alert('info', 'Fractalis finishes preparing cache ');
+        this.isPreparingCache = false;
+      })
+      .catch(err => {
+        MessageHelper.alert('error', 'Fractalis fails preparing cache ');
+        console.error(err)
+      });
   }
 
   getLoadedVariables(): Promise<object> {
@@ -232,7 +228,7 @@ export class FractalisService {
                 break;
               }
               case FractalisEtlState.FAILURE: {
-                message =  'Variable was not loaded correctly into Fractalis.';
+                message = 'Variable was not loaded correctly into Fractalis.';
                 break;
               }
               default:
@@ -308,6 +304,7 @@ export class FractalisService {
   set variablesValidationMessages(value: string[]) {
     this._variablesValidationMessages = value;
   }
+
   get variablesInvalid(): boolean {
     return this._variablesInvalid;
   }

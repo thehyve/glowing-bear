@@ -13,10 +13,12 @@ import {FractalisDataType} from '../models/fractalis-models/fractalis-data-type'
 import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 import {Concept} from '../models/constraint-models/concept';
 import {MessageHelper} from '../utilities/message-helper';
+import {ConceptType} from '../models/constraint-models/concept-type';
 
 describe('FractalisService', () => {
 
   let fractalisService: FractalisService;
+  let constraintService: ConstraintService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,6 +39,7 @@ describe('FractalisService', () => {
       ]
     });
     fractalisService = TestBed.get(FractalisService);
+    constraintService = TestBed.get(ConstraintService);
   });
 
   it('should be injected', inject([FractalisService], (service: FractalisService) => {
@@ -62,8 +65,8 @@ describe('FractalisService', () => {
   it('should remove chart', () => {
     let chart1 = new Chart(ChartType.SCATTERPLOT);
     let chart2 = new Chart(ChartType.BOXPLOT);
-    fractalisService.charts .push(chart1);
-    fractalisService.charts .push(chart2);
+    fractalisService.charts.push(chart1);
+    fractalisService.charts.push(chart2);
     expect(fractalisService.charts.length).toEqual(2);
     fractalisService.removeChart(chart1);
     expect(fractalisService.charts.length).toEqual(1);
@@ -124,8 +127,11 @@ describe('FractalisService', () => {
                     label: 'c3',
                     task_id: 'task2'
                   },
-          ]}});
-        }};
+                ]
+              }
+            });
+        }
+      };
     });
     let spy2 = spyOn(MessageHelper, 'alert').and.stub();
 
@@ -157,7 +163,8 @@ describe('FractalisService', () => {
       return {
         then: function (callback) {
           return callback({});
-        }};
+        }
+      };
     });
     let spy2 = spyOn(MessageHelper, 'alert').and.stub();
 
@@ -166,6 +173,27 @@ describe('FractalisService', () => {
       expect(spy2).toHaveBeenCalledWith('error', 'The variable cannot be selected. No data loaded into Fractalis.');
     });
   });
+
+  it('should show messages for fractalis variable loading', () => {
+    const spyMessageHelper = spyOn(MessageHelper, 'alert');
+    let c1 = new Concept();
+    c1.code = 'QWERT';
+    c1.type = ConceptType.CATEGORICAL;
+    let c2 = new Concept();
+    c2.code = 'WERTY';
+    c2.type = ConceptType.NUMERICAL;
+    let c3 = new Concept();
+    c3.code = 'ASDFG';
+    c3.type = ConceptType.HIGH_DIMENSIONAL;
+    let c4 = new Concept();
+    c4.code = 'ZXCVB';
+    c4.type = ConceptType.DATE;
+    let c5 = new Concept();
+    c5.code = 'POIUY';
+    c5.type = ConceptType.TEXT;
+    constraintService.variablesUpdated.next([c1, c2, c3, c4, c5]);
+    expect(spyMessageHelper).toHaveBeenCalled();
+  })
 
 });
 
