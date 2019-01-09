@@ -16,5 +16,6 @@ export class MessageHelper {
     // This hack is to address the bug where primneNg growl does not time out
     MessageHelper.messages = [].concat(MessageHelper.messages);
     MessageHelper.messages.push({severity: severity, summary: summary, detail: _detail});
+    console.log(summary);
   }
 }
