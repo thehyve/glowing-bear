@@ -90,7 +90,7 @@ describe('FractalisService', () => {
     expect(fractalisService.variablesInvalid).toEqual(false);
   });
 
-  fit('should show messages for fractalis variable loading', () => {
+  it('should show messages for fractalis variable loading', () => {
     let c1 = new Concept();
     c1.code = 'QWERT';
     c1.type = ConceptType.CATEGORICAL;
