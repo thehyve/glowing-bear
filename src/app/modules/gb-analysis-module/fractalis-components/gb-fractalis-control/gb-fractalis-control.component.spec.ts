@@ -92,39 +92,11 @@ describe('GbFractalisControlComponent', () => {
   it('should drop variable', () => {
     const dummy = new Concept();
     constraintService.draggedVariable = dummy;
-    let spy = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
-      return {
-        then: function (callback) {
-          return callback(true);
-        }
-      };
-    });
-
     component.onDropVariable(new DragEvent(''));
-
-    expect(spy).toHaveBeenCalledWith(dummy);
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
     expect(component.isValidationError).toBe(false);
     expect(component.validationErrorMessages.length).toBe(0);
-  });
-
-  it('should not drop variable if invalid', () => {
-    const dummy = new Concept();
-    constraintService.draggedVariable = dummy;
-    let spy = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
-      return {
-        then: function (callback) {
-          return callback(false);
-        }
-      };
-    });
-
-    component.onDropVariable(new DragEvent(''));
-
-    expect(spy).toHaveBeenCalledWith(dummy);
-    expect(component.dragCounter).toBe(0);
-    expect(component.selectedVariables.length).toBe(0);
   });
 
   it('should remove variable', () => {
@@ -167,14 +139,6 @@ describe('GbFractalisControlComponent', () => {
     constraintService.draggedVariable = dummy;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
-    let spy2 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
-      return {
-        then: function (callback) {
-          return callback(true);
-        }
-      };
-    });
-
     component.onDropVariable(new DragEvent(''));
 
     expect(component.dragCounter).toBe(0);
@@ -188,14 +152,6 @@ describe('GbFractalisControlComponent', () => {
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
     let spy2 = spyOn(constraintService, 'identifyDraggedElement').and.callThrough();
-    let spy3 = spyOn(fractalisService, 'validateVariableUploadStatus').and.callFake(function () {
-      return {
-        then: function (callback) {
-          return callback(true);
-        }
-      };
-    });
-
     component.onDropVariable(new DragEvent(''));
 
     expect(component.dragCounter).toBe(0);

@@ -1,19 +1,21 @@
 import {Injectable} from '@angular/core';
 import {AuthenticationService} from './authentication/authentication.service';
 import * as fjs from 'fractalis';
+import Timer = NodeJS.Timer;
 import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
 import {SelectItem} from 'primeng/api';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
-import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {FractalisData} from '../models/fractalis-models/fractalis-data';
 import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 import {FractalisChartDescription} from '../models/fractalis-models/fractalis-chart-description';
 import {FractalisChart} from '../models/fractalis-models/fractalis-chart';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
+import {FractalisVariablesStatus} from '../models/fractalis-models/fractalis-variables-status';
+import {Subject} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -25,34 +27,38 @@ export class FractalisService {
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
+  private _selectedVariablesUpdated = new Subject<Concept[]>();
   private _isPreparingCache = false;
+  private _isClearingCache = false;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
 
   private _chartDivSize: number;
+
+  private timer: Timer;
+  private _variablesStatus: FractalisVariablesStatus;
+
 
   static dataObjectToFractalisDataList(data: any): FractalisData[] {
     return data['data']['data_states'];
   }
 
   constructor(private appConfig: AppConfig,
-              private authService: AuthenticationService,
-              private constraintService: ConstraintService) {
+              private authService: AuthenticationService) {
     this.chartDivSize = 35;
 
     if (!this.appConfig.getConfig('enable-fractalis-analysis')) {
-      MessageHelper.alert('warn', 'Fractalis analysis are not enabled.');
+      MessageHelper.alert('warn', 'Fractalis analysis is disabled.');
     } else if (!fjs.fractalis) {
       MessageHelper.alert('error', 'Failed to import Fractalis.');
     } else {
       this.setupFractalis();
-      this.constraintService.variablesUpdated.asObservable()
-        .subscribe((variables: Concept[]) => {
-          this.clearData().catch(error => console.error(`Error clearing Fractalis cache: ${error}`));
-          this.prepareCache(variables);
-        });
+      this.selectedVariablesUpdated.asObservable().subscribe(variables => {
+        this.prepareCache(variables);
+      });
     }
     this.retrieveAvailableChartTypes();
+    this.timer = setInterval(() => this.updateVariablesStatus(), 3000);
   }
 
   private setupFractalis() {
@@ -79,41 +85,70 @@ export class FractalisService {
       }
     };
     this.F = fjs.fractalis.init(config);
+    this.clearCache()
   }
 
   private prepareCache(variables: Concept[]) {
-    MessageHelper.alert('info', 'Fractalis starts preparing cache...');
-    this.isPreparingCache = true;
-    let descriptors = [];
-    variables.forEach((variable: Concept) => {
-        const type = this.mapConceptTypeToFractalisVariableType(variable.type);
-        if (type) {
-          const constraintObj = {
-            type: 'concept',
-            conceptCode: variable.code
-          };
-          const descriptor = {
-            constraint: constraintObj,
-            data_type: type,
-            label: variable.code
-          };
-          descriptors.push(descriptor);
+    if (variables && variables.length > 0) {
+      this.isPreparingCache = true;
+      let descriptors = [];
+      variables.forEach((variable: Concept) => {
+          const type = this.mapConceptTypeToFractalisVariableType(variable.type);
+          if (type) {
+            const constraintObj = {
+              type: 'concept',
+              conceptCode: variable.code
+            };
+            const descriptor = {
+              constraint: constraintObj,
+              data_type: type,
+              label: variable.code
+            };
+            descriptors.push(descriptor);
+          }
         }
-      }
-    );
-    this.F.loadData(descriptors)
-      .then(res => {
-        MessageHelper.alert('info', 'Fractalis finishes preparing cache ');
-        this.isPreparingCache = false;
-      })
-      .catch(err => {
-        MessageHelper.alert('error', 'Fractalis fails preparing cache ');
-        console.error(err)
-      });
+      );
+      this.F.loadData(descriptors)
+        .catch(err => {
+          MessageHelper.alert('error', 'Fail to prepare cache.');
+          console.error(err)
+        });
+    }
   }
 
-  getLoadedVariables(): Promise<object> {
+  public getTrackedVariables(): Promise<object> {
     return this.F.getTrackedVariables();
+  }
+
+  private updateVariablesStatus() {
+    this.getTrackedVariables().then(dataObj => {
+      let successCount = 0;
+      let submittedCount = 0;
+      let failureCount = 0;
+      const fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
+      fractalisDataList.forEach((data: FractalisData) => {
+        switch (data.etl_state) {
+          case FractalisEtlState.SUCCESS: {
+            successCount++;
+            break;
+          }
+          case FractalisEtlState.SUBMITTED: {
+            submittedCount++;
+            break;
+          }
+          case FractalisEtlState.FAILURE: {
+            failureCount++;
+            break;
+          }
+        }
+      });
+      this._variablesStatus = {successCount, submittedCount, failureCount};
+      this.isPreparingCache = submittedCount > 0;
+      console.log(this.variablesStatus);
+    }).catch(err => {
+      console.error('Failed to fetch tracked variables from Fractalis.');
+      console.error(err);
+    });
   }
 
   setSubsets() {
@@ -121,8 +156,16 @@ export class FractalisService {
     // this.F.setSubsets([])
   }
 
-  private clearData(): Promise<object> {
-    return this.F.clearCache();
+  public clearCache() {
+    this.isClearingCache = true;
+    this.F.clearCache()
+      .then(res => {
+        this.isClearingCache = false;
+      })
+      .catch(error => {
+        console.error(`Error clearing Fractalis cache: ${error}`);
+        this.clearCache();
+      });
   }
 
   private mapConceptTypeToFractalisVariableType(type: ConceptType): string {
@@ -143,7 +186,7 @@ export class FractalisService {
     }
   }
 
-  initChart(chartType: ChartType, chartId: string): Observable<FractalisChart> {
+  public initChart(chartType: ChartType, chartId: string): Observable<FractalisChart> {
     const chartObject = this.F.setChart(chartType, chartId);
     const chartSubject = new BehaviorSubject<FractalisChart>({
       type: chartType,
@@ -160,7 +203,7 @@ export class FractalisService {
     return chartSubject.asObservable();
   }
 
-  setChartParameters(chartObject: any, parameters: object) {
+  public setChartParameters(chartObject: any, parameters: object) {
     this.F.setChartParameters(chartObject, parameters);
   }
 
@@ -210,45 +253,6 @@ export class FractalisService {
     this.variablesInvalid = false;
   }
 
-  public validateVariableUploadStatus(variable: Concept): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
-      this.getLoadedVariables().then(dataObj => {
-        let message = '';
-        if (dataObj) {
-          let fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
-          let fractalisVars = fractalisDataList.filter(data => data.label === variable.code);
-          if (fractalisVars && fractalisVars.length > 0) {
-            switch (fractalisVars[0].etl_state) {
-              case FractalisEtlState.SUCCESS: {
-                resolve(true);
-                return;
-              }
-              case FractalisEtlState.SUBMITTED: {
-                message = 'Uploading into Fractalis in progress. Please try again later.';
-                break;
-              }
-              case FractalisEtlState.FAILURE: {
-                message = 'Variable was not loaded correctly into Fractalis.';
-                break;
-              }
-              default:
-                message = 'Invalid variable upload status: ' + fractalisVars[0].etl_state;
-                break;
-            }
-          } else {
-            message = 'Variable was not loaded into Fractalis.';
-          }
-        } else {
-          message = 'No data loaded into Fractalis.';
-        }
-        MessageHelper.alert('error', 'The variable cannot be selected. ' + message);
-        resolve(false);
-      }).catch(err => {
-        reject(err);
-      })
-    });
-  }
-
   get isFractalisAvailable(): boolean {
     return fjs.fractalis && this.appConfig.getConfig('enable-fractalis-analysis');
   }
@@ -289,6 +293,14 @@ export class FractalisService {
     this._isPreparingCache = value;
   }
 
+  get isClearingCache(): boolean {
+    return this._isClearingCache;
+  }
+
+  set isClearingCache(value: boolean) {
+    this._isClearingCache = value;
+  }
+
   get selectedVariables(): Concept[] {
     return this._selectedVariables;
   }
@@ -319,6 +331,14 @@ export class FractalisService {
 
   set chartDivSize(value: number) {
     this._chartDivSize = value;
+  }
+
+  get variablesStatus(): FractalisVariablesStatus {
+    return this._variablesStatus;
+  }
+
+  get selectedVariablesUpdated(): Subject<Concept[]> {
+    return this._selectedVariablesUpdated;
   }
 
 }

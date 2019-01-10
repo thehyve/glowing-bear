@@ -94,7 +94,7 @@ describe('GbFractalisChartComponent', () => {
       }
     });
     spyOn(fractalisService, 'initChart').and.returnValue(chartSubject.asObservable());
-    spyOn(fractalisService, 'getLoadedVariables').and.returnValue(Promise.resolve({
+    spyOn(fractalisService, 'getTrackedVariables').and.returnValue(Promise.resolve({
         data: {
           data_states: mockFractalisTaskData
         }
@@ -123,7 +123,7 @@ describe('GbFractalisChartComponent', () => {
       }
     });
     spyOn(fractalisService, 'initChart').and.returnValue(chartSubject.asObservable());
-    spyOn(fractalisService, 'getLoadedVariables').and.returnValue(Promise.resolve({
+    spyOn(fractalisService, 'getTrackedVariables').and.returnValue(Promise.resolve({
       data: {
         data_states: mockFractalisTaskData
       }

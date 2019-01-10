@@ -1,50 +1,48 @@
 <div class="fractalis-control-container">
-  <gb-loading [loading]="isPreparingCache"></gb-loading>
 
-  <span *ngIf="!isPreparingCache">
+  <p-selectButton [options]="availableChartTypes"
+                  [(ngModel)]="selectedChartType"
+                  (onChange)="onSelectedChartTypeChange()"></p-selectButton>
 
-    <p-selectButton [options]="availableChartTypes"
-                    [(ngModel)]="selectedChartType"
-                    (onChange)="onSelectedChartTypeChange()"></p-selectButton>
-
-    <div *ngIf="isDropZoneShown"
-         class="drop-zone"
-         name="drop-zone"
-         [pDroppable]="variablesDragDropScope"
-         [ngClass]="{'drop-zone-highlight': dragCounter > 0, 'drop-zone-highlight-invalid': isValidationError}"
-         (onDragEnter)="onDragEnter($event)"
-         (onDragLeave)="onDragLeave($event)"
-         (drop)="onDropVariable($event)">
+  <div *ngIf="isDropZoneShown && !isClearingCache"
+       class="drop-zone"
+       name="drop-zone"
+       [pDroppable]="variablesDragDropScope"
+       [ngClass]="{'drop-zone-highlight': dragCounter > 0, 'drop-zone-highlight-invalid': isValidationError}"
+       (onDragEnter)="onDragEnter($event)"
+       (onDragLeave)="onDragLeave($event)"
+       (drop)="onDropVariable($event)">
     <span *ngIf="selectedVariables.length === 0; else showDroppedVariables">
       Drop variable(s) here
     </span>
-    </div>
-    <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">
-      <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-      {{message}}
-    </div>
+  </div>
+  <gb-loading [loading]="isClearingCache"></gb-loading>
+  <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">
+    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+    {{message}}
+  </div>
 
-    <ng-template #showDroppedVariables>
-      <mat-chip-list>
-        <mat-chip
-            *ngFor="let variable of selectedVariables"
-            removable="true"
-            selectable="false"
-            (removed)="onRemoveVariable(variable)">
-          {{variable.name}}
-          <mat-icon matChipRemove>cancel</mat-icon>
-        </mat-chip>
-      </mat-chip-list>
-    </ng-template>
+  <ng-template #showDroppedVariables>
+    <mat-chip-list>
+      <mat-chip
+        *ngFor="let variable of selectedVariables"
+        removable="true"
+        selectable="false"
+        (removed)="onRemoveVariable(variable)">
+        {{variable.name}}
+        <mat-icon matChipRemove>cancel</mat-icon>
+      </mat-chip>
+    </mat-chip-list>
+    <gb-loading [loading]="isPreparingCache"></gb-loading>
+  </ng-template>
 
-    <div class="btn-container">
+  <div class="btn-container">
     <span *ngIf="isClearButtonShown">
        <button type="button" class="btn btn-primary btn-sm" (click)="onClearControl()">Clear</button>
     </span>
-      <span *ngIf="isAddButtonShown">
+    <span *ngIf="isAddButtonShown">
         <button type="button" class="btn btn-primary btn-sm" (click)="onAddChart()">Add</button>
       </span>
-    </div>
-  </span>
+  </div>
 
 </div>
