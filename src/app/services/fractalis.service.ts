@@ -120,34 +120,38 @@ export class FractalisService {
     return this.F.getTrackedVariables();
   }
 
-  private updateVariablesStatus() {
-    this.getTrackedVariables().then(dataObj => {
-      let successCount = 0;
-      let submittedCount = 0;
-      let failureCount = 0;
-      const fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
-      fractalisDataList.forEach((data: FractalisData) => {
-        switch (data.etl_state) {
-          case FractalisEtlState.SUCCESS: {
-            successCount++;
-            break;
+  public updateVariablesStatus(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.getTrackedVariables().then(dataObj => {
+        let successCount = 0;
+        let submittedCount = 0;
+        let failureCount = 0;
+        const fractalisDataList: FractalisData[] = FractalisService.dataObjectToFractalisDataList(dataObj);
+        fractalisDataList.forEach((data: FractalisData) => {
+          switch (data.etl_state) {
+            case FractalisEtlState.SUCCESS: {
+              successCount++;
+              break;
+            }
+            case FractalisEtlState.SUBMITTED: {
+              submittedCount++;
+              break;
+            }
+            case FractalisEtlState.FAILURE: {
+              failureCount++;
+              break;
+            }
           }
-          case FractalisEtlState.SUBMITTED: {
-            submittedCount++;
-            break;
-          }
-          case FractalisEtlState.FAILURE: {
-            failureCount++;
-            break;
-          }
-        }
+        });
+        this._variablesStatus = {successCount, submittedCount, failureCount};
+        this.isPreparingCache = submittedCount > 0;
+        console.log(this.variablesStatus);
+        resolve(true);
+      }).catch(err => {
+        console.error('Failed to fetch tracked variables from Fractalis.');
+        console.error(err);
+        reject(err);
       });
-      this._variablesStatus = {successCount, submittedCount, failureCount};
-      this.isPreparingCache = submittedCount > 0;
-      console.log(this.variablesStatus);
-    }).catch(err => {
-      console.error('Failed to fetch tracked variables from Fractalis.');
-      console.error(err);
     });
   }
 

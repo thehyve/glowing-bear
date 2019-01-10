@@ -9,11 +9,9 @@ import {ChartType} from '../models/chart-models/chart-type';
 import {Chart} from '../models/chart-models/chart';
 import {AppConfig} from '../config/app.config';
 import {AppConfigFractalisDisabledMock, AppConfigMock} from '../config/app.config.mock';
-import {FractalisDataType} from '../models/fractalis-models/fractalis-data-type';
-import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 import {Concept} from '../models/constraint-models/concept';
-import {MessageHelper} from '../utilities/message-helper';
 import {ConceptType} from '../models/constraint-models/concept-type';
+import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
 
 describe('FractalisService', () => {
 
@@ -38,6 +36,7 @@ describe('FractalisService', () => {
         FractalisService
       ]
     });
+    spyOn(window, 'setInterval').and.stub();
     fractalisService = TestBed.get(FractalisService);
     constraintService = TestBed.get(ConstraintService);
   });
@@ -45,6 +44,55 @@ describe('FractalisService', () => {
   it('should be injected', inject([FractalisService], (service: FractalisService) => {
     expect(service).toBeTruthy();
   }));
+
+  it('should finish preparing cache when no variable is in submitted status', () => {
+    const dataObj = {
+      data: {
+        data_states: [
+          {
+            etl_state: FractalisEtlState.SUCCESS
+          },
+          {
+            etl_state: FractalisEtlState.SUCCESS
+          },
+          {
+            etl_state: FractalisEtlState.FAILURE
+          }
+        ]
+      }
+    };
+    spyOn(fractalisService, 'getTrackedVariables').and.returnValue(Promise.resolve(dataObj));
+    fractalisService.updateVariablesStatus().then(_ => {
+      expect(fractalisService.isPreparingCache).toBe(false);
+    }).catch(err => {
+      fail(err);
+    });
+  });
+
+  it('should continue preparing cache when there is variable in submitted status', () => {
+    const dataObj = {
+      data: {
+        data_states: [
+          {
+            etl_state: FractalisEtlState.SUCCESS
+          },
+          {
+            etl_state: FractalisEtlState.SUBMITTED
+          },
+          {
+            etl_state: FractalisEtlState.FAILURE
+          }
+        ]
+      }
+    };
+    spyOn(fractalisService, 'getTrackedVariables').and.returnValue(Promise.resolve(dataObj));
+
+    fractalisService.updateVariablesStatus().then(_ => {
+      expect(fractalisService.isPreparingCache).toBe(true);
+    }).catch(err => {
+      fail(err);
+    });
+  });
 
   it('should add or recreate chart', () => {
     fractalisService.selectedChartType = ChartType.HEATMAP;
