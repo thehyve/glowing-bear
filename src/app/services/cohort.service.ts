@@ -166,7 +166,6 @@ export class CohortService {
             this.currentCohort.updateDate = new Date().toISOString();
             this.isUpdatingCurrent = false;
             this.isDirty = false;
-            this.cohortsUpdated.next(this.cohorts);
 
             if (this.currentCohort.selected) {
               this.updateCountsWithAllCohorts()
@@ -213,6 +212,7 @@ export class CohortService {
         this.constraintService.selectedStudyConceptCountMap = res[2];
         this.constraintService.selectedConceptCountMap = res[3];
         this.isUpdatingAll = false;
+        this.cohortsUpdated.next(this.cohorts);
         resolve(true);
       }, (err) => {
         reject(err);
