@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MedcoService} from "../../services/picsure-services/medco.service";
 import {MedcoResult} from "../../models/picsure-models/medco-result";
 import {Chart} from 'chart.js';
@@ -48,7 +48,14 @@ export class GbMedcoResultsComponent implements OnInit {
           ],
         }]
       },
-      options: { }
+      options: {
+        legend: {
+          position: 'right',
+          labels: {
+            fontSize: 20
+          }
+        }
+      }
     });
 
     this.medcoService.results.subscribe( (results: MedcoResult[]) => {
