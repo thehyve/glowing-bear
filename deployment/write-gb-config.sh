@@ -1,11 +1,11 @@
 #!/bin/bash
 set -Eeuo pipefail
 
-cat > "$NGINX_ROOT/app/config/env.json" <<EOL
+cat > "$NGINX_ROOT/glowing-bear/app/config/env.json" <<EOL
 { "env": "docker-deployment" }
 EOL
 
-cat > "$NGINX_ROOT/app/config/config.docker-deployment.json" <<EOL
+cat > "$NGINX_ROOT/glowing-bear/app/config/config.docker-deployment.json" <<EOL
 {
   "api-url": "$GB_API_URL",
   "app-url": "$GB_URL",

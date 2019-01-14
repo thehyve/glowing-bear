@@ -32,7 +32,7 @@ FROM nginx:latest as release
 ENV GB_DIST="/glowing-bear-dist" \
     NGINX_ROOT="/usr/share/nginx/html"
 
-COPY --from=build --chown=www-data:www-data $GB_DIST $NGINX_ROOT
+COPY --from=build --chown=www-data:www-data $GB_DIST $NGINX_ROOT/glowing-bear
 COPY deployment/write-gb-config.sh /
 RUN chmod +x /write-gb-config.sh
 
