@@ -30,6 +30,8 @@ export class FractalisService {
   private _selectedVariablesUpdated = new Subject<Concept[]>();
   private _isPreparingCache = false;
   private _isClearingCache = false;
+  private readonly MAX_CACHE_TRYS = 10;
+  private _currentCacheTrys = 0;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
 
@@ -165,10 +167,18 @@ export class FractalisService {
     this.F.clearCache()
       .then(res => {
         this.isClearingCache = false;
+        this._currentCacheTrys = 0;
       })
       .catch(error => {
         console.error(`Error clearing Fractalis cache: ${error}`);
-        this.clearCache();
+        if (this._currentCacheTrys < this.MAX_CACHE_TRYS) {
+          console.error('Retry caching...');
+          this.clearCache();
+          this._currentCacheTrys++;
+        } else {
+          console.error('Maximum number of caching calls exceeded, terminate!');
+          this._currentCacheTrys = 0;
+        }
       });
   }
 
