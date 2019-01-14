@@ -19,7 +19,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
-import {Observable, AsyncSubject} from 'rxjs';
+import {AsyncSubject} from 'rxjs';
 import {TreeNodeService} from './tree-node.service';
 import {AppConfig} from '../config/app.config';
 import {CohortService} from './cohort.service';

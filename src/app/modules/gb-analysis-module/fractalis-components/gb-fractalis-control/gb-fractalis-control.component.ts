@@ -11,6 +11,7 @@ import {SelectItem} from 'primeng/api';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {Subject} from 'rxjs';
 
 @Component({
   selector: 'gb-fractalis-control',
@@ -50,11 +51,8 @@ export class GbFractalisControlComponent implements OnInit {
     this.fractalisService.clearValidation();
     let variable = this.constraintService.identifyDraggedElement();
     if (variable) {
-      this.fractalisService.validateVariableUploadStatus(variable).then(valid => {
-        if (valid) {
-          this.selectedVariables.push(variable);
-        }
-      });
+      this.selectedVariables.push(variable);
+      this.selectedVariablesUpdated.next(this.selectedVariables);
     }
   }
 
@@ -63,11 +61,13 @@ export class GbFractalisControlComponent implements OnInit {
     const index = this.selectedVariables.indexOf(variable);
     if (index >= 0) {
       this.selectedVariables.splice(index, 1);
+      this.selectedVariablesUpdated.next(this.selectedVariables);
     }
   }
 
   onClearControl() {
     this.fractalisService.clearValidation();
+    this.fractalisService.clearCache();
     this.selectedChartType = null;
     this.selectedVariables.length = 0;
   }
@@ -117,8 +117,8 @@ export class GbFractalisControlComponent implements OnInit {
     return this.fractalisService.selectedVariables;
   }
 
-  set selectedVariables(value: Concept[]) {
-    this.fractalisService.selectedVariables = value;
+  get selectedVariablesUpdated(): Subject<Concept[]> {
+    return this.fractalisService.selectedVariablesUpdated;
   }
 
   get isPreparingCache(): boolean {
@@ -135,5 +135,9 @@ export class GbFractalisControlComponent implements OnInit {
 
   get isFractalisAvailable(): boolean {
     return this.fractalisService.isFractalisAvailable;
+  }
+
+  get isClearingCache(): boolean {
+    return this.fractalisService.isClearingCache;
   }
 }

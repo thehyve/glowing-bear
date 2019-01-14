@@ -11,12 +11,15 @@ import {Chart} from '../../models/chart-models/chart';
 import {Concept} from '../../models/constraint-models/concept';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {FractalisChart} from '../../models/fractalis-models/fractalis-chart';
+import {Subject} from 'rxjs';
 
 export class FractalisServiceMock {
 
   private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
+  private selectedVariablesUpdated = new Subject<Concept[]>();
   private _isPreparingCache = true;
+  private isClearingCache = false;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
   private _selectedChartType: ChartType = null;
@@ -75,19 +78,17 @@ export class FractalisServiceMock {
     this.variablesInvalid = false;
   }
 
-  public getLoadedVariables(): Promise<object> {
-    return new Promise(function(resolve, reject) {
+  public clearCache() {
+    this.isClearingCache = false;
+  }
+
+  public getTrackedVariables(): Promise<object> {
+    return new Promise(function (resolve, reject) {
       resolve({
         data: {
           data_states: []
         }
       });
-    });
-  }
-
-  public validateVariableUploadStatus(): Promise<boolean> {
-    return new Promise(function(resolve, reject) {
-      resolve(true);
     });
   }
 

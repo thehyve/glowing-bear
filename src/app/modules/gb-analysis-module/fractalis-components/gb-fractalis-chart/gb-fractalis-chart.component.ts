@@ -66,7 +66,7 @@ export class GbFractalisChartComponent implements AfterViewInit {
   }
 
   private setVariables() {
-    this.fractalisService.getLoadedVariables()
+    this.fractalisService.getTrackedVariables()
       .then(data => {
         const fractalisVariables: FractalisData[] = FractalisService.dataObjectToFractalisDataList(data);
         const mapper = new FractalisChartVariableMapper(fractalisVariables);
