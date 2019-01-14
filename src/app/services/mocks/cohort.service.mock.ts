@@ -8,6 +8,7 @@
 
 import {Cohort} from '../../models/cohort-models/cohort';
 import {CountItem} from '../../models/aggregate-models/count-item';
+import {Subject} from 'rxjs';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
@@ -15,6 +16,7 @@ export class CohortServiceMock {
   exclusionCounts: CountItem;
   counts: CountItem;
   allCounts: CountItem;
+  cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
 
 
   constructor() {
@@ -28,7 +30,7 @@ export class CohortServiceMock {
     this.counts = new CountItem(0, 0);
   }
 
-  public updateCurrent(initialUpdate?: boolean): Promise<any> {
+  public updateCountsWithCurrentCohort(initialUpdate?: boolean): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });

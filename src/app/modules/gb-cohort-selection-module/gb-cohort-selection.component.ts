@@ -116,7 +116,7 @@ export class GbCohortSelectionComponent implements OnInit {
 
   update(event) {
     event.stopPropagation();
-    this.cohortService.updateCurrent();
+    this.cohortService.updateCountsWithCurrentCohort();
   }
 
   importCriteria() {

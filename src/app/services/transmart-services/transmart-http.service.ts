@@ -28,6 +28,7 @@ import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial
 import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 
 
 @Injectable({
@@ -222,13 +223,27 @@ export class TransmartHttpService {
   // -------------------------------------- pedigree calls --------------------------------------
   /**
    * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
-   * @returns {Observable<Object[]>}
+   * @returns {Observable<Pedigree[]>}
    */
   getPedigrees(): Observable<Pedigree[]> {
     const urlPart = 'pedigree/relation_types';
     const responseField = 'relationTypes';
     return this.httpHelper.getCall(urlPart, responseField);
   }
+
+  // -------------------------------------- patient calls --------------------------------------
+  /**
+   * Get the patient list whose observations correspond to the given constraint
+   * @param constraint
+   * @returns {Observable<TransmartPatient[]>}
+   */
+  getPatients(constraint: Constraint): Observable<TransmartPatient[]> {
+    const urlPart = 'patients';
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const responseField = 'patients';
+    return this.httpHelper.postCall(urlPart, body, responseField);
+  }
+
 
   // -------------------------------------- export calls --------------------------------------
   /**

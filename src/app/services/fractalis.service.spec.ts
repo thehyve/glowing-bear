@@ -12,6 +12,10 @@ import {AppConfigFractalisDisabledMock, AppConfigMock} from '../config/app.confi
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {FractalisEtlState} from '../models/fractalis-models/fractalis-etl-state';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
+import {ResourceService} from './resource.service';
+import {ResourceServiceMock} from './mocks/resource.service.mock';
 
 describe('FractalisService', () => {
 
@@ -32,6 +36,14 @@ describe('FractalisService', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         },
         FractalisService
       ]
@@ -178,6 +190,14 @@ describe('FractalisService with analysis disabled', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
         },
         FractalisService
       ]
