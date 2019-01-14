@@ -1,16 +1,8 @@
 FROM node:8 as dev
 
 # build time env
-ENV GB_SRC="/glowing-bear-src" \
-    GB_DIST="/glowing-bear-dist"
+ENV GB_SRC="/glowing-bear-src"
 ENV NG_BIN="$GB_SRC/node_modules/@angular/cli/bin/ng"
-
-COPY . $GB_SRC
-RUN cd $GB_SRC && \
-    npm install && \
-    $NG_BIN build --prod && \
-    mv $GB_SRC/dist $GB_DIST && \
-    rm -rf $GB_SRC
 
 VOLUME $GB_SRC
 EXPOSE 4200
@@ -19,13 +11,28 @@ ENTRYPOINT npm install && exec $NG_BIN serve --aot --port 4200 --host 0.0.0.0
 
 
 # -------------------------------------------
-FROM nginx:latest as prod
+FROM node:8 as build
+
+# build time env
+ENV GB_SRC="/glowing-bear-src" \
+    GB_DIST="/glowing-bear-dist"
+ENV NG_BIN="$GB_SRC/node_modules/@angular/cli/bin/ng"
+
+COPY . $GB_SRC
+RUN cd $GB_SRC && \
+    npm install && \
+    $NG_BIN build --prod && \
+    mv $GB_SRC/dist $GB_DIST
+
+
+# -------------------------------------------
+FROM nginx:latest as release
 
 # build time env
 ENV GB_DIST="/glowing-bear-dist" \
     NGINX_ROOT="/usr/share/nginx/html"
 
-COPY --from=dev --chown=www-data:www-data $GB_DIST $NGINX_ROOT
+COPY --from=build --chown=www-data:www-data $GB_DIST $NGINX_ROOT
 COPY deployment/write-gb-config.sh /
 RUN chmod +x /write-gb-config.sh
 

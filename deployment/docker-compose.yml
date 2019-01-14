@@ -1,8 +1,7 @@
-version: '3.4'
+version: '3.5'
 
 services:
-  gb-dev-server:
-    image: medco/glowing-bear:dev
+  dev-server:
     build:
       context: ..
       dockerfile: ./deployment/Dockerfile
@@ -12,12 +11,12 @@ services:
     volumes:
       - ..:/glowing-bear-src
 
-  gb-nginx:
-    image: medco/glowing-bear:latest
+  glowing-bear:
+    image: medco/glowing-bear:dev
     build:
       context: ..
       dockerfile: ./deployment/Dockerfile
-      target: prod
+      target: release
     ports:
       - "82:80"
     environment:
