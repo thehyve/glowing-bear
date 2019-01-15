@@ -16,11 +16,17 @@ import {CohortService} from './cohort.service';
 import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {of as observableOf} from 'rxjs';
+import {Cohort} from '../models/cohort-models/cohort';
+import {catchError} from 'rxjs/operators';
 
 describe('FractalisService', () => {
 
   let fractalisService: FractalisService;
   let constraintService: ConstraintService;
+  let resourceService: ResourceService;
+  let cohortService: CohortService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -51,6 +57,8 @@ describe('FractalisService', () => {
     spyOn(window, 'setInterval').and.stub();
     fractalisService = TestBed.get(FractalisService);
     constraintService = TestBed.get(ConstraintService);
+    resourceService = TestBed.get(ResourceService);
+    cohortService = TestBed.get(CohortService);
   });
 
   it('should be injected', inject([FractalisService], (service: FractalisService) => {
@@ -168,7 +176,20 @@ describe('FractalisService', () => {
     c5.type = ConceptType.TEXT;
     fractalisService.selectedVariablesUpdated.next([c1, c2, c3, c4, c5]);
     expect(fractalisService.isPreparingCache).toBe(true);
-  })
+  });
+
+  it('should set subsets when cohorts are changed', () => {
+    let spySetSubsets = spyOn(fractalisService.F, 'setSubsets').and.stub();
+    let cohort1 = new Cohort('id1', 'name1');
+    cohort1.selected = true;
+    let cohort2 = new Cohort('id2', 'name2');
+    cohort2.selected = true;
+    cohortService.cohortsUpdated.asObservable()
+      .subscribe(res => {
+        expect(spySetSubsets).toHaveBeenCalledWith([['one', 'two', 'three'], ['one', 'two', 'three']])
+      });
+    cohortService.cohortsUpdated.next([cohort1, cohort2]);
+  });
 
 });
 

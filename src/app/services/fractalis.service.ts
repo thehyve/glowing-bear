@@ -37,7 +37,7 @@ export class FractalisService {
   static readonly MAX_CACHE_TRYS = 10;
   static readonly TIMEOUT_VARIABLE_STATUS_UPDATE = 3000;
 
-  private F: any; // The fractalis object
+  public F: any; // The fractalis object
   private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
@@ -191,11 +191,10 @@ export class FractalisService {
           .subscribe(res => {
             for (let i = 0; i < subjectCalls.length; i++) {
               const ids = res[i].map((subject: TransmartPatient) => {
-                return subject.id;
+                return subject.subjectIds.SUBJ_ID;
               });
               idSets.push(ids);
             }
-            console.log('setSubsets: ', idSets);
             this.F.setSubsets(idSets);
           });
       });
