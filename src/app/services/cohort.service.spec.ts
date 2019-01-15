@@ -74,7 +74,7 @@ describe('CohortService', () => {
   }));
 
   it('should update counts', (done) => {
-    cohortService.updateAll()
+    cohortService.updateCountsWithAllCohorts()
       .then(() => {
         expect(cohortService).toBeTruthy();
         expect(cohortService.counts).toBeDefined();

@@ -22,6 +22,7 @@ import {TransmartHttpService} from '../transmart-services/transmart-http.service
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {EndpointMode} from '../../models/endpoint-mode';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -65,6 +66,22 @@ export class ResourceServiceMock {
 
   getCohorts(): Observable<Cohort[]> {
     return observableOf(this.queries);
+  }
+
+  getSubjects(constraint: Constraint): Observable<TransmartPatient[]> {
+    let p1 = new TransmartPatient();
+    p1.id = 1;
+    p1.inTrialId = 'in1';
+    p1.subjectIds = { SUBJ_ID: 'one' };
+    let p2 = new TransmartPatient();
+    p2.id = 2;
+    p2.inTrialId = 'in2';
+    p2.subjectIds = { SUBJ_ID: 'two' };
+    let p3 = new TransmartPatient();
+    p3.id = 3;
+    p3.inTrialId = 'in3';
+    p3.subjectIds = { SUBJ_ID: 'three' };
+    return observableOf([p1, p2, p3]);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {

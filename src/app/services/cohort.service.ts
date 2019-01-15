@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,7 +23,7 @@ import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 
 /**
  * This service concerns with
@@ -31,8 +31,10 @@ import {forkJoin} from 'rxjs';
  * (2) Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
  *
  * workflow:
- * - when the user changes the constraint(s) inside gb-cohort-selection: updateCurrent() -> updateAll()
- * - when the user changes cohort selection inside gb-cohorts: updateAll()
+ * - when the user changes the constraint(s) inside gb-cohort-selection:
+ *          updateCountsWithCurrentCohort() -> updateCountsWithAllCohorts()
+ * - when the user changes cohort selection inside gb-cohorts:
+ *          updateCountsWithAllCohorts()
  */
 @Injectable({
   providedIn: 'root',
@@ -58,6 +60,7 @@ export class CohortService {
   private _isUpdatingAll = false;
   // flag indicating if the current cohort constraint in gb-cohort-selection has been changed
   private _isDirty = true;
+  private _cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
 
   /*
    * ------ other variables ------
@@ -79,7 +82,7 @@ export class CohortService {
     this.initializeCounts();
     this.loadCohorts();
     // initial updates
-    this.updateCurrent();
+    this.updateCountsWithCurrentCohort();
   }
 
   initializeCounts() {
@@ -92,7 +95,7 @@ export class CohortService {
   clearAll(): Promise<any> {
     this.constraintService.clearCohortConstraint();
     this.isDirty = true;
-    return this.updateCurrent();
+    return this.updateCountsWithCurrentCohort();
   }
 
   /**
@@ -139,7 +142,7 @@ export class CohortService {
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
-  public updateCurrent(): Promise<any> {
+  public updateCountsWithCurrentCohort(): Promise<any> {
     return new Promise((resolve, reject) => {
       if (this.isDirty) {
         this.isUpdatingCurrent = true;
@@ -165,7 +168,7 @@ export class CohortService {
             this.isDirty = false;
 
             if (this.currentCohort.selected) {
-              this.updateAll()
+              this.updateCountsWithAllCohorts()
                 .then(() => {
                   resolve(true)
                 })
@@ -185,7 +188,7 @@ export class CohortService {
     });
   }
 
-  public updateAll(): Promise<any> {
+  public updateCountsWithAllCohorts(): Promise<any> {
     console.log('Updating counts from all cohorts...');
     this.isUpdatingAll = true;
     let combination: CombinationConstraint = new CombinationConstraint();
@@ -209,6 +212,7 @@ export class CohortService {
         this.constraintService.selectedStudyConceptCountMap = res[2];
         this.constraintService.selectedConceptCountMap = res[3];
         this.isUpdatingAll = false;
+        this.cohortsUpdated.next(this.cohorts);
         resolve(true);
       }, (err) => {
         reject(err);
@@ -261,7 +265,7 @@ export class CohortService {
         this.constraintService.clearCohortConstraint();
         this.constraintService.restoreCohortConstraint(cohort.constraint);
         this.isDirty = true;
-        this.updateCurrent()
+        this.updateCountsWithCurrentCohort()
           .then(() => {
             MessageHelper.alert('info', 'Success', `Cohort ${cohort.name} is successfully imported.`);
             this.currentCohort.selected = true;
@@ -470,4 +474,11 @@ export class CohortService {
     this._allCounts = value;
   }
 
+  get cohortsUpdated(): Subject<Cohort[]> {
+    return this._cohortsUpdated;
+  }
+
+  set cohortsUpdated(value: Subject<Cohort[]>) {
+    this._cohortsUpdated = value;
+  }
 }

@@ -217,7 +217,7 @@ export class GbCohortsComponent implements OnInit {
 
   onCohortCheckClick(e: MouseEvent) {
     e.stopPropagation();
-    this.cohortService.updateAll();
+    this.cohortService.updateCountsWithAllCohorts();
   }
 
   get isCohortSubscriptionIncluded(): boolean {

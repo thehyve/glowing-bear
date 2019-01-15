@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -34,6 +34,7 @@ import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-vi
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 
 @Injectable({
   providedIn: 'root',
@@ -479,11 +480,22 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- patient set calls --------------------------------------
+  // -------------------------------------- subject calls --------------------------------------
   saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.savePatientSet(name, constraint);
+      }
+      default: {
+        return this.handleEndpointModeError();
+      }
+    }
+  }
+
+  getSubjects(constraint: Constraint): Observable<TransmartPatient[]> {
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART: {
+        return this.transmartResourceService.getPatients(constraint);
       }
       default: {
         return this.handleEndpointModeError();

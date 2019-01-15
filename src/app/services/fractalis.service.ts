@@ -1,3 +1,11 @@
+/**
+ * Copyright 2017 - 2019  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {Injectable} from '@angular/core';
 import {AuthenticationService} from './authentication/authentication.service';
 import * as fjs from 'fractalis';
@@ -15,14 +23,21 @@ import {FractalisChartDescription} from '../models/fractalis-models/fractalis-ch
 import {FractalisChart} from '../models/fractalis-models/fractalis-chart';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {FractalisVariablesStatus} from '../models/fractalis-models/fractalis-variables-status';
-import {Subject} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
+import {CohortService} from './cohort.service';
+import {ResourceService} from './resource.service';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {Cohort} from '../models/cohort-models/cohort';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FractalisService {
+  static readonly MAX_CACHE_TRYS = 10;
+  static readonly TIMEOUT_VARIABLE_STATUS_UPDATE = 3000;
 
-  private F: any; // The fractalis object
+  public F: any; // The fractalis object
   private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
   private _charts: Chart[] = [];
@@ -30,7 +45,6 @@ export class FractalisService {
   private _selectedVariablesUpdated = new Subject<Concept[]>();
   private _isPreparingCache = false;
   private _isClearingCache = false;
-  private readonly MAX_CACHE_TRYS = 10;
   private _currentCacheTrys = 0;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
@@ -46,7 +60,9 @@ export class FractalisService {
   }
 
   constructor(private appConfig: AppConfig,
-              private authService: AuthenticationService) {
+              private authService: AuthenticationService,
+              private cohortService: CohortService,
+              private resourceService: ResourceService) {
     this.chartDivSize = 35;
 
     if (!this.appConfig.getConfig('enable-fractalis-analysis')) {
@@ -60,7 +76,8 @@ export class FractalisService {
       });
     }
     this.retrieveAvailableChartTypes();
-    this.timer = setInterval(() => this.updateVariablesStatus(), 3000);
+    this.timer = setInterval(() =>
+      this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
   }
 
   private setupFractalis() {
@@ -87,7 +104,8 @@ export class FractalisService {
       }
     };
     this.F = fjs.fractalis.init(config);
-    this.clearCache()
+    this.clearCache();
+    this.configSubsetsUpdate();
   }
 
   private prepareCache(variables: Concept[]) {
@@ -157,9 +175,29 @@ export class FractalisService {
     });
   }
 
-  setSubsets() {
-    // TODO make use of this function
-    // this.F.setSubsets([])
+  private configSubsetsUpdate() {
+    this.cohortService.cohortsUpdated.asObservable()
+      .subscribe((cohorts: Cohort[]) => {
+        let subjectCalls = [];
+        cohorts
+          .filter((cohort: Cohort) => {
+            return cohort.selected;
+          })
+          .forEach((cohort: Cohort) => {
+            subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
+          });
+        let idSets = [];
+        forkJoin(subjectCalls)
+          .subscribe(res => {
+            for (let i = 0; i < subjectCalls.length; i++) {
+              const ids = res[i].map((subject: TransmartPatient) => {
+                return subject.subjectIds.SUBJ_ID;
+              });
+              idSets.push(ids);
+            }
+            this.F.setSubsets(idSets);
+          });
+      });
   }
 
   public clearCache() {
@@ -171,12 +209,12 @@ export class FractalisService {
       })
       .catch(error => {
         console.error(`Error clearing Fractalis cache: ${error}`);
-        if (this._currentCacheTrys < this.MAX_CACHE_TRYS) {
-          console.error('Retry caching...');
+        if (this._currentCacheTrys < FractalisService.MAX_CACHE_TRYS) {
+          console.log('Retry caching...');
           this.clearCache();
           this._currentCacheTrys++;
         } else {
-          console.error('Maximum number of caching calls exceeded, terminate!');
+          console.log('Maximum number of caching calls exceeded, terminate!');
           this._currentCacheTrys = 0;
         }
       });

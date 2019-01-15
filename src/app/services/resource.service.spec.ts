@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,7 @@ import {AppConfigMock} from '../config/app.config.mock';
 import {AppConfig} from '../config/app.config';
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -205,12 +206,26 @@ describe('ResourceService', () => {
       });
   });
 
-  it('should get queries', () => {
+  it('should get cohorts', () => {
     resourceService.getCohorts()
       .subscribe((res: Cohort[]) => {
         expect(res.length).toBe(2);
         expect(res[0].constraint.className).toBe('TrueConstraint');
         expect(res[1].constraint.className).toBe('CombinationConstraint');
+      });
+    resourceService.endpointMode = null;
+    resourceService.getCohorts()
+      .subscribe(res => {
+      }, err => {
+        expect(err).toBeDefined();
+      });
+  });
+
+  it('should get subjects', () => {
+    resourceService.getSubjects(null)
+      .subscribe((res: TransmartPatient[]) => {
+        expect(res.length).toBe(1);
+        expect(res[0].id).toBe(100);
       });
     resourceService.endpointMode = null;
     resourceService.getCohorts()

@@ -23,6 +23,7 @@ import {Pedigree} from '../../models/constraint-models/pedigree';
 import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 
 export class TransmartResourceServiceMock {
   private _studies: Study[];
@@ -217,6 +218,12 @@ export class TransmartResourceServiceMock {
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
     return observableOf([]);
+  }
+
+  getPatients(constraint: Constraint): Observable<TransmartPatient[]> {
+    let p = new TransmartPatient();
+    p.id = 100;
+    return observableOf([p]);
   }
 
   getDataTable(dataTable: DataTable): Observable<TransmartDataTable> {

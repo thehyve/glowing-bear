@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,6 +37,7 @@ import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-
 import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {Study} from '../../models/constraint-models/study';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 
 
 @Injectable({
@@ -355,6 +356,17 @@ export class TransmartResourceService {
   getPedigrees(): Observable<Pedigree[]> {
     return this.transmartHttpService.getPedigrees();
   }
+
+  // -------------------------------------- patient calls --------------------------------------
+  /**
+   * Get the patient list whose observations correspond to the given constraint
+   * @param constraint
+   * @returns {Observable<TransmartPatient[]>}
+   */
+  getPatients(constraint: Constraint): Observable<TransmartPatient[]> {
+    return this.transmartHttpService.getPatients(constraint);
+  }
+
 
   // -------------------------------------- export calls --------------------------------------
 
