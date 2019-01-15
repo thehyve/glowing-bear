@@ -237,6 +237,24 @@ describe('TransmartHttpService', () => {
         req.flush(mockData);
       }));
 
+  it('should get patients',
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
+        const mockData = {
+          patients: {
+            foo: 'bar'
+          }
+        };
+        const mockConstraint = new TrueConstraint();
+        service.getPatients(mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/patients';
+        const req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        req.flush(mockData);
+      }));
+
   it('should get aggregate',
     inject([HttpTestingController, TransmartHttpService],
       (httpMock: HttpTestingController, service: TransmartHttpService) => {
