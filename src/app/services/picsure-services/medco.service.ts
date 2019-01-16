@@ -117,6 +117,14 @@ export class MedcoService {
       console.log(`${k}: ${result.subjectCount}, times: ${JSON.stringify(result.times)}`)
     }
 
+    // randomize results (according to configuration)
+    let medcoResultsRandomization = this.config.getConfig('medco-results-randomization');
+    if (medcoResultsRandomization) {
+      results.forEach((res) =>
+        res.subjectCount += Math.floor(Math.random() * Number(medcoResultsRandomization))
+      );
+    }
+
     this.results.next(results);
     this.addMedcoResultsTab();
 
