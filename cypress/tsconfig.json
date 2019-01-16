@@ -1,23 +1,12 @@
-//{
-//  "compilerOptions": {
-//    "allowJs": true,
-//    "baseUrl": "../node_modules",
-//    "types": [
-//      "cypress"
-//    ]
-//  },
-//  "include": [
-//    "**/*.*"
-//  ]
-//}
-
 {
-  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": "../node_modules",
+    "types": [
+      "cypress"
+    ]
+  },
   "include": [
-    "integration/*.ts",
-    "plugins/*.ts",
-    "support/*.ts",
-    "../node_modules/cypress"
-  ],
-  "types": ["cypress"]
+    "**/*.*"
+  ]
 }
