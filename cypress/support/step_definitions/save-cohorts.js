@@ -44,18 +44,18 @@ given("Cohort {string} is saved", (cohortName) => {
               },
               "queryBlob": {
                 "patientsQueryFull":
-                      {
-                          "type": "subselection",
-                          "dimension": "patient",
-                          "constraint": {
-                              "type": "concept",
-                              "conceptCode": "VSIGN:HR",
-                              "name": "Heart Rate",
-                              "fullName": "\\Vital Signs\\Heart Rate\\",
-                              "conceptPath": "\\Vital Signs\\Heart Rate\\",
-                              "valueType": "NUMERIC"
-                          }
-                      }
+                  {
+                    "type": "subselection",
+                    "dimension": "patient",
+                    "constraint": {
+                      "type": "concept",
+                      "conceptCode": "VSIGN:HR",
+                      "name": "Heart Rate",
+                      "fullName": "\\Vital Signs\\Heart Rate\\",
+                      "conceptPath": "\\Vital Signs\\Heart Rate\\",
+                      "valueType": "NUMERIC"
+                    }
+                  }
               },
               "bookmarked": false
             }
