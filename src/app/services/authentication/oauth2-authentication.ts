@@ -161,8 +161,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
           resolve(authorisation);
         });
       } else {
-        console.log(`Set redirect to: ${window.location.pathname}`);
-        localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
+        console.log(`Set redirect to: ${this.router.url}`);
+        localStorage.setItem('redirect', JSON.stringify(this.router.url));
 
         this._token = JSON.parse(localStorage.getItem('token'));
         this.authorisation.subscribe((authorisation: AuthorizationResult) => {
@@ -177,7 +177,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     // Remove previous token
     localStorage.removeItem('token');
     // Set redirect target for when we return after authentication
-    localStorage.setItem('redirect', JSON.stringify(window.location.pathname));
+    localStorage.setItem('redirect', JSON.stringify(this.router.url));
     // Redirect to authentication
     let clientSecret = '';
     let redirectUri = encodeURI(this.appUrl);
