@@ -10,9 +10,9 @@ given("Cohort {string} is saved", (cohortName) => {
           'method': 'GET',
           'auth': {'bearer': token}
         }).then((queriesResponce) => {
-          queriesResponce.body["queries"].map(x => x["id"]).forEach(x => {
+          queriesResponce.body["queries"].map(x => x["id"]).forEach(id => {
             cy.request({
-              'url': Cypress.env('apiUrl') + '/v2/queries/' + x,
+              'url': Cypress.env('apiUrl') + '/v2/queries/' + id,
               'method': 'DELETE',
               'auth': {'bearer': token}
             })
