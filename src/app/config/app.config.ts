@@ -17,7 +17,7 @@ import {ErrorHelper} from '../utilities/error-helper';
 export class AppConfig {
 
   public static DEFAULT_API_VERSION = 'v2';
-  public static DEFAULT_APP_URL = 'http://localhost:4200';
+  public static DEFAULT_APP_URL = 'https://localhost:4200';
   public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_ENABLE_FRACTALIS_ANALYSIS = false;

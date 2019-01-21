@@ -120,11 +120,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
         this.treeNodeMetadataPanel.show(event);
       }).bind(this);
 
-      let showInfo1 = ((event: MouseEvent) => {
-        this.updateMetadataContent(metadata);
-        this.treeNodeMetadataPanel.show(event);
-      }).bind(this);
-
       let hideInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.hide(event);

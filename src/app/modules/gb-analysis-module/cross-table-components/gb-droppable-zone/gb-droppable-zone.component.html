@@ -2,8 +2,7 @@
      class="container gb-droppable-zone-container"
      [ngClass]="{'gb-droppable-zone-container-highlight': dragCounter > 0}"
      (onDragEnter)="onDragEnter($event)"
-     (onDragLeave)="onDragLeave($event)"
-     (drop)="onDrop($event)">
+     (onDragLeave)="onDragLeave($event)">
 
   <div class="row">
     <div *ngFor="let constraint of constraints"
@@ -12,15 +11,15 @@
                          (constraintCellRemoved)="onConstraintCellRemoved(constraint)">
       </gb-draggable-cell>
     </div>
-    <span *ngIf="constraints.length === 0"
-          class="gb-droppable-zone-info-container">
+    <div *ngIf="constraints.length === 0"
+          class="gb-droppable-zone-info-container" (drop)="onDrop($event)">
       <span *ngIf="axis == 'Row'">
         Row drop zone
       </span>
         <span *ngIf="axis == 'Column'">
         Column drop zone
       </span>
-    </span>
+    </div>
   </div>
 
 </div>

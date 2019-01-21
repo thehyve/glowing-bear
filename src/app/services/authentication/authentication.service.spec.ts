@@ -209,7 +209,8 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200"
+      "http://localhost:4200",
+      "https://localhost:4200"
     ],
     "realm_access": {
       "roles": [
@@ -302,7 +303,8 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200"
+      "http://localhost:4200",
+      "https://localhost:4200"
     ],
     "realm_access": {
       "roles": [
@@ -396,7 +398,8 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200"
+      "http://localhost:4200",
+      "https://localhost:4200"
     ],
     "realm_access": {
       "roles": [
