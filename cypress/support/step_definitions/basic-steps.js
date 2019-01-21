@@ -28,8 +28,8 @@ given("I am on the Analysis tab", () => {
   cy.fixture('admin').as("user");
   cy.login();
   cy.url().should('eq', Cypress.config('baseUrl') + '/analysis');
-  // cy.get('.section-banner').first().contains('New chart');
-  // cy.get('.section-banner').last().contains('Charts');
-  // cy.get('.ui-selectbutton .ui-button-text-only').last().contains('crosstable');
+  cy.get('.section-banner').first().contains('New chart');
+  cy.get('.section-banner').last().contains('Charts');
+  cy.get('.ui-selectbutton .ui-button-text-only').last().contains('crosstable');
 });
 
