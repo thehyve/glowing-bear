@@ -30,19 +30,21 @@ Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
 });
 
 Cypress.Commands.add('drag', (nodeName, dragZoneSelector, options = {}) => {
+  const dataTransfer = new DataTransfer();
   if (dragZoneSelector) {
-    cy.get(dragZoneSelector).contains(nodeName).trigger('dragstart');
+    cy.get(dragZoneSelector).contains(nodeName).trigger('dragstart', { dataTransfer });
   } else {
-    cy.contains(nodeName).trigger('dragstart');
+    cy.contains(nodeName).trigger('dragstart', { dataTransfer });
   }
 });
 
 Cypress.Commands.add('drop', (inputNum, dropZoneSelector, options = {}) => {
+  const dataTransfer = new DataTransfer();
   if (dropZoneSelector) {
-    cy.get(dropZoneSelector).eq(inputNum).trigger('drop');
+    cy.get(dropZoneSelector).eq(inputNum).trigger('drop', { dataTransfer });
   } else {
     // default drop zone
-    cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop');
+    cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop', { dataTransfer });
   }
 });
 

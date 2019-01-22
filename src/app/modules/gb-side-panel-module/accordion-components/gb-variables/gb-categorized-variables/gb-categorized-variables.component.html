@@ -18,10 +18,11 @@
       <div>
         <div *ngFor="let concept of catVar.elements"
              [pDraggable]="variablesDragDropScope"
-             (onDragStart)="onDragStart($event, concept)"
+             (dragstart)="onDragStart($event, concept)"
              class="variable">
           <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected"
                       binary="true" (onChange)="updateCheckAllText()"></p-checkbox>
+
           {{concept.name}} ({{concept.counts.subjectCount}})
         </div>
       </div>

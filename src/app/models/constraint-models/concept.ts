@@ -26,6 +26,20 @@ export class Concept {
   constructor() {
   }
 
+  copy(): Concept {
+    let c = new Concept();
+    c.path = this.path;
+    c.type = this.type;
+    c.label = this.label;
+    c.aggregate = this.aggregate;
+    c.code = this.code;
+    c.name = this.name;
+    c.fullName = this.fullName;
+    c.counts = this.counts;
+    c.selected = this.selected;
+    return c;
+  }
+
   get path(): string {
     return this._path;
   }

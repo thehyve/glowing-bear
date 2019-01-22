@@ -549,7 +549,9 @@ export class ConstraintService {
 
   public identifyDraggedElement(): Concept {
     if (this.draggedVariable) {
-      return this.draggedVariable;
+      const draggedVariable = this.draggedVariable.copy();
+      this.draggedVariable = null;
+      return draggedVariable;
     } else if (this.treeNodeService.selectedTreeNode) {
       return this.treeNodeService.getConceptFromTreeNode(this.treeNodeService.selectedTreeNode);
     }
