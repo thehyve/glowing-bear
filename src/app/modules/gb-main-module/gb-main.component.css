@@ -97,3 +97,20 @@
 .gb-top-panel button:active {
   border: none;
 }
+
+.gb-bottom-panel {
+  background-color: var(--gb-clinical-green-dark);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 100;
+  border: none;
+  padding: 2px 1em 2px 1em;
+  margin: 0px;
+  height: var(--gb-top-panel-height);
+}
+
+.gb-bottom-panel span {
+  font-size: x-small;
+  color: white;
+}

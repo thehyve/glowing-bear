@@ -28,3 +28,4 @@ services:
       - GB_COTHORITY_KEY_URL=http://localhost/cothority-key.pub.toml
       - GB_GENOMIC_ANNOTATIONS_URL=http://localhost/genomicAnnotations
       - GB_MEDCO_RESULTS_RANDOMIZATION=0
+      - GB_FOOTER_TEXT=

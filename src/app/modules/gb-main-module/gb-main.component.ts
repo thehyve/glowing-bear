@@ -13,6 +13,7 @@ import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
 import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {AppConfig} from "../../config/app.config";
 
 @Component({
   selector: 'gb-main',
@@ -35,7 +36,8 @@ export class GbMainComponent implements OnInit {
               private transmartResourceService: TransmartResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private queryService: QueryService) {
+              private queryService: QueryService,
+              private config: AppConfig) {
   }
 
   ngOnInit() {
@@ -107,6 +109,11 @@ export class GbMainComponent implements OnInit {
 
   logout() {
     this.authenticationService.logout();
+  }
+
+  get footerText(): string {
+    let footerText = this.config.getConfig('footer-text');
+    return footerText ? footerText : '';
   }
 
 }

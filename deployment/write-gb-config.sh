@@ -33,7 +33,9 @@ cat > "$NGINX_ROOT/glowing-bear/app/config/config.docker-deployment.json" <<EOL
 
   "medco-cothority-key-url": "$GB_COTHORITY_KEY_URL",
   "medco-genomic-annotations-url": "$GB_GENOMIC_ANNOTATIONS_URL",
-  "medco-results-randomization": $GB_MEDCO_RESULTS_RANDOMIZATION
+  "medco-results-randomization": $GB_MEDCO_RESULTS_RANDOMIZATION,
+
+  "footer-text": "$GB_FOOTER_TEXT"
 
 }
 EOL
