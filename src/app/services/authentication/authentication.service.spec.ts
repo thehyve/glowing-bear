@@ -209,8 +209,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200",
-      "https://localhost:4200"
+      "http://localhost:4200"
     ],
     "realm_access": {
       "roles": [
@@ -251,6 +250,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     );
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
+      console.log('-----> ', jwt_decode(authenticationService.token));
       expect(jwt_decode(authenticationService.token)).toEqual(tokenContents1);
       authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
         expect(level).toEqual(AccessLevel.Restricted);
@@ -303,8 +303,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200",
-      "https://localhost:4200"
+      "http://localhost:4200"
     ],
     "realm_access": {
       "roles": [
@@ -398,8 +397,7 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     "acr": "1",
     "allowed-origins": [
       "http://localhost",
-      "http://localhost:4200",
-      "https://localhost:4200"
+      "http://localhost:4200"
     ],
     "realm_access": {
       "roles": [

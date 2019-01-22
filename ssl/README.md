@@ -6,8 +6,6 @@ Use https for development purpose, based on the original
 This repository contains a script that will generate a trusted ssl certificate which can be used for local software development.
 
 ```
-git clone https://github.com/RubenVermeulen/generate-trusted-ssl-certificate.git
-cd <PATH_TO_REPO_FOLDER>/generate-trusted-ssl-certificate
 bash generate.sh
 ```
 
