@@ -25,21 +25,30 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
-  cy.get('.ui-treenode :visible').contains(nodeName).parent().parent().children('.ui-tree-toggler').click();
+  cy.get('.ui-treenode :visible').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler').click();
 });
 
-Cypress.Commands.add('drag', (nodeName, options = {}) => {
-  cy.contains(nodeName).trigger('dragstart');
+Cypress.Commands.add('drag', (nodeName, dragZoneSelector, options = {}) => {
+  if (dragZoneSelector) {
+    cy.get(dragZoneSelector).contains(nodeName).trigger('dragstart');
+  } else {
+    cy.contains(nodeName).trigger('dragstart');
+  }
 });
 
-Cypress.Commands.add('drop', (inputNum, options = {}) => {
-  cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop');
+Cypress.Commands.add('drop', (inputNum, dropZoneSelector, options = {}) => {
+  if (dropZoneSelector) {
+    cy.get(dropZoneSelector).eq(inputNum).trigger('drop');
+  } else {
+    // default drop zone
+    cy.get('input[placeholder="add criterion"]').eq(inputNum).trigger('drop');
+  }
 });
 
 Cypress.Commands.add('removeChip', (chipName, options = {}) => {
   cy.get('li.ui-multiselect-item').contains(chipName).click();
 });
-
 
 Cypress.Commands.add('transmartLogin', (username, password, valid) => {
   cy.get('#j_username').type(username);
@@ -51,15 +60,18 @@ Cypress.Commands.add('transmartLogin', (username, password, valid) => {
 });
 
 Cypress.Commands.add('keycloakLogin', (username, password) => {
-  cy.url().should('eq', Cypress.env('oidc-server-url') + '/auth?response_type=code&client_id='
-    + Cypress.env('oidc-client-id') + '&client_secret=&redirect_uri=' + Cypress.config('baseUrl'))
-  submitLoginForm();
+  const authUrl =
+    Cypress.env('oidc-server-url') +
+    '/auth?response_type=code&client_id=' +
+    Cypress.env('oidc-client-id') +
+    '&client_secret=&redirect_uri=' +
+    Cypress.config('baseUrl');
+  cy.url().should('equal', authUrl);
 
-  function submitLoginForm() {
-    cy.get('#username').type(username);
-    cy.get('#password').type(password);
-    cy.get('#kc-login').click();
-  }
+  cy.get('#username').type(username);
+  cy.get('#password').type(password);
+  cy.get('#kc-login').click();
+
 });
 
 Cypress.Commands.add('getToken', (username, password) => {
@@ -93,3 +105,23 @@ Cypress.Commands.add('getToken', (username, password) => {
   }
 });
 
+Cypress.Commands.add('logout', () => {
+  let target = '';
+  if (Cypress.env('authentication-service-type') == 'oidc') {
+    target = Cypress.env('oidc-server-url') + '/logout';
+  } else {
+    target = Cypress.env('apiUrl') + '/logout';
+  }
+  cy.request(target);
+});
+
+Cypress.Commands.add('login', () => {
+  cy.logout();
+  cy.get('@user').then((userData) => {
+    if(Cypress.env('authentication-service-type') == 'oidc'){
+      cy.keycloakLogin(userData.username, userData.password);
+    } else {
+      cy.transmartLogin(userData.username, userData.password, userData.valid);
+    }
+  });
+});

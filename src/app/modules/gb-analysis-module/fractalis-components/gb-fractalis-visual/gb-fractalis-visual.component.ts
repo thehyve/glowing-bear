@@ -43,5 +43,4 @@ export class GbFractalisVisualComponent implements OnInit {
   set chartSize(value: number) {
     this.fractalisService.chartDivSize = value;
   }
-
 }

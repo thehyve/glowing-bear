@@ -4,7 +4,7 @@
   "license": "GPL-3.0+",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --aot",
+    "serve": "ng serve --aot --ssl",
     "build": "ng build",
     "package": "ng build --prod",
     "test": "ng test --code-coverage",
@@ -13,7 +13,7 @@
     "report-coverage": "codecov",
     "e2e": "npx cypress run",
     "cypress": "npx cypress open",
-    "cypressDev": "npx cypress open --config baseUrl=http://localhost:4200 --env apiUrl=http://localhost:8080"
+    "cypress-dev": "npx cypress open --config baseUrl=https://localhost:4200 --env apiUrl=http://localhost:8080"
   },
   "private": true,
   "dependencies": {

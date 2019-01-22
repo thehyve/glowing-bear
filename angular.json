@@ -55,7 +55,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "glowing-bear:build"
+            "browserTarget": "glowing-bear:build",
+            "sslKey": "ssl/sever.key",
+            "sslCert": "ssl/server.crt"
           },
           "configurations": {
             "production": {

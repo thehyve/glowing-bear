@@ -44,9 +44,9 @@ so that the `api-url` points to your running transmart instance.
 
 * Third, run
     ```
-    yarn start
+    yarn serve
     ```
-    The app is run on `http://localhost:4200/` and 
+    The app is run on `https://localhost:4200/` and 
     will automatically reload if you change any of the source files.
 
 
@@ -168,7 +168,6 @@ If not, see https://opensource.org/licenses/MPL-2.0.
 
 [tranSMART]: https://github.com/thehyve/transmart-core
 [Angular CLI]: https://github.com/angular/angular-cli
-[Protractor]: http://www.protractortest.org
 [Karma]: https://karma-runner.github.io
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [nginx]: https://nginx.org

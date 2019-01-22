@@ -109,5 +109,4 @@ export class GbDroppableZoneComponent implements OnInit {
   get variablesDragDropScope(): string {
     return this.constraintService.variablesDragDropScope;
   }
-
 }

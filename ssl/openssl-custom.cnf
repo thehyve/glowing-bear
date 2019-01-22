@@ -1,0 +1,22 @@
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+x509_extensions = v3_req
+distinguished_name = dn
+
+[dn]
+C = NL
+ST = UT
+L = Utrecht
+O = The Hyve
+OU = Data Warehousing
+emailAddress = bo@thehyve.nl
+CN = localhost:4200
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = *.localhost:4200
+DNS.2 = localhost:4200
