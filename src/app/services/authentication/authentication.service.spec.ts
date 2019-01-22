@@ -250,7 +250,6 @@ describe('Oauth2Authentication with OpenID Connect service type', () => {
     );
     authenticationService.load().then((result: AuthorizationResult) => {
       expect(result).toEqual(AuthorizationResult.Authorized);
-      console.log('-----> ', jwt_decode(authenticationService.token));
       expect(jwt_decode(authenticationService.token)).toEqual(tokenContents1);
       authenticationService.accessLevel.asObservable().subscribe((level: AccessLevel) => {
         expect(level).toEqual(AccessLevel.Restricted);
