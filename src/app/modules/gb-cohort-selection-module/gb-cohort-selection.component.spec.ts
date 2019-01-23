@@ -125,23 +125,4 @@ describe('GbCohortSelectionComponent', () => {
     expect(event.preventDefault).toHaveBeenCalled();
   });
 
-  it('should process uploaded subject ids', () => {
-    let fileContents = 'id123\nid456\n';
-    let spy = spyOn(cohortService, 'restoreCohort').and.stub();
-
-    component['processSubjectIdsUpload'](fileContents, 'testName');
-    expect(spy).toHaveBeenCalledWith(jasmine.any(Cohort));
-    expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({name: 'testName'}));
-  });
-
-  it('should import subjects criteria', () => {
-    let uploadElm = document.createElement('a');
-    spyOn(document, 'getElementById').and.returnValue(uploadElm);
-    let spy1 = spyOn(uploadElm, 'click').and.stub();
-    component['isUploadListenerNotAdded'] = true;
-    component.importCriteria();
-    expect(component['isUploadListenerNotAdded']).toBe(false);
-    expect(spy1).toHaveBeenCalled();
-  });
-
 });

@@ -12,9 +12,9 @@
        (onDragEnter)="onDragEnter($event)"
        (onDragLeave)="onDragLeave($event)"
        (drop)="onDropVariable($event)">
-    <span *ngIf="selectedVariables.length === 0; else showDroppedVariables">
+    <div *ngIf="selectedVariables.length === 0; else showDroppedVariables">
       Drop variable(s) here
-    </span>
+    </div>
   </div>
   <gb-loading [loading]="isClearingCache"></gb-loading>
   <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">

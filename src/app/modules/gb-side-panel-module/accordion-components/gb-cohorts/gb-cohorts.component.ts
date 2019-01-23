@@ -18,6 +18,8 @@ import {ConstraintHelper} from '../../../../utilities/constraint-utilities/const
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
+import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
+import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -43,33 +45,51 @@ export class GbCohortsComponent implements OnInit {
 
   importCohort() {
     let reader = new FileReader();
-    reader.onload = this.handleCohortFileUploadEvent.bind(this);
+    reader.onload = this.handleCohortImport.bind(this);
     FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
     this.isUploadListenerNotAdded = false;
   }
 
-  handleCohortFileUploadEvent(e) {
+  handleCohortImport(e) {
+    MessageHelper.alert('info', 'File upload successful!');
     let data = e.target['result'];
     this.file = FileImportHelper.getFile(this.fileElementId);
-    let obj = this.verifyFile(this.file, data);
-    this.cohortService.saveCohortByObject(obj);
+    if (FileImportHelper.isTextFile(this.file)) {
+      this.processSubjectIdsUpload(data as string, this.file.name);
+    } else if (FileImportHelper.isJsonFile(this.file)) {
+      let name = this.file.name.substr(0, this.file.name.indexOf('.'));
+      this.processCohortUpload(data, name);
+    } else {
+      MessageHelper.alert('error', 'Invalid file for cohort import.');
+      return;
+    }
   }
 
-  // verify the uploaded cohort file
-  verifyFile(file: File, data: any) {
-    // file.type is empty for some browsers and Windows OS
-    if (FileImportHelper.isJsonFile(file)) {
-      let _json = JSON.parse(data);
-      // If the json is of standard format
-      if (_json['constraint']) {
-        return _json;
-      } else {
-        MessageHelper.alert('error', 'Invalid file content for cohort import.');
-        return;
-      }
+  /**
+   * Split a newline separated string (list of subject ids) into its parts
+   * and restores subject set query where these parts are used as subject ids.
+   * @param {string} fileContents the newline separated string.
+   * @param {string} name the query name.
+   */
+  private processSubjectIdsUpload(fileContents: string, name: string) {
+    let subjectIds: string[] = fileContents.split(/[\r\n]+/)
+      .map(id => id.trim())
+      .filter(id => id.length > 0);
+    let cohort = new Cohort(null, name);
+    let subjectSetConstraint = new SubjectSetConstraint();
+    subjectSetConstraint.subjectIds = subjectIds;
+    cohort.constraint = subjectSetConstraint;
+    this.cohortService.restoreCohort(cohort);
+  }
+
+  private processCohortUpload(data, name: string) {
+    let _json = JSON.parse(data);
+    if (_json['constraints']) {
+      let cohort = new Cohort('', name);
+      cohort.constraint = TransmartConstraintMapper.generateConstraintFromObject(data['constraint']);
+      this.cohortService.restoreCohort(cohort);
     } else {
-      MessageHelper.alert('error', 'Invalid file content for cohort import.');
-      return;
+      MessageHelper.alert('error', 'Invalid json format for cohort import.');
     }
   }
 
