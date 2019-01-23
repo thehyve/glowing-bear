@@ -35,6 +35,7 @@ import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
+import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 
 describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
@@ -115,6 +116,66 @@ describe('GbCohortsComponent', () => {
     component.isUploadListenerNotAdded = false;
     component.importCohort();
     expect(spy1).not.toHaveBeenCalled();
+  });
+
+  it('should have cohort import with subject id file', () => {
+    const e = {
+      target: {
+        result: 'foobar'
+      }
+    };
+    const fileTxt = new File(
+      ['id1\nid2'],
+      'subjectIds.txt',
+      {type: 'text/plain'});
+
+    const spyFileImporter = spyOn(FileImportHelper, 'getFile').and.returnValue(fileTxt);
+    const spyCohortRestore = spyOn(cohortService, 'restoreCohort').and.stub();
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
+    component.handleCohortImport(e);
+    expect(spyFileImporter).toHaveBeenCalled();
+    expect(spyCohortRestore).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('should have cohort import with cohort json file', () => {
+    const e = {
+      target: {
+        result: '{"constraints":"sth"}'
+      }
+    };
+    const fileJson = new File(
+      [],
+      'cohort.json',
+      {type: 'application/json'});
+
+    const spyFileImporter = spyOn(FileImportHelper, 'getFile').and.returnValue(fileJson);
+    const spyTMmapper = spyOn(TransmartConstraintMapper, 'generateConstraintFromObject').and.stub();
+    const spyCohortRestore = spyOn(cohortService, 'restoreCohort').and.stub();
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
+    component.handleCohortImport(e);
+    expect(spyFileImporter).toHaveBeenCalled();
+    expect(spyTMmapper).toHaveBeenCalled();
+    expect(spyCohortRestore).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledTimes(1);
+  });
+
+  it('should have cohort import with invalid file', () => {
+    const e = {
+      target: {
+        result: 'sth'
+      }
+    };
+    const file = new File(
+      [],
+      'cohort.xml',
+      {type: 'application/xml'});
+
+    const spyFileImporter = spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
+    component.handleCohortImport(e);
+    expect(spyFileImporter).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledTimes(2);
   });
 
   it('should read uploaded cohort file', async () => {

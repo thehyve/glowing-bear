@@ -51,6 +51,7 @@ export class GbCohortsComponent implements OnInit {
   }
 
   handleCohortImport(e) {
+    MessageHelper.alert('info', 'File upload successful!');
     let data = e.target['result'];
     this.file = FileImportHelper.getFile(this.fileElementId);
     if (FileImportHelper.isTextFile(this.file)) {
@@ -59,10 +60,9 @@ export class GbCohortsComponent implements OnInit {
       let name = this.file.name.substr(0, this.file.name.indexOf('.'));
       this.processCohortUpload(data, name);
     } else {
-      MessageHelper.alert('error', 'Invalid file format for subjects import.');
+      MessageHelper.alert('error', 'Invalid file for cohort import.');
       return;
     }
-    MessageHelper.alert('info', 'File upload finished successfully!');
   }
 
   /**
@@ -89,7 +89,7 @@ export class GbCohortsComponent implements OnInit {
       cohort.constraint = TransmartConstraintMapper.generateConstraintFromObject(data['constraint']);
       this.cohortService.restoreCohort(cohort);
     } else {
-      MessageHelper.alert('error', 'Invalid file content for subjects import.');
+      MessageHelper.alert('error', 'Invalid json format for cohort import.');
     }
   }
 
