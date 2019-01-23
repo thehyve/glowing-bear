@@ -50,7 +50,7 @@ export class GbCohortsComponent implements OnInit {
     this.isUploadListenerNotAdded = false;
   }
 
-  private handleCohortImport(e) {
+  handleCohortImport(e) {
     let data = e.target['result'];
     this.file = FileImportHelper.getFile(this.fileElementId);
     if (FileImportHelper.isTextFile(this.file)) {

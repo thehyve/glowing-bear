@@ -4,7 +4,7 @@ Feature: Create various Fractalis charts
     Given I am on the Analysis tab
     When I select a box plot
     And I drag numerical_11 variable from the Category View to variable drop zone
-    And I add the chart
+    And I click the Add button
     Then There should be a box plot created
 
   Scenario: Create a box-plot with a numerical variable from the Category View with multiple cohorts

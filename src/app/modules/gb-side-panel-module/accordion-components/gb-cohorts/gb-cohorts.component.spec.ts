@@ -96,7 +96,7 @@ describe('GbCohortsComponent', () => {
     expect(spy1).toHaveBeenCalledWith(id);
     expect(uploadElm['value']).toEqual('');
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should add event listener if needed when importing a cohort', () => {
     let id = 'cohortFileUpload';
@@ -106,7 +106,7 @@ describe('GbCohortsComponent', () => {
     component.importCohort();
     expect(spy1).toHaveBeenCalled();
     expect(component.isUploadListenerNotAdded).toBe(false);
-  })
+  });
 
   it('should not add event listener when there is one when importing a cohort', () => {
     let id = 'cohortFileUpload';
@@ -166,10 +166,10 @@ describe('GbCohortsComponent', () => {
     expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({name: 'testName'}));
   });
 
-  it('should import subjects criteria', () => {
+  it('should trigger click when importing file', () => {
     let uploadElm = document.createElement('a');
     spyOn(document, 'getElementById').and.returnValue(uploadElm);
-    let spy1 = spyOn(uploadElm, 'click').and.stub();
+    let spy1 = spyOn(uploadElm, 'click').and.callThrough();
     component['isUploadListenerNotAdded'] = true;
     component.importCohort();
     expect(component['isUploadListenerNotAdded']).toBe(false);
