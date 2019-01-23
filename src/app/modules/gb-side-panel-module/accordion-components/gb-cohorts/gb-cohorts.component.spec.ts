@@ -115,7 +115,7 @@ describe('GbCohortsComponent', () => {
     component.isUploadListenerNotAdded = false;
     component.importCohort();
     expect(spy1).not.toHaveBeenCalled();
-  })
+  });
 
   it('should read uploaded cohort file', async () => {
     fixture.detectChanges();
@@ -127,7 +127,6 @@ describe('GbCohortsComponent', () => {
     };
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
     let spy2 = spyOn(cohortService, 'saveCohortByObject').and.stub();
-    let spy3 = spyOn(component, 'verifyFile').and.stub();
 
     let reader = new FileReader();
     FileImportHelper.fileUpload(event, reader);
@@ -135,53 +134,47 @@ describe('GbCohortsComponent', () => {
       FileReader.prototype.onload.bind(component);
       expect(spy1).toHaveBeenCalled();
       expect(spy2).toHaveBeenCalled();
-      expect(spy3).toHaveBeenCalled();
     })
-  })
+  });
 
   it('should parse uploaded cohort file if file type is json', () => {
     let file = new File([], 'testFile.txt');
-    let data = {};
+    let event = {
+      target: {
+        files: [file]
+      }
+    };
     let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('application/json');
     let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
       return {};
     });
-    let result = component.verifyFile(file, data);
-    expect(spy0).toHaveBeenCalled();
-    expect(spy1).toHaveBeenCalled();
-  })
-
-  it('should parse uploaded cohort file if file tail is json', () => {
-    let file = new File([], 'testFile.json');
-    let data = {};
-    let json = {
-      constraint: {}
-    };
-    let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('wrong-type');
-    let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
-      return json;
-    })
-    let result = component.verifyFile(file, data);
-    expect(spy0).toHaveBeenCalled();
-    expect(spy1).toHaveBeenCalled();
-    expect(result).toBe(json);
-  })
-
-  it('should not parse file when file is not json or is not up to standard', () => {
-    let file = new File([], 'testFile.txt');
-    let data = {};
-    let json = {};
-    let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('wrong-type');
-    let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
-      return json;
+    let reader = new FileReader();
+    FileImportHelper.fileUpload(event, reader);
+    fixture.whenStable().then(() => {
+      FileReader.prototype.onload.bind(component);
+      expect(spy0).toHaveBeenCalled();
+      expect(spy1).toHaveBeenCalled();
     });
-    let spy2 = spyOn(MessageHelper, 'alert').and.stub();
-    let result = component.verifyFile(file, data);
-    expect(spy0).toHaveBeenCalled();
-    expect(spy1).not.toHaveBeenCalled();
-    expect(result).not.toBe(json);
-    expect(spy2).toHaveBeenCalled();
-  })
+  });
+
+  it('should process uploaded subject ids', () => {
+    let fileContents = 'id123\nid456\n';
+    let spy = spyOn(cohortService, 'restoreCohort').and.stub();
+
+    component['processSubjectIdsUpload'](fileContents, 'testName');
+    expect(spy).toHaveBeenCalledWith(jasmine.any(Cohort));
+    expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({name: 'testName'}));
+  });
+
+  it('should import subjects criteria', () => {
+    let uploadElm = document.createElement('a');
+    spyOn(document, 'getElementById').and.returnValue(uploadElm);
+    let spy1 = spyOn(uploadElm, 'click').and.stub();
+    component['isUploadListenerNotAdded'] = true;
+    component.importCohort();
+    expect(component['isUploadListenerNotAdded']).toBe(false);
+    expect(spy1).toHaveBeenCalled();
+  });
 
   it('should toggle cohort subscription', () => {
     let e = new Event('');
@@ -191,7 +184,7 @@ describe('GbCohortsComponent', () => {
     component.toggleSubscription(e, cohort);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should get cohort subscription button icon', () => {
     let cohort = new Cohort('id', 'name');
@@ -201,7 +194,7 @@ describe('GbCohortsComponent', () => {
     cohort.subscribed = false;
     icon = component.getSubscriptionButtonIcon(cohort);
     expect(icon).toEqual('fa fa-rss');
-  })
+  });
 
   it('should get toggle cohort bookmark', () => {
     let e = new Event('');
@@ -211,7 +204,7 @@ describe('GbCohortsComponent', () => {
     component.toggleBookmark(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should get cohort bookmark button icon', () => {
     let target = new Cohort('id', 'name');
@@ -221,7 +214,7 @@ describe('GbCohortsComponent', () => {
     target.bookmarked = false;
     icon = component.getBookmarkButtonIcon(target);
     expect(icon).toEqual('fa fa-star-o');
-  })
+  });
 
   it('should restore cohort', () => {
     let e = new Event('');
@@ -233,21 +226,21 @@ describe('GbCohortsComponent', () => {
     component.restoreCohort(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should toggle cohort subscription panel', () => {
     let target = new Cohort('id', 'name');
     target.subscriptionCollapsed = true;
     component.toggleSubscriptionPanel(target);
     expect(target.subscriptionCollapsed).toBe(false);
-  })
+  });
 
   it('should toggle cohort subscription record panel', () => {
     let record = new CohortDiffRecord();
     record.showCompleteRepresentation = true;
     component.toggleSubscriptionRecordPanel(record);
     expect(record.showCompleteRepresentation).toBe(false);
-  })
+  });
 
   it('should remove cohort', () => {
     let e = new Event('');
@@ -257,7 +250,7 @@ describe('GbCohortsComponent', () => {
     component.removeCohort(e, target);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should confirm the removal of a cohort', () => {
     let e = new Event('');
@@ -271,7 +264,7 @@ describe('GbCohortsComponent', () => {
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
-  })
+  });
 
   it('should handle cohort removal error', () => {
     let e = new Event('');
@@ -283,7 +276,7 @@ describe('GbCohortsComponent', () => {
     component.confirmRemoval(e, query);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should download cohort', () => {
     let e = new Event('');
@@ -295,13 +288,13 @@ describe('GbCohortsComponent', () => {
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
-  })
+  });
 
   it('check subscription frequency radio button', () => {
     let spy1 = spyOn(cohortService, 'editCohort').and.stub();
     component.radioCheckSubscriptionFrequency(new MouseEvent(''), new Cohort('id', 'name'));
     expect(spy1).toHaveBeenCalled();
-  })
+  });
 
   it('download subscription record', () => {
     let spy1 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
@@ -311,7 +304,7 @@ describe('GbCohortsComponent', () => {
     record.createDate = 'test-create-date';
     component.downloadSubscriptionRecord(query, record);
     expect(spy1).toHaveBeenCalled();
-  })
+  });
 
   it('should handle filtering of cohorts', () => {
     let e = new Event('');
@@ -326,7 +319,7 @@ describe('GbCohortsComponent', () => {
     component.onFiltering(e);
     expect(target.visible).toBe(true);
     expect(spy).toHaveBeenCalled();
-  })
+  });
 
   it('should clear filter and restore cohort visibility', () => {
     component.searchTerm = 'test';
@@ -338,7 +331,7 @@ describe('GbCohortsComponent', () => {
     expect(component.searchTerm).toBe('');
     expect(query.visible).toBe(true);
     expect(spy).toHaveBeenCalled();
-  })
+  });
 
   it('should sort correctly', () => {
     let q1 = new Cohort('id1', 'name1');
@@ -377,6 +370,5 @@ describe('GbCohortsComponent', () => {
     expect(component.cohorts[1]).toBe(q1_1);
     expect(component.cohorts[2]).toBe(q3);
     expect(component.cohorts[3]).toBe(q2);
-  })
-
+  });
 });
