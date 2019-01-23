@@ -1,15 +1,3 @@
-.gb-cohort-selection-header {
-  font-size: large;
-  color: gray;
-  margin-right: 0;
-  margin-left: 0.5em;
-  margin-bottom: 1em;
-  border-bottom: solid;
-  border-color: var(--gb-clinical-green);
-  padding-bottom: 0.3em;
-  font-weight: 500;
-}
-
 /*
  * padding and margin: top, right, bottom, left
  * shadow option: text-shadow: 1px 1px 3px black;
