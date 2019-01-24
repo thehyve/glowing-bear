@@ -84,9 +84,9 @@ export class GbCohortsComponent implements OnInit {
 
   private processCohortUpload(data, name: string) {
     let _json = JSON.parse(data);
-    if (_json['constraints']) {
+    if (_json && _json['constraint']) {
       let cohort = new Cohort('', name);
-      cohort.constraint = TransmartConstraintMapper.generateConstraintFromObject(data['constraint']);
+      cohort.constraint = TransmartConstraintMapper.generateConstraintFromObject(_json['constraint']);
       this.cohortService.restoreCohort(cohort);
     } else {
       MessageHelper.alert('error', 'Invalid json format for cohort import.');
