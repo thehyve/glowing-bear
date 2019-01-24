@@ -141,7 +141,7 @@ describe('GbCohortsComponent', () => {
   it('should have cohort import with cohort json file', () => {
     const e = {
       target: {
-        result: '{"constraints":"sth"}'
+        result: '{"constraint":"sth"}'
       }
     };
     const fileJson = new File(
