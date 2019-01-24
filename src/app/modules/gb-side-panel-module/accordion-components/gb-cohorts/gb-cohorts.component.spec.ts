@@ -22,8 +22,6 @@ import {
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {TreeNodeService} from '../../../../services/tree-node.service';
-import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {FormsModule} from '@angular/forms';
 import {CohortService} from '../../../../services/cohort.service';
 import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
@@ -62,10 +60,6 @@ describe('GbCohortsComponent', () => {
         ToggleButtonModule
       ],
       providers: [
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
         {
           provide: CohortService,
           useClass: CohortServiceMock
