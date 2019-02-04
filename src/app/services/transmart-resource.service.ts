@@ -6,38 +6,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Observable, from as observableFrom} from 'rxjs';
+import {from as observableFrom, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
-import {Constraint} from '../../models/constraint-models/constraint';
-import {Pedigree} from '../../models/constraint-models/pedigree';
-import {ExportJob} from '../../models/export-models/export-job';
-import {Cohort} from '../../models/cohort-models/cohort';
-import {SubjectSet} from '../../models/constraint-models/subject-set';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
-import {AppConfig} from '../../config/app.config';
-import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
-import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {map, flatMap} from 'rxjs/operators';
-import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
-import {ExportDataType} from '../../models/export-models/export-data-type';
+import {Constraint} from '../models/constraint-models/constraint';
+import {Pedigree} from '../models/constraint-models/pedigree';
+import {ExportJob} from '../models/export-models/export-job';
+import {SubjectSet} from '../models/constraint-models/subject-set';
+import {TransmartTableState} from '../models/transmart-models/transmart-table-state';
+import {TransmartDataTable} from '../models/transmart-models/transmart-data-table';
+import {AppConfig} from '../config/app.config';
+import {TransmartCrossTable} from '../models/transmart-models/transmart-cross-table';
+import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
+import {TransmartStudy} from '../models/transmart-models/transmart-study';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {ConstraintMark} from '../models/constraint-models/constraint-mark';
+import {flatMap, map} from 'rxjs/operators';
+import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
+import {ExportDataType} from '../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
-import {TransmartMapper} from '../../utilities/transmart-utilities/transmart-mapper';
-import {TransmartHttpService} from './transmart-http.service';
-import {TransmartPackerMapper} from '../../utilities/transmart-utilities/transmart-packer-mapper';
-import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
-import {TransmartDataTableMapper} from '../../utilities/transmart-utilities/transmart-data-table-mapper';
-import {DataTable} from '../../models/table-models/data-table';
-import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {TransmartPackerHttpService} from './transmart-packer-http.service';
-import {Study} from '../../models/constraint-models/study';
-import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
-import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
+import {TransmartPackerMapper} from '../utilities/transmart-utilities/transmart-packer-mapper';
+import {TransmartPackerJob} from '../models/transmart-models/transmart-packer-job';
+import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
+import {DataTable} from '../models/table-models/data-table';
+import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
+import {TransmartHttpService} from './http/transmart-http.service';
+import {TransmartPackerHttpService} from './http/transmart-packer-http.service';
+import {Study} from '../models/constraint-models/study';
+import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 
 
 @Injectable({

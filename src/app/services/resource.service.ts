@@ -32,10 +32,10 @@ import {TransmartCountItem} from '../models/transmart-models/transmart-count-ite
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
-import {GbBackendHttpService} from './gb-backend-http.service';
+import {GbBackendHttpService} from './http/gb-backend-http.service';
 import {GbBackendMapper} from '../utilities/gb-backend-mapper';
 
 @Injectable({

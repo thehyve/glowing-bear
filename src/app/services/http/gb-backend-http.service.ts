@@ -9,8 +9,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpHelper} from 'app/utilities/http-helper';
-import {AppConfig} from '../config/app.config';
-import {GbBackendQuery} from '../models/gb-backend-models/gb-backend-query';
+import {AppConfig} from '../../config/app.config';
+import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -48,29 +48,29 @@ export class GbBackendHttpService {
 
   /**
    * save a new query
-   * @param {GbBackendQuery} transmartQuery
+   * @param {GbBackendQuery} query
    * @returns {Observable<GbBackendQuery>}
    */
-  saveQuery(transmartQuery: GbBackendQuery): Observable<GbBackendQuery> {
+  saveQuery(query: GbBackendQuery): Observable<GbBackendQuery> {
     const urlPart = `queries`;
     const queryBody = {};
-    if (transmartQuery.name) {
-      queryBody['name'] = transmartQuery.name;
+    if (query.name) {
+      queryBody['name'] = query.name;
     }
-    if (transmartQuery.queryConstraint) {
-      queryBody['queryConstraint'] = transmartQuery.queryConstraint;
+    if (query.queryConstraint) {
+      queryBody['queryConstraint'] = query.queryConstraint;
     }
-    if (transmartQuery.bookmarked) {
-      queryBody['bookmarked'] = transmartQuery.bookmarked;
+    if (query.bookmarked) {
+      queryBody['bookmarked'] = query.bookmarked;
     }
-    if (transmartQuery.subscribed) {
-      queryBody['subscribed'] = transmartQuery.subscribed;
+    if (query.subscribed) {
+      queryBody['subscribed'] = query.subscribed;
     }
-    if (transmartQuery.subscriptionFreq) {
-      queryBody['subscriptionFreq'] = transmartQuery.subscriptionFreq;
+    if (query.subscriptionFreq) {
+      queryBody['subscriptionFreq'] = query.subscriptionFreq;
     }
-    if (transmartQuery.queryBlob) {
-      queryBody['queryBlob'] = transmartQuery.queryBlob;
+    if (query.queryBlob) {
+      queryBody['queryBlob'] = query.queryBlob;
     }
     return this.httpHelper.postCall(urlPart, queryBody, null);
   }
@@ -98,8 +98,10 @@ export class GbBackendHttpService {
 
   // -------------------------------------- query differences --------------------------------------
   /**
-   *
-   * @param queryId
+   * Gets a list of query result change entries by query id.
+   * History of data changes for specific query.
+   * @param {string} queryId
+   * @returns {Observable<object[]>}
    */
   diffQuery(queryId: string): Observable<object[]> {
     const urlPart = `queries/${queryId}/sets`;

@@ -16,7 +16,7 @@ export class AppConfigMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
-      "gb-backend-url": "https://gb-backend.example.com",
+      'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'fractalis-datasource-url': 'https://transmart.example.com',
       'enable-fractalis-analysis': true,

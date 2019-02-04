@@ -34,7 +34,7 @@ import {CohortService} from './services/cohort.service';
 import {CohortServiceMock} from './services/mocks/cohort.service.mock';
 import {DataTableService} from './services/data-table.service';
 import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
-import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
+import {TransmartHttpService} from './services/http/transmart-http.service';
 import {TransmartHttpServiceMock} from './services/mocks/transmart-http.service.mock';
 import {CrossTableService} from './services/cross-table.service';
 import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
@@ -46,10 +46,12 @@ import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
-import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
+import {TransmartPackerHttpService} from './services/http/transmart-packer-http.service';
 import {TransmartPackerHttpServiceMock} from './services/mocks/transmart-packer-http.service.mock';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
+import {GbBackendHttpService} from './services/http/gb-backend-http.service';
+import {GbBackendHttpServiceMock} from './services/mocks/gb-backend-http.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -110,6 +112,10 @@ describe('AppComponent', () => {
         {
           provide: TransmartPackerHttpService,
           useClass: TransmartPackerHttpServiceMock
+        },
+        {
+          provide: GbBackendHttpService,
+          useClass: GbBackendHttpServiceMock
         },
         {
           provide: ResourceService,

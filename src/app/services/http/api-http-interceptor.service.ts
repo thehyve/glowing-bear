@@ -11,9 +11,9 @@ import {tap, switchMap} from 'rxjs/operators';
 import {Injectable, Injector} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {AppConfig} from '../config/app.config';
-import {AuthenticationService} from './authentication/authentication.service';
-import {AuthorizationResult} from './authentication/authorization-result';
+import {AppConfig} from '../../config/app.config';
+import {AuthenticationService} from '../authentication/authentication.service';
+import {AuthorizationResult} from '../authentication/authorization-result';
 
 @Injectable({
   providedIn: 'root'
