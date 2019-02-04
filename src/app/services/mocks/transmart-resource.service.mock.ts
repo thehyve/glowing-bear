@@ -20,7 +20,7 @@ import {TransmartCountItem} from '../../models/transmart-models/transmart-count-
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
@@ -71,17 +71,14 @@ export class TransmartResourceServiceMock {
     return observableOf(pedigrees);
   }
 
-  getQueries(): Observable<TransmartQuery[]> {
-    let q1: TransmartQuery = new TransmartQuery('dt');
+  getQueries(): Observable<GbBackendQuery[]> {
+    let q1: GbBackendQuery = new GbBackendQuery('dt');
     q1.bookmarked = false;
     q1.createDate = '2018-07-03T13:18:31Z';
     q1.subscribed = false;
     q1.subscriptionFreq = null;
     q1.updateDate = '2018-07-03T13:18:31Z';
-    q1.observationsQuery = {
-      data: ['\\Public Studies\\CATEGORICAL_VALUES\\Demography\\Race\\']
-    };
-    q1.patientsQuery = {type: 'true'};
+    q1.queryConstraint = {type: 'true'};
     q1.queryBlob = {
       dataTableState: {
         columnDimensions: ['study'],
@@ -91,21 +88,15 @@ export class TransmartResourceServiceMock {
       }
     };
     q1.queryBlob = {
-      patientsQueryFull: q1.patientsQuery
+      patientsQueryFull: q1.queryConstraint
     };
-    let q2: TransmartQuery = new TransmartQuery('test');
+    let q2: GbBackendQuery = new GbBackendQuery('test');
     q2.bookmarked = false;
     q2.createDate = '2018-07-04T10:08:33Z';
     q2.subscribed = false;
     q2.subscriptionFreq = null;
     q2.updateDate = '2018-07-04T10:08:33Z';
-    q2.observationsQuery = {
-      data: [
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Age\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Gender\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\']
-    };
-    q2.patientsQuery = {
+    q2.queryConstraint = {
       type: 'and',
       args: [
         {
@@ -198,9 +189,9 @@ export class TransmartResourceServiceMock {
         rowDimensions: ['patient', 'study', 'concept'],
         rowSort: []
       },
-      patientsQueryFull: q2.patientsQuery
+      patientsQueryFull: q2.queryConstraint
     };
-    let queries: TransmartQuery[] = [q1, q2];
+    let queries: GbBackendQuery[] = [q1, q2];
     return observableOf(queries);
   }
 

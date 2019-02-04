@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +10,9 @@ import {AsyncSubject, Observable, of as observableOf} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {ExportJob} from '../../models/export-models/export-job';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
 import {TransmartStudyDimensionElement} from 'app/models/transmart-models/transmart-study-dimension-element';
 import {AppConfig} from '../../config/app.config';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
@@ -369,82 +367,12 @@ export class TransmartHttpService {
     return this.httpHelper.deleteCall(urlPart);
   }
 
-  // -------------------------------------- query calls --------------------------------------
-  /**
-   * Get the queries that the current user has saved.
-   * @returns {Observable<Query[]>}
-   */
-  getQueries(): Observable<TransmartQuery[]> {
-    const urlPart = `queries`;
-    const responseField = 'queries';
-    return this.httpHelper.getCall(urlPart, responseField);
-  }
-
-  /**
-   * save a new query
-   * @param {TransmartQuery} transmartQuery
-   * @returns {Observable<TransmartQuery>}
-   */
-  saveQuery(transmartQuery: TransmartQuery): Observable<TransmartQuery> {
-    const urlPart = `queries`;
-    const queryBody = {};
-    if (transmartQuery.name) {
-      queryBody['name'] = transmartQuery.name;
-    }
-    if (transmartQuery.patientsQuery) {
-      queryBody['patientsQuery'] = transmartQuery.patientsQuery;
-    }
-    if (transmartQuery.observationsQuery) {
-      queryBody['observationsQuery'] = transmartQuery.observationsQuery;
-    }
-    if (transmartQuery.bookmarked) {
-      queryBody['bookmarked'] = transmartQuery.bookmarked;
-    }
-    if (transmartQuery.subscribed) {
-      queryBody['subscribed'] = transmartQuery.subscribed;
-    }
-    if (transmartQuery.subscriptionFreq) {
-      queryBody['subscriptionFreq'] = transmartQuery.subscriptionFreq;
-    }
-    if (transmartQuery.queryBlob) {
-      queryBody['queryBlob'] = transmartQuery.queryBlob;
-    }
-    return this.httpHelper.postCall(urlPart, queryBody, null);
-  }
-
-  /**
-   * Modify an existing query.
-   * @param {string} queryId
-   * @param {Object} queryBody
-   * @returns {Observable<Query>}
-   */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.httpHelper.putCall(urlPart, queryBody);
-  }
-
-  /**
-   * Delete an existing query.
-   * @param {string} queryId
-   * @returns {Observable<any>}
-   */
-  deleteQuery(queryId: string): Observable<{}> {
-    const urlPart = `queries/${queryId}`;
-    return this.httpHelper.deleteCall(urlPart);
-  }
 
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
     const body = TransmartConstraintMapper.mapConstraint(constraint);
     return this.httpHelper.postCall(urlPart, body, null);
-  }
-
-  // -------------------------------------- query differences --------------------------------------
-  diffQuery(queryId: string): Observable<object[]> {
-    const urlPart = `queries/${queryId}/sets`;
-    const responseField = 'querySets';
-    return this.httpHelper.getCall(urlPart, responseField);
   }
 
   // -------------------------------------- data table ---------------------------------------------

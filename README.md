@@ -143,6 +143,7 @@ Supported properties in the `config.*.json` files:
 | `api-url`                 |           | URL of the TranSMART API to connect to. |
 | `api-version`             | `v2`      | TranSMART API version. Only `v2` is supported. |
 | `app-url`                 |           | URL where the Glowing Bear is accessible for the user.|
+| `gb-backend-url`          |           | URL of the Gb-backend application to connect to for cohorts handling. |
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `show-observation-counts` | `true`    | |
 | `instant-counts-update` | `false`   | |

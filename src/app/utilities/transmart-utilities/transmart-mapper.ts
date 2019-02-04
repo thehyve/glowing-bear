@@ -7,7 +7,7 @@
  */
 
 import {Cohort} from '../../models/cohort-models/cohort';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {Dimension} from '../../models/table-models/dimension';
@@ -72,31 +72,6 @@ export class TransmartMapper {
     return study;
   }
 
-  public static mapTransmartQueries(transmartQueries: TransmartQuery[]): Cohort[] {
-    let queries: Cohort[] = [];
-    transmartQueries.forEach(tmQuery => {
-      try {
-        let query = this.mapTransmartQuery(tmQuery);
-        queries.push(query);
-      } catch (err) {
-        console.error(`Error while mapping query: ${tmQuery.name}`, tmQuery);
-      }
-    });
-    return queries;
-  }
-
-  public static mapTransmartQuery(transmartQuery: TransmartQuery): Cohort {
-    let query = new Cohort(transmartQuery.id, transmartQuery.name);
-    query.createDate = transmartQuery.createDate;
-    query.updateDate = transmartQuery.updateDate;
-    query.bookmarked = transmartQuery.bookmarked;
-    query.constraint = TransmartConstraintMapper.generateConstraintFromObject(transmartQuery.queryBlob['patientsQueryFull']);
-    query.apiVersion = transmartQuery.apiVersion;
-    query.subscribed = transmartQuery.subscribed;
-    query.subscriptionFreq = transmartQuery.subscriptionFreq;
-    return query;
-  }
-
   private static parseTransmartQueryBlobDataTable(queryBlob: object): DataTable {
     let dataTable: DataTable = null;
 
@@ -117,15 +92,6 @@ export class TransmartMapper {
       }
     }
     return dataTable;
-  }
-
-  public static mapQuery(query: Cohort): TransmartQuery {
-    let transmartQuery: TransmartQuery = new TransmartQuery(query.name);
-    transmartQuery.patientsQuery = TransmartConstraintMapper.mapConstraint(query.constraint, false);
-    transmartQuery.queryBlob = {};
-    transmartQuery.queryBlob['patientsQueryFull'] = TransmartConstraintMapper.mapConstraint(query.constraint, true);
-
-    return transmartQuery;
   }
 
   public static mapTransmartCountItem(tmCountItem: TransmartCountItem): CountItem {

@@ -17,7 +17,7 @@ import {ExportJob} from '../models/export-models/export-job';
 import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {TransmartQuery} from '../models/transmart-models/transmart-query';
+import {GbBackendQuery} from '../models/gb-backend-models/gb-backend-query';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {ExportDataType} from '../models/export-models/export-data-type';
@@ -35,6 +35,8 @@ import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggre
 import {TransmartResourceService} from './transmart-services/transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {GbBackendHttpService} from './gb-backend-http.service';
+import {GbBackendMapper} from '../utilities/gb-backend-mapper';
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +47,7 @@ export class ResourceService {
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
 
-  constructor(private transmartResourceService: TransmartResourceService) {
+  constructor(private transmartResourceService: TransmartResourceService, private gbBackendHttpService: GbBackendHttpService) {
     this.endpointMode = EndpointMode.TRANSMART;
   }
 
@@ -411,40 +413,26 @@ export class ResourceService {
   // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<TransmartQuery[]>}
+   * @returns {Observable<GbBackendQuery[]>}
    */
   getCohorts(): Observable<Cohort[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getQueries().pipe(
-          map((transmartQueries: TransmartQuery[]) => {
-            return TransmartMapper.mapTransmartQueries(transmartQueries);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.gbBackendHttpService.getQueries().pipe(
+      map((gbBackendQueries: GbBackendQuery[]) => {
+        return GbBackendMapper.mapGbBackendQueries(gbBackendQueries);
+      }));
   }
 
   /**
    * Save a new query.
-   * @param {Cohort} query
+   * @param {Cohort} cohort
    * @returns {Observable<Cohort>}
    */
   saveCohort(cohort: Cohort): Observable<Cohort> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(cohort);
-        return this.transmartResourceService.saveQuery(transmartQuery).pipe(
-          map((savedTransmartQuery: TransmartQuery) => {
-            return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    let gbBackendQuery: GbBackendQuery = GbBackendMapper.mapQuery(cohort);
+    return this.gbBackendHttpService.saveQuery(gbBackendQuery).pipe(
+      map((savedGbBackendQuery: GbBackendQuery) => {
+        return GbBackendMapper.mapGbBackendQuery(savedGbBackendQuery);
+      }));
   }
 
   /**
@@ -454,14 +442,7 @@ export class ResourceService {
    * @returns {Observable<{}>}
    */
   editCohort(id: string, body: object): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.updateQuery(id, body);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.gbBackendHttpService.updateQuery(id, body);
   }
 
   /**
@@ -470,14 +451,12 @@ export class ResourceService {
    * @returns {Observable<any>}
    */
   deleteCohort(id: string): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.deleteQuery(id);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.gbBackendHttpService.deleteQuery(id);
+  }
+
+  // -------------------------------------- cohort differences --------------------------------------
+  diffCohort(id: string): Observable<object[]> {
+    return this.gbBackendHttpService.diffQuery(id);
   }
 
   // -------------------------------------- subject calls --------------------------------------
@@ -503,17 +482,7 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- cohort differences --------------------------------------
-  diffCohort(id: string): Observable<object[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.diffQuery(id);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
-  }
+
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(dataTable: DataTable): Observable<DataTable> {
