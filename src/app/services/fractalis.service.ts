@@ -74,10 +74,10 @@ export class FractalisService {
       this.selectedVariablesUpdated.asObservable().subscribe(variables => {
         this.prepareCache(variables);
       });
+      this.timer = setInterval(() =>
+        this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
     }
     this.retrieveAvailableChartTypes();
-    this.timer = setInterval(() =>
-      this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
   }
 
   private setupFractalis() {
