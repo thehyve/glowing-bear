@@ -6,13 +6,13 @@ given("Cohort {string} is saved", (cohortName) => {
       .then((token) => {
         // get cohort list
         cy.request({
-          'url': Cypress.env('apiUrl') + '/v2/queries',
+          'url': Cypress.env('gb-backend-url') + '/queries',
           'method': 'GET',
           'auth': {'bearer': token}
         }).then((queriesResponce) => {
           queriesResponce.body["queries"].map(x => x["id"]).forEach(id => {
             cy.request({
-              'url': Cypress.env('apiUrl') + '/v2/queries/' + id,
+              'url': Cypress.env('gb-backend-url') + '/queries/' + id,
               'method': 'DELETE',
               'auth': {'bearer': token}
             })
@@ -22,7 +22,7 @@ given("Cohort {string} is saved", (cohortName) => {
         // save
         cy.request(
           {
-            'url': Cypress.env('apiUrl') + '/v2/queries',
+            'url': Cypress.env('gb-backend-url') + '/queries',
             'method': 'POST',
             'auth': {'bearer': token},
             'body': {
@@ -72,13 +72,13 @@ given("there are no cohorts saved", () => {
       .then((token) => {
         // get cohort list
         cy.request({
-          'url': Cypress.env('apiUrl') + '/v2/queries',
+          'url': Cypress.env('gb-backend-url') + '/queries',
           'method': 'GET',
           'auth': {'bearer': token}
         }).then((queriesResponce) => {
           queriesResponce.body["queries"].map(x => x["id"]).forEach(x => {
             cy.request({
-              'url': Cypress.env('apiUrl') + '/v2/queries/' + x,
+              'url': Cypress.env('gb-backend-url') + '/queries/' + x,
               'method': 'DELETE',
               'auth': {'bearer': token}
             })
