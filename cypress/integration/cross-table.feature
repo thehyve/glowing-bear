@@ -1,4 +1,5 @@
-Feature: Create cross table based on categorical values
+Feature: cross table
+  you should be able to create cross table based on categorical variables
 
   Scenario: drop one categorical variable on row zone from variable tree view
     Given I am on the Analysis tab

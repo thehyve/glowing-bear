@@ -1,7 +1,7 @@
 Feature: save cohort
   you should be able to save, restore, delete, export and import cohorts
 
-  Scenario: Save cohort
+  Scenario: save cohort
     Given there are no cohorts saved
     Given I am on the cohort-selection tab
     When I use public study 'CATEGORICAL_VALUES ' as a constraint

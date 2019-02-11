@@ -127,3 +127,18 @@ Cypress.Commands.add('login', () => {
     }
   });
 });
+
+// tip: https://github.com/cypress-io/cypress/issues/170#issuecomment-381111656
+Cypress.Commands.add('uploadFile', (fileName, selector) => {
+  cy.get(selector).then(subject => {
+    cy.fixture(fileName).then((content) => {
+      const extension = fileName.split('.').pop();
+      const el = subject[0];
+      const fileContent = extension === 'json' ? JSON.stringify(content) : content;
+      const testFile = new File([fileContent], fileName);
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(testFile);
+      el.files = dataTransfer.files;
+    });
+  });
+});
