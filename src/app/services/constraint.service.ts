@@ -255,7 +255,7 @@ export class ConstraintService {
           }
         });
         this.variables.forEach((v: Concept) => {
-          v.selected = codes.includes(v.code);
+          v.selected = codes.includes(v.code); console.log('v: ', v);
         });
       });
 

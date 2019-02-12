@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {ConstraintService} from './constraint.service';
 import {TreeNodeService} from './tree-node.service';
 import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
@@ -22,10 +22,27 @@ import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {TreeNode} from 'primeng/api';
+import {ConceptType} from '../models/constraint-models/concept-type';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
   let treeNodeService: TreeNodeService;
+  let v1 = new Concept();
+  v1.name = 'v1';
+  v1.code = 'v1';
+  v1.selected = false;
+  v1.type = ConceptType.NUMERICAL;
+  let v2 = new Concept();
+  v2.name = 'v2';
+  v2.code = 'v2';
+  v2.selected = false;
+  v2.type = ConceptType.CATEGORICAL;
+  let v3 = new Concept();
+  v3.name = 'v3';
+  v3.code = 'v3';
+  v3.selected = false;
+  v3.type = ConceptType.TEXT;
+  const dummyVariables: Concept[] = [v1, v2, v3];
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -186,5 +203,48 @@ describe('ConstraintService', () => {
     expect(element).not.toBeNull();
     expect(element).toEqual(jasmine.any(Concept));
   });
+
+  it('should update variables when tree finishes loading', () => {
+    const spyUpdateVariables = spyOn(constraintService, 'updateVariables').and.stub();
+    constraintService.selectedConceptCountMapUpdated.next(null);
+    treeNodeService.treeNodesUpdated.next(true);
+    expect(spyUpdateVariables).toHaveBeenCalled();
+  });
+
+  it('should not update variables when tree is still loading', () => {
+    const spyUpdateVariables = spyOn(constraintService, 'updateVariables').and.stub();
+    constraintService.selectedConceptCountMapUpdated.next(null);
+    treeNodeService.treeNodesUpdated.next(false);
+    expect(spyUpdateVariables).not.toHaveBeenCalled();
+  });
+
+  it('should check and categorise variables when they are updated', () => {
+    spyOnProperty(constraintService, 'variables', 'get').and.returnValue(dummyVariables);
+    const spyTreeSelection = spyOn(treeNodeService, 'selectAllVariablesTreeData').and.stub();
+    constraintService.variablesUpdated.next(dummyVariables);
+    expect(dummyVariables[0].selected).toBe(true);
+    expect(constraintService.categorizedVariables.length).toBe(3);
+    expect(spyTreeSelection).toHaveBeenCalled();
+  });
+
+  it('should update variable in category view when tree-view nodes are checked', () => {
+    let n: TreeNode = {};
+    n['conceptCode'] = 'v2';
+    n['type'] = 'CATEGORICAL';
+    const selectedNodes = [n];
+    spyOnProperty(constraintService, 'variables', 'get').and.returnValue(dummyVariables);
+    treeNodeService.selectedVariablesTreeDataUpdated.asObservable().subscribe(_ => {
+      expect(dummyVariables[0].selected).toBe(false);
+      expect(dummyVariables[1].selected).toBe(true);
+    });
+    treeNodeService.selectedVariablesTreeDataUpdated.next(selectedNodes);
+  });
+
+  it('should update selected tree nodes in tree view when variables in category view are checked',
+    () => {
+      const spyTreeSelection = spyOn(treeNodeService, 'selectVariablesTreeDataByFields').and.stub();
+      constraintService.selectedVariablesUpdated.next(dummyVariables);
+      expect(spyTreeSelection).toHaveBeenCalled();
+    });
 
 });

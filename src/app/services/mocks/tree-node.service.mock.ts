@@ -16,12 +16,7 @@ export class TreeNodeServiceMock {
   public treeNodes: TreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
   public treeNodesCopy: TreeNode[] = [];
-  // the entire tree table data that holds the patients' observations in the 2nd step (projection)
-  private _projectionTreeData: TreeNode[] = [];
-  // the selected tree table data that holds the patients' observations in the 2nd step (projection)
-  private _selectedProjectionTreeData: TreeNode[] = [];
-  // the final tree nodes resulted from data selection
-  private _finalTreeNodes: TreeNode[] = [];
+  private _variablesTreeData: TreeNode[] = [];
 
   public selectedTreeNode;
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
@@ -78,22 +73,6 @@ export class TreeNodeServiceMock {
     return [];
   }
 
-  get projectionTreeData(): TreeNode[] {
-    return this._projectionTreeData;
-  }
-
-  set projectionTreeData(value: TreeNode[]) {
-    this._projectionTreeData = value;
-  }
-
-  get selectedVariablesTreeData(): TreeNode[] {
-    return this._selectedProjectionTreeData;
-  }
-
-  set selectedVariablesTreeData(value: TreeNode[]) {
-    this._selectedProjectionTreeData = value;
-  }
-
   get validTreeNodeTypes(): string[] {
     return this._validTreeNodeTypes;
   }
@@ -112,12 +91,12 @@ export class TreeNodeServiceMock {
   public updateFinalTreeNodes() {
   }
 
-  get finalTreeNodes(): TreeNode[] {
-    return this._finalTreeNodes;
+  get variablesTreeData(): TreeNode[] {
+    return this._variablesTreeData;
   }
 
-  set finalTreeNodes(value: TreeNode[]) {
-    this._finalTreeNodes = value;
+  set variablesTreeData(value: TreeNode[]) {
+    this._variablesTreeData = value;
   }
 
   public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
@@ -134,7 +113,10 @@ export class TreeNodeServiceMock {
     return new Concept();
   }
 
-  selectVariablesTreeDataByFields(nodes: TreeNode[], values: string[], fields: string[]) {
+  public selectVariablesTreeDataByFields(nodes: TreeNode[], values: string[], fields: string[]) {
+  }
+
+  public selectAllVariablesTreeData(b: boolean) {
   }
 
 }
