@@ -27,6 +27,7 @@ export class TreeNodeServiceMock {
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
   public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
+  public selectedVariablesTreeDataUpdated: Subject<TreeNode[]> = new Subject<TreeNode[]>();
 
   public conceptCountMap: Map<string, CountItem>;
   public studyCountMap: Map<string, CountItem>;
@@ -131,6 +132,9 @@ export class TreeNodeServiceMock {
 
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
     return new Concept();
+  }
+
+  selectVariablesTreeDataByFields(nodes: TreeNode[], values: string[], fields: string[]) {
   }
 
 }

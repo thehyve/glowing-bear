@@ -12,53 +12,20 @@ import {DataTableService} from '../../../../../services/data-table.service';
 })
 export class GbCategorizedVariablesComponent implements OnInit {
 
-  public allChecked: boolean;
-
-  private _categorizedVariables: Array<CategorizedVariable> = [];
 
   constructor(private constraintService: ConstraintService,
-              private navbarService: NavbarService,
-              private dataTableService: DataTableService) {
-    this.allChecked = true;
-    this.categorizeVariables(this.constraintService.variables);
-    this.constraintService.variablesUpdated.asObservable()
-      .subscribe((variables: Concept[]) => {
-        this.checkAll(true);
-        this.categorizeVariables(variables);
-      });
+              private navbarService: NavbarService) {
   }
 
   ngOnInit() {
-    this.checkAll(true);
-  }
-
-  private categorizeVariables(variables: Concept[]) {
-    this.categorizedVariables.length = 0;
-    variables.forEach((variable: Concept) => {
-      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
-      if (existingVariable) {
-        existingVariable.elements.push(variable);
-      } else {
-        this.categorizedVariables.push({type: variable.type, elements: [variable]});
-      }
-    });
   }
 
   onDragStart(e, concept) {
     this.constraintService.draggedVariable = concept;
   }
 
-  checkVariables() {
-    this.dataTableService.isDirty = true;
-  }
-
-  checkAll(b: boolean) {
-    this.categorizedVariables.forEach((catVar: CategorizedVariable) => {
-      catVar.elements.forEach((c: Concept) => {
-        c.selected = b;
-      })
-    });
-    this.checkVariables();
+  onCheck(e, concept) {
+    this.constraintService.selectedVariablesUpdated.next(this.constraintService.variables);
   }
 
   get isExport(): boolean {
@@ -70,21 +37,6 @@ export class GbCategorizedVariablesComponent implements OnInit {
   }
 
   get categorizedVariables(): Array<CategorizedVariable> {
-    return this._categorizedVariables;
-  }
-
-  set categorizedVariables(value: Array<CategorizedVariable>) {
-    this._categorizedVariables = value;
-  }
-
-  get checkAllText(): string {
-    let numSelected = this.numberOfSelected;
-    return numSelected === 1 ?
-      `${numSelected} variable selected` : `${numSelected} variables selected`;
-  }
-
-  get numberOfSelected(): number {
-    return this.constraintService.variables.filter(v =>
-      v.selected === true).length;
+    return this.constraintService.categorizedVariables;
   }
 }

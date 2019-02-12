@@ -20,6 +20,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../config/app.config';
 import {FormatHelper} from '../utilities/format-helper';
 import {Subject} from 'rxjs';
+import {CohortService} from './cohort.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +35,7 @@ export class TreeNodeService {
   private _variablesTreeData: TreeNode[] = [];
   // the selected tree data in the variables panel
   private _selectedVariablesTreeData: TreeNode[] = [];
+  private _selectedVariablesTreeDataUpdated: Subject<TreeNode[]> = new Subject<TreeNode[]>();
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -337,7 +339,7 @@ export class TreeNodeService {
     this.variablesTreeData =
       this.updateVariablesTreeDataIterative(this.treeNodesCopy,
         selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
-    this.selectedVariablesTreeData = [];
+    this.selectAllVariablesTreeData(true);
   }
 
   formatNodeWithCounts(node: TreeNode, countItem: CountItem): void {
@@ -391,11 +393,21 @@ export class TreeNodeService {
     return nodesWithCodes;
   }
 
-  public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
+  public selectAllVariablesTreeData(b: boolean) {
+    if (b) {
+      let flattenedVariablesTreeData = [];
+      this.flattenTreeNodes(this.variablesTreeData, flattenedVariablesTreeData);
+      this.selectedVariablesTreeData = flattenedVariablesTreeData;
+    } else {
+      this.selectedVariablesTreeData = [];
+    }
+  }
+
+  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
     for (let node of nodes) {
-      this.selectedVariablesTreeData.push(node);
+      flattened.push(node);
       if (node['children']) {
-        this.checkAllVariablesTreeDataIterative(node['children']);
+        this.flattenTreeNodes(node['children'], flattened);
       }
     }
   }
@@ -500,29 +512,18 @@ export class TreeNodeService {
     });
   }
 
-  selectVariablesTreeNodesByPaths(nodes: TreeNode[], values: string[]) {
+  selectVariablesTreeDataByFields(nodes: TreeNode[], values: string[], fields: string[]) {
     nodes.forEach((node: TreeNode) => {
       if (node) {
-        const itemPath = node['fullName'];
-        if (values.includes(itemPath) && !this.selectedVariablesTreeData.includes(node)) {
+        const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
+        if (values.includes(val) && !this.selectedVariablesTreeData.includes(node)) {
           this.selectedVariablesTreeData.push(node);
+        } else if (!values.includes(val) && this.selectedVariablesTreeData.includes(node)) {
+          const index = this.selectedVariablesTreeData.indexOf(node);
+          this.selectedVariablesTreeData.splice(index, 1);
         }
         if (node['children']) {
-          this.selectVariablesTreeNodesByPaths(node['children'], values);
-        }
-      }
-    });
-  }
-
-  selectVariablesTreeNodesByNames(nodes: TreeNode[], values: string[]) {
-    nodes.forEach((node: TreeNode) => {
-      if (node) {
-        const itemName = (node['metadata'] || {})['item_name'];
-        if (values.includes(itemName) && !this.selectedVariablesTreeData.includes(node)) {
-          this.selectedVariablesTreeData.push(node);
-        }
-        if (node['children']) {
-          this.selectVariablesTreeNodesByNames(node['children'], values);
+          this.selectVariablesTreeDataByFields(node['children'], values, fields);
         }
       }
     });
@@ -573,8 +574,18 @@ export class TreeNodeService {
     return this._selectedVariablesTreeData;
   }
 
+  // this setter is invoked each time the user clicks to (un)check a variable tree node
   set selectedVariablesTreeData(value: TreeNode[]) {
     this._selectedVariablesTreeData = value;
+    this.selectedVariablesTreeDataUpdated.next(value);
+  }
+
+  get selectedVariablesTreeDataUpdated(): Subject<TreeNode[]> {
+    return this._selectedVariablesTreeDataUpdated;
+  }
+
+  set selectedVariablesTreeDataUpdated(value: Subject<TreeNode[]>) {
+    this._selectedVariablesTreeDataUpdated = value;
   }
 
   get validTreeNodeTypes(): string[] {

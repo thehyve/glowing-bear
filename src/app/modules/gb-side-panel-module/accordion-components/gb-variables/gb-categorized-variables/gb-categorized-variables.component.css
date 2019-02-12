@@ -27,9 +27,3 @@
     background-color: var(--gb-orange-light-light);
     cursor: pointer;
 }
-
-.checkAllText {
-    font-size: small;
-    padding: 0.5em;
-    color: grey;
-}

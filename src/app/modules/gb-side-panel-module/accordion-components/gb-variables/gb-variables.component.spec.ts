@@ -9,10 +9,14 @@ import {NavbarService} from '../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {ConceptType} from '../../../../models/constraint-models/concept-type';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
   let fixture: ComponentFixture<GbVariablesComponent>;
+  let constraintService: ConstraintService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -46,10 +50,40 @@ describe('GbVariablesComponent', () => {
     fixture = TestBed.createComponent(GbVariablesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    constraintService = TestBed.get(ConstraintService);
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should give correct number of checked variables', () => {
+    let categorizedVars: Array<CategorizedVariable> = [];
+    let c1 = new Concept();
+    c1.selected = true;
+    let c2 = new Concept();
+    c1.selected = false;
+    let c3 = new Concept();
+    c1.selected = true;
+    let spy1 = spyOnProperty(constraintService, 'variables', 'get')
+      .and.returnValue([c1, c2, c3]);
+    expect(component.checkAllText.includes('2'));
+  });
+
+  it('should check all the variables', () => {
+    let categorizedVars: Array<CategorizedVariable> = [];
+    let c1 = new Concept();
+    c1.selected = true;
+    let c2 = new Concept();
+    c2.selected = false;
+    let c3 = new Concept();
+    c3.selected = true;
+    let spy1 = spyOnProperty(constraintService, 'variables', 'get')
+      .and.returnValue([c1, c2, c3]);
+    component.checkAllVariables(true);
+    expect(component.checkAllText.includes('3'));
+    component.checkAllVariables(false);
+    expect(component.checkAllText.includes('0'));
   });
 
 });

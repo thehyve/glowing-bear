@@ -1,11 +1,4 @@
 <div>
-  <div *ngIf="isExport">
-    <div class="checkAllText">
-      <p-checkbox [(ngModel)]="allChecked" binary="true"
-                  (onChange)="checkAll($event)"></p-checkbox>
-      {{checkAllText}}
-    </div>
-  </div>
 
   <mat-accordion [multi]="true">
     <mat-expansion-panel *ngFor="let catVar of categorizedVariables" expanded="true">
@@ -20,8 +13,8 @@
              [pDraggable]="variablesDragDropScope"
              (dragstart)="onDragStart($event, concept)"
              class="variable">
-          <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected"
-                      binary="true" (onChange)="updateCheckAllText()"></p-checkbox>
+          <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected" binary="true"
+                      (onChange)="onCheck($event, concept)"></p-checkbox>
 
           {{concept.name}} ({{concept.counts.subjectCount}})
         </div>

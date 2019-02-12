@@ -31,6 +31,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Subject, Observable} from 'rxjs';
 import {VariablesViewMode} from '../models/variables-view-mode';
+import {CategorizedVariable} from '../models/constraint-models/categorized-variable';
 
 /**
  * This service concerns with
@@ -119,8 +120,11 @@ export class ConstraintService {
   * when user defines a cohort or a combination of cohorts.
   */
   private _variables: Concept[] = [];
+  private _categorizedVariables: Array<CategorizedVariable> = [];
   // The async subject that tells if variables are updated according to the selectedConceptCountMap
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  // The async subject that tells if the selection of variables is changed according to user action
+  private _selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
 
@@ -172,19 +176,7 @@ export class ConstraintService {
       .catch(err => {
         console.error(err);
       });
-
-    // When the selectedConceptCountMap is updated and the tree is finished loading,
-    // update the corresponding variable list and tree
-    Observable.combineLatest(
-      this.selectedConceptCountMapUpdated.asObservable(),
-      this.treeNodeService.treeNodesUpdated.asObservable()
-    ).subscribe(res => {
-      const isTreeLoadingFinished = res[1];
-      if (isTreeLoadingFinished) {
-        this.updateVariables();
-        this.updateVariablesTreeData();
-      }
-    });
+    this.subscribeToVariableChanges();
   }
 
   private loadEmptyConstraints() {
@@ -228,6 +220,76 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
+  }
+
+  private subscribeToVariableChanges() {
+    // When the selectedConceptCountMap is updated and the tree is finished loading,
+    // update the corresponding variable categorised list and sub-tree
+    Observable.combineLatest(
+      this.selectedConceptCountMapUpdated.asObservable(),
+      this.treeNodeService.treeNodesUpdated.asObservable()
+    ).subscribe(res => {
+      const isTreeLoadingFinished = res[1];
+      if (isTreeLoadingFinished) {
+        this.updateVariables();
+      }
+    });
+
+    // when the variables and sub-tree are updated,
+    // check all variables and tree nodes, categorise the variables, be ready for visual rendering
+    this.variablesUpdated.asObservable()
+      .subscribe((variables: Concept[]) => {
+        this.checkAllVariables(true);
+        this.categorizeVariables();
+      });
+
+    // when the user (un)selects / (un)checks tree nodes in the tree view,
+    // update selected variables in the category view
+    this.treeNodeService.selectedVariablesTreeDataUpdated.asObservable()
+      .subscribe((selectedNodes: TreeNode[]) => {
+        const codes = [];
+        selectedNodes.forEach((n: TreeNode) => {
+          const code = n['conceptCode'];
+          if (this.isVariableNode(n.type) && code && !codes.includes(code)) {
+            codes.push(code);
+          }
+        });
+        this.variables.forEach((v: Concept) => {
+          v.selected = codes.includes(v.code);
+        });
+      });
+
+    // when the user (un)selects / (un)checks variables in the category view,
+    // update the selected tree nodes in the tree view
+    this.selectedVariablesUpdated.asObservable()
+      .subscribe((variables: Concept[]) => {
+        const codes = variables.map((v: Concept) => {
+          return v.code;
+        });
+        this.treeNodeService.selectVariablesTreeDataByFields(
+          this.treeNodeService.variablesTreeData, codes, ['conceptCode']);
+      });
+  }
+
+  private categorizeVariables() {
+    this.categorizedVariables.length = 0;
+    this.variables.forEach((variable: Concept) => {
+      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
+      if (existingVariable) {
+        existingVariable.elements.push(variable);
+      } else {
+        this.categorizedVariables.push({type: variable.type, elements: [variable]});
+      }
+    });
+  }
+
+  public checkAllVariables(b: boolean) {
+    // check the variables for the category view in gb-variables on the left panel
+    this.variables.forEach((variable: Concept) => {
+      variable.selected = b;
+    });
+    // check the variables for the tree view in gb-variables on the left panel
+    this.treeNodeService.selectAllVariablesTreeData(b);
   }
 
   /*
@@ -579,21 +641,21 @@ export class ConstraintService {
           }
         });
         this.variablesUpdated.next(this.variables);
+        this.treeNodeService
+          .updateVariablesTreeData(
+            this.selectedStudyConceptCountMap,
+            this.selectedConceptCountMap,
+            this.selectedStudyCountMap);
         this.isUpdatingVariables = false;
         resolve(true);
       }
     });
   }
 
-  updateVariablesTreeData() {
-    this.treeNodeService.updateVariablesTreeData(this.selectedStudyConceptCountMap,
-      this.selectedConceptCountMap,
-      this.selectedStudyCountMap);
-  }
-
   importVariablesByNames(names: string[]) {
     if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
-      return this.treeNodeService.selectVariablesTreeNodesByNames(this.treeNodeService.variablesTreeData, names);
+      return this.treeNodeService.selectVariablesTreeDataByFields(
+        this.treeNodeService.variablesTreeData, names, ['metadata', 'item_name']);
     } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
       return this.selectVariablesByProperty(names, 'name');
     }
@@ -601,7 +663,8 @@ export class ConstraintService {
 
   importVariablesByPaths(paths: string[]) {
     if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
-      return this.treeNodeService.selectVariablesTreeNodesByPaths(this.treeNodeService.variablesTreeData, paths);
+      return this.treeNodeService.selectVariablesTreeDataByFields(
+        this.treeNodeService.variablesTreeData, paths, ['fullName']);
     } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
       return this.selectVariablesByProperty(paths, 'path');
     }
@@ -769,6 +832,14 @@ export class ConstraintService {
     this._variablesUpdated = value;
   }
 
+  get categorizedVariables(): Array<CategorizedVariable> {
+    return this._categorizedVariables;
+  }
+
+  set categorizedVariables(value: Array<CategorizedVariable>) {
+    this._categorizedVariables = value;
+  }
+
   get isUpdatingVariables(): boolean {
     return this._isUpdatingVariables;
   }
@@ -791,5 +862,13 @@ export class ConstraintService {
 
   set variablesViewMode(value: VariablesViewMode) {
     this._variablesViewMode = value;
+  }
+
+  get selectedVariablesUpdated(): Subject<Concept[]> {
+    return this._selectedVariablesUpdated;
+  }
+
+  set selectedVariablesUpdated(value: Subject<Concept[]>) {
+    this._selectedVariablesUpdated = value;
   }
 }

@@ -79,26 +79,22 @@ describe('ConstraintService', () => {
     c2.selected = false;
     constraintService.variablesViewMode = VariablesViewMode.CATEGORIZED_VIEW;
     constraintService.variables = [c1, c2];
-    let spy1 = spyOn(treeNodeService, 'selectVariablesTreeNodesByNames').and.callThrough();
-    let spy2 = spyOn(treeNodeService, 'selectVariablesTreeNodesByPaths').and.callThrough();
+    let spy1 = spyOn(treeNodeService, 'selectVariablesTreeDataByFields').and.callThrough();
 
     constraintService.importVariablesByNames(['c2', 'c3']);
 
     expect(spy1).not.toHaveBeenCalled();
-    expect(spy2).not.toHaveBeenCalled();
     expect(constraintService.variables.filter(v => v.selected === true).length).toBe(1);
 
     constraintService.importVariablesByPaths(['c1_path']);
 
     expect(spy1).not.toHaveBeenCalled();
-    expect(spy2).not.toHaveBeenCalled();
     expect(constraintService.variables.filter(v => v.selected === true).length).toBe(2);
 
     constraintService.variablesViewMode = VariablesViewMode.TREE_VIEW;
     constraintService.importVariablesByPaths(['c1_path']);
 
-    expect(spy1).not.toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
+    expect(spy1).toHaveBeenCalled();
 
     constraintService.importVariablesByNames(['c1']);
 

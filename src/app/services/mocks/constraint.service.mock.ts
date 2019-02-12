@@ -21,8 +21,9 @@ export class ConstraintServiceMock {
   concepts: Concept[] = [];
   conceptConstraints: Constraint[] = [];
   allConstraints: Constraint[] = [];
-  variables: Concept[] = [];
+  private _variables: Concept[] = [];
   variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -62,5 +63,19 @@ export class ConstraintServiceMock {
 
   public identifyDraggedElement(): Concept {
     return new Concept();
+  }
+
+  checkAllVariables(b: boolean) {
+    this.variables.forEach((variable: Concept) => {
+      variable.selected = b;
+    });
+  }
+
+  get variables(): Concept[] {
+    return this._variables;
+  }
+
+  set variables(value: Concept[]) {
+    this._variables = value;
   }
 }

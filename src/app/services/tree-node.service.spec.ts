@@ -453,15 +453,18 @@ describe('TreeNodeService', () => {
     let dummyTreeNodes = [{}];
     let spy1 = spyOn(treeNodeService, 'copyTreeNodes').and.returnValue(dummyTreeNodes);
     let spy2 = spyOn<any>(treeNodeService, 'updateVariablesTreeDataIterative').and.stub();
+    let spy3 = spyOnProperty(treeNodeService, 'variablesTreeData', 'get').and.returnValue(dummyTreeNodes);
     treeNodeService.treeNodesCopy = dummyTreeNodes;
     treeNodeService.updateVariablesTreeData(new Map(), new Map(), new Map());
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
 
     treeNodeService.treeNodesCopy = [];
     treeNodeService.updateVariablesTreeData(new Map(), new Map(), new Map());
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
   });
 
   it('should update variables tree data iteratively', () => {
@@ -524,8 +527,9 @@ describe('TreeNodeService', () => {
     node_1.children = [node_1_1, node_1_2, node_1_3];
     node_1['fullName'] = 'node_1_fullname';
     node.children = [node_1];
+    spyOnProperty(treeNodeService, 'variablesTreeData', 'get').and.returnValue([node]);
     treeNodeService.selectedVariablesTreeData = [];
-    treeNodeService.checkAllVariablesTreeDataIterative([node]);
+    treeNodeService.selectAllVariablesTreeData(true);
     expect(treeNodeService.selectedVariablesTreeData.length).toBe(5);
   });
 
@@ -577,7 +581,8 @@ describe('TreeNodeService', () => {
     node_2['fullName'] = '\\foo\\node_2\\';
     node.children = [node_1, node_2];
 
-    treeNodeService.selectVariablesTreeNodesByPaths([node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\']);
+    treeNodeService.selectVariablesTreeDataByFields(
+      [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName']);
 
     expect(treeNodeService.selectedVariablesTreeData.length).toBe(2);
     expect(treeNodeService.selectedVariablesTreeData).toContain(node_1_2);
@@ -599,8 +604,7 @@ describe('TreeNodeService', () => {
     nodeAD.children = [nodeADE];
     let nodeA: TreeNode = {};
     nodeA.children = [nodeAB, nodeAD];
-
-    treeNodeService.selectVariablesTreeNodesByNames([nodeA], ['name1']);
+    treeNodeService.selectVariablesTreeDataByFields([nodeA], ['name1'], ['metadata', 'item_name']);
 
     expect(treeNodeService.selectedVariablesTreeData.length).toBe(1);
     expect(treeNodeService.selectedVariablesTreeData).toContain(nodeADE);

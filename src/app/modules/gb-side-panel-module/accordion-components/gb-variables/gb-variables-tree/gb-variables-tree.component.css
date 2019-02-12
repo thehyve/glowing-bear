@@ -1,8 +1,3 @@
-.checkAllText {
-    font-size: small;
-    padding: 0.5em;
-    color: grey;
-}
 
 /*Make the font size in the tree smaller*/
 :host >>> p-treenode {

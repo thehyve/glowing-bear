@@ -13,6 +13,8 @@ import {ConstraintService} from '../../../../services/constraint.service';
 })
 export class GbVariablesComponent implements OnInit {
 
+  public allChecked: boolean;
+
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
 
@@ -23,12 +25,14 @@ export class GbVariablesComponent implements OnInit {
 
   constructor(private constraintService: ConstraintService,
               private navbarService: NavbarService) {
+    this.allChecked = true;
     this.isUploadListenerNotAdded = true;
     this.viewMode = VariablesViewMode.TREE_VIEW;
     this.availableViewModes = this.listAvailableViewModes();
   }
 
   ngOnInit() {
+    this.checkAllVariables(true);
   }
 
   importVariables() {
@@ -86,6 +90,21 @@ export class GbVariablesComponent implements OnInit {
 
   get isExport(): boolean {
     return this.navbarService.isExport;
+  }
+
+  checkAllVariables(b: boolean) {
+    this.constraintService.checkAllVariables(b);
+  }
+
+  get checkAllText(): string {
+    let numSelected = this.numberOfSelected;
+    return numSelected === 1 ?
+      `${numSelected} variable selected` : `${numSelected} variables selected`;
+  }
+
+  get numberOfSelected(): number {
+    return this.constraintService.variables.filter(v =>
+      v.selected === true).length;
   }
 
 }
