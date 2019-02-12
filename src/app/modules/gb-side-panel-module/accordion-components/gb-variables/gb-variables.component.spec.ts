@@ -11,12 +11,16 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
 import {Concept} from '../../../../models/constraint-models/concept';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {FileImportHelper} from '../../../../utilities/file-import-helper';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
   let fixture: ComponentFixture<GbVariablesComponent>;
   let constraintService: ConstraintService;
+  let treeNodeService: TreeNodeService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -38,6 +42,10 @@ describe('GbVariablesComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
+        },
+        {
           provide: NavbarService,
           useClass: NavbarServiceMock
         }
@@ -51,6 +59,7 @@ describe('GbVariablesComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     constraintService = TestBed.get(ConstraintService);
+    treeNodeService = TestBed.get(TreeNodeService);
   });
 
   it('should be created', () => {
@@ -84,6 +93,60 @@ describe('GbVariablesComponent', () => {
     expect(component.checkAllText.includes('3'));
     component.checkAllVariables(false);
     expect(component.checkAllText.includes('0'));
+  });
+
+  it('should call importCriteria when importing variables', () => {
+    const spyImport = spyOn(FileImportHelper, 'importCriteria').and.stub();
+    component.importVariables();
+    expect(spyImport).toHaveBeenCalled();
+    expect(component.isUploadListenerNotAdded).toBe(false);
+  });
+
+  it('should handle non-json file import', () => {
+    const e = new Event('');
+    const spyE = spyOnProperty(e, 'target', 'get').and.returnValue({result: []});
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
+    const fileXML = new File([], 'test.xml', {type: 'application/xml'});
+    const spyGetFile = spyOn(FileImportHelper, 'getFile').and.returnValue(fileXML);
+    component.handleVariablesFileUploadEvent(e);
+    expect(spyE).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledWith('error', 'Invalid file format for variables import.');
+    expect(spyGetFile).toHaveBeenCalled();
+  });
+
+  it('should handle importing invalid json', () => {
+    const e = new Event('');
+    const result = '{ "foo": "bar"}';
+    const spyE = spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
+    const file = new File([], 'test.json', {type: 'application/json'});
+    const spyGetFile = spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    component.handleVariablesFileUploadEvent(e);
+    expect(spyE).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledWith('error', 'Invalid file content for variables import.');
+    expect(spyGetFile).toHaveBeenCalled();
+  });
+
+  it('should handle importing variables by names', () => {
+    const result = '{"names": ["test-name-1", "test-name-3"]}';
+    const e = new Event('');
+    spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
+    const file = new File([], 'test.json', {type: 'application/json'});
+    spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    const spyCall = spyOn(constraintService, 'importVariablesByNames').and.stub();
+    component.handleVariablesFileUploadEvent(e);
+    expect(spyCall).toHaveBeenCalled();
+  });
+
+  it('should handle importing variables by paths', () => {
+    const result = '{"paths": ["foobar"]}';
+    const e = new Event('');
+    spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
+    const file = new File([], 'test.json', {type: 'application/json'});
+    spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    const spyCall = spyOn(constraintService, 'importVariablesByPaths').and.stub();
+    component.handleVariablesFileUploadEvent(e);
+    expect(spyCall).toHaveBeenCalled();
   });
 
 });

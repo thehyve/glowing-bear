@@ -18,8 +18,8 @@ export class GbVariablesComponent implements OnInit {
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
 
-  private isUploadListenerNotAdded: boolean;
-  file: File; // holds the uploaded cohort file
+  public isUploadListenerNotAdded: boolean;
+  public file: File; // holds the uploaded cohort file
 
   private _availableViewModes: SelectItem[];
 
@@ -36,7 +36,6 @@ export class GbVariablesComponent implements OnInit {
   }
 
   importVariables() {
-    MessageHelper.alert('info', 'File upload started. Processing...');
     let reader = new FileReader();
     reader.onload = this.handleVariablesFileUploadEvent.bind(this);
     FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
@@ -61,7 +60,6 @@ export class GbVariablesComponent implements OnInit {
       MessageHelper.alert('error', 'Invalid file format for variables import.');
       return;
     }
-    MessageHelper.alert('info', 'File upload finished successfully!');
   }
 
   private listAvailableViewModes(): SelectItem[] {

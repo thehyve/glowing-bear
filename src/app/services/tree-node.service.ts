@@ -72,7 +72,7 @@ export class TreeNodeService {
   // see constraint.service
   public load() {
     this.loadTreeNodes()
-      .then(() => {
+      .then(() => { console.log('tree', this.treeNodes)
         this.updateTreeNodeCounts();
       })
       .catch(err => {

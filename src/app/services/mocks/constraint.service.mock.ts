@@ -11,6 +11,7 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
 import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
+import {VariablesViewMode} from '../../models/variables-view-mode';
 
 export class ConstraintServiceMock {
 
@@ -24,6 +25,7 @@ export class ConstraintServiceMock {
   private _variables: Concept[] = [];
   variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  private _variablesViewMode: VariablesViewMode;
 
   constructor() {
     this._rootInclusionConstraint = new CombinationConstraint();
@@ -71,11 +73,25 @@ export class ConstraintServiceMock {
     });
   }
 
+  importVariablesByNames(names: string[]) {
+  }
+
+  importVariablesByPaths(paths: string[]) {
+  }
+
   get variables(): Concept[] {
     return this._variables;
   }
 
   set variables(value: Concept[]) {
     this._variables = value;
+  }
+
+  get variablesViewMode(): VariablesViewMode {
+    return this._variablesViewMode;
+  }
+
+  set variablesViewMode(value: VariablesViewMode) {
+    this._variablesViewMode = value;
   }
 }
