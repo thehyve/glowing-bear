@@ -232,7 +232,9 @@ export class TransmartResourceService {
       if (this.autosaveSubjectSets) {
         this.savePatientSet('temp', constraint)
           .subscribe((subjectSet: SubjectSet) => {
-            this.subjectSetConstraint.id = subjectSet.id;
+            // Note that we do not set the subjectSetConstraint id here
+            // because it is used for inclusion subject set
+            // this.subjectSetConstraint.id = subjectSet.id;
             this.exclusionCounts.patientCount = subjectSet.setSize;
             this.exclusionCounts.observationCount = -1;
             resolve(true);
