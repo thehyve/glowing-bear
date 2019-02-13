@@ -255,7 +255,7 @@ export class ConstraintService {
           }
         });
         this.variables.forEach((v: Concept) => {
-          v.selected = codes.includes(v.code); console.log('v: ', v);
+          v.selected = codes.includes(v.code);
         });
       });
 
@@ -653,29 +653,19 @@ export class ConstraintService {
   }
 
   importVariablesByNames(names: string[]) {
-    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
-      return this.treeNodeService.selectVariablesTreeDataByFields(
-        this.treeNodeService.variablesTreeData, names, ['metadata', 'item_name']);
-    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
-      return this.selectVariablesByProperty(names, 'name');
-    }
+    // update the selected tree nodes in gb-variables
+    this.treeNodeService.selectVariablesTreeDataByFields(
+      this.treeNodeService.variablesTreeData, names, ['metadata', 'item_name']);
+    // dispatch the event telling its subscribers that the selected tree nodes have been updated
+    this.treeNodeService.selectedVariablesTreeDataUpdated.next(this.treeNodeService.selectedVariablesTreeData);
   }
 
   importVariablesByPaths(paths: string[]) {
-    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
-      return this.treeNodeService.selectVariablesTreeDataByFields(
-        this.treeNodeService.variablesTreeData, paths, ['fullName']);
-    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
-      return this.selectVariablesByProperty(paths, 'path');
-    }
-  }
-
-  selectVariablesByProperty(values: string[], property: string) {
-    this.variables.forEach((c: Concept) => {
-      if (values.includes(c[property])) {
-        c.selected = true;
-      }
-    });
+    // update the selected tree nodes in gb-variables
+    this.treeNodeService.selectVariablesTreeDataByFields(
+      this.treeNodeService.variablesTreeData, paths, ['fullName']);
+    // dispatch the event telling its subscribers that the selected tree nodes have been updated
+    this.treeNodeService.selectedVariablesTreeDataUpdated.next(this.treeNodeService.selectedVariablesTreeData);
   }
 
   /*

@@ -33,3 +33,13 @@ given("I am on the Analysis tab", () => {
   cy.get('.ui-selectbutton .ui-button-text-only').last().contains('crosstable');
 });
 
+given("I am on the export tab", () => {
+  cy.server();
+  cy.visit('/export');
+  cy.fixture('admin').as("user");
+  cy.login();
+  cy.url().should('eq', Cypress.config('baseUrl') + '/export');
+  cy.get('.section-banner').first().contains('Data Table');
+  cy.get('.section-banner').last().contains('Recent exports');
+});
+
