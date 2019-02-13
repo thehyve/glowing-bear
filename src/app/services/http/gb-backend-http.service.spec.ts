@@ -62,7 +62,7 @@ describe('GbBackendHttpService', () => {
         expect(req.request.body['name']).toBe('custom_name');
         expect(req.request.body['queryConstraint']).toBeDefined();
         expect(req.request.body['queryConstraint']['type']).toBe(true);
-        expect(req.request.body['bookmarked']).not.toBeDefined();
+        expect(req.request.body['bookmarked']).toBe(false);
         expect(req.request.body['subscribed']).toBe(true);
         expect(req.request.body['subscriptionFreq']).toBe('DAILY');
         expect(req.request.body['queryBlob']).not.toBeDefined();

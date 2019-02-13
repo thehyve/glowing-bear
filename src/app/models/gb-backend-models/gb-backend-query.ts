@@ -31,10 +31,14 @@ export class GbBackendQuery {
   public subscribed?: boolean;
   // The frequency of the subscription: daily or monthly
   public subscriptionFreq?: CohortSubscriptionFrequency;
+  // Type of the cohort, specifies a subject dimension that the cohort is related to
+  // and (optionally) the type of subjects for the subscription
+  public type: string;
 
   constructor(queryName: string) {
     this.name = queryName;
     this.bookmarked = false;
     this.subscribed = false;
+    this.type = 'patient' // TODO TMT-729
   }
 }

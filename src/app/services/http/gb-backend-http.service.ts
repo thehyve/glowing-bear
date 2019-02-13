@@ -53,26 +53,7 @@ export class GbBackendHttpService {
    */
   saveQuery(query: GbBackendQuery): Observable<GbBackendQuery> {
     const urlPart = `queries`;
-    const queryBody = {};
-    if (query.name) {
-      queryBody['name'] = query.name;
-    }
-    if (query.queryConstraint) {
-      queryBody['queryConstraint'] = query.queryConstraint;
-    }
-    if (query.bookmarked) {
-      queryBody['bookmarked'] = query.bookmarked;
-    }
-    if (query.subscribed) {
-      queryBody['subscribed'] = query.subscribed;
-    }
-    if (query.subscriptionFreq) {
-      queryBody['subscriptionFreq'] = query.subscriptionFreq;
-    }
-    if (query.queryBlob) {
-      queryBody['queryBlob'] = query.queryBlob;
-    }
-    return this.httpHelper.postCall(urlPart, queryBody, null);
+    return this.httpHelper.postCall(urlPart, query, null);
   }
 
   /**
