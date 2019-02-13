@@ -13,7 +13,7 @@
     "report-coverage": "codecov",
     "e2e": "npx cypress run",
     "cypress": "npx cypress open",
-    "cypress-dev": "npx cypress open --config baseUrl=https://localhost:4200 --env apiUrl=http://localhost:8080"
+    "cypress-dev": "npx cypress open --config baseUrl=https://localhost:4200 --env apiUrl=http://localhost:8081"
   },
   "private": true,
   "dependencies": {

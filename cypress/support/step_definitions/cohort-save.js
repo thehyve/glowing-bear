@@ -72,14 +72,14 @@ given("there are no cohorts saved", () => {
           'url': Cypress.env('gb-backend-url') + '/queries',
           'method': 'GET',
           'auth': {'bearer': token}
-        }).then((queriesResponce) => {
+        }).then((queriesResponce) => { console.log('res', queriesResponce)
           queriesResponce.body["queries"].map(x => x["id"]).forEach(x => {
             cy.request({
               'url': Cypress.env('gb-backend-url') + '/queries/' + x,
               'method': 'DELETE',
               'auth': {'bearer': token}
-            })
-          })
+            });
+          });
         });
       })
   });
