@@ -43,3 +43,6 @@ given("I am on the export tab", () => {
   cy.get('.section-banner').last().contains('Recent exports');
 });
 
+then('I should see the message containing {string}', (msg) => {
+  cy.get('.ui-growl.ui-widget').contains(msg);
+});

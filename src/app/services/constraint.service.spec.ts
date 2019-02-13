@@ -85,39 +85,6 @@ describe('ConstraintService', () => {
     expect(result.length).toBe(0);
   });
 
-  it('should select imported variables', () => {
-    let c1 = new Concept();
-    c1.name = 'c1';
-    c1.path = 'c1_path';
-    c1.selected = false;
-    let c2 = new Concept();
-    c2.name = 'c2';
-    c2.path = 'c2_path';
-    c2.selected = false;
-    constraintService.variablesViewMode = VariablesViewMode.CATEGORIZED_VIEW;
-    constraintService.variables = [c1, c2];
-    let spy1 = spyOn(treeNodeService, 'selectVariablesTreeDataByFields').and.callThrough();
-
-    constraintService.importVariablesByNames(['c2', 'c3']);
-
-    expect(spy1).not.toHaveBeenCalled();
-    expect(constraintService.variables.filter(v => v.selected === true).length).toBe(1);
-
-    constraintService.importVariablesByPaths(['c1_path']);
-
-    expect(spy1).not.toHaveBeenCalled();
-    expect(constraintService.variables.filter(v => v.selected === true).length).toBe(2);
-
-    constraintService.variablesViewMode = VariablesViewMode.TREE_VIEW;
-    constraintService.importVariablesByPaths(['c1_path']);
-
-    expect(spy1).toHaveBeenCalled();
-
-    constraintService.importVariablesByNames(['c1']);
-
-    expect(spy1).toHaveBeenCalled();
-  });
-
   it('should generate variables constraint for categorized view', () => {
     constraintService.variablesViewMode = VariablesViewMode.CATEGORIZED_VIEW;
     let c1 = new Concept();
