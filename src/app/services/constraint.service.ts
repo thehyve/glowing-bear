@@ -30,6 +30,8 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
+import {VariablesViewMode} from '../models/variables-view-mode';
 
 /**
  * This service concerns with
@@ -115,11 +117,6 @@ export class ConstraintService {
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
               private resourceService: ResourceService) {
-    // Initialize the root inclusion and exclusion constraints in the 1st step
-    this.rootInclusionConstraint = new CombinationConstraint();
-    this.rootInclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint = new CombinationConstraint();
-    this.rootExclusionConstraint.isRoot = true;
 
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
@@ -390,7 +387,8 @@ export class ConstraintService {
       if (hasNegation) {
         let negationConstraint =
           <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
+        negationConstraint.constraint.negated = true;
+        this.rootInclusionConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
         this.restoreCohortConstraint(remainingConstraint);
@@ -401,7 +399,8 @@ export class ConstraintService {
         this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.className === 'NegationConstraint') {
-      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
+      (<NegationConstraint>constraint).constraint.negated = true;
+      this.rootInclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
     } else if (constraint.className !== 'TrueConstraint') {
       this.rootInclusionConstraint.addChild(constraint);
     }

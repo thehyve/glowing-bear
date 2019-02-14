@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,11 @@ import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
   visit(constraint: Constraint): T {
+    if (constraint.negated) {
+      let constraintCopy = Object.create(constraint);
+      constraintCopy.negated = false;
+      return this.visit(new NegationConstraint(constraintCopy));
+    }
     switch (constraint.className) {
       case 'TrueConstraint':
         return this.visitTrueConstraint(<TrueConstraint>constraint);

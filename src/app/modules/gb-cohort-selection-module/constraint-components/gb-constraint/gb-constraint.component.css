@@ -4,12 +4,25 @@
 .gb-constraint-container {
   border: 1px solid #ddd;
   border-radius: 6px;
-  background-color: #f7f7f7;
   padding: 0px 1px 0px 5px !important;
   /*box-shadow: 0px 0px 2px 2px grey; !* h-shadow v-shadow blur spread color *!*/
   min-height: 40px;
   font-size: small;
-  margin: 0px 3em 0px 2em !important;
+  margin: 0 13em 0 1em !important;
+}
+
+.gb-constraint-control-container {
+   color: dimgray;
+ }
+
+.gb-constraint {
+  background-color: #f7f7f7;
+}
+.gb-negated-constraint {
+  background-color: rgba(240,128,128, 0.2);
+  border-bottom: 0.1em dotted rgba(240,128,128, 0.4);
+  border-top: 0.1em dotted rgba(240,128,128, 0.4);
+  border-right: 0.1em dotted rgba(240,128,128, 0.4);
 }
 
 /*
@@ -22,19 +35,30 @@
  * dark tomato: #D9391C or rgba(217, 57, 28, 0.6)
  */
 .gb-constraint-container-border-left-1 {
-  border-left: 2em solid rgba(255, 160, 71, 0.6);
+  border-left: 2em solid rgba(62,177,203, 0.6);
+  margin-right: 1em !important;
 }
-
 .gb-constraint-container-border-left-2 {
-  border-left: 1.5em solid rgba(255, 130, 71, 0.6);
+  border-left: 1.5em solid rgba(0,127,163, 0.6);
 }
-
 .gb-constraint-container-border-left-3 {
-  border-left: 1.1em solid rgba(255, 99, 71, 0.6);
+  border-left: 1.1em solid rgba(5,68,88, 0.6);
+}
+.gb-constraint-container-border-left-4 {
+  border-left: 0.7em solid rgba(0,30,59, 0.6);
 }
 
-.gb-constraint-container-border-left-4 {
-  border-left: 0.7em solid rgba(217, 57, 28, 0.6);
+.gb-negated-constraint-container-border-left-1 {
+  border-left: 2em solid rgba(255,99,71, 0.6);
+}
+.gb-negated-constraint-container-border-left-2 {
+  border-left: 1.5em solid rgba(204,79,56, 0.6);
+}
+.gb-negated-constraint-container-border-left-3 {
+  border-left: 1.1em solid rgba(163,63,44, 0.6);
+}
+.gb-negated-constraint-container-border-left-4 {
+  border-left: 0.7em solid rgba(130,50,35, 0.6);
 }
 
 .gb-constraint-container-root {
@@ -51,8 +75,7 @@
 }
 
 .gb-constraint-remove-btn {
-  margin-right: 3px;
-  margin-top: 3px;
+  margin-right: 1px;
   border: none;
   color: lightgray;
   font-size: small;
@@ -61,6 +84,23 @@
 .constraint-remove-btn:hover {
   color: white;
 }
+
+/*
+ * Inclusion-exclusion slider styling
+ */
+:host >>> .ui-inputswitch {
+  background-color: transparent !important;
+}
+:host >>> .ui-inputswitch-slider::before {
+  background-color: white;
+}
+:host >>> .ui-inputswitch .ui-inputswitch-slider {
+  background-color: grey;
+}
+:host >>> .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+  background-color: rgba(230,120,120, 0.6);
+}
+
 
 .form-inline * {
   margin: 6px;

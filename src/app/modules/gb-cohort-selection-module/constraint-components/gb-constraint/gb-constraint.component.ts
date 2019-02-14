@@ -87,29 +87,12 @@ export class GbConstraintComponent implements OnInit {
     }
   }
 
-  get containerClass(): string {
-    if (this.element.nativeElement.children[0].classList.length === 0) {
-      const containerClassName = (this.constraint.className === 'CombinationConstraint'
-        && (<CombinationConstraint>this.constraint).isRoot) ?
-        'gb-constraint-container-root ' : 'gb-constraint-container';
-
-      let borderClassName = '';
-      if (containerClassName === 'gb-constraint-container') {
-        const depth = this.constraintService.depthOfConstraint(this.constraint);
-        if (depth === 1) {
-          borderClassName = 'gb-constraint-container-border-left-1';
-        } else if (depth === 2) {
-          borderClassName = 'gb-constraint-container-border-left-2';
-        } else if (depth === 3) {
-          borderClassName = 'gb-constraint-container-border-left-3';
-        } else {
-          borderClassName = 'gb-constraint-container-border-left-4';
-        }
-      }
-      return containerClassName + ' ' + borderClassName;
-    } else {
-      return this.element.nativeElement.children[0].classList.value;
-    }
+  get constraintDepth(): number {
+    return ConstraintService.depthOfConstraint(this.constraint);
   }
 
+  get isRootClassLevel(): boolean {
+    return this.constraint.className === 'CombinationConstraint'
+      && (<CombinationConstraint>this.constraint).isRoot;
+  }
 }
