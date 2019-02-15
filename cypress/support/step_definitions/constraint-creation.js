@@ -72,3 +72,29 @@ when("I select patients that are part of study Oracle_1000_Patient with age betw
   cy.get('input[placeholder="max:29.79301"]').type('10');
   cy.get('.update-btn').eq(0).click();
 });
+
+when("I use public study {string} and negation of study {string} as a constraint", (study1, study2) => {
+  cy.toggleNode('Public Studies ');
+  cy.drag(study1).drop(0);
+  cy.drag(study2).drop(0);
+
+  cy.get('.ui-inputswitch-slider').eq(1).click();
+  cy.get('.update-btn').eq(0).click();
+});
+
+then("{string} study constraint panel is negated", (studyName) => {
+  cy.get('.gb-constraint-container').eq(1).should('have.class', 'gb-negated-constraint');
+  cy.get('span').contains('excluded').should('be.visible');
+});
+
+when("I use negated pedigree constraint {string} with concept {string} and negated concept {string}",
+    (pedigreeConstraint, concept1, concept2) => {
+  cy.get('input[placeholder="add criterion"]').eq(0).type(pedigreeConstraint).get('.ui-autocomplete-panel').eq(0).click();
+  cy.toggleNode('Pedigree ');
+  cy.drag(concept1).drop(0);
+  cy.drag(concept2).drop(0);
+
+  cy.get('.ui-inputswitch-slider').eq(0).click();
+  cy.get('.ui-inputswitch-slider').eq(2).click();
+  cy.get('.update-btn').eq(0).click();
+});

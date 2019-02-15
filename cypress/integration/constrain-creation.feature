@@ -6,6 +6,17 @@ Feature: create constraints by selecting nodes from the tree
     When I use public study 'CATEGORICAL_VALUES ' as a constraint
     Then there are '3' subjects
 
+  Scenario: create a constraint with negation
+    Given I am on the cohort-selection tab
+    When  I use public study 'EHR' and negation of study 'CATEGORICAL_VALUES' as a constraint
+    Then there are '3' subjects
+    Then 'CATEGORICAL_VALUES' study constraint panel is negated
+
+  Scenario: create a constraint with double negation
+    Given I am on the cohort-selection tab
+    When I use negated pedigree constraint 'Parent of' with concept 'Is a Twin' and negated concept 'Number of children that are multiplet'
+    Then there are '1,355' subjects
+
   Scenario: create a study restricted categorical constraint
     Given I am on the cohort-selection tab
     When I select all female patients from CATEGORICAL_VALUES
@@ -25,3 +36,4 @@ Feature: create constraints by selecting nodes from the tree
     Given I am on the cohort-selection tab
     When I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10
     Then there are '495' subjects
+

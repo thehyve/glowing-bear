@@ -25,8 +25,15 @@ import {
   AutoCompleteModule,
   CalendarModule,
   CheckboxModule,
-  DataListModule, DropdownModule, MessagesModule, MultiSelectModule, OverlayPanelModule, PaginatorModule,
-  PanelModule, TreeNode,
+  DataListModule,
+  DropdownModule,
+  InputSwitchModule,
+  MessagesModule,
+  MultiSelectModule,
+  OverlayPanelModule,
+  PaginatorModule,
+  PanelModule,
+  TreeNode,
   TreeTableModule
 } from 'primeng/primeng';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
@@ -76,7 +83,8 @@ describe('Integration tests for constraint composing', () => {
         DropdownModule,
         MessagesModule,
         MultiSelectModule,
-        OverlayPanelModule
+        OverlayPanelModule,
+        InputSwitchModule
       ],
       providers: [
         {

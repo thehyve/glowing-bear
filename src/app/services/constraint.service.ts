@@ -30,8 +30,6 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Subject} from 'rxjs';
-import {Observable, Subject} from 'rxjs';
-import {VariablesViewMode} from '../models/variables-view-mode';
 
 /**
  * This service concerns with

@@ -25,6 +25,7 @@ import {StudyService} from '../app/services/study.service';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
+import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 
 describe('Integration test for cohort saving and restoring', () => {
 
@@ -165,16 +166,27 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
 
     let child0 = constraintService.rootInclusionConstraint.children[0];
-    expect(child0.className).toEqual('ConceptConstraint');
-    expect(child0['concept']).toBeDefined();
-    expect(child0['concept']['code']).toEqual('SHDCSCP:DEM:AGE');
-    let child1 = constraintService.rootInclusionConstraint.children[1];
-    expect(child1.className).toEqual('ConceptConstraint');
-    expect(child1['concept']).toBeDefined();
-    expect(child1['concept']['code']).toEqual('O1KP:CAT8');
-    let child3 = constraintService.rootExclusionConstraint.children[0];
-    expect(child3['concept']).toBeDefined();
-    expect(child3['concept']['code']).toEqual('VSIGN:HR');
+    expect(child0.className).toEqual('CombinationConstraint');
+
+    let child01 = (<CombinationConstraint>child0).children[0];
+    expect(child01.className).toEqual('ConceptConstraint');
+    expect(child01['concept']).toBeDefined();
+    expect(child01['concept']['code']).toEqual('SHDCSCP:DEM:AGE');
+    expect(child01['negated']).toEqual(false);
+
+    let child02 = (<CombinationConstraint>child0).children[1];
+    expect(child02.className).toEqual('ConceptConstraint');
+    expect(child02['concept']).toBeDefined();
+    expect(child02['concept']['code']).toEqual('O1KP:CAT8');
+    expect(child02['negated']).toEqual(false);
+
+    let child03 = constraintService.rootInclusionConstraint.children[1];
+    expect(child03.className).toEqual('ConceptConstraint');
+    expect(child03['concept']).toBeDefined();
+    expect(child03['concept']['code']).toEqual('VSIGN:HR');
+    expect(child03['negated']).toEqual(true);
+
+    expect(constraintService.rootExclusionConstraint.children.length).toEqual(0);
 
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();

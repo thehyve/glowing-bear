@@ -88,7 +88,7 @@ export class GbConstraintComponent implements OnInit {
   }
 
   get constraintDepth(): number {
-    return ConstraintService.depthOfConstraint(this.constraint);
+    return this.constraintService.depthOfConstraint(this.constraint);
   }
 
   get isRootClassLevel(): boolean {

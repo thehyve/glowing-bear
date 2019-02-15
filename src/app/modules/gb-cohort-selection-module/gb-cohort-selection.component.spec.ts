@@ -34,7 +34,7 @@ import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {DataTableService} from '../../services/data-table.service';
 import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {Cohort} from '../../models/cohort-models/cohort';
+import {InputSwitchModule} from 'primeng/primeng';
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
@@ -59,7 +59,8 @@ describe('GbCohortSelectionComponent', () => {
         TreeModule,
         MessagesModule,
         TooltipModule,
-        OverlayPanelModule
+        OverlayPanelModule,
+        InputSwitchModule
       ],
       providers: [
         {
