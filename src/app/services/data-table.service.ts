@@ -5,22 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {Injectable} from '@angular/core';
 import {Dimension} from '../models/table-models/dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from './constraint.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Subject} from 'rxjs';
 import {VariableService} from './variable.service';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 
 @Injectable({
   providedIn: 'root',
@@ -38,8 +33,7 @@ export class DataTableService {
   private _dataTableUpdated: Subject<any>;
 
   constructor(private resourceService: ResourceService,
-              private variableService: VariableService,
-              private constraintService: ConstraintService) {
+              private variableService: VariableService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
@@ -49,6 +43,10 @@ export class DataTableService {
     this.variableService.variablesUpdated.asObservable()
       .subscribe(() => {
         this.updateDataTable();
+      });
+    this.variableService.selectedVariablesUpdated.asObservable()
+      .subscribe(() => {
+        this.isDirty = true;
       });
   }
 

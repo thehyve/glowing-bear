@@ -1,6 +1,12 @@
+/**
+ * Copyright 2017 - 2019  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import {Component, OnInit} from '@angular/core';
 import {CategorizedVariable} from '../../../../../models/constraint-models/categorized-variable';
-import {ConstraintService} from '../../../../../services/constraint.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {VariableService} from '../../../../../services/variable.service';
 

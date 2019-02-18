@@ -23,7 +23,6 @@ import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -49,7 +48,6 @@ export class VariableService {
   private _variablesTree: TreeNode[] = [];
   // The selected tree data in tree view in gb-variables
   private _selectedVariablesTree: TreeNode[] = [];
-  private _selectedVariablesTreeUpdated: Subject<TreeNode[]> = new Subject<TreeNode[]>();
 
   private _draggedVariable: Concept = null;
   // The scope identifier used by primeng for drag and drop
@@ -85,22 +83,6 @@ export class VariableService {
         this.categorizeVariables();
       });
 
-    // when the user (un)selects / (un)checks tree nodes in the tree view,
-    // update selected variables in the category view
-    this.selectedVariablesTreeUpdated.asObservable()
-      .subscribe((selectedNodes: TreeNode[]) => {
-        const codes = [];
-        selectedNodes.forEach((n: TreeNode) => {
-          const code = n['conceptCode'];
-          if (this.treeNodeService.isVariableNode(n) && code && !codes.includes(code)) {
-            codes.push(code);
-          }
-        });
-        this.variables.forEach((v: Concept) => {
-          v.selected = codes.includes(v.code);
-        });
-      });
-
     // when the user (un)selects / (un)checks variables in the category view,
     // update the selected tree nodes in the tree view
     this.selectedVariablesUpdated.asObservable()
@@ -121,6 +103,24 @@ export class VariableService {
       } else {
         this.categorizedVariables.push({type: variable.type, elements: [variable]});
       }
+    });
+  }
+
+  /**
+   * when the user (un)selects / (un)checks tree nodes in the tree view,
+   * update selected variables in the category view
+   * @param selectedNodes
+   */
+  private updateSelectedVariablesWithTreeNodes(selectedNodes: TreeNode[]) {
+    const codes = [];
+    selectedNodes.forEach((n: TreeNode) => {
+      const code = n['conceptCode'];
+      if (this.treeNodeService.isVariableNode(n) && code && !codes.includes(code)) {
+        codes.push(code);
+      }
+    });
+    this.variables.forEach((v: Concept) => {
+      v.selected = codes.includes(v.code);
     });
   }
 
@@ -252,8 +252,8 @@ export class VariableService {
    * @param {Map<string, CountItem>} selectedStudyCountMap
    */
   public updateVariablesTree(selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                 selectedConceptCountMap: Map<string, CountItem>,
-                                 selectedStudyCountMap: Map<string, CountItem>) {
+                             selectedConceptCountMap: Map<string, CountItem>,
+                             selectedStudyCountMap: Map<string, CountItem>) {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
     if (this.treeNodeService.treeNodesCopy.length === 0) {
       this.treeNodeService.treeNodesCopy = this.treeNodeService.copyTreeNodes(this.treeNodeService.treeNodes);
@@ -265,9 +265,9 @@ export class VariableService {
   }
 
   private updateVariablesTreeRecursion(nodes: TreeNode[],
-                                           selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                           selectedConceptCountMap: Map<string, CountItem>,
-                                           selectedStudyCountMap: Map<string, CountItem>) {
+                                       selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
+                                       selectedConceptCountMap: Map<string, CountItem>,
+                                       selectedStudyCountMap: Map<string, CountItem>) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
@@ -338,14 +338,14 @@ export class VariableService {
     // update the selected tree nodes in gb-variables
     this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
-    this.selectedVariablesTreeUpdated.next(this.selectedVariablesTree);
+    this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
 
   public importVariablesByPaths(paths: string[]) {
     // update the selected tree nodes in gb-variables
     this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
-    this.selectedVariablesTreeUpdated.next(this.selectedVariablesTree);
+    this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
 
   // get the combination of cohort constraint and variable constraint
@@ -432,14 +432,6 @@ export class VariableService {
   // this setter is invoked each time the user clicks to (un)check a variable tree node
   set selectedVariablesTree(value: TreeNode[]) {
     this._selectedVariablesTree = value;
-    this.selectedVariablesTreeUpdated.next(value);
-  }
-
-  get selectedVariablesTreeUpdated(): Subject<TreeNode[]> {
-    return this._selectedVariablesTreeUpdated;
-  }
-
-  set selectedVariablesTreeUpdated(value: Subject<TreeNode[]>) {
-    this._selectedVariablesTreeUpdated = value;
+    this.updateSelectedVariablesWithTreeNodes(value);
   }
 }
