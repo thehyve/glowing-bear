@@ -481,4 +481,31 @@ describe('TreeNodeService', () => {
     expect(result.parent.type).toBe('node_type');
   });
 
+  it('should format node with counts', () => {
+    let node: TreeNode = {};
+    const countItem = new CountItem(10, 20);
+    treeNodeService.formatNodeWithCounts(node, countItem);
+    expect(node['label']).toBeDefined();
+    expect(node['label']).toContain('10');
+  });
+
+  it('should flatten tree nodes', () => {
+    let node1: TreeNode = {};
+    let node1_1: TreeNode = {};
+    let node1_1_1: TreeNode = {};
+    node1_1['children'] = [node1_1_1];
+    node1['children'] = [node1_1];
+    let node2: TreeNode = {};
+    let flattened = [];
+    treeNodeService.flattenTreeNodes([node1, node2], flattened);
+    expect(flattened.length).toBe(4);
+  });
+
+  it('should compute depth of tree node', () => {
+    let node: TreeNode = {};
+    node['fullName'] = 'a\\b\\c\\d\\e\\';
+    const depth = treeNodeService.depthOfTreeNode(node);
+    expect(depth).toBe(4);
+  });
+
 });
