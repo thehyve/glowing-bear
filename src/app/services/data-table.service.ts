@@ -18,6 +18,9 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Subject} from 'rxjs';
 import {VariableService} from './variable.service';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 
 @Injectable({
   providedIn: 'root',
@@ -75,7 +78,7 @@ export class DataTableService {
       this.isDirty = true;
       this.isUpdating = true;
       this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
-      this.dataTable.constraint = this.constraintService.combination;
+      this.dataTable.constraint = this.variableService.combination;
 
       this.resourceService.getDataTable(this.dataTable)
         .subscribe(

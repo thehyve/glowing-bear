@@ -508,4 +508,38 @@ describe('TreeNodeService', () => {
     expect(depth).toBe(4);
   });
 
+  it('should update tree nodes counts', () => {
+    let node1: TreeNode = {};
+    node1['name'] = 'one';
+    node1['subjectCount'] = 11;
+    node1['metadata'] = {foo: 'bar'};
+    let node2: TreeNode = {};
+    node2['name'] = 'two';
+    node2['subjectCount'] = 12;
+    let node3: TreeNode = {};
+    node2['children'] = [node3];
+    spyOnProperty(treeNodeService, 'treeNodes', 'get').and.returnValue([node1, node2]);
+    treeNodeService.updateTreeNodeCounts();
+    expect(node1['label']).toContain('ⓘ');
+    expect(node1['label']).toContain('11');
+    expect(node2['label']).toContain('12');
+  });
+
+  it('should check if a tree node is variable node', () => {
+    let node: TreeNode = {};
+    node['type'] = 'NUMERIC';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+    node['type'] = 'CATEGORICAL';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+    node['type'] = 'CATEGORICAL_OPTION';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+    node['type'] = 'DATE';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+    node['type'] = 'foobar';
+    expect(treeNodeService.isVariableNode(node)).toBe(false);
+    node['type'] = 'HIGH_DIMENSIONAL';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+    node['type'] = 'TEXT';
+    expect(treeNodeService.isVariableNode(node)).toBe(true);
+  });
 });

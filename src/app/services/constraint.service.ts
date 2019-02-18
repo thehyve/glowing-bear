@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, Injector} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
@@ -30,7 +30,6 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Subject} from 'rxjs';
-// import {VariableService} from './variable.service';
 
 /**
  * This service concerns with
@@ -115,8 +114,7 @@ export class ConstraintService {
 
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
-              private resourceService: ResourceService,
-              private injector: Injector) {
+              private resourceService: ResourceService) {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
@@ -432,17 +430,6 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
-  // get the combination of cohort constraint and variable constraint
-  get combination(): CombinationConstraint {
-    // const variableService = this.injector.get(VariableService);
-    // return new CombinationConstraint(
-    //   [this.cohortConstraint(), variableService.variableConstraint()],
-    //   CombinationState.And,
-    //   ConstraintMark.OBSERVATION
-    // );
-    return null;
-  }
-
   get rootInclusionConstraint(): CombinationConstraint {
     return this._rootInclusionConstraint;
   }

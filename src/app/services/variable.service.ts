@@ -64,33 +64,6 @@ export class VariableService {
     this.subscribeToVariableChanges();
   }
 
-  public updateVariables(): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.isUpdatingVariables = true;
-      if (this.isTreeNodesLoading) {
-        window.setTimeout((function () {
-          this.updateVariables(resolve);
-        }).bind(this), 500);
-      } else {
-        this.variables.length = 0;
-        const codes: Array<string> = Array.from(this.constraintService.selectedConceptCountMap.keys());
-        this.constraintService.concepts.forEach((concept: Concept) => {
-          if (codes.includes(concept.code)) {
-            concept.counts = this.constraintService.selectedConceptCountMap.get(concept.code);
-            this.variables.push(concept);
-          }
-        });
-        this.variablesUpdated.next(this.variables);
-        this.updateVariablesTree(
-          this.constraintService.selectedStudyConceptCountMap,
-          this.constraintService.selectedConceptCountMap,
-          this.constraintService.selectedStudyCountMap);
-        this.isUpdatingVariables = false;
-        resolve(true);
-      }
-    });
-  }
-
   private subscribeToVariableChanges() {
     // When the selectedConceptCountMap is updated and the tree is finished loading,
     // update the corresponding variable categorised list and sub-tree
@@ -147,6 +120,33 @@ export class VariableService {
         existingVariable.elements.push(variable);
       } else {
         this.categorizedVariables.push({type: variable.type, elements: [variable]});
+      }
+    });
+  }
+
+  public updateVariables(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.isUpdatingVariables = true;
+      if (this.isTreeNodesLoading) {
+        window.setTimeout((function () {
+          this.updateVariables(resolve);
+        }).bind(this), 500);
+      } else {
+        this.variables.length = 0;
+        const codes: Array<string> = Array.from(this.constraintService.selectedConceptCountMap.keys());
+        this.constraintService.concepts.forEach((concept: Concept) => {
+          if (codes.includes(concept.code)) {
+            concept.counts = this.constraintService.selectedConceptCountMap.get(concept.code);
+            this.variables.push(concept);
+          }
+        });
+        this.variablesUpdated.next(this.variables);
+        this.updateVariablesTree(
+          this.constraintService.selectedStudyConceptCountMap,
+          this.constraintService.selectedConceptCountMap,
+          this.constraintService.selectedStudyCountMap);
+        this.isUpdatingVariables = false;
+        resolve(true);
       }
     });
   }
@@ -317,7 +317,7 @@ export class VariableService {
     }
   }
 
-  selectVariablesTreeByFields(nodes: TreeNode[], values: string[], fields: string[]) {
+  public selectVariablesTreeByFields(nodes: TreeNode[], values: string[], fields: string[]) {
     nodes.forEach((node: TreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
@@ -334,18 +334,27 @@ export class VariableService {
     });
   }
 
-  importVariablesByNames(names: string[]) {
+  public importVariablesByNames(names: string[]) {
     // update the selected tree nodes in gb-variables
     this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.selectedVariablesTreeUpdated.next(this.selectedVariablesTree);
   }
 
-  importVariablesByPaths(paths: string[]) {
+  public importVariablesByPaths(paths: string[]) {
     // update the selected tree nodes in gb-variables
     this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.selectedVariablesTreeUpdated.next(this.selectedVariablesTree);
+  }
+
+  // get the combination of cohort constraint and variable constraint
+  get combination(): CombinationConstraint {
+    return new CombinationConstraint(
+      [this.constraintService.cohortConstraint(), this.variableConstraint()],
+      CombinationState.And,
+      ConstraintMark.OBSERVATION
+    );
   }
 
   get isTreeNodesLoading(): boolean {

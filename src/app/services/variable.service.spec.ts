@@ -6,7 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {TestBed} from '@angular/core/testing';
-
 import {VariableService} from './variable.service';
 import {VariablesViewMode} from '../models/variables-view-mode';
 import {Concept} from '../models/constraint-models/concept';
@@ -52,20 +51,20 @@ describe('VariableService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        VariableService,
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
+        },
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        }
+        VariableService
       ]
     });
+    variableService = TestBed.get(VariableService);
     treeNodeService = TestBed.get(TreeNodeService);
     constraintService = TestBed.get(ConstraintService);
-    variableService = TestBed.get(VariableService);
   });
 
   it('should be created', () => {

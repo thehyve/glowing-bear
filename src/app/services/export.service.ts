@@ -78,14 +78,13 @@ export class ExportService {
           this.updateExportDataTypes();
         });
     }
-
   }
 
   private updateExportDataTypes() {
     console.log('update export data types');
     // update the export info
     this.isDataTypesUpdating = true;
-    this.resourceService.getExportDataTypes(this.constraintService.combination)
+    this.resourceService.getExportDataTypes(this.variableService.combination)
       .subscribe(dataTypes => {
           this.exportDataTypes = dataTypes;
           this.isDataTypesUpdating = false;
@@ -141,7 +140,7 @@ export class ExportService {
       this.resourceService.runExportJob(
         job,
         this.exportDataTypes,
-        this.constraintService.combination,
+        this.variableService.combination,
         this.dataTableService.dataTable,
         this.isTransmartDateColumnsIncluded
       )

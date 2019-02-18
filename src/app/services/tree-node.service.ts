@@ -444,17 +444,17 @@ export class TreeNodeService {
   }
 
   public updateTreeNodeCounts() {
-    this.updateTreeNodeCountsIterative(this.treeNodes);
+    this.updateTreeNodeCountsRecursion(this.treeNodes);
   }
 
-  private updateTreeNodeCountsIterative(nodes: TreeNode[]) {
+  private updateTreeNodeCountsRecursion(nodes: TreeNode[]) {
     nodes.forEach((node: TreeNode) => {
       if (node['subjectCount']) {
         let tail = node['metadata'] ? ' ⓘ ' : ' ';
         node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
       }
       if (node['children']) {
-        this.updateTreeNodeCountsIterative(node['children']);
+        this.updateTreeNodeCountsRecursion(node['children']);
       }
     });
   }
