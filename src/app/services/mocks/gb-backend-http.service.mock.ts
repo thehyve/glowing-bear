@@ -32,7 +32,7 @@ export class GbBackendHttpServiceMock {
       }
     };
     q1.queryBlob = {
-      patientsQueryFull: q1.queryConstraint
+      queryConstraintFull: q1.queryConstraint
     };
     let q2: GbBackendQuery = new GbBackendQuery('test');
     q2.bookmarked = false;
@@ -133,7 +133,7 @@ export class GbBackendHttpServiceMock {
         rowDimensions: ['patient', 'study', 'concept'],
         rowSort: []
       },
-      patientsQueryFull: q2.queryConstraint
+      queryConstraintFull: q2.queryConstraint
     };
     let queries: GbBackendQuery[] = [q1, q2];
     return observableOf(queries);

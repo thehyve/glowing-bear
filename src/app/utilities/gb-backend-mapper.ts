@@ -31,7 +31,7 @@ export class GbBackendMapper {
     query.createDate = gbBackendQuery.createDate;
     query.updateDate = gbBackendQuery.updateDate;
     query.bookmarked = gbBackendQuery.bookmarked;
-    query.constraint = TransmartConstraintMapper.generateConstraintFromObject(gbBackendQuery.queryBlob['patientsQueryFull']);
+    query.constraint = TransmartConstraintMapper.generateConstraintFromObject(gbBackendQuery.queryBlob['queryConstraintFull']);
     query.apiVersion = gbBackendQuery.apiVersion;
     query.subscribed = gbBackendQuery.subscribed;
     query.subscriptionFreq = gbBackendQuery.subscriptionFreq;
@@ -42,7 +42,7 @@ export class GbBackendMapper {
     let transmartQuery: GbBackendQuery = new GbBackendQuery(query.name);
     transmartQuery.queryConstraint = TransmartConstraintMapper.mapConstraint(query.constraint, false);
     transmartQuery.queryBlob = {};
-    transmartQuery.queryBlob['patientsQueryFull'] = TransmartConstraintMapper.mapConstraint(query.constraint, true);
+    transmartQuery.queryBlob['queryConstraintFull'] = TransmartConstraintMapper.mapConstraint(query.constraint, true);
 
     return transmartQuery;
   }
