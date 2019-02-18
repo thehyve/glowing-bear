@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {CategorizedVariable} from '../../../../../models/constraint-models/categorized-variable';
 import {ConstraintService} from '../../../../../services/constraint.service';
-import {Concept} from '../../../../../models/constraint-models/concept';
 import {NavbarService} from '../../../../../services/navbar.service';
-import {DataTableService} from '../../../../../services/data-table.service';
+import {VariableService} from '../../../../../services/variable.service';
 
 @Component({
   selector: 'gb-categorized-variables',
@@ -13,7 +12,7 @@ import {DataTableService} from '../../../../../services/data-table.service';
 export class GbCategorizedVariablesComponent implements OnInit {
 
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private variableService: VariableService,
               private navbarService: NavbarService) {
   }
 
@@ -21,11 +20,11 @@ export class GbCategorizedVariablesComponent implements OnInit {
   }
 
   onDragStart(e, concept) {
-    this.constraintService.draggedVariable = concept;
+    this.variableService.draggedVariable = concept;
   }
 
   onCheck(e, concept) {
-    this.constraintService.selectedVariablesUpdated.next(this.constraintService.variables);
+    this.variableService.selectedVariablesUpdated.next(this.variableService.variables);
   }
 
   get isExport(): boolean {
@@ -33,10 +32,10 @@ export class GbCategorizedVariablesComponent implements OnInit {
   }
 
   get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
+    return this.variableService.variablesDragDropScope;
   }
 
   get categorizedVariables(): Array<CategorizedVariable> {
-    return this.constraintService.categorizedVariables;
+    return this.variableService.categorizedVariables;
   }
 }

@@ -15,11 +15,14 @@ import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
+import {VariableService} from '../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
   let fixture: ComponentFixture<GbVariablesComponent>;
   let constraintService: ConstraintService;
+  let variableService: VariableService;
   let treeNodeService: TreeNodeService;
 
   beforeEach(async(() => {
@@ -42,6 +45,10 @@ describe('GbVariablesComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
+          provide: VariableService,
+          useClass: VariableServiceMock
+        },
+        {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
         },
@@ -60,6 +67,7 @@ describe('GbVariablesComponent', () => {
     fixture.detectChanges();
     constraintService = TestBed.get(ConstraintService);
     treeNodeService = TestBed.get(TreeNodeService);
+    variableService = TestBed.get(VariableService);
   });
 
   it('should be created', () => {
@@ -74,7 +82,7 @@ describe('GbVariablesComponent', () => {
     c1.selected = false;
     let c3 = new Concept();
     c1.selected = true;
-    let spy1 = spyOnProperty(constraintService, 'variables', 'get')
+    let spy1 = spyOnProperty(variableService, 'variables', 'get')
       .and.returnValue([c1, c2, c3]);
     expect(component.checkAllText.includes('2'));
   });
@@ -87,7 +95,7 @@ describe('GbVariablesComponent', () => {
     c2.selected = false;
     let c3 = new Concept();
     c3.selected = true;
-    let spy1 = spyOnProperty(constraintService, 'variables', 'get')
+    let spy1 = spyOnProperty(variableService, 'variables', 'get')
       .and.returnValue([c1, c2, c3]);
     component.checkAllVariables(true);
     expect(component.checkAllText.includes('3'));
@@ -133,7 +141,7 @@ describe('GbVariablesComponent', () => {
     spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
     const file = new File([], 'test.json', {type: 'application/json'});
     spyOn(FileImportHelper, 'getFile').and.returnValue(file);
-    const spyCall = spyOn(constraintService, 'importVariablesByNames').and.stub();
+    const spyCall = spyOn(variableService, 'importVariablesByNames').and.stub();
     component.handleVariablesFileUploadEvent(e);
     expect(spyCall).toHaveBeenCalled();
   });
@@ -144,7 +152,7 @@ describe('GbVariablesComponent', () => {
     spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
     const file = new File([], 'test.json', {type: 'application/json'});
     spyOn(FileImportHelper, 'getFile').and.returnValue(file);
-    const spyCall = spyOn(constraintService, 'importVariablesByPaths').and.stub();
+    const spyCall = spyOn(variableService, 'importVariablesByPaths').and.stub();
     component.handleVariablesFileUploadEvent(e);
     expect(spyCall).toHaveBeenCalled();
   });

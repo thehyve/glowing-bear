@@ -47,7 +47,8 @@ export class ResourceService {
   private _inclusionCounts: CountItem;
   private _exclusionCounts: CountItem;
 
-  constructor(private transmartResourceService: TransmartResourceService, private gbBackendHttpService: GbBackendHttpService) {
+  constructor(private transmartResourceService: TransmartResourceService,
+              private gbBackendHttpService: GbBackendHttpService) {
     this.endpointMode = EndpointMode.TRANSMART;
   }
 

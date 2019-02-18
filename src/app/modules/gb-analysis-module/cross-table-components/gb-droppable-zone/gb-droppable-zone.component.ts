@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,10 +9,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../../services/cross-table.service';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {AxisType} from '../../../../models/table-models/axis-type';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
+import {VariableService} from '../../../../services/variable.service';
 
 @Component({
   selector: 'gb-droppable-zone',
@@ -26,7 +26,7 @@ export class GbDroppableZoneComponent implements OnInit {
   public dragCounter = 0;
 
   constructor(private crossTableService: CrossTableService,
-              private constraintService: ConstraintService) {
+              private variableService: VariableService) {
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class GbDroppableZoneComponent implements OnInit {
     // if no existing constraint (from one of the already created draggable cells) is used,
     // try to create a new one based on the (possible) variable drop
     if (!constraint) {
-      let variable = this.constraintService.identifyDraggedElement();
+      let variable = this.variableService.identifyDraggedElement();
       if (variable) {
         constraint = new ConceptConstraint();
         (<ConceptConstraint>constraint).concept = variable;
@@ -107,6 +107,6 @@ export class GbDroppableZoneComponent implements OnInit {
   }
 
   get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
+    return this.variableService.variablesDragDropScope;
   }
 }

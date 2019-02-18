@@ -1,9 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GbCategorizedVariablesComponent } from './gb-categorized-variables.component';
-import {CategorizedVariable} from '../../../../../models/constraint-models/categorized-variable';
-import {Concept} from '../../../../../models/constraint-models/concept';
-import {ConceptType} from '../../../../../models/constraint-models/concept-type';
+import { GbCategorizedVariablesComponent } from './gb-categorized-variables.component';;
 import {CheckboxModule, DragDropModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatExpansionModule} from '@angular/material';
@@ -11,8 +8,8 @@ import {NavbarService} from '../../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
 import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
 import {ConstraintService} from '../../../../../services/constraint.service';
-import {DataTableService} from '../../../../../services/data-table.service';
-import {DataTableServiceMock} from '../../../../../services/mocks/data-table.service.mock';
+import {VariableService} from '../../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
 
 describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;
@@ -36,12 +33,8 @@ describe('GbCategorizedVariablesComponent', () => {
           useClass: NavbarServiceMock
         },
         {
-          provide: DataTableService,
-          useClass: DataTableServiceMock
-        },
-        {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: VariableService,
+          useClass: VariableServiceMock
         }
       ]
     })

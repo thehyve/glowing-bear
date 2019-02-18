@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,8 +16,8 @@ import {Concept} from '../../../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {DragDropModule} from 'primeng/primeng';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
+import {VariableService} from '../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 
 describe('GbDraggableCellComponent', () => {
   let component: GbDraggableCellComponent;
@@ -37,8 +37,8 @@ describe('GbDraggableCellComponent', () => {
           useClass: CrossTableServiceMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: VariableService,
+          useClass: VariableServiceMock
         }
       ]
     })

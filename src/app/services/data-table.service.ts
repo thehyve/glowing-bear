@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,7 +17,7 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Subject} from 'rxjs';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {VariableService} from './variable.service';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +35,7 @@ export class DataTableService {
   private _dataTableUpdated: Subject<any>;
 
   constructor(private resourceService: ResourceService,
+              private variableService: VariableService,
               private constraintService: ConstraintService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
@@ -42,7 +43,7 @@ export class DataTableService {
     this.isDirty = false;
     this.isUpdating = false;
     this.dataTableUpdated = new Subject();
-    this.constraintService.variablesUpdated.asObservable()
+    this.variableService.variablesUpdated.asObservable()
       .subscribe(() => {
         this.updateDataTable();
       });

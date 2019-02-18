@@ -4,7 +4,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {VariablesViewMode} from '../../../../models/variables-view-mode';
 import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
-import {ConstraintService} from '../../../../services/constraint.service';
+import {VariableService} from '../../../../services/variable.service';
 
 @Component({
   selector: 'gb-variables',
@@ -23,7 +23,7 @@ export class GbVariablesComponent implements OnInit {
 
   private _availableViewModes: SelectItem[];
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private variableService: VariableService,
               private navbarService: NavbarService) {
     this.allChecked = true;
     this.isUploadListenerNotAdded = true;
@@ -49,9 +49,9 @@ export class GbVariablesComponent implements OnInit {
     if (FileImportHelper.isJsonFile(this.file)) {
       let _json = JSON.parse(data);
       if (_json['names']) {
-        this.constraintService.importVariablesByNames(_json['names']);
+        this.variableService.importVariablesByNames(_json['names']);
       } else if (_json['paths']) {
-        this.constraintService.importVariablesByPaths(_json['paths']);
+        this.variableService.importVariablesByPaths(_json['paths']);
       } else {
         MessageHelper.alert('error', 'Invalid file content for variables import.');
         return;
@@ -71,11 +71,11 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get viewMode(): VariablesViewMode {
-    return this.constraintService.variablesViewMode;
+    return this.variableService.variablesViewMode;
   }
 
   set viewMode(value: VariablesViewMode) {
-    this.constraintService.variablesViewMode = value;
+    this.variableService.variablesViewMode = value;
   }
 
   get availableViewModes(): SelectItem[] {
@@ -91,7 +91,7 @@ export class GbVariablesComponent implements OnInit {
   }
 
   checkAllVariables(b: boolean) {
-    this.constraintService.setVariableSelection(b);
+    this.variableService.setVariableSelection(b);
   }
 
   get checkAllText(): string {
@@ -101,7 +101,7 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get numberOfSelected(): number {
-    return this.constraintService.variables.filter(v =>
+    return this.variableService.variables.filter(v =>
       v.selected === true).length;
   }
 

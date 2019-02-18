@@ -95,7 +95,7 @@ export class GbConstraintComponent implements OnInit {
 
       let borderClassName = '';
       if (containerClassName === 'gb-constraint-container') {
-        const depth = ConstraintService.depthOfConstraint(this.constraint);
+        const depth = this.constraintService.depthOfConstraint(this.constraint);
         if (depth === 1) {
           borderClassName = 'gb-constraint-container-border-left-1';
         } else if (depth === 2) {

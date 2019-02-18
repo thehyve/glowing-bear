@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,6 +18,7 @@ import {TransmartResourceService} from '../../services/transmart-resource.servic
 import {TransmartPackerHttpService} from '../../services/http/transmart-packer-http.service';
 import {TransmartHttpService} from '../../services/http/transmart-http.service';
 import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
+import {VariableService} from '../../services/variable.service';
 
 @Component({
   selector: 'gb-main',
@@ -36,6 +37,7 @@ export class GbMainComponent implements OnInit {
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private cohortService: CohortService,
+              private variableService: VariableService,
               private fractalisService: FractalisService) {
   }
 

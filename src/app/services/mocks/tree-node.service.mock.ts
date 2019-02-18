@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,28 +7,21 @@
  */
 
 import {TreeNode} from 'primeng/primeng';
-import {CountItem} from '../../models/aggregate-models/count-item';
 import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
+import {CountItem} from '../../models/aggregate-models/count-item';
 
 export class TreeNodeServiceMock {
-  // the variable that holds the entire tree structure, used by the tree on the left
-  public treeNodes: TreeNode[] = [];
-  // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
-  public treeNodesCopy: TreeNode[] = [];
-  private _variablesTreeData: TreeNode[] = [];
-
-  public selectedTreeNode;
+  private _treeNodes: TreeNode[] = [];
+  private _treeNodesCopy: TreeNode[] = [];
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
   public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
-  public selectedVariablesTreeDataUpdated: Subject<TreeNode[]> = new Subject<TreeNode[]>();
-
-  public conceptCountMap: Map<string, CountItem>;
-  public studyCountMap: Map<string, CountItem>;
-  public studyConceptCountMap: Map<string, Map<string, CountItem>>;
-
   private _validTreeNodeTypes: string[] = [];
+  private _showObservationCounts: boolean;
+  private processedConceptCodes: string[] = [];
+
+  public selectedTreeNode: TreeNode = null;
 
   constructor() {
     this._validTreeNodeTypes = [
@@ -40,33 +33,38 @@ export class TreeNodeServiceMock {
       'HIGH_DIMENSIONAL',
       'UNKNOWN'
     ];
-    // construct the maps
-    let map1 = new Map<string, CountItem>();
-    let item1 = new CountItem(10, 20);
-    map1.set('concept1', item1);
-    let map2 = new Map<string, CountItem>();
-    let item2 = new CountItem(30, 110);
-    let item3 = new CountItem(70, 90);
-    map2.set('concept2', item2);
-    map2.set('concept3', item3);
-    this.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    this.studyConceptCountMap.set('study1', map1);
-    this.studyConceptCountMap.set('study2', map2);
-
-    this.studyCountMap = new Map<string, CountItem>();
-    this.studyCountMap.set('study1', new CountItem(10, 20));
-    this.studyCountMap.set('study2', new CountItem(100, 200));
-
-    this.conceptCountMap = new Map<string, CountItem>();
-    this.conceptCountMap.set('concept1', new CountItem(10, 20));
-    this.conceptCountMap.set('concept2', new CountItem(30, 110));
-    this.conceptCountMap.set('concept3', new CountItem(70, 90));
   }
 
   public load() {
   }
 
   public loadTreeNodes() {
+  }
+
+  isVariableNode(n: TreeNode): boolean {
+    return true;
+  }
+
+  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
+  }
+
+  public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+    return [];
+  }
+
+  public isTreeNodeLeaf(node: TreeNode): boolean {
+    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
+  }
+
+  public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
+  }
+
+  public copyTreeNodeUpward(node: TreeNode): TreeNode {
+    return node;
+  }
+
+  public depthOfTreeNode(node: TreeNode): number {
+    return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
   get validTreeNodeTypes(): string[] {
@@ -81,34 +79,31 @@ export class TreeNodeServiceMock {
     return true;
   }
 
-  public updateVariablesTreeData(conceptCountMap: object, checklist: Array<string>) {
-  }
-
-  public updateFinalTreeNodes() {
-  }
-
-  get variablesTreeData(): TreeNode[] {
-    return this._variablesTreeData;
-  }
-
-  set variablesTreeData(value: TreeNode[]) {
-    this._variablesTreeData = value;
-  }
-
-  public selectVariablesTreeNodesByNames(names: string[]) {
-  }
-
-  public selectVariablesTreeNodesByPaths(paths: string[]) {
-  }
-
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
     return new Concept();
   }
 
-  public selectVariablesTreeDataByFields(nodes: TreeNode[], values: string[], fields: string[]) {
+  get treeNodesCopy(): TreeNode[] {
+    return this._treeNodesCopy;
   }
 
-  public selectAllVariablesTreeData(b: boolean) {
+  set treeNodesCopy(value: TreeNode[]) {
+    this._treeNodesCopy = value;
   }
 
+  get treeNodes(): TreeNode[] {
+    return this._treeNodes;
+  }
+
+  set treeNodes(value: TreeNode[]) {
+    this._treeNodes = value;
+  }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
+  }
 }
