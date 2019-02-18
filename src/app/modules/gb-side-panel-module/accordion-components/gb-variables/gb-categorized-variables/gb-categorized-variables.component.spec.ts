@@ -1,13 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { GbCategorizedVariablesComponent } from './gb-categorized-variables.component';;
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {GbCategorizedVariablesComponent} from './gb-categorized-variables.component';
 import {CheckboxModule, DragDropModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatExpansionModule} from '@angular/material';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
-import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
-import {ConstraintService} from '../../../../../services/constraint.service';
 import {VariableService} from '../../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
 
@@ -38,7 +35,7 @@ describe('GbCategorizedVariablesComponent', () => {
         }
       ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {
