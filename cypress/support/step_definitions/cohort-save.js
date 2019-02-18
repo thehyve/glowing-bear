@@ -27,7 +27,7 @@ given("Cohort {string} is saved", (cohortName) => {
             'auth': {'bearer': token},
             'body': {
               "name": cohortName,
-              "patientsQuery": {
+              "queryConstraint": {
                 "type": "subselection",
                 "dimension": "patient",
                 "constraint": {
@@ -39,11 +39,8 @@ given("Cohort {string} is saved", (cohortName) => {
                   "valueType": "NUMERIC"
                 }
               },
-              "observationsQuery": {
-                "data": []
-              },
               "queryBlob": {
-                "patientsQueryFull":
+                "queryConstraintFull":
                   {
                     "type": "subselection",
                     "dimension": "patient",
