@@ -239,7 +239,7 @@ export class ConstraintService {
     // check all variables and tree nodes, categorise the variables, be ready for visual rendering
     this.variablesUpdated.asObservable()
       .subscribe((variables: Concept[]) => {
-        this.checkAllVariables(true);
+        this.setVariableSelection(true);
         this.categorizeVariables();
       });
 
@@ -283,7 +283,7 @@ export class ConstraintService {
     });
   }
 
-  public checkAllVariables(b: boolean) {
+  public setVariableSelection(b: boolean) {
     // check the variables for the category view in gb-variables on the left panel
     this.variables.forEach((variable: Concept) => {
       variable.selected = b;

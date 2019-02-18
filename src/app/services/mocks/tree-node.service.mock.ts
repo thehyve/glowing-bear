@@ -69,10 +69,6 @@ export class TreeNodeServiceMock {
   public loadTreeNodes() {
   }
 
-  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
-    return [];
-  }
-
   get validTreeNodeTypes(): string[] {
     return this._validTreeNodeTypes;
   }
@@ -97,10 +93,6 @@ export class TreeNodeServiceMock {
 
   set variablesTreeData(value: TreeNode[]) {
     this._variablesTreeData = value;
-  }
-
-  public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
-
   }
 
   public selectVariablesTreeNodesByNames(names: string[]) {

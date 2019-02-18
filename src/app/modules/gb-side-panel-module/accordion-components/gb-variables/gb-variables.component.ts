@@ -91,7 +91,7 @@ export class GbVariablesComponent implements OnInit {
   }
 
   checkAllVariables(b: boolean) {
-    this.constraintService.checkAllVariables(b);
+    this.constraintService.setVariableSelection(b);
   }
 
   get checkAllText(): string {

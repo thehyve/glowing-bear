@@ -67,7 +67,7 @@ export class ConstraintServiceMock {
     return new Concept();
   }
 
-  checkAllVariables(b: boolean) {
+  setVariableSelection(b: boolean) {
     this.variables.forEach((variable: Concept) => {
       variable.selected = b;
     });
