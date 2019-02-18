@@ -32,8 +32,7 @@ export class ResourceServiceMock {
   private crossTable: CrossTable;
   private aggregate: Aggregate;
 
-  inclusionCounts: CountItem;
-  exclusionCounts: CountItem;
+  cohortSelectionCounts: CountItem;
 
   constructor() {
     this.studies = [];
@@ -45,12 +44,9 @@ export class ResourceServiceMock {
     this.aggregate = new Aggregate();
   }
 
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new CountItem(200, 1000);
-      this.exclusionCounts = new CountItem(30, 200);
+      this.cohortSelectionCounts = new CountItem(200, 1000);
       resolve(true);
     });
   }

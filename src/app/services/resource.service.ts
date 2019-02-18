@@ -44,8 +44,7 @@ import {GbBackendMapper} from '../utilities/gb-backend-mapper';
 export class ResourceService {
 
   private _endpointMode: EndpointMode;
-  private _inclusionCounts: CountItem;
-  private _exclusionCounts: CountItem;
+  private _cohortSelectionCounts: CountItem;
 
   constructor(private transmartResourceService: TransmartResourceService,
               private gbBackendHttpService: GbBackendHttpService) {
@@ -94,19 +93,15 @@ export class ResourceService {
   }
 
   // -------------------------------------- count calls --------------------------------------
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           this.transmartResourceService
-            .updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+            .updateCohortSelectionCounts(constraint)
             .then(() => {
-              this.inclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
-              this.exclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
+              this.cohortSelectionCounts =
+                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts);
               resolve(true);
             })
             .catch(err => {
@@ -535,20 +530,12 @@ export class ResourceService {
   }
 
 
-  get inclusionCounts(): CountItem {
-    return this._inclusionCounts;
+  get cohortSelectionCounts(): CountItem {
+    return this._cohortSelectionCounts;
   }
 
-  set inclusionCounts(value: CountItem) {
-    this._inclusionCounts = value;
-  }
-
-  get exclusionCounts(): CountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: CountItem) {
-    this._exclusionCounts = value;
+  set cohortSelectionCounts(value: CountItem) {
+    this._cohortSelectionCounts = value;
   }
 
   get endpointMode(): EndpointMode {

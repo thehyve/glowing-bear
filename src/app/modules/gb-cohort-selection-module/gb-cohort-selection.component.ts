@@ -25,8 +25,7 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 })
 export class GbCohortSelectionComponent implements OnInit {
 
-  @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
-  @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
+  @ViewChild('rootConstraintComponent') rootConstraintComponent: GbConstraintComponent;
 
   public cohortName: string;
 
@@ -54,24 +53,12 @@ export class GbCohortSelectionComponent implements OnInit {
   closeAccordion(event) {
   }
 
-  get inclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.inclusionCounts.subjectCount);
-  }
-
-  get exclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.exclusionCounts.subjectCount);
-  }
-
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootInclusionConstraint;
-  }
-
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootExclusionConstraint;
-  }
-
   get subjectCount(): string {
     return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
+  }
+
+  get rootConstraint(): CombinationConstraint {
+    return this.constraintService.rootConstraint;
   }
 
   get observationCount(): string {

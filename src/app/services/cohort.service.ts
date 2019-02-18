@@ -44,11 +44,8 @@ export class CohortService {
   private _currentCohort: Cohort;
   // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
-  // the counts in the gb-cohort-selection,
-  // which is, roughly speaking, inclusionCounts - exclusionCounts
+  // the counts in the gb-cohort-selection, number of subjects matching a specified criteria
   private _counts: CountItem;
-  private _inclusionCounts: CountItem;
-  private _exclusionCounts: CountItem;
   // The total numbers of subjects & observations for all the cohorts
   private _allCounts: CountItem;
   // indicate when constraints are changed, whether to update counts immediately,
@@ -87,8 +84,6 @@ export class CohortService {
 
   initializeCounts() {
     this.allCounts = new CountItem(0, 0);
-    this.inclusionCounts = new CountItem(0, 0);
-    this.exclusionCounts = new CountItem(0, 0);
     this.counts = new CountItem(0, 0);
   }
 
@@ -146,22 +141,11 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       if (this.isDirty) {
         this.isUpdatingCurrent = true;
-        let constraint = this.constraintService.cohortConstraint();
-        let inclusionConstraint = this.constraintService.inclusionConstraint();
-        let exclusionConstraint = this.constraintService.exclusionConstraint();
-        this.resourceService
-          .updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+        let constraint = this.constraintService.cohortSelectionConstraint();
+        this.resourceService.updateCohortSelectionCounts(constraint)
           .then(() => {
-            let inCounts = this.resourceService.inclusionCounts;
-            let exCounts = this.resourceService.exclusionCounts;
-            this.inclusionCounts = inCounts;
-            this.exclusionCounts = exCounts;
-            this.counts.subjectCount = inCounts.subjectCount - exCounts.subjectCount;
-            if (inCounts.observationCount > -1 && exCounts.observationCount > -1) {
-              this.counts.observationCount = inCounts.observationCount - exCounts.observationCount;
-            } else {
-              this.counts.observationCount = -1;
-            }
+            let cohortSelectionCounts = this.resourceService.cohortSelectionCounts;
+            this.counts.subjectCount = cohortSelectionCounts.subjectCount;
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.isUpdatingCurrent = false;
@@ -368,22 +352,6 @@ export class CohortService {
       bookmarked: target.bookmarked
     };
     this.editCohort(target, obj);
-  }
-
-  get inclusionCounts(): CountItem {
-    return this._inclusionCounts;
-  }
-
-  set inclusionCounts(value: CountItem) {
-    this._inclusionCounts = value;
-  }
-
-  get exclusionCounts(): CountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: CountItem) {
-    this._exclusionCounts = value;
   }
 
   get counts(): CountItem {

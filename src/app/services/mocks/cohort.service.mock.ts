@@ -12,8 +12,6 @@ import {Subject} from 'rxjs';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
-  inclusionCounts: CountItem;
-  exclusionCounts: CountItem;
   counts: CountItem;
   allCounts: CountItem;
   cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
@@ -25,8 +23,6 @@ export class CohortServiceMock {
 
   initializeCounts() {
     this.allCounts = new CountItem(0, 0);
-    this.inclusionCounts = new CountItem(0, 0);
-    this.exclusionCounts = new CountItem(0, 0);
     this.counts = new CountItem(0, 0);
   }
 

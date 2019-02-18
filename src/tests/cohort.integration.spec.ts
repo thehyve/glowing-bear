@@ -163,9 +163,9 @@ describe('Integration test for cohort saving and restoring', () => {
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(cohortService, 'updateCountsWithCurrentCohort').and.callThrough();
     let promise = cohortService.restoreCohort(q0);
-    expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
+    expect(constraintService.rootConstraint.children.length).toEqual(2);
 
-    let child0 = constraintService.rootInclusionConstraint.children[0];
+    let child0 = constraintService.rootConstraint.children[0];
     expect(child0.className).toEqual('CombinationConstraint');
 
     let child01 = (<CombinationConstraint>child0).children[0];
@@ -180,13 +180,11 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(child02['concept']['code']).toEqual('O1KP:CAT8');
     expect(child02['negated']).toEqual(false);
 
-    let child03 = constraintService.rootInclusionConstraint.children[1];
+    let child03 = constraintService.rootConstraint.children[1];
     expect(child03.className).toEqual('ConceptConstraint');
     expect(child03['concept']).toBeDefined();
     expect(child03['concept']['code']).toEqual('VSIGN:HR');
     expect(child03['negated']).toEqual(true);
-
-    expect(constraintService.rootExclusionConstraint.children.length).toEqual(0);
 
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
@@ -208,8 +206,7 @@ describe('Integration test for cohort saving and restoring', () => {
       .then(() => {
         cohortService.clearAll()
           .then(() => {
-            expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
-            expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
+            expect(constraintService.rootConstraint.children.length).toBe(0);
             expect(cohortService.isDirty).toBe(false);
           });
         expect(cohortService.isDirty).toBe(true);

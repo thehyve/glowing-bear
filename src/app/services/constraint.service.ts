@@ -41,8 +41,7 @@ import {Subject} from 'rxjs';
 })
 export class ConstraintService {
 
-  private _rootInclusionConstraint: CombinationConstraint;
-  private _rootExclusionConstraint: CombinationConstraint;
+  private _rootConstraint: CombinationConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -116,13 +115,10 @@ export class ConstraintService {
               private studyService: StudyService,
               private resourceService: ResourceService) {
 
-    // Initialize the root inclusion and exclusion constraints in the 1st step
-    this.rootInclusionConstraint = new CombinationConstraint();
-    this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.mark = ConstraintMark.SUBJECT;
-    this.rootExclusionConstraint = new CombinationConstraint();
-    this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
+    // Initialize the root constraints in the cohort selection
+    this.rootConstraint = new CombinationConstraint();
+    this.rootConstraint.isRoot = true;
+    this.rootConstraint.mark = ConstraintMark.SUBJECT;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -269,77 +265,18 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------ constraint generation
    */
+
   /**
-   * Generate the constraint for retrieving the patients with only the inclusion criteria
+   * Get the constraint based on the current cohort selection criteria
    * @returns {Constraint}
    */
-  public inclusionConstraint(): Constraint {
-    let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
-    return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
-      inclusionConstraint : new TrueConstraint();
-  }
-
-  public hasExclusionConstraint(): Boolean {
-    return ConstraintHelper.hasNonEmptyChildren(this.rootExclusionConstraint);
-  }
-
-  /**
-   * Generate the constraint for retrieving the patients with the exclusion criteria,
-   * but also in the inclusion set
-   * @returns {CombinationConstraint}
-   */
-  public exclusionConstraint(): Constraint {
-    if (this.hasExclusionConstraint()) {
-      // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.inclusionConstraint();
-      let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-
-      let combination = new CombinationConstraint();
-      combination.addChild(inclusionConstraint);
-      combination.addChild(exclusionConstraint);
-      return combination;
-    } else {
-      return undefined;
+  public cohortSelectionConstraint(): Constraint {
+    let constraint = <Constraint>this.rootConstraint;
+    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
+      constraint = new TrueConstraint();
     }
-  }
-
-  /**
-   * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
-   * @returns {Constraint}
-   */
-  public cohortConstraint(): Constraint {
-    let resultConstraint: Constraint; console.log('root inclusion')
-    let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
-    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-    let trueInclusion = false;
-    // Inclusion part
-    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint)) {
-      inclusionConstraint = new TrueConstraint();
-      trueInclusion = true;
-    }
-
-    // Only use exclusion if there's something there
-    if (ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>exclusionConstraint)) {
-      // Wrap exclusion in negation
-      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
-
-      // If there is some constraint other than a true constraint in the inclusion,
-      // form a proper combination constraint to return
-      if (!trueInclusion) {
-        let combination = new CombinationConstraint();
-        combination.combinationState = CombinationState.And;
-        combination.addChild(inclusionConstraint);
-        combination.addChild(negatedExclusionConstraint);
-        resultConstraint = combination;
-      } else {
-        resultConstraint = negatedExclusionConstraint;
-      }
-    } else {
-      // Otherwise just return the inclusion part
-      resultConstraint = inclusionConstraint;
-    }
-    resultConstraint.mark = ConstraintMark.SUBJECT;
-    return resultConstraint;
+    constraint.mark = ConstraintMark.SUBJECT;
+    return constraint;
   }
 
   /**
@@ -373,8 +310,7 @@ export class ConstraintService {
    * Clear the patient constraints
    */
   public clearCohortConstraint() {
-    this.rootInclusionConstraint.children.length = 0;
-    this.rootExclusionConstraint.children.length = 0;
+    this.rootConstraint.children.length = 0;
   }
 
   public restoreCohortConstraint(constraint: Constraint) {
@@ -386,21 +322,21 @@ export class ConstraintService {
         let negationConstraint =
           <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
         negationConstraint.constraint.negated = true;
-        this.rootInclusionConstraint.addChild(negationConstraint.constraint);
+        this.rootConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
         this.restoreCohortConstraint(remainingConstraint);
       } else {
         for (let child of children) {
-          this.rootInclusionConstraint.addChild(child);
+          this.rootConstraint.addChild(child);
         }
-        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
+        this.rootConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.className === 'NegationConstraint') {
       (<NegationConstraint>constraint).constraint.negated = true;
-      this.rootInclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
+      this.rootConstraint.addChild((<NegationConstraint>constraint).constraint);
     } else if (constraint.className !== 'TrueConstraint') {
-      this.rootInclusionConstraint.addChild(constraint);
+      this.rootConstraint.addChild(constraint);
     }
   }
 
@@ -454,20 +390,26 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this._rootInclusionConstraint;
+
+  // get the combination of cohort constraint and variable constraint
+  get combination(): CombinationConstraint {
+    return new CombinationConstraint(
+      [this.cohortSelectionConstraint(), this.variableConstraint()],
+      CombinationState.And,
+      ConstraintMark.OBSERVATION
+    );
   }
 
-  set rootInclusionConstraint(value: CombinationConstraint) {
-    this._rootInclusionConstraint = value;
+  get isTreeNodesLoading(): boolean {
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this._rootExclusionConstraint;
+  get rootConstraint(): CombinationConstraint {
+    return this._rootConstraint;
   }
 
-  set rootExclusionConstraint(value: CombinationConstraint) {
-    this._rootExclusionConstraint = value;
+  set rootConstraint(value: CombinationConstraint) {
+    this._rootConstraint = value;
   }
 
   get allConstraints(): Constraint[] {
