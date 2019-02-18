@@ -12,11 +12,12 @@ import {ResourceService} from '../../services/resource.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {CohortService} from '../../services/cohort.service';
-import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
 import {AppConfig} from '../../config/app.config';
-import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
-import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
 import {FractalisService} from '../../services/fractalis.service';
+import {TransmartResourceService} from '../../services/transmart-resource.service';
+import {TransmartPackerHttpService} from '../../services/http/transmart-packer-http.service';
+import {TransmartHttpService} from '../../services/http/transmart-http.service';
+import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
 
 @Component({
   selector: 'gb-main',
@@ -28,6 +29,7 @@ export class GbMainComponent implements OnInit {
   constructor(private appConfig: AppConfig,
               private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
+              private gbBackendHttpService: GbBackendHttpService,
               private transmartResourceService: TransmartResourceService,
               private transmartHttpService: TransmartHttpService,
               private transmartPackerHttpService: TransmartPackerHttpService,

@@ -11,9 +11,9 @@ import {tap, switchMap} from 'rxjs/operators';
 import {Injectable, Injector} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {AppConfig} from '../config/app.config';
-import {AuthenticationService} from './authentication/authentication.service';
-import {AuthorizationResult} from './authentication/authorization-result';
+import {AppConfig} from '../../config/app.config';
+import {AuthenticationService} from '../authentication/authentication.service';
+import {AuthorizationResult} from '../authentication/authorization-result';
 
 @Injectable({
   providedIn: 'root'
@@ -36,13 +36,7 @@ export class ApiHttpInterceptor implements HttpInterceptor {
       this.appConfig = this.injector.get(AppConfig);
     }
 
-    // skip if request is for config, or if not for API and not for external job service
-    if (  req.url.includes(AppConfig.path) ||
-      (  !req.url.includes(this.appConfig.getConfig('api-url')) &&
-         !(this.appConfig.getConfig('export-mode')['name'] !== 'transmart' ?
-           req.url.includes(this.appConfig.getConfig('export-mode')['export-url']) : false)
-      ) || req.url.endsWith('/oauth/token')
-    ) {
+    if (this.authorizationNotRequiredForUrl(req.url)) {
       return next.handle(req);
     }
 
@@ -65,6 +59,17 @@ export class ApiHttpInterceptor implements HttpInterceptor {
         }));
       }
     }));
+  }
+
+  private authorizationNotRequiredForUrl(url: string) {
+    // skip if request is for config, or if not for: API, external job service, gb backend application
+    return url.includes(AppConfig.path)
+      || (
+          !url.includes(this.appConfig.getConfig('gb-backend-url'))
+          && !url.includes(this.appConfig.getConfig('api-url'))
+          && !(this.appConfig.getConfig('export-mode')['name'] !== 'transmart' ?
+              url.includes(this.appConfig.getConfig('export-mode')['export-url']) : false))
+      || url.endsWith('/oauth/token');
   }
 
   private addAPIHeaders(req: HttpRequest<any>): HttpRequest<any> {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,9 +9,9 @@
 import {CohortSubscriptionFrequency} from '../cohort-models/cohort-subscription-frequency';
 
 /**
- * Representation of a query model returned from tranSMART
+ * Representation of a query model returned from gb-backend
  */
-export class TransmartQuery {
+export class GbBackendQuery {
 
   public id?: string;
   public name?: string;
@@ -22,9 +22,7 @@ export class TransmartQuery {
   // Indicate if the set is bookmarked
   public bookmarked?: boolean;
   // The patient constraint part of the query
-  public patientsQuery?: object;
-  // The observation constraint part of the query
-  public observationsQuery?: { data: string[] };
+  public queryConstraint?: object;
   // Additional information about the query, e.g. a data table state
   public queryBlob?: object;
   // Rest API version
@@ -33,10 +31,14 @@ export class TransmartQuery {
   public subscribed?: boolean;
   // The frequency of the subscription: daily or monthly
   public subscriptionFreq?: CohortSubscriptionFrequency;
+  // Type of the cohort, specifies a subject dimension that the cohort is related to
+  // and (optionally) the type of subjects for the subscription
+  public type: string;
 
   constructor(queryName: string) {
     this.name = queryName;
     this.bookmarked = false;
     this.subscribed = false;
+    this.type = 'patient' // TODO TMT-729
   }
 }

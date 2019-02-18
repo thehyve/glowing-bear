@@ -21,13 +21,16 @@ import {Pedigree} from '../models/constraint-models/pedigree';
 import {Cohort} from '../models/cohort-models/cohort';
 import {AppConfigMock} from '../config/app.config.mock';
 import {AppConfig} from '../config/app.config';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {GbBackendHttpService} from './http/gb-backend-http.service';
+import {GbBackendHttpServiceMock} from './mocks/gb-backend-http.service.mock';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
+  let gbBackendHttpService: GbBackendHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,6 +41,10 @@ describe('ResourceService', () => {
           useClass: TransmartResourceServiceMock
         },
         {
+          provide: GbBackendHttpService,
+          useClass: GbBackendHttpServiceMock
+        },
+        {
           provide: AppConfig,
           useClass: AppConfigMock
         }
@@ -45,6 +52,7 @@ describe('ResourceService', () => {
     });
     resourceService = TestBed.get(ResourceService);
     transmartResourceService = TestBed.get(TransmartResourceService);
+    gbBackendHttpService = TestBed.get(GbBackendHttpService);
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -207,6 +215,7 @@ describe('ResourceService', () => {
   });
 
   it('should get cohorts', () => {
+    const getQueriesSpy = spyOn(gbBackendHttpService, 'getQueries').and.callThrough();
     resourceService.getCohorts()
       .subscribe((res: Cohort[]) => {
         expect(res.length).toBe(2);
@@ -219,6 +228,7 @@ describe('ResourceService', () => {
       }, err => {
         expect(err).toBeDefined();
       });
+    expect(getQueriesSpy).toHaveBeenCalled();
   });
 
   it('should get subjects', () => {

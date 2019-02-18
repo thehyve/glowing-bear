@@ -142,6 +142,12 @@ describe('AppConfig', () => {
       expect(e.message).toBeDefined();
     }
     try {
+      appConfig.getConfig('gb-backend-url');
+      fail('The call to get gb-backend-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
+      try {
       appConfig.getConfig('fractalis-url');
       fail('The call to get fractalis-url config should not succeed.');
     } catch (e) {

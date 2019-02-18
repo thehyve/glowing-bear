@@ -20,7 +20,7 @@ import {TransmartCountItem} from '../../models/transmart-models/transmart-count-
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
@@ -69,139 +69,6 @@ export class TransmartResourceServiceMock {
     p2.label = 'DZ';
     let pedigrees: Pedigree[] = [p1, p2];
     return observableOf(pedigrees);
-  }
-
-  getQueries(): Observable<TransmartQuery[]> {
-    let q1: TransmartQuery = new TransmartQuery('dt');
-    q1.bookmarked = false;
-    q1.createDate = '2018-07-03T13:18:31Z';
-    q1.subscribed = false;
-    q1.subscriptionFreq = null;
-    q1.updateDate = '2018-07-03T13:18:31Z';
-    q1.observationsQuery = {
-      data: ['\\Public Studies\\CATEGORICAL_VALUES\\Demography\\Race\\']
-    };
-    q1.patientsQuery = {type: 'true'};
-    q1.queryBlob = {
-      dataTableState: {
-        columnDimensions: ['study'],
-        columnSort: [],
-        rowDimensions: ['patient', 'concept'],
-        rowSort: []
-      }
-    };
-    q1.queryBlob = {
-      patientsQueryFull: q1.patientsQuery
-    };
-    let q2: TransmartQuery = new TransmartQuery('test');
-    q2.bookmarked = false;
-    q2.createDate = '2018-07-04T10:08:33Z';
-    q2.subscribed = false;
-    q2.subscriptionFreq = null;
-    q2.updateDate = '2018-07-04T10:08:33Z';
-    q2.observationsQuery = {
-      data: [
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Age\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Gender\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\']
-    };
-    q2.patientsQuery = {
-      type: 'and',
-      args: [
-        {
-          constraint: {
-            type: 'or',
-            args: [
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'SCSCP:DEM:AGE',
-                      conceptPath: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      name: 'Age',
-                      type: 'concept',
-                      valueType: 'NUMERIC'
-                    },
-                    {
-                      operator: '<=',
-                      type: 'value',
-                      value: 35,
-                      valueType: 'NUMERIC'
-                    }
-                  ]
-                }
-              },
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'O1KP:CAT8',
-                      conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      name: 'categorical_8',
-                      type: 'concept',
-                      valueType: 'CATEGORICAL'
-                    },
-                    {
-                      type: 'or',
-                      args: [
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Heart',
-                          valueType: 'STRING'
-                        },
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Liver',
-                          valueType: 'STRING'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          dimension: 'patient',
-          type: 'subselection'
-        },
-        {
-          arg: {
-            type: 'subselection',
-            dimension: 'patient',
-            constraint: {
-              conceptCode: 'VSIGN:HR',
-              conceptPath: '\\Vital Signs\\Heart Rate\\',
-              fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Vital Signs\\Heart Rate\\',
-              name: 'Heart Rate',
-              type: 'concept',
-              valueType: 'NUMERIC'
-            }
-          },
-          type: 'negation'
-        }
-      ]
-    };
-    q2.queryBlob = {
-      dataTableState: {
-        columnDimensions: [],
-        columnSort: [],
-        rowDimensions: ['patient', 'study', 'concept'],
-        rowSort: []
-      },
-      patientsQueryFull: q2.patientsQuery
-    };
-    let queries: TransmartQuery[] = [q1, q2];
-    return observableOf(queries);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {

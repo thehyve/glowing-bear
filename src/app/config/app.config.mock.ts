@@ -16,6 +16,7 @@ export class AppConfigMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'fractalis-datasource-url': 'https://transmart.example.com',
       'enable-fractalis-analysis': true,
@@ -76,6 +77,7 @@ export class AppConfigPackerMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
@@ -108,6 +110,7 @@ export class AppConfigSurveyExportMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
@@ -139,6 +142,7 @@ export class AppConfigFractalisDisabledMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'enable-fractalis-analysis': false,
       'authentication-service-type': 'transmart',

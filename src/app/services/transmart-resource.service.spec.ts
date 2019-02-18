@@ -1,25 +1,25 @@
 import {inject, TestBed} from '@angular/core/testing';
 import {of as observableOf} from 'rxjs';
 import {TransmartResourceService} from './transmart-resource.service';
-import {AppConfig} from '../../config/app.config';
-import {AppConfigMock} from '../../config/app.config.mock';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {Concept} from '../../models/constraint-models/concept';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {TransmartHttpService} from './transmart-http.service';
-import {TransmartHttpServiceMock} from '../mocks/transmart-http.service.mock';
-import {TransmartPackerHttpService} from './transmart-packer-http.service';
-import {TransmartPackerHttpServiceMock} from '../mocks/transmart-packer-http.service.mock';
-import {DataTable} from '../../models/table-models/data-table';
-import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {TransmartStudyDimensions} from '../../models/transmart-models/transmart-study-dimensions';
-import {Dimension} from '../../models/table-models/dimension';
-import {ExportDataType} from '../../models/export-models/export-data-type';
-import {ExportFileFormat} from '../../models/export-models/export-file-format';
-import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
-import {SubjectSet} from '../../models/constraint-models/subject-set';
-import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock} from '../config/app.config.mock';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {Concept} from '../models/constraint-models/concept';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
+import {TransmartHttpService} from './http/transmart-http.service';
+import {TransmartHttpServiceMock} from './mocks/transmart-http.service.mock';
+import {TransmartPackerHttpService} from './http/transmart-packer-http.service';
+import {TransmartPackerHttpServiceMock} from './mocks/transmart-packer-http.service.mock';
+import {DataTable} from '../models/table-models/data-table';
+import {TrueConstraint} from '../models/constraint-models/true-constraint';
+import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
+import {Dimension} from '../models/table-models/dimension';
+import {ExportDataType} from '../models/export-models/export-data-type';
+import {ExportFileFormat} from '../models/export-models/export-file-format';
+import {NegationConstraint} from '../models/constraint-models/negation-constraint';
+import {SubjectSet} from '../models/constraint-models/subject-set';
+import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 
 describe('TransmartResourceService', () => {
 
