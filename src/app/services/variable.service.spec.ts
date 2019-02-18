@@ -187,11 +187,9 @@ describe('VariableService', () => {
     n['type'] = 'CATEGORICAL';
     const selectedNodes = [n];
     spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
-    variableService.selectedVariablesTreeUpdated.asObservable().subscribe(_ => {
-      expect(dummyVariables[0].selected).toBe(false);
-      expect(dummyVariables[1].selected).toBe(true);
-    });
-    variableService.selectedVariablesTreeUpdated.next(selectedNodes);
+    variableService['updateSelectedVariablesWithTreeNodes'](selectedNodes);
+    expect(dummyVariables[0].selected).toBe(false);
+    expect(dummyVariables[1].selected).toBe(true);
   });
 
   it('should update selected tree nodes in tree view when variables in category view are checked',
