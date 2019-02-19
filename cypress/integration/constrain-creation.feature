@@ -6,7 +6,12 @@ Feature: create constraints by selecting nodes from the tree
     When I use public study 'CATEGORICAL_VALUES ' as a constraint
     Then there are '3' subjects
 
-  Scenario: create a constraint with negation
+  Scenario: create a constraint with concept negation
+    Given I am on the cohort-selection tab
+    When I select study Oracle_1000_Patient but exclude from categorical_10, Stomach, Lung, Head, Liver
+    Then there are '654' subjects
+
+  Scenario: create a constraint with study negation
     Given I am on the cohort-selection tab
     When  I use public study 'EHR' and negation of study 'CATEGORICAL_VALUES' as a constraint
     Then there are '3' subjects
@@ -21,11 +26,6 @@ Feature: create constraints by selecting nodes from the tree
     Given I am on the cohort-selection tab
     When I select all female patients from CATEGORICAL_VALUES
     Then there are '1' subjects
-
-  Scenario: create a constraint with exclusion
-    Given I am on the cohort-selection tab
-    When I select study Oracle_1000_Patient but exclude from categorical_10, Stomach, Lung, Head, Liver
-    Then there are '654' subjects
 
   Scenario: create a constraint with or
     Given I am on the cohort-selection tab

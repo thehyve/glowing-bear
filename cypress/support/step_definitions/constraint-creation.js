@@ -8,7 +8,7 @@ when("I use public study {string} as a constraint", (studyName) => {
 });
 
 then("there are {string} subjects", (subjects) => {
-  cy.get('.subject-count-box').eq(2).should('contain', subjects);
+  cy.get('.subject-count-box').eq(0).should('contain', subjects);
 });
 
 when("I select all female patients from CATEGORICAL_VALUES", () => {
@@ -26,7 +26,7 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
   cy.toggleNode('Oracle_1000_Patient ')
     .toggleNode('Categorical_locations ');
 
-  cy.drag('categorical_10 ').drop(1);
+  cy.drag('categorical_10 ').drop(0);
 
   cy.contains('Stomach').should('not.be.visible');
   cy.get('label').contains('9 items selected').should('be.visible');
@@ -40,6 +40,8 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
 
   cy.get('label').contains('4 items selected').should('be.visible');
   cy.get('label').contains('4 items selected').click();
+
+  cy.get('.ui-inputswitch-slider').eq(1).click();
 
   cy.get('.update-btn').eq(0).click();
 });

@@ -7,8 +7,7 @@ given("I am logged in as {string}", (user) => {
   cy.fixture(user).as("user");
   cy.login();
   cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
-  cy.contains("Inclusion criteria").should('be.visible');
-  cy.contains("Exclusion criteria").should('be.visible');
+  cy.contains("Summary:").should('be.visible');
 });
 
 given("I am on the cohort-selection tab", () => {

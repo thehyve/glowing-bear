@@ -55,7 +55,6 @@ export class TransmartResourceService {
   private _useExternalExportJob: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
   private _counts: TransmartCountItem;
-  private _exclusionCounts: TransmartCountItem;
 
   constructor(private appConfig: AppConfig,
               private transmartHttpService: TransmartHttpService,
