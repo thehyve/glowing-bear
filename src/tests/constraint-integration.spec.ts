@@ -108,6 +108,7 @@ describe('Integration tests for constraint composing', () => {
 
     fixture = TestBed.createComponent(GbCombinationConstraintComponent);
     combiComponent = fixture.componentInstance;
+    rootConstraint.children.length = 0;
     combiComponent.constraint = rootConstraint;
     fixture.detectChanges();
   });
@@ -132,12 +133,50 @@ describe('Integration tests for constraint composing', () => {
     // when instantCohortUpdate is on
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;
-    const spyResource = spyOn(resourceService, 'updateInclusionExclusionCounts').and.returnValue(
-      new Promise<any>(resolve => resolve(true))
-    );
     spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
       .and.returnValue(rootConstraint);
     combiComponent.onDrop(event);
     expect(constraintService.rootInclusionConstraint.children.length).toBe(2);
+  });
+
+  it('should accept drop of a leaf tree node without constraint field', () => {
+    let node: TreeNode = {};
+    node['visualAttributes'] = ['foo', 'LEAF'];
+    node['name'] = 'name';
+    node['fullName'] = 'full\\name';
+    node['conceptPath'] = 'full\\name';
+    node['conceptCode'] = 'code';
+    spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
+    cohortService.instantCohortCountsUpdate = true;
+    cohortService.isDirty = false;
+    spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
+      .and.returnValue(rootConstraint);
+    combiComponent.onDrop(event);
+    expect(constraintService.rootInclusionConstraint.children.length).toBe(1);
+  });
+
+  it('should accept drop of a tree node with UNKNOWN type', () => {
+    let node: TreeNode = {};
+    node['type'] = 'UNKNOWN';
+    let studyNode: TreeNode = {};
+    studyNode['type'] = 'STUDY';
+    studyNode['constraint'] = {
+      studyId: 'foobar'
+    };
+    let leafNode: TreeNode = {};
+    leafNode['visualAttributes'] = ['foo', 'LEAF'];
+    leafNode['name'] = 'name';
+    leafNode['fullName'] = 'full\\name';
+    leafNode['conceptPath'] = 'full\\name';
+    leafNode['conceptCode'] = 'code';
+    studyNode['children'] = [leafNode];
+    node['children'] = [studyNode];
+    spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
+    cohortService.instantCohortCountsUpdate = true;
+    cohortService.isDirty = false;
+    spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
+      .and.returnValue(rootConstraint);
+    combiComponent.onDrop(event);
+    expect(constraintService.rootInclusionConstraint.children.length).toBe(1);
   });
 });
