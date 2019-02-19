@@ -41,9 +41,8 @@ import {Md2AccordionModule} from 'md2';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
-import {CountItem} from '../app/models/aggregate-models/count-item';
 
-fdescribe('Integration tests for constraint composing', () => {
+describe('Integration tests for constraint composing', () => {
   let combiComponent: GbCombinationConstraintComponent;
   let fixture: ComponentFixture<GbCombinationConstraintComponent>;
   let constraintService: ConstraintService;
