@@ -16,10 +16,11 @@ import {StudyService} from './study.service';
 import {StudyServiceMock} from './mocks/study.service.mock';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {StudyConstraint} from '../models/constraint-models/study-constraint';
-import {VariablesViewMode} from '../models/variables-view-mode';
 import {Concept} from '../models/constraint-models/concept';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {Constraint} from '../models/constraint-models/constraint';
+import {TreeNode} from 'primeng/api';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
@@ -83,5 +84,17 @@ describe('ConstraintService', () => {
       .filter(c => c instanceof ConceptConstraint).length)
       .toBe(1);
   });
+
+  it('should calculate the depth of a constraint', () => {
+    let c111 = new Constraint();
+    let c11 = new Constraint();
+    let c1 = new Constraint();
+    c111.parentConstraint = c11;
+    c11.parentConstraint = c1;
+    const d1 = constraintService.depthOfConstraint(c111);
+    expect(d1).toBe(2);
+    const d2 = constraintService.depthOfConstraint(c11);
+    expect(d2).toBe(1);
+  })
 
 });

@@ -44,7 +44,7 @@ export class TreeNodeService {
   // This field holds the processed concept codes during tree loading, not used anywhere else
   private processedConceptCodes: string[] = [];
 
-  public selectedTreeNode: TreeNode = null;
+  private _selectedTreeNode: TreeNode = null;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -491,4 +491,11 @@ export class TreeNodeService {
     this._showObservationCounts = value;
   }
 
+  get selectedTreeNode(): TreeNode {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: TreeNode) {
+    this._selectedTreeNode = value;
+  }
 }

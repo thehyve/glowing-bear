@@ -313,7 +313,7 @@ export class ConstraintService {
    * @returns {Constraint}
    */
   public cohortConstraint(): Constraint {
-    let resultConstraint: Constraint;
+    let resultConstraint: Constraint; console.log('root inclusion')
     let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
     let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
     let trueInclusion = false;
