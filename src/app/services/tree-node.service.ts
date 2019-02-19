@@ -17,9 +17,9 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
-import {AppConfig} from '../config/app.config';
 import {FormatHelper} from '../utilities/format-helper';
 import {Subject} from 'rxjs';
+import {CountService} from './count.service';
 
 @Injectable({
   providedIn: 'root',
@@ -38,18 +38,14 @@ export class TreeNodeService {
   // the status indicating the when the tree is being loaded or finished loading
   private _validTreeNodeTypes: string[] = [];
 
-  // Flag indicating if the observation counts are calculated and shown
-  private _showObservationCounts: boolean;
-
   // This field holds the processed concept codes during tree loading, not used anywhere else
   private processedConceptCodes: string[] = [];
 
   private _selectedTreeNode: TreeNode = null;
 
-  constructor(private appConfig: AppConfig,
+  constructor(private countService: CountService,
               private resourceService: ResourceService,
               private injector: Injector) {
-    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
     this.validTreeNodeTypes = [
       'NUMERIC',
       'CATEGORICAL',
@@ -215,12 +211,12 @@ export class TreeNodeService {
       }
       // node count
       if (node['studyId']) {
-        let cmap = constraintService.studyConceptCountMap.get(node['studyId']);
+        let cmap = this.countService.studyConceptCountMap.get(node['studyId']);
         if (cmap) {
           nodeCountItem = cmap.get(node['conceptCode']);
         }
       } else {
-        nodeCountItem = constraintService.conceptCountMap.get(node['conceptCode']);
+        nodeCountItem = this.countService.conceptCountMap.get(node['conceptCode']);
       }
     } else {
       if (node['type'] === 'UNKNOWN') {
@@ -229,7 +225,7 @@ export class TreeNodeService {
       } else if (node['type'] === 'STUDY') {
         node['expandedIcon'] = 'icon-folder-study-open';
         node['collapsedIcon'] = 'icon-folder-study';
-        nodeCountItem = constraintService.studyCountMap.get(node['studyId']);
+        nodeCountItem = this.countService.studyCountMap.get(node['studyId']);
       }
       node['icon'] = '';
     }
@@ -481,14 +477,6 @@ export class TreeNodeService {
 
   set validTreeNodeTypes(value: string[]) {
     this._validTreeNodeTypes = value;
-  }
-
-  get showObservationCounts(): boolean {
-    return this._showObservationCounts;
-  }
-
-  set showObservationCounts(value: boolean) {
-    this._showObservationCounts = value;
   }
 
   get selectedTreeNode(): TreeNode {

@@ -34,6 +34,8 @@ import {ConstraintHelper} from '../../../../utilities/constraint-utilities/const
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {CountService} from '../../../../services/count.service';
+import {CountServiceMock} from '../../../../services/mocks/count.service.mock';
 
 describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
@@ -63,6 +65,10 @@ describe('GbCohortsComponent', () => {
         {
           provide: CohortService,
           useClass: CohortServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
         },
         ConfirmationService
       ]

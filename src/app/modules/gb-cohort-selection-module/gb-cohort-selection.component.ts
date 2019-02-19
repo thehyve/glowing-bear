@@ -17,6 +17,7 @@ import {FileImportHelper} from '../../utilities/file-import-helper';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Cohort} from '../../models/cohort-models/cohort';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {CountService} from '../../services/count.service';
 
 @Component({
   selector: 'gb-cohort-selection',
@@ -30,7 +31,8 @@ export class GbCohortSelectionComponent implements OnInit {
   public cohortName: string;
 
   constructor(private cohortService: CohortService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private countService: CountService) {
     this.cohortName = '';
   }
 
@@ -54,7 +56,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get subjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
+    return FormatHelper.formatCountNumber(this.countService.currentSelectionCount.subjectCount);
   }
 
   get rootConstraint(): CombinationConstraint {
@@ -62,7 +64,7 @@ export class GbCohortSelectionComponent implements OnInit {
   }
 
   get observationCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts.observationCount);
+    return FormatHelper.formatCountNumber(this.countService.currentSelectionCount.observationCount);
   }
 
   get isSavingCohortCompleted(): boolean {

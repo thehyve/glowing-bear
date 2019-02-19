@@ -26,10 +26,7 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
 import {StudyService} from './study.service';
-import {CountItem} from '../models/aggregate-models/count-item';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ErrorHelper} from '../utilities/error-helper';
-import {Subject} from 'rxjs';
+import {CountService} from './count.service';
 
 /**
  * This service concerns with
@@ -60,59 +57,9 @@ export class ConstraintService {
    */
   private _maxNumSearchResults = 100;
 
-  /**
-   * The map that holds the conceptCode -> count item relations
-   *  e.g.
-   * "EHR:DEM:AGE": {
-   *   "observationCount": 3,
-   *   "subjectCount": 3
-   *  },
-   * "EHR:VSIGN:HR": {
-   *  "observationCount": 9,
-   *  "subjectCount": 3
-   * }
-   */
-  private _conceptCountMap: Map<string, CountItem>;
-  /**
-   * The map that holds the studyId -> count item relations
-   * e.g.
-   * "MIX_HD": {
-   *   "observationCount": 12,
-   *   "subjectCount": 3
-   * }
-   */
-  private _studyCountMap: Map<string, CountItem>;
-  /**
-   * The map that holds the studyId -> conceptCode -> count item relations
-   * e.g.
-   * "SHARED_CONCEPTS_STUDY_A": {
-   *    "DEMO:POB": {
-   *        "observationCount": 2,
-   *        "subjectCount": 2
-   *    },
-   *    "VSIGN:HR": {
-   *        "observationCount": 3,
-   *        "subjectCount": 3
-   *    }
-   * }
-   */
-  private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
-
-  // the subset of _studyConceptCountMap that holds the selected maps,
-  // which corresponds to the selected cohort(s)
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  // the subset of _studyCountMap that holds the selected studies,
-  // which corresponds to the selected cohort(s)
-  private _selectedStudyCountMap: Map<string, CountItem>;
-  // the subset of _conceptCountMap that holds the selected maps,
-  // which corresponds to the selected cohort(s)
-  private _selectedConceptCountMap: Map<string, CountItem>;
-  // the async subject telling if the selectedConceptCountMap is updated
-  private _selectedConceptCountMapUpdated: Subject<Map<string, CountItem>>
-    = new Subject<Map<string, CountItem>>();
-
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
+              private countService: CountService,
               private resourceService: ResourceService) {
 
     // Initialize the root constraints in the cohort selection
@@ -126,7 +73,7 @@ export class ConstraintService {
     // create the pedigree-related constraints
     this.loadPedigrees();
     // construct concepts from loading the tree nodes
-    this.loadCountMaps()
+    this.countService.loadCountMaps()
       .then(() => {
         this.treeNodeService.load();
       })
@@ -176,63 +123,6 @@ export class ConstraintService {
         },
         err => console.error(err)
       );
-  }
-
-  /*
-   * ------------------------------------------------------------------------- countMap-related methods
-   */
-  loadCountMaps(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let promise1 = this.loadConceptCountMap();
-      let promise2 = this.loadStudyCountMap();
-      let promise3 = this.loadStudyConceptCountMap();
-      Promise.all([promise1, promise2, promise3])
-        .then(() => {
-          resolve(true);
-        })
-        .catch((err) => {
-          reject(err);
-        })
-    });
-  }
-
-  loadConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerConcept(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.conceptCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load concept count map from server.');
-        });
-    });
-  }
-
-  loadStudyCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudy(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.studyCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study count map from server.');
-        });
-    });
-  }
-
-  loadStudyConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
-        .subscribe((map: Map<string, Map<string, CountItem>>) => {
-          this.studyConceptCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study-concept count map from server.');
-        });
-    });
   }
 
   /**
@@ -460,60 +350,4 @@ export class ConstraintService {
     this._maxNumSearchResults = value;
   }
 
-  get conceptCountMap(): Map<string, CountItem> {
-    return this._conceptCountMap;
-  }
-
-  set conceptCountMap(value: Map<string, CountItem>) {
-    this._conceptCountMap = value;
-  }
-
-  get studyCountMap(): Map<string, CountItem> {
-    return this._studyCountMap;
-  }
-
-  set studyCountMap(value: Map<string, CountItem>) {
-    this._studyCountMap = value;
-  }
-
-  get studyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._studyConceptCountMap;
-  }
-
-  set studyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._studyConceptCountMap = value;
-  }
-
-  get selectedConceptCountMap(): Map<string, CountItem> {
-    return this._selectedConceptCountMap;
-  }
-
-  set selectedConceptCountMap(value: Map<string, CountItem>) {
-    this._selectedConceptCountMap = value;
-    this.selectedConceptCountMapUpdated.next(value);
-  }
-
-  get selectedConceptCountMapUpdated(): Subject<Map<string, CountItem>> {
-    return this._selectedConceptCountMapUpdated;
-  }
-
-  set selectedConceptCountMapUpdated(value: Subject<Map<string, CountItem>>) {
-    this._selectedConceptCountMapUpdated = value;
-  }
-
-  get selectedStudyCountMap(): Map<string, CountItem> {
-    return this._selectedStudyCountMap;
-  }
-
-  set selectedStudyCountMap(value: Map<string, CountItem>) {
-    this._selectedStudyCountMap = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
-  }
 }

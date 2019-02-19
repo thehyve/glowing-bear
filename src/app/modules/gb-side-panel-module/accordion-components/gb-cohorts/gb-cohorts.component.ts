@@ -19,6 +19,7 @@ import {FormatHelper} from '../../../../utilities/format-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {CountService} from '../../../../services/count.service';
 
 @Component({
   selector: 'gb-cohorts',
@@ -33,6 +34,7 @@ export class GbCohortsComponent implements OnInit {
   file: File; // holds the uploaded cohort file
 
   constructor(private cohortService: CohortService,
+              private countService: CountService,
               private element: ElementRef,
               private confirmationService: ConfirmationService) {
     this.isUploadListenerNotAdded = true;
@@ -243,7 +245,7 @@ export class GbCohortsComponent implements OnInit {
   }
 
   get subjectCountText(): string {
-    const count = this.cohortService.allCounts.subjectCount;
+    const count = this.countService.allCohortsCount.subjectCount;
     const countString = (this.cohortService.isUpdatingCurrent || this.cohortService.isUpdatingAll) ?
       '...' : FormatHelper.formatCountNumber(count);
     return count === 1 ? countString + ' subject selected' : countString + ' subjects selected';

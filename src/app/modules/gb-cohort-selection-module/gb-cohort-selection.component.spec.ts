@@ -13,6 +13,7 @@ import {
   AutoCompleteModule,
   CalendarModule,
   CheckboxModule,
+  InputSwitchModule,
   MessagesModule,
   OverlayPanelModule,
   TooltipModule,
@@ -21,20 +22,15 @@ import {
 import {Md2AccordionModule} from 'md2';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
-import {ResourceServiceMock} from '../../services/mocks/resource.service.mock';
-import {ResourceService} from '../../services/resource.service';
-import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
-import {TreeNodeService} from '../../services/tree-node.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {ConstraintServiceMock} from '../../services/mocks/constraint.service.mock';
 import {routing} from './gb-cohort-selection.routing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CohortService} from '../../services/cohort.service';
 import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
-import {DataTableService} from '../../services/data-table.service';
-import {DataTableServiceMock} from '../../services/mocks/data-table.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {InputSwitchModule} from 'primeng/primeng';
+import {CountService} from '../../services/count.service';
+import {CountServiceMock} from '../../services/mocks/count.service.mock';
 
 describe('GbCohortSelectionComponent', () => {
   let component: GbCohortSelectionComponent;
@@ -64,14 +60,6 @@ describe('GbCohortSelectionComponent', () => {
       ],
       providers: [
         {
-          provide: ResourceService,
-          useClass: ResourceServiceMock
-        },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
-        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
@@ -80,8 +68,8 @@ describe('GbCohortSelectionComponent', () => {
           useClass: CohortServiceMock
         },
         {
-          provide: DataTableService,
-          useClass: DataTableServiceMock
+          provide: CountService,
+          useClass: CountServiceMock
         }
       ]
     })

@@ -21,6 +21,7 @@ import {StudyService} from './study.service';
 import {AsyncSubject} from 'rxjs';
 import {AppConfig} from '../config/app.config';
 import {CohortService} from './cohort.service';
+import {CountService} from './count.service';
 import {VariableService} from './variable.service';
 
 @Injectable({
@@ -254,8 +255,8 @@ export class ExportService {
    */
   get isDataAvailable(): boolean {
     // Validate if at least one subject is included and variable nodes are selected
-    let cohortService = this.injector.get(CohortService);
-    return cohortService.counts.subjectCount > 0 &&
+    let countService = this.injector.get(CountService);
+    return countService.currentSelectionCount.subjectCount > 0 &&
       (this.variableService.selectedVariablesTree.length > 0 ||
         this.variableService.variables.filter(v => v.selected === true).length > 0);
   }

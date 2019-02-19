@@ -18,17 +18,16 @@ import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscr
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
-import {CountItem} from '../models/aggregate-models/count-item';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
-import {forkJoin, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
+import {CountService} from './count.service';
 
 /**
  * This service concerns with
- * (1) Updating subject and observation counts Cohort Selection
- * (2) Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
+ * Saving / Updating / Restoring / Deleting cohorts in the 'Cohorts' panel on the left
  *
  * workflow:
  * - when the user changes the constraint(s) inside gb-cohort-selection:
@@ -44,13 +43,6 @@ export class CohortService {
   private _currentCohort: Cohort;
   // The list of cohorts saved by the user
   private _cohorts: Cohort[] = [];
-  // the counts in the gb-cohort-selection, number of subjects matching a specified criteria
-  private _counts: CountItem;
-  // The total numbers of subjects & observations for all the cohorts
-  private _allCounts: CountItem;
-  // indicate when constraints are changed, whether to update counts immediately,
-  // used in gb-constraint-component
-  private _instantCohortCountsUpdate: boolean;
   // flag indicating if the current cohort is being updated (gb-cohort-selection)
   private _isUpdatingCurrent = false;
   // flag indicating if all the cohorts are being updated (gb-cohorts)
@@ -58,34 +50,29 @@ export class CohortService {
   // flag indicating if the current cohort constraint in gb-cohort-selection has been changed
   private _isDirty = true;
   private _cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
+  // indicate when constraints are changed, whether to update counts immediately,
+  // used in gb-constraint-component
+  private _instantCohortCountsUpdate: boolean;
 
   /*
    * ------ other variables ------
    */
-  // Flag indicating if the cohort subscription optioin for each cohort in the cohort panel should be included
+  // Flag indicating if the cohort subscription option for each cohort in the cohort panel should be included
   private _isCohortSubscriptionIncluded = false;
-  // Flag indicating if the observation counts are calculated and shown
-  private _showObservationCounts: boolean;
   // Flag indicating if saving a cohort is finished
   private _isSavingCohortCompleted = true;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
-              private constraintService: ConstraintService) {
-    this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
-    this.showObservationCounts = this.appConfig.getConfig('show-observation-counts');
+              private constraintService: ConstraintService,
+              private countService: CountService) {
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
-
-    this.initializeCounts();
+    this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.loadCohorts();
     // initial updates
     this.updateCountsWithCurrentCohort();
   }
 
-  initializeCounts() {
-    this.allCounts = new CountItem(0, 0);
-    this.counts = new CountItem(0, 0);
-  }
 
   clearAll(): Promise<any> {
     this.constraintService.clearCohortConstraint();
@@ -142,10 +129,8 @@ export class CohortService {
       if (this.isDirty) {
         this.isUpdatingCurrent = true;
         let constraint = this.constraintService.cohortSelectionConstraint();
-        this.resourceService.updateCohortSelectionCounts(constraint)
+        this.countService.updateCurrentSelectionCount(constraint)
           .then(() => {
-            let cohortSelectionCounts = this.resourceService.cohortSelectionCounts;
-            this.counts.subjectCount = cohortSelectionCounts.subjectCount;
             this.currentCohort.constraint = constraint;
             this.currentCohort.updateDate = new Date().toISOString();
             this.isUpdatingCurrent = false;
@@ -173,34 +158,26 @@ export class CohortService {
   }
 
   public updateCountsWithAllCohorts(): Promise<any> {
-    console.log('Updating counts from all cohorts...');
-    this.isUpdatingAll = true;
-    let combination: CombinationConstraint = new CombinationConstraint();
-    combination.combinationState = CombinationState.And;
-    combination.mark = ConstraintMark.SUBJECT;
-    this.cohorts.forEach((cohort: Cohort) => {
-      if (cohort.selected) {
-        combination.addChild(cohort.constraint);
-      }
-    });
-
     return new Promise((resolve, reject) => {
-      forkJoin(
-        this.resourceService.getCounts(combination),
-        this.resourceService.getCountsPerStudy(combination),
-        this.resourceService.getCountsPerStudyAndConcept(combination),
-        this.resourceService.getCountsPerConcept(combination)
-      ).subscribe(res => {
-        this.allCounts = res[0];
-        this.constraintService.selectedStudyCountMap = res[1];
-        this.constraintService.selectedStudyConceptCountMap = res[2];
-        this.constraintService.selectedConceptCountMap = res[3];
-        this.isUpdatingAll = false;
-        this.cohortsUpdated.next(this.cohorts);
-        resolve(true);
-      }, (err) => {
-        reject(err);
-      })
+      console.log('Updating counts from all cohorts...');
+      this.isUpdatingAll = true;
+      let combination: CombinationConstraint = new CombinationConstraint();
+      combination.combinationState = CombinationState.And;
+      combination.mark = ConstraintMark.SUBJECT;
+      this.cohorts.forEach((cohort: Cohort) => {
+        if (cohort.selected) {
+          combination.addChild(cohort.constraint);
+        }
+      });
+      return this.countService.updateAllCohortsCount(combination)
+        .then(() => {
+          this.isUpdatingAll = false;
+          this.cohortsUpdated.next(this.cohorts);
+          resolve(true);
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 
@@ -354,14 +331,6 @@ export class CohortService {
     this.editCohort(target, obj);
   }
 
-  get counts(): CountItem {
-    return this._counts;
-  }
-
-  set counts(value: CountItem) {
-    this._counts = value;
-  }
-
   get currentCohort(): Cohort {
     return this._currentCohort;
   }
@@ -376,14 +345,6 @@ export class CohortService {
 
   set cohorts(value: Cohort[]) {
     this._cohorts = value;
-  }
-
-  get instantCohortCountsUpdate(): boolean {
-    return this._instantCohortCountsUpdate;
-  }
-
-  set instantCohortCountsUpdate(value: boolean) {
-    this._instantCohortCountsUpdate = value;
   }
 
   get isDirty(): boolean {
@@ -410,14 +371,6 @@ export class CohortService {
     this._isUpdatingAll = value;
   }
 
-  get showObservationCounts(): boolean {
-    return this._showObservationCounts;
-  }
-
-  set showObservationCounts(value: boolean) {
-    this._showObservationCounts = value;
-  }
-
   get isSavingCohortCompleted(): boolean {
     return this._isSavingCohortCompleted;
   }
@@ -434,19 +387,19 @@ export class CohortService {
     this._isCohortSubscriptionIncluded = value;
   }
 
-  get allCounts(): CountItem {
-    return this._allCounts;
-  }
-
-  set allCounts(value: CountItem) {
-    this._allCounts = value;
-  }
-
   get cohortsUpdated(): Subject<Cohort[]> {
     return this._cohortsUpdated;
   }
 
   set cohortsUpdated(value: Subject<Cohort[]>) {
     this._cohortsUpdated = value;
+  }
+
+  get instantCohortCountsUpdate(): boolean {
+    return this._instantCohortCountsUpdate;
+  }
+
+  set instantCohortCountsUpdate(value: boolean) {
+    this._instantCohortCountsUpdate = value;
   }
 }
