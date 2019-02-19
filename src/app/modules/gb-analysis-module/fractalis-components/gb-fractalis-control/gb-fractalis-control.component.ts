@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,9 +9,9 @@ import {Component, OnInit} from '@angular/core';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {SelectItem} from 'primeng/api';
 import {ChartType} from '../../../../models/chart-models/chart-type';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
+import {VariableService} from '../../../../services/variable.service';
 
 @Component({
   selector: 'gb-fractalis-control',
@@ -23,7 +23,7 @@ export class GbFractalisControlComponent implements OnInit {
   dragCounter = 0;
 
   constructor(private fractalisService: FractalisService,
-              private constraintService: ConstraintService) {
+              private variableService: VariableService) {
   }
 
   ngOnInit() {
@@ -49,7 +49,7 @@ export class GbFractalisControlComponent implements OnInit {
     e.preventDefault();
     this.dragCounter = 0;
     this.fractalisService.clearValidation();
-    let variable = this.constraintService.identifyDraggedElement();
+    let variable = this.variableService.identifyDraggedElement();
     if (variable) {
       this.selectedVariables.push(variable);
       this.selectedVariablesUpdated.next(this.selectedVariables);
@@ -110,7 +110,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
+    return this.variableService.variablesDragDropScope;
   }
 
   get selectedVariables(): Concept[] {

@@ -1,11 +1,10 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {Injectable, Injector} from '@angular/core';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ConstraintService} from './constraint.service';
@@ -20,9 +19,9 @@ import {AccessLevel} from './authentication/access-level';
 import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
 import {AsyncSubject} from 'rxjs';
-import {TreeNodeService} from './tree-node.service';
 import {AppConfig} from '../config/app.config';
 import {CohortService} from './cohort.service';
+import {VariableService} from './variable.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +41,7 @@ export class ExportService {
               private authService: AuthenticationService,
               private studyService: StudyService,
               private dataTableService: DataTableService,
+              private variableService: VariableService,
               private injector: Injector) {
     this.authService.accessLevel.asObservable()
       .subscribe((level: AccessLevel) => {
@@ -72,19 +72,18 @@ export class ExportService {
           this.updateExportDataTypes();
         });
     } else {
-      this.constraintService.variablesUpdated.asObservable()
+      this.variableService.variablesUpdated.asObservable()
         .subscribe(() => {
           this.updateExportDataTypes();
         });
     }
-
   }
 
   private updateExportDataTypes() {
     console.log('update export data types');
     // update the export info
     this.isDataTypesUpdating = true;
-    this.resourceService.getExportDataTypes(this.constraintService.combination)
+    this.resourceService.getExportDataTypes(this.variableService.combination)
       .subscribe(dataTypes => {
           this.exportDataTypes = dataTypes;
           this.isDataTypesUpdating = false;
@@ -140,7 +139,7 @@ export class ExportService {
       this.resourceService.runExportJob(
         job,
         this.exportDataTypes,
-        this.constraintService.combination,
+        this.variableService.combination,
         this.dataTableService.dataTable,
         this.isTransmartDateColumnsIncluded
       )
@@ -256,10 +255,9 @@ export class ExportService {
   get isDataAvailable(): boolean {
     // Validate if at least one subject is included and variable nodes are selected
     let cohortService = this.injector.get(CohortService);
-    let treeNodeService = this.injector.get(TreeNodeService);
     return cohortService.counts.subjectCount > 0 &&
-      (treeNodeService.selectedVariablesTreeData.length > 0 ||
-        this.constraintService.variables.filter(v => v.selected === true).length > 0);
+      (this.variableService.selectedVariablesTree.length > 0 ||
+        this.variableService.variables.filter(v => v.selected === true).length > 0);
   }
 
   get isExternalExportAvailable(): boolean {

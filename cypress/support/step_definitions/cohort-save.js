@@ -78,8 +78,8 @@ given("there are no cohorts saved", () => {
               'url': Cypress.env('gb-backend-url') + '/queries/' + x,
               'method': 'DELETE',
               'auth': {'bearer': token}
-            })
-          })
+            });
+          });
         });
       })
   });

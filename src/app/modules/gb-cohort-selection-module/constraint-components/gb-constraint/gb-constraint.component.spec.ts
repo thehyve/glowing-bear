@@ -37,7 +37,7 @@ describe('GbConstraintComponent', () => {
         MockComponent({selector: 'gb-combination-constraint', inputs: ['constraint']}),
         MockComponent({selector: 'gb-study-constraint', inputs: ['constraint']}),
         MockComponent({selector: 'gb-concept-constraint', inputs: ['constraint']}),
-        MockComponent({selector: 'gb-patient-set-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-subject-set-constraint', inputs: ['constraint']}),
         MockComponent({selector: 'gb-pedigree-constraint', inputs: ['constraint']})
       ],
       providers: [

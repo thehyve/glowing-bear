@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +7,6 @@
  */
 
 import {TestBed, inject} from '@angular/core/testing';
-
 import {ExportService} from './export.service';
 import {ConstraintService} from './constraint.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
@@ -26,6 +25,8 @@ import {StudyServiceMock} from './mocks/study.service.mock';
 import {Observable} from 'rxjs';
 import {AppConfig} from '../config/app.config';
 import {AppConfigMock, AppConfigSurveyExportMock} from '../config/app.config.mock';
+import {VariableService} from './variable.service';
+import {VariableServiceMock} from './mocks/variable.service.mock';
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -63,6 +64,10 @@ describe('ExportService', () => {
         {
           provide: CohortService,
           useClass: CohortServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         ExportService
       ]
@@ -193,6 +198,10 @@ describe('ExportService with surveyTable', () => {
         {
           provide: CohortService,
           useClass: CohortServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         ExportService
       ]

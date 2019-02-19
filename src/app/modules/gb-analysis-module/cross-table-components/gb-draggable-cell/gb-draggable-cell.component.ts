@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,7 +9,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {CrossTableService} from '../../../../services/cross-table.service';
-import {ConstraintService} from '../../../../services/constraint.service';
+import {VariableService} from '../../../../services/variable.service';
 
 @Component({
   selector: 'gb-draggable-cell',
@@ -22,7 +22,7 @@ export class GbDraggableCellComponent implements OnInit {
   @Output() constraintCellRemoved: EventEmitter<any> = new EventEmitter();
 
   constructor(private crossTableService: CrossTableService,
-              private constraintService: ConstraintService) { }
+              private variableService: VariableService) { }
 
   ngOnInit() {
   }
@@ -37,6 +37,6 @@ export class GbDraggableCellComponent implements OnInit {
   }
 
   get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
+    return this.variableService.variablesDragDropScope;
   }
 }

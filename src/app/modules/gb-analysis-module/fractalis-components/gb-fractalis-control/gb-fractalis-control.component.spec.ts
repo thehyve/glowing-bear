@@ -5,8 +5,6 @@ import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
 import {DragDropModule, SelectButtonModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {ConstraintService} from '../../../../services/constraint.service';
 import {MatChipsModule, MatIconModule} from '@angular/material';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ChartType} from '../../../../models/chart-models/chart-type';
@@ -15,12 +13,14 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {By} from '@angular/platform-browser';
 import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
+import {VariableService} from '../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;
   let fixture: ComponentFixture<GbFractalisControlComponent>;
   let fractalisService: FractalisService;
-  let constraintService: ConstraintService;
+  let variableService: VariableService;
   let treeNodeService: TreeNodeService;
 
   beforeEach(async(() => {
@@ -40,13 +40,13 @@ describe('GbFractalisControlComponent', () => {
           useClass: FractalisServiceMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
-        },
-        {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock
         },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
+        }
       ]
     })
       .compileComponents();
@@ -54,7 +54,7 @@ describe('GbFractalisControlComponent', () => {
 
   beforeEach(() => {
     fractalisService = TestBed.get(FractalisService);
-    constraintService = TestBed.get(ConstraintService);
+    variableService = TestBed.get(VariableService);
     treeNodeService = TestBed.get(TreeNodeService);
     fixture = TestBed.createComponent(GbFractalisControlComponent);
     component = fixture.componentInstance;
@@ -91,7 +91,7 @@ describe('GbFractalisControlComponent', () => {
 
   it('should drop variable', () => {
     const dummy = new Concept();
-    constraintService.draggedVariable = dummy;
+    variableService.draggedVariable = dummy;
     component.onDropVariable(new DragEvent(''));
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
@@ -136,7 +136,7 @@ describe('GbFractalisControlComponent', () => {
 
   it('should identify categorized variable dragged', () => {
     const dummy = new Concept();
-    constraintService.draggedVariable = dummy;
+    variableService.draggedVariable = dummy;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
     component.onDropVariable(new DragEvent(''));
@@ -147,11 +147,11 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should identify tree node dragged', () => {
-    constraintService.draggedVariable = null;
+    variableService.draggedVariable = null;
     treeNodeService.selectedTreeNode = {} as TreeNode;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
-    let spy2 = spyOn(constraintService, 'identifyDraggedElement').and.callThrough();
+    let spy2 = spyOn(variableService, 'identifyDraggedElement').and.callThrough();
     component.onDropVariable(new DragEvent(''));
 
     expect(component.dragCounter).toBe(0);

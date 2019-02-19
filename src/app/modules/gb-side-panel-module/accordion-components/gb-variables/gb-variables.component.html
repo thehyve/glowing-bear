@@ -1,8 +1,13 @@
 <div>
-  <p-selectButton [options]="availableViewModes" [(ngModel)]="viewMode" styleClass="view-mode-button"></p-selectButton>
-
-  <!--Import criteria -->
   <div *ngIf="isExport">
+    <!-- check all checkbox -->
+    <span class="checkAllText">
+      <p-checkbox [(ngModel)]="allChecked" binary="true"
+                  (onChange)="checkAllVariables($event)"></p-checkbox>
+      {{checkAllText}}
+    </span>
+
+    <!--Import variables -->
     <div class="pull-right">
       <button class="btn btn-outline-primary import-btn"
               (click)="importVariables()"
@@ -13,6 +18,12 @@
                style="display: none"/>
       </button>
     </div>
+  </div>
+
+  <div class="variable-mode-selection-container">
+    <p-selectButton [options]="availableViewModes"
+                    [(ngModel)]="viewMode"
+                    tyleClass="view-mode-button"></p-selectButton>
   </div>
 
   <gb-variables-tree *ngIf="viewMode === VariablesViewMode.TREE_VIEW"></gb-variables-tree>

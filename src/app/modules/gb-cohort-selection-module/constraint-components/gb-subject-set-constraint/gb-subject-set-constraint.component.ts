@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,7 @@ import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 
 @Component({
-  selector: 'gb-patient-set-constraint',
+  selector: 'gb-subject-set-constraint',
   templateUrl: './gb-subject-set-constraint.component.html',
   styleUrls: ['./gb-subject-set-constraint.component.css']
 })

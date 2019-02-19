@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -95,7 +95,7 @@ export class GbConstraintComponent implements OnInit {
 
       let borderClassName = '';
       if (containerClassName === 'gb-constraint-container') {
-        const depth = ConstraintService.depthOfConstraint(this.constraint);
+        const depth = this.constraintService.depthOfConstraint(this.constraint);
         if (depth === 1) {
           borderClassName = 'gb-constraint-container-border-left-1';
         } else if (depth === 2) {

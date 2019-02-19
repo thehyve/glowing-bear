@@ -13,17 +13,17 @@ import {MockComponent} from 'ng2-mock-component';
 import {CrossTableService} from '../../../../services/cross-table.service';
 import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
 import {DragDropModule} from 'primeng/primeng';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
 import {TrueConstraint} from '../../../../models/constraint-models/true-constraint';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {VariableService} from '../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 
 describe('GbDroppableZoneComponent', () => {
   let component: GbDroppableZoneComponent;
   let fixture: ComponentFixture<GbDroppableZoneComponent>;
   let crossTableService: CrossTableService;
-  let constraintService: ConstraintService;
+  let variableService: VariableService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -40,8 +40,8 @@ describe('GbDroppableZoneComponent', () => {
           useClass: CrossTableServiceMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: VariableService,
+          useClass: VariableServiceMock
         }
       ]
     })
@@ -52,7 +52,7 @@ describe('GbDroppableZoneComponent', () => {
     fixture = TestBed.createComponent(GbDroppableZoneComponent);
     component = fixture.componentInstance;
     crossTableService = TestBed.get(CrossTableService);
-    constraintService = TestBed.get(ConstraintService);
+    variableService = TestBed.get(VariableService);
     fixture.detectChanges();
   });
 
@@ -93,12 +93,12 @@ describe('GbDroppableZoneComponent', () => {
   it('should conditionally update cross table when a constraint cell is dropped', () => {
     let mockEvent = new DragEvent('drop');
     crossTableService.selectedConstraintCell = null;
-    constraintService.draggedVariable = null;
+    variableService.draggedVariable = null;
     component.onDrop(mockEvent);
     expect(component.dragCounter).toEqual(0);
     expect(crossTableService.selectedConstraintCell).toBe(null);
 
-    constraintService.draggedVariable = new Concept();
+    variableService.draggedVariable = new Concept();
     let spy = spyOn(MessageHelper, 'alert').and.stub();
     component.onDrop(mockEvent);
     expect(spy).toHaveBeenCalledTimes(1);

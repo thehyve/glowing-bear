@@ -1,12 +1,4 @@
 <div>
-  <div *ngIf="isExport">
-    <div class="checkAllText">
-      <p-checkbox [ngModel]="allChecked" binary="true"
-                  (onChange)="checkAll($event)"></p-checkbox>
-      {{checkAllText}}
-    </div>
-  </div>
-
   <p-tree [value]="variablesTreeData"
           [selectionMode]="treeNodeSelectionMode"
           [(selection)]="selectedVariablesTreeData"

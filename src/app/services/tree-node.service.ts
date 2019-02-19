@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,10 +30,6 @@ export class TreeNodeService {
   private _treeNodes: TreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the variables panel
   private _treeNodesCopy: TreeNode[] = [];
-  // the tree data that is rendered in the variables panel
-  private _variablesTreeData: TreeNode[] = [];
-  // the selected tree data in the variables panel
-  private _selectedVariablesTreeData: TreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -48,7 +44,7 @@ export class TreeNodeService {
   // This field holds the processed concept codes during tree loading, not used anywhere else
   private processedConceptCodes: string[] = [];
 
-  public selectedTreeNode: TreeNode = null;
+  private _selectedTreeNode: TreeNode = null;
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -320,27 +316,7 @@ export class TreeNodeService {
     }
   }
 
-  /**
-   * Update the tree table data for rendering the tree table in variables panel,
-   * based on a given set of concept codes as filtering criteria.
-   * @param {Map<string, Map<string, CountItem>>} selectedStudyConceptCountMap
-   * @param {Map<string, CountItem>} selectedConceptCountMap
-   * @param {Map<string, CountItem>} selectedStudyCountMap
-   */
-  public updateVariablesTreeData(selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                 selectedConceptCountMap: Map<string, CountItem>,
-                                 selectedStudyCountMap: Map<string, CountItem>) {
-    // If the tree nodes copy is empty, create it by duplicating the tree nodes
-    if (this.treeNodesCopy.length === 0) {
-      this.treeNodesCopy = this.copyTreeNodes(this.treeNodes);
-    }
-    this.variablesTreeData =
-      this.updateVariablesTreeDataIterative(this.treeNodesCopy,
-        selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
-    this.selectedVariablesTreeData = [];
-  }
-
-  formatNodeWithCounts(node: TreeNode, countItem: CountItem): void {
+  public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
     let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
     if (this.showObservationCounts) {
       countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
@@ -348,59 +324,16 @@ export class TreeNodeService {
     node['label'] = `${node['name']} (${countsText})`;
   }
 
-  private updateVariablesTreeDataIterative(nodes: TreeNode[],
-                                           selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                           selectedConceptCountMap: Map<string, CountItem>,
-                                           selectedStudyCountMap: Map<string, CountItem>) {
-    let nodesWithCodes = [];
+  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
     for (let node of nodes) {
-      if (this.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
-        let countItem: CountItem = null;
-        let conceptMap = selectedStudyConceptCountMap ? selectedStudyConceptCountMap.get(node['studyId']) : null;
-        if (conceptMap && conceptMap.size > 0) {
-          node['expanded'] = false;
-          countItem = conceptMap.get(node['conceptCode']);
-        } else {
-          countItem = selectedConceptCountMap ? selectedConceptCountMap.get(node['conceptCode']) : null;
-        }
-        if (countItem && countItem.subjectCount > 0) {
-          this.formatNodeWithCounts(node, countItem);
-          nodesWithCodes.push(node);
-        }
-      } else if (node['children']) { // if the node is an intermediate node
-        let newNodeChildren =
-          this.updateVariablesTreeDataIterative(node['children'],
-            selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
-        if (newNodeChildren.length > 0) {
-          let nodeCopy = this.copyTreeNodeUpward(node);
-          nodeCopy['expanded'] = this.depthOfTreeNode(nodeCopy) <= 2;
-          nodeCopy['children'] = newNodeChildren;
-          if (nodeCopy['type'] === 'STUDY') {
-            const countItem = selectedStudyCountMap ? selectedStudyCountMap.get(nodeCopy['studyId']) : null;
-            if (countItem && countItem.subjectCount > 0) {
-              this.formatNodeWithCounts(node, countItem);
-              nodesWithCodes.push(nodeCopy);
-            }
-          } else {
-            // Always add intermediate nodes
-            nodesWithCodes.push(nodeCopy);
-          }
-        }
-      }
-    }
-    return nodesWithCodes;
-  }
-
-  public checkAllVariablesTreeDataIterative(nodes: TreeNode[]) {
-    for (let node of nodes) {
-      this.selectedVariablesTreeData.push(node);
+      flattened.push(node);
       if (node['children']) {
-        this.checkAllVariablesTreeDataIterative(node['children']);
+        this.flattenTreeNodes(node['children'], flattened);
       }
     }
   }
 
-  copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+  public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node['parent'];
@@ -424,7 +357,7 @@ export class TreeNodeService {
    * @param {TreeNode} node
    * @returns {TreeNode}
    */
-  copyTreeNodeUpward(node: TreeNode): TreeNode {
+  public copyTreeNodeUpward(node: TreeNode): TreeNode {
     let nodeCopy = {};
     let parentCopy = null;
     for (let key in node) {
@@ -440,7 +373,7 @@ export class TreeNodeService {
     return nodeCopy;
   }
 
-  private depthOfTreeNode(node: TreeNode): number {
+  public depthOfTreeNode(node: TreeNode): number {
     return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
@@ -469,6 +402,16 @@ export class TreeNodeService {
 
   public isTreeNodeLeaf(node: TreeNode): boolean {
     return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
+  }
+
+  public isVariableNode(node: TreeNode): boolean {
+    const treeNodeType = node['type'];
+    return (treeNodeType === 'NUMERIC' ||
+      treeNodeType === 'CATEGORICAL' ||
+      treeNodeType === 'CATEGORICAL_OPTION' ||
+      treeNodeType === 'DATE' ||
+      treeNodeType === 'HIGH_DIMENSIONAL' ||
+      treeNodeType === 'TEXT')
   }
 
   /**
@@ -500,47 +443,18 @@ export class TreeNodeService {
     });
   }
 
-  selectVariablesTreeNodesByPaths(nodes: TreeNode[], values: string[]) {
-    nodes.forEach((node: TreeNode) => {
-      if (node) {
-        const itemPath = node['fullName'];
-        if (values.includes(itemPath) && !this.selectedVariablesTreeData.includes(node)) {
-          this.selectedVariablesTreeData.push(node);
-        }
-        if (node['children']) {
-          this.selectVariablesTreeNodesByPaths(node['children'], values);
-        }
-      }
-    });
-  }
-
-  selectVariablesTreeNodesByNames(nodes: TreeNode[], values: string[]) {
-    nodes.forEach((node: TreeNode) => {
-      if (node) {
-        const itemName = (node['metadata'] || {})['item_name'];
-        if (values.includes(itemName) && !this.selectedVariablesTreeData.includes(node)) {
-          this.selectedVariablesTreeData.push(node);
-        }
-        if (node['children']) {
-          this.selectVariablesTreeNodesByNames(node['children'], values);
-        }
-      }
-    });
-  }
-
-
   public updateTreeNodeCounts() {
-    this.updateTreeNodeCountsIterative(this.treeNodes);
+    this.updateTreeNodeCountsRecursion(this.treeNodes);
   }
 
-  updateTreeNodeCountsIterative(nodes: TreeNode[]) {
+  private updateTreeNodeCountsRecursion(nodes: TreeNode[]) {
     nodes.forEach((node: TreeNode) => {
       if (node['subjectCount']) {
         let tail = node['metadata'] ? ' ⓘ ' : ' ';
         node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
       }
       if (node['children']) {
-        this.updateTreeNodeCountsIterative(node['children']);
+        this.updateTreeNodeCountsRecursion(node['children']);
       }
     });
   }
@@ -561,22 +475,6 @@ export class TreeNodeService {
     this._treeNodesCopy = value;
   }
 
-  get variablesTreeData(): TreeNode[] {
-    return this._variablesTreeData;
-  }
-
-  set variablesTreeData(value: TreeNode[]) {
-    this._variablesTreeData = value;
-  }
-
-  get selectedVariablesTreeData(): TreeNode[] {
-    return this._selectedVariablesTreeData;
-  }
-
-  set selectedVariablesTreeData(value: TreeNode[]) {
-    this._selectedVariablesTreeData = value;
-  }
-
   get validTreeNodeTypes(): string[] {
     return this._validTreeNodeTypes;
   }
@@ -593,4 +491,11 @@ export class TreeNodeService {
     this._showObservationCounts = value;
   }
 
+  get selectedTreeNode(): TreeNode {
+    return this._selectedTreeNode;
+  }
+
+  set selectedTreeNode(value: TreeNode) {
+    this._selectedTreeNode = value;
+  }
 }

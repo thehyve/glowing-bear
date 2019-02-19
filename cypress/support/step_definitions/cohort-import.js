@@ -10,10 +10,6 @@ then('Current cohort should contain {string}', (text) => {
   cy.get('.gb-constraint-container-root').contains(text);
 });
 
-then('I should see the message containing {string}', (msg) => {
-  cy.get('.ui-growl.ui-widget').contains(msg);
-});
-
 then('Inclusion criteria should contain {string}', (text) => {
   cy.get('.criteria-box').eq(0).contains(text);
 });

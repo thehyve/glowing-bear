@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +23,7 @@ import {AuthenticationService} from '../app/services/authentication/authenticati
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {AppConfig} from '../app/config/app.config';
+import {VariableService} from '../app/services/variable.service';
 
 describe('Integration test for data export', () => {
 
@@ -47,6 +48,7 @@ describe('Integration test for data export', () => {
           useClass: AuthenticationServiceMock
         },
         TreeNodeService,
+        VariableService,
         ConstraintService,
         DataTableService,
         CrossTableService,

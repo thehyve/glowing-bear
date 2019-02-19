@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@ import {TreeNode} from 'primeng/api';
 import {ConstraintService} from '../../../../../services/constraint.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
-import {DataTableService} from '../../../../../services/data-table.service';
+import {VariableService} from '../../../../../services/variable.service';
 
 @Component({
   selector: 'gb-variables-tree',
@@ -23,14 +23,13 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
   observer: MutationObserver;
 
   constructor(private navbarService: NavbarService,
+              private variableService: VariableService,
               private constraintService: ConstraintService,
               private treeNodeService: TreeNodeService,
-              private dataTableService: DataTableService,
               public element: ElementRef) {
   }
 
   ngOnInit() {
-    this.checkAll(true);
   }
 
   ngAfterViewInit() {
@@ -77,28 +76,16 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
     }
   }
 
-  checkVariables() {
-    this.dataTableService.isDirty = true;
-  }
-
-  checkAll(b: boolean) {
-    this.selectedVariablesTreeData = [];
-    if (b) {
-      this.treeNodeService.checkAllVariablesTreeDataIterative(this.variablesTreeData);
-    }
-    this.checkVariables();
-  }
-
   get variablesTreeData(): TreeNode[] {
-    return this.treeNodeService.variablesTreeData;
+    return this.variableService.variablesTree;
   }
 
   get selectedVariablesTreeData(): TreeNode[] {
-    return this.treeNodeService.selectedVariablesTreeData;
+    return this.variableService.selectedVariablesTree;
   }
 
   set selectedVariablesTreeData(value: TreeNode[]) {
-    this.treeNodeService.selectedVariablesTreeData = value;
+    this.variableService.selectedVariablesTree = value;
   }
 
   get isTreeNodeLoadingCompleted(): boolean {
@@ -114,22 +101,7 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
   }
 
   get variablesDragDropScope(): string {
-    return this.constraintService.variablesDragDropScope;
-  }
-
-  get checkAllText(): string {
-    let numSelected = this.numberOfSelected;
-    return numSelected === 1 ?
-      `${numSelected} variable selected` : `${numSelected} variables selected`;
-  }
-
-  get allChecked(): boolean {
-    return this.numberOfSelected === this.constraintService.variables.length;
-  }
-
-  get numberOfSelected(): number {
-    return this.selectedVariablesTreeData.filter(node =>
-      this.constraintService.isVariableNode(node.type)).length;
+    return this.variableService.variablesDragDropScope;
   }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -51,6 +51,8 @@ import {FractalisService} from '../../services/fractalis.service';
 import {FractalisServiceMock} from '../../services/mocks/fractalis.service.mock';
 import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
 import {GbBackendHttpServiceMock} from '../../services/mocks/gb-backend-http.service.mock';
+import {VariableService} from '../../services/variable.service';
+import {VariableServiceMock} from '../../services/mocks/variable.service.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -114,6 +116,10 @@ describe('GbMainComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         {
           provide: CohortService,

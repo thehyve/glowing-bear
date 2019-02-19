@@ -4,7 +4,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {VariablesViewMode} from '../../../../models/variables-view-mode';
 import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
-import {ConstraintService} from '../../../../services/constraint.service';
+import {VariableService} from '../../../../services/variable.service';
 
 @Component({
   selector: 'gb-variables',
@@ -13,26 +13,29 @@ import {ConstraintService} from '../../../../services/constraint.service';
 })
 export class GbVariablesComponent implements OnInit {
 
+  public allChecked: boolean;
+
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
 
-  private isUploadListenerNotAdded: boolean;
-  file: File; // holds the uploaded cohort file
+  public isUploadListenerNotAdded: boolean;
+  public file: File; // holds the uploaded cohort file
 
   private _availableViewModes: SelectItem[];
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private variableService: VariableService,
               private navbarService: NavbarService) {
+    this.allChecked = true;
     this.isUploadListenerNotAdded = true;
     this.viewMode = VariablesViewMode.TREE_VIEW;
     this.availableViewModes = this.listAvailableViewModes();
   }
 
   ngOnInit() {
+    this.checkAllVariables(true);
   }
 
   importVariables() {
-    MessageHelper.alert('info', 'File upload started. Processing...');
     let reader = new FileReader();
     reader.onload = this.handleVariablesFileUploadEvent.bind(this);
     FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
@@ -46,9 +49,9 @@ export class GbVariablesComponent implements OnInit {
     if (FileImportHelper.isJsonFile(this.file)) {
       let _json = JSON.parse(data);
       if (_json['names']) {
-        this.constraintService.importVariablesByNames(_json['names']);
+        this.variableService.importVariablesByNames(_json['names']);
       } else if (_json['paths']) {
-        this.constraintService.importVariablesByPaths(_json['paths']);
+        this.variableService.importVariablesByPaths(_json['paths']);
       } else {
         MessageHelper.alert('error', 'Invalid file content for variables import.');
         return;
@@ -57,7 +60,6 @@ export class GbVariablesComponent implements OnInit {
       MessageHelper.alert('error', 'Invalid file format for variables import.');
       return;
     }
-    MessageHelper.alert('info', 'File upload finished successfully!');
   }
 
   private listAvailableViewModes(): SelectItem[] {
@@ -69,11 +71,11 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get viewMode(): VariablesViewMode {
-    return this.constraintService.variablesViewMode;
+    return this.variableService.variablesViewMode;
   }
 
   set viewMode(value: VariablesViewMode) {
-    this.constraintService.variablesViewMode = value;
+    this.variableService.variablesViewMode = value;
   }
 
   get availableViewModes(): SelectItem[] {
@@ -86,6 +88,21 @@ export class GbVariablesComponent implements OnInit {
 
   get isExport(): boolean {
     return this.navbarService.isExport;
+  }
+
+  checkAllVariables(b: boolean) {
+    this.variableService.setVariableSelection(b);
+  }
+
+  get checkAllText(): string {
+    let numSelected = this.numberOfSelected;
+    return numSelected === 1 ?
+      `${numSelected} variable selected` : `${numSelected} variables selected`;
+  }
+
+  get numberOfSelected(): number {
+    return this.variableService.variables.filter(v =>
+      v.selected === true).length;
   }
 
 }

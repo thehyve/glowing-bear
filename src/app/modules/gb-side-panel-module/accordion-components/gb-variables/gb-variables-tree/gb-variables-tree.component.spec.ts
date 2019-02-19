@@ -14,6 +14,8 @@ import {ConstraintService} from '../../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../../services/mocks/constraint.service.mock';
 import {TreeModule} from 'primeng/tree';
 import {GbGenericModule} from '../../../../gb-generic-module/gb-generic.module';
+import {VariableService} from '../../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
 
 describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;
@@ -48,6 +50,10 @@ describe('GbVariablesTreeComponent', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         }
       ]
     })
