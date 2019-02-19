@@ -58,6 +58,10 @@ export class VariableServiceMock {
     return new Concept();
   }
 
+  get combination(): Constraint {
+    return new TrueConstraint();
+  }
+
   get isTreeNodesLoading(): boolean {
     return false;
   }

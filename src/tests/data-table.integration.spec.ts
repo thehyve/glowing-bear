@@ -25,6 +25,8 @@ import Spy = jasmine.Spy;
 import {TransmartPackerHttpServiceMock} from '../app/services/mocks/transmart-packer-http.service.mock';
 import {GbBackendHttpService} from '../app/services/http/gb-backend-http.service';
 import {GbBackendHttpServiceMock} from '../app/services/mocks/gb-backend-http.service.mock';
+import {VariableService} from '../app/services/variable.service';
+import {VariableServiceMock} from '../app/services/mocks/variable.service.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -182,6 +184,10 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         {
           provide: AppConfig,

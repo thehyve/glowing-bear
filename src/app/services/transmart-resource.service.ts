@@ -537,7 +537,7 @@ export class TransmartResourceService {
   }
 
   /**
-   * Gets available dimensions for step 3
+   * Gets available dimensions for data table
    * @param {Constraint} constraint
    * @returns {Observable<Dimension[]>}
    */
