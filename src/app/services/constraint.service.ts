@@ -348,6 +348,33 @@ export class ConstraintService {
   }
 
   /**
+   * Generate the constraint based on the variables selected gb-variables
+   * @returns {Constraint}
+   */
+  public variableConstraint(variables: Concept[]): Constraint {
+    const hasUnselected = variables.some((variable: Concept) => {
+      return !variable.selected;
+    });
+    if (hasUnselected) {
+      let result: CombinationConstraint = new CombinationConstraint();
+      result.combinationState = CombinationState.Or;
+      result.mark = ConstraintMark.OBSERVATION;
+      variables
+        .filter((variable: Concept) => {
+          return variable.selected;
+        })
+        .forEach((variable: Concept) => {
+          let c = new ConceptConstraint();
+          c.concept = variable;
+          result.addChild(c)
+        });
+      return result;
+    } else {
+      return new TrueConstraint();
+    }
+  }
+
+  /**
    * Clear the patient constraints
    */
   public clearCohortConstraint() {

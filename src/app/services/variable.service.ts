@@ -172,79 +172,6 @@ export class VariableService {
   }
 
   /**
-   * Generate the constraint based on the variables selected in the Variables panel
-   */
-  public variableConstraint(): Constraint {
-    if (this.variablesViewMode === VariablesViewMode.TREE_VIEW) {
-      return this.generateVariablesTreeConstraint();
-    } else if (this.variablesViewMode === VariablesViewMode.CATEGORIZED_VIEW) {
-      return this.generateCategorizedVariablesConstraint();
-    } else {
-      return new TrueConstraint();
-    }
-  }
-
-  /**
-   * Generate the constraint based on the variables selected in the tree view of the variables panel
-   * @returns {Constraint}
-   */
-  private generateVariablesTreeConstraint(): Constraint {
-    let constraint = null;
-    let selectedTreeNodes = this.selectedVariablesTree;
-    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
-      let leaves = [];
-      constraint = new CombinationConstraint();
-      constraint.combinationState = CombinationState.Or;
-
-      for (let selectedTreeNode of selectedTreeNodes) {
-        let visualAttributes = selectedTreeNode['visualAttributes'];
-        if (visualAttributes && visualAttributes.includes('LEAF')) {
-          leaves.push(selectedTreeNode);
-        }
-      }
-      for (let leaf of leaves) {
-        const leafConstraint = TransmartConstraintMapper.generateConstraintFromObject(leaf['constraint']);
-        if (leafConstraint) {
-          constraint.addChild(leafConstraint);
-        } else {
-          console.error('Failed to create constrain from: ', leaf);
-        }
-      }
-    } else {
-      constraint = new NegationConstraint(new TrueConstraint());
-    }
-
-    return constraint;
-  }
-
-  /**
-   * Generate the constraint based on the variables selected in the category view of the variables panel
-   * @returns {Constraint}
-   */
-  private generateCategorizedVariablesConstraint(): Constraint {
-    const hasUnselected = this.variables.some((variable: Concept) => {
-      return !variable.selected;
-    });
-    if (hasUnselected) {
-      let result: CombinationConstraint = new CombinationConstraint();
-      result.combinationState = CombinationState.Or;
-      result.mark = ConstraintMark.OBSERVATION;
-      this.variables
-        .filter((variable: Concept) => {
-          return variable.selected;
-        })
-        .forEach((variable: Concept) => {
-          let c = new ConceptConstraint();
-          c.concept = variable;
-          result.addChild(c)
-        });
-      return result;
-    } else {
-      return new TrueConstraint();
-    }
-  }
-
-  /**
    * Update the tree data for rendering the tree nodes in variables panel,
    * based on a given set of concept codes as filtering criteria.
    * @param {Map<string, Map<string, CountItem>>} selectedStudyConceptCountMap
@@ -351,7 +278,8 @@ export class VariableService {
   // get the combination of cohort constraint and variable constraint
   get combination(): CombinationConstraint {
     return new CombinationConstraint(
-      [this.constraintService.cohortConstraint(), this.variableConstraint()],
+      [this.constraintService.cohortConstraint(),
+        this.constraintService.variableConstraint(this.variables)],
       CombinationState.And,
       ConstraintMark.OBSERVATION
     );
