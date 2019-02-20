@@ -219,7 +219,17 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
 
     dataTableService.updateDataTable();
 
-    // After the studies have been loaded, and the data table service has been initialised ...
+    /**
+     * After the studies have been loaded, and the data table service has been initialised ...
+     * The sequence of calls goes as follows:
+     * variable.service:variablesUpdated ->
+     * data-table.service:updateDataTable ->
+     * resource.service:getDataTable ->
+     * transmart-resource.service:getDataTable ->
+     * transmart-resource.service:getDimensions ->
+     * transmart-resource.service:getStudyIds ->
+     * transmart-http.service:getStudyIds
+     */
     resourceService.getStudies().subscribe(() => {
 
       // the table should be updated.

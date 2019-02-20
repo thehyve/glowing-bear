@@ -87,9 +87,14 @@ export class VariableService {
     // update the selected tree nodes in the tree view
     this.selectedVariablesUpdated.asObservable()
       .subscribe((variables: Concept[]) => {
-        const codes = variables.map((v: Concept) => {
-          return v.code;
-        });
+        const codes = variables
+          .filter((v: Concept) => {
+            return v.selected;
+          })
+          .map((v: Concept) => {
+            return v.code;
+          });
+
         this.selectVariablesTreeByFields(this.variablesTree, codes, ['conceptCode']);
       });
   }
