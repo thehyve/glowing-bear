@@ -314,7 +314,7 @@ export class TreeNodeService {
 
   public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
     let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
-    if (this.showObservationCounts) {
+    if (this.countService.showObservationCounts) {
       countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
     }
     node['label'] = `${node['name']} (${countsText})`;

@@ -281,15 +281,6 @@ export class ConstraintService {
    * ------------------------------------------------------------------------- getters and setters
    */
 
-  // get the combination of cohort constraint and variable constraint
-  get combination(): CombinationConstraint {
-    return new CombinationConstraint(
-      [this.cohortSelectionConstraint(), this.variableConstraint()],
-      CombinationState.And,
-      ConstraintMark.OBSERVATION
-    );
-  }
-
   get isTreeNodesLoading(): boolean {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }

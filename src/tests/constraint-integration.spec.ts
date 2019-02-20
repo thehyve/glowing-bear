@@ -141,10 +141,10 @@ describe('Integration tests for constraint composing', () => {
     // when instantCohortUpdate is on
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;
-    spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
+    spyOnProperty(constraintService, 'rootConstraint', 'get')
       .and.returnValue(rootConstraint);
     combiComponent.onDrop(event);
-    expect(constraintService.rootInclusionConstraint.children.length).toBe(2);
+    expect(constraintService.rootConstraint.children.length).toBe(2);
   });
 
   it('should accept drop of a leaf tree node without constraint field', () => {
@@ -157,10 +157,10 @@ describe('Integration tests for constraint composing', () => {
     spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;
-    spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
+    spyOnProperty(constraintService, 'rootConstraint', 'get')
       .and.returnValue(rootConstraint);
     combiComponent.onDrop(event);
-    expect(constraintService.rootInclusionConstraint.children.length).toBe(1);
+    expect(constraintService.rootConstraint.children.length).toBe(1);
   });
 
   it('should accept drop of a tree node with UNKNOWN type', () => {
@@ -182,9 +182,9 @@ describe('Integration tests for constraint composing', () => {
     spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;
-    spyOnProperty(constraintService, 'rootInclusionConstraint', 'get')
+    spyOnProperty(constraintService, 'rootConstraint', 'get')
       .and.returnValue(rootConstraint);
     combiComponent.onDrop(event);
-    expect(constraintService.rootInclusionConstraint.children.length).toBe(1);
+    expect(constraintService.rootConstraint.children.length).toBe(1);
   });
 });
