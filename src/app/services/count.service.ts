@@ -94,13 +94,13 @@ export class CountService {
     this.currentSelectionCount = new CountItem(0, 0);
   }
 
-  updateAllCohortsCount(combination: CombinationConstraint) {
+  updateAllCounts(constraint: Constraint) {
     return new Promise((resolve, reject) => {
       forkJoin(
-        this.resourceService.getCounts(combination),
-        this.resourceService.getCountsPerStudy(combination),
-        this.resourceService.getCountsPerStudyAndConcept(combination),
-        this.resourceService.getCountsPerConcept(combination)
+        this.resourceService.getCounts(constraint),
+        this.resourceService.getCountsPerStudy(constraint),
+        this.resourceService.getCountsPerStudyAndConcept(constraint),
+        this.resourceService.getCountsPerConcept(constraint)
       ).subscribe(res => {
         this.allCohortsCount = res[0];
         this.selectedStudyCountMap = res[1];

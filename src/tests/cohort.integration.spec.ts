@@ -26,6 +26,8 @@ import {AuthenticationService} from '../app/services/authentication/authenticati
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {SubjectSet} from '../app/models/constraint-models/subject-set';
+import {CountService} from '../app/services/count.service';
 
 describe('Integration test for cohort saving and restoring', () => {
 
@@ -124,6 +126,7 @@ describe('Integration test for cohort saving and restoring', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
   let treeNodeService: TreeNodeService;
+  let countService: CountService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -148,7 +151,8 @@ describe('Integration test for cohort saving and restoring', () => {
         StudyService,
         CohortService,
         NavbarService,
-        DatePipe
+        DatePipe,
+        CountService
       ]
     });
     cohortService = TestBed.get(CohortService);
@@ -156,12 +160,15 @@ describe('Integration test for cohort saving and restoring', () => {
     dataTableService = TestBed.get(DataTableService);
     resourceService = TestBed.get(ResourceService);
     treeNodeService = TestBed.get(TreeNodeService);
+    countService = TestBed.get(CountService);
   });
 
   it('should restore and save query in relation to other dependent services', () => {
+    cohortService.saveSubjectSetBeforeUpdatingCounts = false;
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(cohortService, 'updateCountsWithCurrentCohort').and.callThrough();
+    let spy2 = spyOn(resourceService, 'saveSubjectSet').and.callThrough();
     let promise = cohortService.restoreCohort(q0);
     expect(constraintService.rootConstraint.children.length).toEqual(2);
 
@@ -188,6 +195,7 @@ describe('Integration test for cohort saving and restoring', () => {
 
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
       expect(cohortService.isDirty).toBe(false);
     });
 
@@ -222,6 +230,19 @@ describe('Integration test for cohort saving and restoring', () => {
       .catch(err => {
         fail('should have successfully restored the cohort with subject-set constraint but not')
       });
+  });
+
+  it('should save subject set before updating counts', () => {
+    cohortService.saveSubjectSetBeforeUpdatingCounts = true;
+    let spy1 = spyOn(resourceService, 'saveSubjectSet').and.callThrough();
+    let spy2 = spyOn(countService, 'updateAllCounts').and.callThrough();
+
+    let promise = cohortService.updateCountsWithAllCohorts();
+    promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledWith(jasmine.any(SubjectSetConstraint));
+      expect(cohortService.isDirty).toBe(false);
+    });
   });
 
 });

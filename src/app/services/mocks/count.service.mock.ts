@@ -8,6 +8,7 @@
 
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Subject} from 'rxjs';
+import {Constraint} from '../../models/constraint-models/constraint';
 
 export class CountServiceMock {
   currentSelectionCount: CountItem;
@@ -57,6 +58,12 @@ export class CountServiceMock {
   }
 
   loadCountMaps(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
+  }
+
+  updateAllCounts(constraint: Constraint) {
     return new Promise<any>(resolve => {
       resolve(true);
     });
