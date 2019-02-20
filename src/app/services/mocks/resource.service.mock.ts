@@ -22,6 +22,7 @@ import {TransmartHttpService} from '../http/transmart-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -202,5 +203,12 @@ export class ResourceServiceMock {
 
   archiveExportJob(jobId: string): Observable<{}> {
     return Observable.of({});
+  }
+
+  saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
+    let subjectSet = new SubjectSet();
+    subjectSet.id = 1;
+    subjectSet.requestConstraints = constraint;
+    return Observable.of(subjectSet);
   }
 }

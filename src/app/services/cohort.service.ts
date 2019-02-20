@@ -24,6 +24,9 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {Subject} from 'rxjs';
 import {CountService} from './count.service';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
+import {SubjectSet} from '../models/constraint-models/subject-set';
+import {Constraint} from '../models/constraint-models/constraint';
 
 /**
  * This service concerns with
@@ -53,32 +56,35 @@ export class CohortService {
   // indicate when constraints are changed, whether to update counts immediately,
   // used in gb-constraint-component
   private _instantCohortCountsUpdate: boolean;
-
+  // indicate when constraints are changed, whether to update counts immediately,
+  // used in gb-constraint-component
+  private _saveSubjectSetBeforeUpdatingCounts: boolean;
   /*
    * ------ other variables ------
    */
+
   // Flag indicating if the cohort subscription option for each cohort in the cohort panel should be included
   private _isCohortSubscriptionIncluded = false;
   // Flag indicating if saving a cohort is finished
   private _isSavingCohortCompleted = true;
-
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private constraintService: ConstraintService,
               private countService: CountService) {
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
+    this.saveSubjectSetBeforeUpdatingCounts = this.appConfig.getConfig('autosave-subject-sets');
     this.loadCohorts();
     // initial updates
     this.updateCountsWithCurrentCohort();
   }
-
 
   clearAll(): Promise<any> {
     this.constraintService.clearCohortConstraint();
     this.isDirty = true;
     return this.updateCountsWithCurrentCohort();
   }
+
 
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
@@ -169,7 +175,29 @@ export class CohortService {
           combination.addChild(cohort.constraint);
         }
       });
-      return this.countService.updateAllCohortsCount(combination)
+      if (this.saveSubjectSetBeforeUpdatingCounts) {
+        this.resourceService.saveSubjectSet('temp', combination).subscribe((subjectSet: SubjectSet) => {
+          return this.updateAllCounts(new SubjectSetConstraint(subjectSet))
+            .then(() =>
+              resolve(true)
+            ).catch(err => {
+              reject(err);
+            });
+        });
+      } else {
+        return this.updateAllCounts(combination)
+          .then(() =>
+            resolve(true)
+          ).catch(err => {
+            reject(err);
+          });
+      }
+    });
+  }
+
+  private updateAllCounts(constraint: Constraint) {
+    return new Promise((resolve, reject) => {
+      return this.countService.updateAllCounts(constraint)
         .then(() => {
           this.isUpdatingAll = false;
           this.cohortsUpdated.next(this.cohorts);
@@ -401,5 +429,13 @@ export class CohortService {
 
   set instantCohortCountsUpdate(value: boolean) {
     this._instantCohortCountsUpdate = value;
+  }
+
+  get saveSubjectSetBeforeUpdatingCounts(): boolean {
+    return this._saveSubjectSetBeforeUpdatingCounts;
+  }
+
+  set saveSubjectSetBeforeUpdatingCounts(value: boolean) {
+    this._saveSubjectSetBeforeUpdatingCounts = value;
   }
 }
