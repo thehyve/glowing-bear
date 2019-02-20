@@ -231,9 +231,10 @@ describe('TransmartHttpService', () => {
         service.getTrialVisits(mockConstraint).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
-        const url = service.endpointUrl + '/dimensions/trial visit/elements?constraint={"type":"true"}';
+        const url = service.endpointUrl + '/dimensions/trial visit/elements';
         const req = httpMock.expectOne(url);
-        expect(req.request.method).toEqual('GET');
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body).toEqual({constraint: {type: 'true'}});
         req.flush(mockData);
       }));
 
