@@ -212,10 +212,10 @@ export class TransmartHttpService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
-    const constraintString = JSON.stringify(TransmartConstraintMapper.mapConstraint(constraint));
-    const urlPart = `dimensions/trial visit/elements?constraint=${constraintString}`;
+    const urlPart = `dimensions/trial visit/elements`;
+    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
     const responseField = 'elements';
-    return this.httpHelper.getCall(urlPart, responseField);
+    return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
