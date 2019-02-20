@@ -255,7 +255,6 @@ export class VariableService {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
         if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
-          console.log('apush node', node)
         } else if (!values.includes(val) && this.selectedVariablesTree.includes(node)) {
           const index = this.selectedVariablesTree.indexOf(node);
           this.selectedVariablesTree.splice(index, 1);
