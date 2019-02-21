@@ -25,36 +25,16 @@
 
   <!-- cohort query composer -->
   <div>
-    <!-- Inclusion criteria -->
-    <div #inclusionCriteriaBox class="criteria-box">
+    <div #criteriaBox class="criteria-box">
 
       <div class="subject-count-box">
-        <span><b>Inclusion</b> criteria: </span>
-        <span>{{inclusionSubjectCount}} subjects included.</span>
+        <span><b>Summary: </b></span>
+        <span>{{subjectCount}} subjects match your selection.</span>
       </div>
-      <gb-constraint #rootInclusionConstraintComponent
-                     [constraint]="rootInclusionConstraint"
+      <gb-constraint #rootConstraintComponent
+                     [constraint]="rootConstraint"
                      [isRoot]="true"></gb-constraint>
     </div>
-
-    <!-- Exclusion criteria -->
-    <div #exclusionCriteriaBox class="criteria-box">
-      <div class="subject-count-box">
-        <span><b>Exclusion</b> criteria: </span>
-        <span>{{exclusionSubjectCount}} subjects excluded.</span>
-      </div>
-      <gb-constraint #rootExclusionConstraintComponent
-                     [constraint]="rootExclusionConstraint"
-                     [isRoot]="true"></gb-constraint>
-    </div>
-
-
-    <!-- Intersection calculation -->
-    <div class="subject-count-box">
-      <span><b>Total: </b></span>
-      <span>{{subjectCount}} subjects match your selection.</span>
-    </div>
-
   </div>
 
   <p-overlayPanel #op

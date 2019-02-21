@@ -11,8 +11,7 @@ when('I login with user {string}', (user) => {
 
 then('I am logged in', () => {
   cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
-  cy.contains('Inclusion criteria').should('be.visible');
-  cy.contains('Exclusion criteria').should('be.visible');
+  cy.contains('Summary:').should('be.visible');
 });
 
 then('I am not logged in', () => {

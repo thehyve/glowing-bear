@@ -6,12 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {TreeNodeService} from './tree-node.service';
-import {NavbarService} from './navbar.service';
-import {NavbarServiceMock} from './mocks/navbar.service.mock';
 import {ConstraintService} from './constraint.service';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
@@ -24,30 +22,26 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {throwError} from 'rxjs/internal/observable/throwError';
-import {AppConfigMock} from '../config/app.config.mock';
-import {AppConfig} from '../config/app.config';
+import {CountService} from './count.service';
+import {CountServiceMock} from './mocks/count.service.mock';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
   let resourceService: ResourceService;
   let constraintService: ConstraintService;
-  let navbarService: NavbarService;
+  let countService: CountService;
   let httpErrorResponse: HttpErrorResponse;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: AppConfig,
-          useClass: AppConfigMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
         },
         {
-          provide: NavbarService,
-          useClass: NavbarServiceMock
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: ConstraintService,
@@ -59,7 +53,7 @@ describe('TreeNodeService', () => {
     treeNodeService = TestBed.get(TreeNodeService);
     resourceService = TestBed.get(ResourceService);
     constraintService = TestBed.get(ConstraintService);
-    navbarService = TestBed.get(NavbarService);
+    countService = TestBed.get(CountService);
     httpErrorResponse = new HttpErrorResponse({
       error: 'error',
       headers: null,
@@ -203,10 +197,10 @@ describe('TreeNodeService', () => {
 
   it('should process a single tree node', () => {
     // construct the maps
-    constraintService.conceptCountMap = new Map<string, CountItem>();
-    constraintService.conceptCountMap.set('concept1', new CountItem(10, 20));
-    constraintService.conceptCountMap.set('concept2', new CountItem(30, 110));
-    constraintService.conceptCountMap.set('concept3', new CountItem(70, 90));
+    countService.conceptCountMap = new Map<string, CountItem>();
+    countService.conceptCountMap.set('concept1', new CountItem(10, 20));
+    countService.conceptCountMap.set('concept2', new CountItem(30, 110));
+    countService.conceptCountMap.set('concept3', new CountItem(70, 90));
 
     let map1 = new Map<string, CountItem>();
     let item1 = new CountItem(10, 20);
@@ -216,13 +210,13 @@ describe('TreeNodeService', () => {
     let item3 = new CountItem(70, 90);
     map2.set('concept2', item2);
     map2.set('concept3', item3);
-    constraintService.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    constraintService.studyConceptCountMap.set('study1', map1);
-    constraintService.studyConceptCountMap.set('study2', map2);
+    countService.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    countService.studyConceptCountMap.set('study1', map1);
+    countService.studyConceptCountMap.set('study2', map2);
 
-    constraintService.studyCountMap = new Map<string, CountItem>();
-    constraintService.studyCountMap.set('study1', new CountItem(10, 20));
-    constraintService.studyCountMap.set('study2', new CountItem(100, 200));
+    countService.studyCountMap = new Map<string, CountItem>();
+    countService.studyCountMap.set('study1', new CountItem(10, 20));
+    countService.studyCountMap.set('study2', new CountItem(100, 200));
 
     let node = {
       label: 'label',

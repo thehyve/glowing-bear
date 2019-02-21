@@ -26,6 +26,8 @@ import {AuthenticationService} from '../app/services/authentication/authenticati
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {SubjectSet} from '../app/models/constraint-models/subject-set';
+import {CountService} from '../app/services/count.service';
 
 describe('Integration test for cohort saving and restoring', () => {
 
@@ -124,6 +126,7 @@ describe('Integration test for cohort saving and restoring', () => {
   let dataTableService: DataTableService;
   let resourceService: ResourceService;
   let treeNodeService: TreeNodeService;
+  let countService: CountService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -148,7 +151,8 @@ describe('Integration test for cohort saving and restoring', () => {
         StudyService,
         CohortService,
         NavbarService,
-        DatePipe
+        DatePipe,
+        CountService
       ]
     });
     cohortService = TestBed.get(CohortService);
@@ -156,16 +160,19 @@ describe('Integration test for cohort saving and restoring', () => {
     dataTableService = TestBed.get(DataTableService);
     resourceService = TestBed.get(ResourceService);
     treeNodeService = TestBed.get(TreeNodeService);
+    countService = TestBed.get(CountService);
   });
 
   it('should restore and save query in relation to other dependent services', () => {
+    cohortService.saveSubjectSetBeforeUpdatingCounts = false;
     treeNodeService.treeNodeCallsSent = 10;
     treeNodeService.treeNodeCallsReceived = 10;
     let spy1 = spyOn(cohortService, 'updateCountsWithCurrentCohort').and.callThrough();
+    let spy2 = spyOn(resourceService, 'saveSubjectSet').and.callThrough();
     let promise = cohortService.restoreCohort(q0);
-    expect(constraintService.rootInclusionConstraint.children.length).toEqual(2);
+    expect(constraintService.rootConstraint.children.length).toEqual(2);
 
-    let child0 = constraintService.rootInclusionConstraint.children[0];
+    let child0 = constraintService.rootConstraint.children[0];
     expect(child0.className).toEqual('CombinationConstraint');
 
     let child01 = (<CombinationConstraint>child0).children[0];
@@ -180,16 +187,15 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(child02['concept']['code']).toEqual('O1KP:CAT8');
     expect(child02['negated']).toEqual(false);
 
-    let child03 = constraintService.rootInclusionConstraint.children[1];
+    let child03 = constraintService.rootConstraint.children[1];
     expect(child03.className).toEqual('ConceptConstraint');
     expect(child03['concept']).toBeDefined();
     expect(child03['concept']['code']).toEqual('VSIGN:HR');
     expect(child03['negated']).toEqual(true);
 
-    expect(constraintService.rootExclusionConstraint.children.length).toEqual(0);
-
     promise.then(() => {
       expect(spy1).toHaveBeenCalled();
+      expect(spy2).not.toHaveBeenCalled();
       expect(cohortService.isDirty).toBe(false);
     });
 
@@ -208,8 +214,7 @@ describe('Integration test for cohort saving and restoring', () => {
       .then(() => {
         cohortService.clearAll()
           .then(() => {
-            expect(constraintService.rootInclusionConstraint.children.length).toBe(0);
-            expect(constraintService.rootExclusionConstraint.children.length).toBe(0);
+            expect(constraintService.rootConstraint.children.length).toBe(0);
             expect(cohortService.isDirty).toBe(false);
           });
         expect(cohortService.isDirty).toBe(true);
@@ -225,6 +230,19 @@ describe('Integration test for cohort saving and restoring', () => {
       .catch(err => {
         fail('should have successfully restored the cohort with subject-set constraint but not')
       });
+  });
+
+  it('should save subject set before updating counts', () => {
+    cohortService.saveSubjectSetBeforeUpdatingCounts = true;
+    let spy1 = spyOn(resourceService, 'saveSubjectSet').and.callThrough();
+    let spy2 = spyOn(countService, 'updateAllCounts').and.callThrough();
+
+    let promise = cohortService.updateCountsWithAllCohorts();
+    promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledWith(jasmine.any(SubjectSetConstraint));
+      expect(cohortService.isDirty).toBe(false);
+    });
   });
 
 });

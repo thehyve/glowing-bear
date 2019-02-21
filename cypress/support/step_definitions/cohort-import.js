@@ -10,6 +10,6 @@ then('Current cohort should contain {string}', (text) => {
   cy.get('.gb-constraint-container-root').contains(text);
 });
 
-then('Inclusion criteria should contain {string}', (text) => {
+then('Summary should contain {string}', (text) => {
   cy.get('.criteria-box').eq(0).contains(text);
 });

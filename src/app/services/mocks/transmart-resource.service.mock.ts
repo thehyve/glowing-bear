@@ -32,8 +32,7 @@ export class TransmartResourceServiceMock {
 
   private _autosaveSubjectSets: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
-  private _inclusionCounts: TransmartCountItem;
-  private _exclusionCounts: TransmartCountItem;
+  private _cohortSelectionCounts: TransmartCountItem;
 
   constructor() {
     this._studies = [];
@@ -44,7 +43,7 @@ export class TransmartResourceServiceMock {
 
   private mockStudies() {
     let s1 = new Study();
-    s1.dimensions = ['study', 'cocnept', 'patient'];
+    s1.dimensions = ['study', 'concept', 'patient'];
     s1.id = 'CATEGORICAL_VALUES';
     let s2 = new Study();
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
@@ -195,32 +194,19 @@ export class TransmartResourceServiceMock {
     this._subjectSetConstraint = value;
   }
 
-  get inclusionCounts(): TransmartCountItem {
-    return this._inclusionCounts;
+  get cohortSelectionCounts(): TransmartCountItem {
+    return this._cohortSelectionCounts;
   }
 
-  set inclusionCounts(value: TransmartCountItem) {
-    this._inclusionCounts = value;
+  set cohortSelectionCounts(value: TransmartCountItem) {
+    this._cohortSelectionCounts = value;
   }
 
-  get exclusionCounts(): TransmartCountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: TransmartCountItem) {
-    this._exclusionCounts = value;
-  }
-
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new TransmartCountItem();
-      this.inclusionCounts.patientCount = 10;
-      this.inclusionCounts.observationCount = 100;
-      this.exclusionCounts = new TransmartCountItem();
-      this.exclusionCounts.patientCount = 0;
-      this.exclusionCounts.observationCount = 0;
+      this.cohortSelectionCounts = new TransmartCountItem();
+      this.cohortSelectionCounts.patientCount = 10;
+      this.cohortSelectionCounts.observationCount = 100;
       resolve(true);
     });
   }

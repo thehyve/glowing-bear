@@ -73,15 +73,14 @@ describe('ResourceService', () => {
       })
   })
 
-  it('should udpate inclusion and exclusion counts', () => {
+  it('should update cohort selection counts', () => {
     let dummy = new TrueConstraint();
-    resourceService.updateInclusionExclusionCounts(dummy, dummy, dummy)
+    resourceService.updateCohortSelectionCounts(dummy)
       .then(() => {
-        expect(resourceService.inclusionCounts.subjectCount).toEqual(10);
-        expect(resourceService.exclusionCounts.subjectCount).toEqual(0);
+        expect(resourceService.cohortSelectionCounts.subjectCount).toEqual(10);
       });
     resourceService.endpointMode = null;
-    resourceService.updateInclusionExclusionCounts(dummy, dummy, dummy)
+    resourceService.updateCohortSelectionCounts(dummy)
       .catch(err => {
         expect(err).toBeDefined();
       });

@@ -1,34 +1,28 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {ConstraintService} from './constraint.service';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
-import {TreeNodeService} from './tree-node.service';
-import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
 import {CohortService} from './cohort.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {AppConfig} from '../config/app.config';
 import {AppConfigMock} from '../config/app.config.mock';
-import {DataTableServiceMock} from './mocks/data-table.service.mock';
-import {DataTableService} from './data-table.service';
-import {ExportService} from './export.service';
-import {ExportServiceMock} from './mocks/export.service.mock';
-import {CrossTableService} from './cross-table.service';
-import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
 import {of as observableOf} from 'rxjs';
 import {Cohort} from '../models/cohort-models/cohort';
 import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscription-frequency';
 import {ErrorHelper} from '../utilities/error-helper';
 import {throwError} from 'rxjs/internal/observable/throwError';
+import {CountService} from './count.service';
+import {CountServiceMock} from './mocks/count.service.mock';
 
 
 describe('CohortService', () => {
@@ -44,8 +38,8 @@ describe('CohortService', () => {
           useClass: AppConfigMock
         },
         {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: ResourceService,
@@ -72,19 +66,6 @@ describe('CohortService', () => {
   it('should be injected', inject([CohortService], (service: CohortService) => {
     expect(service).toBeTruthy();
   }));
-
-  it('should update counts', (done) => {
-    cohortService.updateCountsWithAllCohorts()
-      .then(() => {
-        expect(cohortService).toBeTruthy();
-        expect(cohortService.counts).toBeDefined();
-        done();
-      })
-      .catch((error) => {
-        fail('Unexpected error: ' + error);
-        done();
-      });
-  });
 
   it('should handle loaded cohorts', () => {
     let q = new Cohort('test query id', 'test query name');

@@ -7,12 +7,7 @@
  */
 import {TestBed} from '@angular/core/testing';
 import {VariableService} from './variable.service';
-import {VariablesViewMode} from '../models/variables-view-mode';
 import {Concept} from '../models/constraint-models/concept';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {TreeNode} from 'primeng/api';
 import {ConstraintService} from './constraint.service';
 import {TreeNodeService} from './tree-node.service';
@@ -20,11 +15,14 @@ import {TreeNodeServiceMock} from './mocks/tree-node.service.mock';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {CountService} from './count.service';
+import {CountServiceMock} from './mocks/count.service.mock';
 
 describe('VariableService', () => {
   let variableService: VariableService;
   let constraintService: ConstraintService;
   let treeNodeService: TreeNodeService;
+  let countService: CountService;
   let v1 = new Concept();
   v1.name = 'v1';
   v1.code = 'v1';
@@ -59,12 +57,17 @@ describe('VariableService', () => {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
         },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
+        },
         VariableService
       ]
     });
     variableService = TestBed.get(VariableService);
     treeNodeService = TestBed.get(TreeNodeService);
     constraintService = TestBed.get(ConstraintService);
+    countService = TestBed.get(CountService);
   });
 
   it('should be created', () => {
@@ -96,14 +99,14 @@ describe('VariableService', () => {
 
   it('should update variables when tree finishes loading', () => {
     const spyUpdateVariables = spyOn(variableService, 'updateVariables').and.stub();
-    constraintService.selectedConceptCountMapUpdated.next(null);
+    countService.selectedConceptCountMapUpdated.next(null);
     treeNodeService.treeNodesUpdated.next(true);
     expect(spyUpdateVariables).toHaveBeenCalled();
   });
 
   it('should not update variables when tree is still loading', () => {
     const spyUpdateVariables = spyOn(variableService, 'updateVariables').and.stub();
-    constraintService.selectedConceptCountMapUpdated.next(null);
+    countService.selectedConceptCountMapUpdated.next(null);
     treeNodeService.treeNodesUpdated.next(false);
     expect(spyUpdateVariables).not.toHaveBeenCalled();
   });
@@ -205,13 +208,13 @@ describe('VariableService', () => {
     let spy2 = spyOn<any>(variableService, 'updateVariablesTreeRecursion').and.stub();
     let spy3 = spyOnProperty(variableService, 'variablesTree', 'get').and.returnValue(dummyTreeNodes);
     treeNodeService.treeNodesCopy = dummyTreeNodes;
-    variableService.updateVariablesTree(new Map(), new Map(), new Map());
+    variableService.updateVariablesTree();
     expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
 
     treeNodeService.treeNodesCopy = [];
-    variableService.updateVariablesTree(new Map(), new Map(), new Map());
+    variableService.updateVariablesTree();
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
@@ -251,14 +254,14 @@ describe('VariableService', () => {
     let conceptCode2 = 'a-code-2';
     let conceptMap = new Map<string, CountItem>();
     conceptMap.set(conceptCode, new CountItem(10, 20));
-    let selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    selectedStudyConceptCountMap.set(studyId, conceptMap);
+    countService.selectedStudyConceptCountMap = new Map<string, Map<string, CountItem>>();
+    countService.selectedStudyConceptCountMap.set(studyId, conceptMap);
     let conceptMap1 = new Map<string, CountItem>();
     conceptMap1.set(conceptCode1, new CountItem(100, 200));
-    selectedStudyConceptCountMap.set(studyId1, conceptMap1);
-    let selectedConceptCountMap = new Map<string, CountItem>();
-    selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
-    let selectedStudyCountMap = new Map<string, CountItem>();
+    countService.selectedStudyConceptCountMap.set(studyId1, conceptMap1);
+    countService.selectedConceptCountMap = new Map<string, CountItem>();
+    countService.selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
+    countService.selectedStudyCountMap = new Map<string, CountItem>();
     conceptMap1.set(studyId, new CountItem(1, 1));
     let node1: TreeNode = {};
     let node2: TreeNode = {};
@@ -282,8 +285,7 @@ describe('VariableService', () => {
     node6['conceptCode'] = conceptCode2;
     node6['visualAttributes'] = ['LEAF'];
     let nodes = [node1, node2, node3, node4, node5, node6];
-    let resultNodes = variableService['updateVariablesTreeRecursion'](nodes,
-      selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
+    let resultNodes = variableService['updateVariablesTreeRecursion'](nodes);
     expect(node4['expanded']).toBe(false);
     expect(resultNodes.length).toEqual(3);
     expect(resultNodes[0]['label']).toBeUndefined();

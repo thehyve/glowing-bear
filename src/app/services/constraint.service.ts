@@ -26,10 +26,7 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
 import {StudyService} from './study.service';
-import {CountItem} from '../models/aggregate-models/count-item';
-import {HttpErrorResponse} from '@angular/common/http';
-import {ErrorHelper} from '../utilities/error-helper';
-import {Subject} from 'rxjs';
+import {CountService} from './count.service';
 
 /**
  * This service concerns with
@@ -41,8 +38,7 @@ import {Subject} from 'rxjs';
 })
 export class ConstraintService {
 
-  private _rootInclusionConstraint: CombinationConstraint;
-  private _rootExclusionConstraint: CombinationConstraint;
+  private _rootConstraint: CombinationConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -61,68 +57,15 @@ export class ConstraintService {
    */
   private _maxNumSearchResults = 100;
 
-  /**
-   * The map that holds the conceptCode -> count item relations
-   *  e.g.
-   * "EHR:DEM:AGE": {
-   *   "observationCount": 3,
-   *   "subjectCount": 3
-   *  },
-   * "EHR:VSIGN:HR": {
-   *  "observationCount": 9,
-   *  "subjectCount": 3
-   * }
-   */
-  private _conceptCountMap: Map<string, CountItem>;
-  /**
-   * The map that holds the studyId -> count item relations
-   * e.g.
-   * "MIX_HD": {
-   *   "observationCount": 12,
-   *   "subjectCount": 3
-   * }
-   */
-  private _studyCountMap: Map<string, CountItem>;
-  /**
-   * The map that holds the studyId -> conceptCode -> count item relations
-   * e.g.
-   * "SHARED_CONCEPTS_STUDY_A": {
-   *    "DEMO:POB": {
-   *        "observationCount": 2,
-   *        "subjectCount": 2
-   *    },
-   *    "VSIGN:HR": {
-   *        "observationCount": 3,
-   *        "subjectCount": 3
-   *    }
-   * }
-   */
-  private _studyConceptCountMap: Map<string, Map<string, CountItem>>;
-
-  // the subset of _studyConceptCountMap that holds the selected maps,
-  // which corresponds to the selected cohort(s)
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  // the subset of _studyCountMap that holds the selected studies,
-  // which corresponds to the selected cohort(s)
-  private _selectedStudyCountMap: Map<string, CountItem>;
-  // the subset of _conceptCountMap that holds the selected maps,
-  // which corresponds to the selected cohort(s)
-  private _selectedConceptCountMap: Map<string, CountItem>;
-  // the async subject telling if the selectedConceptCountMap is updated
-  private _selectedConceptCountMapUpdated: Subject<Map<string, CountItem>>
-    = new Subject<Map<string, CountItem>>();
-
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
+              private countService: CountService,
               private resourceService: ResourceService) {
 
-    // Initialize the root inclusion and exclusion constraints in the 1st step
-    this.rootInclusionConstraint = new CombinationConstraint();
-    this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.mark = ConstraintMark.SUBJECT;
-    this.rootExclusionConstraint = new CombinationConstraint();
-    this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
+    // Initialize the root constraints in the cohort selection
+    this.rootConstraint = new CombinationConstraint();
+    this.rootConstraint.isRoot = true;
+    this.rootConstraint.mark = ConstraintMark.SUBJECT;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -130,7 +73,7 @@ export class ConstraintService {
     // create the pedigree-related constraints
     this.loadPedigrees();
     // construct concepts from loading the tree nodes
-    this.loadCountMaps()
+    this.countService.loadCountMaps()
       .then(() => {
         this.treeNodeService.load();
       })
@@ -182,63 +125,6 @@ export class ConstraintService {
       );
   }
 
-  /*
-   * ------------------------------------------------------------------------- countMap-related methods
-   */
-  loadCountMaps(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      let promise1 = this.loadConceptCountMap();
-      let promise2 = this.loadStudyCountMap();
-      let promise3 = this.loadStudyConceptCountMap();
-      Promise.all([promise1, promise2, promise3])
-        .then(() => {
-          resolve(true);
-        })
-        .catch((err) => {
-          reject(err);
-        })
-    });
-  }
-
-  loadConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerConcept(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.conceptCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load concept count map from server.');
-        });
-    });
-  }
-
-  loadStudyCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudy(new TrueConstraint())
-        .subscribe((map: Map<string, CountItem>) => {
-          this.studyCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study count map from server.');
-        });
-    });
-  }
-
-  loadStudyConceptCountMap(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.resourceService.getCountsPerStudyAndConcept(new TrueConstraint())
-        .subscribe((map: Map<string, Map<string, CountItem>>) => {
-          this.studyConceptCountMap = map;
-          resolve(true);
-        }, (err: HttpErrorResponse) => {
-          ErrorHelper.handleError(err);
-          reject('Fail to load study-concept count map from server.');
-        });
-    });
-  }
-
   /**
    * Returns a list of all constraints that match the search word.
    * The constraints should be copied when editing them.
@@ -269,77 +155,18 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------ constraint generation
    */
+
   /**
-   * Generate the constraint for retrieving the patients with only the inclusion criteria
+   * Get the constraint based on the current cohort selection criteria
    * @returns {Constraint}
    */
-  public inclusionConstraint(): Constraint {
-    let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
-    return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
-      inclusionConstraint : new TrueConstraint();
-  }
-
-  public hasExclusionConstraint(): Boolean {
-    return ConstraintHelper.hasNonEmptyChildren(this.rootExclusionConstraint);
-  }
-
-  /**
-   * Generate the constraint for retrieving the patients with the exclusion criteria,
-   * but also in the inclusion set
-   * @returns {CombinationConstraint}
-   */
-  public exclusionConstraint(): Constraint {
-    if (this.hasExclusionConstraint()) {
-      // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.inclusionConstraint();
-      let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-
-      let combination = new CombinationConstraint();
-      combination.addChild(inclusionConstraint);
-      combination.addChild(exclusionConstraint);
-      return combination;
-    } else {
-      return undefined;
+  public cohortSelectionConstraint(): Constraint {
+    let constraint = <Constraint>this.rootConstraint;
+    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
+      constraint = new TrueConstraint();
     }
-  }
-
-  /**
-   * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
-   * @returns {Constraint}
-   */
-  public cohortConstraint(): Constraint {
-    let resultConstraint: Constraint; console.log('root inclusion')
-    let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
-    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-    let trueInclusion = false;
-    // Inclusion part
-    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint)) {
-      inclusionConstraint = new TrueConstraint();
-      trueInclusion = true;
-    }
-
-    // Only use exclusion if there's something there
-    if (ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>exclusionConstraint)) {
-      // Wrap exclusion in negation
-      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
-
-      // If there is some constraint other than a true constraint in the inclusion,
-      // form a proper combination constraint to return
-      if (!trueInclusion) {
-        let combination = new CombinationConstraint();
-        combination.combinationState = CombinationState.And;
-        combination.addChild(inclusionConstraint);
-        combination.addChild(negatedExclusionConstraint);
-        resultConstraint = combination;
-      } else {
-        resultConstraint = negatedExclusionConstraint;
-      }
-    } else {
-      // Otherwise just return the inclusion part
-      resultConstraint = inclusionConstraint;
-    }
-    resultConstraint.mark = ConstraintMark.SUBJECT;
-    return resultConstraint;
+    constraint.mark = ConstraintMark.SUBJECT;
+    return constraint;
   }
 
   /**
@@ -373,8 +200,7 @@ export class ConstraintService {
    * Clear the patient constraints
    */
   public clearCohortConstraint() {
-    this.rootInclusionConstraint.children.length = 0;
-    this.rootExclusionConstraint.children.length = 0;
+    this.rootConstraint.children.length = 0;
   }
 
   public restoreCohortConstraint(constraint: Constraint) {
@@ -386,21 +212,21 @@ export class ConstraintService {
         let negationConstraint =
           <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
         negationConstraint.constraint.negated = true;
-        this.rootInclusionConstraint.addChild(negationConstraint.constraint);
+        this.rootConstraint.addChild(negationConstraint.constraint);
         let remainingConstraint =
           <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
         this.restoreCohortConstraint(remainingConstraint);
       } else {
         for (let child of children) {
-          this.rootInclusionConstraint.addChild(child);
+          this.rootConstraint.addChild(child);
         }
-        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
+        this.rootConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
       }
     } else if (constraint.className === 'NegationConstraint') {
       (<NegationConstraint>constraint).constraint.negated = true;
-      this.rootInclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
+      this.rootConstraint.addChild((<NegationConstraint>constraint).constraint);
     } else if (constraint.className !== 'TrueConstraint') {
-      this.rootInclusionConstraint.addChild(constraint);
+      this.rootConstraint.addChild(constraint);
     }
   }
 
@@ -454,20 +280,17 @@ export class ConstraintService {
   /*
    * ------------------------------------------------------------------------- getters and setters
    */
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this._rootInclusionConstraint;
+
+  get isTreeNodesLoading(): boolean {
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
-  set rootInclusionConstraint(value: CombinationConstraint) {
-    this._rootInclusionConstraint = value;
+  get rootConstraint(): CombinationConstraint {
+    return this._rootConstraint;
   }
 
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this._rootExclusionConstraint;
-  }
-
-  set rootExclusionConstraint(value: CombinationConstraint) {
-    this._rootExclusionConstraint = value;
+  set rootConstraint(value: CombinationConstraint) {
+    this._rootConstraint = value;
   }
 
   get allConstraints(): Constraint[] {
@@ -518,60 +341,4 @@ export class ConstraintService {
     this._maxNumSearchResults = value;
   }
 
-  get conceptCountMap(): Map<string, CountItem> {
-    return this._conceptCountMap;
-  }
-
-  set conceptCountMap(value: Map<string, CountItem>) {
-    this._conceptCountMap = value;
-  }
-
-  get studyCountMap(): Map<string, CountItem> {
-    return this._studyCountMap;
-  }
-
-  set studyCountMap(value: Map<string, CountItem>) {
-    this._studyCountMap = value;
-  }
-
-  get studyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._studyConceptCountMap;
-  }
-
-  set studyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._studyConceptCountMap = value;
-  }
-
-  get selectedConceptCountMap(): Map<string, CountItem> {
-    return this._selectedConceptCountMap;
-  }
-
-  set selectedConceptCountMap(value: Map<string, CountItem>) {
-    this._selectedConceptCountMap = value;
-    this.selectedConceptCountMapUpdated.next(value);
-  }
-
-  get selectedConceptCountMapUpdated(): Subject<Map<string, CountItem>> {
-    return this._selectedConceptCountMapUpdated;
-  }
-
-  set selectedConceptCountMapUpdated(value: Subject<Map<string, CountItem>>) {
-    this._selectedConceptCountMapUpdated = value;
-  }
-
-  get selectedStudyCountMap(): Map<string, CountItem> {
-    return this._selectedStudyCountMap;
-  }
-
-  set selectedStudyCountMap(value: Map<string, CountItem>) {
-    this._selectedStudyCountMap = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
-  }
 }

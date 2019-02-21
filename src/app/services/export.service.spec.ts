@@ -15,9 +15,6 @@ import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {DataTableService} from './data-table.service';
 import {DataTableServiceMock} from './mocks/data-table.service.mock';
 import {ExportJob} from '../models/export-models/export-job';
-import {ExportDataType} from '../models/export-models/export-data-type';
-import {CohortService} from './cohort.service';
-import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
 import {StudyService} from './study.service';
@@ -27,10 +24,11 @@ import {AppConfig} from '../config/app.config';
 import {AppConfigMock, AppConfigSurveyExportMock} from '../config/app.config.mock';
 import {VariableService} from './variable.service';
 import {VariableServiceMock} from './mocks/variable.service.mock';
+import {CountServiceMock} from './mocks/count.service.mock';
+import {CountService} from './count.service';
 
 describe('ExportService', () => {
   let exportService: ExportService;
-  let cohortService: CohortService;
   let resourceService: ResourceService;
   let exportJob: ExportJob;
 
@@ -62,8 +60,8 @@ describe('ExportService', () => {
           useClass: DataTableServiceMock
         },
         {
-          provide: CohortService,
-          useClass: CohortServiceMock
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: VariableService,
@@ -74,7 +72,6 @@ describe('ExportService', () => {
     });
     resourceService = TestBed.get(ResourceService);
     exportService = TestBed.get(ExportService);
-    cohortService = TestBed.get(CohortService);
     exportJob = new ExportJob();
     exportJob.id = 'id';
     exportJob.name = 'test job name';
@@ -196,8 +193,8 @@ describe('ExportService with surveyTable', () => {
           useClass: DataTableServiceMock
         },
         {
-          provide: CohortService,
-          useClass: CohortServiceMock
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: VariableService,

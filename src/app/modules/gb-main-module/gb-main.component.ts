@@ -19,6 +19,7 @@ import {TransmartPackerHttpService} from '../../services/http/transmart-packer-h
 import {TransmartHttpService} from '../../services/http/transmart-http.service';
 import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
 import {VariableService} from '../../services/variable.service';
+import {CountService} from '../../services/count.service';
 
 @Component({
   selector: 'gb-main',
@@ -34,6 +35,7 @@ export class GbMainComponent implements OnInit {
               private transmartResourceService: TransmartResourceService,
               private transmartHttpService: TransmartHttpService,
               private transmartPackerHttpService: TransmartPackerHttpService,
+              private countService: CountService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private cohortService: CohortService,

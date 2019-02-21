@@ -14,14 +14,11 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from 'primeng/api';
 import {ConstraintService} from './constraint.service';
 import {Constraint} from '../models/constraint-models/constraint';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {ConstraintMark} from '../models/constraint-models/constraint-mark';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CountItem} from '../models/aggregate-models/count-item';
+import {CountService} from './count.service';
 
 @Injectable({
   providedIn: 'root'
@@ -58,7 +55,8 @@ export class VariableService {
   private _variablesViewMode: VariablesViewMode;
 
   constructor(private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private countService: CountService) {
     this.subscribeToVariableChanges();
   }
 
@@ -66,7 +64,7 @@ export class VariableService {
     // When the selectedConceptCountMap is updated and the tree is finished loading,
     // update the corresponding variable categorised list and sub-tree
     Observable.combineLatest(
-      this.constraintService.selectedConceptCountMapUpdated.asObservable(),
+      this.countService.selectedConceptCountMapUpdated.asObservable(),
       this.treeNodeService.treeNodesUpdated.asObservable()
     ).subscribe(res => {
       const isTreeLoadingFinished = res[1];
@@ -133,18 +131,15 @@ export class VariableService {
         }).bind(this), 500);
       } else {
         this.variables.length = 0;
-        const codes: Array<string> = Array.from(this.constraintService.selectedConceptCountMap.keys());
+        const codes: Array<string> = Array.from(this.countService.selectedConceptCountMap.keys());
         this.constraintService.concepts.forEach((concept: Concept) => {
           if (codes.includes(concept.code)) {
-            concept.counts = this.constraintService.selectedConceptCountMap.get(concept.code);
+            concept.counts = this.countService.selectedConceptCountMap.get(concept.code);
             this.variables.push(concept);
           }
         });
         this.variablesUpdated.next(this.variables);
-        this.updateVariablesTree(
-          this.constraintService.selectedStudyConceptCountMap,
-          this.constraintService.selectedConceptCountMap,
-          this.constraintService.selectedStudyCountMap);
+        this.updateVariablesTree();
         this.isUpdatingVariables = false;
         resolve(true);
       }
@@ -174,37 +169,30 @@ export class VariableService {
   /**
    * Update the tree data for rendering the tree nodes in variables panel,
    * based on a given set of concept codes as filtering criteria.
-   * @param {Map<string, Map<string, CountItem>>} selectedStudyConceptCountMap
-   * @param {Map<string, CountItem>} selectedConceptCountMap
-   * @param {Map<string, CountItem>} selectedStudyCountMap
    */
-  public updateVariablesTree(selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                             selectedConceptCountMap: Map<string, CountItem>,
-                             selectedStudyCountMap: Map<string, CountItem>) {
+  public updateVariablesTree() {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
     if (this.treeNodeService.treeNodesCopy.length === 0) {
       this.treeNodeService.treeNodesCopy = this.treeNodeService.copyTreeNodes(this.treeNodeService.treeNodes);
     }
     this.variablesTree =
-      this.updateVariablesTreeRecursion(this.treeNodeService.treeNodesCopy,
-        selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
+      this.updateVariablesTreeRecursion(this.treeNodeService.treeNodesCopy);
     this.selectAllVariablesTree(true);
   }
 
-  private updateVariablesTreeRecursion(nodes: TreeNode[],
-                                       selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>,
-                                       selectedConceptCountMap: Map<string, CountItem>,
-                                       selectedStudyCountMap: Map<string, CountItem>) {
+  private updateVariablesTreeRecursion(nodes: TreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
         let countItem: CountItem = null;
-        let conceptMap = selectedStudyConceptCountMap ? selectedStudyConceptCountMap.get(node['studyId']) : null;
+        let conceptMap = this.countService.selectedStudyConceptCountMap ?
+          this.countService.selectedStudyConceptCountMap.get(node['studyId']) : null;
         if (conceptMap && conceptMap.size > 0) {
           node['expanded'] = false;
           countItem = conceptMap.get(node['conceptCode']);
         } else {
-          countItem = selectedConceptCountMap ? selectedConceptCountMap.get(node['conceptCode']) : null;
+          countItem = this.countService.selectedConceptCountMap ?
+            this.countService.selectedConceptCountMap.get(node['conceptCode']) : null;
         }
         if (countItem && countItem.subjectCount > 0) {
           this.treeNodeService.formatNodeWithCounts(node, countItem);
@@ -212,14 +200,14 @@ export class VariableService {
         }
       } else if (node['children']) { // if the node is an intermediate node
         let newNodeChildren =
-          this.updateVariablesTreeRecursion(node['children'],
-            selectedStudyConceptCountMap, selectedConceptCountMap, selectedStudyCountMap);
+          this.updateVariablesTreeRecursion(node['children']);
         if (newNodeChildren.length > 0) {
           let nodeCopy = this.treeNodeService.copyTreeNodeUpward(node);
           nodeCopy['expanded'] = this.treeNodeService.depthOfTreeNode(nodeCopy) <= 2;
           nodeCopy['children'] = newNodeChildren;
           if (nodeCopy['type'] === 'STUDY') {
-            const countItem = selectedStudyCountMap ? selectedStudyCountMap.get(nodeCopy['studyId']) : null;
+            const countItem = this.countService.selectedStudyCountMap ?
+              this.countService.selectedStudyCountMap.get(nodeCopy['studyId']) : null;
             if (countItem && countItem.subjectCount > 0) {
               this.treeNodeService.formatNodeWithCounts(node, countItem);
               nodesWithCodes.push(nodeCopy);
@@ -278,7 +266,7 @@ export class VariableService {
   // get the combination of cohort constraint and variable constraint
   get combination(): Constraint {
     return new CombinationConstraint(
-      [this.constraintService.cohortConstraint(),
+      [this.constraintService.cohortSelectionConstraint(),
         this.constraintService.variableConstraint(this.variables)],
       CombinationState.And,
       ConstraintMark.OBSERVATION
