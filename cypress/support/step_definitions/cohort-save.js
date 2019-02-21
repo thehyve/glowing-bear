@@ -26,6 +26,7 @@ given("Cohort {string} is saved", (cohortName) => {
             'method': 'POST',
             'auth': {'bearer': token},
             'body': {
+              "subjectDimension": "patient",
               "name": cohortName,
               "queryConstraint": {
                 "type": "subselection",
