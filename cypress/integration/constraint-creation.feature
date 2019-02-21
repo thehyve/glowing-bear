@@ -26,7 +26,7 @@ Feature: create constraints by selecting nodes from the tree
     Given I am on the cohort-selection tab
     When I select all female patients from CATEGORICAL_VALUES
     Then there are '1' subjects
-  variable.service.spec.ts
+
   Scenario: create a constraint with or
     Given I am on the cohort-selection tab
     When I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TRIAL or EHR
