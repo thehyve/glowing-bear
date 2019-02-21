@@ -52,6 +52,8 @@ import {TransmartResourceService} from './services/transmart-resource.service';
 import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
 import {GbBackendHttpService} from './services/http/gb-backend-http.service';
 import {GbBackendHttpServiceMock} from './services/mocks/gb-backend-http.service.mock';
+import {CountServiceMock} from './services/mocks/count.service.mock';
+import {CountService} from './services/count.service';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -120,6 +122,10 @@ describe('AppComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: TreeNodeService,

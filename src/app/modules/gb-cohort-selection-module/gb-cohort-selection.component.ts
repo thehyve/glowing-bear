@@ -17,6 +17,7 @@ import {FileImportHelper} from '../../utilities/file-import-helper';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Cohort} from '../../models/cohort-models/cohort';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {CountService} from '../../services/count.service';
 
 @Component({
   selector: 'gb-cohort-selection',
@@ -25,13 +26,13 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 })
 export class GbCohortSelectionComponent implements OnInit {
 
-  @ViewChild('rootInclusionConstraintComponent') rootInclusionConstraintComponent: GbConstraintComponent;
-  @ViewChild('rootExclusionConstraintComponent') rootExclusionConstraintComponent: GbConstraintComponent;
+  @ViewChild('rootConstraintComponent') rootConstraintComponent: GbConstraintComponent;
 
   public cohortName: string;
 
   constructor(private cohortService: CohortService,
-              private constraintService: ConstraintService) {
+              private constraintService: ConstraintService,
+              private countService: CountService) {
     this.cohortName = '';
   }
 
@@ -54,28 +55,16 @@ export class GbCohortSelectionComponent implements OnInit {
   closeAccordion(event) {
   }
 
-  get inclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.inclusionCounts.subjectCount);
-  }
-
-  get exclusionSubjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.exclusionCounts.subjectCount);
-  }
-
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootInclusionConstraint;
-  }
-
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootExclusionConstraint;
-  }
-
   get subjectCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts.subjectCount);
+    return FormatHelper.formatCountNumber(this.countService.currentSelectionCount.subjectCount);
+  }
+
+  get rootConstraint(): CombinationConstraint {
+    return this.constraintService.rootConstraint;
   }
 
   get observationCount(): string {
-    return FormatHelper.formatCountNumber(this.cohortService.counts.observationCount);
+    return FormatHelper.formatCountNumber(this.countService.currentSelectionCount.observationCount);
   }
 
   get isSavingCohortCompleted(): boolean {

@@ -53,6 +53,8 @@ import {GbBackendHttpService} from '../../services/http/gb-backend-http.service'
 import {GbBackendHttpServiceMock} from '../../services/mocks/gb-backend-http.service.mock';
 import {VariableService} from '../../services/variable.service';
 import {VariableServiceMock} from '../../services/mocks/variable.service.mock';
+import {CountService} from '../../services/count.service';
+import {CountServiceMock} from '../../services/mocks/count.service.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -108,6 +110,10 @@ describe('GbMainComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: TreeNodeService,

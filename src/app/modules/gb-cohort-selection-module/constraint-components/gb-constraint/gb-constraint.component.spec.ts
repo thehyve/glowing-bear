@@ -25,6 +25,10 @@ import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
+import {InputSwitchModule} from 'primeng/primeng';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 
 describe('GbConstraintComponent', () => {
   let component: GbConstraintComponent;
@@ -65,6 +69,12 @@ describe('GbConstraintComponent', () => {
           provide: StudyService,
           useClass: StudyServiceMock
         }
+      ],
+      imports: [
+        BrowserAnimationsModule,
+        CommonModule,
+        FormsModule,
+        InputSwitchModule
       ]
     })
       .compileComponents();

@@ -47,4 +47,18 @@ describe('ConstraintVisitor', () => {
     }
   });
 
+  it('TransmartConstraintSerialiser should include negation', () => {
+    const studyConstraint = new StudyConstraint();
+    studyConstraint.negated = true;
+    let visitor = new TransmartConstraintSerialiser(false);
+
+    let spy1 = spyOn(visitor, 'visitNegationConstraint').and.callThrough();
+    let spy2 = spyOn(visitor, 'visitStudyConstraint').and.callThrough();
+
+    expect(visitor.visit(studyConstraint)).toBeDefined(
+      `Visitor does not give a result for constraint type: ${studyConstraint.className}`);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+  });
+
 });

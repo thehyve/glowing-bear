@@ -20,7 +20,8 @@ import {Concept} from '../models/constraint-models/concept';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Constraint} from '../models/constraint-models/constraint';
-import {TreeNode} from 'primeng/api';
+import {CountServiceMock} from './mocks/count.service.mock';
+import {CountService} from './count.service';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
@@ -29,6 +30,14 @@ describe('ConstraintService', () => {
     TestBed.configureTestingModule({
       providers: [
         ConstraintService,
+        {
+          provide: ResourceService,
+          useClass: ResourceServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
+        },
         {
           provide: TreeNodeService,
           useClass: TreeNodeServiceMock

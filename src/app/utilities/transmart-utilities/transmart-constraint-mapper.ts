@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,6 +22,7 @@ import {Study} from '../../models/constraint-models/study';
 import {Concept} from '../../models/constraint-models/concept';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {TransmartConstraintSerialiser} from './transmart-constraint-serialiser';
+import {ConstraintHelper} from '../constraint-utilities/constraint-helper';
 
 export class TransmartConstraintMapper {
 
@@ -328,8 +329,8 @@ export class TransmartConstraintMapper {
     } else if (type === 'true') { // -----------------------------------> If it is a true constraint
       constraint = new TrueConstraint();
     } else if (type === 'negation') { // ---------------------------> If it is a negation constraint
-      const childConstraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['arg']);
-      constraint = new NegationConstraint(childConstraint);
+      constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['arg']);
+      constraint.negated = true;
     }
     return constraint;
   }

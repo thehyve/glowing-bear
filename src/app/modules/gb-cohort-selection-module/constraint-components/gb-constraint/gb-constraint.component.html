@@ -1,11 +1,22 @@
-<div class="{{containerClass}}">
-  <!-- Remove Button -->
-  <button *ngIf="!isRoot"
-          type="button"
-          class="btn btn-outline-danger btn-sm pull-right gb-constraint-remove-btn"
-          (click)="remove()">
-    <i class="fa fa-times" aria-hidden="true"></i>
-  </button>
+<div [class.gb-negated-constraint]="constraint.negated" [class.gb-constraint]="!constraint.negated"
+     [class.gb-constraint-container-root]="isRootClassLevel"
+     [class.gb-constraint-container]="!isRootClassLevel"
+     [class.gb-constraint-container-border-left-1]="!isRootClassLevel && constraintDepth === 1"
+     [class.gb-constraint-container-border-left-2]="!isRootClassLevel && constraintDepth === 2"
+     [class.gb-constraint-container-border-left-3]="!isRootClassLevel && constraintDepth === 3"
+     [class.gb-constraint-container-border-left-4]="!isRootClassLevel && constraintDepth === 4">
+
+  <div *ngIf="!isRoot" class="pull-right form-inline gb-constraint-control-container">
+    <!-- Exclusion switch -->
+    <span>{{constraint.negated ? 'excluded' : 'included'}}</span>
+    <p-inputSwitch [(ngModel)]="constraint.negated" (onChange)="update()"></p-inputSwitch>
+    <!-- Remove Button -->
+    <button type="button"
+            class="btn btn-outline-danger btn-sm gb-constraint-remove-btn"
+            (click)="remove()">
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </button>
+  </div>
 
   <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
                              [constraint]="constraint"></gb-combination-constraint>
@@ -18,3 +29,4 @@
   <gb-pedigree-constraint *ngIf="constraint.className === 'PedigreeConstraint' "
                              [constraint]="constraint"></gb-pedigree-constraint>
 </div>
+

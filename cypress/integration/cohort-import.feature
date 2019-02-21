@@ -16,4 +16,4 @@ Feature: import cohort
     Given I am on the cohort-selection tab
     When I import a cohort with 'cohort-subject-ids-invalid.txt'
     Then Current cohort should contain '2 external subject IDs'
-    And Inclusion criteria should contain '0 subjects included'
+    And Summary should contain '0 subjects match your selection'

@@ -249,7 +249,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       }
     } else if (constraint.mark === ConstraintMark.SUBJECT) {
       constraint.mark = ConstraintMark.OBSERVATION;
-      let subObj = this.visitPedigreeConstraint(constraint);
+      let subObj = this.visit(constraint);
       constraint.mark = ConstraintMark.SUBJECT;
       result = {
         'type': 'subselection',

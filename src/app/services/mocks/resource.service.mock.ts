@@ -22,6 +22,7 @@ import {TransmartHttpService} from '../http/transmart-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -32,8 +33,7 @@ export class ResourceServiceMock {
   private crossTable: CrossTable;
   private aggregate: Aggregate;
 
-  inclusionCounts: CountItem;
-  exclusionCounts: CountItem;
+  cohortSelectionCounts: CountItem;
 
   constructor() {
     this.studies = [];
@@ -45,12 +45,9 @@ export class ResourceServiceMock {
     this.aggregate = new Aggregate();
   }
 
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new CountItem(200, 1000);
-      this.exclusionCounts = new CountItem(30, 200);
+      this.cohortSelectionCounts = new CountItem(200, 1000);
       resolve(true);
     });
   }
@@ -206,5 +203,12 @@ export class ResourceServiceMock {
 
   archiveExportJob(jobId: string): Observable<{}> {
     return Observable.of({});
+  }
+
+  saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
+    let subjectSet = new SubjectSet();
+    subjectSet.id = 1;
+    subjectSet.requestConstraints = constraint;
+    return Observable.of(subjectSet);
   }
 }

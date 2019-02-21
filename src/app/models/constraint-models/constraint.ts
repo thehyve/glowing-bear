@@ -16,11 +16,22 @@ export class Constraint {
   protected _mark: ConstraintMark;
   // The parent constraint
   protected _parentConstraint: Constraint;
+  // The negation flag indicating whether to add a logical negation to the constraints
+  protected _negated: boolean;
 
   constructor() {
     this.textRepresentation = '';
     this.mark = ConstraintMark.OBSERVATION;
     this.parentConstraint = null;
+    this.negated = false;
+  }
+
+  get negated(): boolean {
+    return this._negated;
+  }
+
+  set negated(value: boolean) {
+    this._negated = value;
   }
 
   get textRepresentation(): string {

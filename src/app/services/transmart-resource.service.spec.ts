@@ -17,7 +17,6 @@ import {TransmartStudyDimensions} from '../models/transmart-models/transmart-stu
 import {Dimension} from '../models/table-models/dimension';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 
@@ -172,36 +171,35 @@ describe('TransmartResourceService', () => {
   });
 
   const createMockConstraints = () => {
-    const inclusionConstraint = new ConceptConstraint();
-    inclusionConstraint.concept = new Concept();
-    inclusionConstraint.concept.code = 'Foo';
-    const exclusionConstraint = new ConceptConstraint();
-    exclusionConstraint.concept = new Concept();
-    exclusionConstraint.concept.code = 'Bar';
-    const excludedConstraint = new CombinationConstraint();
-    excludedConstraint.addChild(inclusionConstraint);
-    excludedConstraint.addChild(exclusionConstraint);
-    const constraint = new CombinationConstraint();
-    constraint.addChild(inclusionConstraint);
-    constraint.addChild(new NegationConstraint(exclusionConstraint));
+    const constraint1 = new ConceptConstraint();
+    constraint1.concept = new Concept();
+    constraint1.concept.code = 'Foo';
+    const constraint2 = new ConceptConstraint();
+    constraint2.concept = new Concept();
+    constraint2.concept.code = 'Bar';
+
+    const constraintWithoutNegation = new CombinationConstraint();
+    constraintWithoutNegation.addChild(constraint1);
+    constraintWithoutNegation.addChild(constraint2);
+
+    const constraintWithNegation = new CombinationConstraint();
+    constraint2.negated = true;
+    constraintWithoutNegation.addChild(constraint1);
+    constraintWithoutNegation.addChild(constraint2);
     return {
-      inclusionConstraint: inclusionConstraint,
-      excludedConstraint: excludedConstraint,
-      constraint: constraint
+      constraintWithoutNegation: constraintWithoutNegation,
+      constraintWithNegation: constraintWithNegation,
     }
   };
 
-  it('should compute counts for a query without exclusion constraint', (done) => {
+  it('should compute counts for a query without negated constraint', (done) => {
     const constraints = createMockConstraints();
     transmartResourceService.autosaveSubjectSets = false;
-    transmartResourceService.updateInclusionExclusionCounts(
-      constraints.inclusionConstraint, constraints.inclusionConstraint, null)
+    transmartResourceService.updateCohortSelectionCounts(constraints.constraintWithoutNegation)
       .then((response) => {
         expect(response).toBe(true);
-        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(100);
-        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(1000);
-        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(0);
-        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(0);
+        expect(transmartResourceService.counts.patientCount).toEqual(100);
+        expect(transmartResourceService.counts.observationCount).toEqual(1000);
         done();
       })
   });
@@ -211,29 +209,17 @@ describe('TransmartResourceService', () => {
     transmartResourceService.autosaveSubjectSets = false;
     spyOn(transmartHttpService, 'getCounts').and.callFake((constraint) => {
       const result = new TransmartCountItem();
-      switch (constraint) {
-        case constraints.inclusionConstraint:
-          result.patientCount = 400;
-          result.observationCount = 4000;
-          break;
-        case constraints.excludedConstraint:
-          result.patientCount = 150;
-          result.observationCount = 1500;
-          break;
-        default:
-          throw Error('Unexpected query');
-      }
+      result.patientCount = 400;
+      result.observationCount = 4000;
+
       return observableOf(result);
     });
 
-    transmartResourceService.updateInclusionExclusionCounts(
-      constraints.constraint, constraints.inclusionConstraint, constraints.excludedConstraint)
+    transmartResourceService.updateCohortSelectionCounts(constraints.constraintWithNegation)
       .then((response) => {
         expect(response).toBe(true);
-        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(400);
-        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(4000);
-        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(150);
-        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(1500);
+        expect(transmartResourceService.counts.patientCount).toEqual(400);
+        expect(transmartResourceService.counts.observationCount).toEqual(4000);
         done();
       })
   });
@@ -244,12 +230,12 @@ describe('TransmartResourceService', () => {
     spyOn(transmartHttpService, 'savePatientSet').and.callFake((name, constraint) => {
       const result = new SubjectSet();
       switch (constraint) {
-        case constraints.constraint:
+        case constraints.constraintWithoutNegation:
           // selected subjects: included subjects minus excluded subjects
           result.id = 123;
           result.setSize = 250;
           break;
-        case constraints.excludedConstraint:
+        case constraints.constraintWithNegation:
           // intersection between included subjects and excluded subjects
           result.id = 789;
           result.setSize = 150;
@@ -260,16 +246,12 @@ describe('TransmartResourceService', () => {
       return observableOf(result);
     });
 
-    transmartResourceService.updateInclusionExclusionCounts(
-      constraints.constraint, constraints.inclusionConstraint, constraints.excludedConstraint)
+    transmartResourceService.updateCohortSelectionCounts(constraints.constraintWithNegation)
       .then((response) => {
         expect(response).toBe(true);
-        // included subjects (including excluded subjects)
-        expect(transmartResourceService.inclusionCounts.patientCount).toEqual(400);
-        expect(transmartResourceService.inclusionCounts.observationCount).toEqual(-1);
-        // number of subjects excluded from the set of included subjects
-        expect(transmartResourceService.exclusionCounts.patientCount).toEqual(150);
-        expect(transmartResourceService.exclusionCounts.observationCount).toEqual(-1);
+        // number of subjects
+        expect(transmartResourceService.counts.patientCount).toEqual(150);
+        expect(transmartResourceService.counts.observationCount).toEqual(700);
         done();
       })
       .catch((error) => {
