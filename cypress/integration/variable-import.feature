@@ -14,5 +14,5 @@ Feature: variable import
   Scenario: handle invalid variable import
     Given I am on the export tab
     When I import variables with 'variable-invalid.json'
-    Then The number of selected variables should be '145'
+    Then The number of selected variables should be '178'
     Then I should see the message containing 'Invalid'
