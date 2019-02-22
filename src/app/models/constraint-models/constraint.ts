@@ -10,6 +10,8 @@ import {ConstraintMark} from './constraint-mark';
 
 export class Constraint {
 
+  static readonly BASIC_DIMENSION: string = 'patient';
+
   // The textual representation of this constraint
   protected _textRepresentation: string;
   // The enum indicating the purpose of the constraint: is it for querying subjects? Or observations?
@@ -18,12 +20,15 @@ export class Constraint {
   protected _parentConstraint: Constraint;
   // The negation flag indicating whether to add a logical negation to the constraints
   protected _negated: boolean;
+  // The dimension for which observations will be selected
+  private _dimension: string;
 
   constructor() {
     this.textRepresentation = '';
     this.mark = ConstraintMark.OBSERVATION;
     this.parentConstraint = null;
     this.negated = false;
+    this.dimension = Constraint.BASIC_DIMENSION;
   }
 
   get negated(): boolean {
@@ -60,5 +65,13 @@ export class Constraint {
 
   get className(): string {
     return 'Constraint';
+  }
+
+  get dimension(): string {
+    return this._dimension;
+  }
+
+  set dimension(value: string) {
+    this._dimension = value;
   }
 }

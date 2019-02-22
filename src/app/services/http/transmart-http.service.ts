@@ -27,6 +27,7 @@ import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
 
 @Injectable({
@@ -142,7 +143,7 @@ export class TransmartHttpService {
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_study_and_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'countsPerStudy';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -155,7 +156,7 @@ export class TransmartHttpService {
    */
   getCountsPerStudy(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_study';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'countsPerStudy';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -167,7 +168,7 @@ export class TransmartHttpService {
    */
   getCountsPerConcept(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/counts_per_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'countsPerConcept';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -179,7 +180,7 @@ export class TransmartHttpService {
    */
   getCounts(constraint: Constraint): Observable<TransmartCountItem> {
     const urlPart = 'observations/counts';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = false;
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -193,14 +194,14 @@ export class TransmartHttpService {
    */
   getAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'aggregatesPerConcept';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
   getCategoricalAggregate(constraint: Constraint): Observable<object> {
     const urlPart = 'observations/aggregates_per_categorical_concept';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'aggregatesPerCategoricalConcept';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -213,7 +214,7 @@ export class TransmartHttpService {
    */
   getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
     const urlPart = `dimensions/trial visit/elements`;
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'elements';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -237,7 +238,7 @@ export class TransmartHttpService {
    */
   getPatients(constraint: Constraint): Observable<TransmartPatient[]> {
     const urlPart = 'patients';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'patients';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -251,7 +252,7 @@ export class TransmartHttpService {
    */
   getExportDataFormats(constraint: Constraint): Observable<string[]> {
     const urlPart = 'export/data_formats';
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'dataFormats';
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
@@ -305,7 +306,7 @@ export class TransmartHttpService {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {
-      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+      constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint),
       elements: elements
     };
     if (tableState) {
@@ -329,7 +330,7 @@ export class TransmartHttpService {
     const urlPart = `export/${jobId}/run`;
     const responseField = 'exportJob';
     let body = {
-      constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+      constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint),
       elements: elements,
       includeMeasurementDateColumns: dateColumnsIncluded
     };
@@ -371,7 +372,7 @@ export class TransmartHttpService {
   // -------------------------------------- patient set calls --------------------------------------
   savePatientSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     const urlPart = `patient_sets?name=${name}&reuse=true`;
-    const body = TransmartConstraintMapper.mapConstraint(constraint);
+    const body = TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint);
     return this.httpHelper.postCall(urlPart, body, null);
   }
 
@@ -382,7 +383,7 @@ export class TransmartHttpService {
     const urlPart = `observations/table`;
     let body = {
       type: 'clinical',
-      constraint: TransmartConstraintMapper.mapConstraint(constraint),
+      constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint),
       rowDimensions: tableState.rowDimensions,
       columnDimensions: tableState.columnDimensions,
       offset: offset,
@@ -398,7 +399,7 @@ export class TransmartHttpService {
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
     const urlPart = `dimensions/study/elements`;
-    const body = {constraint: TransmartConstraintMapper.mapConstraint(constraint)};
+    const body = {constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)};
     const responseField = 'elements';
     return this.httpHelper.postCall(urlPart, body, responseField).pipe(map(
       (elements: TransmartStudyDimensionElement[]) => elements.map(element => element.name)
@@ -410,11 +411,22 @@ export class TransmartHttpService {
                 columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
     const urlPart = 'observations/crosstable';
     const body = {
-      subjectConstraint: TransmartConstraintMapper.mapConstraint(baseConstraint),
-      rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint)),
-      columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraint(constraint))
+      subjectConstraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(baseConstraint),
+      rowConstraints: rowConstraints.map(constraint => TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint)),
+      columnConstraints: columnConstraints.map(constraint => TransmartConstraintMapper.mapConstraintOnPatientLevel(constraint))
     };
     return this.httpHelper.postCall(urlPart, body, null);
+  }
+
+  // -------------------------------------- dimension calls --------------------------------------
+
+  /**
+   * Get a list of all dimensions supported by transmart.
+   */
+  getDimensions(): Observable<TransmartDimension[]> {
+    const urlPart = 'dimensions';
+    const responseField = 'dimensions';
+    return this.httpHelper.getCall(urlPart, responseField);
   }
 
 }

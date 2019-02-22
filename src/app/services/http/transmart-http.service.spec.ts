@@ -20,6 +20,10 @@ import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {of as observableOf} from 'rxjs';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
+import {ConceptConstraint} from "../../models/constraint-models/concept-constraint";
+import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
+import {TransmartConstraintMapper} from "../../utilities/transmart-utilities/transmart-constraint-mapper";
+import {Concept} from "../../models/constraint-models/concept";
 
 describe('TransmartHttpService', () => {
 
@@ -405,5 +409,53 @@ describe('TransmartHttpService', () => {
       expect(MessageHelper.messages[messageCount].summary).toContain('A server-side error occurred');
     });
   });
+
+  it('should wrap constraints into patient subselection',
+    inject([HttpTestingController, TransmartHttpService],
+    (httpMock: HttpTestingController, service: TransmartHttpService) => {
+      const mockData = {
+        foo: 'bar'
+      };
+      const c1 = new ConceptConstraint();
+      c1.concept = new Concept();
+      const mockConstraint = new CombinationConstraint();
+      mockConstraint.addChild(c1);
+      mockConstraint.dimension = 'patient';
+      let spy = spyOn(TransmartConstraintMapper, 'wrapWithCombinationConstraint').and.callThrough();
+
+      service.getCounts(mockConstraint).subscribe((res) => {
+        expect(res['foo']).toBe('bar');
+      });
+      const url = service.endpointUrl + '/observations/counts';
+      const req = httpMock.expectOne(url);
+
+      expect(spy).not.toHaveBeenCalled();
+      expect(req.request.body).toEqual({
+        constraint: {
+          type: 'concept',
+          conceptCode: undefined
+        }
+      });
+      req.flush(mockData);
+
+      mockConstraint.dimension = 'Diagnosis ID';
+      service.getCounts(mockConstraint).subscribe((res) => {
+        expect(res['foo']).toBe('bar');
+      });
+      const req2 = httpMock.expectOne(url);
+      expect(spy).toHaveBeenCalled();
+      expect(req2.request.body).toEqual({
+        constraint: {
+          type: 'subselection',
+          dimension: 'Diagnosis ID',
+          constraint: {
+            type: 'concept',
+            conceptCode: undefined
+          }
+        }
+      });
+      req2.flush(mockData);
+
+    }));
 
 });

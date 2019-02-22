@@ -23,6 +23,7 @@ import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -211,4 +212,9 @@ export class ResourceServiceMock {
     subjectSet.requestConstraints = constraint;
     return Observable.of(subjectSet);
   }
+
+  get dimensions(): Observable<TransmartDimension[]> {
+    return Observable.of([]);
+  }
+
 }

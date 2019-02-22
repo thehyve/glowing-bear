@@ -18,7 +18,7 @@ import {Cohort} from '../../models/cohort-models/cohort';
 import {CohortSubscriptionFrequency} from '../../models/cohort-models/cohort-subscription-frequency';
 import {MessageHelper} from '../message-helper';
 import {DataTable} from '../../models/table-models/data-table';
-import {Dimension} from '../../models/table-models/dimension';
+import {TableDimension} from '../../models/table-models/table-dimension';
 
 export class ConstraintHelper {
 
@@ -192,10 +192,10 @@ export class ConstraintHelper {
 
   static mapDataTabletoObject(dataTable: DataTable): object {
     let obj = {};
-    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
+    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: TableDimension) => {
       return dim.name;
     });
-    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: Dimension) => {
+    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: TableDimension) => {
       return dim.name;
     });
     return obj;

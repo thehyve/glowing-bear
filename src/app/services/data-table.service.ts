@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {Injectable} from '@angular/core';
-import {Dimension} from '../models/table-models/dimension';
+import {TableDimension} from '../models/table-models/table-dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
@@ -22,8 +22,8 @@ import {VariableService} from './variable.service';
 })
 export class DataTableService {
 
-  private _prevRowDimensions: Array<Dimension>;
-  private _prevColDimensions: Array<Dimension>;
+  private _prevRowDimensions: Array<TableDimension>;
+  private _prevColDimensions: Array<TableDimension>;
   private _dataTable: DataTable;
 // Indicate if the current data table is dirty
   private _isDirty: boolean;
@@ -113,28 +113,28 @@ export class DataTableService {
 
   private updatePrevDimensions() {
     this.prevRowDimensions = [];
-    this.rowDimensions.forEach((dim: Dimension) => {
-      this.prevRowDimensions.push(new Dimension(dim.name));
+    this.rowDimensions.forEach((dim: TableDimension) => {
+      this.prevRowDimensions.push(new TableDimension(dim.name));
     });
     this.prevColDimensions = [];
-    this.columnDimensions.forEach((dim: Dimension) => {
-      this.prevColDimensions.push(new Dimension(dim.name));
+    this.columnDimensions.forEach((dim: TableDimension) => {
+      this.prevColDimensions.push(new TableDimension(dim.name));
     });
   }
 
-  get rowDimensions(): Dimension[] {
+  get rowDimensions(): TableDimension[] {
     return this.dataTable.rowDimensions;
   }
 
-  set rowDimensions(value: Dimension[]) {
+  set rowDimensions(value: TableDimension[]) {
     this.dataTable.rowDimensions = value;
   }
 
-  get columnDimensions(): Dimension[] {
+  get columnDimensions(): TableDimension[] {
     return this.dataTable.columnDimensions;
   }
 
-  set columnDimensions(value: Dimension[]) {
+  set columnDimensions(value: TableDimension[]) {
     this.dataTable.columnDimensions = value;
   }
 
@@ -156,19 +156,19 @@ export class DataTableService {
     }
   }
 
-  get prevRowDimensions(): Array<Dimension> {
+  get prevRowDimensions(): Array<TableDimension> {
     return this._prevRowDimensions;
   }
 
-  set prevRowDimensions(value: Array<Dimension>) {
+  set prevRowDimensions(value: Array<TableDimension>) {
     this._prevRowDimensions = value;
   }
 
-  get prevColDimensions(): Array<Dimension> {
+  get prevColDimensions(): Array<TableDimension> {
     return this._prevColDimensions;
   }
 
-  set prevColDimensions(value: Array<Dimension>) {
+  set prevColDimensions(value: Array<TableDimension>) {
     this._prevColDimensions = value;
   }
 

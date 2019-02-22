@@ -181,6 +181,7 @@ export class ConstraintService {
       let result: CombinationConstraint = new CombinationConstraint();
       result.combinationState = CombinationState.Or;
       result.mark = ConstraintMark.OBSERVATION;
+      result.dimension = 'patient';
       variables
         .filter((variable: Concept) => {
           return variable.selected;
@@ -204,6 +205,7 @@ export class ConstraintService {
   }
 
   public restoreCohortConstraint(constraint: Constraint) {
+    this.rootConstraint.dimension = constraint.dimension;
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2

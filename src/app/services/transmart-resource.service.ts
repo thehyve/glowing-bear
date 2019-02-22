@@ -36,12 +36,15 @@ import {TransmartPackerHttpService} from './http/transmart-packer-http.service';
 import {Study} from '../models/constraint-models/study';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransmartResourceService {
+
+  static readonly SUBJECT_DIMENSION_TYPE = 'subject';
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
@@ -478,7 +481,7 @@ export class TransmartResourceService {
   /**
    * Gets available dimensions for data table
    * @param {Constraint} constraint
-   * @returns {Observable<Dimension[]>}
+   * @returns {Observable<TableDimension[]>}
    */
   getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     // Fetch study names for the constraint
@@ -500,14 +503,23 @@ export class TransmartResourceService {
     return this.transmartHttpService.getStudyIds(constraint);
   }
 
-  get sortableDimensions(): Set<string> {
-    return TransmartHttpService.sortableDimensions;
-  }
-
   getCrossTable(baseConstraint: Constraint,
                 rowConstraints: Constraint[],
                 columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
     return this.transmartHttpService.getCrossTable(baseConstraint, rowConstraints, columnConstraints);
+  }
+
+  get sortableDimensions(): Set<string> {
+    return TransmartHttpService.sortableDimensions;
+  }
+
+  getSubjectDimensions(): Observable<TransmartDimension[]> {
+    return this.transmartHttpService.getDimensions().pipe(
+      map((transmartDimensions: TransmartDimension[]) => {
+        return transmartDimensions.filter( transmartDimension =>
+          transmartDimension.dimensionType &&
+          transmartDimension.dimensionType.toLowerCase() === TransmartResourceService.SUBJECT_DIMENSION_TYPE);
+      }));
   }
 
 }

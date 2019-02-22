@@ -6,12 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {DimensionValue} from './dimension-value';
+import {TableDimensionValue} from './table-dimension-value';
 
-export class Dimension {
+export class TableDimension {
   private _name: string;
   // the names of the categorical values that this dimension contains
-  private _values: DimensionValue[];
+  private _values: TableDimensionValue[];
 
   constructor(name: string) {
     this.name = name;
@@ -26,11 +26,11 @@ export class Dimension {
     this._name = value;
   }
 
-  get values(): DimensionValue[] {
+  get values(): TableDimensionValue[] {
     return this._values;
   }
 
-  set values(value: DimensionValue[]) {
+  set values(value: TableDimensionValue[]) {
     this._values = value;
   }
 }

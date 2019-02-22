@@ -6,13 +6,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Dimension} from '../../models/table-models/dimension';
+import {TableDimension} from '../../models/table-models/table-dimension';
 import {Row} from '../../models/table-models/row';
 import {TransmartColumnHeaders} from '../../models/transmart-models/transmart-column-headers';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
-import {DimensionValue} from '../../models/table-models/dimension-value';
-import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
+import {TableDimensionValue} from '../../models/table-models/table-dimension-value';
+import {TransmartTableDimension} from '../../models/transmart-models/transmart-table-dimension';
 import {Col} from '../../models/table-models/col';
 import {TransmartRowHeader} from '../../models/transmart-models/transmart-row-header';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
@@ -91,29 +91,29 @@ export class TransmartDataTableMapper {
     dataTable.isLastPage = transmartTable.rowCount != null;
 
     // get row dimensions
-    transmartTable.rowDimensions.forEach((rowDim: TransmartDimension) => {
-      let rowDimension = new Dimension(rowDim.name);
+    transmartTable.rowDimensions.forEach((rowDim: TransmartTableDimension) => {
+      let rowDimension = new TableDimension(rowDim.name);
       if (rowDim.elements != null) {
         let elements = this.convertObjectToMap(rowDim.elements);
         elements.forEach((value: Map<string, object>, key: string) => {
-          rowDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(rowDim.name, value)));
+          rowDimension.values.push(new TableDimensionValue(key, this.getDimensionMetadata(rowDim.name, value)));
         });
       } else {
-        rowDimension.values.push(new DimensionValue(null));
+        rowDimension.values.push(new TableDimensionValue(null));
       }
       dataTable.rowDimensions.push(rowDimension);
     });
 
     // get column dimensions
-    transmartTable.columnDimensions.forEach((colDim: TransmartDimension) => {
-      let colDimension = new Dimension(colDim.name);
+    transmartTable.columnDimensions.forEach((colDim: TransmartTableDimension) => {
+      let colDimension = new TableDimension(colDim.name);
       if (colDim.elements != null) {
         let elements = this.convertObjectToMap(colDim.elements);
         elements.forEach((value: Map<string, object>, key: string) => {
-          colDimension.values.push(new DimensionValue(key, this.getDimensionMetadata(colDim.name, value)));
+          colDimension.values.push(new TableDimensionValue(key, this.getDimensionMetadata(colDim.name, value)));
         });
       } else {
-        colDimension.values.push(new DimensionValue(null));
+        colDimension.values.push(new TableDimensionValue(null));
       }
       dataTable.columnDimensions.push(colDimension);
     });
@@ -138,7 +138,7 @@ export class TransmartDataTableMapper {
             row.addDatum(null, null);
           } else {
             // if dimension is indexed
-            let indexedDimension: TransmartDimension = transmartTable.columnDimensions.filter(
+            let indexedDimension: TransmartTableDimension = transmartTable.columnDimensions.filter(
               dim => dim.name === transmartColumnHeader.dimension)[0];
             let metadata = this.getDimensionMetadata(indexedDimension.name, indexedDimension.elements[key]);
             let val = indexedDimension.elements[key][headerNameField];
@@ -158,7 +158,7 @@ export class TransmartDataTableMapper {
       transmartTable.rows[i].rowHeaders.forEach((rowHeader: TransmartRowHeader) => {
         if (rowHeader.key) {
           // if dimension is indexed
-          let indexedDimension: TransmartDimension = transmartTable.rowDimensions
+          let indexedDimension: TransmartTableDimension = transmartTable.rowDimensions
             .filter(dim => dim.name === rowHeader.dimension)[0];
           let dimensionObject = indexedDimension.elements[rowHeader.key];
           let val: any;

@@ -14,11 +14,13 @@ import {TransmartPackerHttpServiceMock} from './mocks/transmart-packer-http.serv
 import {DataTable} from '../models/table-models/data-table';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
-import {Dimension} from '../models/table-models/dimension';
+import {TableDimension} from '../models/table-models/table-dimension';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
 describe('TransmartResourceService', () => {
 
@@ -96,8 +98,8 @@ describe('TransmartResourceService', () => {
     });
     transmartResourceService.exportDataView = 'dataTable';
     const table = new DataTable();
-    table.rowDimensions = [new Dimension('patient')];
-    table.columnDimensions = [new Dimension(('concept'))];
+    table.rowDimensions = [new TableDimension('patient')];
+    table.columnDimensions = [new TableDimension(('concept'))];
     const dataType = new ExportDataType('clinical', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
     transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [dataType], table, false);
@@ -114,8 +116,8 @@ describe('TransmartResourceService', () => {
     mockConstraint.concept = new Concept();
 
     const dimensions = new TransmartStudyDimensions();
-    dimensions.availableDimensions.push(new Dimension('patient'));
-    dimensions.availableDimensions.push(new Dimension('study'));
+    dimensions.availableDimensions.push(new TableDimension('patient'));
+    dimensions.availableDimensions.push(new TableDimension('study'));
     const dimensionsSpy = spyOn(transmartResourceService, 'getDimensions').and.returnValue(observableOf(dimensions));
     const exportSpy = spyOn(transmartHttpService, 'runExportJob').and.callFake(() => {
       return observableOf(null);
@@ -259,6 +261,17 @@ describe('TransmartResourceService', () => {
         fail('Unexpected error');
         done();
       })
+  });
+
+  it('should get subject dimensions', (done) => {
+    transmartResourceService.getSubjectDimensions()
+      .subscribe((res: TransmartDimension[]) => {
+        let resultNames = res.map(r => r.name);
+        expect(res.length).toBe(2);
+        expect(resultNames).toContain('td2');
+        expect(resultNames).toContain('td4');
+        done();
+      });
   });
 
 });

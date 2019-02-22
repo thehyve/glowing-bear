@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {ConstraintService} from '../../../../services/constraint.service';
@@ -26,6 +26,7 @@ export class GbConstraintComponent implements OnInit {
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
   droppedConstraint: Constraint = null;
+
 
   constructor(protected authService: AuthenticationService,
               protected treeNodeService: TreeNodeService,
@@ -95,4 +96,5 @@ export class GbConstraintComponent implements OnInit {
     return this.constraint.className === 'CombinationConstraint'
       && (<CombinationConstraint>this.constraint).isRoot;
   }
+
 }

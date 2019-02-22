@@ -25,6 +25,7 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
     if (constraint.negated) {
       let constraintCopy = Object.create(constraint);
       constraintCopy.negated = false;
+      constraintCopy.dimension = constraint.dimension;
       return this.visit(new NegationConstraint(constraintCopy));
     }
     switch (constraint.className) {

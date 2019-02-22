@@ -13,7 +13,6 @@ import {TrueConstraint} from './true-constraint';
 import {ConstraintMark} from './constraint-mark';
 
 export class CombinationConstraint extends Constraint {
-
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
@@ -92,7 +91,7 @@ export class CombinationConstraint extends Constraint {
 
   optimize(): Constraint {
     if (this.children.length > 0) {
-      if (this.children.length > 1) {
+      if (this.children.length > 1 || this.modifiesLowerLevels) {
         return this;
       } else {
         let child = this.children[0];
@@ -106,5 +105,9 @@ export class CombinationConstraint extends Constraint {
     } else {
       return new TrueConstraint();
     }
+  }
+
+  private get modifiesLowerLevels(): boolean {
+    return this.children[0].negated || this.dimension !== this.children[0].dimension;
   }
 }

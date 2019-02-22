@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -60,23 +60,24 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
   /**
    * Wrap a given query object with subselection clause
    * @param {Object} queryObject
+   * @param {string} dimension - dimension for the subselection constraint
    * @returns {Object}
    */
-  static wrapWithSubselection(queryObject: object): object {
+  static wrapWithSubselection(queryObject: object, dimension: string): object {
     let queryObj = this.unWrapNestedQueryObject(queryObject);
     if (queryObj['type'] === 'true') {
       return {'type': 'true'};
     } else if (queryObj['type'] !== 'negation') {
       return {
         'type': 'subselection',
-        'dimension': 'patient',
+        'dimension': dimension,
         'constraint': queryObj
       };
     } else {
       const arg = queryObj['arg'];
       const sub = {
         'type': 'subselection',
-        'dimension': 'patient',
+        'dimension': dimension,
         'constraint': arg
       };
       return {
@@ -230,7 +231,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       constraint.mark = ConstraintMark.SUBJECT;
       result = {
         'type': 'subselection',
-        'dimension': 'patient',
+        'dimension': constraint.dimension,
         'constraint': subObj
       };
     }
@@ -253,7 +254,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       constraint.mark = ConstraintMark.SUBJECT;
       result = {
         'type': 'subselection',
-        'dimension': 'patient',
+        'dimension': constraint.dimension,
         'constraint': subObj
       };
     }
@@ -272,7 +273,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
         'type': 'negation',
         'arg': {
           'type': 'subselection',
-          'dimension': 'patient',
+          'dimension': constraint.dimension,
           'constraint': this.visit(constraint.constraint)
         }
       }
@@ -352,7 +353,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       constraint.mark = ConstraintMark.SUBJECT;
       result = {
         'type': 'subselection',
-        'dimension': 'patient',
+        'dimension': constraint.dimension,
         'constraint': subObj
       };
     }
@@ -379,32 +380,32 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
   visitCombinationConstraint(constraint: CombinationConstraint): object {
     let optConstraint = constraint.optimize();
     if (optConstraint.className === 'CombinationConstraint') {
-      let constraint1: CombinationConstraint = <CombinationConstraint>optConstraint;
+      let combination: CombinationConstraint = <CombinationConstraint>optConstraint;
       let result = null;
       // Collect children query objects
-      let childQueryObjects: Object[] = this.getNonEmptyChildObjects(constraint1);
+      let childQueryObjects: Object[] = this.getNonEmptyChildObjects(combination);
       if (childQueryObjects.length > 0) {
-        if (constraint1.mark === ConstraintMark.SUBJECT) {
+        if (combination.mark === ConstraintMark.SUBJECT) {
           if (childQueryObjects.length === 1) {
-            result = TransmartConstraintSerialiser.wrapWithSubselection(childQueryObjects[0]);
+            result = TransmartConstraintSerialiser.wrapWithSubselection(childQueryObjects[0], combination.dimension);
           } else {
             // Wrap the child query objects in subselections
             childQueryObjects = childQueryObjects.map(queryObj => {
-              return TransmartConstraintSerialiser.wrapWithSubselection(queryObj);
+              return TransmartConstraintSerialiser.wrapWithSubselection(queryObj, combination.dimension);
             });
             // Wrap in and/or constraint
             result = {
-              type: constraint1.combinationState === CombinationState.And ? 'and' : 'or',
+              type: combination.combinationState === CombinationState.And ? 'and' : 'or',
               args: childQueryObjects
             };
           }
-        } else if (constraint1.mark === ConstraintMark.OBSERVATION) {
+        } else if (combination.mark === ConstraintMark.OBSERVATION) {
           if (childQueryObjects.length === 1) {
             result = childQueryObjects[0];
           } else {
             // Wrap in and/or constraint
             result = {
-              type: constraint1.combinationState === CombinationState.And ? 'and' : 'or',
+              type: combination.combinationState === CombinationState.And ? 'and' : 'or',
               args: childQueryObjects
             };
           }

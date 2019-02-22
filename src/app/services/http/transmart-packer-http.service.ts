@@ -89,7 +89,7 @@ export class TransmartPackerHttpService {
     let body = {
       job_type: this.customExportJobName,
       job_parameters: {
-        constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
+        constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint),
         custom_name: jobName
       }
     };

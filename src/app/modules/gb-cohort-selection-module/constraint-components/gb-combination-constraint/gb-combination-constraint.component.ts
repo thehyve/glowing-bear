@@ -13,7 +13,7 @@ import {Constraint} from '../../../../models/constraint-models/constraint';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
-import {TreeNode} from 'primeng/api';
+import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
@@ -28,8 +28,17 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   searchResults: Constraint[];
   selectedConstraint: Constraint;
+  cohortTypes: SelectItem[];
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.cohortTypes = [];
+    for (let dim of this.cohortService.dimensions) {
+      let ctype: SelectItem = {
+        label: dim.name,
+        value: dim.name
+      };
+      this.cohortTypes.push(ctype);
+    }
   }
 
   get isAnd(): boolean {
@@ -61,10 +70,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onSelect(selectedConstraint) {
     if (selectedConstraint != null) {
-
       // Create a copy of the selected constraint
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
+      newConstraint.dimension = this.constraint.dimension;
 
       if (newConstraint.className === 'CombinationConstraint') {
         // we don't want to copy a CombinationConstraint's children
@@ -93,10 +102,16 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+      this.droppedConstraint.dimension = combinationConstraint.dimension;
       combinationConstraint.addChild(this.droppedConstraint);
       this.update();
       this.droppedConstraint = null;
     }
+  }
+
+  onCohortTypeChange() {
+    this.handleCohortTypeChange();
+    this.update();
   }
 
   get combinationState() {
@@ -113,8 +128,17 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       '' : 'gb-combination-constraint-child-container';
   }
 
+
   addChildCombinationConstraint() {
     (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+  }
+
+  handleCohortTypeChange() {
+    this.children.forEach(child => {
+      if (child.className !== 'CombinationConstraint') {
+        child.dimension = this.constraint.dimension;
+      }
+    })
   }
 
 }

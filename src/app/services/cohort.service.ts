@@ -27,6 +27,7 @@ import {CountService} from './count.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Constraint} from '../models/constraint-models/constraint';
+import {Dimension} from '../models/cohort-models/dimension';
 
 /**
  * This service concerns with
@@ -67,6 +68,9 @@ export class CohortService {
   private _isCohortSubscriptionIncluded = false;
   // Flag indicating if saving a cohort is finished
   private _isSavingCohortCompleted = true;
+  // List of all available cohort types
+  private _dimensions: Dimension[] = [];
+
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private constraintService: ConstraintService,
@@ -74,6 +78,7 @@ export class CohortService {
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.saveSubjectSetBeforeUpdatingCounts = this.appConfig.getConfig('autosave-subject-sets');
+    this.loadCohortTypes();
     this.loadCohorts();
     // initial updates
     this.updateCountsWithCurrentCohort();
@@ -85,6 +90,50 @@ export class CohortService {
     return this.updateCountsWithCurrentCohort();
   }
 
+  /**
+   * ----------------------------- Update the current cohort panel -----------------------------
+   */
+  public updateCountsWithCurrentCohort(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.isDirty) {
+        this.isUpdatingCurrent = true;
+        let constraint = this.constraintService.cohortSelectionConstraint();
+        this.countService.updateCurrentSelectionCount(constraint)
+          .then(() => {
+            this.currentCohort.constraint = constraint;
+            this.currentCohort.updateDate = new Date().toISOString();
+            this.isUpdatingCurrent = false;
+            this.isDirty = false;
+
+            if (this.currentCohort.selected) {
+              this.updateCountsWithAllCohorts()
+                .then(() => {
+                  resolve(true)
+                })
+                .catch(err => {
+                  reject(err);
+                })
+            } else {
+              resolve(true);
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        resolve(true);
+      }
+    });
+  }
+
+  public loadCohortTypes() {
+    this.resourceService.dimensions
+      .subscribe(
+        (cohortTypes: Dimension[]) => {
+          for (let ct of cohortTypes) {
+            this.dimensions.push(ct);
+          }});
+  }
 
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
@@ -130,39 +179,6 @@ export class CohortService {
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
-  public updateCountsWithCurrentCohort(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (this.isDirty) {
-        this.isUpdatingCurrent = true;
-        let constraint = this.constraintService.cohortSelectionConstraint();
-        this.countService.updateCurrentSelectionCount(constraint)
-          .then(() => {
-            this.currentCohort.constraint = constraint;
-            this.currentCohort.updateDate = new Date().toISOString();
-            this.isUpdatingCurrent = false;
-            this.isDirty = false;
-
-            if (this.currentCohort.selected) {
-              this.updateCountsWithAllCohorts()
-                .then(() => {
-                  resolve(true)
-                })
-                .catch(err => {
-                  reject(err);
-                })
-            } else {
-              resolve(true);
-            }
-          })
-          .catch(err => {
-            reject(err);
-          });
-      } else {
-        resolve(true);
-      }
-    });
-  }
-
   public updateCountsWithAllCohorts(): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log('Updating counts from all cohorts...');
@@ -170,6 +186,7 @@ export class CohortService {
       let combination: CombinationConstraint = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
       combination.mark = ConstraintMark.SUBJECT;
+      combination.dimension = 'patient';
       this.cohorts.forEach((cohort: Cohort) => {
         if (cohort.selected) {
           combination.addChild(cohort.constraint);
@@ -437,5 +454,13 @@ export class CohortService {
 
   set saveSubjectSetBeforeUpdatingCounts(value: boolean) {
     this._saveSubjectSetBeforeUpdatingCounts = value;
+  }
+
+  get dimensions(): Dimension[] {
+    return this._dimensions;
+  }
+
+  set dimensions(value: Dimension[]) {
+    this._dimensions = value;
   }
 }
