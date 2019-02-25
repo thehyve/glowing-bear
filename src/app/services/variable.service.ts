@@ -239,9 +239,12 @@ export class VariableService {
     nodes.forEach((node: TreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
-        if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
+        if (values.includes(val)
+          && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
-        } else if (!values.includes(val) && this.selectedVariablesTree.includes(node)) {
+        } else if (!values.includes(val)
+          && this.treeNodeService.isVariableNode(node)
+          && this.selectedVariablesTree.includes(node)) {
           const index = this.selectedVariablesTree.indexOf(node);
           this.selectedVariablesTree.splice(index, 1);
         }
