@@ -1,7 +1,7 @@
 {
   "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
-  "app-url": "https://localhost:4200",
+  "app-url": "https://glowingbear-dev.thehyve.net",
   "app-version": "0.0.1-SNAPSHOT",
   "gb-backend-url": "https://gb-backend-dev.thehyve.net",
   "fractalis-url": "https://fractalis-dev.thehyve.net",
