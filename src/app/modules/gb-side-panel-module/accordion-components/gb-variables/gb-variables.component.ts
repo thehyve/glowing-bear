@@ -5,6 +5,7 @@ import {VariablesViewMode} from '../../../../models/variables-view-mode';
 import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
 import {VariableService} from '../../../../services/variable.service';
+import {Concept} from '../../../../models/constraint-models/concept';
 
 @Component({
   selector: 'gb-variables',
@@ -13,7 +14,9 @@ import {VariableService} from '../../../../services/variable.service';
 })
 export class GbVariablesComponent implements OnInit {
 
-  public allChecked: boolean;
+  private _allChecked: boolean;
+  public viewMode: VariablesViewMode;
+  public availableViewModes: SelectItem[];
 
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
@@ -21,18 +24,19 @@ export class GbVariablesComponent implements OnInit {
   public isUploadListenerNotAdded: boolean;
   public file: File; // holds the uploaded cohort file
 
-  private _availableViewModes: SelectItem[];
-
   constructor(private variableService: VariableService,
               private navbarService: NavbarService) {
-    this.allChecked = true;
     this.isUploadListenerNotAdded = true;
-    this.viewMode = VariablesViewMode.TREE_VIEW;
-    this.availableViewModes = this.listAvailableViewModes();
   }
 
   ngOnInit() {
-    this.checkAllVariables(true);
+    this.availableViewModes = Object.keys(VariablesViewMode).map(c => {
+      return {
+        label: VariablesViewMode[c],
+        value: VariablesViewMode[c]
+      }
+    }) as SelectItem[];
+    this.viewMode = VariablesViewMode.TREE_VIEW;
   }
 
   importVariables() {
@@ -62,36 +66,20 @@ export class GbVariablesComponent implements OnInit {
     }
   }
 
-  private listAvailableViewModes(): SelectItem[] {
-    return Object.keys(VariablesViewMode).map(c => {
-      return {
-        label: VariablesViewMode[c],
-        value: VariablesViewMode[c]}
-    }) as SelectItem[];
+  get allChecked(): boolean {
+    this._allChecked = this.variableService.variables.every((v: Concept) => {
+      return v.selected;
+    });
+    return this._allChecked;
   }
 
-  get viewMode(): VariablesViewMode {
-    return this.variableService.variablesViewMode;
-  }
-
-  set viewMode(value: VariablesViewMode) {
-    this.variableService.variablesViewMode = value;
-  }
-
-  get availableViewModes(): SelectItem[] {
-    return this._availableViewModes;
-  }
-
-  set availableViewModes(value: SelectItem[]) {
-    this._availableViewModes = value;
+  set allChecked(value: boolean) {
+    this._allChecked = value;
+    this.variableService.setVariableSelection(value);
   }
 
   get isExport(): boolean {
     return this.navbarService.isExport;
-  }
-
-  checkAllVariables(b: boolean) {
-    this.variableService.setVariableSelection(b);
   }
 
   get checkAllText(): string {

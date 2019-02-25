@@ -6,7 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {Injectable} from '@angular/core';
-import {VariablesViewMode} from '../models/variables-view-mode';
 import {Concept} from '../models/constraint-models/concept';
 import {CategorizedVariable} from '../models/constraint-models/categorized-variable';
 import {Observable, Subject} from 'rxjs';
@@ -52,7 +51,6 @@ export class VariableService {
   // [pDroppable] in gb-fractalis-control.component
   // [pDroppable] in gb-cross-table.component
   public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
-  private _variablesViewMode: VariablesViewMode;
 
   constructor(private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
@@ -320,14 +318,6 @@ export class VariableService {
 
   set draggedVariable(value: Concept) {
     this._draggedVariable = value;
-  }
-
-  get variablesViewMode(): VariablesViewMode {
-    return this._variablesViewMode;
-  }
-
-  set variablesViewMode(value: VariablesViewMode) {
-    this._variablesViewMode = value;
   }
 
   get selectedVariablesUpdated(): Subject<Concept[]> {
