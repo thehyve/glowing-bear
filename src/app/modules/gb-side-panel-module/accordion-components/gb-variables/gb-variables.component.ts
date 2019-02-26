@@ -21,7 +21,6 @@ import {Concept} from '../../../../models/constraint-models/concept';
 })
 export class GbVariablesComponent implements OnInit {
 
-  private _allChecked: boolean;
   public viewMode: VariablesViewMode;
   public availableViewModes: SelectItem[];
 
@@ -74,14 +73,12 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get allChecked(): boolean {
-    this._allChecked = this.variableService.variables.every((v: Concept) => {
+    return this.variableService.variables.every((v: Concept) => {
       return v.selected;
     });
-    return this._allChecked;
   }
 
   set allChecked(value: boolean) {
-    this._allChecked = value;
     this.variableService.setVariableSelection(value);
   }
 
