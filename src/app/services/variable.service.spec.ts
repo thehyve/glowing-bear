@@ -291,5 +291,4 @@ describe('VariableService', () => {
     expect(resultNodes[0]['label']).toBeUndefined();
     expect(resultNodes[1]['label']).toBeUndefined();
   });
-
 });

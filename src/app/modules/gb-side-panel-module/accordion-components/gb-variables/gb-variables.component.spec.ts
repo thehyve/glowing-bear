@@ -164,4 +164,16 @@ describe('GbVariablesComponent', () => {
     expect(spyCall).toHaveBeenCalled();
   });
 
+  it('should enable check mark only when all variables are selected', () => {
+    let c1 = new Concept();
+    c1.selected = true;
+    let c2 = new Concept();
+    c2.selected = true;
+    let dummies = [c1, c2];
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummies);
+    expect(component.allChecked).toBe(true);
+    c2.selected = false;
+    expect(component.allChecked).toBe(false);
+  });
+
 });
