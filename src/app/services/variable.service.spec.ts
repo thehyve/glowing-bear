@@ -291,4 +291,18 @@ describe('VariableService', () => {
     expect(resultNodes[0]['label']).toBeUndefined();
     expect(resultNodes[1]['label']).toBeUndefined();
   });
+
+  it('should import variables by names', () => {
+    const spy = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
+    const names = ['name1', 'name2'];
+    variableService.importVariablesByNames(names);
+    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, names, ['metadata', 'item_name']);
+  });
+
+  it('should import variables by paths', () => {
+    const spy = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
+    const paths = ['path1', 'path2'];
+    variableService.importVariablesByPaths(paths);
+    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, paths, ['fullName']);
+  });
 });
