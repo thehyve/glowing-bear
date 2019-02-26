@@ -23,11 +23,9 @@ export class VariableServiceMock {
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
 
-  // the tree data that is rendered in the variables panel
-  private _variablesTreeData: TreeNode[] = [];
-  // the selected tree data in the variables panel
-  private _selectedVariablesTreeData: TreeNode[] = [];
-  private _selectedVariablesTreeDataUpdated: Subject<TreeNode[]> = new Subject<TreeNode[]>();
+  private _variablesTree: TreeNode[] = [];
+  // The selected tree data in tree view in gb-variables
+  private _selectedVariablesTree: TreeNode[] = [];
 
   private _draggedVariable: Concept = null;
   // The scope identifier used by primeng for drag and drop
@@ -122,29 +120,19 @@ export class VariableServiceMock {
     this._selectedVariablesUpdated = value;
   }
 
-  get variablesTreeData(): TreeNode[] {
-    return this._variablesTreeData;
+  get variablesTree(): TreeNode[] {
+    return this._variablesTree;
   }
 
-  set variablesTreeData(value: TreeNode[]) {
-    this._variablesTreeData = value;
+  set variablesTree(value: TreeNode[]) {
+    this._variablesTree = value;
   }
 
-  get selectedVariablesTreeData(): TreeNode[] {
-    return this._selectedVariablesTreeData;
+  get selectedVariablesTree(): TreeNode[] {
+    return this._selectedVariablesTree;
   }
 
-  // this setter is invoked each time the user clicks to (un)check a variable tree node
-  set selectedVariablesTreeData(value: TreeNode[]) {
-    this._selectedVariablesTreeData = value;
-    this.selectedVariablesTreeDataUpdated.next(value);
-  }
-
-  get selectedVariablesTreeDataUpdated(): Subject<TreeNode[]> {
-    return this._selectedVariablesTreeDataUpdated;
-  }
-
-  set selectedVariablesTreeDataUpdated(value: Subject<TreeNode[]>) {
-    this._selectedVariablesTreeDataUpdated = value;
+  set selectedVariablesTree(value: TreeNode[]) {
+    this._selectedVariablesTree = value;
   }
 }

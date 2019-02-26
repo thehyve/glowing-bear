@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 - 2019  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
@@ -97,9 +104,9 @@ describe('GbVariablesComponent', () => {
     c3.selected = true;
     let spy1 = spyOnProperty(variableService, 'variables', 'get')
       .and.returnValue([c1, c2, c3]);
-    component.checkAllVariables(true);
+    component.allChecked = true;
     expect(component.checkAllText.includes('3'));
-    component.checkAllVariables(false);
+    component.allChecked = false;
     expect(component.checkAllText.includes('0'));
   });
 
@@ -155,6 +162,18 @@ describe('GbVariablesComponent', () => {
     const spyCall = spyOn(variableService, 'importVariablesByPaths').and.stub();
     component.handleVariablesFileUploadEvent(e);
     expect(spyCall).toHaveBeenCalled();
+  });
+
+  it('should enable check mark only when all variables are selected', () => {
+    let c1 = new Concept();
+    c1.selected = true;
+    let c2 = new Concept();
+    c2.selected = true;
+    let dummies = [c1, c2];
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummies);
+    expect(component.allChecked).toBe(true);
+    c2.selected = false;
+    expect(component.allChecked).toBe(false);
   });
 
 });

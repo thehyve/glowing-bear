@@ -1,3 +1,10 @@
+/**
+ * Copyright 2017 - 2019  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import {Component, OnInit} from '@angular/core';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
@@ -5,6 +12,7 @@ import {VariablesViewMode} from '../../../../models/variables-view-mode';
 import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
 import {VariableService} from '../../../../services/variable.service';
+import {Concept} from '../../../../models/constraint-models/concept';
 
 @Component({
   selector: 'gb-variables',
@@ -13,7 +21,8 @@ import {VariableService} from '../../../../services/variable.service';
 })
 export class GbVariablesComponent implements OnInit {
 
-  public allChecked: boolean;
+  public viewMode: VariablesViewMode;
+  public availableViewModes: SelectItem[];
 
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
   public readonly fileElementId: string = 'variablesCriteriaFileUpload';
@@ -21,18 +30,23 @@ export class GbVariablesComponent implements OnInit {
   public isUploadListenerNotAdded: boolean;
   public file: File; // holds the uploaded cohort file
 
-  private _availableViewModes: SelectItem[];
-
   constructor(private variableService: VariableService,
               private navbarService: NavbarService) {
-    this.allChecked = true;
     this.isUploadListenerNotAdded = true;
-    this.viewMode = VariablesViewMode.TREE_VIEW;
-    this.availableViewModes = this.listAvailableViewModes();
   }
 
   ngOnInit() {
-    this.checkAllVariables(true);
+    this.availableViewModes = this.listAvailableViewModes();
+    this.viewMode = VariablesViewMode.TREE_VIEW;
+  }
+
+  private listAvailableViewModes(): SelectItem[] {
+    return Object.keys(VariablesViewMode).map(c => {
+      return {
+        label: VariablesViewMode[c],
+        value: VariablesViewMode[c]
+      }
+    }) as SelectItem[];
   }
 
   importVariables() {
@@ -62,36 +76,18 @@ export class GbVariablesComponent implements OnInit {
     }
   }
 
-  private listAvailableViewModes(): SelectItem[] {
-    return Object.keys(VariablesViewMode).map(c => {
-      return {
-        label: VariablesViewMode[c],
-        value: VariablesViewMode[c]}
-    }) as SelectItem[];
+  get allChecked(): boolean {
+    return this.variableService.variables.every((v: Concept) => {
+      return v.selected;
+    });
   }
 
-  get viewMode(): VariablesViewMode {
-    return this.variableService.variablesViewMode;
-  }
-
-  set viewMode(value: VariablesViewMode) {
-    this.variableService.variablesViewMode = value;
-  }
-
-  get availableViewModes(): SelectItem[] {
-    return this._availableViewModes;
-  }
-
-  set availableViewModes(value: SelectItem[]) {
-    this._availableViewModes = value;
+  set allChecked(value: boolean) {
+    this.variableService.setVariableSelection(value);
   }
 
   get isExport(): boolean {
     return this.navbarService.isExport;
-  }
-
-  checkAllVariables(b: boolean) {
-    this.variableService.setVariableSelection(b);
   }
 
   get checkAllText(): string {
