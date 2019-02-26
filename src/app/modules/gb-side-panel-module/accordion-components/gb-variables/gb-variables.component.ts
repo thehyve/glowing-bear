@@ -36,13 +36,17 @@ export class GbVariablesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.availableViewModes = Object.keys(VariablesViewMode).map(c => {
+    this.availableViewModes = this.listAvailableViewModes();
+    this.viewMode = VariablesViewMode.TREE_VIEW;
+  }
+
+  private listAvailableViewModes(): SelectItem[] {
+    return Object.keys(VariablesViewMode).map(c => {
       return {
         label: VariablesViewMode[c],
         value: VariablesViewMode[c]
       }
     }) as SelectItem[];
-    this.viewMode = VariablesViewMode.TREE_VIEW;
   }
 
   importVariables() {
