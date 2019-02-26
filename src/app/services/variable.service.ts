@@ -51,6 +51,12 @@ export class VariableService {
   // [pDroppable] in gb-fractalis-control.component
   // [pDroppable] in gb-cross-table.component
   public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
+  /**
+   *   when set to true, variable import will be additional,
+   *   meaning that the previously selected variables will remain selected,
+   *   when set to false, the selected variables will only be the ones imported
+   */
+  private isAdditionalImport = true;
 
   constructor(private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
@@ -239,12 +245,16 @@ export class VariableService {
     nodes.forEach((node: TreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
-        if (values.includes(val)
+        if (
+          values.includes(val)
           && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
-        } else if (!values.includes(val)
+        } else if (
+          !this.isAdditionalImport
+          && !values.includes(val)
           && this.treeNodeService.isVariableNode(node)
-          && this.selectedVariablesTree.includes(node)) {
+          && this.selectedVariablesTree.includes(node)
+        ) {
           const index = this.selectedVariablesTree.indexOf(node);
           this.selectedVariablesTree.splice(index, 1);
         }
