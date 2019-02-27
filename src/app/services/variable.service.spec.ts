@@ -171,7 +171,7 @@ describe('VariableService', () => {
     node_1.parent = node;
     node_2.parent = node;
     node_2['fullName'] = '\\foo\\node_2\\';
-    node.children = [node_1, node_2];
+    node.children = [node_1, node_2, null];
 
     variableService.selectVariablesTreeByFields(
       [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName']);
@@ -179,7 +179,41 @@ describe('VariableService', () => {
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
+
+    spyOn(treeNodeService, 'isVariableNode').and.returnValue(true);
+
+    variableService['isAdditionalImport'] = true;
+    variableService.selectVariablesTreeByFields(
+      [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName']);
+    expect(variableService.selectedVariablesTree.length).toBe(2);
+    expect(variableService.selectedVariablesTree).toContain(node_1_2);
+    expect(variableService.selectedVariablesTree).toContain(node_2);
   });
+
+  it('should remove unselected tree nodes when additional import is off', () => {
+    let node: TreeNode = {};
+    let node_1: TreeNode = {};
+    let node_1_1: TreeNode = {};
+    let node_1_2: TreeNode = {};
+    let node_2: TreeNode = {};
+    node_1_1.parent = node_1;
+    node_1_2.parent = node_1;
+    node_1_1['fullName'] = '\\foo\\bar\\node_1_1\\';
+    node_1_2['fullName'] = '\\foo\\bar\\node_1_2\\';
+    node_1.children = [node_1_1, node_1_2];
+    node_1.parent = node;
+    node_2.parent = node;
+    node_2['fullName'] = '\\foo\\node_2\\';
+    node.children = [node_1, node_2];
+
+    variableService.selectVariablesTreeByFields(
+      [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName']);
+    variableService['isAdditionalImport'] = false;
+    variableService.selectVariablesTreeByFields(
+      [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName']);
+    expect(variableService.selectedVariablesTree.length).toBe(1);
+    expect(variableService.selectedVariablesTree).toContain(node_1_2);
+  })
 
   it('should select variables tree nodes by names', () => {
     let nodeABC: TreeNode = {};
