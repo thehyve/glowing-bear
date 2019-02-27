@@ -48,9 +48,8 @@ export class FractalisService {
   private _currentCacheTrys = 0;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
-
   private _chartDivSize: number;
-
+  private _enabled = true;
   private timer: Timer;
   private _variablesStatus: FractalisVariablesStatus;
 
@@ -64,23 +63,16 @@ export class FractalisService {
               private cohortService: CohortService,
               private resourceService: ResourceService) {
     this.chartDivSize = 35;
-
-    if (!this.appConfig.getConfig('enable-fractalis-analysis')) {
-      MessageHelper.alert('warn', 'Fractalis analysis is disabled.');
-    } else if (!fjs.fractalis) {
+    this.enabled = this.appConfig.getConfig('enable-fractalis-analysis');
+    if (this.enabled && !fjs.fractalis) {
       MessageHelper.alert('error', 'Failed to import Fractalis.');
     } else {
-      this.setupFractalis();
-      this.selectedVariablesUpdated.asObservable().subscribe(variables => {
-        this.prepareCache(variables);
-      });
       this.timer = setInterval(() =>
         this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
     }
-    this.retrieveAvailableChartTypes();
   }
 
-  private setupFractalis() {
+  public setupFractalis(): Promise<any> {
     let token = this.authService.token;
     let oidcClientId = this.appConfig.getConfig('oidc-client-id');
     let oidcServerUrl = this.appConfig.getConfig('oidc-server-url');
@@ -104,11 +96,13 @@ export class FractalisService {
       }
     };
     this.F = fjs.fractalis.init(config);
-    this.clearCache();
     this.configSubsetsUpdate();
+    this.configVariablesUpdate();
+    this.retrieveAvailableChartTypes();
+    return this.clearCache();
   }
 
-  private prepareCache(variables: Concept[]) {
+  public prepareCache(variables: Concept[]) {
     if (variables && variables.length > 0) {
       this.isPreparingCache = true;
       let descriptors = [];
@@ -200,24 +194,35 @@ export class FractalisService {
       });
   }
 
-  public clearCache() {
-    this.isClearingCache = true;
-    this.F.clearCache()
-      .then(res => {
-        this.isClearingCache = false;
-        this._currentCacheTrys = 0;
-      })
-      .catch(error => {
-        console.error(`Error clearing Fractalis cache: ${error}`);
-        if (this._currentCacheTrys < FractalisService.MAX_CACHE_TRYS) {
-          console.log('Retry caching...');
-          this.clearCache();
-          this._currentCacheTrys++;
-        } else {
-          console.log('Maximum number of caching calls exceeded, terminate!');
+  private configVariablesUpdate() {
+    this.selectedVariablesUpdated.asObservable().subscribe(variables => {
+      this.prepareCache(variables);
+    });
+  }
+
+  public clearCache(): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.isClearingCache = true;
+      this.F.clearCache()
+        .then(res => {
+          this.isClearingCache = false;
           this._currentCacheTrys = 0;
-        }
-      });
+          resolve(true);
+        })
+        .catch(error => {
+          console.error(`Error clearing Fractalis cache: ${error}`);
+          if (this._currentCacheTrys < FractalisService.MAX_CACHE_TRYS) {
+            console.log('Retry caching...');
+            this.clearCache();
+            this._currentCacheTrys++;
+          } else {
+            const msg = 'Maximum number of caching calls exceeded, terminate!';
+            console.log(msg);
+            this._currentCacheTrys = 0;
+            reject(msg);
+          }
+        });
+    });
   }
 
   private mapConceptTypeToFractalisVariableType(type: ConceptType): string {
@@ -393,4 +398,11 @@ export class FractalisService {
     return this._selectedVariablesUpdated;
   }
 
+  get enabled(): boolean {
+    return this._enabled;
+  }
+
+  set enabled(value: boolean) {
+    this._enabled = value;
+  }
 }

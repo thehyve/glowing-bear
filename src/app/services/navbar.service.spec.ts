@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,18 +9,18 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
-import {CohortService} from './cohort.service';
-import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
-import {of as observableOf} from 'rxjs';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
+import {FractalisService} from './fractalis.service';
+import {FractalisServiceMock} from './mocks/fractalis.service.mock';
 
 describe('NavbarService', () => {
   let navbarService: NavbarService;
   let exportService: ExportService;
   let authService: AuthenticationService;
+  let fractalisService: FractalisService;
   let exportEnabled: boolean;
 
   beforeEach(() => {
@@ -31,6 +31,10 @@ describe('NavbarService', () => {
           useClass: AuthenticationServiceMock
         },
         {
+          provide: FractalisService,
+          useClass: FractalisServiceMock
+        },
+        {
           provide: ExportService,
           useClass: ExportServiceMock
         },
@@ -39,6 +43,7 @@ describe('NavbarService', () => {
     });
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
+    fractalisService = TestBed.get(FractalisService);
     exportEnabled = false;
     navbarService = TestBed.get(NavbarService);
   });
@@ -50,7 +55,7 @@ describe('NavbarService', () => {
 
   it('should add export item when access level is full', () => {
     exportEnabled = true;
-    navbarService = new NavbarService(authService, exportService);
+    navbarService = new NavbarService(authService, fractalisService, exportService);
     expect(navbarService.items.length).toBe(3);
   });
 

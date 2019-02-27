@@ -10,6 +10,7 @@ import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
 import {ExportService} from './export.service';
 import {AuthenticationService} from './authentication/authentication.service';
+import {FractalisService} from './fractalis.service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,9 +23,10 @@ export class NavbarService {
   private _isDataSelection = true;
   private _isAnalysis = false;
   private _isExport = false;
-
+  private firstTimeAnalysisTabActivated = true;
 
   constructor(private authService: AuthenticationService,
+              private fractalisService: FractalisService,
               private exportService: ExportService) {
     this.items = [
       {label: 'Cohort Selection', routerLink: '/cohort-selection'},
@@ -47,8 +49,21 @@ export class NavbarService {
       this.activeItem = this._items[0];
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
+      this.configFractalis();
     } else if (this.isExport) {
       this.activeItem = this._items[2];
+    }
+  }
+
+  private configFractalis() {
+    if (this.firstTimeAnalysisTabActivated) {
+      if (this.fractalisService.enabled) {
+        this.fractalisService.setupFractalis().then(_ => {
+          this.firstTimeAnalysisTabActivated = false;
+        });
+      } else {
+        this.firstTimeAnalysisTabActivated = false;
+      }
     }
   }
 
