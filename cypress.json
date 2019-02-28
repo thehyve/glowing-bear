@@ -10,5 +10,6 @@
     "oidc-client-id": "transmart-client",
     "gb-backend-url": "https://gb-backend-dev.thehyve.net"
   },
+  "numTestsKeptInMemory": 3,
   "defaultCommandTimeout": 30000
 }
