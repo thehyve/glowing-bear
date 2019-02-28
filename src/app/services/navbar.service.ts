@@ -57,7 +57,7 @@ export class NavbarService {
 
   private configFractalis() {
     if (this.firstTimeAnalysisTabActivated) {
-      if (this.fractalisService.enabled) {
+      if (this.fractalisService.isFractalisAvailable) {
         this.fractalisService.setupFractalis().then(_ => {
           this.firstTimeAnalysisTabActivated = false;
         });

@@ -49,7 +49,6 @@ export class FractalisService {
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
   private _chartDivSize: number;
-  private _enabled = true;
   private timer: Timer;
   private _variablesStatus: FractalisVariablesStatus;
 
@@ -63,12 +62,16 @@ export class FractalisService {
               private cohortService: CohortService,
               private resourceService: ResourceService) {
     this.chartDivSize = 35;
-    this.enabled = this.appConfig.getConfig('enable-fractalis-analysis');
-    if (this.enabled && !fjs.fractalis) {
+    const enabled = this.appConfig.getConfig('enable-fractalis-analysis');
+    if (enabled && !fjs.fractalis) {
       MessageHelper.alert('error', 'Failed to import Fractalis.');
     } else {
       this.timer = setInterval(() =>
         this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
+      this.availableChartTypes.push({
+        label: ChartType.CROSSTABLE,
+        value: ChartType.CROSSTABLE
+      });
     }
   }
 
@@ -98,7 +101,7 @@ export class FractalisService {
     this.F = fjs.fractalis.init(config);
     this.configSubsetsUpdate();
     this.configVariablesUpdate();
-    this.retrieveAvailableChartTypes();
+    this.retrieveFractalisChartTypes();
     return this.clearCache();
   }
 
@@ -264,7 +267,7 @@ export class FractalisService {
     this.F.setChartParameters(chartObject, parameters);
   }
 
-  private retrieveAvailableChartTypes() {
+  private retrieveFractalisChartTypes() {
     if (this.isFractalisAvailable) {
       const types: string[] = this.F.getAvailableCharts();
       types.forEach((t: string) => {
@@ -275,10 +278,6 @@ export class FractalisService {
         });
       });
     }
-    this.availableChartTypes.push({
-      label: ChartType.CROSSTABLE,
-      value: ChartType.CROSSTABLE
-    });
   }
 
   public addOrRecreateChart() {
@@ -311,7 +310,7 @@ export class FractalisService {
   }
 
   get isFractalisAvailable(): boolean {
-    return fjs.fractalis && this.appConfig.getConfig('enable-fractalis-analysis');
+    return this.appConfig.getConfig('enable-fractalis-analysis') && fjs.fractalis;
   }
 
   get previousChart(): Chart {
@@ -396,13 +395,5 @@ export class FractalisService {
 
   get selectedVariablesUpdated(): Subject<Concept[]> {
     return this._selectedVariablesUpdated;
-  }
-
-  get enabled(): boolean {
-    return this._enabled;
-  }
-
-  set enabled(value: boolean) {
-    this._enabled = value;
   }
 }
