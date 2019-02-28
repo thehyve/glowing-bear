@@ -66,8 +66,6 @@ export class FractalisService {
     if (enabled && !fjs.fractalis) {
       MessageHelper.alert('error', 'Failed to import Fractalis.');
     } else {
-      this.timer = setInterval(() =>
-        this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
       this.availableChartTypes.push({
         label: ChartType.CROSSTABLE,
         value: ChartType.CROSSTABLE
@@ -201,6 +199,8 @@ export class FractalisService {
     this.selectedVariablesUpdated.asObservable().subscribe(variables => {
       this.prepareCache(variables);
     });
+    this.timer = setInterval(() =>
+      this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
   }
 
   public clearCache(): Promise<any> {
@@ -307,6 +307,10 @@ export class FractalisService {
   public clearValidation() {
     this.variablesValidationMessages = [];
     this.variablesInvalid = false;
+  }
+
+  get isInitialized(): boolean {
+    return this.F ? true : false;
   }
 
   get isFractalisEnabled(): boolean {
