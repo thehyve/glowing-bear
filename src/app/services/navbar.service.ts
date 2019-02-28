@@ -23,7 +23,6 @@ export class NavbarService {
   private _isDataSelection = true;
   private _isAnalysis = false;
   private _isExport = false;
-  private firstTimeAnalysisTabActivated = true;
 
   constructor(private authService: AuthenticationService,
               private fractalisService: FractalisService,
@@ -56,14 +55,8 @@ export class NavbarService {
   }
 
   private configFractalis() {
-    if (this.firstTimeAnalysisTabActivated) {
-      if (this.fractalisService.isFractalisAvailable) {
-        this.fractalisService.setupFractalis().then(_ => {
-          this.firstTimeAnalysisTabActivated = false;
-        });
-      } else {
-        this.firstTimeAnalysisTabActivated = false;
-      }
+    if (!this.fractalisService.F) {
+      this.fractalisService.setupFractalis();
     }
   }
 

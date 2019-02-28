@@ -268,7 +268,7 @@ export class FractalisService {
   }
 
   private retrieveFractalisChartTypes() {
-    if (this.isFractalisAvailable) {
+    if (this.isFractalisEnabled) {
       const types: string[] = this.F.getAvailableCharts();
       types.forEach((t: string) => {
         const type = <ChartType>t.toLowerCase();
@@ -309,7 +309,7 @@ export class FractalisService {
     this.variablesInvalid = false;
   }
 
-  get isFractalisAvailable(): boolean {
+  get isFractalisEnabled(): boolean {
     return this.appConfig.getConfig('enable-fractalis-analysis') && fjs.fractalis;
   }
 

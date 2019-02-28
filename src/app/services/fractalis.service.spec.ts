@@ -234,7 +234,7 @@ describe('FractalisService with analysis disabled', () => {
 
   it('should disable fractalis analysis', () => {
     expect(fractalisService['F']).not.toBeTruthy();
-    expect(fractalisService.isFractalisAvailable).toBe(false);
+    expect(fractalisService.isFractalisEnabled).toBe(false);
     expect(fractalisService.isPreparingCache).toBe(false);
   });
 

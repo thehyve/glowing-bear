@@ -133,10 +133,6 @@ export class GbFractalisControlComponent implements OnInit {
     return this.fractalisService.variablesValidationMessages;
   }
 
-  get isFractalisAvailable(): boolean {
-    return this.fractalisService.isFractalisAvailable;
-  }
-
   get isClearingCache(): boolean {
     return this.fractalisService.isClearingCache;
   }
