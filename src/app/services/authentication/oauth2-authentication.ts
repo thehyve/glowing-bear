@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -70,7 +70,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       console.log(`Redirect to ${path}`);
       this.router.navigate([path]);
     } else {
-      this.router.navigate(['/']);
+      this.logout();
     }
   }
 
