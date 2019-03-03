@@ -37,3 +37,8 @@ Feature: create constraints by selecting nodes from the tree
     When I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10
     Then there are '495' subjects
 
+  Scenario: create a simple sample based subselection constraint
+    Given I am on the cohort-selection tab
+    When I select diagnosis that are part of study 'CSR'
+    Then there are '8' subjects
+

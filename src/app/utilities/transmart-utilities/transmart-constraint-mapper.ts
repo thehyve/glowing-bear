@@ -64,8 +64,8 @@ export class TransmartConstraintMapper {
   static wrapWithCombinationConstraint(child: Constraint, dimension?: string): Constraint {
     let constraint = new CombinationConstraint();
     constraint.mark = ConstraintMark.SUBJECT;
-    constraint.dimension = dimension ? dimension : child.dimension;
     constraint.addChild(child);
+    constraint.dimension = dimension ? dimension : child.dimension;
     return constraint;
   }
 

@@ -24,6 +24,7 @@ import {ConceptConstraint} from "../../models/constraint-models/concept-constrai
 import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
 import {TransmartConstraintMapper} from "../../utilities/transmart-utilities/transmart-constraint-mapper";
 import {Concept} from "../../models/constraint-models/concept";
+import {ConstraintMark} from "../../models/constraint-models/constraint-mark";
 
 describe('TransmartHttpService', () => {
 
@@ -410,7 +411,7 @@ describe('TransmartHttpService', () => {
     });
   });
 
-  it('should wrap constraints into patient subselection',
+  it('should not wrap constraints into patient subselection',
     inject([HttpTestingController, TransmartHttpService],
     (httpMock: HttpTestingController, service: TransmartHttpService) => {
       const mockData = {
@@ -438,19 +439,40 @@ describe('TransmartHttpService', () => {
       });
       req.flush(mockData);
 
+    }));
+
+  it('should wrap constraints into patient subselection',
+    inject([HttpTestingController, TransmartHttpService],
+      (httpMock: HttpTestingController, service: TransmartHttpService) => {
+        const mockData = {
+          foo: 'bar'
+        };
+      const c1 = new ConceptConstraint();
+      c1.concept = new Concept();
+      const mockConstraint = new CombinationConstraint();
+      mockConstraint.mark = ConstraintMark.SUBJECT;
+      mockConstraint.addChild(c1);
       mockConstraint.dimension = 'Diagnosis ID';
+      mockConstraint.children[0].dimension = 'Diagnosis ID';
+      let spy = spyOn(TransmartConstraintMapper, 'wrapWithCombinationConstraint').and.callThrough();
+
       service.getCounts(mockConstraint).subscribe((res) => {
         expect(res['foo']).toBe('bar');
       });
+      const url = service.endpointUrl + '/observations/counts';
       const req2 = httpMock.expectOne(url);
       expect(spy).toHaveBeenCalled();
       expect(req2.request.body).toEqual({
         constraint: {
           type: 'subselection',
-          dimension: 'Diagnosis ID',
+          dimension: 'patient',
           constraint: {
-            type: 'concept',
-            conceptCode: undefined
+            type: 'subselection',
+            dimension: 'Diagnosis ID',
+            constraint: {
+              type: 'concept',
+              conceptCode: undefined
+            }
           }
         }
       });
