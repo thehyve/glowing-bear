@@ -85,14 +85,18 @@ export class TransmartPackerHttpService {
   runJob(jobName: string, targetConstraint: Constraint): Observable<TransmartPackerJob> {
     const urlPart = `jobs/create`;
     const responseField = 'job';
+    const constraint = TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint);
 
     let body = {
       job_type: this.customExportJobName,
       job_parameters: {
-        constraint: TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint),
-        custom_name: jobName
+        constraint: constraint,
+        custom_name: jobName,
       }
     };
+    if (targetConstraint.dimension !== 'patient') {
+      body.job_parameters['row_filter'] = TransmartConstraintMapper.mapConstraint(targetConstraint);
+    }
 
     return this.httpHelper.postCall(urlPart, body, responseField);
   }

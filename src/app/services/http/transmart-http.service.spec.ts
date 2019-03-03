@@ -20,11 +20,11 @@ import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {of as observableOf} from 'rxjs';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {ConceptConstraint} from "../../models/constraint-models/concept-constraint";
-import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
-import {TransmartConstraintMapper} from "../../utilities/transmart-utilities/transmart-constraint-mapper";
-import {Concept} from "../../models/constraint-models/concept";
-import {ConstraintMark} from "../../models/constraint-models/constraint-mark";
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {Concept} from '../../models/constraint-models/concept';
+import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 
 describe('TransmartHttpService', () => {
 

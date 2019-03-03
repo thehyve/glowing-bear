@@ -14,6 +14,10 @@ import {HttpClientTestingModule, HttpTestingController} from '@angular/common/ht
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {TransmartPackerHttpService} from './transmart-packer-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
+import {Concept} from '../../models/constraint-models/concept';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 
 describe('TransmartPackerHttpService', () => {
 
@@ -121,6 +125,69 @@ describe('TransmartPackerHttpService', () => {
         expect(req.request.body['job_parameters']['constraint']).toBeDefined();
         expect(req.request.body['job_parameters']['constraint']['type']).toBe('true');
         expect(req.request.body['job_parameters']['custom_name']).toBe('custom_name');
+        expect(req.request.body['job_parameters']['custom_name']).toBe('custom_name');
+      }));
+
+  it('should not include row_filter when running export job',
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
+        const jobName = 'custom_name';
+        const c1 = new ConceptConstraint();
+        c1.concept = new Concept();
+        const mockConstraint = new CombinationConstraint();
+        mockConstraint.addChild(c1);
+        mockConstraint.dimension = 'patient';
+        service.runJob(jobName, mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/jobs/create';
+        let req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body['job_parameters']).toBeDefined();
+        expect(req.request.body['job_parameters']['constraint']).toBeDefined();
+        expect(req.request.body['job_parameters']['row_filter']).not.toBeDefined();
+      }));
+
+  it('should include row_filter when running export job',
+    inject([HttpTestingController, TransmartPackerHttpService],
+      (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
+        const jobName = 'custom_name';
+        const c1 = new ConceptConstraint();
+        c1.concept = new Concept();
+        c1.dimension = 'Biosource ID';
+        const mockConstraint = new CombinationConstraint();
+        mockConstraint.mark = ConstraintMark.SUBJECT;
+        mockConstraint.dimension = 'Biosource ID';
+        mockConstraint.addChild(c1);
+        service.runJob(jobName, mockConstraint).subscribe((res) => {
+          expect(res['foo']).toBe('bar');
+        });
+        const url = service.endpointUrl + '/jobs/create';
+        let req = httpMock.expectOne(url);
+        expect(req.request.method).toEqual('POST');
+        expect(req.request.body['job_parameters']).toBeDefined();
+        expect(req.request.body['job_parameters']['constraint']).toBeDefined();
+        expect(req.request.body['job_parameters']['constraint']).toEqual({
+            type: 'subselection',
+            dimension: 'patient',
+            constraint: {
+              type: 'subselection',
+              dimension: 'Biosource ID',
+              constraint: {
+                type: 'concept',
+                conceptCode: undefined
+            }
+          }
+        });
+        expect(req.request.body['job_parameters']['row_filter']).toBeDefined();
+        expect(req.request.body['job_parameters']['row_filter']).toEqual({
+            type: 'subselection',
+            dimension: 'Biosource ID',
+            constraint: {
+              type: 'concept',
+              conceptCode: undefined
+          }
+        });
       }));
 
 });

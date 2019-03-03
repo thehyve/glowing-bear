@@ -32,7 +32,7 @@ export class TransmartConstraintMapper {
   public static mapConstraintOnPatientLevel(constraint: Constraint, full?: boolean): object {
     let patientLevelConstraint: Constraint;
     if (constraint.dimension !== 'patient') {
-      patientLevelConstraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint);
+      patientLevelConstraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint, 'patient');
     } else {
       patientLevelConstraint = constraint;
     }
