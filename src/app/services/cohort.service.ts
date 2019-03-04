@@ -27,7 +27,6 @@ import {CountService} from './count.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Constraint} from '../models/constraint-models/constraint';
-import {Dimension} from '../models/cohort-models/dimension';
 
 /**
  * This service concerns with
@@ -68,8 +67,6 @@ export class CohortService {
   private _isCohortSubscriptionIncluded = false;
   // Flag indicating if saving a cohort is finished
   private _isSavingCohortCompleted = true;
-  // List of all available cohort types
-  private _dimensions: Dimension[] = [];
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -78,7 +75,6 @@ export class CohortService {
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.saveSubjectSetBeforeUpdatingCounts = this.appConfig.getConfig('autosave-subject-sets');
-    this.loadCohortTypes();
     this.loadCohorts();
     // initial updates
     this.updateCountsWithCurrentCohort();
@@ -124,15 +120,6 @@ export class CohortService {
         resolve(true);
       }
     });
-  }
-
-  public loadCohortTypes() {
-    this.resourceService.dimensions
-      .subscribe(
-        (cohortTypes: Dimension[]) => {
-          for (let ct of cohortTypes) {
-            this.dimensions.push(ct);
-          }});
   }
 
   /**
@@ -456,11 +443,4 @@ export class CohortService {
     this._saveSubjectSetBeforeUpdatingCounts = value;
   }
 
-  get dimensions(): Dimension[] {
-    return this._dimensions;
-  }
-
-  set dimensions(value: Dimension[]) {
-    this._dimensions = value;
-  }
 }

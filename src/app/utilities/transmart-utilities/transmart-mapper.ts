@@ -26,7 +26,7 @@ import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
-import {Dimension} from '../../models/cohort-models/dimension';
+import {Dimension} from '../../models/constraint-models/dimension';
 
 export class TransmartMapper {
 
@@ -252,12 +252,8 @@ export class TransmartMapper {
   }
 
   public static mapDimensions(transmartDimensions: TransmartDimension[]) {
-    let cohortTypes = [];
-    transmartDimensions.forEach( (transmartDimension: TransmartDimension) => {
-      let dimension = new Dimension(transmartDimension.name);
-      dimension.sortIndex = transmartDimension.sortIndex;
-      cohortTypes.push(dimension);
-    });
-    return cohortTypes;
+    return transmartDimensions.sort(function (a, b) {
+      return a.sortIndex - b.sortIndex;
+    }).map(transmartDimension => new Dimension(transmartDimension.name));
   }
 }

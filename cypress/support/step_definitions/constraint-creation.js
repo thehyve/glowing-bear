@@ -101,7 +101,7 @@ when("I use negated pedigree constraint {string} with concept {string} and negat
   cy.get('.update-btn').eq(0).click();
 });
 
-when("I select diagnosis that are part of study {string}", (studyName) => {
+when("I select diagnoses that are part of study {string}", (studyName) => {
   cy.toggleNode('Public Studies ');
   cy.drag('CSR').drop(0);
 

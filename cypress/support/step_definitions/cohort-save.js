@@ -124,7 +124,7 @@ then('the current cohort has biomaterial selected', () => {
   cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biomaterial ID');
   cy.contains('CSR');
   cy.contains('EHR');
-  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 1); //FIXME <- should be 1, is 2 - additional subselection
+  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 1);
 });
 
 when('I create a cohort with multiple dimensions constraint', () => {
@@ -145,8 +145,8 @@ when('I create a cohort with multiple dimensions constraint', () => {
 })
 
 then('the current cohort has multiple dimensions selected', () => {
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biomaterial ID');
+  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biosource ID');
   cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('patient');
-  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 2); //FIXME
-  cy.get('gb-combination-constraint').should('have.length', 2); //FIXME
+  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 2);
+  cy.get('gb-combination-constraint').should('have.length', 2);
 })

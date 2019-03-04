@@ -381,6 +381,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
     let optConstraint = constraint.optimize();
     if (optConstraint.className === 'CombinationConstraint') {
       let combination: CombinationConstraint = <CombinationConstraint>optConstraint;
+      combination.mark = this.verifyMark(optConstraint);
       let result = null;
       // Collect children query objects
       let childQueryObjects: Object[] = this.getNonEmptyChildObjects(combination);
@@ -417,4 +418,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
     }
   }
 
+  private verifyMark(optConstraint) {
+    if (optConstraint.parentConstraint && optConstraint.dimension !== optConstraint.parentConstraint.dimension) {
+      return ConstraintMark.SUBJECT;
+    } else {
+      return optConstraint.mark
+    }
+  }
 }

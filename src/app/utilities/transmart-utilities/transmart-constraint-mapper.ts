@@ -129,8 +129,10 @@ export class TransmartConstraintMapper {
         arg['conceptCode'] = constraintObject['conceptCode'];
       }
       let child = TransmartConstraintMapper.generateConstraintFromObject(arg);
-      if (arg['type'] === 'subselection' && constraint.dimension !== arg['dimension']) {
-        child = TransmartConstraintMapper.wrapWithCombinationConstraint(child);
+      if (arg['type'] === 'subselection' && constraint.dimension !== child.dimension) {
+        if (constraint.parentConstraint !== null) {
+          child = TransmartConstraintMapper.wrapWithCombinationConstraint(child);
+        }
         constraint.dimension = arg['dimension'];
       }
       if (arg['type'] === 'concept') {
@@ -283,6 +285,16 @@ export class TransmartConstraintMapper {
     return constraint;
   }
 
+  static generateConstraintFromSubselection(constraintObject): Constraint {
+    let constraint: Constraint;
+    constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
+    if (constraint.className !== 'CombinationConstraint') {
+      constraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint)
+    }
+    constraint.dimension = constraintObject['dimension'];
+    return constraint;
+  }
+
   public static optimizeConstraintObject(constraintObject) {
     let newConstraintObject = Object.assign({}, constraintObject);
 
@@ -312,9 +324,6 @@ export class TransmartConstraintMapper {
           newConstraintObject['args'] = newArgs;
         }
       }
-    } else if (newConstraintObject['constraint'] && newConstraintObject['dimension'] === 'patient') {
-      // if the object has the 'constraint' property
-      newConstraintObject = this.optimizeConstraintObject(newConstraintObject['constraint']);
     }
     return newConstraintObject;
   }
@@ -343,8 +352,7 @@ export class TransmartConstraintMapper {
     } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
       constraint = TransmartConstraintMapper.generateConstraintFromPatientSetObject(constraintObject);
     } else if (type === 'subselection') { // --------------------> If it is a sub-selection constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
-      constraint.dimension = constraintObject['dimension'];
+      constraint = TransmartConstraintMapper.generateConstraintFromSubselection(constraintObject);
     } else if (type === 'true') { // -----------------------------------> If it is a true constraint
       constraint = new TrueConstraint();
     } else if (type === 'negation') { // ---------------------------> If it is a negation constraint

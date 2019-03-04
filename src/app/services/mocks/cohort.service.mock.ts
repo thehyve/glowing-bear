@@ -9,15 +9,12 @@
 import {Cohort} from '../../models/cohort-models/cohort';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Subject} from 'rxjs';
-import {Dimension} from '../../models/cohort-models/dimension';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
   counts: CountItem;
   allCounts: CountItem;
   cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
-  dimensions: Dimension[] = [];
-
 
   constructor() {
     this.initializeCounts();

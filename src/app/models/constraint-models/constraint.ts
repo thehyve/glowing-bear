@@ -10,7 +10,7 @@ import {ConstraintMark} from './constraint-mark';
 
 export class Constraint {
 
-  static readonly BASIC_DIMENSION: string = 'patient';
+  static readonly TOP_LEVEL_DIMENSION: string = 'patient';
 
   // The textual representation of this constraint
   protected _textRepresentation: string;
@@ -28,7 +28,7 @@ export class Constraint {
     this.mark = ConstraintMark.OBSERVATION;
     this.parentConstraint = null;
     this.negated = false;
-    this.dimension = Constraint.BASIC_DIMENSION;
+    this.dimension = Constraint.TOP_LEVEL_DIMENSION;
   }
 
   get negated(): boolean {

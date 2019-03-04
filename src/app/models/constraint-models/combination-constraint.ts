@@ -91,7 +91,7 @@ export class CombinationConstraint extends Constraint {
 
   optimize(): Constraint {
     if (this.children.length > 0) {
-      if (this.children.length > 1 || this.modifiesLowerLevels) {
+      if (this.children.length > 1 || this.isChangingChildConstraint) {
         return this;
       } else {
         let child = this.children[0];
@@ -107,7 +107,7 @@ export class CombinationConstraint extends Constraint {
     }
   }
 
-  private get modifiesLowerLevels(): boolean {
+  private get isChangingChildConstraint(): boolean {
     return this.children[0].negated || this.dimension !== this.children[0].dimension;
   }
 }

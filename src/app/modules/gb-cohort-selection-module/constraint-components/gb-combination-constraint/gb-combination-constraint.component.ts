@@ -15,6 +15,7 @@ import {CombinationState} from '../../../../models/constraint-models/combination
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
+import {Dimension} from '../../../../models/constraint-models/dimension';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -28,17 +29,27 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   searchResults: Constraint[];
   selectedConstraint: Constraint;
-  cohortTypes: SelectItem[];
+  dimensions: SelectItem[];
 
-  ngOnInit(): void {
-    this.cohortTypes = [];
-    for (let dim of this.cohortService.dimensions) {
+  private static dimensionToDimensionOption(validDimensions: Dimension[]) {
+    let dimensions = [];
+    for (let dim of validDimensions) {
       let ctype: SelectItem = {
         label: dim.name,
         value: dim.name
       };
-      this.cohortTypes.push(ctype);
+      dimensions.push(ctype);
     }
+    return dimensions;
+  }
+
+  ngOnInit(): void {
+    this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(this.constraintService.validDimensions);
+    this.constraintService.validDimensionsUpdated.asObservable().subscribe( validDimensions => {
+      this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(validDimensions);
+      console.log('new dimensions')
+      }
+    );
   }
 
   get isAnd(): boolean {
@@ -128,10 +139,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       '' : 'gb-combination-constraint-child-container';
   }
 
-
   addChildCombinationConstraint() {
     (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
   }
+
 
   handleCohortTypeChange() {
     this.children.forEach(child => {

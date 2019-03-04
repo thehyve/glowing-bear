@@ -128,9 +128,9 @@ describe('GbCombinationConstraintComponent', () => {
     component.onCohortTypeChange();
 
     expect((<CombinationConstraint>component.constraint).children[0].dimension).toEqual(newCohortType);
-    expect((<CombinationConstraint>component.constraint).children[1].dimension).toEqual(Constraint.BASIC_DIMENSION);
+    expect((<CombinationConstraint>component.constraint).children[1].dimension).toEqual(Constraint.TOP_LEVEL_DIMENSION);
     expect((<CombinationConstraint>(<CombinationConstraint>component.constraint).children[1]).children[0].dimension)
-      .toEqual(Constraint.BASIC_DIMENSION);
+      .toEqual(Constraint.TOP_LEVEL_DIMENSION);
   });
 
 });

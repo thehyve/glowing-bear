@@ -190,14 +190,4 @@ export class ConstraintHelper {
     return null;
   }
 
-  static mapDataTabletoObject(dataTable: DataTable): object {
-    let obj = {};
-    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: TableDimension) => {
-      return dim.name;
-    });
-    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: TableDimension) => {
-      return dim.name;
-    });
-    return obj;
-  }
 }

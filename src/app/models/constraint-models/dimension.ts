@@ -8,18 +8,9 @@
 
 export class Dimension {
   private _name: string;
-  private _sortIndex: number;
 
-  constructor(label: string) {
-    this.name = label;
-  }
-
-  get sortIndex(): number {
-    return this._sortIndex;
-  }
-
-  set sortIndex(value: number) {
-    this._sortIndex = value;
+  constructor(name: string) {
+    this.name = name;
   }
 
   get name(): string {
