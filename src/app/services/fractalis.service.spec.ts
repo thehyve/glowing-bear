@@ -174,11 +174,13 @@ describe('FractalisService', () => {
     let c5 = new Concept();
     c5.code = 'POIUY';
     c5.type = ConceptType.TEXT;
+    fractalisService.setupFractalis();
     fractalisService.selectedVariablesUpdated.next([c1, c2, c3, c4, c5]);
     expect(fractalisService.isPreparingCache).toBe(true);
   });
 
   it('should set subsets when cohorts are changed', () => {
+    fractalisService.setupFractalis();
     let spySetSubsets = spyOn(fractalisService.F, 'setSubsets').and.stub();
     let cohort1 = new Cohort('id1', 'name1');
     cohort1.selected = true;
@@ -232,7 +234,7 @@ describe('FractalisService with analysis disabled', () => {
 
   it('should disable fractalis analysis', () => {
     expect(fractalisService['F']).not.toBeTruthy();
-    expect(fractalisService.isFractalisAvailable).toBe(false);
+    expect(fractalisService.isFractalisEnabled).toBe(false);
     expect(fractalisService.isPreparingCache).toBe(false);
   });
 

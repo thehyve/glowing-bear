@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -92,10 +92,15 @@ export class FractalisServiceMock {
     });
   }
 
+  public setupFractalis(): Promise<any> {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
+  }
+
   get previousChart(): Chart {
     return this.charts[this.charts.length - 1];
   }
-
 
   get charts(): Chart[] {
     return this._charts;
