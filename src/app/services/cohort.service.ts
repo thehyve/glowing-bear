@@ -168,7 +168,7 @@ export class CohortService {
       console.log('Updating counts from all cohorts...');
       this.isUpdatingAll = true;
       let combination: CombinationConstraint = new CombinationConstraint();
-      combination.combinationState = CombinationState.And;
+      combination.combinationState = CombinationState.Or;
       combination.mark = ConstraintMark.SUBJECT;
       this.cohorts.forEach((cohort: Cohort) => {
         if (cohort.selected) {
