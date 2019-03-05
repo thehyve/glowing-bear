@@ -24,7 +24,9 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Concept} from '../../models/constraint-models/concept';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
+import {TransmartConstraintSerialiser} from '../../utilities/transmart-utilities/transmart-constraint-serialiser';
+import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
+import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 describe('TransmartHttpService', () => {
 
@@ -422,7 +424,7 @@ describe('TransmartHttpService', () => {
       const mockConstraint = new CombinationConstraint();
       mockConstraint.addChild(c1);
       mockConstraint.dimension = 'patient';
-      let spy = spyOn(TransmartConstraintMapper, 'wrapWithCombinationConstraint').and.callThrough();
+      let spy = spyOn(TransmartConstraintMapper, 'mapConstraint').and.callThrough();
 
       service.getCounts(mockConstraint).subscribe((res) => {
         expect(res['foo']).toBe('bar');
@@ -430,7 +432,7 @@ describe('TransmartHttpService', () => {
       const url = service.endpointUrl + '/observations/counts';
       const req = httpMock.expectOne(url);
 
-      expect(spy).not.toHaveBeenCalled();
+      expect(spy).not.toHaveBeenCalledWith(jasmine.any(SubselectionConstraint));
       expect(req.request.body).toEqual({
         constraint: {
           type: 'concept',
@@ -450,18 +452,15 @@ describe('TransmartHttpService', () => {
       const c1 = new ConceptConstraint();
       c1.concept = new Concept();
       const mockConstraint = new CombinationConstraint();
-      mockConstraint.mark = ConstraintMark.SUBJECT;
+      mockConstraint.isRoot = true;
       mockConstraint.addChild(c1);
       mockConstraint.dimension = 'Diagnosis ID';
-      mockConstraint.children[0].dimension = 'Diagnosis ID';
-      let spy = spyOn(TransmartConstraintMapper, 'wrapWithCombinationConstraint').and.callThrough();
 
       service.getCounts(mockConstraint).subscribe((res) => {
         expect(res['foo']).toBe('bar');
       });
       const url = service.endpointUrl + '/observations/counts';
       const req2 = httpMock.expectOne(url);
-      expect(spy).toHaveBeenCalled();
       expect(req2.request.body).toEqual({
         constraint: {
           type: 'subselection',

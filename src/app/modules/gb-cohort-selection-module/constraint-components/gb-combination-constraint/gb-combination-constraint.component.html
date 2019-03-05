@@ -2,7 +2,7 @@
 
   <div class="form-inline gb-constraint-cohort-type-dropdown">
     <label>Selection type:</label>
-    <p-dropdown [options]="dimensions" [(ngModel)]="constraint.dimension" (onChange)="onCohortTypeChange()"
+    <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension" (onChange)="onCohortTypeChange()"
                 [autoWidth]="false" [style]="{'min-width':'9em'}"></p-dropdown>
   </div>
 

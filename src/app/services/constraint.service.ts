@@ -20,7 +20,6 @@ import {TreeNodeService} from './tree-node.service';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNode} from 'primeng/api';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
@@ -71,7 +70,6 @@ export class ConstraintService {
     // Initialize the root constraints in the cohort selection
     this.rootConstraint = new CombinationConstraint();
     this.rootConstraint.isRoot = true;
-    this.rootConstraint.mark = ConstraintMark.SUBJECT;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -181,7 +179,6 @@ export class ConstraintService {
     if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
       constraint = new TrueConstraint();
     }
-    constraint.mark = ConstraintMark.SUBJECT;
     return constraint;
   }
 
@@ -196,8 +193,6 @@ export class ConstraintService {
     if (hasUnselected) {
       let result: CombinationConstraint = new CombinationConstraint();
       result.combinationState = CombinationState.Or;
-      result.mark = ConstraintMark.OBSERVATION;
-      result.dimension = 'patient';
       variables
         .filter((variable: Concept) => {
           return variable.selected;
@@ -221,8 +216,8 @@ export class ConstraintService {
   }
 
   public restoreCohortConstraint(constraint: Constraint) {
-    this.rootConstraint.dimension = constraint.dimension;
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
+      this.rootConstraint.dimension = (<CombinationConstraint>constraint).dimension;
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
         && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');

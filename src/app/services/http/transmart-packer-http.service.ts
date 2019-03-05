@@ -90,9 +90,8 @@ export class TransmartPackerHttpService {
     let packerJobParameters = new TransmartPackerJobParameters();
     packerJobParameters.constraint = TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint);
     packerJobParameters.custom_name = jobName;
-    if (targetConstraint.dimension !== 'patient') {
-      packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(targetConstraint);
-    }
+    packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(targetConstraint);
+
     let packerJob = new TransmartPackerJob();
     packerJob.job_type = this.customExportJobName;
     packerJob.job_parameters = packerJobParameters;

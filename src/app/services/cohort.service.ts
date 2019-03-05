@@ -21,7 +21,6 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {Subject} from 'rxjs';
 import {CountService} from './count.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
@@ -172,8 +171,6 @@ export class CohortService {
       this.isUpdatingAll = true;
       let combination: CombinationConstraint = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
-      combination.mark = ConstraintMark.SUBJECT;
-      combination.dimension = 'patient';
       this.cohorts.forEach((cohort: Cohort) => {
         if (cohort.selected) {
           combination.addChild(cohort.constraint);

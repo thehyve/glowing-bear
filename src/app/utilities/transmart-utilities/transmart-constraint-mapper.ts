@@ -22,7 +22,7 @@ import {Study} from '../../models/constraint-models/study';
 import {Concept} from '../../models/constraint-models/concept';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {TransmartConstraintSerialiser} from './transmart-constraint-serialiser';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
+import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 export class TransmartConstraintMapper {
 
@@ -31,10 +31,11 @@ export class TransmartConstraintMapper {
 
   public static mapConstraintOnPatientLevel(constraint: Constraint, full?: boolean): object {
     let patientLevelConstraint: Constraint;
-    if (constraint.dimension !== 'patient') {
-      patientLevelConstraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint, 'patient');
-    } else {
+    if (constraint.className === 'CombinationConstraint'
+      && (<CombinationConstraint>constraint).dimension === 'patient' || constraint.className === 'TrueConstraint') {
       patientLevelConstraint = constraint;
+    } else {
+      patientLevelConstraint = new SubselectionConstraint('patient', constraint)
     }
     return this.mapConstraint(patientLevelConstraint, full);
   }
@@ -61,11 +62,10 @@ export class TransmartConstraintMapper {
     throw new Error(`Unable to map constraint ${constraint.className} to object.`);
   }
 
-  static wrapWithCombinationConstraint(child: Constraint, dimension?: string): Constraint {
+  static wrapWithCombinationConstraint(child: Constraint, dimension: string): Constraint {
     let constraint = new CombinationConstraint();
-    constraint.mark = ConstraintMark.SUBJECT;
     constraint.addChild(child);
-    constraint.dimension = dimension ? dimension : child.dimension;
+    constraint.dimension = dimension;
     return constraint;
   }
 
@@ -118,6 +118,14 @@ export class TransmartConstraintMapper {
     let hasOnlyStudies = true;
     let allStudyIds = [];
     /*
+     * if all children are a subselection of the same dimension, drop subselection wrapper
+     */
+    if (constraintObject['args'].every( arg => arg['type'] === 'subselection'
+      && arg['dimension'] === constraintObject['args'][0]['dimension'])) {
+      (<CombinationConstraint>constraint).dimension = constraintObject['args'][0]['dimension'];
+      constraintObject['args'] = constraintObject['args'].map(arg => arg['constraint']);
+    }
+    /*
      * go through each argument, construct potential sub-constraints for the concept constraint
      */
     for (let arg of constraintObject['args']) {
@@ -129,11 +137,11 @@ export class TransmartConstraintMapper {
         arg['conceptCode'] = constraintObject['conceptCode'];
       }
       let child = TransmartConstraintMapper.generateConstraintFromObject(arg);
-      if (arg['type'] === 'subselection' && constraint.dimension !== child.dimension) {
+      if (arg['type'] === 'subselection' && !(<CombinationConstraint>constraint).isCombinationLevelRedundant) {
         if (constraint.parentConstraint !== null) {
-          child = TransmartConstraintMapper.wrapWithCombinationConstraint(child);
+          child = TransmartConstraintMapper.wrapWithCombinationConstraint(child, arg['dimension']);
         }
-        constraint.dimension = arg['dimension'];
+        (<CombinationConstraint>constraint).dimension = arg['dimension'];
       }
       if (arg['type'] === 'concept') {
         prospectConcept = <ConceptConstraint>child;
@@ -289,9 +297,9 @@ export class TransmartConstraintMapper {
     let constraint: Constraint;
     constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
     if (constraint.className !== 'CombinationConstraint') {
-      constraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint)
+      constraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint, constraintObject['dimension']);
     }
-    constraint.dimension = constraintObject['dimension'];
+    (<CombinationConstraint>constraint).dimension = constraintObject['dimension'];
     return constraint;
   }
 

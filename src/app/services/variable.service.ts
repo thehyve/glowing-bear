@@ -15,7 +15,6 @@ import {ConstraintService} from './constraint.service';
 import {Constraint} from '../models/constraint-models/constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
 
@@ -284,8 +283,7 @@ export class VariableService {
     return new CombinationConstraint(
       [this.constraintService.cohortSelectionConstraint(),
         this.constraintService.variableConstraint(this.variables)],
-      CombinationState.And,
-      ConstraintMark.OBSERVATION
+      CombinationState.And
     );
   }
 

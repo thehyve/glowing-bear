@@ -6,29 +6,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {ConstraintMark} from './constraint-mark';
-
 export class Constraint {
-
-  static readonly TOP_LEVEL_DIMENSION: string = 'patient';
 
   // The textual representation of this constraint
   protected _textRepresentation: string;
-  // The enum indicating the purpose of the constraint: is it for querying subjects? Or observations?
-  protected _mark: ConstraintMark;
   // The parent constraint
   protected _parentConstraint: Constraint;
   // The negation flag indicating whether to add a logical negation to the constraints
   protected _negated: boolean;
-  // The dimension for which observations will be selected
-  private _dimension: string;
 
   constructor() {
     this.textRepresentation = '';
-    this.mark = ConstraintMark.OBSERVATION;
     this.parentConstraint = null;
     this.negated = false;
-    this.dimension = Constraint.TOP_LEVEL_DIMENSION;
   }
 
   get negated(): boolean {
@@ -47,14 +37,6 @@ export class Constraint {
     this._textRepresentation = value;
   }
 
-  get mark(): ConstraintMark {
-    return this._mark;
-  }
-
-  set mark(value: ConstraintMark) {
-    this._mark = value;
-  }
-
   get parentConstraint(): Constraint {
     return this._parentConstraint;
   }
@@ -65,13 +47,5 @@ export class Constraint {
 
   get className(): string {
     return 'Constraint';
-  }
-
-  get dimension(): string {
-    return this._dimension;
-  }
-
-  set dimension(value: string) {
-    this._dimension = value;
   }
 }

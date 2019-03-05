@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, DoCheck, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../../../models/constraint-models/constraint';
@@ -22,7 +22,7 @@ import {Dimension} from '../../../../models/constraint-models/dimension';
   templateUrl: './gb-combination-constraint.component.html',
   styleUrls: ['./gb-combination-constraint.component.css', '../gb-constraint/gb-constraint.component.css']
 })
-export class GbCombinationConstraintComponent extends GbConstraintComponent implements OnInit {
+export class GbCombinationConstraintComponent extends GbConstraintComponent implements OnInit, DoCheck {
   CombinationState = CombinationState;
 
   @ViewChild('autoComplete') autoComplete: AutoComplete;
@@ -30,6 +30,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   searchResults: Constraint[];
   selectedConstraint: Constraint;
   dimensions: SelectItem[];
+  selectedDimension: string;
 
   private static dimensionToDimensionOption(validDimensions: Dimension[]) {
     let dimensions = [];
@@ -47,9 +48,13 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(this.constraintService.validDimensions);
     this.constraintService.validDimensionsUpdated.asObservable().subscribe( validDimensions => {
       this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(validDimensions);
-      console.log('new dimensions')
       }
     );
+    this.selectedDimension = (<CombinationConstraint>this.constraint).dimension;
+  }
+
+  ngDoCheck(): void {
+    this.selectedDimension = (<CombinationConstraint>this.constraint).dimension;
   }
 
   get isAnd(): boolean {
@@ -84,11 +89,11 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Create a copy of the selected constraint
       let newConstraint: Constraint = new selectedConstraint.constructor();
       Object.assign(newConstraint, this.selectedConstraint);
-      newConstraint.dimension = this.constraint.dimension;
 
       if (newConstraint.className === 'CombinationConstraint') {
         // we don't want to copy a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
+        (<CombinationConstraint>newConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
       } else if (newConstraint.className === 'PedigreeConstraint') {
         // we don't want to copy a PedigreeConstraint's right-hand-side constraint
         (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
@@ -113,7 +118,9 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      this.droppedConstraint.dimension = combinationConstraint.dimension;
+      if (this.droppedConstraint.className === 'CombinationConstraint') {
+        (<CombinationConstraint>this.droppedConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
+      }
       combinationConstraint.addChild(this.droppedConstraint);
       this.update();
       this.droppedConstraint = null;
@@ -145,11 +152,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
 
   handleCohortTypeChange() {
-    this.children.forEach(child => {
-      if (child.className !== 'CombinationConstraint') {
-        child.dimension = this.constraint.dimension;
-      }
-    })
+    (<CombinationConstraint>this.constraint).dimension = this.selectedDimension;
   }
 
 }

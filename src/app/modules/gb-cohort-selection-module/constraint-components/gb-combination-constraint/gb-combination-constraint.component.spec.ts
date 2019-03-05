@@ -100,15 +100,16 @@ describe('GbCombinationConstraintComponent', () => {
 
   it('should handle cohort type change action', () => {
     component.constraint = new CombinationConstraint();
-    let newCohortType = 'test dimension';
+    let newDimension = 'test dimension';
     let spy1 = spyOn(component, 'update').and.callThrough();
     let spy2 = spyOn(component, 'handleCohortTypeChange').and.callThrough();
 
-    component.constraint.dimension = newCohortType;
+    component.selectedDimension = newDimension;
     component.onCohortTypeChange();
 
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
+    expect((<CombinationConstraint>component.constraint).dimension).toBe(newDimension);
   });
 
   it('should propagate selected cohort type', () => {
@@ -122,15 +123,11 @@ describe('GbCombinationConstraintComponent', () => {
     (<CombinationConstraint>component.constraint).addChild(constraint1);
     (<CombinationConstraint>component.constraint).addChild(constraint2);
 
-    let newCohortType = 'test dimension';
-
-    component.constraint.dimension = newCohortType;
+    component.selectedDimension = 'test dimension';
     component.onCohortTypeChange();
 
-    expect((<CombinationConstraint>component.constraint).children[0].dimension).toEqual(newCohortType);
-    expect((<CombinationConstraint>component.constraint).children[1].dimension).toEqual(Constraint.TOP_LEVEL_DIMENSION);
-    expect((<CombinationConstraint>(<CombinationConstraint>component.constraint).children[1]).children[0].dimension)
-      .toEqual(Constraint.TOP_LEVEL_DIMENSION);
+    expect((<CombinationConstraint>(<CombinationConstraint>component.constraint)
+      .children[1]).dimension).toEqual(CombinationConstraint.TOP_LEVEL_DIMENSION);
   });
 
 });

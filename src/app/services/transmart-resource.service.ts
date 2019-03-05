@@ -20,7 +20,6 @@ import {TransmartCountItem} from '../models/transmart-models/transmart-count-ite
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {flatMap, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {ExportDataType} from '../models/export-models/export-data-type';
@@ -371,8 +370,7 @@ export class TransmartResourceService {
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
-      constraint.className === 'CombinationConstraint' &&
-      (<CombinationConstraint>constraint).children[1].mark === ConstraintMark.OBSERVATION) {
+      constraint.className === 'CombinationConstraint') {
       let combo = new CombinationConstraint();
       combo.addChild(this.subjectSetConstraint);
       combo.addChild((<CombinationConstraint>constraint).children[1]);
