@@ -27,7 +27,7 @@ import {ExportDataType} from '../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {TransmartPackerMapper} from '../utilities/transmart-utilities/transmart-packer-mapper';
-import {TransmartPackerJob} from '../models/transmart-models/transmart-packer-job';
+import {TransmartPackerJob} from '../models/transmart-packer-models/transmart-packer-job';
 import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';

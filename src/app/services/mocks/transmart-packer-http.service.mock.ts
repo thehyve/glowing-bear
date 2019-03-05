@@ -10,7 +10,7 @@
 import {Observable, of as observableOf} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
+import {TransmartPackerJob} from '../../models/transmart-packer-models/transmart-packer-job';
 
 export class TransmartPackerHttpServiceMock {
   private exportJobs: ExportJob[];
