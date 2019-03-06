@@ -239,7 +239,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
   /**
    * Map a concept constraint to its object form,
    * the full param is a flag indicating if the four attributes: name, fullName, conceptPath and valueType
-   * should be incldued in the final object.
+   * should be included in the final object.
    * These four attributes are needed for saving and restoring a query, otherwise not needed.
    * @param {ConceptConstraint} constraint
    * @returns {object}
@@ -283,8 +283,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     if (constraint.applyObsDateConstraint) {
       args.push(this.visit(constraint.obsDateConstraint));
     }
-    if (constraint.applyTrialVisitConstraint) {
+    if (constraint.applyTrialVisitConstraint && constraint.trialVisitConstraint.trialVisits.length > 0) {
       args.push(this.visit(constraint.trialVisitConstraint));
+    }
+    if (constraint.applyStudyConstraint && constraint.studyConstraint.studies.length > 0) {
+      args.push(this.visit(constraint.studyConstraint));
     }
     if (args.length === 1) {
       result = args[0];

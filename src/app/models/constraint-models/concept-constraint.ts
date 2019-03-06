@@ -12,6 +12,7 @@ import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
 import {FormatHelper} from '../../utilities/format-helper';
+import {StudyConstraint} from './study-constraint';
 
 export class ConceptConstraint extends Constraint {
 
@@ -30,6 +31,9 @@ export class ConceptConstraint extends Constraint {
   private _applyTrialVisitConstraint = false;
   private _trialVisitConstraint: TrialVisitConstraint;
 
+  // studies
+  private _applyStudyConstraint = false;
+  private _studyConstraint: StudyConstraint;
 
   constructor() {
     super();
@@ -39,6 +43,7 @@ export class ConceptConstraint extends Constraint {
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.isObservationDate = true;
     this.trialVisitConstraint = new TrialVisitConstraint();
+    this.studyConstraint = new StudyConstraint();
     this.textRepresentation = 'Concept';
   }
 
@@ -111,6 +116,23 @@ export class ConceptConstraint extends Constraint {
     this._applyValDateConstraint = value;
   }
 
+  get applyStudyConstraint(): boolean {
+    return this._applyStudyConstraint;
+  }
+
+  set applyStudyConstraint(value: boolean) {
+    this._applyStudyConstraint = value;
+  }
+
+  get studyConstraint(): StudyConstraint {
+    return this._studyConstraint;
+  }
+
+  set studyConstraint(value: StudyConstraint) {
+    this._studyConstraint = value;
+    value.parentConstraint = this;
+  }
+
   clone(): ConceptConstraint {
     const clone = new ConceptConstraint();
     clone.concept = this.concept;
@@ -121,6 +143,8 @@ export class ConceptConstraint extends Constraint {
     clone.obsDateConstraint = this.obsDateConstraint.clone();
     clone.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
     clone.trialVisitConstraint = this.trialVisitConstraint.clone();
+    clone.applyStudyConstraint = this.applyStudyConstraint;
+    clone.studyConstraint = this.studyConstraint.clone();
     clone.negated = this.negated;
     return clone;
   }

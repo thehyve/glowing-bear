@@ -14,6 +14,8 @@
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
   </div>
 
+  <!-- FIXME: Refactor into separate value constraint component -->
+
   <!-- if the concept is NUMERIC -->
   <div *ngIf="isNumeric()" class="form-inline gb-constraint-child-container">
     <span>with value</span>
@@ -89,6 +91,7 @@
   <!-- ---------- more options ---------- -->
   <div class="gb-constraint-child-container" style="margin-top: 2px">
     <p-panel [collapsed]="!showMoreOptions">
+
       <p-header class="form-inline" style="margin-left: -0.8em">
         <button type="button"
                 (click)="toggleMoreOptions()"
@@ -96,12 +99,14 @@
           and more options
         </button>
       </p-header>
+
       <!-- observation date range constraint -->
+      <!-- FIXME: Refactor into separate observation date component -->
       <div class="form-inline" style="margin-top: -1em">
         <p-checkbox [(ngModel)]="applyObsDateConstraint" binary="true"></p-checkbox>
         <label *ngIf="!applyObsDateConstraint" class="gray-text">apply observation-date constraint</label>
         <div *ngIf="applyObsDateConstraint" class="form-inline">
-          <span>and observation date &nbsp;</span>
+          <label>and observation date </label>&nbsp;
           <button type="button" class="btn btn-outline-secondary"
                   (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
             <i *ngSwitchCase="ObsDateOperatorStateEnum.BEFORE">on or before </i>
@@ -130,13 +135,13 @@
         </div>
       </div>
 
-
       <!-- trial visit constraint -->
-      <div class="form-inline" style="margin-bottom: -1em">
+      <!-- FIXME: Refactor into separate trial visit constraint component -->
+      <div class="form-inline">
         <p-checkbox [(ngModel)]="applyTrialVisitConstraint" binary="true"></p-checkbox>
         <label *ngIf="!applyTrialVisitConstraint" class="gray-text">apply trial-visit constraint</label>
-        <div *ngIf="applyTrialVisitConstraint">
-          <span>and trial visits </span>
+        <div *ngIf="applyTrialVisitConstraint" class="form-inline">
+          <label>and trial visits</label>&nbsp;
           <p-autoComplete #trialVisitAutoComplete
                           [(ngModel)]="selectedTrialVisits"
                           [suggestions]="suggestedTrialVisits"
@@ -157,6 +162,14 @@
           </button>
         </div>
       </div>
+
+      <div class="form-inline" style="margin-bottom: -1em">
+        <p-checkbox [(ngModel)]="applyStudyConstraint" binary="true"></p-checkbox>
+        <label *ngIf="!applyStudyConstraint" class="gray-text">apply study constraint</label>
+        <gb-study-constraint [className]="'gb-concept-study-child'" *ngIf="applyStudyConstraint"
+                             [constraint]="studyConstraint"></gb-study-constraint>
+      </div>
+
     </p-panel>
     <br>
   </div>

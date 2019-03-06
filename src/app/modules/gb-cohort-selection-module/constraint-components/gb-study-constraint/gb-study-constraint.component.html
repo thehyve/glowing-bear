@@ -1,5 +1,5 @@
 <div class="form-inline" (drop)="onDrop($event)">
-  <label>for study</label>
+  <label>{{constraint.parentConstraint?.className === 'ConceptConstraint' ? 'and' : 'for'}} study</label>
 
   <p-autoComplete #autoComplete
                   [(ngModel)]="selectedStudies"

@@ -39,6 +39,7 @@ import {throwError} from 'rxjs/internal/observable/throwError';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 import {Operator} from '../../../../models/constraint-models/operator';
+import {MockComponent} from 'ng2-mock-component';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -49,7 +50,9 @@ describe('GbConceptConstraintComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbConceptConstraintComponent
+        GbConceptConstraintComponent,
+        MockComponent({selector: 'gb-constraint', inputs: ['constraint']}),
+        MockComponent({selector: 'gb-study-constraint', inputs: ['constraint']})
       ],
       imports: [
         BrowserAnimationsModule,
@@ -200,7 +203,6 @@ describe('GbConceptConstraintComponent', () => {
     component.handleNumericAggregate(response);
     expect(component.minLimit).toEqual(10);
     expect(component.maxLimit).toEqual(20);
-
 
     let val1 = new ValueConstraint();
     val1.operator = <Operator>'>';

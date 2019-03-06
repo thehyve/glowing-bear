@@ -67,9 +67,11 @@ export class ConstraintSerialiser extends AbstractConstraintVisitor<object> {
     if (constraint.applyObsDateConstraint) {
       result['obsDateConstraint'] = this.visit(constraint.obsDateConstraint);
     }
-
     if (constraint.applyTrialVisitConstraint) {
       result['trialVisitConstraint'] = this.visit(constraint.trialVisitConstraint);
+    }
+    if (constraint.applyStudyConstraint) {
+      result['studyConstraint'] = this.visit(constraint.studyConstraint);
     }
     return result;
   }

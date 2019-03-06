@@ -127,3 +127,8 @@
   font-size: small;
   padding: 0.2em 0.5em 0.2em 0.5em;
 }
+
+
+.gb-concept-study-child, .gb-concept-study-child >>> label {
+  margin: 0 !important;
+}

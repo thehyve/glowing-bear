@@ -102,12 +102,12 @@ describe('GbStudyConstraintComponent', () => {
     let studyConstraint2 = new StudyConstraint();
     let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];
-    let spy1 = spyOn(treeNodeService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
-    treeNodeService.selectedTreeNode = {};
+    const generateTreeNodeSpy = spyOn(treeNodeService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
+    treeNodeService.selectedTreeNode = {type: 'STUDY'};
     component.constraint = studyConstraint2;
     let e = new DragEvent('drag');
     component.onDrop(e);
-    expect(spy1).toHaveBeenCalled();
+    expect(generateTreeNodeSpy).toHaveBeenCalled();
     expect((<StudyConstraint>component.constraint).studies.length).toEqual(2);
 
     treeNodeService.selectedTreeNode = {};
