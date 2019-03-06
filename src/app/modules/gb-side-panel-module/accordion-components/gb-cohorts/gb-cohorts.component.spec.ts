@@ -30,12 +30,12 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {Cohort} from '../../../../models/cohort-models/cohort';
 import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-record';
 import {DownloadHelper} from '../../../../utilities/download-helper';
-import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
 import {CountServiceMock} from '../../../../services/mocks/count.service.mock';
+import {TransmartCohortMapper} from '../../../../utilities/transmart-utilities/transmart-cohort-mapper';
 
 describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
@@ -178,51 +178,55 @@ describe('GbCohortsComponent', () => {
     expect(spyMessage).toHaveBeenCalledTimes(2);
   });
 
-  it('should read uploaded cohort file', async () => {
+  it('should read uploaded cohort file', () => {
     fixture.detectChanges();
-    let file = new File([], 'testFile');
+    const contents = '{"constraint": {"type": "true"}}';
+    const file = new File([contents], 'testFile', {type: 'application/json'});
     let event = {
       target: {
-        files: [file]
+        files: [file],
+        result: contents
       }
     };
+    spyOn(FileImportHelper, 'getFile').and.returnValue(file);
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
-    let spy2 = spyOn(cohortService, 'saveCohortByObject').and.stub();
+    let spy2 = spyOn(cohortService, 'restoreCohort').and.stub();
 
-    let reader = new FileReader();
-    FileImportHelper.fileUpload(event, reader);
-    fixture.whenStable().then(() => {
-      FileReader.prototype.onload.bind(component);
-      expect(spy1).toHaveBeenCalled();
-      expect(spy2).toHaveBeenCalled();
-    })
+    component.handleCohortImport(event);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
   });
 
   it('should parse uploaded cohort file if file type is json', () => {
-    let file = new File([], 'testFile.txt');
-    let event = {
+    const contents = '{}';
+    const file = new File([contents], 'testFile.txt', {type: 'application/json'});
+    spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    const event = {
       target: {
-        files: [file]
+        files: [file],
+        result: contents
       }
     };
-    let spy0 = spyOnProperty(file, 'type', 'get').and.returnValue('application/json');
     let spy1 = spyOn(JSON, 'parse').and.callFake(() => {
       return {};
     });
-    let reader = new FileReader();
-    FileImportHelper.fileUpload(event, reader);
-    fixture.whenStable().then(() => {
-      FileReader.prototype.onload.bind(component);
-      expect(spy0).toHaveBeenCalled();
-      expect(spy1).toHaveBeenCalled();
-    });
+    component.handleCohortImport(event);
+    expect(spy1).toHaveBeenCalled();
   });
 
   it('should process uploaded subject ids', () => {
     let fileContents = 'id123\nid456\n';
+    let file = new File([fileContents], 'testName', {type: 'text/plain'});
+    spyOn(FileImportHelper, 'getFile').and.returnValue(file);
+    let event = {
+      target: {
+        files: [file],
+        result: fileContents
+      }
+    };
     let spy = spyOn(cohortService, 'restoreCohort').and.stub();
 
-    component['processSubjectIdsUpload'](fileContents, 'testName');
+    component.handleCohortImport(event);
     expect(spy).toHaveBeenCalledWith(jasmine.any(Cohort));
     expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({name: 'testName'}));
   });
@@ -344,7 +348,7 @@ describe('GbCohortsComponent', () => {
     let query = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
-    let spy3 = spyOn(ConstraintHelper, 'mapCohortToObject').and.stub();
+    let spy3 = spyOn(TransmartCohortMapper, 'serialise').and.stub();
     component.downloadCohort(e, query);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();

@@ -605,8 +605,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     // Update the constraint
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.obsDateConstraint.dateOperator = this.obsDateOperatorState;
-    conceptConstraint.obsDateConstraint.isNegated =
-      (this.obsDateOperatorState === DateOperatorState.NOT_BETWEEN);
     // Notify constraint service
     this.update();
   }
@@ -621,8 +619,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     // Update the constraint
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.valDateConstraint.dateOperator = this.valDateOperatorState;
-    conceptConstraint.valDateConstraint.isNegated =
-      (this.valDateOperatorState === DateOperatorState.NOT_BETWEEN);
     this.updateConceptValues();
   }
 

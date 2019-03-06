@@ -45,6 +45,10 @@ export class ConstraintServiceMock {
     return [];
   }
 
+  public cohortSelectionConstraint(): Constraint {
+    return this._constraint;
+  }
+
   get allConstraints(): Constraint[] {
     return this._allConstraints;
   }

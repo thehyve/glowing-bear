@@ -24,7 +24,6 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   @ViewChild('autoComplete') autoComplete: AutoComplete;
 
   searchResults: Study[];
-  isDropdownVisible = false;
 
   ngOnInit() {
   }

@@ -58,10 +58,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.selectedDimension = (<CombinationConstraint>this.constraint).dimension;
   }
 
-  get isAnd(): boolean {
-    return (<CombinationConstraint>this.constraint).isAnd();
-  }
-
   get children(): Constraint[] {
     return (<CombinationConstraint>this.constraint).children;
   }

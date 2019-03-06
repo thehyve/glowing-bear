@@ -15,8 +15,6 @@ export class TimeConstraint extends Constraint {
   date1: Date = new Date();
   date2: Date = new Date();
 
-  // the flag indicating if the constraint is negated
-  private _isNegated = false;
   // the flag indicating if the constraint is related to observation date
   private _isObservationDate = false;
 
@@ -43,17 +41,6 @@ export class TimeConstraint extends Constraint {
 
   get className(): string {
     return 'TimeConstraint';
-  }
-
-  get isNegated(): boolean {
-    return this._isNegated;
-  }
-
-  set isNegated(value: boolean) {
-    this._isNegated = value;
-    if (value) {
-      this.dateOperator = DateOperatorState.NOT_BETWEEN;
-    }
   }
 
   get isObservationDate(): boolean {

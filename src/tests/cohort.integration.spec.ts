@@ -10,7 +10,6 @@ import {ResourceService} from '../app/services/resource.service';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
 import {Cohort} from '../app/models/cohort-models/cohort';
 import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
-import {ConstraintHelper} from '../app/utilities/constraint-utilities/constraint-helper';
 import {ConstraintService} from '../app/services/constraint.service';
 import {DataTableService} from '../app/services/data-table.service';
 import {TreeNodeService} from '../app/services/tree-node.service';
@@ -26,14 +25,17 @@ import {AuthenticationService} from '../app/services/authentication/authenticati
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
-import {SubjectSet} from '../app/models/constraint-models/subject-set';
 import {CountService} from '../app/services/count.service';
+import {TransmartCohortMapper} from '../app/utilities/transmart-utilities/transmart-cohort-mapper';
+import {TransmartCohort} from '../app/models/transmart-models/transmart-cohort';
+import {TransmartAndConstraint, TransmartNegationConstraint} from '../app/models/transmart-models/transmart-constraint';
 
 describe('Integration test for cohort saving and restoring', () => {
 
   // mocked cohort objects
-  let q0obj = {
+  const q0obj: TransmartCohort = {
     bookmarked: false,
+    subscribed: false,
     createDate: '2018-07-02T14:47:05Z',
     id: 'q0',
     name: 'cohort that stores stuff',
@@ -115,12 +117,12 @@ describe('Integration test for cohort saving and restoring', () => {
               }
             ]
           }
-        }
+        } as TransmartNegationConstraint
       ]
-    }
+    } as TransmartAndConstraint
   };
 
-  let q0: Cohort = ConstraintHelper.mapObjectToCohort(q0obj);
+  let q0: Cohort = TransmartCohortMapper.deserialise(q0obj);
   let cohortService: CohortService;
   let constraintService: ConstraintService;
   let dataTableService: DataTableService;

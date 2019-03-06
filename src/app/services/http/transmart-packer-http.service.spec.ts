@@ -147,14 +147,10 @@ describe('TransmartPackerHttpService', () => {
         expect(req.request.body['job_parameters']['constraint']).toBeDefined();
         expect(req.request.body['job_parameters']['constraint']).toEqual({
             type: 'subselection',
-            dimension: 'patient',
+            dimension: 'Biosource ID',
             constraint: {
-              type: 'subselection',
-              dimension: 'Biosource ID',
-              constraint: {
-                type: 'concept',
-                conceptCode: undefined
-            }
+              type: 'concept',
+              conceptCode: undefined
           }
         });
         expect(req.request.body['job_parameters']['row_filter']).toBeDefined();

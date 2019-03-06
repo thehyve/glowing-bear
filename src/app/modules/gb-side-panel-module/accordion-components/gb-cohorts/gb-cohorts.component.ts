@@ -13,7 +13,6 @@ import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-rec
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {ConfirmationService} from 'primeng/primeng';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
@@ -21,6 +20,7 @@ import {SubjectSetConstraint} from '../../../../models/constraint-models/subject
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
 import {IconHelper} from '../../../../utilities/icon-helper';
+import {TransmartCohortMapper} from '../../../../utilities/transmart-utilities/transmart-cohort-mapper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -53,8 +53,8 @@ export class GbCohortsComponent implements OnInit {
 
   handleCohortImport(e) {
     MessageHelper.alert('info', 'File upload successful!');
-    let data = e.target['result'];
     this.file = FileImportHelper.getFile(this.fileElementId);
+    const data = e.target['result'];
     if (FileImportHelper.isTextFile(this.file)) {
       this.processSubjectIdsUpload(data as string, this.file.name);
     } else if (FileImportHelper.isJsonFile(this.file)) {
@@ -151,7 +151,7 @@ export class GbCohortsComponent implements OnInit {
 
   downloadCohort(event: Event, target: Cohort) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(ConstraintHelper.mapCohortToObject(target), target.name);
+    DownloadHelper.downloadJSON(TransmartCohortMapper.serialise(target), target.name);
   }
 
   radioCheckSubscriptionFrequency(event: MouseEvent, target: Cohort) {

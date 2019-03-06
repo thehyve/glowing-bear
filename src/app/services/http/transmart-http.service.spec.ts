@@ -12,7 +12,6 @@ import {TransmartHttpService} from './transmart-http.service';
 import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
-import {MessageHelper} from '../../utilities/message-helper';
 import {Observable} from 'rxjs/Observable';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
@@ -22,11 +21,7 @@ import {TransmartExportElement} from '../../models/transmart-models/transmart-ex
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Concept} from '../../models/constraint-models/concept';
-import {TransmartConstraintSerialiser} from '../../utilities/transmart-utilities/transmart-constraint-serialiser';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 describe('TransmartHttpService', () => {
 
@@ -396,54 +391,26 @@ describe('TransmartHttpService', () => {
     );
   });
 
-  it('should notify the user when studies cannot be fetched', function () {
-    spyOn(transmartHttpService, 'getStudies').and.callFake(() =>
-      Observable.of(new Promise(() => {
-        throw new HttpErrorResponse({status: 500});
-      }))
-    );
+  it('should forward the error when studies cannot be fetched', (done) => {
+    let httpError: any;
+    spyOn(transmartHttpService, 'getStudies').and.callFake(() => {
+      httpError = new HttpErrorResponse({status: 500});
+      return Observable.of(new Promise(() => {
+        throw httpError;
+      }));
+    });
 
-    let messageCount = MessageHelper.messages.length;
     // The first time, the studies should be fetched from the resource
-    transmartHttpService.studies.then(() =>
-      fail()
-    ).catch(() => {
-      expect(MessageHelper.messages.length).toEqual(messageCount);
-      expect(MessageHelper.messages[messageCount].summary).toContain('A server-side error occurred');
+    transmartHttpService.studies.then(() => {
+      fail();
+      done();
+    }).catch((error) => {
+      expect(error).toEqual(httpError);
+      done();
     });
   });
 
-  it('should not wrap constraints into patient subselection',
-    inject([HttpTestingController, TransmartHttpService],
-    (httpMock: HttpTestingController, service: TransmartHttpService) => {
-      const mockData = {
-        foo: 'bar'
-      };
-      const c1 = new ConceptConstraint();
-      c1.concept = new Concept();
-      const mockConstraint = new CombinationConstraint();
-      mockConstraint.addChild(c1);
-      mockConstraint.dimension = 'patient';
-      let spy = spyOn(TransmartConstraintMapper, 'mapConstraint').and.callThrough();
-
-      service.getCounts(mockConstraint).subscribe((res) => {
-        expect(res['foo']).toBe('bar');
-      });
-      const url = service.endpointUrl + '/observations/counts';
-      const req = httpMock.expectOne(url);
-
-      expect(spy).not.toHaveBeenCalledWith(jasmine.any(SubselectionConstraint));
-      expect(req.request.body).toEqual({
-        constraint: {
-          type: 'concept',
-          conceptCode: undefined
-        }
-      });
-      req.flush(mockData);
-
-    }));
-
-  it('should wrap constraints into patient subselection',
+  it('should correctly map constraints',
     inject([HttpTestingController, TransmartHttpService],
       (httpMock: HttpTestingController, service: TransmartHttpService) => {
         const mockData = {
@@ -464,14 +431,10 @@ describe('TransmartHttpService', () => {
       expect(req2.request.body).toEqual({
         constraint: {
           type: 'subselection',
-          dimension: 'patient',
+          dimension: 'Diagnosis ID',
           constraint: {
-            type: 'subselection',
-            dimension: 'Diagnosis ID',
-            constraint: {
-              type: 'concept',
-              conceptCode: undefined
-            }
+            type: 'concept',
+            conceptCode: undefined
           }
         }
       });

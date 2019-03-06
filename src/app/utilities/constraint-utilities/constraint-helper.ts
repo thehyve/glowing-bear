@@ -12,10 +12,6 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {CombinationState} from '../../models/constraint-models/combination-state';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
-import {Cohort} from '../../models/cohort-models/cohort';
-import {CohortSubscriptionFrequency} from '../../models/cohort-models/cohort-subscription-frequency';
-import {MessageHelper} from '../message-helper';
 
 export class ConstraintHelper {
 
@@ -119,71 +115,6 @@ export class ConstraintHelper {
       // all other types of constraints count as non-empty children.
       return true;
     });
-  }
-
-  /**
-   * map a constraint to plain object that can be downloaded in json, and later imported as well
-   * @param {Constraint} constraint
-   * @returns {object}
-   */
-  static mapConstraintToObject(constraint: Constraint): object {
-    let obj: object = TransmartConstraintMapper.mapConstraint(constraint, true);
-    return obj;
-  }
-
-  /**
-   * map an object to constraint
-   * @param {object} obj
-   * @returns {Constraint}
-   */
-  static mapObjectToConstraint(obj: object): Constraint {
-    let constraint: Constraint = TransmartConstraintMapper.generateConstraintFromObject(obj);
-    return constraint;
-  }
-
-  static mapCohortToObject(target: Cohort): object {
-    let obj = {};
-    obj['id'] = target.id;
-    obj['name'] = target.name;
-    obj['bookmarked'] = target.bookmarked;
-    obj['subscribed'] = target.subscribed;
-    if (target.subscriptionFreq) {
-      obj['subscriptionFreq'] = target.subscriptionFreq;
-    }
-    if (target.description) {
-      obj['description'] = target.description;
-    }
-    if (target.createDate) {
-      obj['createDate'] = target.createDate;
-    }
-    if (target.updateDate) {
-      obj['updateDate'] = target.updateDate;
-    }
-    if (target.constraint) {
-      obj['constraint'] = ConstraintHelper.mapConstraintToObject(target.constraint);
-    }
-    return obj;
-  }
-
-  static mapObjectToCohort(obj: object): Cohort {
-    try {
-      let result = new Cohort(obj['id'], obj['name']);
-      result.bookmarked = obj['bookmarked'] ? true : false;
-      result.subscribed = obj['subscribed'] ? true : false;
-      if (result.subscribed) {
-        result.subscriptionFreq = obj['subscriptionFreq'] ?
-          obj['subscriptionFreq'] : CohortSubscriptionFrequency.WEEKLY;
-      }
-      result.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
-      result.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
-      result.constraint = ConstraintHelper.mapObjectToConstraint(obj['constraint']);
-      return result;
-    } catch (e) {
-      const message = 'Failed to convert to query.';
-      console.error(message);
-      MessageHelper.alert('error', message);
-    }
-    return null;
   }
 
 }

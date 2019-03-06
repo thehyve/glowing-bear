@@ -219,10 +219,6 @@ export class CohortService {
     this.saveCohort(result);
   }
 
-  public saveCohortByObject(obj: object) {
-    this.saveCohort(ConstraintHelper.mapObjectToCohort(obj));
-  }
-
   public saveCohort(target: Cohort) {
     this.isSavingCohortCompleted = false;
     this.resourceService.saveCohort(target)

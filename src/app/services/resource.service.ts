@@ -517,10 +517,6 @@ export class ResourceService {
     }
   }
 
-  get transmartExportDataView(): string {
-    return this.transmartResourceService.exportDataView;
-  }
-
   // -------------------------------------- cross table ---------------------------------------------
   public getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
     switch (this.endpointMode) {

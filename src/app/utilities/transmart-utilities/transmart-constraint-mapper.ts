@@ -7,373 +7,78 @@
  */
 
 import {Constraint} from '../../models/constraint-models/constraint';
-import {ValueConstraint} from '../../models/constraint-models/value-constraint';
-import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
-import {TimeConstraint} from '../../models/constraint-models/time-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {StudyConstraint} from '../../models/constraint-models/study-constraint';
-import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
-import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {CombinationState} from '../../models/constraint-models/combination-state';
-import {Study} from '../../models/constraint-models/study';
-import {Concept} from '../../models/constraint-models/concept';
-import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {TransmartConstraintSerialiser} from './transmart-constraint-serialiser';
-import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
+import {
+  TransmartCombinationConstraint,
+  TransmartConstraint, TransmartTrueConstraint
+} from '../../models/transmart-models/transmart-constraint';
+import {TransmartConstraintReader} from './transmart-constraint-reader';
+
 
 export class TransmartConstraintMapper {
 
   static fullSerialiser = new TransmartConstraintSerialiser(true);
   static defaultSerialiser = new TransmartConstraintSerialiser(false);
 
-  public static mapConstraintOnPatientLevel(constraint: Constraint, full?: boolean): object {
-    let patientLevelConstraint: Constraint;
-    if (constraint.className === 'CombinationConstraint'
-      && (<CombinationConstraint>constraint).dimension === 'patient' || constraint.className === 'TrueConstraint') {
-      patientLevelConstraint = constraint;
-    } else {
-      patientLevelConstraint = new SubselectionConstraint('patient', constraint)
-    }
-    return this.mapConstraint(patientLevelConstraint, full);
+  static throwMappingError(constraint: Constraint) {
+    throw new Error(`Unable to map constraint ${constraint.className} to object.`);
   }
 
-  public static mapConstraint(constraint: Constraint, full?: boolean): object {
+  public static mapConstraint(constraint: Constraint, full?: boolean): TransmartConstraint {
     let result;
     if (full) {
       result = TransmartConstraintMapper.fullSerialiser.visit(constraint);
     } else {
       result = TransmartConstraintMapper.defaultSerialiser.visit(constraint);
     }
-    result = TransmartConstraintMapper.verifyConstraintObject(constraint, result);
-    return result;
-  }
-
-  public static verifyConstraintObject(constraint: Constraint, result: object): object {
     if (!result) {
       TransmartConstraintMapper.throwMappingError(constraint);
     }
     return result;
   }
 
-  static throwMappingError(constraint: Constraint) {
-    throw new Error(`Unable to map constraint ${constraint.className} to object.`);
-  }
-
-  static wrapWithCombinationConstraint(child: Constraint, dimension: string): Constraint {
-    let constraint = new CombinationConstraint();
-    constraint.addChild(child);
-    constraint.dimension = dimension;
-    return constraint;
-  }
-
-  static generateConstraintFromConceptObject(constraintObject: object): Constraint {
-    let constraint: Constraint;
-    let concept = new Concept();
-    const tail = '\\' + constraintObject['name'] + '\\';
-    const fullName = constraintObject['fullName'];
-    concept.fullName = fullName;
-    let head = fullName.substring(0, fullName.length - tail.length);
-    concept.name = constraintObject['name'];
-    concept.label = constraintObject['name'] + ' (' + head + ')';
-    concept.path = constraintObject['conceptPath'];
-    concept.type = constraintObject['valueType'];
-    concept.code = constraintObject['conceptCode'];
-    constraint = new ConceptConstraint();
-    (<ConceptConstraint>constraint).concept = concept;
-    return constraint;
-  }
-
-  static generateConstraintFromStudyObject(constraintObject): Constraint {
-    let constraint: Constraint = null;
-    let study = new Study();
-    study.id = constraintObject['studyId'];
-    constraint = new StudyConstraint();
-    (<StudyConstraint>constraint).studies.push(study);
-    return constraint;
-  }
-
-  static generateConstraintFromCombinationObject(constraintObject): Constraint {
-    let constraint: Constraint = new CombinationConstraint();
-    (<CombinationConstraint>constraint).combinationState = this.getCombinationState(constraintObject);
-
-    /*
-     * sometimes a combination constraint actually corresponds to a concept constraint UI
-     * which could have:
-     * a) an observation date constraint and/or
-     * b) a trial-visit constraint and/or
-     * c) value constraints and/or
-     * d) time constraints (value date for a DATE concept and/or observation date constraints)
-     * >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-     * sometimes a combination contains purely study constraints,
-     * in which case we can reduce this combination to a single study constraint containing multiple studies
-     */
-    let prospectConcept: ConceptConstraint = null;
-    let prospectValDate: TimeConstraint = null;
-    let prospectObsDate: TimeConstraint = null;
-    let prospectTrialVisit: TrialVisitConstraint = null;
-    let prospectValues: ValueConstraint[] = [];
-    let hasOnlyStudies = true;
-    let allStudyIds = [];
-    /*
-     * if all children are a subselection of the same dimension, drop subselection wrapper
-     */
-    if (constraintObject['args'].every( arg => arg['type'] === 'subselection'
-      && arg['dimension'] === constraintObject['args'][0]['dimension'])) {
-      (<CombinationConstraint>constraint).dimension = constraintObject['args'][0]['dimension'];
-      constraintObject['args'] = constraintObject['args'].map(arg => arg['constraint']);
+  public static optimizeConstraintObject(constraintObject: TransmartConstraint): TransmartConstraint {
+    if (!['and', 'or'].includes(constraintObject.type)) {
+      // Return a copy
+      return Object.assign({}, constraintObject);
     }
-    /*
-     * go through each argument, construct potential sub-constraints for the concept constraint
-     */
-    for (let arg of constraintObject['args']) {
-      if (arg['type'] === 'concept' && !arg['fullName']) {
-        arg['valueType'] = constraintObject['valueType'];
-        arg['conceptPath'] = constraintObject['conceptPath'];
-        arg['name'] = constraintObject['name'];
-        arg['fullName'] = constraintObject['fullName'];
-        arg['conceptCode'] = constraintObject['conceptCode'];
-      }
-      let child = TransmartConstraintMapper.generateConstraintFromObject(arg);
-      if (arg['type'] === 'subselection' && !(<CombinationConstraint>constraint).isCombinationLevelRedundant) {
-        if (constraint.parentConstraint !== null) {
-          child = TransmartConstraintMapper.wrapWithCombinationConstraint(child, arg['dimension']);
-        }
-        (<CombinationConstraint>constraint).dimension = arg['dimension'];
-      }
-      if (arg['type'] === 'concept') {
-        prospectConcept = <ConceptConstraint>child;
-      } else if (arg['type'] === 'time') {
-        if (arg['isObservationDate']) {
-          prospectObsDate = <TimeConstraint>child;
-          prospectObsDate.isNegated = arg['isNegated'];
+    const combination = <TransmartCombinationConstraint>Object.assign({}, constraintObject);
+    if (combination.args.length > 1) {
+      // Remove 'true' constraints if operator is 'and';
+      // return true if the operator is 'or' and the arguments contain a 'true' constraint.
+      let isOr = combination.type === 'or';
+      let hasTrue = false;
+      let newArgs = [];
+      for (let arg of combination.args) {
+        if (arg.type === 'true') {
+          hasTrue = true;
         } else {
-          prospectValDate = <TimeConstraint>child;
-          prospectValDate.isNegated = arg['isNegated'];
-        }
-      } else if (arg['type'] === 'field') {
-        prospectTrialVisit = <TrialVisitConstraint>child;
-      } else if (arg['type'] === 'value') {
-        prospectValues.push(<ValueConstraint>child);
-      } else if (arg['type'] === 'or') {
-        let isValues = true;
-        for (let val of (<CombinationConstraint>child).children) {
-          if (val.className !== 'ValueConstraint') {
-            isValues = false;
-          } else {
-            prospectValues.push(<ValueConstraint>val);
-          }
-        }
-        if (!isValues) {
-          prospectValues = [];
-        }
-      } else if (arg['type'] === 'negation') {
-        let negationArg = arg['arg'];
-        if (negationArg['type'] === 'time') {
-          if (negationArg['isObservationDate']) {
-            prospectObsDate = <TimeConstraint>((<NegationConstraint>child).constraint);
-            prospectObsDate.isNegated = true;
-          } else {
-            prospectValDate = <TimeConstraint>((<NegationConstraint>child).constraint);
-            prospectValDate.isNegated = true;
-          }
-        }
-      }
-      (<CombinationConstraint>constraint).addChild(child);
-      if (arg['type'] === 'study_name') {
-        allStudyIds.push(arg['studyId']);
-      } else {
-        hasOnlyStudies = false;
-      }
-    }
-    // -------------------------------- end for -------------------------------------------
-
-    /*
-     * Check conditions for a concept constraint
-     */
-    if (prospectConcept &&
-      (prospectValDate || prospectObsDate || prospectTrialVisit || prospectValues.length > 0)) {
-      if (prospectValDate) {
-        prospectConcept.applyValDateConstraint = true;
-        prospectConcept.valDateConstraint = prospectValDate;
-      }
-      if (prospectObsDate) {
-        prospectConcept.applyObsDateConstraint = true;
-        prospectConcept.obsDateConstraint = prospectObsDate;
-      }
-      if (prospectTrialVisit) {
-        prospectConcept.applyTrialVisitConstraint = true;
-        prospectConcept.trialVisitConstraint = prospectTrialVisit;
-      }
-      if (prospectValues) {
-        prospectConcept.valueConstraints = prospectValues;
-      }
-      constraint = prospectConcept;
-    }
-    /*
-     * Check conditions for a study constraint
-     */
-    if (constraintObject['type'] === 'or' && hasOnlyStudies) {
-      let studyConstraint = new StudyConstraint();
-      for (let sid of allStudyIds) {
-        let study = new Study();
-        study.id = sid;
-        studyConstraint.studies.push(study);
-      }
-      (<CombinationConstraint>constraint).children.length = 0;
-      (<CombinationConstraint>constraint).addChild(studyConstraint);
-    }
-    return constraint;
-  }
-
-  static generateConstraintFromPedigreeObject(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = new PedigreeConstraint(constraintObject['relationTypeLabel']);
-    (<PedigreeConstraint>constraint).biological = constraintObject['biological'];
-    (<PedigreeConstraint>constraint).shareHousehold = constraintObject['shareHousehold'];
-    let rightHandSide = this.generateConstraintFromObject(constraintObject['relatedSubjectsConstraint']);
-    (<PedigreeConstraint>constraint).rightHandSideConstraint.children.length = 0;
-    if (rightHandSide.className === 'CombinationConstraint') {
-      const combiRhs =  <CombinationConstraint>rightHandSide;
-      for (let child of combiRhs.children) {
-        (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(child);
-      }
-      (<PedigreeConstraint>constraint).rightHandSideConstraint.combinationState = combiRhs.combinationState;
-    } else {
-      if (rightHandSide.className !== 'TrueConstraint') {
-        (<PedigreeConstraint>constraint).rightHandSideConstraint.addChild(rightHandSide);
-      }
-    }
-    return constraint;
-  }
-
-  static generateConstraintFromTimeObject(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = new TimeConstraint(constraintObject['operator']);
-    (<TimeConstraint>constraint).date1 = new Date(constraintObject['values'][0]);
-    if (constraintObject['values'].length === 2) {
-      (<TimeConstraint>constraint).date2 = new Date(constraintObject['values'][1]);
-    }
-    (<TimeConstraint>constraint).isNegated = constraintObject['isNegated'];
-    (<TimeConstraint>constraint).isObservationDate = constraintObject['isObservationDate'];
-    return constraint;
-  }
-
-  static generateConstraintFromTrialVisitObject(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = new TrialVisitConstraint();
-    for (let id of constraintObject['value']) {
-      let visit = new TrialVisit(id);
-      (<TrialVisitConstraint>constraint).trialVisits.push(visit);
-    }
-    return constraint;
-  }
-
-  static generateConstraintFromValueObject(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = new ValueConstraint();
-    (<ValueConstraint>constraint).operator = constraintObject['operator'];
-    (<ValueConstraint>constraint).value = constraintObject['value'];
-    (<ValueConstraint>constraint).valueType = constraintObject['valueType'];
-    return constraint;
-  }
-
-  static generateConstraintFromPatientSetObject(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = new SubjectSetConstraint();
-    if (constraintObject['subjectIds']) {
-      (<SubjectSetConstraint>constraint).subjectIds = constraintObject['subjectIds'];
-    } else if (constraintObject['patientIds']) {
-      (<SubjectSetConstraint>constraint).patientIds = constraintObject['patientIds'];
-    } else if (constraintObject['patientSetId']) {
-      (<SubjectSetConstraint>constraint).id = constraintObject['patientSetId'];
-    }
-    return constraint;
-  }
-
-  static generateConstraintFromSubselection(constraintObject): Constraint {
-    let constraint: Constraint;
-    constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
-    if (constraint.className !== 'CombinationConstraint') {
-      constraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint, constraintObject['dimension']);
-    }
-    (<CombinationConstraint>constraint).dimension = constraintObject['dimension'];
-    return constraint;
-  }
-
-  public static optimizeConstraintObject(constraintObject) {
-    let newConstraintObject = Object.assign({}, constraintObject);
-
-    // if the object has 'args' property
-    if (newConstraintObject['args']) {
-      if (newConstraintObject['args'].length === 1) {
-        newConstraintObject = this.optimizeConstraintObject(newConstraintObject['args'][0]);
-      } else if (newConstraintObject['args'].length > 1) {
-        let isOr = newConstraintObject['type'] === 'or';
-        let hasTrue = false;
-        let newArgs = [];
-        for (let arg of newConstraintObject['args']) {
-          if (arg['type'] === 'true') {
+          let newArg = this.optimizeConstraintObject(arg);
+          if (newArg.type === 'true') {
             hasTrue = true;
           } else {
-            let newArg = this.optimizeConstraintObject(arg);
-            if (newArg['type'] === 'true') {
-              hasTrue = true;
-            } else {
-              newArgs.push(newArg);
-            }
+            newArgs.push(newArg);
           }
         }
-        if (isOr && hasTrue) {
-          newConstraintObject['args'] = [];
-        } else {
-          newConstraintObject['args'] = newArgs;
-        }
+      }
+      if (isOr && hasTrue) {
+        return new TransmartTrueConstraint();
+      } else {
+        combination.args = newArgs;
       }
     }
-    return newConstraintObject;
+    if (combination.args.length === 1) {
+      // return the singleton argument instead of the combination
+      return this.optimizeConstraintObject(combination.args[0]);
+    }
+    return combination;
   }
 
   // generate the constraint instance based on given constraint object input
-  public static generateConstraintFromObject(constraintObjectInput: object): Constraint {
+  public static generateConstraintFromObject(constraintObjectInput: TransmartConstraint): Constraint {
     let constraintObject = TransmartConstraintMapper.optimizeConstraintObject(constraintObjectInput);
-    let type = constraintObject['type'];
-    let constraint: Constraint = null;
-    if (type === 'concept') { // ------------------------------------> If it is a concept constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromConceptObject(constraintObject);
-    } else if (type === 'study_name') { // ----------------------------> If it is a study constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromStudyObject(constraintObject);
-    } else if (type === 'and' ||
-      type === 'or' ||
-      type === 'combination') { // ------------------------------> If it is a combination constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromCombinationObject(constraintObject);
-    } else if (type === 'relation') { // ---------------------------> If it is a pedigree constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromPedigreeObject(constraintObject);
-    } else if (type === 'time') { // -----------------------------------> If it is a time constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromTimeObject(constraintObject);
-    } else if (type === 'field') { // ---------------------------> If it is a trial-visit constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromTrialVisitObject(constraintObject);
-    } else if (type === 'value') { // ---------------------------> If it is a value constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromValueObject(constraintObject);
-    } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromPatientSetObject(constraintObject);
-    } else if (type === 'subselection') { // --------------------> If it is a sub-selection constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromSubselection(constraintObject);
-    } else if (type === 'true') { // -----------------------------------> If it is a true constraint
-      constraint = new TrueConstraint();
-    } else if (type === 'negation') { // ---------------------------> If it is a negation constraint
-      constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['arg']);
-      constraint.negated = true;
-    }
-    return constraint;
-  }
-
-  private static getCombinationState(constraintObject) {
-    let type = constraintObject['type'];
-    let operator = type !== 'combination' ? type : constraintObject['operator'];
-    return (operator === 'and') ? CombinationState.And : CombinationState.Or;
+    const constraintReader = new TransmartConstraintReader();
+    return constraintReader.visit(constraintObject);
   }
 
 }
