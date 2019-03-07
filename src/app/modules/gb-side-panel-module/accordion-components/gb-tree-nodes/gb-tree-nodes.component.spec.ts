@@ -19,6 +19,7 @@ import {ResourceServiceMock} from '../../../../services/mocks/resource.service.m
 import {CohortService} from '../../../../services/cohort.service';
 import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
 import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
+import {GbTreeSearchComponent} from "../gb-tree-search/gb-tree-search.component";
 
 describe('TreeNodesComponent', () => {
   let component: GbTreeNodesComponent;
@@ -27,7 +28,7 @@ describe('TreeNodesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTreeNodesComponent],
+      declarations: [GbTreeNodesComponent, GbTreeSearchComponent],
       imports: [
         BrowserAnimationsModule,
         TreeModule,

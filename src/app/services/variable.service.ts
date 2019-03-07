@@ -204,6 +204,7 @@ export class VariableService {
         }
         if (countItem && countItem.subjectCount > 0) {
           this.treeNodeService.formatNodeWithCounts(node, countItem);
+          node.styleClass = '';
           nodesWithCodes.push(node);
         }
       } else if (node['children']) { // if the node is an intermediate node

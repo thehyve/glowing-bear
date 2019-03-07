@@ -2,32 +2,9 @@
   font-size: small;
 }
 
-.filter-btn {
-  font-size: small;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  color: gray;
-}
-
-.filter-result {
-  font-size: small;
-  color: grey;
-  padding-top: 3px;
-  padding-left: 5px;
-}
-
 /*Make the font size in the tree smaller*/
 :host >>> p-treenode {
   font-size: small;
-}
-
-/*Style for the search box in the tree-node accordion on the left side*/
-:host >>> .gb-tree-filter-input > input {
-  font-size: small !important;
-  height: 1.8em;
-  width: 100%;
-  min-width: 3em;
-  max-width: 7em;
 }
 
 /*
@@ -38,18 +15,4 @@
   width: auto;
   background-color: transparent;
   border: none;
-}
-
-/*tree node styles for filtering*/
-:host >>> .gb-highlight-treenode {
-  background-color: var(--gb-orange-light) !important;
-  border-radius: 10px !important;
-  font-weight: bold !important;
-}
-
-/*
- * A marker css class to indicate if a tree node is leaf or not,
- * should be left empty
- */
-:host >>> .gb-is-not-leaf {
 }

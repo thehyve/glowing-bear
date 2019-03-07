@@ -9,7 +9,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
 import {MatExpansionModule} from '@angular/material';
-import {CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
+import {AutoCompleteModule, CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {MockComponent} from 'ng2-mock-component';
 import {NavbarService} from '../../../../services/navbar.service';
@@ -24,6 +24,7 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
+import {GbTreeSearchComponent} from "../gb-tree-search/gb-tree-search.component";
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -37,14 +38,16 @@ describe('GbVariablesComponent', () => {
       declarations: [
         GbVariablesComponent,
         MockComponent({selector: 'gb-variables-tree'}),
-        MockComponent({selector: 'gb-categorized-variables'})
+        MockComponent({selector: 'gb-categorized-variables'}),
+        GbTreeSearchComponent
       ],
       imports: [
         FormsModule,
         DragDropModule,
         MatExpansionModule,
         CheckboxModule,
-        SelectButtonModule
+        SelectButtonModule,
+        AutoCompleteModule,
       ],
       providers: [
         {

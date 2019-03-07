@@ -1,4 +1,5 @@
 <div>
+
   <div *ngIf="isExport">
     <!-- check all checkbox -->
     <span class="checkAllText">
@@ -19,10 +20,14 @@
     </div>
   </div>
 
+  <gb-tree-search
+    [tree]="variablesTreeData"
+    (onClear)="onTreeClear()"
+  ></gb-tree-search>
+
   <div class="variable-mode-selection-container">
     <p-selectButton [options]="availableViewModes"
-                    [(ngModel)]="viewMode"
-                    tyleClass="view-mode-button"></p-selectButton>
+                    [(ngModel)]="viewMode"></p-selectButton>
   </div>
 
   <gb-variables-tree *ngIf="viewMode === VariablesViewMode.TREE_VIEW"></gb-variables-tree>

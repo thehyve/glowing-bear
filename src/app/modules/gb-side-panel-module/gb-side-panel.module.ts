@@ -40,6 +40,7 @@ import {
 import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 import {RouterModule} from '@angular/router';
+import {GbTreeSearchComponent} from "./accordion-components/gb-tree-search/gb-tree-search.component";
 
 @NgModule({
   imports: [
@@ -71,7 +72,8 @@ import {RouterModule} from '@angular/router';
     GbCohortsComponent,
     GbVariablesComponent,
     GbCategorizedVariablesComponent,
-    GbVariablesTreeComponent
+    GbVariablesTreeComponent,
+    GbTreeSearchComponent,
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]
