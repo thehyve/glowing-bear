@@ -150,3 +150,8 @@ then('the current cohort has multiple dimensions selected', () => {
   cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 2);
   cy.get('gb-combination-constraint').should('have.length', 2);
 })
+
+then('the cohort {string} has type {string}', (cohortName, cohortType) => {
+  cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).parent().parent().parent().parent().click();
+  cy.get('.ng-trigger-tabContent').eq(1).contains('Type: ' + cohortType);
+})

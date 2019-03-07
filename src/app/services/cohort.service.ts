@@ -213,6 +213,9 @@ export class CohortService {
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
     result.constraint = this.currentCohort.constraint;
+    if (this.currentCohort.constraint.className === 'CombinationConstraint') {
+      result.type = (<CombinationConstraint>this.currentCohort.constraint).dimension;
+    }
     this.saveCohort(result);
   }
 

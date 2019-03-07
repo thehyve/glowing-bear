@@ -35,10 +35,10 @@ export class GbBackendQuery {
   // and (optionally) the type of subjects for the subscription
   public subjectDimension: string;
 
-  constructor(queryName: string) {
+  constructor(queryName: string, subjectDimension: string) {
     this.name = queryName;
+    this.subjectDimension = subjectDimension;
     this.bookmarked = false;
     this.subscribed = false;
-    this.subjectDimension = 'patient' // TODO TMT-729
   }
 }

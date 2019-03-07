@@ -17,6 +17,8 @@ import {FormatHelper} from '../../utilities/format-helper';
 export class Cohort {
   private _id: string;
   private _name: string;
+  // Type of the cohort equals dimension selected on the constraint root level
+  private _type: string;
   private _description: string;
   private _createDate: string;
   // The information about the creation date, e.g. 3 days ago
@@ -57,6 +59,7 @@ export class Cohort {
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
+    this.type = Constraint.TOP_LEVEL_DIMENSION;
     this.collapsed = true;
     this.visible = true;
     this.bookmarked = false;
@@ -81,6 +84,14 @@ export class Cohort {
 
   set name(value: string) {
     this._name = value;
+  }
+
+  get type(): string {
+    return this._type;
+  }
+
+  set type(value: string) {
+    this._type = value;
   }
 
   get description(): string {

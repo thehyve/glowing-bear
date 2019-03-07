@@ -16,7 +16,7 @@ export class GbBackendHttpServiceMock {
   }
 
   getQueries(): Observable<GbBackendQuery[]> {
-    let q1: GbBackendQuery = new GbBackendQuery('dt');
+    let q1: GbBackendQuery = new GbBackendQuery('dt', 'patient');
     q1.bookmarked = false;
     q1.createDate = '2018-07-03T13:18:31Z';
     q1.subscribed = false;
@@ -34,7 +34,7 @@ export class GbBackendHttpServiceMock {
     q1.queryBlob = {
       queryConstraintFull: q1.queryConstraint
     };
-    let q2: GbBackendQuery = new GbBackendQuery('test');
+    let q2: GbBackendQuery = new GbBackendQuery('test', 'patient');
     q2.bookmarked = false;
     q2.createDate = '2018-07-04T10:08:33Z';
     q2.subscribed = false;

@@ -116,6 +116,7 @@
         <!-- accordion body -->
         <div *ngIf="cohort.visible">
           <div>Name: {{cohort.name}}</div>
+          <div>Type: {{cohort.type}}</div>
           <div>Created: {{cohort.createDateInfo}}</div>
           <div>Updated: {{cohort.updateDateInfo}}</div>
           <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">

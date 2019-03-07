@@ -7,6 +7,7 @@ Feature: save cohort
     When I use public study 'CATEGORICAL_VALUES ' as a constraint
     When I save the Cohort with name 'CatVal'
     Then the cohort 'CatVal' is saved
+    And the cohort 'CatVal' has type 'patient'
 
   Scenario: load cohort
     Given Cohort 'Query Vital Signs' is saved
@@ -26,6 +27,7 @@ Feature: save cohort
     And I save the Cohort with name 'Biomaterial ID'
     And I restore the cohort 'Biomaterial ID'
     Then the current cohort has biomaterial selected
+    And the cohort 'Biomaterial ID' has type 'Biomaterial ID'
 
   Scenario: save and delete complex multi-dimension cohort
     Given I am on the cohort-selection tab
@@ -33,3 +35,4 @@ Feature: save cohort
     And I save the Cohort with name 'Multi dim'
     And I restore the cohort 'Multi dim'
     Then the current cohort has multiple dimensions selected
+    And the cohort 'Multi dim' has type 'Biosource ID'
