@@ -71,6 +71,8 @@
           <div *ngIf="cohort.visible">
             <div class="cohort-header clearfix">
               <div class="cohort-header-name">
+                <i *ngIf="cohort.controlsEnabled" class="{{getCohortTypeIcon(cohort.type)}} cohort-type-icon">
+                </i>&nbsp;
                 <p-toggleButton [(ngModel)]="cohort.selected"
                                 onLabel="{{cohort.name}}"
                                 offLabel="{{cohort.name}}"

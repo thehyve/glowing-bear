@@ -3,7 +3,14 @@
   <div class="form-inline gb-constraint-cohort-type-dropdown">
     <label>Selection type:</label>
     <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension" (onChange)="onCohortTypeChange()"
-                [autoWidth]="false" [style]="{'min-width':'9em'}"></p-dropdown>
+                [autoWidth]="false" [style]="{'min-width':'10em'}">
+      <ng-template let-item pTemplate="selectedItem">
+        <i class="{{getDimensionIcon(item.label)}} gb-dimension-icon"></i>&nbsp;{{item.label}}
+      </ng-template>
+      <ng-template let-dimension pTemplate="item">
+        <i class="{{getDimensionIcon(dimension.label)}} gb-dimension-icon"></i>&nbsp;{{dimension.label}}
+      </ng-template>
+    </p-dropdown>
   </div>
 
   <div class="{{childContainerClass}}">

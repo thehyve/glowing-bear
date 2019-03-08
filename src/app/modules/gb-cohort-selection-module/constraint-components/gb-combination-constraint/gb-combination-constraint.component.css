@@ -38,3 +38,9 @@
 .gb-constraint-cohort-type-dropdown {
   margin-left: 1.5em;
 }
+
+.gb-dimension-icon {
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+  width: 1em;
+}

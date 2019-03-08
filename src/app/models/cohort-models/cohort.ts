@@ -8,11 +8,9 @@
 
 import {CohortSubscriptionFrequency} from './cohort-subscription-frequency';
 import {CohortDiffRecord} from './cohort-diff-record';
-import {DataTable} from '../table-models/data-table';
 import {Constraint} from '../constraint-models/constraint';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
-import {ConstraintHelper} from '../../utilities/constraint-utilities/constraint-helper';
 import {FormatHelper} from '../../utilities/format-helper';
+import {CombinationConstraint} from '../constraint-models/combination-constraint';
 
 export class Cohort {
   private _id: string;
@@ -59,7 +57,7 @@ export class Cohort {
   constructor(id: string, name: string) {
     this.id = id;
     this.name = name;
-    this.type = Constraint.TOP_LEVEL_DIMENSION;
+    this.type = CombinationConstraint.TOP_LEVEL_DIMENSION;
     this.collapsed = true;
     this.visible = true;
     this.bookmarked = false;

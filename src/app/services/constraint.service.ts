@@ -366,5 +366,4 @@ export class ConstraintService {
   get validDimensionsUpdated(): Subject<Dimension[]> {
     return this._validDimensionsUpdated;
   }
-
 }

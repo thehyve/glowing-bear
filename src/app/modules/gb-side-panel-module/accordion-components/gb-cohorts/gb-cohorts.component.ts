@@ -20,6 +20,7 @@ import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {SubjectSetConstraint} from '../../../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
+import {IconHelper} from '../../../../utilities/icon-helper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -91,6 +92,10 @@ export class GbCohortsComponent implements OnInit {
     } else {
       MessageHelper.alert('error', 'Invalid json format for cohort import.');
     }
+  }
+
+  getCohortTypeIcon(cohortType: string): string {
+    return IconHelper.getDimensionIcon(cohortType);
   }
 
   toggleSubscription(event: Event, target: Cohort) {

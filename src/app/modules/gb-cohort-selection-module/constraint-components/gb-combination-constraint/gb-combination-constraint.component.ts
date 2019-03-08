@@ -16,6 +16,7 @@ import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-
 import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {Dimension} from '../../../../models/constraint-models/dimension';
+import {IconHelper} from '../../../../utilities/icon-helper';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -153,6 +154,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   handleCohortTypeChange() {
     (<CombinationConstraint>this.constraint).dimension = this.selectedDimension;
+  }
+
+  getDimensionIcon(dimension: string): string {
+    return IconHelper.getDimensionIcon(dimension);
   }
 
 }
