@@ -160,4 +160,17 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     return IconHelper.getDimensionIcon(dimension);
   }
 
+  get subjectBoxMessage(): string {
+    if ((<CombinationConstraint>this.constraint).isRoot) {
+      return 'Select data for';
+    } else {
+      let parentDimension = this.constraintService.parentDimension(this.constraint);
+      if (this.constraint.negated) {
+        return `the ${parentDimension} is NOT linked to a`;
+      } else {
+        return `the ${parentDimension} is linked to a`;
+      }
+    }
+  }
+
 }

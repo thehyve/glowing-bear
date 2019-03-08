@@ -84,9 +84,10 @@ when("I use public study {string} and negation of study {string} as a constraint
   cy.get('.update-btn').eq(0).click();
 });
 
-then("{string} study constraint panel is negated", (studyName) => {
-  cy.get('.gb-constraint-container').eq(1).should('have.class', 'gb-negated-constraint');
+then("constraint panel containing {string} is negated", (constraintName) => {
+  cy.get('.gb-constraint-container').contains(constraintName).parents('.gb-negated-constraint');
   cy.get('span').contains('excluded').should('be.visible');
+  cy.get('label').contains('for the patient there are NO observations:');
 });
 
 when("I use negated pedigree constraint {string} with concept {string} and negated concept {string}",
@@ -108,5 +109,9 @@ when("I select diagnoses that are part of study {string}", (studyName) => {
   cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
   cy.get('.ui-dropdown').contains('Diagnosis ID').click();
   cy.get('.update-btn').eq(0).click();
+});
+
+then("there is an observation level box message with {string} dimension", (dimensionName) => {
+  cy.get('label').contains(`for the ${dimensionName} there is an observation:`);
 });
 

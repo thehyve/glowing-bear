@@ -97,4 +97,13 @@ export class GbConstraintComponent implements OnInit {
       && (<CombinationConstraint>this.constraint).isRoot;
   }
 
+  get observationBoxMessage(): string {
+    let parentDimension = this.constraintService.parentDimension(this.constraint);
+    if (this.constraint.negated) {
+      return `for the ${parentDimension} there are NO observations:`;
+    } else {
+      return `for the ${parentDimension} there is an observation:`;
+    }
+  }
+
 }

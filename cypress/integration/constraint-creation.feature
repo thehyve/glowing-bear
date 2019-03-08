@@ -15,12 +15,13 @@ Feature: create constraints by selecting nodes from the tree
     Given I am on the cohort-selection tab
     When  I use public study 'EHR' and negation of study 'CATEGORICAL_VALUES' as a constraint
     Then there are '3' subjects
-    Then 'CATEGORICAL_VALUES' study constraint panel is negated
+    And constraint panel containing 'CATEGORICAL_VALUES' is negated
 
   Scenario: create a constraint with double negation
     Given I am on the cohort-selection tab
     When I use negated pedigree constraint 'Parent of' with concept 'Is a Twin' and negated concept 'Number of children that are multiplet'
     Then there are '1,355' subjects
+    And constraint panel containing 'Parent of ' is negated
 
   Scenario: create a study restricted categorical constraint
     Given I am on the cohort-selection tab
@@ -41,4 +42,5 @@ Feature: create constraints by selecting nodes from the tree
     Given I am on the cohort-selection tab
     When I select diagnoses that are part of study 'CSR'
     Then there are '8' subjects
+    And there is an observation level box message with 'Diagnosis ID' dimension
 

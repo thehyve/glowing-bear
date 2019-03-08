@@ -130,4 +130,24 @@ describe('GbCombinationConstraintComponent', () => {
       .children[1]).dimension).toEqual(CombinationConstraint.TOP_LEVEL_DIMENSION);
   });
 
+  it('should add a proper box description message', () => {
+    let constraint1 = new CombinationConstraint();
+    constraint1.isRoot = true;
+    constraint1.dimension = 'patient';
+    let constraint11 = new CombinationConstraint();
+    constraint11.negated = true;
+    let constraint12 = new ConceptConstraint();
+    constraint1.addChild(constraint11);
+    constraint1.addChild(constraint12);
+
+    component.constraint = constraint1;
+    expect(component.subjectBoxMessage).toBe('Select data for');
+
+    component.constraint = constraint11;
+    expect(component.subjectBoxMessage).toBe('the patient is NOT linked to a');
+
+    component.constraint = constraint12;
+    expect(component.subjectBoxMessage).toBe('the patient is linked to a');
+  });
+
 });

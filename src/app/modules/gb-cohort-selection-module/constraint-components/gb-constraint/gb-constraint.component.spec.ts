@@ -142,4 +142,17 @@ describe('GbConstraintComponent', () => {
     expect(component.element.nativeElement.firstChild.classList).not.toContain('dropzone');
   });
 
+  it('should add a proper observation level box message', () => {
+    let constraint1 = new CombinationConstraint();
+    constraint1.dimension = 'patient';
+    let constraint11 = new ConceptConstraint();
+    constraint1.addChild(constraint11);
+
+    component.constraint = constraint11;
+    expect(component.observationBoxMessage).toBe('for the patient there is an observation:');
+
+    component.constraint.negated = true;
+    expect(component.observationBoxMessage).toBe('for the patient there are NO observations:');
+  });
+
 });

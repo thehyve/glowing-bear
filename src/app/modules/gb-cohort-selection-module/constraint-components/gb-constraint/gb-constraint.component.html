@@ -7,6 +7,7 @@
      [class.gb-constraint-container-border-left-4]="!isRootClassLevel && constraintDepth === 4">
 
   <div *ngIf="!isRoot" class="pull-right form-inline gb-constraint-control-container">
+
     <!-- Exclusion switch -->
     <span>{{constraint.negated ? 'excluded' : 'included'}}</span>
     <p-inputSwitch [(ngModel)]="constraint.negated" (onChange)="update()"></p-inputSwitch>
@@ -18,6 +19,9 @@
     </button>
   </div>
 
+  <div *ngIf="!isRoot && constraint.className !== 'CombinationConstraint'" class="form-inline">
+    <label>{{observationBoxMessage}}</label>
+  </div>
   <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
                              [constraint]="constraint"></gb-combination-constraint>
   <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "

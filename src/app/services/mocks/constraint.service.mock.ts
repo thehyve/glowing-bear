@@ -49,6 +49,10 @@ export class ConstraintServiceMock {
     return [];
   }
 
+  public parentDimension(constraint: Constraint): string {
+    return 'patient';
+  }
+
   get allConstraints(): Constraint[] {
     return this._allConstraints;
   }
