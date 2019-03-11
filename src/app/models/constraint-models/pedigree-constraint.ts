@@ -9,7 +9,6 @@
 import {Constraint} from './constraint';
 import {PedigreeState} from './pedigree-state';
 import {CombinationConstraint} from './combination-constraint';
-import {ConstraintMark} from './constraint-mark';
 
 type TriState = true | false | undefined;
 
@@ -80,7 +79,6 @@ export class PedigreeConstraint extends Constraint {
   set rightHandSideConstraint(value: CombinationConstraint) {
     this._rightHandSideConstraint = value;
     this._rightHandSideConstraint.parentConstraint = this;
-    this._rightHandSideConstraint.mark = ConstraintMark.SUBJECT;
   }
 
   get relationType(): PedigreeState {

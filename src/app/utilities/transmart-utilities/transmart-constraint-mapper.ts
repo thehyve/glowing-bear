@@ -22,12 +22,23 @@ import {Study} from '../../models/constraint-models/study';
 import {Concept} from '../../models/constraint-models/concept';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {TransmartConstraintSerialiser} from './transmart-constraint-serialiser';
-import {ConstraintHelper} from '../constraint-utilities/constraint-helper';
+import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 export class TransmartConstraintMapper {
 
   static fullSerialiser = new TransmartConstraintSerialiser(true);
   static defaultSerialiser = new TransmartConstraintSerialiser(false);
+
+  public static mapConstraintOnPatientLevel(constraint: Constraint, full?: boolean): object {
+    let patientLevelConstraint: Constraint;
+    if (constraint.className === 'CombinationConstraint'
+      && (<CombinationConstraint>constraint).dimension === 'patient' || constraint.className === 'TrueConstraint') {
+      patientLevelConstraint = constraint;
+    } else {
+      patientLevelConstraint = new SubselectionConstraint('patient', constraint)
+    }
+    return this.mapConstraint(patientLevelConstraint, full);
+  }
 
   public static mapConstraint(constraint: Constraint, full?: boolean): object {
     let result;
@@ -49,6 +60,13 @@ export class TransmartConstraintMapper {
 
   static throwMappingError(constraint: Constraint) {
     throw new Error(`Unable to map constraint ${constraint.className} to object.`);
+  }
+
+  static wrapWithCombinationConstraint(child: Constraint, dimension: string): Constraint {
+    let constraint = new CombinationConstraint();
+    constraint.addChild(child);
+    constraint.dimension = dimension;
+    return constraint;
   }
 
   static generateConstraintFromConceptObject(constraintObject: object): Constraint {
@@ -78,12 +96,8 @@ export class TransmartConstraintMapper {
   }
 
   static generateConstraintFromCombinationObject(constraintObject): Constraint {
-    let type = constraintObject['type'];
-    let constraint: Constraint = null;
-    let operator = type !== 'combination' ? type : constraintObject['operator'];
-    constraint = new CombinationConstraint();
-    (<CombinationConstraint>constraint).combinationState =
-      (operator === 'and') ? CombinationState.And : CombinationState.Or;
+    let constraint: Constraint = new CombinationConstraint();
+    (<CombinationConstraint>constraint).combinationState = this.getCombinationState(constraintObject);
 
     /*
      * sometimes a combination constraint actually corresponds to a concept constraint UI
@@ -104,6 +118,14 @@ export class TransmartConstraintMapper {
     let hasOnlyStudies = true;
     let allStudyIds = [];
     /*
+     * if all children are a subselection of the same dimension, drop subselection wrapper
+     */
+    if (constraintObject['args'].every( arg => arg['type'] === 'subselection'
+      && arg['dimension'] === constraintObject['args'][0]['dimension'])) {
+      (<CombinationConstraint>constraint).dimension = constraintObject['args'][0]['dimension'];
+      constraintObject['args'] = constraintObject['args'].map(arg => arg['constraint']);
+    }
+    /*
      * go through each argument, construct potential sub-constraints for the concept constraint
      */
     for (let arg of constraintObject['args']) {
@@ -115,6 +137,12 @@ export class TransmartConstraintMapper {
         arg['conceptCode'] = constraintObject['conceptCode'];
       }
       let child = TransmartConstraintMapper.generateConstraintFromObject(arg);
+      if (arg['type'] === 'subselection' && !(<CombinationConstraint>constraint).isCombinationLevelRedundant) {
+        if (constraint.parentConstraint !== null) {
+          child = TransmartConstraintMapper.wrapWithCombinationConstraint(child, arg['dimension']);
+        }
+        (<CombinationConstraint>constraint).dimension = arg['dimension'];
+      }
       if (arg['type'] === 'concept') {
         prospectConcept = <ConceptConstraint>child;
       } else if (arg['type'] === 'time') {
@@ -187,7 +215,7 @@ export class TransmartConstraintMapper {
     /*
      * Check conditions for a study constraint
      */
-    if (type === 'or' && hasOnlyStudies) {
+    if (constraintObject['type'] === 'or' && hasOnlyStudies) {
       let studyConstraint = new StudyConstraint();
       for (let sid of allStudyIds) {
         let study = new Study();
@@ -265,6 +293,16 @@ export class TransmartConstraintMapper {
     return constraint;
   }
 
+  static generateConstraintFromSubselection(constraintObject): Constraint {
+    let constraint: Constraint;
+    constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
+    if (constraint.className !== 'CombinationConstraint') {
+      constraint = TransmartConstraintMapper.wrapWithCombinationConstraint(constraint, constraintObject['dimension']);
+    }
+    (<CombinationConstraint>constraint).dimension = constraintObject['dimension'];
+    return constraint;
+  }
+
   public static optimizeConstraintObject(constraintObject) {
     let newConstraintObject = Object.assign({}, constraintObject);
 
@@ -294,8 +332,6 @@ export class TransmartConstraintMapper {
           newConstraintObject['args'] = newArgs;
         }
       }
-    } else if (newConstraintObject['constraint']) { // if the object has the 'constraint' property
-      newConstraintObject = this.optimizeConstraintObject(newConstraintObject['constraint']);
     }
     return newConstraintObject;
   }
@@ -323,9 +359,8 @@ export class TransmartConstraintMapper {
       constraint = TransmartConstraintMapper.generateConstraintFromValueObject(constraintObject);
     } else if (type === 'patient_set') { // ---------------------> If it is a patient-set constraint
       constraint = TransmartConstraintMapper.generateConstraintFromPatientSetObject(constraintObject);
-    } else if (type === 'subselection'
-      && constraintObject['dimension'] === 'patient') { // -------> If it is a patient sub-selection
-      constraint = TransmartConstraintMapper.generateConstraintFromObject(constraintObject['constraint']);
+    } else if (type === 'subselection') { // --------------------> If it is a sub-selection constraint
+      constraint = TransmartConstraintMapper.generateConstraintFromSubselection(constraintObject);
     } else if (type === 'true') { // -----------------------------------> If it is a true constraint
       constraint = new TrueConstraint();
     } else if (type === 'negation') { // ---------------------------> If it is a negation constraint
@@ -333,6 +368,12 @@ export class TransmartConstraintMapper {
       constraint.negated = true;
     }
     return constraint;
+  }
+
+  private static getCombinationState(constraintObject) {
+    let type = constraintObject['type'];
+    let operator = type !== 'combination' ? type : constraintObject['operator'];
+    return (operator === 'and') ? CombinationState.And : CombinationState.Or;
   }
 
 }

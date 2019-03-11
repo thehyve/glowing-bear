@@ -7,7 +7,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Dimension} from '../../../../models/table-models/dimension';
+import {TableDimension} from '../../../../models/table-models/table-dimension';
 import {DataTableService} from '../../../../services/data-table.service';
 
 @Component({
@@ -61,19 +61,19 @@ export class GbDataTableDimensionsComponent implements OnInit {
     }
   }
 
-  get rowDimensions(): Dimension[] {
+  get rowDimensions(): TableDimension[] {
     return this.dataTableService.rowDimensions;
   }
 
-  set rowDimensions(value: Dimension[]) {
+  set rowDimensions(value: TableDimension[]) {
     this.dataTableService.rowDimensions = value;
   }
 
-  get columnDimensions(): Dimension[] {
+  get columnDimensions(): TableDimension[] {
     return this.dataTableService.columnDimensions;
   }
 
-  set columnDimensions(value: Dimension[]) {
+  set columnDimensions(value: TableDimension[]) {
     this.dataTableService.columnDimensions = value;
   }
 

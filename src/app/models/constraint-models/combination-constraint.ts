@@ -10,17 +10,19 @@ import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {PedigreeConstraint} from './pedigree-constraint';
 import {TrueConstraint} from './true-constraint';
-import {ConstraintMark} from './constraint-mark';
 
 export class CombinationConstraint extends Constraint {
+
+  static readonly TOP_LEVEL_DIMENSION: string = 'patient';
 
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
+  private _dimension: string;
 
   constructor(children?: Constraint[],
               state?: CombinationState,
-              mark?: ConstraintMark) {
+              dimension?: string) {
     super();
     this.children = [];
     this.isRoot = false;
@@ -31,7 +33,7 @@ export class CombinationConstraint extends Constraint {
       });
     }
     this.combinationState = state ? state : CombinationState.And;
-    this.mark = mark ? mark : ConstraintMark.OBSERVATION;
+    this.dimension = dimension ? dimension : CombinationConstraint.TOP_LEVEL_DIMENSION;
   }
 
   get className(): string {
@@ -90,18 +92,33 @@ export class CombinationConstraint extends Constraint {
     this._isRoot = value;
   }
 
+  get dimension(): string {
+    return this._dimension;
+  }
+
+  set dimension(value: string) {
+    this._dimension = value;
+  }
+
+  get isDimensionSubselectionRequired(): boolean {
+    return this.parentConstraint && this.parentConstraint.className === 'CombinationConstraint'
+      && this.dimension !== (<CombinationConstraint>this.parentConstraint).dimension
+      || this.isRoot;
+  }
+
+  get isCombinationLevelRedundant(): boolean {
+    return this.children.length === 1
+      && !this.children[0].negated
+      && this.children[0].className === 'CombinationConstraint'
+      && this.dimension === (<CombinationConstraint>this.children[0]).dimension;
+  }
+
   optimize(): Constraint {
     if (this.children.length > 0) {
-      if (this.children.length > 1) {
-        return this;
+      if (this.isCombinationLevelRedundant) {
+        return (<CombinationConstraint>this.children[0]).optimize();
       } else {
-        let child = this.children[0];
-        child.mark = this.mark;
-        if (child.className === 'CombinationConstraint') {
-          return (<CombinationConstraint>child).optimize();
-        } else {
-          return child;
-        }
+        return this;
       }
     } else {
       return new TrueConstraint();

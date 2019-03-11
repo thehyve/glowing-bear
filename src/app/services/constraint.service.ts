@@ -20,13 +20,14 @@ import {TreeNodeService} from './tree-node.service';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
 import {TreeNode} from 'primeng/api';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
 import {StudyService} from './study.service';
 import {CountService} from './count.service';
+import {Dimension} from '../models/constraint-models/dimension';
+import {Subject} from 'rxjs';
 
 /**
  * This service concerns with
@@ -52,6 +53,10 @@ export class ConstraintService {
   private _concepts: Concept[] = [];
   private _conceptConstraints: Constraint[] = [];
 
+  // List of all available cohort types
+  private _validDimensions: Dimension[] = [];
+  private _validDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
+
   /*
    * The maximum number of search results allowed when searching for a constraint
    */
@@ -65,10 +70,11 @@ export class ConstraintService {
     // Initialize the root constraints in the cohort selection
     this.rootConstraint = new CombinationConstraint();
     this.rootConstraint.isRoot = true;
-    this.rootConstraint.mark = ConstraintMark.SUBJECT;
 
     // Construct constraints
     this.loadEmptyConstraints();
+    // load valid constraint dimensions
+    this.loadValidDimensions();
     this.loadStudiesConstraints();
     // create the pedigree-related constraints
     this.loadPedigrees();
@@ -86,6 +92,14 @@ export class ConstraintService {
     this.allConstraints.push(new CombinationConstraint());
     this.allConstraints.push(new StudyConstraint());
     this.allConstraints.push(new ConceptConstraint());
+  }
+
+  private loadValidDimensions() {
+    this.resourceService.validDimensions
+      .subscribe(
+        (validDimensions: Dimension[]) => {
+          this.validDimensions = validDimensions;
+        });
   }
 
   private loadStudiesConstraints() {
@@ -165,7 +179,6 @@ export class ConstraintService {
     if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
       constraint = new TrueConstraint();
     }
-    constraint.mark = ConstraintMark.SUBJECT;
     return constraint;
   }
 
@@ -180,7 +193,6 @@ export class ConstraintService {
     if (hasUnselected) {
       let result: CombinationConstraint = new CombinationConstraint();
       result.combinationState = CombinationState.Or;
-      result.mark = ConstraintMark.OBSERVATION;
       variables
         .filter((variable: Concept) => {
           return variable.selected;
@@ -205,6 +217,7 @@ export class ConstraintService {
 
   public restoreCohortConstraint(constraint: Constraint) {
     if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
+      this.rootConstraint.dimension = (<CombinationConstraint>constraint).dimension;
       const children = (<CombinationConstraint>constraint).children;
       let hasNegation = children.length === 2
         && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');
@@ -339,6 +352,19 @@ export class ConstraintService {
 
   set maxNumSearchResults(value: number) {
     this._maxNumSearchResults = value;
+  }
+
+  get validDimensions(): Dimension[] {
+    return this._validDimensions;
+  }
+
+  set validDimensions(values: Dimension[]) {
+    this._validDimensions = values;
+    this.validDimensionsUpdated.next(values);
+  }
+
+  get validDimensionsUpdated(): Subject<Dimension[]> {
+    return this._validDimensionsUpdated;
   }
 
 }

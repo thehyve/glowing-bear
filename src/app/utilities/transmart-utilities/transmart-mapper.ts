@@ -6,11 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Cohort} from '../../models/cohort-models/cohort';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
-import {Dimension} from '../../models/table-models/dimension';
+import {TableDimension} from '../../models/table-models/table-dimension';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
@@ -19,18 +17,16 @@ import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {NumericalAggregate} from '../../models/aggregate-models/numerical-aggregate';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {FormatHelper} from '../format-helper';
-import {TransmartConstraintMapper} from './transmart-constraint-mapper';
 import {CountItem} from '../../models/aggregate-models/count-item';
-import {TransmartDataTableMapper} from './transmart-data-table-mapper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {Study} from '../../models/constraint-models/study';
-import {Concept} from '../../models/constraint-models/concept';
-import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {ExportJob} from '../../models/export-models/export-job';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
+import {Dimension} from '../../models/constraint-models/dimension';
 
 export class TransmartMapper {
 
@@ -80,13 +76,13 @@ export class TransmartMapper {
       dataTable = new DataTable();
       if (transmartTableState.columnDimensions) {
         transmartTableState.columnDimensions.forEach(colName => {
-          let dimension: Dimension = new Dimension(colName);
+          let dimension: TableDimension = new TableDimension(colName);
           dataTable.columnDimensions.push(dimension);
         });
       }
       if (transmartTableState.rowDimensions) {
         transmartTableState.rowDimensions.forEach(rowName => {
-          let dimension: Dimension = new Dimension(rowName);
+          let dimension: TableDimension = new TableDimension(rowName);
           dataTable.rowDimensions.push(dimension);
         });
       }
@@ -215,7 +211,7 @@ export class TransmartMapper {
       dimensionsList.sort((a, b) => a.length - b.length);
 
       dimensionsList.forEach((name: string) => {
-        transmartStudyDimensions.availableDimensions.push(new Dimension(name));
+        transmartStudyDimensions.availableDimensions.push(new TableDimension(name));
       });
     }
     return transmartStudyDimensions;
@@ -255,4 +251,9 @@ export class TransmartMapper {
     return map;
   }
 
+  public static mapDimensions(transmartDimensions: TransmartDimension[]) {
+    return transmartDimensions.sort(function (a, b) {
+      return a.sortIndex - b.sortIndex;
+    }).map(transmartDimension => new Dimension(transmartDimension.name));
+  }
 }

@@ -16,7 +16,6 @@ export class CohortServiceMock {
   allCounts: CountItem;
   cohortsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
 
-
   constructor() {
     this.initializeCounts();
   }

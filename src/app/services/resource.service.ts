@@ -37,6 +37,8 @@ import {TransmartExportJob} from '../models/transmart-models/transmart-export-jo
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {GbBackendHttpService} from './http/gb-backend-http.service';
 import {GbBackendMapper} from '../utilities/gb-backend-mapper';
+import {Dimension} from '../models/constraint-models/dimension';
+import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
 @Injectable({
   providedIn: 'root',
@@ -496,6 +498,18 @@ export class ResourceService {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.sortableDimensions;
+      }
+      default: {
+        this.handleEndpointModeError();
+      }
+    }
+  }
+
+  get validDimensions(): Observable<Dimension[]> {
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART: {
+        return this.transmartResourceService.getSubjectDimensions().pipe(
+          map((transmartDimensions: TransmartDimension[]) => TransmartMapper.mapDimensions(transmartDimensions)))
       }
       default: {
         this.handleEndpointModeError();

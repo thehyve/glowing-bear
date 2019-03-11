@@ -12,13 +12,10 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {CombinationState} from '../../models/constraint-models/combination-state';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
 import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
 import {Cohort} from '../../models/cohort-models/cohort';
 import {CohortSubscriptionFrequency} from '../../models/cohort-models/cohort-subscription-frequency';
 import {MessageHelper} from '../message-helper';
-import {DataTable} from '../../models/table-models/data-table';
-import {Dimension} from '../../models/table-models/dimension';
 
 export class ConstraintHelper {
 
@@ -80,7 +77,6 @@ export class ConstraintHelper {
       // wrap patient level constraints in a patient-level combination
       let combination = new CombinationConstraint();
       combination.combinationState = CombinationState.And;
-      combination.mark = ConstraintMark.SUBJECT;
       constraints.forEach(child => combination.addChild(child));
       return combination;
     }
@@ -190,14 +186,4 @@ export class ConstraintHelper {
     return null;
   }
 
-  static mapDataTabletoObject(dataTable: DataTable): object {
-    let obj = {};
-    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
-      return dim.name;
-    });
-    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: Dimension) => {
-      return dim.name;
-    });
-    return obj;
-  }
 }

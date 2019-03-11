@@ -21,7 +21,6 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {Subject} from 'rxjs';
 import {CountService} from './count.service';
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
@@ -67,6 +66,7 @@ export class CohortService {
   private _isCohortSubscriptionIncluded = false;
   // Flag indicating if saving a cohort is finished
   private _isSavingCohortCompleted = true;
+
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private constraintService: ConstraintService,
@@ -85,6 +85,41 @@ export class CohortService {
     return this.updateCountsWithCurrentCohort();
   }
 
+  /**
+   * ----------------------------- Update the current cohort panel -----------------------------
+   */
+  public updateCountsWithCurrentCohort(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (this.isDirty) {
+        this.isUpdatingCurrent = true;
+        let constraint = this.constraintService.cohortSelectionConstraint();
+        this.countService.updateCurrentSelectionCount(constraint)
+          .then(() => {
+            this.currentCohort.constraint = constraint;
+            this.currentCohort.updateDate = new Date().toISOString();
+            this.isUpdatingCurrent = false;
+            this.isDirty = false;
+
+            if (this.currentCohort.selected) {
+              this.updateCountsWithAllCohorts()
+                .then(() => {
+                  resolve(true)
+                })
+                .catch(err => {
+                  reject(err);
+                })
+            } else {
+              resolve(true);
+            }
+          })
+          .catch(err => {
+            reject(err);
+          });
+      } else {
+        resolve(true);
+      }
+    });
+  }
 
   /**
    * ----------------------------- Update the queries on the left-side panel -----------------------------
@@ -130,46 +165,12 @@ export class CohortService {
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
   }
 
-  public updateCountsWithCurrentCohort(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      if (this.isDirty) {
-        this.isUpdatingCurrent = true;
-        let constraint = this.constraintService.cohortSelectionConstraint();
-        this.countService.updateCurrentSelectionCount(constraint)
-          .then(() => {
-            this.currentCohort.constraint = constraint;
-            this.currentCohort.updateDate = new Date().toISOString();
-            this.isUpdatingCurrent = false;
-            this.isDirty = false;
-
-            if (this.currentCohort.selected) {
-              this.updateCountsWithAllCohorts()
-                .then(() => {
-                  resolve(true)
-                })
-                .catch(err => {
-                  reject(err);
-                })
-            } else {
-              resolve(true);
-            }
-          })
-          .catch(err => {
-            reject(err);
-          });
-      } else {
-        resolve(true);
-      }
-    });
-  }
-
   public updateCountsWithAllCohorts(): Promise<any> {
     return new Promise((resolve, reject) => {
       console.log('Updating counts from all cohorts...');
       this.isUpdatingAll = true;
       let combination: CombinationConstraint = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
-      combination.mark = ConstraintMark.SUBJECT;
       this.cohorts.forEach((cohort: Cohort) => {
         if (cohort.selected) {
           combination.addChild(cohort.constraint);
@@ -438,4 +439,5 @@ export class CohortService {
   set saveSubjectSetBeforeUpdatingCounts(value: boolean) {
     this._saveSubjectSetBeforeUpdatingCounts = value;
   }
+
 }

@@ -13,10 +13,6 @@ import {MessageHelper} from '../../utilities/message-helper';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ConstraintService} from '../../services/constraint.service';
-import {FileImportHelper} from '../../utilities/file-import-helper';
-import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
-import {Cohort} from '../../models/cohort-models/cohort';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {CountService} from '../../services/count.service';
 
 @Component({

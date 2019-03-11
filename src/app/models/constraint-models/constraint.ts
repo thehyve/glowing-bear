@@ -6,14 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {ConstraintMark} from './constraint-mark';
-
 export class Constraint {
 
   // The textual representation of this constraint
   protected _textRepresentation: string;
-  // The enum indicating the purpose of the constraint: is it for querying subjects? Or observations?
-  protected _mark: ConstraintMark;
   // The parent constraint
   protected _parentConstraint: Constraint;
   // The negation flag indicating whether to add a logical negation to the constraints
@@ -21,7 +17,6 @@ export class Constraint {
 
   constructor() {
     this.textRepresentation = '';
-    this.mark = ConstraintMark.OBSERVATION;
     this.parentConstraint = null;
     this.negated = false;
   }
@@ -40,14 +35,6 @@ export class Constraint {
 
   set textRepresentation(value: string) {
     this._textRepresentation = value;
-  }
-
-  get mark(): ConstraintMark {
-    return this._mark;
-  }
-
-  set mark(value: ConstraintMark) {
-    this._mark = value;
   }
 
   get parentConstraint(): Constraint {

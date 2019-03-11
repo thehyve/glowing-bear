@@ -47,7 +47,8 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
     MessagesModule,
     MultiSelectModule,
     OverlayPanelModule,
-    InputSwitchModule
+    InputSwitchModule,
+    DropdownModule,
   ],
   exports: [
     RouterModule

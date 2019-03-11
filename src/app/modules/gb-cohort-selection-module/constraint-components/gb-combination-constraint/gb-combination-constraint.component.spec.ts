@@ -9,7 +9,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbCombinationConstraintComponent} from './gb-combination-constraint.component';
-import {AutoCompleteModule} from 'primeng/primeng';
+import {AutoCompleteModule, DropdownModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
@@ -27,6 +27,7 @@ import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
+import {Constraint} from '../../../../models/constraint-models/constraint';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -41,7 +42,8 @@ describe('GbCombinationConstraintComponent', () => {
       ],
       imports: [
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        DropdownModule
       ],
       providers: [
         {
@@ -94,5 +96,38 @@ describe('GbCombinationConstraintComponent', () => {
     e['originalEvent'] = new MouseEvent('');
     component.onDropdown(e);
     expect(component.searchResults).toBe(dummies);
-  })
+  });
+
+  it('should handle cohort type change action', () => {
+    component.constraint = new CombinationConstraint();
+    let newDimension = 'test dimension';
+    let spy1 = spyOn(component, 'update').and.callThrough();
+    let spy2 = spyOn(component, 'handleCohortTypeChange').and.callThrough();
+
+    component.selectedDimension = newDimension;
+    component.onCohortTypeChange();
+
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
+    expect((<CombinationConstraint>component.constraint).dimension).toBe(newDimension);
+  });
+
+  it('should propagate selected cohort type', () => {
+    let constraint1 = new StudyConstraint();
+    let constraint2 = new CombinationConstraint();
+    let constraint21 = new ConceptConstraint();
+    let constraint22 = new ConceptConstraint();
+    constraint2.addChild(constraint21);
+    constraint2.addChild(constraint22);
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).addChild(constraint1);
+    (<CombinationConstraint>component.constraint).addChild(constraint2);
+
+    component.selectedDimension = 'test dimension';
+    component.onCohortTypeChange();
+
+    expect((<CombinationConstraint>(<CombinationConstraint>component.constraint)
+      .children[1]).dimension).toEqual(CombinationConstraint.TOP_LEVEL_DIMENSION);
+  });
+
 });

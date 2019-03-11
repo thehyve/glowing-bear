@@ -10,6 +10,9 @@ import {CombinationConstraint} from '../../models/constraint-models/combination-
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
 import {Concept} from '../../models/constraint-models/concept';
+import {Subject} from 'rxjs';
+import {Cohort} from '../../models/cohort-models/cohort';
+import {Dimension} from '../../models/constraint-models/dimension';
 
 export class ConstraintServiceMock {
 
@@ -21,7 +24,8 @@ export class ConstraintServiceMock {
   private _conceptConstraints: Constraint[] = [];
   private _maxNumSearchResults = 100;
   private _constraint: Constraint = new CombinationConstraint();
-
+  private _validDimensionsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
+  private _validDimensions: Dimension[] = [];
   constructor() {
     this._rootConstraint = new CombinationConstraint();
   }
@@ -91,6 +95,22 @@ export class ConstraintServiceMock {
 
   set maxNumSearchResults(value: number) {
     this._maxNumSearchResults = value;
+  }
+
+  get validDimensionsUpdated(): Subject<Cohort[]> {
+    return this._validDimensionsUpdated;
+  }
+
+  set validDimensionsUpdated(value: Subject<Cohort[]>) {
+    this._validDimensionsUpdated = value;
+  }
+
+  get validDimensions(): Dimension[] {
+    return this._validDimensions;
+  }
+
+  set validDimensions(value: Dimension[]) {
+    this._validDimensions = value;
   }
 
 }

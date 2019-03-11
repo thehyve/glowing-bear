@@ -20,14 +20,13 @@ import {TransmartCountItem} from '../models/transmart-models/transmart-count-ite
 import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 import {TransmartStudy} from '../models/transmart-models/transmart-study';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {flatMap, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {ExportDataType} from '../models/export-models/export-data-type';
 import {switchMap} from 'rxjs/internal/operators';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {TransmartPackerMapper} from '../utilities/transmart-utilities/transmart-packer-mapper';
-import {TransmartPackerJob} from '../models/transmart-models/transmart-packer-job';
+import {TransmartPackerJob} from '../models/transmart-packer-models/transmart-packer-job';
 import {TransmartDataTableMapper} from '../utilities/transmart-utilities/transmart-data-table-mapper';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartStudyDimensions} from '../models/transmart-models/transmart-study-dimensions';
@@ -36,12 +35,15 @@ import {TransmartPackerHttpService} from './http/transmart-packer-http.service';
 import {Study} from '../models/constraint-models/study';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class TransmartResourceService {
+
+  static readonly SUBJECT_DIMENSION_TYPE = 'subject';
 
   // the export data view, for 'transmart' mode either 'dataTable' or 'surveyTable'.
   private _exportDataView: string;
@@ -368,8 +370,7 @@ export class TransmartResourceService {
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
     let targetConstraint = constraint;
     if (this.autosaveSubjectSets &&
-      constraint.className === 'CombinationConstraint' &&
-      (<CombinationConstraint>constraint).children[1].mark === ConstraintMark.OBSERVATION) {
+      constraint.className === 'CombinationConstraint') {
       let combo = new CombinationConstraint();
       combo.addChild(this.subjectSetConstraint);
       combo.addChild((<CombinationConstraint>constraint).children[1]);
@@ -478,7 +479,7 @@ export class TransmartResourceService {
   /**
    * Gets available dimensions for data table
    * @param {Constraint} constraint
-   * @returns {Observable<Dimension[]>}
+   * @returns {Observable<TableDimension[]>}
    */
   getDimensions(constraint: Constraint): Observable<TransmartStudyDimensions> {
     // Fetch study names for the constraint
@@ -500,14 +501,23 @@ export class TransmartResourceService {
     return this.transmartHttpService.getStudyIds(constraint);
   }
 
-  get sortableDimensions(): Set<string> {
-    return TransmartHttpService.sortableDimensions;
-  }
-
   getCrossTable(baseConstraint: Constraint,
                 rowConstraints: Constraint[],
                 columnConstraints: Constraint[]): Observable<TransmartCrossTable> {
     return this.transmartHttpService.getCrossTable(baseConstraint, rowConstraints, columnConstraints);
+  }
+
+  get sortableDimensions(): Set<string> {
+    return TransmartHttpService.sortableDimensions;
+  }
+
+  getSubjectDimensions(): Observable<TransmartDimension[]> {
+    return this.transmartHttpService.getDimensions().pipe(
+      map((transmartDimensions: TransmartDimension[]) => {
+        return transmartDimensions.filter( transmartDimension =>
+          transmartDimension.dimensionType &&
+          transmartDimension.dimensionType.toLowerCase() === TransmartResourceService.SUBJECT_DIMENSION_TYPE);
+      }));
   }
 
 }

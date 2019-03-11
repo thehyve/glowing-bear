@@ -21,6 +21,7 @@
 
 .gb-combination-constraint-input-container {
   margin-left: 1.6em;
+  margin-top: 0;
 }
 
 .btn-outline-primary {
@@ -32,4 +33,8 @@
   margin: 0.2em 0em 0.2em 0.4em !important;
   font-size: xx-small !important;
   padding: 0em 0.5em 0em 0.5em !important;
+}
+
+.gb-constraint-cohort-type-dropdown {
+  margin-left: 1.5em;
 }

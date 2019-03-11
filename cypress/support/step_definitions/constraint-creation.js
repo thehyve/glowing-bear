@@ -100,3 +100,13 @@ when("I use negated pedigree constraint {string} with concept {string} and negat
   cy.get('.ui-inputswitch-slider').eq(2).click();
   cy.get('.update-btn').eq(0).click();
 });
+
+when("I select diagnoses that are part of study {string}", (studyName) => {
+  cy.toggleNode('Public Studies ');
+  cy.drag('CSR').drop(0);
+
+  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
+  cy.get('.ui-dropdown').contains('Diagnosis ID').click();
+  cy.get('.update-btn').eq(0).click();
+});
+

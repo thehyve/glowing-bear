@@ -14,10 +14,11 @@ import {AppConfig} from '../../config/app.config';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
-import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
+import {TransmartPackerJob} from '../../models/transmart-packer-models/transmart-packer-job';
 import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
+import {TransmartPackerJobParameters} from '../../models/transmart-packer-models/transmart-packer-job-parameters';
 
 
 @Injectable({
@@ -86,15 +87,16 @@ export class TransmartPackerHttpService {
     const urlPart = `jobs/create`;
     const responseField = 'job';
 
-    let body = {
-      job_type: this.customExportJobName,
-      job_parameters: {
-        constraint: TransmartConstraintMapper.mapConstraint(targetConstraint),
-        custom_name: jobName
-      }
-    };
+    let packerJobParameters = new TransmartPackerJobParameters();
+    packerJobParameters.constraint = TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint);
+    packerJobParameters.custom_name = jobName;
+    packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(targetConstraint);
 
-    return this.httpHelper.postCall(urlPart, body, responseField);
+    let packerJob = new TransmartPackerJob();
+    packerJob.job_type = this.customExportJobName;
+    packerJob.job_parameters = packerJobParameters;
+
+    return this.httpHelper.postCall(urlPart, packerJob, responseField);
   }
 
   /**

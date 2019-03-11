@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@ export class TransmartPackerJob {
   public job_type: string;
   // The date of the job creation
   public created_at: string;
-  // The parameters of the job, e.g. constraints, custom job name
+  // The parameters of the job
   public job_parameters?: object;
   // The status of the job
   public status: string;

@@ -20,6 +20,7 @@ import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
 export class TransmartHttpServiceMock {
   private _studies: TransmartStudy[];
@@ -163,6 +164,29 @@ export class TransmartHttpServiceMock {
     result.patientCount = 100;
     result.observationCount = 1000;
     return Observable.of(result);
+  }
+
+  getDimensions(): Observable<TransmartDimension[]> {
+    const results: TransmartDimension[] = [];
+    let td1 = new TransmartDimension();
+    td1.name = 'td1';
+    td1.dimensionType = 'attribute';
+    td1.sortIndex = 1;
+    let td2 = new TransmartDimension();
+    td2.name = 'td2';
+    td2.dimensionType = 'Subject';
+    let td3 = new TransmartDimension();
+    td3.name = 'td3';
+    td3.dimensionType = '';
+    let td4 = new TransmartDimension();
+    td4.name = 'td4';
+    td4.dimensionType = 'SUBJECT';
+    results.push(td1);
+    results.push(td2);
+    results.push(td3);
+    results.push(td4);
+
+    return Observable.of(results);
   }
 
 }
