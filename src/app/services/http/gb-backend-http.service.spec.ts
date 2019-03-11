@@ -48,7 +48,7 @@ describe('GbBackendHttpService', () => {
     inject([HttpTestingController, GbBackendHttpService],
       (httpMock: HttpTestingController, service: GbBackendHttpService) => {
 
-        let query = new GbBackendQuery('custom_name');
+        let query = new GbBackendQuery('custom_name', 'testDimension');
         query.subscribed = true;
         query.subscriptionFreq = CohortSubscriptionFrequency.DAILY;
         query.queryConstraint = {'type': true};
@@ -60,6 +60,7 @@ describe('GbBackendHttpService', () => {
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('POST');
         expect(req.request.body['name']).toBe('custom_name');
+        expect(req.request.body['subjectDimension']).toBe('testDimension');
         expect(req.request.body['queryConstraint']).toBeDefined();
         expect(req.request.body['queryConstraint']['type']).toBe(true);
         expect(req.request.body['bookmarked']).toBe(false);

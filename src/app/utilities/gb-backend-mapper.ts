@@ -28,6 +28,7 @@ export class GbBackendMapper {
 
   public static mapGbBackendQuery(gbBackendQuery: GbBackendQuery): Cohort {
     let query = new Cohort(gbBackendQuery.id, gbBackendQuery.name);
+    query.type = gbBackendQuery.subjectDimension;
     query.createDate = gbBackendQuery.createDate;
     query.updateDate = gbBackendQuery.updateDate;
     query.bookmarked = gbBackendQuery.bookmarked;
@@ -39,7 +40,7 @@ export class GbBackendMapper {
   }
 
   public static mapQuery(query: Cohort): GbBackendQuery {
-    let transmartQuery: GbBackendQuery = new GbBackendQuery(query.name);
+    let transmartQuery: GbBackendQuery = new GbBackendQuery(query.name, query.type);
     transmartQuery.queryConstraint = TransmartConstraintMapper.mapConstraint(query.constraint, false);
     transmartQuery.queryBlob = {};
     transmartQuery.queryBlob['queryConstraintFull'] = TransmartConstraintMapper.mapConstraint(query.constraint, true);

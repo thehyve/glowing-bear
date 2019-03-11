@@ -202,6 +202,11 @@ md2-accordion-header .ui-button-secondary:hover {
   padding-bottom: 0.1em;
 }
 
+.cohort-type-icon {
+  font-size: medium;
+  width: 1em;
+}
+
 .counts-info {
   font-size: small;
   color: grey;

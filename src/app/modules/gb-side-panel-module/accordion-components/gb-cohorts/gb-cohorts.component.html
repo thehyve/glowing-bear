@@ -71,6 +71,8 @@
           <div *ngIf="cohort.visible">
             <div class="cohort-header clearfix">
               <div class="cohort-header-name">
+                <i *ngIf="cohort.controlsEnabled" class="{{getCohortTypeIcon(cohort.type)}} cohort-type-icon">
+                </i>&nbsp;
                 <p-toggleButton [(ngModel)]="cohort.selected"
                                 onLabel="{{cohort.name}}"
                                 offLabel="{{cohort.name}}"
@@ -116,6 +118,7 @@
         <!-- accordion body -->
         <div *ngIf="cohort.visible">
           <div>Name: {{cohort.name}}</div>
+          <div>Type: {{cohort.type}}</div>
           <div>Created: {{cohort.createDateInfo}}</div>
           <div>Updated: {{cohort.updateDateInfo}}</div>
           <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">
