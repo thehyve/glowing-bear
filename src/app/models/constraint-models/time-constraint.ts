@@ -18,24 +18,8 @@ export class TimeConstraint extends Constraint {
   // the flag indicating if the constraint is related to observation date
   private _isObservationDate = false;
 
-  constructor(operator?: string) {
+  constructor() {
     super();
-    if (operator) {
-      switch (operator) {
-        case '<-->': {
-          this.dateOperator = DateOperatorState.BETWEEN;
-          break;
-        }
-        case '<=': {
-          this.dateOperator = DateOperatorState.BEFORE;
-          break;
-        }
-        case '>=': {
-          this.dateOperator = DateOperatorState.AFTER;
-          break;
-        }
-      }
-    }
     this.textRepresentation = 'Time constraint';
   }
 

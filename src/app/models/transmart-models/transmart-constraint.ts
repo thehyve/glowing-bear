@@ -1,3 +1,5 @@
+import {ConceptType} from '../constraint-models/concept-type';
+
 export enum TransmartType {
   id = 'id',
   numeric = 'numeric',
@@ -32,6 +34,27 @@ export enum TransmartOperator {
   union = 'union',
   none = 'none'
 }
+export const TransmartOperatorValues = [
+  TransmartOperator.lt,
+  TransmartOperator.gt,
+  TransmartOperator.eq,
+  TransmartOperator.neq,
+  TransmartOperator.leq,
+  TransmartOperator.geq,
+  TransmartOperator.like,
+  TransmartOperator.contains,
+  TransmartOperator.in,
+  TransmartOperator.before,
+  TransmartOperator.after,
+  TransmartOperator.between,
+  TransmartOperator.and,
+  TransmartOperator.or,
+  TransmartOperator.not,
+  TransmartOperator.exists,
+  TransmartOperator.intersect,
+  TransmartOperator.union,
+  TransmartOperator.none
+];
 
 export class TransmartField {
   dimension: string;
@@ -61,6 +84,13 @@ export class TransmartConceptConstraint extends TransmartConstraint {
   path?: string;
 }
 
+export class ExtendedConceptConstraint extends TransmartConceptConstraint {
+  name?: string;
+  fullName?: string;
+  conceptPath?: string;
+  valueType?: ConceptType;
+}
+
 export class TransmartStudyNameConstraint extends TransmartConstraint {
   type = 'study_name';
   studyId: string;
@@ -68,6 +98,7 @@ export class TransmartStudyNameConstraint extends TransmartConstraint {
 
 export class TransmartNullConstraint extends TransmartConstraint {
   type = 'null';
+  field: TransmartField;
 }
 
 export class TransmartValueConstraint extends TransmartConstraint {

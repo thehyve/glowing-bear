@@ -13,6 +13,7 @@ import {
   TransmartConstraint, TransmartTrueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {TransmartConstraintReader} from './transmart-constraint-reader';
+import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 
 
 export class TransmartConstraintMapper {
@@ -37,41 +38,8 @@ export class TransmartConstraintMapper {
     return result;
   }
 
-  public static optimizeConstraintObject(constraintObject: TransmartConstraint): TransmartConstraint {
-    if (!['and', 'or'].includes(constraintObject.type)) {
-      // Return a copy
-      return Object.assign({}, constraintObject);
-    }
-    const combination = <TransmartCombinationConstraint>Object.assign({}, constraintObject);
-    if (combination.args.length > 1) {
-      // Remove 'true' constraints if operator is 'and';
-      // return true if the operator is 'or' and the arguments contain a 'true' constraint.
-      let isOr = combination.type === 'or';
-      let hasTrue = false;
-      let newArgs = [];
-      for (let arg of combination.args) {
-        if (arg.type === 'true') {
-          hasTrue = true;
-        } else {
-          let newArg = this.optimizeConstraintObject(arg);
-          if (newArg.type === 'true') {
-            hasTrue = true;
-          } else {
-            newArgs.push(newArg);
-          }
-        }
-      }
-      if (isOr && hasTrue) {
-        return new TransmartTrueConstraint();
-      } else {
-        combination.args = newArgs;
-      }
-    }
-    if (combination.args.length === 1) {
-      // return the singleton argument instead of the combination
-      return this.optimizeConstraintObject(combination.args[0]);
-    }
-    return combination;
+  public static optimizeConstraintObject(constraint: TransmartConstraint): TransmartConstraint {
+    return new TransmartConstraintRewriter().visit(constraint);
   }
 
   // generate the constraint instance based on given constraint object input

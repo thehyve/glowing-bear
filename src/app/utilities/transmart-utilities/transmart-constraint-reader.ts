@@ -1,11 +1,11 @@
 import {AbstractTransmartConstraintVisitor} from './abstract-transmart-constraint-visitor';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {
+  ExtendedConceptConstraint,
   TransmartCombinationConstraint,
-  TransmartConceptConstraint,
   TransmartFieldConstraint,
   TransmartNegationConstraint,
-  TransmartNullConstraint,
+  TransmartNullConstraint, TransmartOperator,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
   TransmartStudyNameConstraint,
@@ -45,16 +45,29 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     return constraint;
   }
 
-  visitConceptConstraint(constraintObject: TransmartConceptConstraint): Constraint {
+  static convertDateOperator(operator: string): DateOperatorState {
+    switch (operator) {
+      case TransmartOperator.before:
+        return DateOperatorState.BEFORE;
+      case TransmartOperator.after:
+        return DateOperatorState.AFTER;
+      case TransmartOperator.between:
+        return DateOperatorState.BETWEEN;
+      default:
+        throw new Error(`Date operator not supported: ${operator}`);
+    }
+  }
+
+  visitConceptConstraint(constraintObject: ExtendedConceptConstraint): Constraint {
     let concept = new Concept();
-    const tail = '\\' + constraintObject['name'] + '\\';
-    const fullName = constraintObject['fullName'];
+    const tail = '\\' + constraintObject.name + '\\';
+    const fullName = constraintObject.fullName;
     concept.fullName = fullName;
     let head = fullName ? fullName.substring(0, fullName.length - tail.length) : '';
-    concept.name = constraintObject['name'];
-    concept.label = constraintObject['name'] + ' (' + head + ')';
-    concept.path = constraintObject['conceptPath'];
-    concept.type = constraintObject['valueType'];
+    concept.name = constraintObject.name;
+    concept.label = constraintObject.name + ' (' + head + ')';
+    concept.path = constraintObject.conceptPath;
+    concept.type = constraintObject.valueType;
     concept.code = constraintObject.conceptCode;
     const constraint = new ConceptConstraint();
     constraint.concept = concept;
@@ -203,7 +216,8 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
   }
 
   visitTimeConstraint(constraintObject: TransmartTimeConstraint): Constraint {
-    const constraint = new TimeConstraint(constraintObject.operator);
+    const constraint = new TimeConstraint();
+    constraint.dateOperator = TransmartConstraintReader.convertDateOperator(constraintObject.operator);
     switch (constraintObject.field.dimension) {
       case 'start time':
         constraint.isObservationDate = true;

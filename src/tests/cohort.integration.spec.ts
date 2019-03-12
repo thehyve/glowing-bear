@@ -26,103 +26,106 @@ import {AuthenticationServiceMock} from '../app/services/mocks/authentication.se
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 import {CountService} from '../app/services/count.service';
-import {TransmartCohortMapper} from '../app/utilities/transmart-utilities/transmart-cohort-mapper';
-import {TransmartCohort} from '../app/models/transmart-models/transmart-cohort';
 import {TransmartAndConstraint, TransmartNegationConstraint} from '../app/models/transmart-models/transmart-constraint';
+import {CohortMapper} from '../app/utilities/cohort-utilities/cohort-mapper';
+import {CohortRepresentation} from '../app/models/gb-backend-models/cohort-representation';
 
 describe('Integration test for cohort saving and restoring', () => {
 
   // mocked cohort objects
-  const q0obj: TransmartCohort = {
+  const q0obj: CohortRepresentation = {
     bookmarked: false,
     subscribed: false,
     createDate: '2018-07-02T14:47:05Z',
     id: 'q0',
     name: 'cohort that stores stuff',
-    constraint: {
-      type: 'and',
-      args: [
-        {
-          type: 'or',
-          args: [
-            {
+    subjectDimension: 'patient',
+    queryBlob: {
+      queryConstraintFull: {
+        type: 'and',
+        args: [
+          {
+            type: 'or',
+            args: [
+              {
+                type: 'and',
+                args: [
+                  {
+                    conceptCode: 'SHDCSCP:DEM:AGE',
+                    conceptPath: '\\Private Studies\\SHARED_HD_CONCEPTS_STUDY_C_PR\\Demography\\Age\\',
+                    fullName: '\\Private Studies\\SHARED_HD_CONCEPTS_STUDY_C_PR\\Demography\\Age\\',
+                    name: 'age',
+                    type: 'concept',
+                    valueType: 'NUMERIC'
+                  },
+                  {
+                    operation: '<=',
+                    type: 'value',
+                    value: 35,
+                    valueType: 'NUMERIC'
+                  }
+                ]
+              },
+              {
+                type: 'and',
+                args: [
+                  {
+                    conceptCode: 'O1KP:CAT8',
+                    conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
+                    fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
+                    name: 'categorical_8',
+                    type: 'concept',
+                    valueType: 'CATEGORICAL'
+                  },
+                  {
+                    type: 'or',
+                    args: [
+                      {
+                        type: 'value',
+                        valueType: 'STRING',
+                        operator: '=',
+                        value: 'Heart'
+                      },
+                      {
+                        type: 'value',
+                        valueType: 'STRING',
+                        operator: '=',
+                        value: 'Liver'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'negation',
+            arg: {
               type: 'and',
               args: [
                 {
-                  conceptCode: 'SHDCSCP:DEM:AGE',
-                  conceptPath: '\\Private Studies\\SHARED_HD_CONCEPTS_STUDY_C_PR\\Demography\\Age\\',
-                  fullName: '\\Private Studies\\SHARED_HD_CONCEPTS_STUDY_C_PR\\Demography\\Age\\',
-                  name: 'age',
+                  conceptCode: 'VSIGN:HR',
+                  conceptPath: '\\Vital Signs\\Heart Rate\\',
+                  fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Vital Signs\\Heart Rate\\',
+                  name: 'Heart Rate',
                   type: 'concept',
                   valueType: 'NUMERIC'
                 },
                 {
-                  operation: '<=',
+                  operation: '=',
                   type: 'value',
-                  value: 35,
+                  value: 60,
                   valueType: 'NUMERIC'
-                }
-              ]
-            },
-            {
-              type: 'and',
-              args: [
-                {
-                  conceptCode: 'O1KP:CAT8',
-                  conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                  fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                  name: 'categorical_8',
-                  type: 'concept',
-                  valueType: 'CATEGORICAL'
-                },
-                {
-                  type: 'or',
-                  args: [
-                    {
-                      type: 'value',
-                      valueType: 'STRING',
-                      operator: '=',
-                      value: 'Heart'
-                    },
-                    {
-                      type: 'value',
-                      valueType: 'STRING',
-                      operator: '=',
-                      value: 'Liver'
-                    }
-                  ]
                 }
               ]
             }
-          ]
-        },
-        {
-          type: 'negation',
-          arg: {
-            type: 'and',
-            args: [
-              {
-                conceptCode: 'VSIGN:HR',
-                conceptPath: '\\Vital Signs\\Heart Rate\\',
-                fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Vital Signs\\Heart Rate\\',
-                name: 'Heart Rate',
-                type: 'concept',
-                valueType: 'NUMERIC'
-              },
-              {
-                operation: '=',
-                type: 'value',
-                value: 60,
-                valueType: 'NUMERIC'
-              }
-            ]
-          }
-        } as TransmartNegationConstraint
-      ]
-    } as TransmartAndConstraint
+          } as TransmartNegationConstraint
+        ]
+      } as TransmartAndConstraint
+    }
   };
 
-  let q0: Cohort = TransmartCohortMapper.deserialise(q0obj);
+  let q0: Cohort = CohortMapper.deserialise(q0obj);
   let cohortService: CohortService;
   let constraintService: ConstraintService;
   let dataTableService: DataTableService;

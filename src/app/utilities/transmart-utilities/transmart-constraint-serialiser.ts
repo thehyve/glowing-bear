@@ -21,10 +21,12 @@ import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {AbstractConstraintVisitor} from '../constraint-utilities/abstract-constraint-visitor';
 import {
   TransmartCombinationConstraint,
+  TransmartConceptConstraint,
   TransmartConstraint,
   TransmartFieldConstraint,
   TransmartNegationConstraint,
   TransmartOperator,
+  TransmartOperatorValues,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
   TransmartSubSelectionConstraint,
@@ -34,6 +36,7 @@ import {
   TransmartValueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
+import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -98,6 +101,13 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     }
   }
 
+  static convertOperator(operator: string): TransmartOperator {
+    if ((TransmartOperatorValues as string[]).includes(operator)) {
+      return <TransmartOperator>operator;
+    }
+    throw new Error(`Unknown operator: ${operator}`);
+  }
+
   constructor(full: boolean) {
     super();
     this._full = full;
@@ -107,7 +117,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     return {
       type: 'value',
       valueType: <TransmartType>constraint.valueType,
-      operator: <TransmartOperator>constraint.operator,
+      operator: TransmartConstraintSerialiser.convertOperator(constraint.operator),
       value: constraint.value
     }
   }
@@ -132,11 +142,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
 
   visitTimeConstraint(constraint: TimeConstraint): TransmartConstraint {
     // Operator
-    let operator = {
-      [DateOperatorState.BETWEEN]: '<-->',
-      [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-      [DateOperatorState.BEFORE]: '<=',
-      [DateOperatorState.AFTER]: '>='
+    const operator: TransmartOperator = {
+      [DateOperatorState.BETWEEN]: TransmartOperator.between,
+      [DateOperatorState.NOT_BETWEEN]: TransmartOperator.between, // we'll negate it later
+      [DateOperatorState.BEFORE]: TransmartOperator.before,
+      [DateOperatorState.AFTER]: TransmartOperator.after
     }[constraint.dateOperator];
     // Values (dates)
     let values = [constraint.date1.getTime()];
@@ -157,7 +167,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
         fieldName: fieldName,
         type: TransmartType.date
       },
-      operator: <TransmartOperator>operator,
+      operator: operator,
       values: values
     };
     // Wrap date constraint in a negation if required
@@ -242,18 +252,18 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
   visitConceptConstraint(constraint: ConceptConstraint): TransmartConstraint {
     let result = null;
     if (constraint.concept) {
-      let args = [];
-      let conceptObj = {
+      const args = [];
+      const conceptConstraint: TransmartConceptConstraint = {
         type: 'concept',
         conceptCode: constraint.concept.code,
       };
       if (this._full) {
-        conceptObj['name'] = constraint.concept.name;
-        conceptObj['fullName'] = constraint.concept.fullName;
-        conceptObj['conceptPath'] = constraint.concept.path;
-        conceptObj['valueType'] = constraint.concept.type;
+        conceptConstraint['name'] = constraint.concept.name;
+        conceptConstraint['fullName'] = constraint.concept.fullName;
+        conceptConstraint['conceptPath'] = constraint.concept.path;
+        conceptConstraint['valueType'] = constraint.concept.type;
       }
-      args.push(conceptObj);
+      args.push(conceptConstraint);
 
       if (constraint.valueConstraints.length > 0) {
         if (constraint.concept.type === 'NUMERIC') {
@@ -322,27 +332,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     let args = childQueryObjects.map(queryObj =>
       applySubselection ? TransmartConstraintSerialiser.wrapWithSubselection(dimension, queryObj) : queryObj
     );
-    if (args.length === 0) {
-      if (constraint.combinationState === CombinationState.And) {
-        return new TransmartTrueConstraint();
-      } else {
-        return new TransmartNegationConstraint(new TransmartTrueConstraint());
-      }
-    }
-    if (constraint.combinationState === CombinationState.And) {
-      args = args.filter(arg => arg.type !== 'true');
-    } else {
-      if (args.some(arg => arg.type === 'true')) {
-        return new TransmartTrueConstraint();
-      }
-    }
-    if (args.length === 1) {
-      return args[0];
-    }
-    return {
+    const result = {
       type: constraint.combinationState === CombinationState.And ? 'and' : 'or',
       args: args
     } as TransmartCombinationConstraint;
+    return new TransmartConstraintRewriter().visit(result);
   }
 
 }

@@ -17,7 +17,7 @@ import {ExportJob} from '../models/export-models/export-job';
 import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {GbBackendQuery} from '../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../models/gb-backend-models/cohort-representation';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {ExportDataType} from '../models/export-models/export-data-type';
@@ -36,7 +36,7 @@ import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {GbBackendHttpService} from './http/gb-backend-http.service';
-import {GbBackendMapper} from '../utilities/gb-backend-mapper';
+import {CohortMapper} from '../utilities/cohort-utilities/cohort-mapper';
 import {Dimension} from '../models/constraint-models/dimension';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
@@ -411,12 +411,12 @@ export class ResourceService {
   // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<GbBackendQuery[]>}
+   * @returns {Observable<CohortRepresentation[]>}
    */
   getCohorts(): Observable<Cohort[]> {
     return this.gbBackendHttpService.getQueries().pipe(
-      map((gbBackendQueries: GbBackendQuery[]) => {
-        return GbBackendMapper.mapGbBackendQueries(gbBackendQueries);
+      map((gbBackendQueries: CohortRepresentation[]) => {
+        return CohortMapper.deserialiseList(gbBackendQueries);
       }));
   }
 
@@ -426,10 +426,10 @@ export class ResourceService {
    * @returns {Observable<Cohort>}
    */
   saveCohort(cohort: Cohort): Observable<Cohort> {
-    let gbBackendQuery: GbBackendQuery = GbBackendMapper.mapQuery(cohort);
+    let gbBackendQuery: CohortRepresentation = CohortMapper.serialise(cohort);
     return this.gbBackendHttpService.saveQuery(gbBackendQuery).pipe(
-      map((savedGbBackendQuery: GbBackendQuery) => {
-        return GbBackendMapper.mapGbBackendQuery(savedGbBackendQuery);
+      map((savedGbBackendQuery: CohortRepresentation) => {
+        return CohortMapper.deserialise(savedGbBackendQuery);
       }));
   }
 

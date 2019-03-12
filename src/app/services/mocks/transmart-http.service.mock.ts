@@ -12,7 +12,7 @@ import {ExportJob} from '../../models/export-models/export-job';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';

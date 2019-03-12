@@ -20,7 +20,7 @@ import {SubjectSetConstraint} from '../../../../models/constraint-models/subject
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
 import {IconHelper} from '../../../../utilities/icon-helper';
-import {TransmartCohortMapper} from '../../../../utilities/transmart-utilities/transmart-cohort-mapper';
+import {CohortMapper} from '../../../../utilities/cohort-utilities/cohort-mapper';
 
 @Component({
   selector: 'gb-cohorts',
@@ -151,7 +151,7 @@ export class GbCohortsComponent implements OnInit {
 
   downloadCohort(event: Event, target: Cohort) {
     event.stopPropagation();
-    DownloadHelper.downloadJSON(TransmartCohortMapper.serialise(target), target.name);
+    DownloadHelper.downloadJSON(CohortMapper.serialise(target), target.name);
   }
 
   radioCheckSubscriptionFrequency(event: MouseEvent, target: Cohort) {

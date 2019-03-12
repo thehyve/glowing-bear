@@ -8,15 +8,18 @@
 
 
 import {Observable, of as observableOf} from 'rxjs';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
+import {
+  TransmartAndConstraint, TransmartNegationConstraint
+} from '../../models/transmart-models/transmart-constraint';
 
 export class GbBackendHttpServiceMock {
 
   constructor() {
   }
 
-  getQueries(): Observable<GbBackendQuery[]> {
-    let q1: GbBackendQuery = new GbBackendQuery('dt', 'patient');
+  getQueries(): Observable<CohortRepresentation[]> {
+    let q1: CohortRepresentation = new CohortRepresentation('dt', 'patient');
     q1.bookmarked = false;
     q1.createDate = '2018-07-03T13:18:31Z';
     q1.subscribed = false;
@@ -24,17 +27,9 @@ export class GbBackendHttpServiceMock {
     q1.updateDate = '2018-07-03T13:18:31Z';
     q1.queryConstraint = {type: 'true'};
     q1.queryBlob = {
-      dataTableState: {
-        columnDimensions: ['study'],
-        columnSort: [],
-        rowDimensions: ['patient', 'concept'],
-        rowSort: []
-      }
-    };
-    q1.queryBlob = {
       queryConstraintFull: q1.queryConstraint
     };
-    let q2: GbBackendQuery = new GbBackendQuery('test', 'patient');
+    let q2: CohortRepresentation = new CohortRepresentation('test', 'patient');
     q2.bookmarked = false;
     q2.createDate = '2018-07-04T10:08:33Z';
     q2.subscribed = false;
@@ -123,19 +118,13 @@ export class GbBackendHttpServiceMock {
             }
           },
           type: 'negation'
-        }
+        } as TransmartNegationConstraint
       ]
-    };
+    } as TransmartAndConstraint;
     q2.queryBlob = {
-      dataTableState: {
-        columnDimensions: [],
-        columnSort: [],
-        rowDimensions: ['patient', 'study', 'concept'],
-        rowSort: []
-      },
       queryConstraintFull: q2.queryConstraint
     };
-    let queries: GbBackendQuery[] = [q1, q2];
+    let queries: CohortRepresentation[] = [q1, q2];
     return observableOf(queries);
   }
 

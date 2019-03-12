@@ -12,7 +12,7 @@ import {AppConfigPackerMock} from '../../config/app.config.mock';
 import {HttpClientModule} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {AppConfig} from '../../config/app.config';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {CohortSubscriptionFrequency} from '../../models/cohort-models/cohort-subscription-frequency';
 
 describe('GbBackendHttpService', () => {
@@ -48,10 +48,10 @@ describe('GbBackendHttpService', () => {
     inject([HttpTestingController, GbBackendHttpService],
       (httpMock: HttpTestingController, service: GbBackendHttpService) => {
 
-        let query = new GbBackendQuery('custom_name', 'testDimension');
+        let query = new CohortRepresentation('custom_name', 'testDimension');
         query.subscribed = true;
         query.subscriptionFreq = CohortSubscriptionFrequency.DAILY;
-        query.queryConstraint = {'type': true};
+        query.queryConstraint = {type: 'true'};
 
         service.saveQuery(query).subscribe((res) => {
           expect(res['foo']).toBe('bar');
@@ -59,14 +59,15 @@ describe('GbBackendHttpService', () => {
         const url = service.endpointUrl + '/queries';
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('POST');
-        expect(req.request.body['name']).toBe('custom_name');
-        expect(req.request.body['subjectDimension']).toBe('testDimension');
-        expect(req.request.body['queryConstraint']).toBeDefined();
-        expect(req.request.body['queryConstraint']['type']).toBe(true);
-        expect(req.request.body['bookmarked']).toBe(false);
-        expect(req.request.body['subscribed']).toBe(true);
-        expect(req.request.body['subscriptionFreq']).toBe('DAILY');
-        expect(req.request.body['queryBlob']).not.toBeDefined();
+        const body: CohortRepresentation = req.request.body;
+        expect(body.name).toBe('custom_name');
+        expect(body.subjectDimension).toBe('testDimension');
+        expect(body.queryConstraint).toBeDefined();
+        expect(body.queryConstraint.type).toBe('true');
+        expect(body.bookmarked).toBe(false);
+        expect(body.subscribed).toBe(true);
+        expect(body.subscriptionFreq).toBe('DAILY');
+        expect(body.queryBlob).not.toBeDefined();
       }));
 
   it('should get queries',

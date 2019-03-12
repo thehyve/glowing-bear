@@ -125,7 +125,8 @@ describe('TransmartConstraintReader', () => {
 
   it('should correctly (de)serialise concept constraints with observed date', () => {
     const constraint = createConceptConstraint();
-    const observedDateConstraint = new TimeConstraint('<');
+    const observedDateConstraint = new TimeConstraint();
+    observedDateConstraint.dateOperator = DateOperatorState.BEFORE;
     observedDateConstraint.isObservationDate = false;
     observedDateConstraint.date1 = new Date();
     constraint.valDateConstraint = observedDateConstraint;
@@ -135,7 +136,8 @@ describe('TransmartConstraintReader', () => {
 
   it('should correctly (de)serialise concept constraints with start date', () => {
     const constraint = createConceptConstraint();
-    const startDateConstraint = new TimeConstraint('<');
+    const startDateConstraint = new TimeConstraint();
+    startDateConstraint.dateOperator = DateOperatorState.BEFORE;
     startDateConstraint.isObservationDate = true;
     startDateConstraint.date1 = new Date();
     constraint.obsDateConstraint = startDateConstraint;

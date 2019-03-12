@@ -35,7 +35,7 @@ import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
 import {CountServiceMock} from '../../../../services/mocks/count.service.mock';
-import {TransmartCohortMapper} from '../../../../utilities/transmart-utilities/transmart-cohort-mapper';
+import {CohortMapper} from '../../../../utilities/cohort-utilities/cohort-mapper';
 
 describe('GbCohortsComponent', () => {
   let component: GbCohortsComponent;
@@ -348,7 +348,7 @@ describe('GbCohortsComponent', () => {
     let query = new Cohort('id', 'name');
     let spy1 = spyOn(e, 'stopPropagation').and.stub();
     let spy2 = spyOn(DownloadHelper, 'downloadJSON').and.stub();
-    let spy3 = spyOn(TransmartCohortMapper, 'serialise').and.stub();
+    let spy3 = spyOn(CohortMapper, 'serialise').and.stub();
     component.downloadCohort(e, query);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
