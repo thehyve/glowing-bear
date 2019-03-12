@@ -14,7 +14,6 @@ export class IconHelper {
    * @param dimensionName
    */
   public static getDimensionIcon(dimensionName: string): string {
-    console.log(dimensionName);
     if (!dimensionName) {
       return '';
     }
