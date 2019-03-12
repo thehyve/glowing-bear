@@ -171,27 +171,32 @@ export class FractalisService {
   }
 
   private configSubsetsUpdate() {
+    this.setSubsets(this.cohortService.cohorts);
     this.cohortService.cohortsUpdated.asObservable()
       .subscribe((cohorts: Cohort[]) => {
-        let subjectCalls = [];
-        cohorts
-          .filter((cohort: Cohort) => {
-            return cohort.selected;
-          })
-          .forEach((cohort: Cohort) => {
-            subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
+        this.setSubsets(cohorts);
+      });
+  }
+
+  private setSubsets(cohorts: Cohort[]) {
+    let subjectCalls = [];
+    cohorts
+      .filter((cohort: Cohort) => {
+        return cohort.selected;
+      })
+      .forEach((cohort: Cohort) => {
+        subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
+      });
+    let idSets = [];
+    forkJoin(subjectCalls)
+      .subscribe(res => {
+        for (let i = 0; i < subjectCalls.length; i++) {
+          const ids = res[i].map((subject: TransmartPatient) => {
+            return subject.subjectIds.SUBJ_ID;
           });
-        let idSets = [];
-        forkJoin(subjectCalls)
-          .subscribe(res => {
-            for (let i = 0; i < subjectCalls.length; i++) {
-              const ids = res[i].map((subject: TransmartPatient) => {
-                return subject.subjectIds.SUBJ_ID;
-              });
-              idSets.push(ids);
-            }
-            this.F.setSubsets(idSets);
-          });
+          idSets.push(ids);
+        }
+        this.F.setSubsets(idSets);
       });
   }
 
