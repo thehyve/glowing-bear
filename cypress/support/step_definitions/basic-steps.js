@@ -29,7 +29,7 @@ given("I am on the Analysis tab", () => {
   cy.url().should('eq', Cypress.config('baseUrl') + '/analysis');
   cy.get('.section-banner').first().contains('New chart');
   cy.get('.section-banner').last().contains('Charts');
-  cy.get('.ui-selectbutton .ui-button-text-only').last().contains('crosstable');
+  cy.get('.fractalis-control-container').contains('crosstable');
 });
 
 given("I am on the export tab", () => {

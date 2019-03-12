@@ -17,21 +17,16 @@ then('There should be a box plot created', () => {
 
 then('I select two cohorts', () => {
   cy.get('span.ui-button-text.ui-unselectable-text').then(cohortsElms => {
-    if(cohortsElms && cohortsElms.length > 1) {
-      // if there is already more than one cohort, select the 2nd one
-      cohortsElms.eq(1).click();
-    } else {
-      // else creat and save a new cohort, then select it
-      const cohortName = 'temp_oracle_numerical';
-      cy.toggleNode('Public Studies');
-      cy.toggleNode('Oracle_1000_Patient');
-      cy.toggleNode('Numerical Variables');
-      cy.drag('numerical_11').drop(0);
-      cy.contains('Update cohort').click();
-      cy.get('#cohortName').type(cohortName);
-      cy.contains('Save cohort').click();
-      cy.get('gb-cohorts').contains(cohortName).eq(0).click();
-    }
+    // create a new cohort
+    const cohortName = 'temp_oracle_numerical';
+    cy.toggleNode('Public Studies');
+    cy.toggleNode('Oracle_1000_Patient');
+    cy.toggleNode('Numerical Variables');
+    cy.drag('numerical_11').drop(0);
+    cy.contains('Update cohort').click();
+    cy.get('#cohortName').type(cohortName);
+    cy.contains('Save cohort').click();
+    cy.get('gb-cohorts').contains(cohortName).eq(0).click();
     cy.get('gb-nav-bar').contains('Analysis').click();
   });
 });
