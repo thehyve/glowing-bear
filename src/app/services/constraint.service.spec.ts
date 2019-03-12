@@ -22,6 +22,7 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {Constraint} from '../models/constraint-models/constraint';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {CountService} from './count.service';
+import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
@@ -93,17 +94,5 @@ describe('ConstraintService', () => {
       .filter(c => c instanceof ConceptConstraint).length)
       .toBe(1);
   });
-
-  it('should calculate the depth of a constraint', () => {
-    let c111 = new Constraint();
-    let c11 = new Constraint();
-    let c1 = new Constraint();
-    c111.parentConstraint = c11;
-    c11.parentConstraint = c1;
-    const d1 = constraintService.depthOfConstraint(c111);
-    expect(d1).toBe(2);
-    const d2 = constraintService.depthOfConstraint(c11);
-    expect(d2).toBe(1);
-  })
 
 });

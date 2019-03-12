@@ -1,3 +1,5 @@
+import {CombinationConstraint} from './combination-constraint';
+
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
@@ -19,6 +21,26 @@ export class Constraint {
     this.textRepresentation = '';
     this.parentConstraint = null;
     this.negated = false;
+  }
+
+  get depth(): number {
+    let depth = 0;
+    if (this.parentConstraint !== null) {
+      depth++;
+      depth += this.parentConstraint.depth;
+    }
+    return depth;
+  }
+
+  get parentDimension(): string {
+    if (this.parentConstraint) {
+      if (this.parentConstraint.className === 'CombinationConstraint') {
+        return (<CombinationConstraint>this.parentConstraint).dimension;
+      } else if (this.parentConstraint.className === 'PedigreeConstraint') {
+        return this.parentConstraint.parentDimension;
+      }
+    }
+    return null;
   }
 
   get negated(): boolean {

@@ -33,10 +33,6 @@ export class ConstraintServiceMock {
   init() {
   }
 
-  public depthOfConstraint(constraint: Constraint): number {
-    return 1;
-  }
-
   get combination(): Constraint {
     return this._constraint;
   }

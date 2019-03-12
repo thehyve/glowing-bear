@@ -281,15 +281,6 @@ export class ConstraintService {
     return constraint;
   }
 
-  public depthOfConstraint(constraint: Constraint): number {
-    let depth = 0;
-    if (constraint.parentConstraint !== null) {
-      depth++;
-      depth += this.depthOfConstraint(constraint.parentConstraint);
-    }
-    return depth;
-  }
-
   /*
    * ------------------------------------------------------------------------- getters and setters
    */

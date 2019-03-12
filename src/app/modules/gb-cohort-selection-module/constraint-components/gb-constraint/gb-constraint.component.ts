@@ -89,12 +89,21 @@ export class GbConstraintComponent implements OnInit {
   }
 
   get constraintDepth(): number {
-    return this.constraintService.depthOfConstraint(this.constraint);
+    return this.constraint.depth;
   }
 
   get isRootClassLevel(): boolean {
     return this.constraint.className === 'CombinationConstraint'
       && (<CombinationConstraint>this.constraint).isRoot;
+  }
+
+  get observationBoxMessage(): string {
+    let parentDimension = this.constraint.parentDimension;
+    if (this.constraint.negated) {
+      return `for the ${parentDimension} there are NO observations:`;
+    } else {
+      return `for the ${parentDimension} there is an observation:`;
+    }
   }
 
 }
