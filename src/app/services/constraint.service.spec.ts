@@ -95,41 +95,4 @@ describe('ConstraintService', () => {
       .toBe(1);
   });
 
-  it('should calculate the depth of a constraint', () => {
-    let c111 = new Constraint();
-    let c11 = new Constraint();
-    let c1 = new Constraint();
-    c111.parentConstraint = c11;
-    c11.parentConstraint = c1;
-    const d1 = constraintService.depthOfConstraint(c111);
-    expect(d1).toBe(2);
-    const d2 = constraintService.depthOfConstraint(c11);
-    expect(d2).toBe(1);
-  });
-
-  it('should find a parent dimension', () => {
-    let constraint1 = new CombinationConstraint();
-    constraint1.dimension = 'Diagnosis ID';
-    let constraint2 = new CombinationConstraint();
-    constraint2.dimension = 'Biomaterial ID';
-    let constraint3 = new PedigreeConstraint('PAR');
-    constraint1.addChild(constraint2);
-    constraint2.addChild(constraint3);
-    let constraint5 = new ConceptConstraint();
-    let constraint4 = new CombinationConstraint();
-    constraint4.addChild(constraint5);
-    constraint3.rightHandSideConstraint = constraint4;
-
-    const m1 = constraintService.parentDimension(constraint1);
-    expect(m1).toBe(null);
-    const m2 = constraintService.parentDimension(constraint2);
-    expect(m2).toBe('Diagnosis ID');
-    const m3 = constraintService.parentDimension(constraint3);
-    expect(m3).toBe('Biomaterial ID');
-    const m4 = constraintService.parentDimension(constraint4);
-    expect(m4).toBe('Biomaterial ID');
-    const m5 = constraintService.parentDimension(constraint5);
-    expect(m5).toBe('patient');
-  });
-
 });

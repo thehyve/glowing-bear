@@ -89,7 +89,7 @@ export class GbConstraintComponent implements OnInit {
   }
 
   get constraintDepth(): number {
-    return this.constraintService.depthOfConstraint(this.constraint);
+    return this.constraint.depth;
   }
 
   get isRootClassLevel(): boolean {
@@ -98,7 +98,7 @@ export class GbConstraintComponent implements OnInit {
   }
 
   get observationBoxMessage(): string {
-    let parentDimension = this.constraintService.parentDimension(this.constraint);
+    let parentDimension = this.constraint.parentDimension;
     if (this.constraint.negated) {
       return `for the ${parentDimension} there are NO observations:`;
     } else {

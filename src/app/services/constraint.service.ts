@@ -281,26 +281,6 @@ export class ConstraintService {
     return constraint;
   }
 
-  public depthOfConstraint(constraint: Constraint): number {
-    let depth = 0;
-    if (constraint.parentConstraint !== null) {
-      depth++;
-      depth += this.depthOfConstraint(constraint.parentConstraint);
-    }
-    return depth;
-  }
-
-  public parentDimension(constraint: Constraint): string {
-    if (constraint.parentConstraint) {
-      if (constraint.parentConstraint.className === 'CombinationConstraint') {
-        return (<CombinationConstraint>constraint.parentConstraint).dimension;
-      } else if (constraint.parentConstraint.className === 'PedigreeConstraint') {
-        return this.parentDimension(constraint.parentConstraint);
-      }
-    }
-    return null;
-  }
-
   /*
    * ------------------------------------------------------------------------- getters and setters
    */

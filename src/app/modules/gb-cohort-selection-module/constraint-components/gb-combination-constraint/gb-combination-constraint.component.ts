@@ -164,7 +164,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     if ((<CombinationConstraint>this.constraint).isRoot) {
       return 'Select data for';
     } else {
-      let parentDimension = this.constraintService.parentDimension(this.constraint);
+      let parentDimension = this.constraint.parentDimension;
       if (this.constraint.negated) {
         return `the ${parentDimension} is NOT linked to a`;
       } else {
