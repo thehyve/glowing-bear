@@ -21,7 +21,7 @@ Feature: save cohort
     When I delete the cohort 'Query Vital Signs'
     Then the cohort 'Query Vital Signs' is deleted
 
-  Scenario: save and delete simple biomaterial dimension cohort
+  Scenario: save and restore simple biomaterial dimension cohort
     Given I am on the cohort-selection tab
     When I create a cohort with 'Biomaterial ID' dimension constraint
     And I save the Cohort with name 'Biomaterial ID'
@@ -29,7 +29,7 @@ Feature: save cohort
     Then the current cohort has biomaterial selected
     And the cohort 'Biomaterial ID' has type 'Biomaterial ID'
 
-  Scenario: save and delete complex multi-dimension cohort
+  Scenario: save and restore complex multi-dimension cohort
     Given I am on the cohort-selection tab
     When I create a cohort with multiple dimensions constraint
     And I save the Cohort with name 'Multi dim'

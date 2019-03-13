@@ -26,7 +26,7 @@ given("there are no export jobs pending", () => {
 
 when('I select all data in Tree View', () => {
   cy.get('.gb-nav').contains('Export').click();
-  cy.get('.checkAllText').find(".ui-chkbox-box").click()
+// all the variables should be selected by by default in Tree View
 });
 
 when('I select all data in Category View', () => {

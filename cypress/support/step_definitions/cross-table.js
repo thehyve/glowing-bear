@@ -1,5 +1,5 @@
 when('I add a cross table', () => {
-  cy.get('.ui-selectbutton .ui-button-text-only').last().click();
+  cy.get('.ui-selectbutton .ui-button-text-only').contains('crosstable').click();
   cy.get('.btn-container .btn.btn-primary').contains('Add').click();
 });
 
