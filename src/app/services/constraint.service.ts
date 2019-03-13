@@ -11,16 +11,12 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {StudyConstraint} from '../models/constraint-models/study-constraint';
-import {Study} from '../models/constraint-models/study';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {TreeNodeService} from './tree-node.service';
 import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 import {ResourceService} from './resource.service';
-import {TreeNode} from 'primeng/api';
-import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {MessageHelper} from '../utilities/message-helper';
@@ -28,6 +24,7 @@ import {StudyService} from './study.service';
 import {CountService} from './count.service';
 import {Dimension} from '../models/constraint-models/dimension';
 import {Subject} from 'rxjs';
+import {ConstraintCopier} from 'app/utilities/constraint-utilities/constraint-copier';
 
 /**
  * This service concerns with
@@ -215,70 +212,18 @@ export class ConstraintService {
     this.rootConstraint.children.length = 0;
   }
 
-  public restoreCohortConstraint(constraint: Constraint) {
-    if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
+  public restoreCohortConstraint(cohortConstraint: Constraint) {
+    const constraint = ConstraintCopier.copy(cohortConstraint);
+    if (constraint.className === 'CombinationConstraint' && !constraint.negated) { // If it is a combination constraint
       this.rootConstraint.dimension = (<CombinationConstraint>constraint).dimension;
       const children = (<CombinationConstraint>constraint).children;
-      let hasNegation = children.length === 2
-        && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');
-      if (hasNegation) {
-        let negationConstraint =
-          <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
-        negationConstraint.constraint.negated = true;
-        this.rootConstraint.addChild(negationConstraint.constraint);
-        let remainingConstraint =
-          <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreCohortConstraint(remainingConstraint);
-      } else {
-        for (let child of children) {
-          this.rootConstraint.addChild(child);
-        }
-        this.rootConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
+      for (let child of children) {
+        this.rootConstraint.addChild(child);
       }
-    } else if (constraint.className === 'NegationConstraint') {
-      (<NegationConstraint>constraint).constraint.negated = true;
-      this.rootConstraint.addChild((<NegationConstraint>constraint).constraint);
+      this.rootConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
     } else if (constraint.className !== 'TrueConstraint') {
       this.rootConstraint.addChild(constraint);
     }
-  }
-
-  // generate the constraint instance based on given node (e.g. tree node)
-  public generateConstraintFromTreeNode(node: TreeNode): Constraint {
-    let constraint: Constraint = null;
-    if (this.treeNodeService.isTreeNodeStudy(node)) {
-      let study: Study = new Study();
-      study.id = node['constraint']['studyId'];
-      constraint = new StudyConstraint();
-      (<StudyConstraint>constraint).studies.push(study);
-    } else if (this.treeNodeService.isTreeNodeLeaf(node)) {
-      if (node['constraint']) {
-        constraint = TransmartConstraintMapper.generateConstraintFromObject(node['constraint']);
-      } else {
-        let concept = this.treeNodeService.getConceptFromTreeNode(node);
-        constraint = new ConceptConstraint();
-        (<ConceptConstraint>constraint).concept = concept;
-      }
-    } else if (node['type'] === 'UNKNOWN') {
-      let descendants = [];
-      this.treeNodeService
-        .getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN'], descendants);
-      if (descendants.length < 6) {
-        constraint = new CombinationConstraint();
-        (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
-        for (let descendant of descendants) {
-          let dConstraint = this.generateConstraintFromTreeNode(descendant);
-          if (dConstraint) {
-            (<CombinationConstraint>constraint).addChild(dConstraint);
-          }
-        }
-        if ((<CombinationConstraint>constraint).children.length === 0) {
-          constraint = null;
-        }
-      }
-    }
-
-    return constraint;
   }
 
   /*

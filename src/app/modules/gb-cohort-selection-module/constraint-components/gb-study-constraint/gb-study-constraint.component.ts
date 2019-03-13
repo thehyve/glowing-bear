@@ -54,8 +54,7 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   onDrop(event: DragEvent) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode);
+    this.droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let study = (<StudyConstraint>this.droppedConstraint).studies[0];

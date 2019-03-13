@@ -10,6 +10,8 @@ import {TreeNode} from 'primeng/primeng';
 import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
 import {CountItem} from '../../models/aggregate-models/count-item';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 
 export class TreeNodeServiceMock {
   private _treeNodes: TreeNode[] = [];
@@ -20,6 +22,7 @@ export class TreeNodeServiceMock {
   private _validTreeNodeTypes: string[] = [];
   private _showObservationCounts: boolean;
   private processedConceptCodes: string[] = [];
+  private _constraint: Constraint = new CombinationConstraint();
 
   public selectedTreeNode: TreeNode = null;
 
@@ -81,6 +84,10 @@ export class TreeNodeServiceMock {
 
   public getConceptFromTreeNode(treeNode: TreeNode): Concept {
     return new Concept();
+  }
+
+  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
+    return this._constraint;
   }
 
   get treeNodesCopy(): TreeNode[] {

@@ -20,6 +20,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {FormatHelper} from '../utilities/format-helper';
 import {Subject} from 'rxjs';
 import {CountService} from './count.service';
+import {Constraint} from '../models/constraint-models/constraint';
+import {Study} from '../models/constraint-models/study';
+import {StudyConstraint} from '../models/constraint-models/study-constraint';
+import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
+import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
 
 @Injectable({
   providedIn: 'root',
@@ -107,18 +115,18 @@ export class TreeNodeService {
    * Iteratively load the descendants of the given tree node
    * @param parentNode
    */
-  loadTreeNext(parentNode: TreeNode, constraintService: ConstraintService): Promise<any> {
+  loadTreeNext(parentNode: GbTreeNode, constraintService: ConstraintService): Promise<any> {
     return new Promise((resolve, reject) => {
       this.treeNodeCallsSent++;
       let depth = 20;
-      this.resourceService.getTreeNodes(parentNode['fullName'], depth, false, true)
+      this.resourceService.getTreeNodes(parentNode.fullName, depth, false, true)
         .subscribe(
           (treeNodes: object[]) => {
             this.treeNodeCallsReceived++;
-            const refNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
-            const children = refNode ? refNode['children'] : undefined;
+            const refNode: TreeNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+            const children = refNode ? refNode.children : undefined;
             if (children) {
-              parentNode['children'] = children;
+              parentNode.children = children;
             }
             this.processTreeNode(parentNode, constraintService);
             this.processTreeNodes(children, constraintService);
@@ -152,14 +160,14 @@ export class TreeNodeService {
    *  And augment tree nodes with PrimeNG tree-ui specifications
    * @param treeNodes
    */
-  processTreeNodes(treeNodes: object[], constraintService: ConstraintService) {
+  processTreeNodes(treeNodes: GbTreeNode[], constraintService: ConstraintService) {
     if (!treeNodes) {
       return;
     }
     for (let node of treeNodes) {
       this.processTreeNode(node, constraintService);
-      if (node['children']) {
-        this.processTreeNodes(node['children'], constraintService);
+      if (node.children) {
+        this.processTreeNodes(node.children, constraintService);
       }
     }
   }
@@ -171,12 +179,12 @@ export class TreeNodeService {
    * @param {Object} node
    * @param {ConstraintService} constraintService
    */
-  processTreeNode(node: Object, constraintService: ConstraintService) {
-    let tail = node['metadata'] ? ' ⓘ' : ' ';
-    node['label'] = node['name'] + tail;
+  processTreeNode(node: GbTreeNode, constraintService: ConstraintService) {
+    let tail = node.metadata ? ' ⓘ' : ' ';
+    node.label = node.name + tail;
     let nodeCountItem: CountItem = undefined;
     // Extract concept
-    if (node['visualAttributes'].includes('LEAF')) {
+    if (node.visualAttributes.includes(VisualAttribute.LEAF)) {
       let concept = this.getConceptFromTreeNode(node);
       let code = concept.code;
       if (typeof code === 'string' && this.processedConceptCodes.indexOf(code) === -1) {
@@ -188,76 +196,117 @@ export class TreeNodeService {
         constraintService.allConstraints.push(constraint);
       }
       // node constraint
-      if (node['constraint']) {
-        node['constraint']['fullName'] = node['fullName'];
-        node['constraint']['name'] = node['name'];
-        node['constraint']['conceptPath'] = node['conceptPath'];
-        node['constraint']['conceptCode'] = node['conceptCode'];
-        node['constraint']['valueType'] = node['type'];
+      if (node.constraint) {
+        node.constraint.fullName = node.fullName;
+        node.constraint.name = node.name;
+        node.constraint.valueType = <ConceptType>node.type;
       }
       // node icon
-      if (node['type'] === 'NUMERIC') {
-        node['icon'] = 'icon-123';
-      } else if (node['type'] === 'HIGH_DIMENSIONAL') {
-        node['icon'] = 'icon-hd';
-      } else if (node['type'] === 'CATEGORICAL') {
-        node['icon'] = 'icon-abc';
-      } else if (node['type'] === 'DATE') {
-        node['icon'] = 'fa fa-calendar-o';
-      } else if (node['type'] === 'TEXT') {
-        node['icon'] = 'fa fa-newspaper-o';
+      if (node.type === 'NUMERIC') {
+        node.icon = 'icon-123';
+      } else if (node.type === 'HIGH_DIMENSIONAL') {
+        node.icon = 'icon-hd';
+      } else if (node.type === 'CATEGORICAL') {
+        node.icon = 'icon-abc';
+      } else if (node.type === 'DATE') {
+        node.icon = 'fa fa-calendar-o';
+      } else if (node.type === 'TEXT') {
+        node.icon = 'fa fa-newspaper-o';
       } else {
-        node['icon'] = 'fa fa-file';
+        node.icon = 'fa fa-file';
       }
       // node count
       if (node['studyId']) {
-        let cmap = this.countService.studyConceptCountMap.get(node['studyId']);
+        let cmap = this.countService.studyConceptCountMap.get(node.studyId);
         if (cmap) {
-          nodeCountItem = cmap.get(node['conceptCode']);
+          nodeCountItem = cmap.get(node.conceptCode);
         }
       } else {
-        nodeCountItem = this.countService.conceptCountMap.get(node['conceptCode']);
+        nodeCountItem = this.countService.conceptCountMap.get(node.conceptCode);
       }
     } else {
-      if (node['type'] === 'UNKNOWN') {
-        node['expandedIcon'] = 'fa fa-folder-open';
-        node['collapsedIcon'] = 'fa fa-folder';
-      } else if (node['type'] === 'STUDY') {
-        node['expandedIcon'] = 'icon-folder-study-open';
-        node['collapsedIcon'] = 'icon-folder-study';
-        nodeCountItem = this.countService.studyCountMap.get(node['studyId']);
+      if (node.type === 'UNKNOWN') {
+        node.expandedIcon = 'fa fa-folder-open';
+        node.collapsedIcon = 'fa fa-folder';
+      } else if (node.type === 'STUDY') {
+        node.expandedIcon = 'icon-folder-study-open';
+        node.collapsedIcon = 'icon-folder-study';
+        nodeCountItem = this.countService.studyCountMap.get(node.studyId);
       }
-      node['icon'] = '';
+      node.icon = '';
     }
-    node['subjectCount'] = nodeCountItem ? FormatHelper.formatCountNumber(nodeCountItem.subjectCount) : undefined;
+    node.subjectCount = nodeCountItem ? FormatHelper.formatCountNumber(nodeCountItem.subjectCount) : undefined;
   }
 
   /**
    * Parse a tree node and create the corresponding concept
-   * @param {TreeNode} treeNode
+   * @param {GbTreeNode} treeNode
    * @returns {Concept}
    */
-  public getConceptFromTreeNode(treeNode: TreeNode): Concept {
-    if (treeNode['name'] &&
-      treeNode['fullName'] &&
-      treeNode['conceptPath'] &&
-      treeNode['conceptCode'] &&
-      treeNode['type']) {
+  public getConceptFromTreeNode(treeNode: GbTreeNode): Concept {
+    if (treeNode.name &&
+      treeNode.fullName &&
+      treeNode.conceptCode &&
+      treeNode.type) {
       let concept = new Concept();
-      const tail = '\\' + treeNode['name'] + '\\';
-      const fullName = treeNode['fullName'];
+      const tail = '\\' + treeNode.name + '\\';
+      const fullName = treeNode.fullName;
       let head = fullName.substring(0, fullName.length - tail.length);
-      concept.label = treeNode['name'] + ' (' + head + ')';
-      concept.path = treeNode['conceptPath'];
-      concept.type = <ConceptType>treeNode['type'];
-      concept.code = treeNode['conceptCode'];
-      concept.fullName = treeNode['fullName'];
-      concept.name = treeNode['name'];
+      concept.label = treeNode.name + ' (' + head + ')';
+      concept.type = <ConceptType>treeNode.type;
+      concept.code = treeNode.conceptCode;
+      concept.fullName = treeNode.fullName;
+      concept.name = treeNode.name;
       return concept;
     } else {
       const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';
       MessageHelper.alert('error', summary);
       return null;
+    }
+  }
+
+  /**
+   * Generate a constraint instance based on a tree node
+   * @param {GbTreeNode} node
+   * @returns {Constraint}
+   */
+  public generateConstraintFromTreeNode(node: GbTreeNode): Constraint {
+    if (this.isTreeNodeStudy(node)) {
+      let study: Study = new Study();
+      study.id = node.studyId;
+      const constraint = new StudyConstraint();
+      constraint.studies.push(study);
+      return constraint;
+    } else if (this.isTreeNodeLeaf(node)) {
+      const concept = this.getConceptFromTreeNode(node);
+      if (node.constraint) {
+        const constraint = TransmartConstraintMapper.generateConstraintFromObject(node.constraint);
+        if (constraint.className === 'ConceptConstraint') {
+          (<ConceptConstraint>constraint).concept = concept;
+        }
+        return constraint;
+      } else {
+        const constraint = new ConceptConstraint();
+        constraint.concept = concept;
+        return constraint;
+      }
+    } else if (node.type === 'UNKNOWN') {
+      let descendants = [];
+      this.getTreeNodeDescendantsWithExcludedTypes(node, ['UNKNOWN'], descendants);
+      if (descendants.length < 6) {
+        const constraint = new CombinationConstraint();
+        constraint.combinationState = CombinationState.Or;
+        for (let descendant of descendants) {
+          let dConstraint = this.generateConstraintFromTreeNode(descendant);
+          if (dConstraint) {
+            constraint.addChild(dConstraint);
+          }
+        }
+        if (constraint.children.length === 0) {
+          return null;
+        }
+        return constraint;
+      }
     }
   }
 
@@ -272,14 +321,14 @@ export class TreeNodeService {
                                          descendants: TreeNode[]) {
     if (treeNode) {
       if (depth === 2) {
-        if (treeNode['children']) {
-          for (let child of treeNode['children']) {
+        if (treeNode.children) {
+          for (let child of treeNode.children) {
             descendants.push(child);
           }
         }
       } else if (depth > 2) {
-        if (treeNode['children']) {
-          for (let child of treeNode['children']) {
+        if (treeNode.children) {
+          for (let child of treeNode.children) {
             let newDepth = depth - 1;
             this.getTreeNodeDescendantsWithDepth(child, newDepth, descendants);
           }
@@ -300,11 +349,11 @@ export class TreeNodeService {
                                                  descendants: TreeNode[]) {
     if (treeNode) {
       // If the tree node has children
-      if (treeNode['children']) {
-        for (let child of treeNode['children']) {
-          if (child['children']) {
+      if (treeNode.children) {
+        for (let child of treeNode.children) {
+          if (child.children) {
             this.getTreeNodeDescendantsWithExcludedTypes(child, excludedTypes, descendants);
-          } else if (excludedTypes.indexOf(child['type']) === -1) {
+          } else if (excludedTypes.indexOf(child.type) === -1) {
             descendants.push(child);
           }
         }
@@ -312,19 +361,19 @@ export class TreeNodeService {
     }
   }
 
-  public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
+  public formatNodeWithCounts(node: GbTreeNode, countItem: CountItem) {
     let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
     if (this.countService.showObservationCounts) {
       countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
     }
-    node['label'] = `${node['name']} (${countsText})`;
+    node.label = `${node.name} (${countsText})`;
   }
 
   public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
     for (let node of nodes) {
       flattened.push(node);
-      if (node['children']) {
-        this.flattenTreeNodes(node['children'], flattened);
+      if (node.children) {
+        this.flattenTreeNodes(node.children, flattened);
       }
     }
   }
@@ -332,18 +381,18 @@ export class TreeNodeService {
   public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
-      let parent = node['parent'];
-      let children = node['children'];
-      node['parent'] = null;
-      node['children'] = null;
+      let parent = node.parent;
+      let children = node.children;
+      node.parent = null;
+      node.children = null;
       let nodeCopy = JSON.parse(JSON.stringify(node));
       if (children) {
         let childrenCopy = this.copyTreeNodes(children);
-        nodeCopy['children'] = childrenCopy;
+        nodeCopy.children = childrenCopy;
       }
       nodesCopy.push(nodeCopy);
-      node['parent'] = parent;
-      node['children'] = children;
+      node.parent = parent;
+      node.children = children;
     }
     return nodesCopy;
   }
@@ -354,7 +403,7 @@ export class TreeNodeService {
    * @returns {TreeNode}
    */
   public copyTreeNodeUpward(node: TreeNode): TreeNode {
-    let nodeCopy = {};
+    let nodeCopy: TreeNode = {};
     let parentCopy = null;
     for (let key in node) {
       if (key === 'parent') {
@@ -364,13 +413,13 @@ export class TreeNodeService {
       }
     }
     if (parentCopy) {
-      nodeCopy['parent'] = parentCopy;
+      nodeCopy.parent = parentCopy;
     }
     return nodeCopy;
   }
 
-  public depthOfTreeNode(node: TreeNode): number {
-    return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
+  public depthOfTreeNode(node: GbTreeNode): number {
+    return node.fullName ? node.fullName.split('\\').length - 2 : null;
   }
 
   /**
@@ -379,7 +428,7 @@ export class TreeNodeService {
    * @returns {boolean}
    */
   public isTreeNodeConcept(node: TreeNode): boolean {
-    const type = node['type'];
+    const type = node.type;
     return type === 'NUMERIC' ||
       type === 'CATEGORICAL' ||
       type === 'DATE' ||
@@ -393,7 +442,7 @@ export class TreeNodeService {
    * @returns {boolean}
    */
   public isTreeNodeStudy(node: TreeNode): boolean {
-    return node['type'] ? node['type'] === 'STUDY' : false;
+    return node.type ? node.type === 'STUDY' : false;
   }
 
   public isTreeNodeLeaf(node: TreeNode): boolean {
@@ -401,7 +450,7 @@ export class TreeNodeService {
   }
 
   public isVariableNode(node: TreeNode): boolean {
-    const treeNodeType = node['type'];
+    const treeNodeType = node.type;
     return (treeNodeType === 'NUMERIC' ||
       treeNodeType === 'CATEGORICAL' ||
       treeNodeType === 'CATEGORICAL_OPTION' ||
@@ -425,15 +474,15 @@ export class TreeNodeService {
    * @param {string[]} items
    * @param {string[]} paths
    */
-  public convertItemsToPaths(nodes: TreeNode[], items: string[], paths: string[]) {
-    nodes.forEach((node: TreeNode) => {
+  public convertItemsToPaths(nodes: GbTreeNode[], items: string[], paths: string[]) {
+    nodes.forEach((node: GbTreeNode) => {
       if (node) {
-        const itemName = (node['metadata'] || {})['item_name'];
+        const itemName = (node.metadata || {})['item_name'];
         if (items.indexOf(itemName) > -1) {
-          paths.push(node['fullName']);
+          paths.push(node.fullName);
         }
-        if (node['children']) {
-          this.convertItemsToPaths(node['children'], items, paths);
+        if (node.children) {
+          this.convertItemsToPaths(node.children, items, paths);
         }
       }
     });
@@ -443,14 +492,14 @@ export class TreeNodeService {
     this.updateTreeNodeCountsRecursion(this.treeNodes);
   }
 
-  private updateTreeNodeCountsRecursion(nodes: TreeNode[]) {
-    nodes.forEach((node: TreeNode) => {
-      if (node['subjectCount']) {
-        let tail = node['metadata'] ? ' ⓘ ' : ' ';
-        node['label'] = node['name'] + tail + `(${node['subjectCount']})`;
+  private updateTreeNodeCountsRecursion(nodes: GbTreeNode[]) {
+    nodes.forEach((node: GbTreeNode) => {
+      if (node.subjectCount) {
+        let tail = node.metadata ? ' ⓘ ' : ' ';
+        node.label = node.name + tail + `(${node.subjectCount})`;
       }
-      if (node['children']) {
-        this.updateTreeNodeCountsRecursion(node['children']);
+      if (node.children) {
+        this.updateTreeNodeCountsRecursion(node.children);
       }
     });
   }

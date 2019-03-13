@@ -8,11 +8,13 @@
 
 import {Constraint} from './constraint';
 import {FormatHelper} from '../../utilities/format-helper';
+import {ValueType} from './value-type';
+import {Operator} from './operator';
 
 export class ValueConstraint extends Constraint {
 
-  private _valueType: string;
-  private _operator: string;
+  private _valueType: ValueType;
+  private _operator: Operator;
   private _value: any;
 
   constructor() {
@@ -20,19 +22,19 @@ export class ValueConstraint extends Constraint {
     this.textRepresentation = 'Value';
   }
 
-  get valueType(): string {
+  get valueType(): ValueType {
     return this._valueType;
   }
 
-  set valueType(value: string) {
+  set valueType(value: ValueType) {
     this._valueType = value;
   }
 
-  get operator(): string {
+  get operator(): Operator {
     return this._operator;
   }
 
-  set operator(value: string) {
+  set operator(value: Operator) {
     this._operator = value;
   }
 

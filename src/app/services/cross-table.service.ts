@@ -22,6 +22,8 @@ import {Row} from '../models/table-models/row';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
+import {ValueType} from '../models/constraint-models/value-type';
+import {Operator} from '../models/constraint-models/operator';
 
 @Injectable({
   providedIn: 'root',
@@ -38,29 +40,6 @@ export class CrossTableService {
    */
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
-
-  /**
-   * Return a brief string representation of a constraint.
-   * Note that not all constraint types are supported.
-   */
-  public static brief(constraint: Constraint): string {
-    // For a combination with one concept constraint, return the concept name
-    if (constraint.className === 'CombinationConstraint') {
-      let combiConstraint = <CombinationConstraint>constraint;
-      if (combiConstraint.isAnd()) {
-        let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
-          ConstraintHelper.isCategoricalConceptConstraint(child)
-        );
-        if (categoricalConceptConstraints.length === 1) {
-          return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
-        }
-      }
-    } else if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
-      return (<ConceptConstraint>constraint).concept.name;
-    }
-    // Else, create a brief representation of the constraint
-    return constraint.textRepresentation;
-  }
 
   constructor(private resourceService: ResourceService,
               private applicationRef: ApplicationRef) {
@@ -119,7 +98,7 @@ export class CrossTableService {
       this.clearValueConstraints(constraints);
       let promises: Promise<any>[] = [];
       for (let constraint of constraints) {
-        constraint.textRepresentation = CrossTableService.brief(constraint);
+        constraint.textRepresentation = ConstraintHelper.brief(constraint);
         let needsAggregateCall = false;
         // If the constraint has categorical concept, break it down to value constraints and add those respectively
         if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
@@ -265,8 +244,8 @@ export class CrossTableService {
                                          peerConstraint: Constraint) {
     let valueConstraints = categoricalAggregate.values.map((value) => {
       let val = new ValueConstraint();
-      val.valueType = 'STRING';
-      val.operator = '=';
+      val.valueType = ValueType.string;
+      val.operator = Operator.eq;
       val.value = value;
       val.textRepresentation = val.value.toString();
       return val;

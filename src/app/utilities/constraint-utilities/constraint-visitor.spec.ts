@@ -18,7 +18,7 @@ import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-c
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {Concept} from '../../models/constraint-models/concept';
 import {TransmartConstraintSerialiser} from '../transmart-utilities/transmart-constraint-serialiser';
-import {TransmartOperator} from '../../models/transmart-models/transmart-constraint';
+import {Operator} from '../../models/constraint-models/operator';
 
 describe('ConstraintVisitor', () => {
 
@@ -28,7 +28,7 @@ describe('ConstraintVisitor', () => {
     concept.name = 'Concept name';
     conceptConstraint.concept = concept;
     const valueConstraint = new ValueConstraint();
-    valueConstraint.operator = TransmartOperator.eq;
+    valueConstraint.operator = Operator.eq;
     const constraints = [
       new TrueConstraint(),
       new StudyConstraint(),

@@ -11,7 +11,6 @@ import {ConceptType} from './concept-type';
 import {CountItem} from '../aggregate-models/count-item';
 
 export class Concept {
-  private _path: string;
   private _type: ConceptType;
   // the display text
   private _label: string;
@@ -28,7 +27,6 @@ export class Concept {
 
   copy(): Concept {
     let c = new Concept();
-    c.path = this.path;
     c.type = this.type;
     c.label = this.label;
     c.aggregate = this.aggregate;
@@ -38,14 +36,6 @@ export class Concept {
     c.counts = this.counts;
     c.selected = this.selected;
     return c;
-  }
-
-  get path(): string {
-    return this._path;
-  }
-
-  set path(value: string) {
-    this._path = value;
   }
 
   get type(): ConceptType {

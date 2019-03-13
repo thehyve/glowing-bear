@@ -24,6 +24,16 @@ import {CountItem} from '../models/aggregate-models/count-item';
 import {throwError} from 'rxjs/internal/observable/throwError';
 import {CountService} from './count.service';
 import {CountServiceMock} from './mocks/count.service.mock';
+import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
+import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
+import {TransmartConstraintSerialiser} from '../utilities/transmart-utilities/transmart-constraint-serialiser';
+import {StudyConstraint} from '../models/constraint-models/study-constraint';
+import {Study} from '../models/constraint-models/study';
+import {
+  ExtendedAndConstraint,
+  ExtendedStudyNameConstraint,
+  TransmartStudyNameConstraint
+} from '../models/transmart-models/transmart-constraint';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
@@ -85,7 +95,7 @@ describe('TreeNodeService', () => {
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
     expect(treeNodeService.treeNodes.length).toBe(2);
-  })
+  });
 
   it('should handle error for the initial loading of tree nodes', () => {
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
@@ -95,7 +105,7 @@ describe('TreeNodeService', () => {
     treeNodeService.loadTreeNodes();
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should iteratively load the next tree branch', () => {
     let parentFullName = 'parent-full-name';
@@ -104,24 +114,24 @@ describe('TreeNodeService', () => {
       children: [
         {}
       ]
-    }
+    };
     let otherNode = {
       fullName: 'other full name'
-    }
+    };
     let spy1 = spyOn(resourceService, 'getTreeNodes')
       .and.callFake((fullname, depth, hasCounts, hasTag) => {
         if (fullname === parentFullName) {
           return observableOf([parentNode]);
         }
         return observableOf([otherNode]);
-      })
+      });
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth')
       .and.callFake((refNode, depth, descendants) => {
         if (refNode['fullName'] === parentFullName) {
           descendants.push({});
           descendants.push({});
         }
-      })
+      });
     let spy3 = spyOn(treeNodeService, 'processTreeNode').and.stub();
     let spy4 = spyOn(treeNodeService, 'processTreeNodes').and.stub();
     let spy5 = spyOn(treeNodeService, 'loadTreeNext').and.callThrough();
@@ -131,7 +141,7 @@ describe('TreeNodeService', () => {
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
     expect(spy5).toHaveBeenCalledTimes(3);
-  })
+  });
 
   it('should handle edge cases of iterative tree loading', () => {
     let parentFullName = 'parent-full-name';
@@ -140,7 +150,7 @@ describe('TreeNodeService', () => {
       children: [
         {}
       ]
-    }
+    };
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
       return observableOf(null);
     })
@@ -152,7 +162,7 @@ describe('TreeNodeService', () => {
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
-  })
+  });
 
   it('should handle error for iterative tree loading', () => {
     let parentFullName = 'parent-full-name';
@@ -161,10 +171,10 @@ describe('TreeNodeService', () => {
       children: [
         {}
       ]
-    }
+    };
     let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
       return throwError(httpErrorResponse);
-    })
+    });
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth').and.stub();
     let spy3 = spyOn(treeNodeService, 'processTreeNode').and.stub();
     let spy4 = spyOn(treeNodeService, 'processTreeNodes').and.stub();
@@ -175,7 +185,7 @@ describe('TreeNodeService', () => {
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).toHaveBeenCalled();
-  })
+  });
 
   it('should process tree nodes', () => {
     let node1 = {
@@ -183,17 +193,17 @@ describe('TreeNodeService', () => {
     };
     let node = {
       children: [node1]
-    }
+    };
     let spy1 = spyOn(treeNodeService, 'processTreeNode').and.stub();
     treeNodeService.processTreeNodes([node], constraintService);
     expect(spy1).toHaveBeenCalledTimes(2);
-  })
+  });
 
   it('should handle edge case for processing tree nodes', () => {
     let spy1 = spyOn(treeNodeService, 'processTreeNode').and.stub();
     treeNodeService.processTreeNodes(null, constraintService);
     expect(spy1).toHaveBeenCalledTimes(0);
-  })
+  });
 
   it('should process a single tree node', () => {
     // construct the maps
@@ -218,46 +228,47 @@ describe('TreeNodeService', () => {
     countService.studyCountMap.set('study1', new CountItem(10, 20));
     countService.studyCountMap.set('study2', new CountItem(100, 200));
 
-    let node = {
+    let node: GbTreeNode = {
       label: 'label',
       fullName: 'full name',
       name: 'name',
-      conceptPath: 'concept path',
       conceptCode: 'concept2',
       type: 'type',
-      constraint: {},
+      constraint: {
+        type: 'concept',
+        conceptCode: 'concept2'
+      },
       visualAttributes: [
-        'LEAF'
+        VisualAttribute.LEAF
       ],
       metadata: 1
     };
 
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['label']).toContain('ⓘ');
-    expect(node['constraint']['fullName']).toEqual('full name');
-    expect(node['constraint']['name']).toEqual('name');
-    expect(node['constraint']['conceptPath']).toEqual('concept path');
-    expect(node['constraint']['conceptCode']).toEqual('concept2');
-    expect(node['constraint']['valueType']).toEqual('type');
+    expect(node.label).toContain('ⓘ');
+    expect(node.constraint.fullName).toEqual('full name');
+    expect(node.constraint.name).toEqual('name');
+    expect(node.constraint.conceptCode).toEqual('concept2');
+    expect(node.constraint.valueType).toEqual('type');
     expect(constraintService.concepts.length).toBe(1);
     expect(constraintService.conceptConstraints.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(1);
 
     node.type = 'NUMERIC';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toBeDefined();
+    expect(node.icon).toBeDefined();
     node.type = 'HIGH_DIMENSIONAL';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toBeDefined();
+    expect(node.icon).toBeDefined();
     node.type = 'CATEGORICAL';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toBeDefined();
+    expect(node.icon).toBeDefined();
     node.type = 'DATE';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toBeDefined();
+    expect(node.icon).toBeDefined();
     node.type = 'TEXT';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['icon']).toBeDefined();
+    expect(node.icon).toBeDefined();
 
     constraintService.concepts.length = 0;
     constraintService.conceptConstraints.length = 0;
@@ -271,60 +282,171 @@ describe('TreeNodeService', () => {
     expect(constraintService.conceptConstraints.length).toBe(0);
     expect(constraintService.allConstraints.length).toBe(0);
 
-    node['studyId'] = 'study2';
+    node.studyId = 'study2';
     treeNodeService.processTreeNode(node, constraintService);
 
-    node.visualAttributes = ['FOLDER'];
+    node.visualAttributes = [VisualAttribute.FOLDER];
     node.metadata = undefined;
-    node['children'] = [{}];
+    node.children = [{}];
     treeNodeService.processTreeNode(node, constraintService);
     expect(node.constraint).not.toBeDefined();
     expect(constraintService.concepts.length).toBe(0);
     expect(constraintService.conceptConstraints.length).toBe(0);
     expect(constraintService.allConstraints.length).toBe(0);
-    expect(node['label']).not.toContain('ⓘ');
+    expect(node.label).not.toContain('ⓘ');
 
-    node['visualAttributes'] = ['FOLDER'];
-    node['type'] = 'UNKNOWN';
+    node.visualAttributes = [VisualAttribute.FOLDER];
+    node.type = 'UNKNOWN';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['expandedIcon']).toBeDefined();
-    expect(node['collapsedIcon']).toBeDefined();
-    node['type'] = 'STUDY';
+    expect(node.expandedIcon).toBeDefined();
+    expect(node.collapsedIcon).toBeDefined();
+    node.type = 'STUDY';
     treeNodeService.processTreeNode(node, constraintService);
-    expect(node['expandedIcon']).toBeDefined();
-    expect(node['collapsedIcon']).toBeDefined();
-  })
+    expect(node.expandedIcon).toBeDefined();
+    expect(node.collapsedIcon).toBeDefined();
+  });
 
   it('should get concept from a tree node', () => {
-    let node: TreeNode = {};
-    node['name'] = 'name';
-    node['fullName'] = '\\full\\name\\';
-    node['conceptPath'] = 'path';
-    node['conceptCode'] = 'code';
-    node['type'] = 'NUMERIC';
+    let node: GbTreeNode = {};
+    node.name = 'name';
+    node.fullName = '\\full\\name\\';
+    node.conceptCode = 'code';
+    node.type = 'NUMERIC';
     let concept = treeNodeService.getConceptFromTreeNode(node);
     expect(concept.label).toEqual('name (\\full)');
-    expect(concept.path).toEqual('path');
     expect(concept.type).toEqual(ConceptType.NUMERICAL);
     expect(concept.code).toEqual('code');
     expect(concept.fullName).toEqual('\\full\\name\\');
     expect(concept.name).toEqual('name');
 
-    node['type'] = undefined;
+    node.type = undefined;
     let spy = spyOn(MessageHelper, 'alert').and.stub();
     concept = treeNodeService.getConceptFromTreeNode(node);
     expect(spy).toHaveBeenCalled();
     expect(concept).toBeNull();
-  })
+  });
+
+  it('should convert categorical tree node to concept constraint', () => {
+    const serialiser = new TransmartConstraintSerialiser(true);
+    const conceptNode: GbTreeNode = {
+      type: 'CATEGORICAL',
+      name: 'Test categorical concept',
+      fullName: '\\Test\\Test categorical concept\\',
+      conceptCode: 'TEST:CAT1',
+      constraint: {type: 'concept', conceptCode: 'TEST:CAT1'},
+      visualAttributes: [VisualAttribute.LEAF, VisualAttribute.CATEGORICAL]
+    };
+    const constraint = treeNodeService.generateConstraintFromTreeNode(conceptNode);
+    const expected = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = 'TEST:CAT1';
+    concept.type = ConceptType.CATEGORICAL;
+    concept.name = 'Test categorical concept';
+    concept.fullName = '\\Test\\Test categorical concept\\';
+    concept.label = 'Test categorical concept (\\Test)';
+    expected.concept = concept;
+    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+  });
+
+  it('should convert numerical tree node to concept constraint', () => {
+    const serialiser = new TransmartConstraintSerialiser(true);
+    const conceptNode: GbTreeNode = {
+      type: 'NUMERIC',
+      name: 'Test numerical concept',
+      fullName: '\\Test\\Test numerical concept\\',
+      conceptCode: 'TEST:NUM1',
+      constraint: {type: 'concept', conceptCode: 'TEST:NUM1'},
+      visualAttributes: [VisualAttribute.LEAF, VisualAttribute.NUMERICAL]
+    };
+    const constraint = treeNodeService.generateConstraintFromTreeNode(conceptNode);
+    const expected = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = 'TEST:NUM1';
+    concept.type = ConceptType.NUMERICAL;
+    concept.name = 'Test numerical concept';
+    concept.fullName = '\\Test\\Test numerical concept\\';
+    concept.label = 'Test numerical concept (\\Test)';
+    expected.concept = concept;
+    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+  });
+
+  it('should convert date tree node to concept constraint', () => {
+    const serialiser = new TransmartConstraintSerialiser(true);
+    const conceptNode: GbTreeNode = {
+      type: 'DATE',
+      name: 'Test date concept',
+      fullName: '\\Test\\Test date concept\\',
+      conceptCode: 'TEST:DATE1',
+      constraint: {type: 'concept', conceptCode: 'TEST:DATE1'},
+      visualAttributes: [VisualAttribute.LEAF, VisualAttribute.DATE]
+    };
+    const constraint = treeNodeService.generateConstraintFromTreeNode(conceptNode);
+    const expected = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = 'TEST:DATE1';
+    concept.type = ConceptType.DATE;
+    concept.name = 'Test date concept';
+    concept.fullName = '\\Test\\Test date concept\\';
+    concept.label = 'Test date concept (\\Test)';
+    expected.concept = concept;
+    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+  });
+
+  it('should convert study node to study constraint', () => {
+    const serialiser = new TransmartConstraintSerialiser(true);
+    const studyNode: GbTreeNode = {
+      type: 'STUDY',
+      name: 'Test study',
+      fullName: '\\Test\\Study\\',
+      studyId: 'TEST_STUDY_ID',
+      constraint: {type: 'study_name', studyId: 'TEST_STUDY_ID'} as ExtendedStudyNameConstraint,
+      visualAttributes: [VisualAttribute.STUDY, VisualAttribute.FOLDER]
+    };
+    const constraint = treeNodeService.generateConstraintFromTreeNode(studyNode);
+    const expected = new StudyConstraint();
+    const study = new Study();
+    study.id = 'TEST_STUDY_ID';
+    expected.studies.push(study);
+    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+  });
+
+  it('should convert study specific concept node to concept constraint with study', () => {
+    const serialiser = new TransmartConstraintSerialiser(true);
+    const conceptNode: GbTreeNode = {
+      type: 'CATEGORICAL',
+      name: 'Test categorical concept',
+      fullName: '\\Test\\Study\\Test categorical concept\\',
+      conceptCode: 'TEST:CAT1',
+      studyId: 'TEST_STUDY_ID',
+      constraint: {
+        type: 'and',
+        args: [
+          {type: 'concept', conceptCode: 'TEST:CAT1'},
+          {type: 'study_name', studyId: 'TEST_STUDY_ID'} as TransmartStudyNameConstraint
+        ]
+      } as ExtendedAndConstraint,
+      visualAttributes: [VisualAttribute.LEAF, VisualAttribute.CATEGORICAL]
+    };
+    const constraint = treeNodeService.generateConstraintFromTreeNode(conceptNode);
+    const expected = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = 'TEST:CAT1';
+    concept.type = ConceptType.CATEGORICAL;
+    concept.name = 'Test categorical concept';
+    concept.fullName = '\\Test\\Study\\Test categorical concept\\';
+    concept.label = 'Test categorical concept (\\Test\\Study)';
+    expected.concept = concept;
+    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+  });
 
   it('should get tree node descendants with given depth', () => {
-    let node_1_1 = {}
+    let node_1_1 = {};
     let node_1 = {
       children: [node_1_1]
-    }
+    };
     let node = {
       children: [node_1]
-    }
+    };
     let desc = [];
     treeNodeService.getTreeNodeDescendantsWithDepth(null, 3, desc);
     expect(desc.length).toBe(0);
@@ -338,21 +460,21 @@ describe('TreeNodeService', () => {
     expect(desc.length).toBe(1);
     treeNodeService.getTreeNodeDescendantsWithDepth(node, 3, desc);
     expect(desc.length).toBe(2);
-  })
+  });
 
   it('should get tree nodes descendants with given excluded types', () => {
     let node_1_1 = {
       type: 'node_1_1_type'
-    }
+    };
     let node_1 = {
       children: [node_1_1],
       type: 'node_1_type'
-    }
+    };
     let node = {
       children: [node_1]
-    }
+    };
     let desc = [];
-    let types = ['type1']
+    let types = ['type1'];
     treeNodeService.getTreeNodeDescendantsWithExcludedTypes(null, types, desc);
     expect(desc.length).toBe(0);
     treeNodeService.getTreeNodeDescendantsWithExcludedTypes({}, types, desc);
@@ -378,25 +500,25 @@ describe('TreeNodeService', () => {
 
 
   it('should convert tree nodes to paths', () => {
-    let nodeABC: TreeNode = {};
-    nodeABC['fullName'] = '\\A\\B\\C\\';
-    nodeABC['metadata'] = {};
-    nodeABC['metadata']['item_name'] = 'name3';
-    let nodeAB: TreeNode = {};
-    nodeAB['fullName'] = '\\A\\B\\';
+    let nodeABC: GbTreeNode = {};
+    nodeABC.fullName = '\\A\\B\\C\\';
+    nodeABC.metadata = {};
+    nodeABC.metadata['item_name'] = 'name3';
+    let nodeAB: GbTreeNode = {};
+    nodeAB.fullName = '\\A\\B\\';
     nodeAB.children = [nodeABC];
-    let nodeADE: TreeNode = {};
-    nodeADE['fullName'] = '\\A\\D\\E\\';
-    nodeADE['metadata'] = {};
-    nodeADE['metadata']['item_name'] = 'name1';
-    let nodeADEF: TreeNode = {};
-    nodeADEF['fullName'] = '\\A\\D\\E\\F\\';
+    let nodeADE: GbTreeNode = {};
+    nodeADE.fullName = '\\A\\D\\E\\';
+    nodeADE.metadata = {};
+    nodeADE.metadata['item_name'] = 'name1';
+    let nodeADEF: GbTreeNode = {};
+    nodeADEF.fullName = '\\A\\D\\E\\F\\';
     nodeADE.children = [nodeADEF];
-    let nodeAD: TreeNode = {};
-    nodeAD['fullName'] = '\\A\\D\\';
+    let nodeAD: GbTreeNode = {};
+    nodeAD.fullName = '\\A\\D\\';
     nodeAD.children = [nodeADE];
-    let nodeA: TreeNode = {};
-    nodeA['fullName'] = '\\A\\';
+    let nodeA: GbTreeNode = {};
+    nodeA.fullName = '\\A\\';
     nodeA.children = [nodeAB, nodeAD];
     let paths = [];
     treeNodeService.convertItemsToPaths([nodeA, null], ['name1'], paths);
@@ -405,40 +527,40 @@ describe('TreeNodeService', () => {
   });
 
   it('should verify if a tree node is concept node', () => {
-    let node: TreeNode = {};
-    node['type'] = 'NUMERIC';
+    let node: GbTreeNode = {};
+    node.type = 'NUMERIC';
     let isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(true);
-    node['type'] = 'CATEGORICAL';
+    node.type = 'CATEGORICAL';
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(true);
-    node['type'] = 'DATE';
+    node.type = 'DATE';
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(true);
-    node['type'] = 'TEXT';
+    node.type = 'TEXT';
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(true);
-    node['type'] = 'HIGH_DIMENSIONAL';
+    node.type = 'HIGH_DIMENSIONAL';
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(true);
-    node['type'] = undefined;
+    node.type = undefined;
     isConcept = treeNodeService.isTreeNodeConcept(node);
     expect(isConcept).toBe(false);
   });
 
   it('should verify if a tree node is study node', () => {
-    let node: TreeNode = {};
-    node['type'] = 'STUDY';
+    let node: GbTreeNode = {};
+    node.type = 'STUDY';
     let isStudy = treeNodeService.isTreeNodeStudy(node);
     expect(isStudy).toBe(true);
-    node['type'] = undefined;
+    node.type = undefined;
     isStudy = treeNodeService.isTreeNodeStudy(node);
     expect(isStudy).toBe(false);
   });
 
   it('should verify if a tree node is leaf node', () => {
-    let node: TreeNode = {};
-    node['visualAttributes'] = ['bar', 'foo', 'LEAF'];
+    let node: GbTreeNode = {};
+    node.visualAttributes = ['bar', 'foo', 'LEAF'] as VisualAttribute[];
     let is = treeNodeService.isTreeNodeLeaf(node);
     expect(is).toBe(true);
   });
@@ -448,7 +570,7 @@ describe('TreeNodeService', () => {
     let node_1: TreeNode = {};
     let node_1_1: TreeNode = {};
     node_1_1.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
+    node_1_1.type = 'node_1_1_type';
     node_1.children = [node_1_1];
     node_1.type = 'node_1_type';
     node_1.parent = node;
@@ -463,7 +585,7 @@ describe('TreeNodeService', () => {
     let node_1: TreeNode = {};
     let node_1_1: TreeNode = {};
     node_1_1.parent = node_1;
-    node_1_1['type'] = 'node_1_1_type';
+    node_1_1.type = 'node_1_1_type';
     node_1.children = [node_1_1];
     node_1.type = 'node_1_type';
     node_1.parent = node;
@@ -479,16 +601,16 @@ describe('TreeNodeService', () => {
     let node: TreeNode = {};
     const countItem = new CountItem(10, 20);
     treeNodeService.formatNodeWithCounts(node, countItem);
-    expect(node['label']).toBeDefined();
-    expect(node['label']).toContain('10');
+    expect(node.label).toBeDefined();
+    expect(node.label).toContain('10');
   });
 
   it('should flatten tree nodes', () => {
     let node1: TreeNode = {};
     let node1_1: TreeNode = {};
     let node1_1_1: TreeNode = {};
-    node1_1['children'] = [node1_1_1];
-    node1['children'] = [node1_1];
+    node1_1.children = [node1_1_1];
+    node1.children = [node1_1];
     let node2: TreeNode = {};
     let flattened = [];
     treeNodeService.flattenTreeNodes([node1, node2], flattened);
@@ -496,44 +618,45 @@ describe('TreeNodeService', () => {
   });
 
   it('should compute depth of tree node', () => {
-    let node: TreeNode = {};
-    node['fullName'] = 'a\\b\\c\\d\\e\\';
+    let node: GbTreeNode = {};
+    node.fullName = 'a\\b\\c\\d\\e\\';
     const depth = treeNodeService.depthOfTreeNode(node);
     expect(depth).toBe(4);
   });
 
   it('should update tree nodes counts', () => {
-    let node1: TreeNode = {};
-    node1['name'] = 'one';
-    node1['subjectCount'] = 11;
-    node1['metadata'] = {foo: 'bar'};
-    let node2: TreeNode = {};
-    node2['name'] = 'two';
-    node2['subjectCount'] = 12;
-    let node3: TreeNode = {};
-    node2['children'] = [node3];
+    let node1: GbTreeNode = {};
+    node1.name = 'one';
+    node1.subjectCount = '11';
+    node1.metadata = {foo: 'bar'};
+    let node2: GbTreeNode = {};
+    node2.name = 'two';
+    node2.subjectCount = '12';
+    let node3: GbTreeNode = {};
+    node2.children = [node3];
     spyOnProperty(treeNodeService, 'treeNodes', 'get').and.returnValue([node1, node2]);
     treeNodeService.updateTreeNodeCounts();
-    expect(node1['label']).toContain('ⓘ');
-    expect(node1['label']).toContain('11');
-    expect(node2['label']).toContain('12');
+    expect(node1.label).toContain('ⓘ');
+    expect(node1.label).toContain('11');
+    expect(node2.label).toContain('12');
   });
 
   it('should check if a tree node is variable node', () => {
     let node: TreeNode = {};
-    node['type'] = 'NUMERIC';
+    node.type = 'NUMERIC';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node['type'] = 'CATEGORICAL';
+    node.type = 'CATEGORICAL';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node['type'] = 'CATEGORICAL_OPTION';
+    node.type = 'CATEGORICAL_OPTION';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node['type'] = 'DATE';
+    node.type = 'DATE';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node['type'] = 'foobar';
+    node.type = 'foobar';
     expect(treeNodeService.isVariableNode(node)).toBe(false);
-    node['type'] = 'HIGH_DIMENSIONAL';
+    node.type = 'HIGH_DIMENSIONAL';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node['type'] = 'TEXT';
+    node.type = 'TEXT';
     expect(treeNodeService.isVariableNode(node)).toBe(true);
   });
+
 });

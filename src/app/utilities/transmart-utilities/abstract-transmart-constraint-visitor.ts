@@ -27,6 +27,9 @@ import {
 export abstract class AbstractTransmartConstraintVisitor<T> implements TransmartConstraintVisitor<T> {
 
   visit(constraint: TransmartConstraint): T {
+    if (constraint === null || constraint === undefined) {
+      return null;
+    }
     switch (constraint.type) {
       case 'true':
         return this.visitTrueConstraint(<TransmartTrueConstraint>constraint);

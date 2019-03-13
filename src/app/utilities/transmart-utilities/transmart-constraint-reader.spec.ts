@@ -17,6 +17,9 @@ import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {DateOperatorState} from '../../models/constraint-models/date-operator-state';
+import {Operator} from '../../models/constraint-models/operator';
+import {ValueType} from '../../models/constraint-models/value-type';
+import {ConceptType} from '../../models/constraint-models/concept-type';
 
 describe('TransmartConstraintReader', () => {
 
@@ -27,12 +30,15 @@ describe('TransmartConstraintReader', () => {
     const serialisedConstraint = JSON.parse(JSON.stringify(serialiser.visit(constraint)));
     const importedConstraint = reader.visit(serialisedConstraint);
     const serialisedImportedConstraint = JSON.parse(JSON.stringify(serialiser.visit(importedConstraint)));
-    if (serialisedImportedConstraint !== serialisedConstraint) {
-      console.error('Serialised', JSON.stringify(serialisedConstraint));
-      console.error('Imported', JSON.stringify(serialisedImportedConstraint));
-    }
     expect(serialisedImportedConstraint).toEqual(serialisedConstraint);
   }
+
+  it('should (de)serialise null or undefined to null', () => {
+    expect(serialiser.visit(null)).toBeNull();
+    expect(serialiser.visit(undefined)).toBeNull();
+    expect(reader.visit(null)).toBeNull();
+    expect(reader.visit(undefined)).toBeNull();
+  });
 
   it('should correctly (de)serialise true constraints', () => {
     const constraint = new TrueConstraint();
@@ -54,11 +60,12 @@ describe('TransmartConstraintReader', () => {
     const constraint = new ConceptConstraint();
     const concept = new Concept();
     concept.code = 'TEST';
+    concept.type = ConceptType.NUMERICAL;
     concept.fullName = '\\Test studies\\TEST';
     constraint.concept = concept;
     const valueConstraint = new ValueConstraint();
-    valueConstraint.operator = '=';
-    valueConstraint.valueType = 'NUMERIC';
+    valueConstraint.operator = <Operator>'=';
+    valueConstraint.valueType = <ValueType>'numeric';
     valueConstraint.value = 3;
     constraint.valueConstraints.push(valueConstraint);
     return constraint;
@@ -183,6 +190,31 @@ describe('TransmartConstraintReader', () => {
   it('should correctly (de)serialise patient set constraints with patient ids', () => {
     const constraint = new SubjectSetConstraint(null);
     constraint.patientIds = ['12345', '23456'];
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise subselection with negated study constraint', () => {
+    const studyConstraint = new StudyConstraint();
+    const study = new Study();
+    study.id = 'ABC';
+    studyConstraint.studies.push(study);
+    const constraint = new CombinationConstraint([
+      new NegationConstraint(studyConstraint)
+    ], CombinationState.And, 'biomaterial');
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise subselection with multiple constraints', () => {
+    const studyConstraint1 = new StudyConstraint();
+    const study1 = new Study();
+    study1.id = 'ABC';
+    studyConstraint1.studies.push(study1);
+    const studyConstraint2 = new StudyConstraint();
+    const study2 = new Study();
+    study2.id = 'DEF';
+    studyConstraint1.studies.push(study2);
+    const constraint = new CombinationConstraint(
+      [studyConstraint1, studyConstraint2], CombinationState.Or, 'biomaterial');
     testConstraint(constraint);
   });
 

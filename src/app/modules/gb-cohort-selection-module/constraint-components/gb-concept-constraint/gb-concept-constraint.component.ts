@@ -26,6 +26,8 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {AccessLevel} from '../../../../services/authentication/access-level';
+import {ValueType} from '../../../../models/constraint-models/value-type';
+import {Operator} from '../../../../models/constraint-models/operator';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -397,7 +399,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let query = event.query.toLowerCase();
     let concepts = this.constraintService.concepts;
     if (query) {
-      this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
+      this.searchResults = concepts.filter((concept: Concept) =>
+        concept.fullName && concept.fullName.toLowerCase().includes(query));
     } else {
       this.searchResults = concepts;
     }
@@ -429,8 +432,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (this.operatorState === GbConceptOperatorState.EQUAL) {
       if (typeof this.equalVal === 'number') {
         let newVal: ValueConstraint = new ValueConstraint();
-        newVal.valueType = this.selectedConcept.type;
-        newVal.operator = '=';
+        newVal.valueType = ValueType.numeric;
+        newVal.operator = <Operator>'=';
         newVal.value = this.equalVal;
         conceptConstraint.valueConstraints = [];
         conceptConstraint.valueConstraints.push(newVal);
@@ -439,10 +442,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       conceptConstraint.valueConstraints = [];
       if (typeof this.minVal === 'number') {
         let newMinVal: ValueConstraint = new ValueConstraint();
-        newMinVal.valueType = this.selectedConcept.type;
-        newMinVal.operator = '>';
+        newMinVal.valueType = ValueType.numeric;
+        newMinVal.operator = <Operator>'>';
         if (this.isMinEqual) {
-          newMinVal.operator = '>=';
+          newMinVal.operator = <Operator>'>=';
         }
         newMinVal.value = this.minVal;
         conceptConstraint.valueConstraints.push(newMinVal);
@@ -450,10 +453,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
       if (typeof this.maxVal === 'number') {
         let newMaxVal: ValueConstraint = new ValueConstraint();
-        newMaxVal.valueType = this.selectedConcept.type;
-        newMaxVal.operator = '<';
+        newMaxVal.valueType = ValueType.numeric;
+        newMaxVal.operator = <Operator>'<';
         if (this.isMaxEqual) {
-          newMaxVal.operator = '<=';
+          newMaxVal.operator = <Operator>'<=';
         }
         newMaxVal.value = this.maxVal;
         conceptConstraint.valueConstraints.push(newMaxVal);
@@ -466,8 +469,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     conceptConstraint.valueConstraints = [];
     for (let category of this.selectedCategories) {
       let newVal: ValueConstraint = new ValueConstraint();
-      newVal.valueType = 'STRING';
-      newVal.operator = '=';
+      newVal.valueType = ValueType.string;
+      newVal.operator = <Operator>'=';
       newVal.value = category;
       conceptConstraint.valueConstraints.push(newVal);
     }
@@ -633,7 +636,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     this.droppedConstraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode);
+      this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
 
     if (this.droppedConstraint && this.droppedConstraint.className === 'ConceptConstraint') {
       (<ConceptConstraint>this.constraint).concept = (<ConceptConstraint>this.droppedConstraint).concept;

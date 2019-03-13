@@ -1,11 +1,12 @@
 import {AbstractTransmartConstraintVisitor} from './abstract-transmart-constraint-visitor';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {
-  ExtendedConceptConstraint,
+  ExtendedAndConstraint,
+  ExtendedConceptConstraint, ExtendedConstraint,
   TransmartCombinationConstraint,
   TransmartFieldConstraint,
   TransmartNegationConstraint,
-  TransmartNullConstraint, TransmartOperator,
+  TransmartNullConstraint,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
   TransmartStudyNameConstraint,
@@ -29,6 +30,7 @@ import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {DateOperatorState} from '../../models/constraint-models/date-operator-state';
+import {Operator} from '../../models/constraint-models/operator';
 
 /**
  * Deserialisation class for reading constraint objects from TranSMART API and
@@ -39,7 +41,13 @@ import {DateOperatorState} from '../../models/constraint-models/date-operator-st
 export class TransmartConstraintReader extends AbstractTransmartConstraintVisitor<Constraint> {
 
   static wrapWithCombinationConstraint(dimension: string, child: Constraint): CombinationConstraint {
-    let constraint = new CombinationConstraint();
+    if (child.className === 'CombinationConstraint') {
+      const combination = <CombinationConstraint>child;
+      if (combination.dimension === dimension) {
+        return combination;
+      }
+    }
+    const constraint = new CombinationConstraint();
     constraint.addChild(child);
     constraint.dimension = dimension;
     return constraint;
@@ -47,28 +55,33 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
 
   static convertDateOperator(operator: string): DateOperatorState {
     switch (operator) {
-      case TransmartOperator.before:
+      case Operator.before:
         return DateOperatorState.BEFORE;
-      case TransmartOperator.after:
+      case Operator.after:
         return DateOperatorState.AFTER;
-      case TransmartOperator.between:
+      case Operator.between:
         return DateOperatorState.BETWEEN;
       default:
         throw new Error(`Date operator not supported: ${operator}`);
     }
   }
 
-  visitConceptConstraint(constraintObject: ExtendedConceptConstraint): Constraint {
-    let concept = new Concept();
-    const tail = '\\' + constraintObject.name + '\\';
+  addMetadataToConcept(concept: Concept, constraintObject: ExtendedConstraint) {
     const fullName = constraintObject.fullName;
     concept.fullName = fullName;
-    let head = fullName ? fullName.substring(0, fullName.length - tail.length) : '';
+    const tail = '\\' + constraintObject.name + '\\';
+    const head = fullName ? fullName.substring(0, fullName.length - tail.length) : '';
     concept.name = constraintObject.name;
     concept.label = constraintObject.name + ' (' + head + ')';
-    concept.path = constraintObject.conceptPath;
     concept.type = constraintObject.valueType;
+  }
+
+  visitConceptConstraint(constraintObject: ExtendedConceptConstraint): Constraint {
+    let concept = new Concept();
     concept.code = constraintObject.conceptCode;
+    if (constraintObject.fullName) {
+      this.addMetadataToConcept(concept, constraintObject);
+    }
     const constraint = new ConceptConstraint();
     constraint.concept = concept;
     return constraint;
@@ -115,27 +128,24 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
      * go through each argument, construct potential sub-constraints for the concept constraint
      */
     for (let arg of constraintObject.args) {
-      if (arg.type === 'concept' && !arg['fullName'] && constraintObject['fullName']) {
-        arg['valueType'] = constraintObject['valueType'];
-        arg['conceptPath'] = constraintObject['conceptPath'];
-        arg['name'] = constraintObject['name'];
-        arg['fullName'] = constraintObject['fullName'];
-        arg['conceptCode'] = constraintObject['conceptCode'];
-      }
       let child = this.visit(arg);
-      if (arg.type === 'concept') {
+      if (child.className === 'ConceptConstraint') {
         prospectConcept = <ConceptConstraint>child;
-      } else if (arg.type === 'time') {
+        if (!prospectConcept.concept.fullName && constraintObject['fullName'] && operator === 'and') {
+          this.addMetadataToConcept(prospectConcept.concept, <ExtendedAndConstraint>constraintObject);
+        }
+      } else if (child.className === 'TimeConstraint') {
         if (arg['isObservationDate']) {
           prospectObsDate = <TimeConstraint>child;
         } else {
           prospectValDate = <TimeConstraint>child;
         }
-      } else if (arg.type === 'field') {
+      } else if (child.className === 'TrialVisitConstraint') {
         prospectTrialVisit = <TrialVisitConstraint>child;
-      } else if (arg.type === 'value') {
+      } else if (child.className === 'ValueConstraint') {
         prospectValues.push(<ValueConstraint>child);
-      } else if (arg.type === 'or') {
+      } else if (child.className === 'CombinationConstraint' &&
+        (<CombinationConstraint>child).combinationState === CombinationState.Or) {
         let isValues = true;
         for (let val of (<CombinationConstraint>child).children) {
           if (val.className !== 'ValueConstraint') {
@@ -148,9 +158,9 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
           prospectValues = [];
         }
       }
-      (<CombinationConstraint>constraint).addChild(child);
+      constraint.addChild(child);
       if (arg.type === 'study_name') {
-        allStudyIds.push(arg['studyId']);
+        allStudyIds.push((<TransmartStudyNameConstraint>arg).studyId);
       } else {
         hasOnlyStudies = false;
       }
@@ -189,8 +199,22 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
         study.id = studyId;
         return study;
       });
-      constraint.children.length = 0;
-      constraint.addChild(studyConstraint);
+      return studyConstraint;
+    }
+    /*
+     * Flatten nested subselection constraint
+     */
+    if (constraint.children.every(child => child.className === 'CombinationConstraint')) {
+      const dimensions = new Set(constraint.children.map((child: CombinationConstraint) => child.dimension));
+      // Only flatten when all children have the same dimension
+      if (dimensions.size === 1) {
+        constraint.dimension = dimensions.values().next().value;
+        const children: Constraint[] = [];
+        constraint.children.forEach((child: CombinationConstraint) =>
+          child.children.forEach(c => children.push(c))
+        );
+        constraint.children = children;
+      }
     }
     return constraint;
   }

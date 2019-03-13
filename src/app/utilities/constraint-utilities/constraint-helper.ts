@@ -117,4 +117,27 @@ export class ConstraintHelper {
     });
   }
 
+  /**
+   * Return a brief string representation of a constraint.
+   * Note that not all constraint types are supported.
+   */
+  public static brief(constraint: Constraint): string {
+    // For a combination with one concept constraint, return the concept name
+    if (constraint.className === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+          ConstraintHelper.isCategoricalConceptConstraint(child)
+        );
+        if (categoricalConceptConstraints.length === 1) {
+          return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
+        }
+      }
+    } else if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
+      return (<ConceptConstraint>constraint).concept.name;
+    }
+    // Else, create a brief representation of the constraint
+    return constraint.textRepresentation;
+  }
+
 }

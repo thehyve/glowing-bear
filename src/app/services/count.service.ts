@@ -7,7 +7,6 @@
  */
 
 import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {forkJoin, Subject} from 'rxjs';
 import {ResourceService} from './resource.service';
 import {CountItem} from '../models/aggregate-models/count-item';

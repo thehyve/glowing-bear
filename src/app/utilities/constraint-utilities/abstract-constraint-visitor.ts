@@ -22,6 +22,9 @@ import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
   visit(constraint: Constraint): T {
+    if (constraint === null || constraint === undefined) {
+      return null;
+    }
     if (constraint.negated) {
       let constraintCopy = Object.create(constraint);
       constraintCopy.negated = false;

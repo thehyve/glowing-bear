@@ -20,23 +20,23 @@ import {CombinationConstraint} from '../../models/constraint-models/combination-
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {AbstractConstraintVisitor} from '../constraint-utilities/abstract-constraint-visitor';
 import {
+  ExtendedConstraint,
   TransmartCombinationConstraint,
   TransmartConceptConstraint,
   TransmartConstraint,
   TransmartFieldConstraint,
   TransmartNegationConstraint,
-  TransmartOperator,
-  TransmartOperatorValues,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
   TransmartSubSelectionConstraint,
   TransmartTimeConstraint,
   TransmartTrueConstraint,
-  TransmartType,
   TransmartValueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
+import {Operator, OperatorValues} from '../../models/constraint-models/operator';
+import {ValueType} from '../../models/constraint-models/value-type';
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -82,16 +82,6 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     let queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
     if (queryConstraint.type === 'true') {
       return {'type': 'true'};
-    } else if (queryConstraint.type === 'negation') {
-      const arg = (<TransmartNegationConstraint>queryConstraint).arg;
-      return {
-        type: 'negation',
-        arg: {
-          type: 'subselection',
-          dimension: dimension,
-          constraint: arg
-        } as TransmartSubSelectionConstraint
-      } as TransmartNegationConstraint;
     } else {
       return {
         type: 'subselection',
@@ -101,9 +91,9 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     }
   }
 
-  static convertOperator(operator: string): TransmartOperator {
-    if ((TransmartOperatorValues as string[]).includes(operator)) {
-      return <TransmartOperator>operator;
+  static convertOperator(operator: string): Operator {
+    if ((OperatorValues as string[]).includes(operator)) {
+      return <Operator>operator;
     }
     throw new Error(`Unknown operator: ${operator}`);
   }
@@ -116,7 +106,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
   visitValueConstraint(constraint: ValueConstraint): TransmartValueConstraint {
     return {
       type: 'value',
-      valueType: <TransmartType>constraint.valueType,
+      valueType: constraint.valueType,
       operator: TransmartConstraintSerialiser.convertOperator(constraint.operator),
       value: constraint.value
     }
@@ -133,20 +123,20 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
       field: {
         dimension: 'trial visit',
         fieldName: 'id',
-        type: TransmartType.numeric
+        type: ValueType.numeric
       },
-      operator: TransmartOperator.in,
+      operator: Operator.in,
       value: trialVisitIds
     };
   }
 
   visitTimeConstraint(constraint: TimeConstraint): TransmartConstraint {
     // Operator
-    const operator: TransmartOperator = {
-      [DateOperatorState.BETWEEN]: TransmartOperator.between,
-      [DateOperatorState.NOT_BETWEEN]: TransmartOperator.between, // we'll negate it later
-      [DateOperatorState.BEFORE]: TransmartOperator.before,
-      [DateOperatorState.AFTER]: TransmartOperator.after
+    const operator: Operator = {
+      [DateOperatorState.BETWEEN]: Operator.between,
+      [DateOperatorState.NOT_BETWEEN]: Operator.between, // we'll negate it later
+      [DateOperatorState.BEFORE]: Operator.before,
+      [DateOperatorState.AFTER]: Operator.after
     }[constraint.dateOperator];
     // Values (dates)
     let values = [constraint.date1.getTime()];
@@ -165,7 +155,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
       field: {
         dimension: dimension,
         fieldName: fieldName,
-        type: TransmartType.date
+        type: ValueType.date
       },
       operator: operator,
       values: values
@@ -251,56 +241,60 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
    */
   visitConceptConstraint(constraint: ConceptConstraint): TransmartConstraint {
     let result = null;
-    if (constraint.concept) {
-      const args = [];
-      const conceptConstraint: TransmartConceptConstraint = {
-        type: 'concept',
-        conceptCode: constraint.concept.code,
-      };
-      if (this._full) {
-        conceptConstraint['name'] = constraint.concept.name;
-        conceptConstraint['fullName'] = constraint.concept.fullName;
-        conceptConstraint['conceptPath'] = constraint.concept.path;
-        conceptConstraint['valueType'] = constraint.concept.type;
-      }
-      args.push(conceptConstraint);
+    if (!constraint.concept) {
+      throw new Error('Cannot serialise concept constraint without concept');
+    }
+    const args = [];
+    const conceptConstraint: TransmartConceptConstraint = {
+      type: 'concept',
+      conceptCode: constraint.concept.code,
+    };
+    args.push(conceptConstraint);
 
-      if (constraint.valueConstraints.length > 0) {
-        if (constraint.concept.type === 'NUMERIC') {
-          // Add numerical values directly to the main constraint
-          for (let val of constraint.valueConstraints) {
-            args.push(this.visit(val));
-          }
-        } else if (constraint.concept.type === 'CATEGORICAL') {
-          // Wrap categorical values in an OR constraint
-          let categorical = {
-            type: 'or',
-            args: constraint.valueConstraints.map((val: ValueConstraint) => this.visit(val))
-          };
-          if (categorical.args.length === 1) {
-            args.push(categorical.args[0]);
-          } else {
-            args.push(categorical);
-          }
+    if (constraint.valueConstraints.length > 0) {
+      if (constraint.concept.type === 'NUMERIC') {
+        // Add numerical values directly to the main constraint
+        for (let val of constraint.valueConstraints) {
+          args.push(this.visit(val));
         }
-      }
-      if (constraint.applyValDateConstraint) {
-        args.push(this.visit(constraint.valDateConstraint));
-      }
-      if (constraint.applyObsDateConstraint) {
-        args.push(this.visit(constraint.obsDateConstraint));
-      }
-      if (constraint.applyTrialVisitConstraint) {
-        args.push(this.visit(constraint.trialVisitConstraint));
-      }
-      if (args.length === 1) {
-        result = args[0];
-      } else {
-        result = {
-          type: 'and',
-          args: args
+      } else if (constraint.concept.type === 'CATEGORICAL') {
+        // Wrap categorical values in an OR constraint
+        let categorical = {
+          type: 'or',
+          args: constraint.valueConstraints.map((val: ValueConstraint) => this.visit(val))
         };
+        if (categorical.args.length === 1) {
+          args.push(categorical.args[0]);
+        } else {
+          args.push(categorical);
+        }
+      } else {
+        throw new Error(`Concept type not supported: ${constraint.concept.type}`);
       }
+    }
+    if (constraint.applyValDateConstraint) {
+      args.push(this.visit(constraint.valDateConstraint));
+    }
+    if (constraint.applyObsDateConstraint) {
+      args.push(this.visit(constraint.obsDateConstraint));
+    }
+    if (constraint.applyTrialVisitConstraint) {
+      args.push(this.visit(constraint.trialVisitConstraint));
+    }
+    if (args.length === 1) {
+      result = args[0];
+    } else {
+      result = {
+        type: 'and',
+        args: args
+      };
+    }
+    if (this._full) {
+      const fullConstraint = <ExtendedConstraint>result;
+      fullConstraint.name = constraint.concept.name;
+      fullConstraint.fullName = constraint.concept.fullName;
+      fullConstraint.valueType = constraint.concept.type;
+      result = fullConstraint;
     }
     return result;
   }

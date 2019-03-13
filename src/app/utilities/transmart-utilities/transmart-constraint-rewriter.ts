@@ -13,7 +13,34 @@ import {
   TransmartValueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 
+/**
+ * Rewrites constraints to simplify them. The following rules are applied:
+ * - eliminate double negation:
+ *   <code>{type: 'negation', arg: {type: 'negation', arg: { type: 'study_name', studyId: 'A'}}}</code>
+ *   is rewritten to: <code>{ type: 'study_name', studyId: 'A'}</code>
+ * - flatten nested combination constraints (but keeping combination constraints with tree node data intact):
+ *   <code>{type: 'and', args: [{type: 'concept'}, {type: 'and', args: [{type: 'value'}]}]}</code>
+ *   is rewritten to: <code>{type: 'and', args: [{type: 'concept'}, {type: 'value'}]}</code>
+ * - simplify singleton combination constraints:
+ *   <code>{type: 'and', args: [{type: 'concept'}]}</code>
+ *   is rewritten to: <code>{type: 'concept'}</code>
+ * - simplify empty combination constraints:
+ *   <code>{type: 'and', args: []}</code> is rewritten to: <code>{type: 'true'}</code>
+ *   <code>{type: 'or', args: []}</code> is rewritten to: <code>{type: 'negation', arg: {type: 'true'}}</code>
+ */
 export class TransmartConstraintRewriter extends AbstractTransmartConstraintVisitor<TransmartConstraint> {
+
+  flattenArguments(type: 'and'|'or', args: TransmartConstraint[]): TransmartConstraint[] {
+    const newArgs: TransmartConstraint[] = [];
+    args.forEach(arg => {
+      if (arg.type === type && !arg['fullName']) {
+        (<TransmartCombinationConstraint>arg).args.forEach(argChild => newArgs.push(argChild));
+      } else {
+        newArgs.push(arg);
+      }
+    });
+    return newArgs;
+  }
 
   visitCombinationConstraint(constraint: TransmartCombinationConstraint): TransmartConstraint {
     if (!['and', 'or'].includes(constraint.type)) {
@@ -38,6 +65,8 @@ export class TransmartConstraintRewriter extends AbstractTransmartConstraintVisi
     if (args.length === 1) {
       return args[0];
     }
+    args = this.flattenArguments(<'and'|'or'>constraint.type, args);
+
     result.args = args;
     return result;
   }
@@ -53,6 +82,9 @@ export class TransmartConstraintRewriter extends AbstractTransmartConstraintVisi
   visitNegationConstraint(constraint: TransmartNegationConstraint): TransmartConstraint {
     const result = Object.assign({}, constraint);
     result.arg = this.visit(result.arg);
+    if (result.arg.type === 'negation') {
+      return (<TransmartNegationConstraint>result.arg).arg;
+    }
     return result;
   }
 

@@ -1,7 +1,11 @@
 import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 import {
   TransmartAndConstraint,
-  TransmartConceptConstraint, TransmartConstraint, TransmartNegationConstraint,
+  TransmartConceptConstraint,
+  TransmartConstraint,
+  TransmartFieldConstraint,
+  TransmartNegationConstraint,
+  TransmartNullConstraint,
   TransmartOrConstraint,
   TransmartStudyNameConstraint,
   TransmartTrueConstraint
@@ -25,6 +29,16 @@ describe('TransmartConstraintRewriter', () => {
     const constraint = new TransmartAndConstraint();
     constraint.args = [subconstraint];
     const expected = new TransmartStudyNameConstraint();
+    testConstraint(constraint, expected);
+  });
+
+  it('should combine arguments of nested combination constraints', () => {
+    const subconstraint = new TransmartOrConstraint();
+    subconstraint.args = [new TransmartStudyNameConstraint(), new TransmartFieldConstraint()];
+    const constraint = new TransmartOrConstraint();
+    constraint.args = [subconstraint, new TransmartNullConstraint()];
+    const expected = new TransmartOrConstraint();
+    expected.args = [new TransmartStudyNameConstraint(), new TransmartFieldConstraint(), new TransmartNullConstraint()];
     testConstraint(constraint, expected);
   });
 
@@ -60,6 +74,13 @@ describe('TransmartConstraintRewriter', () => {
     constraint.args = [];
     const expected = new TransmartTrueConstraint();
     testConstraint(constraint, expected);
+  });
+
+  it('should eliminate double negation', () => {
+    const studyNameConstraint = new TransmartStudyNameConstraint();
+    studyNameConstraint.studyId = 'A';
+    const constraint = new TransmartNegationConstraint(new TransmartNegationConstraint(studyNameConstraint));
+    testConstraint(constraint, studyNameConstraint);
   });
 
 });

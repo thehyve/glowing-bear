@@ -169,15 +169,22 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       console.log('Updating counts from all cohorts...');
       this.isUpdatingAll = true;
-      let combination: CombinationConstraint = new CombinationConstraint();
-      combination.combinationState = CombinationState.Or;
-      this.cohorts.forEach((cohort: Cohort) => {
-        if (cohort.selected) {
-          combination.addChild(cohort.constraint);
-        }
-      });
+      const selectedCohorts = this.cohorts.filter(cohort => cohort.selected);
+      let constraint: Constraint;
+      if (selectedCohorts.length === 1) {
+        constraint = selectedCohorts[0].constraint;
+      } else {
+        const combination = new CombinationConstraint();
+        combination.combinationState = CombinationState.Or;
+        this.cohorts.forEach((cohort: Cohort) => {
+          if (cohort.selected) {
+            combination.addChild(cohort.constraint);
+          }
+        });
+        constraint = combination;
+      }
       if (this.saveSubjectSetBeforeUpdatingCounts) {
-        this.resourceService.saveSubjectSet('temp', combination).subscribe((subjectSet: SubjectSet) => {
+        this.resourceService.saveSubjectSet('temp', constraint).subscribe((subjectSet: SubjectSet) => {
           return this.updateAllCounts(new SubjectSetConstraint(subjectSet))
             .then(() =>
               resolve(true)
@@ -186,7 +193,7 @@ export class CohortService {
             });
         });
       } else {
-        return this.updateAllCounts(combination)
+        return this.updateAllCounts(constraint)
           .then(() =>
             resolve(true)
           ).catch(err => {

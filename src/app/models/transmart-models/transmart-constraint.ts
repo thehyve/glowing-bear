@@ -1,138 +1,105 @@
+/**
+ * Copyright 2019  The Hyve B.V.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import {ConceptType} from '../constraint-models/concept-type';
+import {ValueType} from '../constraint-models/value-type';
+import {Operator} from '../constraint-models/operator';
 
-export enum TransmartType {
-  id = 'id',
-  numeric = 'numeric',
-  date = 'date',
-  string = 'string',
-  text = 'text',
-  event = 'event',
-  object = 'object',
-  collection = 'collection',
-  constraint = 'constraint',
-  none = 'none'
-}
-
-export enum TransmartOperator {
-  lt = '<',
-  gt = '>',
-  eq = '=',
-  neq = '!=',
-  leq = '<=',
-  geq = '>=',
-  like = 'like',
-  contains = 'contains',
-  in = 'in',
-  before = '<-',
-  after = '->',
-  between = '<-->',
-  and = 'and',
-  or = 'or',
-  not = 'not',
-  exists = 'exists',
-  intersect = 'intersect',
-  union = 'union',
-  none = 'none'
-}
-export const TransmartOperatorValues = [
-  TransmartOperator.lt,
-  TransmartOperator.gt,
-  TransmartOperator.eq,
-  TransmartOperator.neq,
-  TransmartOperator.leq,
-  TransmartOperator.geq,
-  TransmartOperator.like,
-  TransmartOperator.contains,
-  TransmartOperator.in,
-  TransmartOperator.before,
-  TransmartOperator.after,
-  TransmartOperator.between,
-  TransmartOperator.and,
-  TransmartOperator.or,
-  TransmartOperator.not,
-  TransmartOperator.exists,
-  TransmartOperator.intersect,
-  TransmartOperator.union,
-  TransmartOperator.none
-];
-
-export class TransmartField {
-  dimension: string;
-  type: TransmartType;
-  fieldName: string;
-}
-
-export class TransmartConstraint {
+export interface TransmartConstraint {
   type: string;
 }
 
-export class TransmartTrueConstraint extends TransmartConstraint {
+export interface ExtendedConstraint extends TransmartConstraint {
+  name?: string;
+  fullName?: string;
+  conceptCode?: string;
+  valueType?: ConceptType;
+}
+
+export class TransmartField {
+  dimension: string;
+  type: ValueType;
+  fieldName: string;
+}
+
+export class TransmartTrueConstraint implements TransmartConstraint {
   type = 'true';
 }
 
-export class TransmartFieldConstraint extends TransmartConstraint {
+export class TransmartFieldConstraint implements TransmartConstraint {
   type = 'field';
   field: TransmartField;
-  operator: TransmartOperator;
+  operator: Operator;
   value: object;
 }
 
-export class TransmartConceptConstraint extends TransmartConstraint {
+export class TransmartConceptConstraint implements TransmartConstraint {
   type = 'concept';
   conceptCode?: string;
   conceptCodes?: string[];
   path?: string;
 }
 
-export class ExtendedConceptConstraint extends TransmartConceptConstraint {
+export class ExtendedConceptConstraint extends TransmartConceptConstraint implements ExtendedConstraint {
   name?: string;
   fullName?: string;
   conceptPath?: string;
   valueType?: ConceptType;
 }
 
-export class TransmartStudyNameConstraint extends TransmartConstraint {
+export class TransmartStudyNameConstraint implements TransmartConstraint {
   type = 'study_name';
   studyId: string;
 }
 
-export class TransmartNullConstraint extends TransmartConstraint {
+export class ExtendedStudyNameConstraint extends TransmartStudyNameConstraint implements ExtendedConstraint {
+  name?: string;
+  fullName?: string;
+  conceptPath?: string;
+  valueType?: ConceptType;
+}
+
+export class TransmartNullConstraint implements TransmartConstraint {
   type = 'null';
   field: TransmartField;
 }
 
-export class TransmartValueConstraint extends TransmartConstraint {
+export class TransmartValueConstraint implements TransmartConstraint {
   type = 'value';
-  valueType: TransmartType;
-  operator: TransmartOperator;
-  value: object;
+  valueType: ValueType;
+  operator: Operator;
+  value: any;
 }
 
-export class TransmartTimeConstraint extends TransmartConstraint {
+export class TransmartTimeConstraint implements TransmartConstraint {
   type = 'time';
   field: TransmartField;
-  operator: TransmartOperator;
+  operator: Operator;
   values: number[];
 }
 
-export class TransmartPatientSetConstraint extends TransmartConstraint {
+export class TransmartPatientSetConstraint implements TransmartConstraint {
   type = 'patient_set';
   patientSetId?: number;
   patientIds?: number[];
   subjectIds?: string[];
 }
 
-export class TransmartNegationConstraint extends TransmartConstraint {
+export class TransmartNegationConstraint implements TransmartConstraint {
   type = 'negation';
   arg: TransmartConstraint;
 
   constructor(arg: TransmartConstraint) {
-    super();
     this.arg = arg;
   }
 }
 
-export class TransmartCombinationConstraint extends TransmartConstraint {
+export class TransmartCombinationConstraint implements TransmartConstraint {
   type = 'combination';
   operator?: string;
   args: TransmartConstraint[];
@@ -142,23 +109,30 @@ export class TransmartAndConstraint extends TransmartCombinationConstraint {
   type = 'and';
 }
 
+export class ExtendedAndConstraint extends TransmartAndConstraint implements ExtendedConstraint {
+  name?: string;
+  fullName?: string;
+  conceptPath?: string;
+  valueType?: ConceptType;
+}
+
 export class TransmartOrConstraint extends TransmartCombinationConstraint {
   type = 'or';
 }
 
-export class TransmartTemporalConstraint extends TransmartConstraint {
+export class TransmartTemporalConstraint implements TransmartConstraint {
   type = 'temporal';
-  operator: TransmartOperator;
+  operator: Operator;
   eventConstraint: TransmartConstraint;
 }
 
-export class TransmartSubSelectionConstraint extends TransmartConstraint {
+export class TransmartSubSelectionConstraint implements TransmartConstraint {
   type = 'subselection';
   dimension: string;
   constraint: TransmartConstraint;
 }
 
-export class TransmartRelationConstraint extends TransmartConstraint {
+export class TransmartRelationConstraint implements TransmartConstraint {
   type = 'relation';
   relationTypeLabel: string;
   relatedSubjectsConstraint: TransmartConstraint;

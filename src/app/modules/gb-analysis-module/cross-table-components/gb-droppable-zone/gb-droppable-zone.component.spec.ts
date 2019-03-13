@@ -18,6 +18,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
+import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
 
 describe('GbDroppableZoneComponent', () => {
   let component: GbDroppableZoneComponent;
@@ -70,7 +71,7 @@ describe('GbDroppableZoneComponent', () => {
     let dummy = new TrueConstraint();
     let spy1 = spyOnProperty(crossTableService, 'selectedConstraintCell', 'get').and.returnValue({
       constraint: dummy
-    })
+    });
     component.onDragEnter(new DragEvent('dragenter'));
     expect(spy1).toHaveBeenCalled();
     expect(component.dragCounter).toEqual(4);
@@ -79,7 +80,7 @@ describe('GbDroppableZoneComponent', () => {
     component.constraints = [dummy];
     component.onDragEnter(new DragEvent('dragenter'));
     expect(component.dragCounter).toEqual(3);
-  })
+  });
 
   it('should update dragCounter when drag leaves', () => {
     let e = new DragEvent('dragleave');
@@ -88,7 +89,7 @@ describe('GbDroppableZoneComponent', () => {
     component.onDragLeave(e);
     expect(spy1).toHaveBeenCalled();
     expect(component.dragCounter).toEqual(5);
-  })
+  });
 
   it('should conditionally update cross table when a constraint cell is dropped', () => {
     let mockEvent = new DragEvent('drop');
@@ -105,7 +106,7 @@ describe('GbDroppableZoneComponent', () => {
 
     let spy3 = spyOn(crossTableService, 'isValidConstraint').and.returnValue(true);
     let dummyText = 'dummy text';
-    let spy4 = spyOn(CrossTableService, 'brief').and.returnValue(dummyText);
+    let spy4 = spyOn(ConstraintHelper, 'brief').and.returnValue(dummyText);
     component.onDrop(mockEvent);
     expect(spy3).toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
@@ -127,7 +128,7 @@ describe('GbDroppableZoneComponent', () => {
     expect(component.constraints.length).toEqual(1);
     expect(component.constraints).toContain(dummy);
     expect(spy7).toHaveBeenCalled();
-  })
+  });
 
   it('should remove selected constraint cell', () => {
     let dummy = new TrueConstraint();
@@ -142,5 +143,6 @@ describe('GbDroppableZoneComponent', () => {
     component.onConstraintCellRemoved(dummy);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
+
 });

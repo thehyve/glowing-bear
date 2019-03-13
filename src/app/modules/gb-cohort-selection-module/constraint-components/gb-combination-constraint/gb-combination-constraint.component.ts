@@ -110,8 +110,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   onDrop(event) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode);
+    this.droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
