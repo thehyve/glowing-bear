@@ -40,7 +40,14 @@ Feature: create constraints by selecting nodes from the tree
 
   Scenario: create a constraint with a diagnosis dimension
     Given I am on the cohort-selection tab
-    When I select diagnoses that are part of study 'CSR'
+    When I select root dimension 'Diagnosis ID'
+    And I use public study 'CSR' as a constraint
     Then there are '8' subjects
     And there is an observation level box message with 'Diagnosis ID' dimension
+
+  Scenario: create a dimension-restricted concept constraint
+    Given I am on the cohort-selection tab
+    When I select root dimension 'Biomaterial ID'
+    And I select gender concept from CSR study
+    Then concept constraint is wrapped into combination box
 

@@ -102,16 +102,28 @@ when("I use negated pedigree constraint {string} with concept {string} and negat
   cy.get('.update-btn').eq(0).click();
 });
 
-when("I select diagnoses that are part of study {string}", (studyName) => {
-  cy.toggleNode('Public Studies ');
-  cy.drag('CSR').drop(0);
-
-  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
-  cy.get('.ui-dropdown').contains('Diagnosis ID').click();
-  cy.get('.update-btn').eq(0).click();
-});
-
 then("there is an observation level box message with {string} dimension", (dimensionName) => {
   cy.get('label').contains(`for the ${dimensionName} there is an observation:`);
 });
+
+when("I select root dimension {string}", (dimensionName) => {
+  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
+  cy.get('.ui-dropdown').contains(dimensionName).click();
+});
+
+when("I select gender concept from CSR study", () => {
+  cy.get('input[placeholder="add criterion"]').eq(0).type('gender (\Public Studies\CSR')
+    .get('.ui-autocomplete-panel').eq(0).click();
+});
+
+then("concept constraint is wrapped into combination box", () => {
+  cy.get('label').contains('the Diagnosis ID is linked to a');
+  cy.get('label').contains('for the patient there is an observation:');
+  cy.get('.gb-concept-constraint-input').contains('02. Gender (\Public Studies\CSR\01. Patient information)');
+  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Diagnosis ID');
+  cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('patient');
+  cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('.ui-state-disabled');
+});
+
+
 
