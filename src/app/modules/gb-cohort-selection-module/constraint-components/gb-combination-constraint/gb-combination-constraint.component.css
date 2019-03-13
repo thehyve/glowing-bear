@@ -35,12 +35,21 @@
   padding: 0em 0.5em 0em 0.5em !important;
 }
 
-.gb-constraint-cohort-type-dropdown {
-  margin-left: 1.5em;
-}
-
 .gb-dimension-icon {
   margin-top: 0 !important;
   margin-left: 0 !important;
   width: 1em;
+}
+
+.gb-constraint-cohort-type-dropdown {
+  margin-left: 1.5em;
+}
+
+:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled {
+  opacity: 1;
+}
+
+:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-trigger,
+:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-label {
+  background-color: #f8f8f8;
 }

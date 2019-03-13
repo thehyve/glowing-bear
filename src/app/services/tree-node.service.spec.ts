@@ -320,7 +320,7 @@ describe('TreeNodeService', () => {
     expect(concept.name).toEqual('name');
     expect(concept.subjectDimensions.length).toEqual(0);
 
-    node['metadata']= {subject_dimension: 'bar'};
+    node['metadata'] = {subject_dimension: 'bar'};
     concept = treeNodeService.getConceptFromTreeNode(node);
     expect(concept.subjectDimensions.length).toEqual(1);
     expect(concept.subjectDimensions[0]).toEqual('bar');

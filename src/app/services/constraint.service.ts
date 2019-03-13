@@ -50,8 +50,8 @@ export class ConstraintService {
   private _conceptConstraints: Constraint[] = [];
 
   // List of all available cohort types
-  private _validDimensions: Dimension[] = [];
-  private _validDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
+  private _subjectDimensions: Dimension[] = [];
+  private _subjectDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
 
   /*
    * The maximum number of search results allowed when searching for a constraint
@@ -94,7 +94,7 @@ export class ConstraintService {
     this.resourceService.validDimensions
       .subscribe(
         (validDimensions: Dimension[]) => {
-          this.validDimensions = validDimensions;
+          this.subjectDimensions = validDimensions;
         });
   }
 
@@ -289,16 +289,16 @@ export class ConstraintService {
     this._maxNumSearchResults = value;
   }
 
-  get validDimensions(): Dimension[] {
-    return this._validDimensions;
+  get subjectDimensions(): Dimension[] {
+    return this._subjectDimensions;
   }
 
-  set validDimensions(values: Dimension[]) {
-    this._validDimensions = values;
-    this.validDimensionsUpdated.next(values);
+  set subjectDimensions(values: Dimension[]) {
+    this._subjectDimensions = values;
+    this.subjectDimensionsUpdated.next(values);
   }
 
-  get validDimensionsUpdated(): Subject<Dimension[]> {
-    return this._validDimensionsUpdated;
+  get subjectDimensionsUpdated(): Subject<Dimension[]> {
+    return this._subjectDimensionsUpdated;
   }
 }

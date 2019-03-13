@@ -102,10 +102,10 @@ describe('GbCombinationConstraintComponent', () => {
     component.constraint = new CombinationConstraint();
     let newDimension = 'test dimension';
     let spy1 = spyOn(component, 'update').and.callThrough();
-    let spy2 = spyOn(component, 'handleCohortTypeChange').and.callThrough();
+    let spy2 = spyOn(component, 'handleSelectedDimensionChange').and.callThrough();
 
     component.selectedDimension = newDimension;
-    component.onCohortTypeChange();
+    component.onSelectedDimensionChange();
 
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
@@ -124,7 +124,7 @@ describe('GbCombinationConstraintComponent', () => {
     (<CombinationConstraint>component.constraint).addChild(constraint2);
 
     component.selectedDimension = 'test dimension';
-    component.onCohortTypeChange();
+    component.onSelectedDimensionChange();
 
     expect((<CombinationConstraint>(<CombinationConstraint>component.constraint)
       .children[1]).dimension).toEqual(CombinationConstraint.TOP_LEVEL_DIMENSION);

@@ -9,6 +9,7 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {PedigreeConstraint} from './pedigree-constraint';
+import {ConceptConstraint} from './concept-constraint';
 
 export class CombinationConstraint extends Constraint {
 
@@ -109,4 +110,18 @@ export class CombinationConstraint extends Constraint {
     return clone;
   }
 
+  get restrictiveDimensions(): string[] {
+    let result = [];
+    let constraintsWithDimRestrictions = this.children.filter(constraint =>
+      constraint.className === 'ConceptConstraint'
+      && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
+    );
+    if (constraintsWithDimRestrictions.length > 0) {
+      result = (<ConceptConstraint>constraintsWithDimRestrictions[0]).concept.subjectDimensions;
+      constraintsWithDimRestrictions.forEach(constraint =>
+        result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
+      );
+    }
+    return result;
+  }
 }

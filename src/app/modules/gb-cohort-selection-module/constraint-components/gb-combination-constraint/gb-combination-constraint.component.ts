@@ -15,7 +15,6 @@ import {CombinationState} from '../../../../models/constraint-models/combination
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {Dimension} from '../../../../models/constraint-models/dimension';
 import {IconHelper} from '../../../../utilities/icon-helper';
 
 @Component({
@@ -33,12 +32,12 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   dimensions: SelectItem[];
   selectedDimension: string;
 
-  private static dimensionToDimensionOption(validDimensions: Dimension[]) {
+  private static dimensionToDimensionOption(subjectDimensions: string[]) {
     let dimensions = [];
-    for (let dim of validDimensions) {
+    for (let dim of subjectDimensions) {
       let ctype: SelectItem = {
-        label: dim.name,
-        value: dim.name
+        label: dim,
+        value: dim
       };
       dimensions.push(ctype);
     }
@@ -46,9 +45,9 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   ngOnInit(): void {
-    this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(this.constraintService.validDimensions);
-    this.constraintService.validDimensionsUpdated.asObservable().subscribe( validDimensions => {
-      this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(validDimensions);
+    this.updateDimensionDropdownOptions();
+    this.constraintService.subjectDimensionsUpdated.asObservable().subscribe(() => {
+      this.updateDimensionDropdownOptions();
       }
     );
     this.selectedDimension = (<CombinationConstraint>this.constraint).dimension;
@@ -68,6 +67,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
+    this.updateDimensionDropdownOptions();
     this.update();
   }
 
@@ -98,6 +98,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       // Add it as a new child
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
       combinationConstraint.addChild(newConstraint);
+      this.updateDimensionDropdownOptions();
 
       // Clear selection (for some reason, setting the model selectedConstraint
       // to null doesn't work)
@@ -117,13 +118,14 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
         (<CombinationConstraint>this.droppedConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
       }
       combinationConstraint.addChild(this.droppedConstraint);
+      this.updateDimensionDropdownOptions();
       this.update();
       this.droppedConstraint = null;
     }
   }
 
-  onCohortTypeChange() {
-    this.handleCohortTypeChange();
+  onSelectedDimensionChange() {
+    this.handleSelectedDimensionChange();
     this.update();
   }
 
@@ -146,8 +148,18 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
 
-  handleCohortTypeChange() {
+  handleSelectedDimensionChange() {
     (<CombinationConstraint>this.constraint).dimension = this.selectedDimension;
+  }
+
+  updateDimensionDropdownOptions() {
+    let restrictiveDimensions = (<CombinationConstraint>this.constraint).restrictiveDimensions;
+    if (restrictiveDimensions.length > 0) {
+      this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(restrictiveDimensions);
+    } else {
+      this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(
+        this.constraintService.subjectDimensions.map(sd => sd.name));
+    }
   }
 
   getDimensionIcon(dimension: string): string {
