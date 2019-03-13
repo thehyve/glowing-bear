@@ -114,6 +114,7 @@ export class CombinationConstraint extends Constraint {
     let result = [];
     let constraintsWithDimRestrictions = this.children.filter(constraint =>
       constraint.className === 'ConceptConstraint'
+      && (<ConceptConstraint>constraint).concept
       && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
     );
     if (constraintsWithDimRestrictions.length > 0) {

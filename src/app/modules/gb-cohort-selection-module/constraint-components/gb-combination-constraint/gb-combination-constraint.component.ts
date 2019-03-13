@@ -16,6 +16,7 @@ import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-
 import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {IconHelper} from '../../../../utilities/icon-helper';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -83,20 +84,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onSelect(selectedConstraint) {
     if (selectedConstraint != null) {
-      // Create a clone of the selected constraint
-      let newConstraint: Constraint = selectedConstraint.clone();
-
-      if (newConstraint.className === 'CombinationConstraint') {
-        // we don't want to clone a CombinationConstraint's children
-        (<CombinationConstraint>newConstraint).children = [];
-        (<CombinationConstraint>newConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
-      } else if (newConstraint.className === 'PedigreeConstraint') {
-        // we don't want to clone a PedigreeConstraint's right-hand-side constraint
-        (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
-      }
+      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+      let newConstraint = this.prepareChildConstraint(selectedConstraint, combinationConstraint.dimension);
 
       // Add it as a new child
-      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
       combinationConstraint.addChild(newConstraint);
       this.updateDimensionDropdownOptions();
 
@@ -107,6 +98,28 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     }
   }
 
+  private prepareChildConstraint(selectedConstraint, currentDimension: string): Constraint {
+    // Create a clone of the selected constraint
+    let newConstraint: Constraint = selectedConstraint.clone();
+
+    if (newConstraint.className === 'CombinationConstraint') {
+      // we don't want to clone a CombinationConstraint's children
+      (<CombinationConstraint>newConstraint).children = [];
+    } else if (newConstraint.className === 'PedigreeConstraint') {
+      // we don't want to clone a PedigreeConstraint's right-hand-side constraint
+      (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
+    } else if (newConstraint.className === 'ConceptConstraint') {
+      let restrictiveDimensions = (<ConceptConstraint>selectedConstraint).concept.subjectDimensions;
+      if (restrictiveDimensions.length > 0 && !restrictiveDimensions.includes(currentDimension)) {
+        // wrap into combination constraint if concept constraint is restricted to a different dimension
+        return new CombinationConstraint([newConstraint], null, restrictiveDimensions[0]);
+      }
+    }
+    return newConstraint;
+  }
+
+
+
   onDrop(event) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
@@ -114,9 +127,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      if (this.droppedConstraint.className === 'CombinationConstraint') {
-        (<CombinationConstraint>this.droppedConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
-      }
       combinationConstraint.addChild(this.droppedConstraint);
       this.updateDimensionDropdownOptions();
       this.update();

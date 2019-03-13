@@ -28,6 +28,7 @@ import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 import {Constraint} from '../../../../models/constraint-models/constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -112,7 +113,7 @@ describe('GbCombinationConstraintComponent', () => {
     expect((<CombinationConstraint>component.constraint).dimension).toBe(newDimension);
   });
 
-  it('should propagate selected cohort type', () => {
+  it('should not propagate selected cohort type on children combination constraint', () => {
     let constraint1 = new StudyConstraint();
     let constraint2 = new CombinationConstraint();
     let constraint21 = new ConceptConstraint();
@@ -148,6 +149,39 @@ describe('GbCombinationConstraintComponent', () => {
 
     component.constraint = constraint12;
     expect(component.subjectBoxMessage).toBe('the patient is linked to a');
+  });
+
+  it('should wrap concept constraint with combination when concept restricted to a dimensions', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+
+    let selectedConceptConstraint = new ConceptConstraint();
+    selectedConceptConstraint.concept = new Concept();
+    selectedConceptConstraint.concept.subjectDimensions.push('Biosource ID');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('CombinationConstraint');
+    expect((<CombinationConstraint>children[0]).dimension).toBe('Biosource ID');
+    expect((<CombinationConstraint>children[0]).children.length).toBe(1);
+    expect((<CombinationConstraint>children[0]).children[0].className).toBe('ConceptConstraint');
+  });
+
+  it('should not wrap concept constraint with combination when concept not restricted to dimensions', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+
+    let selectedConceptConstraint = new ConceptConstraint();
+    selectedConceptConstraint.concept = new Concept();
+    selectedConceptConstraint.concept.subjectDimensions.push('Diagnosis ID');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('ConceptConstraint');
   });
 
 });
