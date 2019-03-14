@@ -234,7 +234,7 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     } else if (rightHandSide.className !== 'TrueConstraint') {
       constraint.rightHandSideConstraint.addChild(rightHandSide);
     } else {
-      // FIXME: no restoring of other constraint types?
+      constraint.rightHandSideConstraint = new CombinationConstraint([rightHandSide]);
     }
     return constraint;
   }
@@ -302,7 +302,7 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
   }
 
   visitNullConstraint(constraintObject: TransmartNullConstraint): Constraint {
-    return undefined;
+    throw new Error(`Constraint type not supported: ${constraintObject.type}`);
   }
 
   visitSubSelectionConstraint(constraintObject: TransmartSubSelectionConstraint): CombinationConstraint {
@@ -311,7 +311,7 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
   }
 
   visitTemporalConstraint(constraintObject: TransmartTemporalConstraint): Constraint {
-    return undefined;
+    throw new Error(`Constraint type not supported: ${constraintObject.type}`);
   }
 
   visitTrueConstraint(constraintObject: TransmartTrueConstraint): Constraint {

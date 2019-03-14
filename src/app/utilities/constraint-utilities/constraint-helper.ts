@@ -21,7 +21,7 @@ export class ConstraintHelper {
    * @param {Constraint} constraint
    * @return {boolean} true if the constraint is a categorical concept constraint; false otherwise.
    */
-  public static isCategoricalConceptConstraint(constraint: Constraint): boolean {
+  static isCategoricalConceptConstraint(constraint: Constraint): boolean {
     if (constraint.className !== 'ConceptConstraint') {
       return false;
     }
@@ -38,7 +38,7 @@ export class ConstraintHelper {
    * @return {Constraint[][]} a list of lists with the length of the input list,
    * enumerating all combinations with an elements from the first list, one from the second list, etc.
    */
-  public static permuteConstraints(constraints: Constraint[][]): Constraint[][] {
+  static permuteConstraints(constraints: Constraint[][]): Constraint[][] {
     if (constraints.length < 1) {
       return [[]];
     }
@@ -62,7 +62,7 @@ export class ConstraintHelper {
    * @return {Constraint} True, if the list is empty, the contained element if it is singleton,
    * or a subject-level combination constraint otherwise.
    */
-  public static combineSubjectLevelConstraints(constraints: Constraint[]): Constraint {
+  static combineSubjectLevelConstraints(constraints: Constraint[]): Constraint {
     if (constraints.length < 1) {
       // empty list of patient level constraints
       return new TrueConstraint();
@@ -76,6 +76,23 @@ export class ConstraintHelper {
       constraints.forEach(child => combination.addChild(child));
       return combination;
     }
+  }
+
+  /**
+   * Ensures that the resulting constraint selects all patients related to the observations
+   * selected by observationConstraint.
+   * E.g., when the observationConstraint selects samples, the constraint is wrapped
+   * in a patient-level combination constraint.
+   *
+   * @param {Constraint} observationConstraint
+   * @return {Constraint}
+   */
+  static ensurePatientLevelConstraint(observationConstraint: Constraint): Constraint {
+    if (observationConstraint.className === 'CombinationConstraint' &&
+      (<CombinationConstraint>observationConstraint).dimension !== 'patient') {
+      return new CombinationConstraint([observationConstraint], CombinationState.And, 'patient');
+    }
+    return observationConstraint;
   }
 
   /**
@@ -121,7 +138,7 @@ export class ConstraintHelper {
    * Return a brief string representation of a constraint.
    * Note that not all constraint types are supported.
    */
-  public static brief(constraint: Constraint): string {
+  static brief(constraint: Constraint): string {
     // For a combination with one concept constraint, return the concept name
     if (constraint.className === 'CombinationConstraint') {
       let combiConstraint = <CombinationConstraint>constraint;

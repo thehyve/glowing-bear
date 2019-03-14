@@ -15,6 +15,9 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 
 
 @Injectable({
@@ -94,12 +97,13 @@ export class CountService {
   }
 
   updateAllCounts(constraint: Constraint) {
+    const patientLevelConstraint = ConstraintHelper.ensurePatientLevelConstraint(constraint);
     return new Promise((resolve, reject) => {
       forkJoin(
         this.resourceService.getCounts(constraint),
-        this.resourceService.getCountsPerStudy(constraint),
-        this.resourceService.getCountsPerStudyAndConcept(constraint),
-        this.resourceService.getCountsPerConcept(constraint)
+        this.resourceService.getCountsPerStudy(patientLevelConstraint),
+        this.resourceService.getCountsPerStudyAndConcept(patientLevelConstraint),
+        this.resourceService.getCountsPerConcept(patientLevelConstraint)
       ).subscribe(res => {
         this.allCohortsCount = res[0];
         this.selectedStudyCountMap = res[1];
