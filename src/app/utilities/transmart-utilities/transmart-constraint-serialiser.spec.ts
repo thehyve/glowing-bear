@@ -4,7 +4,7 @@ import {Concept} from '../../models/constraint-models/concept';
 import {ConceptType} from '../../models/constraint-models/concept-type';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {
-  TransmartAndConstraint,
+  TransmartAndConstraint, TransmartConceptConstraint,
   TransmartConstraint,
   TransmartRelationConstraint,
   TransmartSubSelectionConstraint,
@@ -16,6 +16,7 @@ import {ValueType} from '../../models/constraint-models/value-type';
 import {Operator} from '../../models/constraint-models/operator';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
+import deepEqual = require('deep-equal');
 
 describe('TransmartConstraintSerialiser', () => {
 
@@ -24,7 +25,7 @@ describe('TransmartConstraintSerialiser', () => {
   function testConstraint(constraint: Constraint, expected: TransmartConstraint) {
     const serialisedConstraint = JSON.parse(JSON.stringify(serialiser.visit(constraint)));
     const expectedConstraint = JSON.parse(JSON.stringify(expected));
-    if (JSON.stringify(serialisedConstraint) !== JSON.stringify(expectedConstraint)) {
+    if (!deepEqual(serialisedConstraint, expectedConstraint)) {
       console.error('Serialised', JSON.stringify(serialisedConstraint, null, 2));
       console.error('Expected', JSON.stringify(expectedConstraint, null, 2));
     }
@@ -297,6 +298,51 @@ describe('TransmartConstraintSerialiser', () => {
       ]
     };
     testConstraint(combination, expected);
+  });
+
+  it('should serialise pedigree constraints with attributes', () => {
+    const conceptConstraint = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = 'TEST';
+    conceptConstraint.concept = concept;
+    const combination = new CombinationConstraint([conceptConstraint], CombinationState.And, 'patient');
+    const pedigree = new PedigreeConstraint('parent');
+    pedigree.rightHandSideConstraint = combination;
+    let expected: TransmartRelationConstraint = {
+      type: 'relation',
+      relationTypeLabel: 'parent',
+      relatedSubjectsConstraint: {
+        type: 'concept',
+        conceptCode: 'TEST'
+      } as TransmartConceptConstraint
+    };
+    testConstraint(pedigree, expected);
+
+    pedigree.biological = true;
+    expected = {
+      type: 'relation',
+      relationTypeLabel: 'parent',
+      biological: true,
+      relatedSubjectsConstraint: {
+        type: 'concept',
+        conceptCode: 'TEST'
+      } as TransmartConceptConstraint
+    };
+    testConstraint(pedigree, expected);
+
+    pedigree.biological = false;
+    pedigree.shareHousehold = true;
+    expected = {
+      type: 'relation',
+      relationTypeLabel: 'parent',
+      biological: false,
+      shareHousehold: true,
+      relatedSubjectsConstraint: {
+        type: 'concept',
+        conceptCode: 'TEST'
+      } as TransmartConceptConstraint
+    };
+    testConstraint(pedigree, expected);
   });
 
 });

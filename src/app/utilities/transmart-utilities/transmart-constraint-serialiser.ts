@@ -215,13 +215,18 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
   }
 
   visitPedigreeConstraint(constraint: PedigreeConstraint): TransmartRelationConstraint {
-    return {
+    const result: TransmartRelationConstraint = {
       type: 'relation',
       relatedSubjectsConstraint: this.visit(constraint.rightHandSideConstraint),
-      relationTypeLabel: constraint.label,
-      biological: constraint.biological,
-      shareHousehold: constraint.shareHousehold
+      relationTypeLabel: constraint.label
+    };
+    if (constraint.biological !== undefined) {
+      result.biological = constraint.biological;
     }
+    if (constraint.shareHousehold !== undefined) {
+      result.shareHousehold = constraint.shareHousehold;
+    }
+    return result;
   }
 
   visitNegationConstraint(constraint: NegationConstraint): TransmartNegationConstraint {

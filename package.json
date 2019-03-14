@@ -51,6 +51,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.10.5",
     "@angular/cli": "^7.0.5",
+    "@types/deep-equal": "^1.0.1",
     "@types/jasmine": "2.5.47",
     "@types/node": "~6.0.60",
     "codecov": "^3.1.0",
@@ -58,6 +59,7 @@
     "cucumber": "^2.1.0",
     "cypress": "^3.1.5",
     "cypress-cucumber-preprocessor": "^1.9.1",
+    "deep-equal": "^1.0.1",
     "es6-promise": "^4.1.1",
     "jasmine-core": "~2.9.1",
     "jasmine-spec-reporter": "~3.2.0",
