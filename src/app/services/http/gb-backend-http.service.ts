@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpHelper} from 'app/utilities/http-helper';
 import {AppConfig} from '../../config/app.config';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {Observable} from 'rxjs';
 
 @Injectable({
@@ -40,7 +40,7 @@ export class GbBackendHttpService {
    * Get the queries that the current user has saved.
    * @returns {Observable<Query[]>}
    */
-  getQueries(): Observable<GbBackendQuery[]> {
+  getQueries(): Observable<CohortRepresentation[]> {
     const urlPart = `queries`;
     const responseField = 'queries';
     return this.httpHelper.getCall(urlPart, responseField);
@@ -48,10 +48,10 @@ export class GbBackendHttpService {
 
   /**
    * save a new query
-   * @param {GbBackendQuery} query
-   * @returns {Observable<GbBackendQuery>}
+   * @param {CohortRepresentation} query
+   * @returns {Observable<CohortRepresentation>}
    */
-  saveQuery(query: GbBackendQuery): Observable<GbBackendQuery> {
+  saveQuery(query: CohortRepresentation): Observable<CohortRepresentation> {
     const urlPart = `queries`;
     return this.httpHelper.postCall(urlPart, query, null);
   }

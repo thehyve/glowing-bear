@@ -98,4 +98,14 @@ export class SubjectSetConstraint extends Constraint {
   set requestConstraints(value: string) {
     this._requestConstraints = value;
   }
+
+  clone() {
+    const clone = new SubjectSetConstraint();
+    clone.id = this.id;
+    clone.patientIds = this.patientIds;
+    clone.subjectIds = this.subjectIds;
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

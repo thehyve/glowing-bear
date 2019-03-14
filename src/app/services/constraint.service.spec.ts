@@ -78,11 +78,9 @@ describe('ConstraintService', () => {
   it('should generate variables constraint', () => {
     let c1 = new Concept();
     c1.name = 'c1';
-    c1.path = 'c1_path';
     c1.selected = true;
     let c2 = new Concept();
     c2.name = 'c2';
-    c2.path = 'c2_path';
     c2.selected = true;
     let result = constraintService.variableConstraint([c1, c2]);
     expect(result).toEqual(jasmine.any(TrueConstraint));

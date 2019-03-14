@@ -20,7 +20,7 @@ import {TransmartCountItem} from '../../models/transmart-models/transmart-count-
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {GbBackendQuery} from '../../models/gb-backend-models/gb-backend-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';

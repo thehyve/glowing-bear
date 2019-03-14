@@ -17,7 +17,6 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
-import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 export interface ConstraintVisitor<T> {
 
@@ -42,7 +41,5 @@ export interface ConstraintVisitor<T> {
   visitTrialVisitConstraint(constraint: TrialVisitConstraint): T;
 
   visitTimeConstraint(constraint: TimeConstraint): T;
-
-  visitSubselectionConstraint(constraint: SubselectionConstraint): T;
 
 }

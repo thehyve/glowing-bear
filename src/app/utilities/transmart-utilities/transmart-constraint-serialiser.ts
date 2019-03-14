@@ -19,7 +19,24 @@ import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-c
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {AbstractConstraintVisitor} from '../constraint-utilities/abstract-constraint-visitor';
-import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
+import {
+  ExtendedConstraint,
+  TransmartCombinationConstraint,
+  TransmartConceptConstraint,
+  TransmartConstraint,
+  TransmartFieldConstraint,
+  TransmartNegationConstraint,
+  TransmartPatientSetConstraint,
+  TransmartRelationConstraint,
+  TransmartSubSelectionConstraint,
+  TransmartTimeConstraint,
+  TransmartTrueConstraint,
+  TransmartValueConstraint
+} from '../../models/transmart-models/transmart-constraint';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
+import {Operator, OperatorValues} from '../../models/constraint-models/operator';
+import {ValueType} from '../../models/constraint-models/value-type';
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -32,73 +49,94 @@ import {SubselectionConstraint} from '../../models/constraint-models/subselectio
  *
  * To serialise a constraint, use <code>serialiser.visit(constraint)</code>.
  */
-export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<object> {
+export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<TransmartConstraint> {
 
-  private _full: boolean;
+  private readonly _full: boolean;
+
+  /**
+   * This method is used to unwrap nested combination constraint
+   * with single child
+   * @param {TransmartConstraint} constraint
+   * @returns {TransmartConstraint}
+   */
+  static unWrapNestedQueryObject(constraint: TransmartConstraint): TransmartConstraint {
+    // If the query object is a combination constraint
+    if (constraint.type === 'and' || constraint.type === 'or') {
+      if (constraint['args'].length === 1) {
+        return this.unWrapNestedQueryObject(constraint['args'][0]);
+      } else {
+        return constraint;
+      }
+    } else {
+      return constraint;
+    }
+  }
+
+  /**
+   * Wrap a given query object with subselection clause
+   * @param {string} dimension
+   * @param {TransmartConstraint} constraint
+   * @returns {TransmartConstraint}
+   */
+  static wrapWithSubselection(dimension: string, constraint: TransmartConstraint): TransmartConstraint {
+    let queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
+    if (queryConstraint.type === 'true') {
+      return {'type': 'true'};
+    } else {
+      return {
+        type: 'subselection',
+        dimension: dimension,
+        constraint: queryConstraint
+      } as TransmartSubSelectionConstraint;
+    }
+  }
+
+  static convertOperator(operator: string): Operator {
+    if ((OperatorValues as string[]).includes(operator)) {
+      return <Operator>operator;
+    }
+    throw new Error(`Unknown operator: ${operator}`);
+  }
 
   constructor(full: boolean) {
     super();
     this._full = full;
   }
 
-  visitSubselectionConstraint(constraint: SubselectionConstraint) {
-    if (constraint.child.className === 'TrueConstraint') {
-      return {'type': 'true'};
-    } else {
-      const sub = {
-        'type': 'subselection',
-        'dimension': constraint.dimension,
-        'constraint': this.visit(constraint.child)
-      };
-      if (constraint.child.className === 'NegationConstraint') {
-        return {
-          'type': 'negation',
-          'arg': sub
-        };
-      } else {
-        return sub;
-      }
-    }
-  }
-
-  visitValueConstraint(constraint: ValueConstraint): object {
+  visitValueConstraint(constraint: ValueConstraint): TransmartValueConstraint {
     return {
       type: 'value',
       valueType: constraint.valueType,
-      operator: constraint.operator,
+      operator: TransmartConstraintSerialiser.convertOperator(constraint.operator),
       value: constraint.value
     }
   }
 
-  visitTrueConstraint(constraint: TrueConstraint): object {
+  visitTrueConstraint(constraint: TrueConstraint): TransmartTrueConstraint {
     return {type: 'true'};
   }
 
-  visitTrialVisitConstraint(constraint: TrialVisitConstraint): object {
-    let values: number[] = [];
-    for (let visit of constraint.trialVisits) {
-      values.push(Number(visit.id));
-    }
+  visitTrialVisitConstraint(constraint: TrialVisitConstraint): TransmartFieldConstraint {
+    const trialVisitIds = constraint.trialVisits.map(trialVisit => Number(trialVisit.id));
     return {
-      'type': 'field',
-      'field': {
-        'dimension': 'trial visit',
-        'fieldName': 'id',
-        'type': 'NUMERIC'
+      type: 'field',
+      field: {
+        dimension: 'trial visit',
+        fieldName: 'id',
+        type: ValueType.numeric
       },
-      'operator': 'in',
-      'value': values
+      operator: Operator.in,
+      value: trialVisitIds
     };
   }
 
-  visitTimeConstraint(constraint: TimeConstraint): object {
-    let result = null;
+  visitTimeConstraint(constraint: TimeConstraint): TransmartConstraint {
     // Operator
-    let operator = {
-      [DateOperatorState.BETWEEN]: '<-->',
-      [DateOperatorState.NOT_BETWEEN]: '<-->', // we'll negate it later
-      [DateOperatorState.BEFORE]: '<=',
-      [DateOperatorState.AFTER]: '>='
+    const operator: Operator = {
+      [DateOperatorState.BETWEEN]: Operator.between,
+      [DateOperatorState.NOT_BETWEEN]: Operator.between, // we'll negate it later
+      [DateOperatorState.BEFORE]: Operator.before,
+      [DateOperatorState.AFTER]: Operator.after
     }[constraint.dateOperator];
     // Values (dates)
     let values = [constraint.date1.getTime()];
@@ -112,27 +150,24 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
     // the 'value' dimension applies to the observations with actual date values
     let dimension = constraint.isObservationDate ? 'start time' : 'value';
     let fieldName = constraint.isObservationDate ? 'startDate' : 'numberValue';
-    result = {
+    const result: TransmartTimeConstraint = {
       type: 'time',
       field: {
         dimension: dimension,
         fieldName: fieldName,
-        type: 'DATE'
+        type: ValueType.date
       },
       operator: operator,
       values: values
     };
     // Wrap date constraint in a negation if required
     if (constraint.dateOperator === DateOperatorState.NOT_BETWEEN) {
-      result = {
-        type: 'negation',
-        arg: result
-      };
+      return new TransmartNegationConstraint(result);
     }
     return result;
   }
 
-  visitSubjectSetConstraint(constraint: SubjectSetConstraint): object {
+  visitSubjectSetConstraint(constraint: SubjectSetConstraint): TransmartPatientSetConstraint {
     let result = null;
     const type = 'patient_set';
     if (constraint.subjectIds.length > 0) {
@@ -154,15 +189,15 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
     return result;
   }
 
-  visitStudyConstraint(constraint: StudyConstraint): object {
+  visitStudyConstraint(constraint: StudyConstraint): TransmartConstraint {
     let result = null;
     if (constraint.studies.length !== 0) {
       // Construct query objects for all studies
       let childQueryObjects: Object[] = [];
       for (let study of constraint.studies) {
         childQueryObjects.push({
-          'type': 'study_name',
-          'studyId': study.id
+          type: 'study_name',
+          studyId: study.id
         });
       }
       if (childQueryObjects.length === 1) {
@@ -171,25 +206,30 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
       } else {
         // Wrap study query objects in 'or' constraint
         result = {
-          'type': 'or',
-          'args': childQueryObjects
+          type: 'or',
+          args: childQueryObjects
         };
       }
     }
     return result;
   }
 
-  visitPedigreeConstraint(constraint: PedigreeConstraint): object {
-    return {
+  visitPedigreeConstraint(constraint: PedigreeConstraint): TransmartRelationConstraint {
+    const result: TransmartRelationConstraint = {
       type: 'relation',
       relatedSubjectsConstraint: this.visit(constraint.rightHandSideConstraint),
-      relationTypeLabel: constraint.label,
-      biological: constraint.biological,
-      shareHousehold: constraint.shareHousehold
+      relationTypeLabel: constraint.label
+    };
+    if (constraint.biological !== undefined) {
+      result.biological = constraint.biological;
     }
+    if (constraint.shareHousehold !== undefined) {
+      result.shareHousehold = constraint.shareHousehold;
+    }
+    return result;
   }
 
-  visitNegationConstraint(constraint: NegationConstraint): object {
+  visitNegationConstraint(constraint: NegationConstraint): TransmartNegationConstraint {
     return {
       type: 'negation',
       arg: this.visit(constraint.constraint)
@@ -204,105 +244,120 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<obj
    * @param {ConceptConstraint} constraint
    * @returns {object}
    */
-  visitConceptConstraint(constraint: ConceptConstraint): object {
+  visitConceptConstraint(constraint: ConceptConstraint): TransmartConstraint {
     let result = null;
-    if (constraint.concept) {
-      let args = [];
-      let conceptObj = {
-        type: 'concept',
-        conceptCode: constraint.concept.code,
-      };
-      if (this._full) {
-        conceptObj['name'] = constraint.concept.name;
-        conceptObj['fullName'] = constraint.concept.fullName;
-        conceptObj['conceptPath'] = constraint.concept.path;
-        conceptObj['valueType'] = constraint.concept.type;
-      }
-      args.push(conceptObj);
+    if (!constraint.concept) {
+      throw new Error('Cannot serialise concept constraint without concept');
+    }
+    const args = [];
+    const conceptConstraint: TransmartConceptConstraint = {
+      type: 'concept',
+      conceptCode: constraint.concept.code,
+    };
+    args.push(conceptConstraint);
 
-      if (constraint.valueConstraints.length > 0) {
-        if (constraint.concept.type === 'NUMERIC') {
-          // Add numerical values directly to the main constraint
-          for (let val of constraint.valueConstraints) {
-            args.push(this.visit(val));
-          }
-        } else if (constraint.concept.type === 'CATEGORICAL') {
-          // Wrap categorical values in an OR constraint
-          let categorical = {
-            type: 'or',
-            args: constraint.valueConstraints.map((val: ValueConstraint) => this.visit(val))
-          };
-          if (categorical.args.length === 1) {
-            args.push(categorical.args[0]);
-          } else {
-            args.push(categorical);
-          }
+    if (constraint.valueConstraints.length > 0) {
+      if (constraint.concept.type === 'NUMERIC') {
+        // Add numerical values directly to the main constraint
+        for (let val of constraint.valueConstraints) {
+          args.push(this.visit(val));
         }
-      }
-      if (constraint.applyValDateConstraint) {
-        args.push(this.visit(constraint.valDateConstraint));
-      }
-      if (constraint.applyObsDateConstraint) {
-        let arg = this.visit(constraint.obsDateConstraint);
-        if (this._full) {
-          arg['isObservationDate'] = true;
-        }
-        args.push(arg);
-      }
-      if (constraint.applyTrialVisitConstraint) {
-        args.push(this.visit(constraint.trialVisitConstraint));
-      }
-      if (args.length === 1) {
-        result = args[0];
-      } else {
-        result = {
-          type: 'and',
-          args: args
+      } else if (constraint.concept.type === 'CATEGORICAL') {
+        // Wrap categorical values in an OR constraint
+        let categorical = {
+          type: 'or',
+          args: constraint.valueConstraints.map((val: ValueConstraint) => this.visit(val))
         };
+        if (categorical.args.length === 1) {
+          args.push(categorical.args[0]);
+        } else {
+          args.push(categorical);
+        }
+      } else {
+        throw new Error(`Concept type not supported: ${constraint.concept.type}`);
       }
     }
+    if (constraint.applyValDateConstraint) {
+      args.push(this.visit(constraint.valDateConstraint));
+    }
+    if (constraint.applyObsDateConstraint) {
+      args.push(this.visit(constraint.obsDateConstraint));
+    }
+    if (constraint.applyTrialVisitConstraint) {
+      args.push(this.visit(constraint.trialVisitConstraint));
+    }
+    if (args.length === 1) {
+      result = args[0];
+    } else {
+      result = {
+        type: 'and',
+        args: args
+      };
+    }
+    if (this._full) {
+      const fullConstraint = <ExtendedConstraint>result;
+      fullConstraint.name = constraint.concept.name;
+      fullConstraint.fullName = constraint.concept.fullName;
+      fullConstraint.valueType = constraint.concept.type;
+      result = fullConstraint;
+    }
     return result;
+  }
+
+  /**
+   * Collects all non-empty query objects of a combination constraint
+   * @param {CombinationConstraint} constraint
+   * @returns {TransmartConstraint[]}
+   */
+  private getNonEmptyChildObjects(constraint: CombinationConstraint): TransmartConstraint[] {
+    return constraint.children.reduce((result: TransmartConstraint[], child: Constraint) => {
+      const queryObject: TransmartConstraint = this.visit(child);
+      if (!queryObject) {
+        return result;
+      }
+      if (constraint.combinationState === CombinationState.And && queryObject.type === 'true') {
+        // skip 'true' for conjunctive constraints
+        return result;
+      }
+      if (constraint.combinationState === CombinationState.Or && queryObject.type === 'negation') {
+        const negatedConstraint = (<TransmartNegationConstraint>queryObject).arg;
+        if (negatedConstraint.type === 'true') {
+          // skip 'false' for disjunctive constraints
+          return result;
+        }
+      }
+      result.push(queryObject);
+      return result;
+    }, []);
   }
 
   /*
    * --------------------- combination constraint related methods ---------------------
    */
-  visitCombinationConstraint(constraint: CombinationConstraint): object {
-    let optConstraint = constraint.optimize();
-    if (optConstraint.className === 'CombinationConstraint') {
-      let combination: CombinationConstraint = <CombinationConstraint>optConstraint;
-      let result = null;
-      // Collect children query objects
-      // let childQueryObjects: Object[] = this.getNonEmptyChildObjects(combination);
-      if (combination.children.length > 0) {
-        if (combination.isDimensionSubselectionRequired) {
-          if (combination.children.length === 1) {
-            result = this.visit(new SubselectionConstraint(combination.dimension, combination.children[0]))
-          } else {
-            result = {
-              type: combination.combinationState === CombinationState.And ? 'and' : 'or',
-              args: combination.children.map(child =>
-                this.visit(new SubselectionConstraint(combination.dimension, child)))
-            }
-          }
-
-        } else {
-          if (combination.children.length === 1) {
-            result = this.visit(combination.children[0]);
-          } else {
-            // Wrap in and/or constraint
-            result = {
-              type: combination.combinationState === CombinationState.And ? 'and' : 'or',
-              args: combination.children.map(child =>
-                this.visit(child))
-            };
-          }
-        }
+  visitCombinationConstraint(constraint: CombinationConstraint): TransmartConstraint {
+    const dimension = constraint.dimension;
+    // Collect children query objects
+    const children = this.getNonEmptyChildObjects(constraint);
+    const parentDimension = constraint.parentConstraint ? (<CombinationConstraint>constraint.parentConstraint).dimension : null;
+    if (children.length === 1) {
+      if (!parentDimension && dimension === 'patient') {
+        // Subselection not required for singleton patient-level combinations at the top level
+        return children[0];
       }
-      return result;
-    } else {
-      return this.visit(optConstraint);
     }
+    let args = children.map(child => {
+      if (parentDimension === dimension && child.type === 'subselection') {
+        // Subselection not required if the dimension equals the parent dimension and the child is a subselection
+        return child;
+      } else {
+        return TransmartConstraintSerialiser.wrapWithSubselection(dimension, child);
+      }
+    });
+    const result = {
+      type: constraint.combinationState === CombinationState.And ? 'and' : 'or',
+      args: args
+    } as TransmartCombinationConstraint;
+    return new TransmartConstraintRewriter().visit(result);
   }
 
 }

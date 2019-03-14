@@ -29,7 +29,6 @@ import {AuthenticationServiceMock} from '../../../../services/mocks/authenticati
 describe('GbStudyConstraintComponent', () => {
   let component: GbStudyConstraintComponent;
   let fixture: ComponentFixture<GbStudyConstraintComponent>;
-  let constraintService: ConstraintService;
   let treeNodeService: TreeNodeService;
   let studyService: StudyService;
 
@@ -68,7 +67,6 @@ describe('GbStudyConstraintComponent', () => {
       ]
     })
       .compileComponents();
-    constraintService = TestBed.get(ConstraintService);
     treeNodeService = TestBed.get(TreeNodeService);
     studyService = TestBed.get(StudyService);
   }));
@@ -95,7 +93,7 @@ describe('GbStudyConstraintComponent', () => {
     expect(spy1).toHaveBeenCalled();
     expect(component.searchResults.length).toBe(2);
     expect(component.searchResults[0].id).toBe('s1')
-  })
+  });
 
   it('should handle the drop of a study constraint', () => {
     let studyConstraint1 = new StudyConstraint();
@@ -104,7 +102,7 @@ describe('GbStudyConstraintComponent', () => {
     let studyConstraint2 = new StudyConstraint();
     let study2 = new Study(); study2.id = 'id2';
     studyConstraint2.studies = [study2];
-    let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
+    let spy1 = spyOn(treeNodeService, 'generateConstraintFromTreeNode').and.returnValue(studyConstraint1);
     treeNodeService.selectedTreeNode = {};
     component.constraint = studyConstraint2;
     let e = new DragEvent('drag');
@@ -115,10 +113,10 @@ describe('GbStudyConstraintComponent', () => {
     treeNodeService.selectedTreeNode = {};
     component.onDrop(e);
     expect((<StudyConstraint>component.constraint).studies.length).toEqual(2);
-  })
+  });
 
   it('should handle dropped constraint being null', () => {
-    let spy1 = spyOn(constraintService, 'generateConstraintFromTreeNode').and.returnValue(null);
+    let spy1 = spyOn(treeNodeService, 'generateConstraintFromTreeNode').and.returnValue(null);
     treeNodeService.selectedTreeNode = {};
     let studyConstraint2 = new StudyConstraint();
     let study2 = new Study(); study2.id = 'id2';
@@ -127,7 +125,7 @@ describe('GbStudyConstraintComponent', () => {
     let e = new DragEvent('drag');
     component.onDrop(e);
     expect((<StudyConstraint>component.constraint).studies.length).toEqual(1);
-  })
+  });
 
   it('should search studies', () => {
     let event = {
@@ -147,6 +145,6 @@ describe('GbStudyConstraintComponent', () => {
     event.query = '';
     component.onSearch(event);
     expect(component.searchResults.length).toEqual(3);
-  })
+  });
 
 });

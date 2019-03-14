@@ -38,6 +38,7 @@ import {StudyService} from '../../../../services/study.service';
 import {throwError} from 'rxjs/internal/observable/throwError';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
+import {Operator} from '../../../../models/constraint-models/operator';
 
 describe('GbConceptConstraintComponent', () => {
   let component: GbConceptConstraintComponent;
@@ -126,7 +127,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy3).toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).not.toHaveBeenCalled();
-  })
+  });
 
 
   it('should initialize the categorical concept constraint', () => {
@@ -142,7 +143,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).toHaveBeenCalled();
     expect(spy5).not.toHaveBeenCalled();
-  })
+  });
 
   it('should initialize the date concept constraint', () => {
     let constraint = new ConceptConstraint();
@@ -157,7 +158,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).toHaveBeenCalled();
-  })
+  });
 
   it('should not initialize the constraint when it is not numerical, categorical or date', () => {
     let constraint = new ConceptConstraint();
@@ -172,7 +173,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(spy3).not.toHaveBeenCalled();
     expect(spy4).not.toHaveBeenCalled();
     expect(spy5).not.toHaveBeenCalled();
-  })
+  });
 
   it('should handle resource service errors during initialization', () => {
     let constraint = new ConceptConstraint();
@@ -187,7 +188,7 @@ describe('GbConceptConstraintComponent', () => {
     });
     component.initializeConstraints();
     expect(spy).toHaveBeenCalledTimes(2);
-  })
+  });
 
   it('should handle numeric aggregate response', () => {
     let constraint = new ConceptConstraint();
@@ -202,16 +203,16 @@ describe('GbConceptConstraintComponent', () => {
 
 
     let val1 = new ValueConstraint();
-    val1.operator = '>';
+    val1.operator = <Operator>'>';
     val1.value = 11;
     let val2 = new ValueConstraint();
-    val2.operator = '<';
+    val2.operator = <Operator>'<';
     val2.value = 100;
     let val3 = new ValueConstraint();
-    val3.operator = '=';
+    val3.operator = <Operator>'=';
     val3.value = 15;
     let val4 = new ValueConstraint();
-    val4.operator = 'other';
+    val4.operator = <Operator>'other';
     val4.value = 16;
     constraint.valueConstraints = [
       val1, val2, val3, val4
@@ -221,7 +222,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(component.maxVal).toEqual(100);
     expect(component.equalVal).toEqual(15);
     expect(component.operatorState).toEqual(GbConceptOperatorState.EQUAL);
-  })
+  });
 
   it('should handle categorical aggregate response', () => {
     let constraint = new ConceptConstraint();
@@ -240,7 +241,7 @@ describe('GbConceptConstraintComponent', () => {
     constraint.valueConstraints = [val];
     component.handleCategoricalAggregate(response);
     expect(component.selectedCategories[0]).toEqual('bar');
-  })
+  });
 
   it('should handle date aggregate response', () => {
     let constraint = new ConceptConstraint();
@@ -261,7 +262,7 @@ describe('GbConceptConstraintComponent', () => {
     component.handleDateAggregate(response);
     expect(component.valDate1.getTime()).toEqual(1434664800000);
     expect(component.valDate2.getTime()).toEqual(1529584961623);
-  })
+  });
 
   it('should update concept values', () => {
     let constraint = new ConceptConstraint();
@@ -285,7 +286,7 @@ describe('GbConceptConstraintComponent', () => {
     constraint.concept.type = ConceptType.DATE;
     component.updateConceptValues();
     expect(spy3).toHaveBeenCalledTimes(1);
-  })
+  });
 
   it('should set selected concept', () => {
     let oldConcept = new Concept();
@@ -299,7 +300,7 @@ describe('GbConceptConstraintComponent', () => {
     expect((<ConceptConstraint>component.constraint).concept).toBe(newConcept);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
-  })
+  });
 
   it('should set observation dates', () => {
     let dummy = new Date();
@@ -320,13 +321,12 @@ describe('GbConceptConstraintComponent', () => {
     invalidDummy = undefined;
     component.obsDate2 = invalidDummy;
     expect(component.obsDate2).toBe(dummy);
-  })
+  });
 
   it('should search and find intended concepts', () => {
     let c = new Concept();
-    c.path = 'test path';
+    c.fullName = ' This is a tESt  ';
     let c1 = new Concept();
-    c1.path = 'other path';
     let dummies = [c, c1];
     let e = {
       query: 'some query'
@@ -336,11 +336,12 @@ describe('GbConceptConstraintComponent', () => {
     expect(component.searchResults.length).toEqual(0);
     e.query = 'tESt';
     component.onSearch(e);
+    expect(component.searchResults.length).toEqual(1);
     expect(component.searchResults[0]).toEqual(c);
     e.query = '';
     component.onSearch(e);
     expect(component.searchResults.length).toEqual(2);
-  })
+  });
 
   it('should handle drop down', () => {
     let c = new Concept();
@@ -356,7 +357,7 @@ describe('GbConceptConstraintComponent', () => {
     component.onDropdown(e);
     expect(component.searchResults.length).toBe(1);
     expect(spy).toHaveBeenCalled();
-  })
+  });
 
   it('should update numeric concept values', () => {
     let constraint = new ConceptConstraint();
@@ -410,7 +411,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(constraint.valueConstraints.length).toEqual(2);
     expect(constraint.valueConstraints[0].operator).toEqual('>=');
     expect(constraint.valueConstraints[1].operator).toEqual('<=');
-  })
+  });
 
   it('should update categorical concept values', () => {
     component.selectedCategories = ['a', 'b', FormatHelper.nullValuePlaceholder];
@@ -419,7 +420,7 @@ describe('GbConceptConstraintComponent', () => {
     component.constraint = constraint;
     component.updateCategoricalConceptValues();
     expect(constraint.valueConstraints.length).toBe(3);
-  })
+  });
 
   it('should update date concept values', () => {
     let constraint = new ConceptConstraint();
@@ -435,7 +436,7 @@ describe('GbConceptConstraintComponent', () => {
     component.valDate2 = new Date('2018-06-06');
     component.updateDateConceptValues();
     expect(constraint.valDateConstraint.date2.getTime()).toEqual(1528250400000);
-  })
+  });
 
   it('should check the states of the concept component', () => {
     let c: Concept = new Concept();
@@ -452,7 +453,7 @@ describe('GbConceptConstraintComponent', () => {
     expect(component.isNumeric()).toBe(false);
     expect(component.isCategorical()).toBe(false);
     expect(component.isDate()).toBe(true);
-  })
+  });
 
   it('should return false when concept is absent in constraint', () => {
     (<ConceptConstraint>component.constraint).concept = null;

@@ -63,6 +63,7 @@ export class Cohort {
     this.bookmarked = false;
     this.selected = false;
     this.controlsEnabled = true;
+    this.subscribed = false;
     this.subscriptionFreq = CohortSubscriptionFrequency.WEEKLY;
     this.subscriptionCollapsed = true;
     this.diffRecords = [];

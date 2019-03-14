@@ -68,28 +68,6 @@ export class TransmartMapper {
     return study;
   }
 
-  private static parseTransmartQueryBlobDataTable(queryBlob: object): DataTable {
-    let dataTable: DataTable = null;
-
-    if (queryBlob && queryBlob['dataTableState']) {
-      const transmartTableState: TransmartTableState = queryBlob['dataTableState'];
-      dataTable = new DataTable();
-      if (transmartTableState.columnDimensions) {
-        transmartTableState.columnDimensions.forEach(colName => {
-          let dimension: TableDimension = new TableDimension(colName);
-          dataTable.columnDimensions.push(dimension);
-        });
-      }
-      if (transmartTableState.rowDimensions) {
-        transmartTableState.rowDimensions.forEach(rowName => {
-          let dimension: TableDimension = new TableDimension(rowName);
-          dataTable.rowDimensions.push(dimension);
-        });
-      }
-    }
-    return dataTable;
-  }
-
   public static mapTransmartCountItem(tmCountItem: TransmartCountItem): CountItem {
     return new CountItem(tmCountItem.patientCount, tmCountItem.observationCount);
   }

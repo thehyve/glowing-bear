@@ -37,12 +37,12 @@ export class ConstraintServiceMock {
     return this._constraint;
   }
 
-  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
-    return this._constraint;
-  }
-
   public searchAllConstraints(query: string): Constraint[] {
     return [];
+  }
+
+  public cohortSelectionConstraint(): Constraint {
+    return this._constraint;
   }
 
   get allConstraints(): Constraint[] {

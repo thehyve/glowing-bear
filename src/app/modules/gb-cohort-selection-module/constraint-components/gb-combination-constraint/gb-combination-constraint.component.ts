@@ -58,10 +58,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.selectedDimension = (<CombinationConstraint>this.constraint).dimension;
   }
 
-  get isAnd(): boolean {
-    return (<CombinationConstraint>this.constraint).isAnd();
-  }
-
   get children(): Constraint[] {
     return (<CombinationConstraint>this.constraint).children;
   }
@@ -87,16 +83,15 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onSelect(selectedConstraint) {
     if (selectedConstraint != null) {
-      // Create a copy of the selected constraint
-      let newConstraint: Constraint = new selectedConstraint.constructor();
-      Object.assign(newConstraint, this.selectedConstraint);
+      // Create a clone of the selected constraint
+      let newConstraint: Constraint = selectedConstraint.clone();
 
       if (newConstraint.className === 'CombinationConstraint') {
-        // we don't want to copy a CombinationConstraint's children
+        // we don't want to clone a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
         (<CombinationConstraint>newConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
       } else if (newConstraint.className === 'PedigreeConstraint') {
-        // we don't want to copy a PedigreeConstraint's right-hand-side constraint
+        // we don't want to clone a PedigreeConstraint's right-hand-side constraint
         (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
       }
 
@@ -114,8 +109,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   onDrop(event) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode);
+    this.droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;

@@ -19,6 +19,7 @@ import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 import {TransmartPackerJobParameters} from '../../models/transmart-packer-models/transmart-packer-job-parameters';
+import {ConstraintHelper} from '../../utilities/constraint-utilities/constraint-helper';
 
 
 @Injectable({
@@ -79,6 +80,9 @@ export class TransmartPackerHttpService {
   /**
    * Create and run an export job for the current user, with a given name
    *
+   * FIXME: There should be different constraints for the subjects and for the
+   * combination of subjects and variables.
+   *
    * @param {string} jobName
    * @param {Constraint} targetConstraint
    * @returns {Observable<ExportJob>}
@@ -88,7 +92,8 @@ export class TransmartPackerHttpService {
     const responseField = 'job';
 
     let packerJobParameters = new TransmartPackerJobParameters();
-    packerJobParameters.constraint = TransmartConstraintMapper.mapConstraintOnPatientLevel(targetConstraint);
+    packerJobParameters.constraint = TransmartConstraintMapper.mapConstraint(
+      ConstraintHelper.ensurePatientLevelConstraint(targetConstraint));
     packerJobParameters.custom_name = jobName;
     packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(targetConstraint);
 

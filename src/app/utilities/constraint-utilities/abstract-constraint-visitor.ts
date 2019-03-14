@@ -18,11 +18,13 @@ import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-c
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
 import {StudyConstraint} from '../../models/constraint-models/study-constraint';
-import {SubselectionConstraint} from '../../models/constraint-models/subselection-constraint';
 
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
   visit(constraint: Constraint): T {
+    if (constraint === null || constraint === undefined) {
+      return null;
+    }
     if (constraint.negated) {
       let constraintCopy = Object.create(constraint);
       constraintCopy.negated = false;
@@ -52,8 +54,6 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
         return this.visitTrialVisitConstraint(<TrialVisitConstraint>constraint);
       case 'TimeConstraint':
         return this.visitTimeConstraint(<TimeConstraint>constraint);
-      case 'SubselectionConstraint':
-        return this.visitSubselectionConstraint(<SubselectionConstraint>constraint);
       default:
         throw new Error(`Unsupported constraint type: ${constraint.className}`);
     }
@@ -78,7 +78,5 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
   abstract visitTrialVisitConstraint(constraint: TrialVisitConstraint): T;
 
   abstract visitTimeConstraint(constraint: TimeConstraint): T;
-
-  abstract visitSubselectionConstraint(constraint: SubselectionConstraint): T;
 
 }

@@ -8,7 +8,7 @@ import {CombinationConstraint} from './combination-constraint';
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class Constraint {
+export abstract class Constraint {
 
   // The textual representation of this constraint
   protected _textRepresentation: string;
@@ -17,7 +17,7 @@ export class Constraint {
   // The negation flag indicating whether to add a logical negation to the constraints
   protected _negated: boolean;
 
-  constructor() {
+  protected constructor() {
     this.textRepresentation = '';
     this.parentConstraint = null;
     this.negated = false;
@@ -70,4 +70,11 @@ export class Constraint {
   get className(): string {
     return 'Constraint';
   }
+
+  /**
+   * Creates a deep clone of the constraint that can be edited independently.
+   * @return {Constraint}
+   */
+  abstract clone(): Constraint;
+
 }

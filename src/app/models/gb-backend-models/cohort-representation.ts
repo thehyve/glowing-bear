@@ -7,33 +7,39 @@
  */
 
 import {CohortSubscriptionFrequency} from '../cohort-models/cohort-subscription-frequency';
+import {TransmartConstraint} from '../transmart-models/transmart-constraint';
+
+export class CohortBlob {
+  queryConstraintFull: TransmartConstraint;
+}
 
 /**
  * Representation of a query model returned from gb-backend
  */
-export class GbBackendQuery {
+export class CohortRepresentation {
 
-  public id?: string;
-  public name?: string;
+  id?: string;
+  name?: string;
+  description?: string;
   // The date of the query creation
-  public createDate?: string;
+  createDate?: string;
   // The date of a last query update
-  public updateDate?: string;
+  updateDate?: string;
   // Indicate if the set is bookmarked
-  public bookmarked?: boolean;
+  bookmarked?: boolean;
   // The patient constraint part of the query
-  public queryConstraint?: object;
-  // Additional information about the query, e.g. a data table state
-  public queryBlob?: object;
+  queryConstraint?: TransmartConstraint;
+  // Additional information about the query, e.g. tree nodes information
+  queryBlob?: CohortBlob;
   // Rest API version
-  public apiVersion?: string;
+  apiVersion?: string;
   // Indicate if the set is subscribed
-  public subscribed?: boolean;
+  subscribed?: boolean;
   // The frequency of the subscription: daily or monthly
-  public subscriptionFreq?: CohortSubscriptionFrequency;
+  subscriptionFreq?: CohortSubscriptionFrequency;
   // Type of the cohort, specifies a subject dimension that the cohort is related to
   // and (optionally) the type of subjects for the subscription
-  public subjectDimension: string;
+  subjectDimension: string;
 
   constructor(queryName: string, subjectDimension: string) {
     this.name = queryName;
@@ -41,4 +47,5 @@ export class GbBackendQuery {
     this.bookmarked = false;
     this.subscribed = false;
   }
+
 }

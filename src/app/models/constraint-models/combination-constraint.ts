@@ -9,7 +9,6 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {PedigreeConstraint} from './pedigree-constraint';
-import {TrueConstraint} from './true-constraint';
 
 export class CombinationConstraint extends Constraint {
 
@@ -100,28 +99,14 @@ export class CombinationConstraint extends Constraint {
     this._dimension = value;
   }
 
-  get isDimensionSubselectionRequired(): boolean {
-    return this.parentConstraint && this.parentConstraint.className === 'CombinationConstraint'
-      && this.dimension !== (<CombinationConstraint>this.parentConstraint).dimension
-      || this.isRoot;
+  clone(): CombinationConstraint {
+    const clone = new CombinationConstraint(
+      this.children.map(child => child.clone()),
+      this.combinationState,
+      this.dimension
+    );
+    clone.negated = this.negated;
+    return clone;
   }
 
-  get isCombinationLevelRedundant(): boolean {
-    return this.children.length === 1
-      && !this.children[0].negated
-      && this.children[0].className === 'CombinationConstraint'
-      && this.dimension === (<CombinationConstraint>this.children[0]).dimension;
-  }
-
-  optimize(): Constraint {
-    if (this.children.length > 0) {
-      if (this.isCombinationLevelRedundant) {
-        return (<CombinationConstraint>this.children[0]).optimize();
-      } else {
-        return this;
-      }
-    } else {
-      return new TrueConstraint();
-    }
-  }
 }
