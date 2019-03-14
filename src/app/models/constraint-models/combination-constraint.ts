@@ -112,16 +112,20 @@ export class CombinationConstraint extends Constraint {
 
   get restrictiveDimensions(): string[] {
     let result = [];
-    let constraintsWithDimRestrictions = this.children.filter(constraint =>
-      constraint.className === 'ConceptConstraint'
-      && (<ConceptConstraint>constraint).concept
-      && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
-    );
-    if (constraintsWithDimRestrictions.length > 0) {
-      result = (<ConceptConstraint>constraintsWithDimRestrictions[0]).concept.subjectDimensions;
-      constraintsWithDimRestrictions.forEach(constraint =>
-        result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
+    if (this.children.filter(constraint => constraint.className === 'PedigreeConstraint').length > 0) {
+      return [CombinationConstraint.TOP_LEVEL_DIMENSION];
+    } else {
+      let constraintsWithConceptDimRestrictions = this.children.filter(constraint =>
+        constraint.className === 'ConceptConstraint'
+        && (<ConceptConstraint>constraint).concept
+        && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
       );
+      if (constraintsWithConceptDimRestrictions.length > 0) {
+        result = (<ConceptConstraint>constraintsWithConceptDimRestrictions[0]).concept.subjectDimensions;
+        constraintsWithConceptDimRestrictions.forEach(constraint =>
+          result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
+        );
+      }
     }
     return result;
   }

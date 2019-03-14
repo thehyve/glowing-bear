@@ -107,22 +107,30 @@ then("there is an observation level box message with {string} dimension", (dimen
 });
 
 when("I select root dimension {string}", (dimensionName) => {
-  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
+  cy.get('.gb-constraint-dimension-dropdown').get('.ui-dropdown').click();
   cy.get('.ui-dropdown').contains(dimensionName).click();
 });
 
 when("I select gender concept from CSR study", () => {
-  cy.get('input[placeholder="add criterion"]').eq(0).type('gender (\Public Studies\CSR')
+  cy.get('input[placeholder="add criterion"]').eq(0).type('gender (\\Public Studies\\CSR')
     .get('.ui-autocomplete-panel').eq(0).click();
 });
 
 then("concept constraint is wrapped into combination box", () => {
   cy.get('label').contains('the Diagnosis ID is linked to a');
   cy.get('label').contains('for the patient there is an observation:');
-  cy.get('.gb-concept-constraint-input').contains('02. Gender (\Public Studies\CSR\01. Patient information)');
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Diagnosis ID');
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('patient');
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('.ui-state-disabled');
+  cy.get('.gb-concept-constraint-input ').eq(0);
+  cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('Diagnosis ID');
+  cy.get('.gb-constraint-dimension-dropdown').eq(1).contains('patient');
+  cy.get('.gb-constraint-dimension-dropdown')
+    .get('.ui-dropdown').eq(1).should('have.class', 'ui-state-disabled');
+});
+
+when("the root dimension and box descriptions for pedigree constraint are correct", () => {
+  cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('patient');
+  cy.get('.gb-constraint-container').eq(0).should('not.have.class', 'gb-constraint-dimension-dropdown');
+  cy.get('.gb-constraint-container').eq(0).children('gb-combination-constraint')
+    .should('not.have.class', 'gb-constraint-dimension-dropdown');
 });
 
 

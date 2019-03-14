@@ -106,4 +106,9 @@ export class GbConstraintComponent implements OnInit {
     }
   }
 
+  get showObservationBoxMessage(): boolean {
+    return !this.isRoot && this.constraint.className !== 'CombinationConstraint'
+      && this.constraint.className !== 'PedigreeConstraint'
+  }
+
 }

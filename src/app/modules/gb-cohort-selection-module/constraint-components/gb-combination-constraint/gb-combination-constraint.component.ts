@@ -108,6 +108,9 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     } else if (newConstraint.className === 'PedigreeConstraint') {
       // we don't want to clone a PedigreeConstraint's right-hand-side constraint
       (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
+      if ((<CombinationConstraint>this.constraint).dimension !== CombinationConstraint.TOP_LEVEL_DIMENSION) {
+        return new CombinationConstraint([newConstraint]);
+      }
     } else if (newConstraint.className === 'ConceptConstraint') {
       let restrictiveDimensions = (<ConceptConstraint>selectedConstraint).concept.subjectDimensions;
       if (restrictiveDimensions.length > 0 && !restrictiveDimensions.includes(currentDimension)) {
@@ -187,6 +190,12 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
         return `the ${parentDimension} is linked to a`;
       }
     }
+  }
+
+  get hideDimensionDropdown(): boolean {
+    return !(<CombinationConstraint>this.constraint).isRoot
+      && this.constraint.parentConstraint
+      && this.constraint.parentConstraint.className === 'PedigreeConstraint'
   }
 
 }

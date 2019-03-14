@@ -1,6 +1,7 @@
 import {CombinationConstraint} from './combination-constraint';
 import {ConceptConstraint} from './concept-constraint';
 import {Concept} from './concept';
+import {PedigreeConstraint} from './pedigree-constraint';
 
 describe('CombinationConstraint', () => {
 
@@ -39,6 +40,11 @@ describe('CombinationConstraint', () => {
     combinationConstraint.children = [];
     combinationConstraint.addChild(combinationConstraint2);
     expect(combinationConstraint.restrictiveDimensions).toEqual([]);
+
+    let pedigreeConstraint = new PedigreeConstraint('PAR');
+    combinationConstraint.children = [];
+    combinationConstraint.addChild(pedigreeConstraint);
+    expect(combinationConstraint.restrictiveDimensions).toEqual(['patient']);
   });
 
 });

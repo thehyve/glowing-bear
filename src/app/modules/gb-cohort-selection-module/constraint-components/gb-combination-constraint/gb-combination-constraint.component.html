@@ -1,6 +1,6 @@
 <div class="gb-combination-constraint-container" (drop)="onDrop($event)">
 
-  <div class="form-inline gb-constraint-cohort-type-dropdown">
+  <div *ngIf="!hideDimensionDropdown" class="form-inline gb-constraint-dimension-dropdown">
     <label>{{subjectBoxMessage}}</label>
     <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension"
                 [disabled]="dimensions.length === 1"

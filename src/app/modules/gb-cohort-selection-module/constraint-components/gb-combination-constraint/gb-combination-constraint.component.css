@@ -41,15 +41,15 @@
   width: 1em;
 }
 
-.gb-constraint-cohort-type-dropdown {
+.gb-constraint-dimension-dropdown {
   margin-left: 1.5em;
 }
 
-:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled {
+:host >>> .gb-constraint-dimension-dropdown .ui-state-disabled {
   opacity: 1;
 }
 
-:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-trigger,
-:host >>> .gb-constraint-cohort-type-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-label {
+:host >>> .gb-constraint-dimension-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-trigger,
+:host >>> .gb-constraint-dimension-dropdown .ui-state-disabled.ui-dropdown .ui-dropdown-label {
   background-color: #f8f8f8;
 }

@@ -19,7 +19,7 @@
     </button>
   </div>
 
-  <div *ngIf="!isRoot && constraint.className !== 'CombinationConstraint'" class="form-inline">
+  <div *ngIf="showObservationBoxMessage" class="form-inline">
     <label>{{observationBoxMessage}}</label>
   </div>
   <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "

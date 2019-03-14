@@ -29,6 +29,7 @@ import {AuthenticationService} from '../../../../services/authentication/authent
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -182,6 +183,21 @@ describe('GbCombinationConstraintComponent', () => {
     let children = (<CombinationConstraint>component.constraint).children;
     expect(children.length).toBe(1);
     expect(children[0].className).toBe('ConceptConstraint');
+  });
+
+  it('should wrap pedigree constraint with patient-level combination', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+    let selectedConceptConstraint = new PedigreeConstraint('PAR');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('CombinationConstraint');
+    expect((<CombinationConstraint>children[0]).dimension).toBe('patient');
+    expect((<CombinationConstraint>children[0]).children.length).toBe(1);
+    expect((<CombinationConstraint>children[0]).children[0].className).toBe('PedigreeConstraint');
   });
 
 });

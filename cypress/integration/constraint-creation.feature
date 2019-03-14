@@ -22,6 +22,7 @@ Feature: create constraints by selecting nodes from the tree
     When I use negated pedigree constraint 'Parent of' with concept 'Is a Twin' and negated concept 'Number of children that are multiplet'
     Then there are '1,355' subjects
     And constraint panel containing 'Parent of ' is negated
+    And the root dimension and box descriptions for pedigree constraint are correct
 
   Scenario: create a study restricted categorical constraint
     Given I am on the cohort-selection tab
@@ -47,7 +48,7 @@ Feature: create constraints by selecting nodes from the tree
 
   Scenario: create a dimension-restricted concept constraint
     Given I am on the cohort-selection tab
-    When I select root dimension 'Biomaterial ID'
+    When I select root dimension 'Diagnosis ID'
     And I select gender concept from CSR study
     Then concept constraint is wrapped into combination box
 
