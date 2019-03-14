@@ -92,7 +92,7 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       if (this.isDirty) {
         this.isUpdatingCurrent = true;
-        let constraint = this.constraintService.cohortSelectionConstraint();
+        let constraint = this.constraintService.cohortSelectionConstraint;
         this.countService.updateCurrentSelectionCount(constraint)
           .then(() => {
             this.currentCohort.constraint = constraint;
@@ -212,9 +212,10 @@ export class CohortService {
 
   public saveCohortByName(name: string) {
     let result = new Cohort('', name);
-    result.constraint = this.currentCohort.constraint;
-    if (this.currentCohort.constraint.className === 'CombinationConstraint') {
-      result.type = (<CombinationConstraint>this.currentCohort.constraint).dimension;
+    let constraint = this.constraintService.cohortSelectionConstraint;
+    result.constraint = constraint;
+    if (constraint.className === 'CombinationConstraint') {
+      result.type = (<CombinationConstraint>constraint).dimension;
     }
     this.saveCohort(result);
   }
