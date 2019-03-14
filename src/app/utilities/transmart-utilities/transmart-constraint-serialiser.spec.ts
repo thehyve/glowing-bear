@@ -25,8 +25,8 @@ describe('TransmartConstraintSerialiser', () => {
     const serialisedConstraint = JSON.parse(JSON.stringify(serialiser.visit(constraint)));
     const expectedConstraint = JSON.parse(JSON.stringify(expected));
     if (JSON.stringify(serialisedConstraint) !== JSON.stringify(expectedConstraint)) {
-      console.error('Serialised', JSON.stringify(serialisedConstraint));
-      console.error('Expected', JSON.stringify(expectedConstraint));
+      console.error('Serialised', JSON.stringify(serialisedConstraint, null, 2));
+      console.error('Expected', JSON.stringify(expectedConstraint, null, 2));
     }
     expect(serialisedConstraint).toEqual(expectedConstraint);
   }
@@ -106,14 +106,23 @@ describe('TransmartConstraintSerialiser', () => {
         type: 'and',
         args: [
           {
-            type: 'concept',
-            conceptCode: 'BIO:TYPE'
-          },
-          {
-            type: 'value',
-            valueType: 'string',
-            operator: '=',
-            value: 'A'
+            type: 'subselection',
+            dimension: 'biomaterial',
+            constraint: {
+              type: 'and',
+              args: [
+                {
+                  type: 'concept',
+                  conceptCode: 'BIO:TYPE'
+                },
+                {
+                  type: 'value',
+                  valueType: 'string',
+                  operator: '=',
+                  value: 'A'
+                }
+              ]
+            }
           },
           {
             type: 'subselection',
@@ -217,6 +226,77 @@ describe('TransmartConstraintSerialiser', () => {
         } as TransmartSubSelectionConstraint
     };
     testConstraint(parentConstraint, expected);
+  });
+
+  it('should serialise "select all female patients with age > 50"', () => {
+    // Female patients
+    const genderConstraint = new ConceptConstraint();
+    const genderConcept = new Concept();
+    genderConcept.code = 'PERSON:GENDER';
+    genderConcept.type = ConceptType.CATEGORICAL;
+    genderConstraint.concept = genderConcept;
+    const genderValueConstraint = new ValueConstraint();
+    genderValueConstraint.operator = Operator.eq;
+    genderValueConstraint.valueType = ValueType.string;
+    genderValueConstraint.value = 'Female';
+    genderConstraint.valueConstraints.push(genderValueConstraint);
+    // Age > 50
+    const ageConstraint = new ConceptConstraint();
+    const ageConcept = new Concept();
+    ageConcept.code = 'PERSON:AGE';
+    ageConcept.type = ConceptType.NUMERICAL;
+    ageConstraint.concept = ageConcept;
+    const ageValueConstraint = new ValueConstraint();
+    ageValueConstraint.operator = Operator.gt;
+    ageValueConstraint.valueType = ValueType.numeric;
+    ageValueConstraint.value = 50;
+    ageConstraint.valueConstraints.push(ageValueConstraint);
+    const combination = new CombinationConstraint(
+      [genderConstraint, ageConstraint], CombinationState.And, 'patient');
+    const expected: TransmartAndConstraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'PERSON:GENDER',
+              },
+              {
+                type: 'value',
+                valueType: 'string',
+                operator: '=',
+                value: 'Female'
+              }
+            ]
+          }
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'PERSON:AGE',
+              },
+              {
+                type: 'value',
+                valueType: 'numeric',
+                operator: '>',
+                value: 50
+              }
+            ]
+          }
+        } as TransmartSubSelectionConstraint
+      ]
+    };
+    testConstraint(combination, expected);
   });
 
 });

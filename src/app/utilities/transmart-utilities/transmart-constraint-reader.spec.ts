@@ -90,7 +90,6 @@ describe('TransmartConstraintReader', () => {
     testConstraint(constraint);
   });
 
-
   it('should correctly (de)serialise combination constraints', () => {
     const constraint = createCombinationConstraint();
     testConstraint(constraint);
