@@ -100,6 +100,28 @@ export class CombinationConstraint extends Constraint {
     this._dimension = value;
   }
 
+  get validDimensions(): string[] {
+    let result = [];
+    if (this.children.filter(constraint => constraint.className === 'PedigreeConstraint').length > 0) {
+      // for pedigree constraint only 'patient' dimension is allowed
+      return [CombinationConstraint.TOP_LEVEL_DIMENSION];
+    } else {
+      let childrenWithConceptDimRestrictions = this.children.filter(constraint =>
+        constraint.className === 'ConceptConstraint'
+        && (<ConceptConstraint>constraint).concept
+        && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
+      );
+      if (childrenWithConceptDimRestrictions.length > 0) {
+        result = (<ConceptConstraint>childrenWithConceptDimRestrictions[0]).concept.subjectDimensions;
+        // find the dimensions intersection for each child concept constraint
+        childrenWithConceptDimRestrictions.forEach(constraint =>
+          result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
+        );
+      }
+    }
+    return result;
+  }
+
   clone(): CombinationConstraint {
     const clone = new CombinationConstraint(
       this.children.map(child => child.clone()),
@@ -108,25 +130,5 @@ export class CombinationConstraint extends Constraint {
     );
     clone.negated = this.negated;
     return clone;
-  }
-
-  get restrictiveDimensions(): string[] {
-    let result = [];
-    if (this.children.filter(constraint => constraint.className === 'PedigreeConstraint').length > 0) {
-      return [CombinationConstraint.TOP_LEVEL_DIMENSION];
-    } else {
-      let constraintsWithConceptDimRestrictions = this.children.filter(constraint =>
-        constraint.className === 'ConceptConstraint'
-        && (<ConceptConstraint>constraint).concept
-        && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
-      );
-      if (constraintsWithConceptDimRestrictions.length > 0) {
-        result = (<ConceptConstraint>constraintsWithConceptDimRestrictions[0]).concept.subjectDimensions;
-        constraintsWithConceptDimRestrictions.forEach(constraint =>
-          result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
-        );
-      }
-    }
-    return result;
   }
 }

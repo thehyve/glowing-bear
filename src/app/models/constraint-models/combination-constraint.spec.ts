@@ -24,27 +24,27 @@ describe('CombinationConstraint', () => {
     combinationConstraint2.addChild(conceptConstraint2);
 
     combinationConstraint.addChild(conceptConstraint1);
-    expect(combinationConstraint.restrictiveDimensions).toEqual([]);
+    expect(combinationConstraint.validDimensions).toEqual([]);
 
     combinationConstraint.addChild(conceptConstraint2);
-    expect(combinationConstraint.restrictiveDimensions).toEqual(['patient']);
+    expect(combinationConstraint.validDimensions).toEqual(['patient']);
 
     combinationConstraint.addChild(conceptConstraint3);
-    expect(combinationConstraint.restrictiveDimensions).toEqual(['patient']);
+    expect(combinationConstraint.validDimensions).toEqual(['patient']);
 
     combinationConstraint.children = [];
     combinationConstraint.addChild(conceptConstraint3);
     combinationConstraint.addChild(conceptConstraint4);
-    expect(combinationConstraint.restrictiveDimensions).toEqual([]);
+    expect(combinationConstraint.validDimensions).toEqual([]);
 
     combinationConstraint.children = [];
     combinationConstraint.addChild(combinationConstraint2);
-    expect(combinationConstraint.restrictiveDimensions).toEqual([]);
+    expect(combinationConstraint.validDimensions).toEqual([]);
 
     let pedigreeConstraint = new PedigreeConstraint('PAR');
     combinationConstraint.children = [];
     combinationConstraint.addChild(pedigreeConstraint);
-    expect(combinationConstraint.restrictiveDimensions).toEqual(['patient']);
+    expect(combinationConstraint.validDimensions).toEqual(['patient']);
   });
 
 });

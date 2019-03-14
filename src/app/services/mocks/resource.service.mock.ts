@@ -213,7 +213,7 @@ export class ResourceServiceMock {
     return Observable.of(subjectSet);
   }
 
-  get validDimensions(): Observable<TransmartDimension[]> {
+  get subjectDimensions(): Observable<TransmartDimension[]> {
     return Observable.of([]);
   }
 
