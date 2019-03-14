@@ -2,15 +2,15 @@ import {Constraint} from './constraint';
 import {CombinationConstraint} from './combination-constraint';
 import {PedigreeConstraint} from './pedigree-constraint';
 import {ConceptConstraint} from './concept-constraint';
-
+import {ValueConstraint} from './value-constraint';
 
 
 describe('Constraint', () => {
 
   it('should calculate the depth of a constraint', () => {
-    let c111 = new Constraint();
-    let c11 = new Constraint();
-    let c1 = new Constraint();
+    let c111 = new ValueConstraint();
+    let c11 = new PedigreeConstraint('test');
+    let c1 = new CombinationConstraint();
     c111.parentConstraint = c11;
     c11.parentConstraint = c1;
 
@@ -37,4 +37,5 @@ describe('Constraint', () => {
     expect(constraint4.parentDimension).toBe('Biomaterial ID');
     expect(constraint5.parentDimension).toBe('patient');
   });
+
 });

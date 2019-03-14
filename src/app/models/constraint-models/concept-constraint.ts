@@ -110,4 +110,19 @@ export class ConceptConstraint extends Constraint {
   set applyValDateConstraint(value: boolean) {
     this._applyValDateConstraint = value;
   }
+
+  clone(): ConceptConstraint {
+    const clone = new ConceptConstraint();
+    clone.concept = this.concept;
+    clone.valueConstraints = this.valueConstraints.map(child => child.clone());
+    clone.applyValDateConstraint = this.applyValDateConstraint;
+    clone.valDateConstraint = this.valDateConstraint.clone();
+    clone.applyObsDateConstraint = this.applyObsDateConstraint;
+    clone.obsDateConstraint = this.obsDateConstraint.clone();
+    clone.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
+    clone.trialVisitConstraint = this.trialVisitConstraint.clone();
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

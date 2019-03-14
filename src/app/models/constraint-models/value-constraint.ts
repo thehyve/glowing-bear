@@ -50,4 +50,16 @@ export class ValueConstraint extends Constraint {
   get className(): string {
     return 'ValueConstraint';
   }
+
+  clone(): ValueConstraint {
+    const clone = new ValueConstraint();
+    clone.valueType = this.valueType;
+    clone.operator = this.operator;
+    if (this.value !== undefined) {
+      clone.value = this.value;
+    }
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

@@ -156,4 +156,15 @@ export class PedigreeConstraint extends Constraint {
   get parentConstraint(): Constraint {
     return this._parentConstraint;
   }
+
+  clone(): PedigreeConstraint {
+    const clone = new PedigreeConstraint(this.label);
+    clone.relationType = this.relationType;
+    clone.rightHandSideConstraint = this.rightHandSideConstraint.clone();
+    clone.biological = this.biological;
+    clone.shareHousehold = this.shareHousehold;
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

@@ -24,7 +24,6 @@ import {StudyService} from './study.service';
 import {CountService} from './count.service';
 import {Dimension} from '../models/constraint-models/dimension';
 import {Subject} from 'rxjs';
-import {ConstraintCopier} from 'app/utilities/constraint-utilities/constraint-copier';
 
 /**
  * This service concerns with
@@ -213,7 +212,7 @@ export class ConstraintService {
   }
 
   public restoreCohortConstraint(cohortConstraint: Constraint) {
-    const constraint = ConstraintCopier.copy(cohortConstraint);
+    const constraint = cohortConstraint.clone();
     if (constraint.className === 'CombinationConstraint' && !constraint.negated) { // If it is a combination constraint
       this.rootConstraint.dimension = (<CombinationConstraint>constraint).dimension;
       const children = (<CombinationConstraint>constraint).children;

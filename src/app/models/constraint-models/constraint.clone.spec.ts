@@ -1,30 +1,28 @@
-import {Constraint} from '../../models/constraint-models/constraint';
-import {ConstraintSerialiser} from './constraint-serialiser';
-import {ConstraintCopier} from './constraint-copier';
-import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {ValueConstraint} from '../../models/constraint-models/value-constraint';
-import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
-import {TimeConstraint} from '../../models/constraint-models/time-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import {StudyConstraint} from '../../models/constraint-models/study-constraint';
-import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
-import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
-import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {TrialVisit} from '../../models/constraint-models/trial-visit';
-import {Study} from '../../models/constraint-models/study';
-import {Concept} from '../../models/constraint-models/concept';
+import {Constraint} from './constraint';
+import {ConstraintSerialiser} from '../../utilities/constraint-utilities/constraint-serialiser';
+import {TrueConstraint} from './true-constraint';
+import {ValueConstraint} from './value-constraint';
+import {TrialVisitConstraint} from './trial-visit-constraint';
+import {TimeConstraint} from './time-constraint';
+import {SubjectSetConstraint} from './subject-set-constraint';
+import {StudyConstraint} from './study-constraint';
+import {PedigreeConstraint} from './pedigree-constraint';
+import {CombinationConstraint} from './combination-constraint';
+import {ConceptConstraint} from './concept-constraint';
+import {TrialVisit} from './trial-visit';
+import {Study} from './study';
+import {Concept} from './concept';
 
-describe('ConstraintCopier', () => {
+describe('Constraint.clone', () => {
 
   function testConstraint(constraint: Constraint) {
     const serialisedConstraint = ConstraintSerialiser.serialise(constraint);
-    const copy = ConstraintCopier.copy(constraint);
+    const copy = constraint.clone();
     const serialisedCopy = ConstraintSerialiser.serialise(copy);
     expect(serialisedCopy).toEqual(serialisedConstraint);
   }
 
-  it('should copy combination constraint', () => {
+  it('should clone combination constraint', () => {
     const constraint = new CombinationConstraint();
     const studyConstraint = new StudyConstraint();
     const study = new Study();
@@ -35,7 +33,7 @@ describe('ConstraintCopier', () => {
     testConstraint(constraint);
   });
 
-  it('should copy concept constraint', () => {
+  it('should clone concept constraint', () => {
     const constraint = new ConceptConstraint();
     const concept = new Concept();
     concept.code = 'ABC';
@@ -54,17 +52,17 @@ describe('ConstraintCopier', () => {
     testConstraint(constraint);
   });
 
-  it('should copy negation constraint', () => {
+  it('should clone negation constraint', () => {
     const constraint = new ValueConstraint();
     constraint.negated = true;
     testConstraint(constraint);
   });
 
-  it('should copy pedigree constraint', () => {
+  it('should clone pedigree constraint', () => {
     const constraint = new PedigreeConstraint('parent');
     testConstraint(constraint);
   });
-  it('should copy study constraint', () => {
+  it('should clone study constraint', () => {
     const constraint = new StudyConstraint();
     const studyA = new Study();
     studyA.id = 'A';
@@ -75,18 +73,18 @@ describe('ConstraintCopier', () => {
     testConstraint(constraint);
   });
 
-  it('should copy subject set constraint', () => {
+  it('should clone subject set constraint', () => {
     const constraint = new SubjectSetConstraint();
     testConstraint(constraint);
   });
 
-  it('should copy time constraint', () => {
+  it('should clone time constraint', () => {
     const constraint = new TimeConstraint();
     testConstraint(constraint);
 
   });
 
-  it('should copy trial visit constraint', () => {
+  it('should clone trial visit constraint', () => {
     const constraint = new TrialVisitConstraint();
     const trialVisit = new TrialVisit();
     trialVisit.label = 'Week 1';
@@ -94,11 +92,11 @@ describe('ConstraintCopier', () => {
     testConstraint(constraint);
   });
 
-  it('should copy true constraint', () => {
+  it('should clone true constraint', () => {
     testConstraint(new TrueConstraint());
   });
 
-  it('should copy value constraint', () => {
+  it('should clone value constraint', () => {
     const constraint = new ValueConstraint();
     testConstraint(constraint);
   });

@@ -83,16 +83,15 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onSelect(selectedConstraint) {
     if (selectedConstraint != null) {
-      // Create a copy of the selected constraint
-      let newConstraint: Constraint = new selectedConstraint.constructor();
-      Object.assign(newConstraint, this.selectedConstraint);
+      // Create a clone of the selected constraint
+      let newConstraint: Constraint = selectedConstraint.clone();
 
       if (newConstraint.className === 'CombinationConstraint') {
-        // we don't want to copy a CombinationConstraint's children
+        // we don't want to clone a CombinationConstraint's children
         (<CombinationConstraint>newConstraint).children = [];
         (<CombinationConstraint>newConstraint).dimension = (<CombinationConstraint>this.constraint).dimension;
       } else if (newConstraint.className === 'PedigreeConstraint') {
-        // we don't want to copy a PedigreeConstraint's right-hand-side constraint
+        // we don't want to clone a PedigreeConstraint's right-hand-side constraint
         (<PedigreeConstraint>newConstraint).rightHandSideConstraint = new CombinationConstraint();
       }
 

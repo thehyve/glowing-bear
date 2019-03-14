@@ -34,4 +34,15 @@ export class TimeConstraint extends Constraint {
   set isObservationDate(value: boolean) {
     this._isObservationDate = value;
   }
+
+  clone(): TimeConstraint {
+    const clone = new TimeConstraint();
+    clone.dateOperator = this.dateOperator;
+    clone.date1 = this.date1;
+    clone.date2 = this.date2;
+    clone.isObservationDate = this.isObservationDate;
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

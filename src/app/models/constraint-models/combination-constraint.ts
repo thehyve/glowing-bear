@@ -99,4 +99,14 @@ export class CombinationConstraint extends Constraint {
     this._dimension = value;
   }
 
+  clone(): CombinationConstraint {
+    const clone = new CombinationConstraint(
+      this.children.map(child => child.clone()),
+      this.combinationState,
+      this.dimension
+    );
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

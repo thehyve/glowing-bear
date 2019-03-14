@@ -29,4 +29,11 @@ export class NegationConstraint extends Constraint {
   get className(): string {
     return 'NegationConstraint';
   }
+
+  clone(): Constraint {
+    const copy = this.constraint.clone();
+    copy.negated = true;
+    return copy;
+  }
+
 }

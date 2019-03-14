@@ -18,4 +18,11 @@ export class TrueConstraint extends Constraint {
   get className(): string {
     return 'TrueConstraint';
   }
+
+  clone(): TrueConstraint {
+    const clone = new TrueConstraint();
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

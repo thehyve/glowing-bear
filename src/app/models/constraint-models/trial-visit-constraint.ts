@@ -13,7 +13,6 @@ export class TrialVisitConstraint extends Constraint {
 
   private _trialVisits: TrialVisit[];
 
-
   constructor() {
     super();
     this.trialVisits = [];
@@ -31,4 +30,12 @@ export class TrialVisitConstraint extends Constraint {
   set trialVisits(value: TrialVisit[]) {
     this._trialVisits = value;
   }
+
+  clone(): TrialVisitConstraint {
+    const clone = new TrialVisitConstraint();
+    clone.trialVisits = [].concat(this.trialVisits);
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }
