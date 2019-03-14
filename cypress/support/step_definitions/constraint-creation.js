@@ -70,7 +70,7 @@ when("I select patients that are part of study Oracle_1000_Patient with age betw
   cy.get('input[placeholder="max:65"]').type('55');
   cy.contains('numerical_1 ').trigger('dragstart');
   cy.get('input[placeholder="add criterion"]').eq(1).trigger('drop');
-  cy.get('input[placeholder="min:5.766787251"]').type('0');
+  cy.get('input[placeholder="min:-5.766787251"]').type('0');
   cy.get('input[placeholder="max:29.7930135202"]').type('10');
   cy.get('.update-btn').eq(0).click();
 });
