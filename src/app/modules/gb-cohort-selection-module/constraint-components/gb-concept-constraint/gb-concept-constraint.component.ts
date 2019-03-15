@@ -666,6 +666,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       !currentStudyIds.includes(study.id)
     );
     newStudies.forEach(study => conceptConstraint.studyConstraint.studies.push(study));
+    if (conceptConstraint.studyConstraint.studies.length > 0) {
+      conceptConstraint.applyStudyConstraint = true;
+    }
   }
 
   onDrop(event: DragEvent) {
