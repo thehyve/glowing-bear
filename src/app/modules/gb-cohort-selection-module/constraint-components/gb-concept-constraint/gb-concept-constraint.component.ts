@@ -20,14 +20,16 @@ import {DateOperatorState} from '../../../../models/constraint-models/date-opera
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
-import {SelectItem, TreeNode} from 'primeng/api';
+import {SelectItem} from 'primeng/api';
 import {ErrorHelper} from '../../../../utilities/error-helper';
-import {MessageHelper} from '../../../../utilities/message-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {AccessLevel} from '../../../../services/authentication/access-level';
 import {ValueType} from '../../../../models/constraint-models/value-type';
 import {Operator} from '../../../../models/constraint-models/operator';
+import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
+import {Study} from '../../../../models/constraint-models/study';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -100,11 +102,13 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _selectedTrialVisits: TrialVisit[];
   private _suggestedTrialVisits: TrialVisit[];
 
+  private _applyStudyConstraint = false;
+
   ngOnInit() {
-    this.initializeConstraints();
+    this.initializeConstraints().then();
   }
 
-  initializeConstraints(): Promise<any> {
+  initializeConstraints() {
     return new Promise<any>((resolve, reject) => {
       // Initialize aggregate values
       this.isMinEqual = true;
@@ -184,8 +188,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           }
         });
 
+        this.applyStudyConstraint = (<ConceptConstraint>this.constraint).applyStudyConstraint;
+
         // Initialize flags
-        this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint;
+        this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint || this.applyStudyConstraint;
       }
     });
   }
@@ -336,6 +342,23 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     conceptConstraint.applyTrialVisitConstraint = this.applyTrialVisitConstraint;
     if (conceptConstraint.applyTrialVisitConstraint) {
+      this.update();
+    }
+  }
+
+  get studyConstraint() {
+    return (<ConceptConstraint>this.constraint).studyConstraint;
+  }
+
+  get applyStudyConstraint(): boolean {
+    return this._applyStudyConstraint;
+  }
+
+  set applyStudyConstraint(value: boolean) {
+    this._applyStudyConstraint = value;
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.applyStudyConstraint = this.applyStudyConstraint;
+    if (conceptConstraint.applyStudyConstraint) {
       this.update();
     }
   }
@@ -632,24 +655,35 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.showMoreOptions = !this.showMoreOptions;
   }
 
-  onDrop(event: DragEvent) {
-    event.stopPropagation();
-    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint =
-      this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
+  /**
+   * Add studies to the current concept constraint, if not already present.
+   * @param studies
+   */
+  addStudies(studies: Study[]) {
+    const conceptConstraint = (<ConceptConstraint>this.constraint);
+    const currentStudyIds = conceptConstraint.studyConstraint.studies.map(study => study.id);
+    const newStudies = studies.filter(study =>
+      !currentStudyIds.includes(study.id)
+    );
+    newStudies.forEach(study => conceptConstraint.studyConstraint.studies.push(study));
+    if (conceptConstraint.studyConstraint.studies.length > 0) {
+      conceptConstraint.applyStudyConstraint = true;
+    }
+  }
 
-    if (this.droppedConstraint && this.droppedConstraint.className === 'ConceptConstraint') {
-      (<ConceptConstraint>this.constraint).concept = (<ConceptConstraint>this.droppedConstraint).concept;
-      this.initializeConstraints()
-        .then(() => {
+  onDrop(event: DragEvent) {
+    const selectedNode: GbTreeNode = this.treeNodeService.selectedTreeNode;
+    if (selectedNode && selectedNode.type === 'STUDY') {
+      const droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
+      if (droppedConstraint && droppedConstraint.className === 'StudyConstraint') {
+        this.addStudies((<StudyConstraint>droppedConstraint).studies);
+        this.initializeConstraints().then(() => {
           this.update();
         });
-    } else {
-      const summary = `Dropped a ${this.droppedConstraint.className}, incompatible with ConceptConstraint.`;
-      MessageHelper.alert('error', summary);
+        this.treeNodeService.selectedTreeNode = null;
+        event.stopPropagation();
+      }
     }
-    this.treeNodeService.selectedTreeNode = null;
-    this.droppedConstraint = null;
   }
 
   /**
@@ -678,4 +712,5 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       }
     });
   }
+
 }

@@ -93,12 +93,13 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onDrop(event) {
     event.stopPropagation();
-    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
-    this.treeNodeService.selectedTreeNode = null;
-    if (this.droppedConstraint) {
-      this.updateConstraint(this.droppedConstraint);
-      this.droppedConstraint = null;
+    const selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
+    if (selectedNode) {
+      const droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
+      if (droppedConstraint) {
+        this.updateConstraint(droppedConstraint);
+      }
+      this.treeNodeService.selectedTreeNode = null;
     }
   }
 
@@ -110,7 +111,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.update();
   }
 
-  private prepareChildConstraint(selectedConstraint, currentDimension: string): Constraint {
+  private prepareChildConstraint(selectedConstraint: Constraint, currentDimension: string): Constraint {
     // Create a clone of the selected constraint
     let newConstraint: Constraint = selectedConstraint.clone();
 

@@ -26,7 +26,6 @@ import {CountService} from './count.service';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
 import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
-import {TransmartConstraintSerialiser} from '../utilities/transmart-utilities/transmart-constraint-serialiser';
 import {StudyConstraint} from '../models/constraint-models/study-constraint';
 import {Study} from '../models/constraint-models/study';
 import {
@@ -34,6 +33,7 @@ import {
   ExtendedStudyNameConstraint,
   TransmartStudyNameConstraint
 } from '../models/transmart-models/transmart-constraint';
+import {ConstraintSerialiser} from '../utilities/constraint-utilities/constraint-serialiser';
 
 describe('TreeNodeService', () => {
   let treeNodeService: TreeNodeService;
@@ -333,7 +333,6 @@ describe('TreeNodeService', () => {
   });
 
   it('should convert categorical tree node to concept constraint', () => {
-    const serialiser = new TransmartConstraintSerialiser(true);
     const conceptNode: GbTreeNode = {
       type: 'CATEGORICAL',
       name: 'Test categorical concept',
@@ -351,11 +350,10 @@ describe('TreeNodeService', () => {
     concept.fullName = '\\Test\\Test categorical concept\\';
     concept.label = 'Test categorical concept (\\Test)';
     expected.concept = concept;
-    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+    expect(ConstraintSerialiser.serialise(constraint)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
   it('should convert numerical tree node to concept constraint', () => {
-    const serialiser = new TransmartConstraintSerialiser(true);
     const conceptNode: GbTreeNode = {
       type: 'NUMERIC',
       name: 'Test numerical concept',
@@ -373,11 +371,10 @@ describe('TreeNodeService', () => {
     concept.fullName = '\\Test\\Test numerical concept\\';
     concept.label = 'Test numerical concept (\\Test)';
     expected.concept = concept;
-    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+    expect(ConstraintSerialiser.serialise(constraint)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
   it('should convert date tree node to concept constraint', () => {
-    const serialiser = new TransmartConstraintSerialiser(true);
     const conceptNode: GbTreeNode = {
       type: 'DATE',
       name: 'Test date concept',
@@ -395,11 +392,10 @@ describe('TreeNodeService', () => {
     concept.fullName = '\\Test\\Test date concept\\';
     concept.label = 'Test date concept (\\Test)';
     expected.concept = concept;
-    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+    expect(ConstraintSerialiser.serialise(constraint)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
   it('should convert study node to study constraint', () => {
-    const serialiser = new TransmartConstraintSerialiser(true);
     const studyNode: GbTreeNode = {
       type: 'STUDY',
       name: 'Test study',
@@ -413,11 +409,10 @@ describe('TreeNodeService', () => {
     const study = new Study();
     study.id = 'TEST_STUDY_ID';
     expected.studies.push(study);
-    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+    expect(ConstraintSerialiser.serialise(constraint)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
   it('should convert study specific concept node to concept constraint with study', () => {
-    const serialiser = new TransmartConstraintSerialiser(true);
     const conceptNode: GbTreeNode = {
       type: 'CATEGORICAL',
       name: 'Test categorical concept',
@@ -442,7 +437,13 @@ describe('TreeNodeService', () => {
     concept.fullName = '\\Test\\Study\\Test categorical concept\\';
     concept.label = 'Test categorical concept (\\Test\\Study)';
     expected.concept = concept;
-    expect(serialiser.visit(constraint)).toEqual(serialiser.visit(expected));
+    const studyConstraint = new StudyConstraint();
+    const study = new Study();
+    study.id = 'TEST_STUDY_ID';
+    studyConstraint.studies.push(study);
+    expected.studyConstraint = studyConstraint;
+    expected.applyStudyConstraint = true;
+    expect(ConstraintSerialiser.serialise(constraint)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
   it('should get tree node descendants with given depth', () => {

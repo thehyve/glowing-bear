@@ -13,6 +13,7 @@ import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {TreeNode} from 'primeng/api';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-study-constraint',
@@ -52,17 +53,19 @@ export class GbStudyConstraintComponent extends GbConstraintComponent implements
   }
 
   onDrop(event: DragEvent) {
-    event.stopPropagation();
-    let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
-    this.treeNodeService.selectedTreeNode = null;
-    if (this.droppedConstraint) {
-      let study = (<StudyConstraint>this.droppedConstraint).studies[0];
-      let studies = (<StudyConstraint>this.constraint).studies;
-      studies = studies.filter(item => item.id === study.id);
-      if (studies.length === 0) {
-        (<StudyConstraint>this.constraint).studies.push(study);
-        this.update();
+    const selectedNode: GbTreeNode = this.treeNodeService.selectedTreeNode;
+    if (selectedNode && selectedNode.type === 'STUDY') {
+      const droppedConstraint = this.treeNodeService.generateConstraintFromTreeNode(selectedNode);
+      if (droppedConstraint && droppedConstraint.className === 'StudyConstraint') {
+        let study = (<StudyConstraint>droppedConstraint).studies[0];
+        let studies = (<StudyConstraint>this.constraint).studies;
+        studies = studies.filter(item => item.id === study.id);
+        if (studies.length === 0) {
+          (<StudyConstraint>this.constraint).studies.push(study);
+          this.update();
+        }
+        this.treeNodeService.selectedTreeNode = null;
+        event.stopPropagation();
       }
     }
   }

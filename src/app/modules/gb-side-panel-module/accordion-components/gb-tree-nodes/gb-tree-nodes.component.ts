@@ -11,6 +11,7 @@ import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {TreeNodeService} from '../../../../services/tree-node.service';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -102,12 +103,12 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * @param treeNodeElements
    * @param treeNodes
    */
-  updateEventListeners(treeNodeElements, treeNodes) {
+  updateEventListeners(treeNodeElements, treeNodes: GbTreeNode[]) {
     let index = 0;
     for (let elm of treeNodeElements) {
-      let dataObject: TreeNode = treeNodes[index];
-      let dataObjectType = dataObject['type'];
-      let metadata = dataObject['metadata'];
+      let dataObject: GbTreeNode = treeNodes[index];
+      let dataObjectType = dataObject.type;
+      let metadata = dataObject.metadata;
       let treeNodeElm = elm.querySelector('li.ui-treenode');
       let treeNodeElmLabel = elm.querySelector('li.ui-treenode .ui-treenode-label');
       let handleDragstart = (function (event) {

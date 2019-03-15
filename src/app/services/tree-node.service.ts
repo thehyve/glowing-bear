@@ -49,7 +49,7 @@ export class TreeNodeService {
   // This field holds the processed concept codes during tree loading, not used anywhere else
   private processedConceptCodes: string[] = [];
 
-  private _selectedTreeNode: TreeNode = null;
+  private _selectedTreeNode: GbTreeNode = null;
 
   constructor(private countService: CountService,
               private resourceService: ResourceService,
@@ -531,11 +531,11 @@ export class TreeNodeService {
     this._validTreeNodeTypes = value;
   }
 
-  get selectedTreeNode(): TreeNode {
+  get selectedTreeNode(): GbTreeNode {
     return this._selectedTreeNode;
   }
 
-  set selectedTreeNode(value: TreeNode) {
+  set selectedTreeNode(value: GbTreeNode) {
     this._selectedTreeNode = value;
   }
 }

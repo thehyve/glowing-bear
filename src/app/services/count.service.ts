@@ -15,8 +15,6 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 
 
@@ -29,6 +27,8 @@ export class CountService {
   private _currentSelectionCount: CountItem;
   // The total numbers of subjects & observations for all the cohorts
   private _allCohortsCount: CountItem;
+
+  private _cohortSelectionCounts: CountItem;
 
   // Flag indicating if the observation counts are calculated and shown
   private _showObservationCounts: boolean;
@@ -119,8 +119,7 @@ export class CountService {
   updateCurrentSelectionCount(constraint: Constraint): Promise<any> {
     return new Promise((resolve, reject) => {
       this.resourceService.updateCohortSelectionCounts(constraint)
-        .then(() => {
-          let cohortSelectionCounts = this.resourceService.cohortSelectionCounts;
+        .then((cohortSelectionCounts) => {
           this.currentSelectionCount.subjectCount = cohortSelectionCounts.subjectCount;
           resolve(true);
         })
@@ -201,6 +200,14 @@ export class CountService {
 
   set allCohortsCount(value: CountItem) {
     this._allCohortsCount = value;
+  }
+
+  get cohortSelectionCounts(): CountItem {
+    return this._cohortSelectionCounts;
+  }
+
+  set cohortSelectionCounts(value: CountItem) {
+    this._cohortSelectionCounts = value;
   }
 
   get showObservationCounts(): boolean {

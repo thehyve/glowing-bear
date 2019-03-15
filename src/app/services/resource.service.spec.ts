@@ -71,20 +71,20 @@ describe('ResourceService', () => {
       }, err => {
         expect(err).toBeDefined();
       })
-  })
+  });
 
   it('should update cohort selection counts', () => {
     let dummy = new TrueConstraint();
     resourceService.updateCohortSelectionCounts(dummy)
-      .then(() => {
-        expect(resourceService.cohortSelectionCounts.subjectCount).toEqual(10);
+      .then((cohortSelectionCounts) => {
+        expect(cohortSelectionCounts.subjectCount).toEqual(10);
       });
     resourceService.endpointMode = null;
     resourceService.updateCohortSelectionCounts(dummy)
       .catch(err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per concept', () => {
     let dummy = new TrueConstraint();
@@ -92,28 +92,28 @@ describe('ResourceService', () => {
       .subscribe((map: Map<string, CountItem>) => {
         expect(map.size).toBe(2);
         expect(map.has('EHR:VSIGN:HR')).toBe(true);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerConcept(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per study', () => {
     let dummy = new TrueConstraint();
     resourceService.getCountsPerStudy(dummy)
       .subscribe((map: Map<string, CountItem>) => {
         expect(map.size).toBe(2);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerStudy(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per study and concept', () => {
     let dummy = new TrueConstraint();
@@ -121,14 +121,14 @@ describe('ResourceService', () => {
       .subscribe((map: Map<string, Map<string, CountItem>>) => {
         expect(map.size).toBe(1);
         expect(map.get('EHR').size).toBe(2);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerStudyAndConcept(dummy)
       .subscribe((map: Map<string, Map<string, CountItem>>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts', () => {
     let dummy = new TrueConstraint();
@@ -143,7 +143,7 @@ describe('ResourceService', () => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get aggregate', () => {
     let dummy = new ConceptConstraint();

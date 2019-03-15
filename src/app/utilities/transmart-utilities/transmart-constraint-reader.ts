@@ -2,7 +2,8 @@ import {AbstractTransmartConstraintVisitor} from './abstract-transmart-constrain
 import {Constraint} from '../../models/constraint-models/constraint';
 import {
   ExtendedAndConstraint,
-  ExtendedConceptConstraint, ExtendedConstraint,
+  ExtendedConceptConstraint,
+  ExtendedConstraint,
   TransmartCombinationConstraint,
   TransmartFieldConstraint,
   TransmartNegationConstraint,
@@ -101,9 +102,23 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
    */
   visitCombinationConstraint(constraintObject: TransmartCombinationConstraint): Constraint {
     const operator = constraintObject.type !== 'combination' ? constraintObject.type : constraintObject.operator;
-    const constraint = new CombinationConstraint();
-    constraint.combinationState =
+    const combinationState =
       (operator === 'and') ? CombinationState.And : CombinationState.Or;
+
+    const children = constraintObject.args.filter(arg => arg).map(arg => this.visit(arg));
+
+    /*
+    * Check conditions for a study constraint
+    */
+    if (combinationState === CombinationState.Or &&
+      children.every(child => child.className === 'StudyConstraint')) {
+      const studyConstraint = new StudyConstraint();
+      const studies: Study[] = [];
+      children.forEach((child: StudyConstraint) =>
+        child.studies.forEach((study: Study) => studies.push(study)));
+      studyConstraint.studies = studies;
+      return studyConstraint;
+    }
 
     /*
      * sometimes a combination constraint actually corresponds to a concept constraint UI
@@ -116,107 +131,100 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
      * sometimes a combination contains purely study constraints,
      * in which case we can reduce this combination to a single study constraint containing multiple studies
      */
-    let prospectConcept: ConceptConstraint = null;
-    let prospectValDate: TimeConstraint = null;
-    let prospectObsDate: TimeConstraint = null;
-    let prospectTrialVisit: TrialVisitConstraint = null;
-    let prospectValues: ValueConstraint[] = [];
-    let hasOnlyStudies = true;
-    let allStudyIds = [];
+    if (combinationState === CombinationState.And) {
+      let prospectConcept: ConceptConstraint = null;
+      let prospectValDate: TimeConstraint = null;
+      let prospectObsDate: TimeConstraint = null;
+      let prospectTrialVisit: TrialVisitConstraint = null;
+      let prospectStudy: StudyConstraint = null;
+      let prospectValues: ValueConstraint[] = [];
 
-    /*
-     * go through each argument, construct potential sub-constraints for the concept constraint
-     */
-    for (let arg of constraintObject.args) {
-      let child = this.visit(arg);
-      if (child.className === 'ConceptConstraint') {
-        prospectConcept = <ConceptConstraint>child;
-        if (!prospectConcept.concept.fullName && constraintObject['fullName'] && operator === 'and') {
-          this.addMetadataToConcept(prospectConcept.concept, <ExtendedAndConstraint>constraintObject);
-        }
-      } else if (child.className === 'TimeConstraint') {
-        if (arg['isObservationDate']) {
-          prospectObsDate = <TimeConstraint>child;
-        } else {
-          prospectValDate = <TimeConstraint>child;
-        }
-      } else if (child.className === 'TrialVisitConstraint') {
-        prospectTrialVisit = <TrialVisitConstraint>child;
-      } else if (child.className === 'ValueConstraint') {
-        prospectValues.push(<ValueConstraint>child);
-      } else if (child.className === 'CombinationConstraint' &&
-        (<CombinationConstraint>child).combinationState === CombinationState.Or) {
-        let isValues = true;
-        for (let val of (<CombinationConstraint>child).children) {
-          if (val.className !== 'ValueConstraint') {
-            isValues = false;
-          } else {
-            prospectValues.push(<ValueConstraint>val);
+      /*
+       * go through each argument, construct potential sub-constraints for the concept constraint
+       */
+      for (let child of children) {
+        if (child.className === 'ConceptConstraint') {
+          prospectConcept = <ConceptConstraint>child;
+          if (!prospectConcept.concept.fullName && constraintObject['fullName'] && operator === 'and') {
+            this.addMetadataToConcept(prospectConcept.concept, <ExtendedAndConstraint>constraintObject);
           }
-        }
-        if (!isValues) {
-          prospectValues = [];
+        } else if (child.className === 'TimeConstraint') {
+          const timeConstraint = <TimeConstraint>child;
+          if (timeConstraint.isObservationDate) {
+            prospectObsDate = timeConstraint;
+          } else {
+            prospectValDate = timeConstraint;
+          }
+        } else if (child.className === 'TrialVisitConstraint') {
+          prospectTrialVisit = <TrialVisitConstraint>child;
+        } else if (child.className === 'StudyConstraint') {
+          prospectStudy = <StudyConstraint>child;
+        } else if (child.className === 'ValueConstraint') {
+          prospectValues.push(<ValueConstraint>child);
+        } else if (child.className === 'CombinationConstraint' &&
+          (<CombinationConstraint>child).combinationState === CombinationState.Or) {
+          const subChildren = (<CombinationConstraint>child).children;
+          if (subChildren.every(subChild =>
+            subChild.className === 'ValueConstraint')) {
+            subChildren.forEach((subChild: ValueConstraint) =>
+              prospectValues.push(subChild)
+            );
+          } else {
+            // FIXME: Disjunctive children not handled
+          }
+        } else {
+          // FIXME: Combination of concept constraint and arbitrary other constraints not handled
         }
       }
-      constraint.addChild(child);
-      if (arg.type === 'study_name') {
-        allStudyIds.push((<TransmartStudyNameConstraint>arg).studyId);
-      } else {
-        hasOnlyStudies = false;
-      }
-    }
-    // -------------------------------- end for -------------------------------------------
+      // -------------------------------- end for -------------------------------------------
 
-    /*
-     * Check conditions for a concept constraint
-     */
-    if (prospectConcept &&
-      (prospectValDate || prospectObsDate || prospectTrialVisit || prospectValues.length > 0 || allStudyIds.length > 0)) {
-      if (prospectValDate) {
-        prospectConcept.applyValDateConstraint = true;
-        prospectConcept.valDateConstraint = prospectValDate;
+      /*
+       * Check conditions for a concept constraint
+       */
+      if (prospectConcept &&
+        (prospectValDate || prospectObsDate || prospectTrialVisit || prospectStudy || prospectValues.length > 0)) {
+        if (prospectValDate) {
+          prospectConcept.applyValDateConstraint = true;
+          prospectConcept.valDateConstraint = prospectValDate;
+        }
+        if (prospectObsDate) {
+          prospectConcept.applyObsDateConstraint = true;
+          prospectConcept.obsDateConstraint = prospectObsDate;
+        }
+        if (prospectTrialVisit) {
+          prospectConcept.applyTrialVisitConstraint = true;
+          prospectConcept.trialVisitConstraint = prospectTrialVisit;
+        }
+        if (prospectStudy) {
+          prospectConcept.applyStudyConstraint = true;
+          prospectConcept.studyConstraint = prospectStudy;
+        }
+        if (prospectValues) {
+          prospectConcept.valueConstraints = prospectValues;
+        }
+        return prospectConcept;
       }
-      if (prospectObsDate) {
-        prospectConcept.applyObsDateConstraint = true;
-        prospectConcept.obsDateConstraint = prospectObsDate;
-      }
-      if (prospectTrialVisit) {
-        prospectConcept.applyTrialVisitConstraint = true;
-        prospectConcept.trialVisitConstraint = prospectTrialVisit;
-      }
-      if (prospectValues) {
-        prospectConcept.valueConstraints = prospectValues;
-      }
-      return prospectConcept;
     }
-    /*
-     * Check conditions for a study constraint
-     */
-    if (operator === 'or' && hasOnlyStudies) {
-      let studyConstraint = new StudyConstraint();
-      studyConstraint.studies = allStudyIds.map(studyId => {
-        const study = new Study();
-        study.id = studyId;
-        return study;
-      });
-      return studyConstraint;
-    }
+
+    const result = new CombinationConstraint();
+    result.combinationState = combinationState;
+    children.forEach(child => result.addChild(child));
     /*
      * Flatten nested subselection constraint
      */
-    if (constraint.children.every(child => child.className === 'CombinationConstraint')) {
-      const dimensions = new Set(constraint.children.map((child: CombinationConstraint) => child.dimension));
+    if (result.children.every(child => child.className === 'CombinationConstraint')) {
+      const dimensions = new Set(result.children.map((child: CombinationConstraint) => child.dimension));
       // Only flatten when all children have the same dimension
       if (dimensions.size === 1) {
-        constraint.dimension = dimensions.values().next().value;
-        const children: Constraint[] = [];
-        constraint.children.forEach((child: CombinationConstraint) =>
-          child.children.forEach(c => children.push(c))
+        result.dimension = dimensions.values().next().value;
+        const flattenedChildren: Constraint[] = [];
+        result.children.forEach((child: CombinationConstraint) =>
+          child.children.forEach(c => flattenedChildren.push(c))
         );
-        constraint.children = children;
+        result.children = flattenedChildren;
       }
     }
-    return constraint;
+    return result;
   }
 
   visitRelationConstraint(constraintObject: TransmartRelationConstraint): Constraint {

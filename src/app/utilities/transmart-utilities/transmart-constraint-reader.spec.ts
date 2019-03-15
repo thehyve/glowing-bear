@@ -83,6 +83,16 @@ describe('TransmartConstraintReader', () => {
     const constraint = new PedigreeConstraint('parent');
     constraint.rightHandSideConstraint = createCombinationConstraint();
     testConstraint(constraint);
+
+    constraint.rightHandSideConstraint = new CombinationConstraint([]);
+    testConstraint(constraint)
+
+    const studyConstraint = new StudyConstraint();
+    const study = new Study();
+    study.id = 'A';
+    studyConstraint.studies.push(study);
+    constraint.rightHandSideConstraint.addChild(studyConstraint);
+    testConstraint(constraint);
   });
 
   it('should correctly (de)serialise negation constraints', () => {
@@ -143,7 +153,7 @@ describe('TransmartConstraintReader', () => {
   it('should correctly (de)serialise concept constraints with start date', () => {
     const constraint = createConceptConstraint();
     const startDateConstraint = new TimeConstraint();
-    startDateConstraint.dateOperator = DateOperatorState.BEFORE;
+    startDateConstraint.dateOperator = DateOperatorState.AFTER;
     startDateConstraint.isObservationDate = true;
     startDateConstraint.date1 = new Date();
     constraint.obsDateConstraint = startDateConstraint;
@@ -170,6 +180,24 @@ describe('TransmartConstraintReader', () => {
     trialVisitConstraint.trialVisits.push(trialVisit);
     constraint.trialVisitConstraint = trialVisitConstraint;
     constraint.applyTrialVisitConstraint = true;
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise concept constraints with study', () => {
+    const constraint = createConceptConstraint();
+    const studyConstraint = new StudyConstraint();
+    constraint.studyConstraint = studyConstraint;
+    constraint.applyStudyConstraint = true;
+    testConstraint(constraint);
+
+    const studyA = new Study();
+    studyA.id = 'TEST_STUDY_A';
+    studyConstraint.studies.push(studyA);
+    testConstraint(constraint);
+
+    const studyB = new Study();
+    studyB.id = 'TEST_STUDY_B';
+    studyConstraint.studies.push(studyB);
     testConstraint(constraint);
   });
 

@@ -25,8 +25,6 @@ export class GbConstraintComponent implements OnInit {
   @Input() constraint: Constraint;
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
-  droppedConstraint: Constraint = null;
-
 
   constructor(protected authService: AuthenticationService,
               protected treeNodeService: TreeNodeService,
@@ -50,7 +48,7 @@ export class GbConstraintComponent implements OnInit {
   }
 
   addEventListeners() {
-    let elm = this.element.nativeElement;
+    let elm: Element = this.element.nativeElement;
     elm.addEventListener('dragenter', this.onDragEnter.bind(this), false);
     elm.addEventListener('dragover', this.onDragOver.bind(this), false);
     elm.addEventListener('dragleave', this.onDragLeave.bind(this), false);
