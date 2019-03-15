@@ -46,7 +46,6 @@ import {TransmartDimension} from '../models/transmart-models/transmart-dimension
 export class ResourceService {
 
   private _endpointMode: EndpointMode;
-  private _cohortSelectionCounts: CountItem;
 
   constructor(private transmartResourceService: TransmartResourceService,
               private gbBackendHttpService: GbBackendHttpService) {
@@ -95,16 +94,14 @@ export class ResourceService {
   }
 
   // -------------------------------------- count calls --------------------------------------
-  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<CountItem> {
     return new Promise<any>((resolve, reject) => {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           this.transmartResourceService
             .updateCohortSelectionCounts(constraint)
             .then(() => {
-              this.cohortSelectionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts);
-              resolve(true);
+              resolve(TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts));
             })
             .catch(err => {
               reject(err);
@@ -537,15 +534,6 @@ export class ResourceService {
         return this.handleEndpointModeError();
       }
     }
-  }
-
-
-  get cohortSelectionCounts(): CountItem {
-    return this._cohortSelectionCounts;
-  }
-
-  set cohortSelectionCounts(value: CountItem) {
-    this._cohortSelectionCounts = value;
   }
 
   get endpointMode(): EndpointMode {
