@@ -170,7 +170,7 @@ export class ConstraintService {
    * Get the constraint based on the current cohort selection criteria
    * @returns {Constraint}
    */
-  public cohortSelectionConstraint(): Constraint {
+  get cohortSelectionConstraint(): Constraint {
     let constraint = <Constraint>this.rootConstraint;
     if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
       constraint = new TrueConstraint();

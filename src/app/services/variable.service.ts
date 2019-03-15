@@ -281,7 +281,7 @@ export class VariableService {
   // get the combination of cohort constraint and variable constraint
   get combination(): Constraint {
     return new CombinationConstraint(
-      [this.constraintService.cohortSelectionConstraint(),
+      [this.constraintService.cohortSelectionConstraint,
         this.constraintService.variableConstraint(this.variables)],
       CombinationState.And
     );
