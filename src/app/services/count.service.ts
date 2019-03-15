@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {forkJoin, Subject} from 'rxjs';
+import {forkJoin, Observable, Subject} from 'rxjs';
 import {ResourceService} from './resource.service';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {AppConfig} from '../config/app.config';
@@ -15,9 +15,8 @@ import {Constraint} from '../models/constraint-models/constraint';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
+import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
 
 
 @Injectable({
@@ -100,7 +99,7 @@ export class CountService {
     const patientLevelConstraint = ConstraintHelper.ensurePatientLevelConstraint(constraint);
     return new Promise((resolve, reject) => {
       forkJoin(
-        this.resourceService.getCounts(constraint),
+        this.getCounts(constraint),
         this.resourceService.getCountsPerStudy(patientLevelConstraint),
         this.resourceService.getCountsPerStudyAndConcept(patientLevelConstraint),
         this.resourceService.getCountsPerConcept(patientLevelConstraint)
@@ -114,6 +113,21 @@ export class CountService {
         reject(err);
       })
     });
+  }
+
+  /**
+   * When no observation counts requested, takes advantage of subject set constraint knowing number of subjects.
+   * Falls back to making reqular call otherwise
+   * @param constraint
+   */
+  getCounts(constraint: Constraint) {
+    if (!this.showObservationCounts
+      && constraint instanceof SubjectSetConstraint
+      && constraint.setSize > -1) {
+      let countItem = new CountItem(constraint.setSize, -1);
+      return Observable.of(countItem);
+    }
+    return this.resourceService.getCounts(constraint);
   }
 
   updateCurrentSelectionCount(constraint: Constraint): Promise<any> {
