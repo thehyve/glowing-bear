@@ -257,6 +257,9 @@ export class TreeNodeService {
       concept.code = treeNode.conceptCode;
       concept.fullName = treeNode.fullName;
       concept.name = treeNode.name;
+      if (treeNode.metadata && treeNode.metadata['subject_dimension']) {
+        concept.subjectDimensions.push(treeNode.metadata['subject_dimension']);
+      }
       return concept;
     } else {
       const summary = 'Cannot construct concept from the given tree node, because the tree node\'s format is incorrect ';

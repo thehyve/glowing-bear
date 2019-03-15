@@ -505,7 +505,7 @@ export class ResourceService {
     }
   }
 
-  get validDimensions(): Observable<Dimension[]> {
+  get subjectDimensions(): Observable<Dimension[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getSubjectDimensions().pipe(

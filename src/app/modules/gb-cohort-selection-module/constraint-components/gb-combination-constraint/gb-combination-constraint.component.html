@@ -1,9 +1,11 @@
 <div class="gb-combination-constraint-container" (drop)="onDrop($event)">
 
-  <div class="form-inline gb-constraint-cohort-type-dropdown">
+  <div *ngIf="!hideDimensionDropdown" class="form-inline gb-constraint-dimension-dropdown">
     <label>{{subjectBoxMessage}}</label>
-    <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension" (onChange)="onCohortTypeChange()"
-                [autoWidth]="false" [style]="{'min-width':'10em'}">
+    <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension"
+                [disabled]="dimensions.length === 1"
+                [dropdownIcon]="dimensions.length === 1 ? '' : 'pi pi-chevron-down'"
+                (onChange)="onSelectedDimensionChange()" [autoWidth]="false" [style]="{'min-width':'10em'} ">
       <ng-template let-item pTemplate="selectedItem">
         <i class="{{getDimensionIcon(item.label)}} gb-dimension-icon"></i>&nbsp;{{item.label}}
       </ng-template>

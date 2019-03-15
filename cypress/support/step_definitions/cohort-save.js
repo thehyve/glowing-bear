@@ -107,7 +107,7 @@ when('I create a cohort with {string} dimension constraint', (dimension) => {
   cy.contains('i', 'and').click();
   cy.contains('i', 'or').should('be.visible');
 
-  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').click();
+  cy.get('.gb-constraint-dimension-dropdown').get('.ui-dropdown').click();
   cy.get('.ui-dropdown').contains(dimension).click();
   cy.get('.update-btn').eq(0).click();
 });
@@ -121,10 +121,10 @@ then('the cohort {string} is deleted', (cohortName) => {
 });
 
 then('the current cohort has biomaterial selected', () => {
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biomaterial ID');
+  cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('Biomaterial ID');
   cy.contains('CSR');
   cy.contains('EHR');
-  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 1);
+  cy.get('.gb-constraint-dimension-dropdown').should('have.length', 1);
 });
 
 when('I create a cohort with multiple dimensions constraint', () => {
@@ -136,8 +136,8 @@ when('I create a cohort with multiple dimensions constraint', () => {
   cy.get('label').contains('f (5), m (4)').click();
   cy.removeChip('m (4)');
 
-  cy.get('.gb-constraint-cohort-type-dropdown').get('.ui-dropdown').eq(0).click();
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biosource ID').click();
+  cy.get('.gb-constraint-dimension-dropdown').get('.ui-dropdown').eq(0).click();
+  cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('Biosource ID').click();
 
   cy.drag('CLINICAL_TRIAL ').drop(1);
   cy.get('.update-btn').eq(0).click();
@@ -145,9 +145,9 @@ when('I create a cohort with multiple dimensions constraint', () => {
 })
 
 then('the current cohort has multiple dimensions selected', () => {
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(0).contains('Biosource ID');
-  cy.get('.gb-constraint-cohort-type-dropdown').eq(1).contains('patient');
-  cy.get('.gb-constraint-cohort-type-dropdown').should('have.length', 2);
+  cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('Biosource ID');
+  cy.get('.gb-constraint-dimension-dropdown').eq(1).contains('patient');
+  cy.get('.gb-constraint-dimension-dropdown').should('have.length', 2);
   cy.get('gb-combination-constraint').should('have.length', 2);
 })
 

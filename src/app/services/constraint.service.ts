@@ -49,9 +49,9 @@ export class ConstraintService {
   private _concepts: Concept[] = [];
   private _conceptConstraints: Constraint[] = [];
 
-  // List of all available cohort types
-  private _validDimensions: Dimension[] = [];
-  private _validDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
+  // List of all available subject dimensions
+  private _allSubjectDimensions: Dimension[] = [];
+  private _allSubjectDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
 
   /*
    * The maximum number of search results allowed when searching for a constraint
@@ -69,8 +69,8 @@ export class ConstraintService {
 
     // Construct constraints
     this.loadEmptyConstraints();
-    // load valid constraint dimensions
-    this.loadValidDimensions();
+    // load all available subject dimensions
+    this.loadAvailableSubjectDimensions();
     this.loadStudiesConstraints();
     // create the pedigree-related constraints
     this.loadPedigrees();
@@ -90,11 +90,11 @@ export class ConstraintService {
     this.allConstraints.push(new ConceptConstraint());
   }
 
-  private loadValidDimensions() {
-    this.resourceService.validDimensions
+  private loadAvailableSubjectDimensions() {
+    this.resourceService.subjectDimensions
       .subscribe(
-        (validDimensions: Dimension[]) => {
-          this.validDimensions = validDimensions;
+        (allSubjectDimensions: Dimension[]) => {
+          this.allSubjectDimensions = allSubjectDimensions;
         });
   }
 
@@ -289,16 +289,16 @@ export class ConstraintService {
     this._maxNumSearchResults = value;
   }
 
-  get validDimensions(): Dimension[] {
-    return this._validDimensions;
+  get allSubjectDimensions(): Dimension[] {
+    return this._allSubjectDimensions;
   }
 
-  set validDimensions(values: Dimension[]) {
-    this._validDimensions = values;
-    this.validDimensionsUpdated.next(values);
+  set allSubjectDimensions(values: Dimension[]) {
+    this._allSubjectDimensions = values;
+    this.allSubjectDimensionsUpdated.next(values);
   }
 
-  get validDimensionsUpdated(): Subject<Dimension[]> {
-    return this._validDimensionsUpdated;
+  get allSubjectDimensionsUpdated(): Subject<Dimension[]> {
+    return this._allSubjectDimensionsUpdated;
   }
 }

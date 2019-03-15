@@ -21,8 +21,10 @@ export class Concept {
   private _counts: CountItem;
   // a flag indicating if the concept is selected/checked/marked
   private _selected = true;
+  private _subjectDimensions: string[];
 
   constructor() {
+    this.subjectDimensions = [];
   }
 
   copy(): Concept {
@@ -35,6 +37,7 @@ export class Concept {
     c.fullName = this.fullName;
     c.counts = this.counts;
     c.selected = this.selected;
+    c.subjectDimensions = this.subjectDimensions;
     return c;
   }
 
@@ -100,5 +103,13 @@ export class Concept {
 
   set counts(value: CountItem) {
     this._counts = value;
+  }
+
+  get subjectDimensions(): string[] {
+    return this._subjectDimensions;
+  }
+
+  set subjectDimensions(value: string[]) {
+    this._subjectDimensions = value;
   }
 }

@@ -28,6 +28,8 @@ import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
 import {Constraint} from '../../../../models/constraint-models/constraint';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -102,17 +104,17 @@ describe('GbCombinationConstraintComponent', () => {
     component.constraint = new CombinationConstraint();
     let newDimension = 'test dimension';
     let spy1 = spyOn(component, 'update').and.callThrough();
-    let spy2 = spyOn(component, 'handleCohortTypeChange').and.callThrough();
+    let spy2 = spyOn(component, 'handleSelectedDimensionChange').and.callThrough();
 
     component.selectedDimension = newDimension;
-    component.onCohortTypeChange();
+    component.onSelectedDimensionChange();
 
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect((<CombinationConstraint>component.constraint).dimension).toBe(newDimension);
   });
 
-  it('should propagate selected cohort type', () => {
+  it('should not propagate selected cohort type on children combination constraint', () => {
     let constraint1 = new StudyConstraint();
     let constraint2 = new CombinationConstraint();
     let constraint21 = new ConceptConstraint();
@@ -124,7 +126,7 @@ describe('GbCombinationConstraintComponent', () => {
     (<CombinationConstraint>component.constraint).addChild(constraint2);
 
     component.selectedDimension = 'test dimension';
-    component.onCohortTypeChange();
+    component.onSelectedDimensionChange();
 
     expect((<CombinationConstraint>(<CombinationConstraint>component.constraint)
       .children[1]).dimension).toEqual(CombinationConstraint.TOP_LEVEL_DIMENSION);
@@ -148,6 +150,54 @@ describe('GbCombinationConstraintComponent', () => {
 
     component.constraint = constraint12;
     expect(component.subjectBoxMessage).toBe('the patient is linked to a');
+  });
+
+  it('should wrap concept constraint with combination when concept restricted to a dimensions', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+
+    let selectedConceptConstraint = new ConceptConstraint();
+    selectedConceptConstraint.concept = new Concept();
+    selectedConceptConstraint.concept.subjectDimensions.push('Biosource ID');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('CombinationConstraint');
+    expect((<CombinationConstraint>children[0]).dimension).toBe('Biosource ID');
+    expect((<CombinationConstraint>children[0]).children.length).toBe(1);
+    expect((<CombinationConstraint>children[0]).children[0].className).toBe('ConceptConstraint');
+  });
+
+  it('should not wrap concept constraint with combination when concept not restricted to dimensions', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+
+    let selectedConceptConstraint = new ConceptConstraint();
+    selectedConceptConstraint.concept = new Concept();
+    selectedConceptConstraint.concept.subjectDimensions.push('Diagnosis ID');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('ConceptConstraint');
+  });
+
+  it('should wrap pedigree constraint with patient-level combination', () => {
+    component.constraint = new CombinationConstraint();
+    (<CombinationConstraint>component.constraint).dimension = 'Diagnosis ID';
+    let selectedConceptConstraint = new PedigreeConstraint('PAR');
+
+    component.onSelect(selectedConceptConstraint);
+    expect((<CombinationConstraint>component.constraint).dimension).toBe('Diagnosis ID');
+    let children = (<CombinationConstraint>component.constraint).children;
+    expect(children.length).toBe(1);
+    expect(children[0].className).toBe('CombinationConstraint');
+    expect((<CombinationConstraint>children[0]).dimension).toBe('patient');
+    expect((<CombinationConstraint>children[0]).children.length).toBe(1);
+    expect((<CombinationConstraint>children[0]).children[0].className).toBe('PedigreeConstraint');
   });
 
 });
