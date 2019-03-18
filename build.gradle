@@ -1,28 +1,28 @@
 import groovy.json.JsonSlurper
 
 buildscript {
-    ext {
-        gradleNodeVersion = '1.2.0'
-    }
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    dependencies {
-        classpath "com.moowork.gradle:gradle-node-plugin:${gradleNodeVersion}"
-        classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-    }
+  ext {
+    gradleNodeVersion = '1.2.0'
+  }
+  repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url 'https://plugins.gradle.org/m2/' }
+  }
+  dependencies {
+    classpath "com.moowork.gradle:gradle-node-plugin:${gradleNodeVersion}"
+    classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
+  }
 }
 
 def versionFile = new File('src/app/config/config.default.json')
 def versionObject = new JsonSlurper().parseText(versionFile.text)
 
 ext {
-    glowingBearVersion = versionObject['app-version']
-    nodeVersion = '10.12.0'
-    yarnVersion = '1.10.1'
-    gradleWrapperVersion = '4.0'
+  glowingBearVersion = versionObject['app-version']
+  nodeVersion = '11.10.0'
+  yarnVersion = '1.13.0'
+  gradleWrapperVersion = '4.0'
 }
 
 version = glowingBearVersion
@@ -36,20 +36,20 @@ apply plugin: 'net.linguica.maven-settings'
 apply plugin: 'maven-publish'
 
 repositories {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = gradleWrapperVersion
+  gradleVersion = gradleWrapperVersion
 }
 
 node {
-    version = nodeVersion
-    yarnVersion = yarnVersion
-    download = true
+  version = nodeVersion
+  yarnVersion = yarnVersion
+  download = true
 }
 
 task yarnPackage(type: YarnTask, dependsOn: 'yarn') {
@@ -80,47 +80,47 @@ task yarnCodecov(type: YarnTask, dependsOn: 'yarn') {
 }
 
 clean {
-    delete fileTree(dir: 'dist')
-    delete 'coverage'
+  delete fileTree(dir: 'dist')
+  delete 'coverage'
 }
 
 distributions {
-    main {
-        baseName = 'glowing-bear'
-        contents {
-            from 'dist'
-            include '**'
-        }
+  main {
+    baseName = 'glowing-bear'
+    contents {
+      from 'dist'
+      include '**'
     }
-    cypress {
-        baseName = 'glowing-bear-cypress-tests'
-        contents {
-            from 'cypress'
-            include '**'
-        }
+  }
+  cypress {
+    baseName = 'glowing-bear-cypress-tests'
+    contents {
+      from 'cypress'
+      include '**'
     }
+  }
 }
 
 distZip.enabled = false
 cypressDistTar.enabled = false
 
 publishing {
-    repositories {
-        maven {
-            name 'nl.thehyve.nexus'
-            url 'https://repo.thehyve.nl/content/repositories/snapshots/'
-        }
+  repositories {
+    maven {
+      name 'nl.thehyve.nexus'
+      url 'https://repo.thehyve.nl/content/repositories/snapshots/'
     }
-    publications {
-        app(MavenPublication) {
-            artifactId 'glowing-bear'
-            artifact distTar // Publish the output of the distTar task
-        }
-        cypressTests(MavenPublication) {
-            artifactId 'glowing-bear-cypress-tests'
-            artifact cypressDistZip
-        }
+  }
+  publications {
+    app(MavenPublication) {
+      artifactId 'glowing-bear'
+      artifact distTar // Publish the output of the distTar task
     }
+    cypressTests(MavenPublication) {
+      artifactId 'glowing-bear-cypress-tests'
+      artifact cypressDistZip
+    }
+  }
 }
 publishToMavenLocal.dependsOn 'distTar'
 publish.dependsOn 'distTar'
