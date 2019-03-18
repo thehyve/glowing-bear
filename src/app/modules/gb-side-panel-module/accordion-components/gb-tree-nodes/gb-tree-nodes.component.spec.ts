@@ -76,7 +76,7 @@ describe('TreeNodesComponent', () => {
     expect(component.metadataContent[0].val).toEqual('bar1');
     expect(component.metadataContent[1].key).toEqual('foo2');
     expect(component.metadataContent[1].val).toEqual('bar2');
-  })
+  });
 
   it('should update event listners', () => {
     let elm = {
@@ -89,11 +89,11 @@ describe('TreeNodesComponent', () => {
           return null;
         }
       }
-    };
+    } as Element;
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
-    }
+    };
     let treeNodeElmIcon = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
@@ -113,7 +113,7 @@ describe('TreeNodesComponent', () => {
     expect(spy2).not.toHaveBeenCalled();
     expect(spy3).toHaveBeenCalledTimes(2)
 
-  })
+  });
 
   it('should not add event listeners to treenode icon when there is no metadata', () => {
     let elm = {
@@ -126,14 +126,14 @@ describe('TreeNodesComponent', () => {
           return null;
         }
       }
-    };
+    } as Element;
     let node = {
       type: 'type-A'
     };
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
-    }
+    };
     let treeNodeElmIcon = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
@@ -144,7 +144,7 @@ describe('TreeNodesComponent', () => {
     component.updateEventListeners([elm], [node]);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled()
-  })
+  });
 
   it('should filter tree nodes', () => {
     let result = component.filterWithHighlightTreeNodes(null, '', '');
@@ -186,5 +186,6 @@ describe('TreeNodesComponent', () => {
     component.filterWithHighlightTreeNodes([node], field, word);
     expect(node['styleClass']).not.toBeDefined();
 
-  })
+  });
+
 });

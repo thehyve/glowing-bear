@@ -103,14 +103,14 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * @param treeNodeElements
    * @param treeNodes
    */
-  updateEventListeners(treeNodeElements, treeNodes: GbTreeNode[]) {
+  updateEventListeners(treeNodeElements: Element[], treeNodes: GbTreeNode[]) {
     let index = 0;
     for (let elm of treeNodeElements) {
       let dataObject: GbTreeNode = treeNodes[index];
       let dataObjectType = dataObject.type;
       let metadata = dataObject.metadata;
-      let treeNodeElm = elm.querySelector('li.ui-treenode');
-      let treeNodeElmLabel = elm.querySelector('li.ui-treenode .ui-treenode-label');
+      let treeNodeElm: Element = elm.querySelector('li.ui-treenode');
+      let treeNodeElmLabel: Element = elm.querySelector('li.ui-treenode .ui-treenode-label');
       let handleDragstart = (function (event) {
         event.stopPropagation();
         this.treeNodeService.selectedTreeNode = dataObject;
@@ -138,7 +138,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
-        this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
+        this.updateEventListeners(Array.from(uiTreeNodeChildrenElm.children), dataObject.children);
       }
       index++;
     }
@@ -148,7 +148,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (!this.initUpdated) {
       let treeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
       if (treeContainer) {
-        let treeNodeElements = treeContainer.children;
+        let treeNodeElements: Element[] = Array.from(treeContainer.children);
         if (treeNodeElements && treeNodeElements.length > 0) {
           this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
           this.initUpdated = true;
@@ -161,7 +161,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (this.expansionStatus['expanded']) {
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
-      let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
+      let newChildren: Element[] = Array.from(treeNodeElm.querySelector('ul.ui-treenode-children').children);
       this.updateEventListeners(newChildren, treeNode.children);
 
       this.expansionStatus['expanded'] = false;
@@ -290,7 +290,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       this.removeFalsePrimeNgClasses(this.delay);
 
       window.setTimeout((function () {
-        let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
+        let treeNodeElements: Element[] = Array.from(
+          this.element.nativeElement.querySelector('.ui-tree-container').children);
         let treeNodes = this.treeNodeService.treeNodes;
         this.updateEventListeners(treeNodeElements, treeNodes);
       }).bind(this), this.delay);
