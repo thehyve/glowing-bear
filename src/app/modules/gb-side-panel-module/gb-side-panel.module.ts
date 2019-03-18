@@ -39,6 +39,7 @@ import {
 } from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
 import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import {RouterModule} from '@angular/router';
 
 @NgModule({
   imports: [
@@ -57,6 +58,7 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     ConfirmDialogModule,
     Md2AccordionModule,
     RadioButtonModule,
+    RouterModule,
     ToggleButtonModule,
     CheckboxModule,
     MatExpansionModule,

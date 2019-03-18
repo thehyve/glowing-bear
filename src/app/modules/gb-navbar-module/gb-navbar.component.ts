@@ -18,13 +18,13 @@ import {AppConfig} from '../../config/app.config';
   styleUrls: ['./gb-navbar.component.css']
 })
 export class GbNavbarComponent implements OnInit {
-  appUrl: string;
+  docUrl: string;
   appVersion: string;
 
   constructor(private router: Router,
               private appConfig: AppConfig,
               private navbarService: NavbarService) {
-    this.appUrl = appConfig.getConfig('app-url');
+    this.docUrl = appConfig.getConfig('doc-url');
     this.appVersion = appConfig.getConfig('app-version');
   }
 
