@@ -5,7 +5,7 @@ import {ConceptType} from '../../models/constraint-models/concept-type';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {
   TransmartAndConstraint, TransmartConceptConstraint,
-  TransmartConstraint,
+  TransmartConstraint, TransmartNegationConstraint,
   TransmartRelationConstraint,
   TransmartSubSelectionConstraint,
   TransmartValueConstraint
@@ -343,6 +343,47 @@ describe('TransmartConstraintSerialiser', () => {
       } as TransmartConceptConstraint
     };
     testConstraint(pedigree, expected);
+  });
+
+  it('should serialise combination constraint with negation and subselection', () => {
+    const conceptConstraint = new ConceptConstraint();
+    const concept1 = new Concept();
+    concept1.code = 'TEST';
+    conceptConstraint.concept = concept1;
+
+    const negatedConceptConstraint = new ConceptConstraint();
+    negatedConceptConstraint.negated = true;
+    const concept2 = new Concept();
+    concept2.code = 'NEG:TEST';
+    negatedConceptConstraint.concept = concept2;
+    const combination = new CombinationConstraint(
+      [conceptConstraint, negatedConceptConstraint], CombinationState.And, 'patient');
+
+    const expected: TransmartAndConstraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'concept',
+            conceptCode: 'TEST'
+          }
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'negation',
+          arg: {
+            type: 'subselection',
+            dimension: 'patient',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'NEG:TEST',
+            }
+          } as TransmartSubSelectionConstraint
+        } as TransmartNegationConstraint
+      ]
+    };
+    testConstraint(combination, expected);
   });
 
 });
