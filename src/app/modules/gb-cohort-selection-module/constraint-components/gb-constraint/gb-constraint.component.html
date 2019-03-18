@@ -1,0 +1,36 @@
+<div [class.gb-negated-constraint]="constraint.negated" [class.gb-constraint]="!constraint.negated"
+     [class.gb-constraint-container-root]="isRootClassLevel"
+     [class.gb-constraint-container]="!isRootClassLevel"
+     [class.gb-constraint-container-border-left-1]="!isRootClassLevel && constraintDepth === 1"
+     [class.gb-constraint-container-border-left-2]="!isRootClassLevel && constraintDepth === 2"
+     [class.gb-constraint-container-border-left-3]="!isRootClassLevel && constraintDepth === 3"
+     [class.gb-constraint-container-border-left-4]="!isRootClassLevel && constraintDepth === 4">
+
+  <div *ngIf="!isRoot" class="pull-right form-inline gb-constraint-control-container">
+
+    <!-- Exclusion switch -->
+    <span>{{constraint.negated ? 'excluded' : 'included'}}</span>
+    <p-inputSwitch [(ngModel)]="constraint.negated" (onChange)="update()"></p-inputSwitch>
+    <!-- Remove Button -->
+    <button type="button"
+            class="btn btn-outline-danger btn-sm gb-constraint-remove-btn"
+            (click)="remove()">
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div *ngIf="showObservationBoxMessage" class="form-inline">
+    <label>{{observationBoxMessage}}</label>
+  </div>
+  <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
+                             [constraint]="constraint"></gb-combination-constraint>
+  <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "
+                         [constraint]="constraint"></gb-concept-constraint>
+  <gb-study-constraint *ngIf="constraint.className === 'StudyConstraint' "
+                       [constraint]="constraint"></gb-study-constraint>
+  <gb-subject-set-constraint *ngIf="constraint.className === 'SubjectSetConstraint' "
+                             [constraint]="constraint"></gb-subject-set-constraint>
+  <gb-pedigree-constraint *ngIf="constraint.className === 'PedigreeConstraint' "
+                             [constraint]="constraint"></gb-pedigree-constraint>
+</div>
+

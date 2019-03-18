@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,15 +18,19 @@ import {Concept} from '../models/constraint-models/concept';
 import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {AppConfigMock} from '../config/app.config.mock';
 import {AppConfig} from '../config/app.config';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {GbBackendHttpService} from './http/gb-backend-http.service';
+import {GbBackendHttpServiceMock} from './mocks/gb-backend-http.service.mock';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
   let transmartResourceService: TransmartResourceService;
+  let gbBackendHttpService: GbBackendHttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -37,6 +41,10 @@ describe('ResourceService', () => {
           useClass: TransmartResourceServiceMock
         },
         {
+          provide: GbBackendHttpService,
+          useClass: GbBackendHttpServiceMock
+        },
+        {
           provide: AppConfig,
           useClass: AppConfigMock
         }
@@ -44,6 +52,7 @@ describe('ResourceService', () => {
     });
     resourceService = TestBed.get(ResourceService);
     transmartResourceService = TestBed.get(TransmartResourceService);
+    gbBackendHttpService = TestBed.get(GbBackendHttpService);
   });
 
   it('should be injected', inject([ResourceService], (service: ResourceService) => {
@@ -62,22 +71,20 @@ describe('ResourceService', () => {
       }, err => {
         expect(err).toBeDefined();
       })
-  })
+  });
 
-  it('should udpate inclusion and exclusion counts', () => {
+  it('should update cohort selection counts', () => {
     let dummy = new TrueConstraint();
-    resourceService.updateInclusionExclusionCounts(dummy, dummy, dummy)
-      .then(() => {
-        expect(resourceService.inclusionCounts.subjectCount).toEqual(10);
-        expect(resourceService.exclusionCounts.subjectCount).toEqual(0);
-        expect(resourceService.selectedStudyConceptCountMap.size).toEqual(1);
+    resourceService.updateCohortSelectionCounts(dummy)
+      .then((cohortSelectionCounts) => {
+        expect(cohortSelectionCounts.subjectCount).toEqual(10);
       });
     resourceService.endpointMode = null;
-    resourceService.updateInclusionExclusionCounts(dummy, dummy, dummy)
+    resourceService.updateCohortSelectionCounts(dummy)
       .catch(err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per concept', () => {
     let dummy = new TrueConstraint();
@@ -85,28 +92,28 @@ describe('ResourceService', () => {
       .subscribe((map: Map<string, CountItem>) => {
         expect(map.size).toBe(2);
         expect(map.has('EHR:VSIGN:HR')).toBe(true);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerConcept(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per study', () => {
     let dummy = new TrueConstraint();
     resourceService.getCountsPerStudy(dummy)
       .subscribe((map: Map<string, CountItem>) => {
         expect(map.size).toBe(2);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerStudy(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts per study and concept', () => {
     let dummy = new TrueConstraint();
@@ -114,14 +121,14 @@ describe('ResourceService', () => {
       .subscribe((map: Map<string, Map<string, CountItem>>) => {
         expect(map.size).toBe(1);
         expect(map.get('EHR').size).toBe(2);
-      })
+      });
     resourceService.endpointMode = null;
     resourceService.getCountsPerStudyAndConcept(dummy)
       .subscribe((map: Map<string, Map<string, CountItem>>) => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get counts', () => {
     let dummy = new TrueConstraint();
@@ -136,7 +143,7 @@ describe('ResourceService', () => {
       }, err => {
         expect(err).toBeDefined();
       });
-  })
+  });
 
   it('should get aggregate', () => {
     let dummy = new ConceptConstraint();
@@ -206,17 +213,31 @@ describe('ResourceService', () => {
       });
   });
 
-  it('should get queries', () => {
-    resourceService.getQueries()
-      .subscribe((queries: Query[]) => {
-        expect(queries.length).toBe(2);
-        expect(queries[0].subjectQuery.className).toBe('TrueConstraint');
-        expect(queries[0].observationQuery.data.length).toBe(1);
-        expect(queries[1].subjectQuery.className).toBe('CombinationConstraint');
-        expect(queries[1].observationQuery.data.length).toBe(3);
+  it('should get cohorts', () => {
+    const getQueriesSpy = spyOn(gbBackendHttpService, 'getQueries').and.callThrough();
+    resourceService.getCohorts()
+      .subscribe((res: Cohort[]) => {
+        expect(res.length).toBe(2);
+        expect(res[0].constraint.className).toBe('TrueConstraint');
+        expect(res[1].constraint.className).toBe('CombinationConstraint');
       });
     resourceService.endpointMode = null;
-    resourceService.getQueries()
+    resourceService.getCohorts()
+      .subscribe(res => {
+      }, err => {
+        expect(err).toBeDefined();
+      });
+    expect(getQueriesSpy).toHaveBeenCalled();
+  });
+
+  it('should get subjects', () => {
+    resourceService.getSubjects(null)
+      .subscribe((res: TransmartPatient[]) => {
+        expect(res.length).toBe(1);
+        expect(res[0].id).toBe(100);
+      });
+    resourceService.endpointMode = null;
+    resourceService.getCohorts()
       .subscribe(res => {
       }, err => {
         expect(err).toBeDefined();

@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Dimension} from './dimension';
+import {TableDimension} from './table-dimension';
 import {Row} from './row';
 import {Col} from './col';
 import {Constraint} from '../constraint-models/constraint';
@@ -15,8 +15,8 @@ import {TrueConstraint} from '../constraint-models/true-constraint';
 export class DataTable {
 
   private _constraint: Constraint;
-  private _rowDimensions: Array<Dimension>;
-  private _columnDimensions: Array<Dimension>;
+  private _rowDimensions: Array<TableDimension>;
+  private _columnDimensions: Array<TableDimension>;
   /*
    * The structure of the data table
    * _cols    ------> _cols[0],               _cols[1],               _cols[2],               ...
@@ -29,10 +29,6 @@ export class DataTable {
   private _rows: Array<Row>;
   // The index header row, used when headerRows are not used
   private _cols: Array<Col>;
-  // Indicate if the current data table is dirty
-  private _isDirty: boolean;
-  // Indicate if the current data table is updating
-  private _isUpdating: boolean;
   // Indicate if there is no more data to get from the back-end
   private _isLastPage: boolean;
   // The offset and limit used to make table calls with pagination
@@ -43,7 +39,6 @@ export class DataTable {
 
   constructor() {
     this.constraint = new TrueConstraint();
-    this.isDirty = true;
     this.isLastPage = false;
     this.currentPage = 1;
     this.offset = 0;
@@ -66,19 +61,19 @@ export class DataTable {
     this.cols = [];
   }
 
-  get rowDimensions(): Array<Dimension> {
+  get rowDimensions(): Array<TableDimension> {
     return this._rowDimensions;
   }
 
-  set rowDimensions(value: Array<Dimension>) {
+  set rowDimensions(value: Array<TableDimension>) {
     this._rowDimensions = value;
   }
 
-  get columnDimensions(): Array<Dimension> {
+  get columnDimensions(): Array<TableDimension> {
     return this._columnDimensions;
   }
 
-  set columnDimensions(value: Array<Dimension>) {
+  set columnDimensions(value: Array<TableDimension>) {
     this._columnDimensions = value;
   }
 
@@ -104,22 +99,6 @@ export class DataTable {
 
   set constraint(value: Constraint) {
     this._constraint = value;
-  }
-
-  get isDirty(): boolean {
-    return this._isDirty;
-  }
-
-  set isDirty(value: boolean) {
-    this._isDirty = value;
-  }
-
-  get isUpdating(): boolean {
-    return this._isUpdating;
-  }
-
-  set isUpdating(value: boolean) {
-    this._isUpdating = value;
   }
 
   get offset(): number {

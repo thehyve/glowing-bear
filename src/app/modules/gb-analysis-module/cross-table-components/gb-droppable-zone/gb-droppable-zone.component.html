@@ -1,0 +1,25 @@
+<div [pDroppable]="variablesDragDropScope"
+     class="container gb-droppable-zone-container"
+     [ngClass]="{'gb-droppable-zone-container-highlight': dragCounter > 0}"
+     (onDragEnter)="onDragEnter($event)"
+     (onDragLeave)="onDragLeave($event)">
+
+  <div class="row">
+    <div *ngFor="let constraint of constraints"
+         class="gb-draggable-cell-outside-container">
+      <gb-draggable-cell [constraint]="constraint"
+                         (constraintCellRemoved)="onConstraintCellRemoved(constraint)">
+      </gb-draggable-cell>
+    </div>
+    <div *ngIf="constraints.length === 0"
+          class="gb-droppable-zone-info-container" (drop)="onDrop($event)">
+      <span *ngIf="axis == 'Row'">
+        Row drop zone
+      </span>
+        <span *ngIf="axis == 'Column'">
+        Column drop zone
+      </span>
+    </div>
+  </div>
+
+</div>

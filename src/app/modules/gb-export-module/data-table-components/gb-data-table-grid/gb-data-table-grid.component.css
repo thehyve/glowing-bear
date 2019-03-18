@@ -1,0 +1,56 @@
+.grid-container {
+  font-size: small;
+}
+
+:host >>> .grid-container .table-header {
+  border-left: 3px var(--gb-clinical-green-dark) solid !important;
+  border-right: 3px var(--gb-clinical-green-dark) solid !important;
+  background-color: var(--gb-clinical-green-light-light) !important;
+}
+
+:host >>> .grid-container .pagination-container {
+  margin: 10px 0px 0px 0px;
+  text-align: center;
+}
+
+:host >>> .grid-container .pagination-container .btn-outline-secondary {
+  color: GrayText;
+  border: none;
+}
+
+:host >>> .grid-container .pagination-container .btn-outline-secondary:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+
+:host >>> .grid-container .pagination-container .btn-outline-secondary:active {
+  font-weight: bolder;
+  background-color: var(--gb-clinical-green-light-light);
+}
+
+
+:host >>> .grid-container .ui-resizable-column {
+  background-color: white;
+  border: solid lightgray 1px;
+  text-align: center;
+  min-width: 30px;
+  width: 100px;
+}
+
+/*
+ * Change the primeng data table border to lightgrey
+ */
+.ui-datatable .ui-datatable-thead > tr > th,
+.ui-datatable .ui-datatable-tfoot > tr > td,
+.ui-datatable .ui-datatable-data > tr > td {
+  border-color: lightgrey;
+}
+
+/*
+ * Change the primeng tooltip for data table cells
+ */
+.ui-tooltip.ui-widget.ui-tooltip-right,
+.ui-tooltip.ui-widget.ui-tooltip-left {
+  font-size: x-small;
+  width: 300px;
+  min-width: 300px;
+}

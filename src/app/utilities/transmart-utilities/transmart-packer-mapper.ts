@@ -6,8 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {ExportJob} from '../../models/export-models/export-job';
-import {TransmartPackerJob} from '../../models/transmart-models/transmart-packer-job';
+import {TransmartPackerJob} from '../../models/transmart-packer-models/transmart-packer-job';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 
 const statusDictionary: { [status: string]: string | undefined } = {

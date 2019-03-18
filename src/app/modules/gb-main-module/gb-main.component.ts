@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,11 +11,15 @@ import {AuthenticationService} from '../../services/authentication/authenticatio
 import {ResourceService} from '../../services/resource.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
-import {QueryService} from '../../services/query.service';
-import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
+import {CohortService} from '../../services/cohort.service';
 import {AppConfig} from '../../config/app.config';
-import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
-import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {FractalisService} from '../../services/fractalis.service';
+import {TransmartResourceService} from '../../services/transmart-resource.service';
+import {TransmartPackerHttpService} from '../../services/http/transmart-packer-http.service';
+import {TransmartHttpService} from '../../services/http/transmart-http.service';
+import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
+import {VariableService} from '../../services/variable.service';
+import {CountService} from '../../services/count.service';
 
 @Component({
   selector: 'gb-main',
@@ -27,12 +31,16 @@ export class GbMainComponent implements OnInit {
   constructor(private appConfig: AppConfig,
               private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
+              private gbBackendHttpService: GbBackendHttpService,
               private transmartResourceService: TransmartResourceService,
               private transmartHttpService: TransmartHttpService,
               private transmartPackerHttpService: TransmartPackerHttpService,
+              private countService: CountService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
-              private queryService: QueryService) {
+              private cohortService: CohortService,
+              private variableService: VariableService,
+              private fractalisService: FractalisService) {
   }
 
   ngOnInit() {

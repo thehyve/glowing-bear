@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,8 +11,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {APP_BASE_HREF} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';
-import {QueryService} from '../../services/query.service';
-import {QueryServiceMock} from '../../services/mocks/query.service.mock';
+import {CohortService} from '../../services/cohort.service';
+import {CohortServiceMock} from '../../services/mocks/cohort.service.mock';
 import {NavbarService} from '../../services/navbar.service';
 import {NavbarServiceMock} from '../../services/mocks/navbar.service.mock';
 import {GbMainComponent} from './gb-main.component';
@@ -23,8 +23,8 @@ import {GrowlModule} from 'primeng/growl';
 import {GbAnalysisModule} from '../gb-analysis-module/gb-analysis.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
-import {GbDataSelectionModule} from '../gb-data-selection-module/gb-data-selection.module';
-import {TransmartHttpService} from '../../services/transmart-services/transmart-http.service';
+import {GbCohortSelectionModule} from '../gb-cohort-selection-module/gb-cohort-selection.module';
+import {TransmartHttpService} from '../../services/http/transmart-http.service';
 import {DataTableService} from '../../services/data-table.service';
 import {ExportService} from '../../services/export.service';
 import {CrossTableServiceMock} from '../../services/mocks/cross-table.service.mock';
@@ -43,10 +43,18 @@ import {AuthenticationServiceMock} from '../../services/mocks/authentication.ser
 import {AngularSplitModule} from 'angular-split';
 import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
-import {TransmartPackerHttpService} from '../../services/transmart-services/transmart-packer-http.service';
+import {TransmartPackerHttpService} from '../../services/http/transmart-packer-http.service';
 import {TransmartPackerHttpServiceMock} from '../../services/mocks/transmart-packer-http.service.mock';
-import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
+import {TransmartResourceService} from '../../services/transmart-resource.service';
 import {TransmartResourceServiceMock} from '../../services/mocks/transmart-resource.service.mock';
+import {FractalisService} from '../../services/fractalis.service';
+import {FractalisServiceMock} from '../../services/mocks/fractalis.service.mock';
+import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
+import {GbBackendHttpServiceMock} from '../../services/mocks/gb-backend-http.service.mock';
+import {VariableService} from '../../services/variable.service';
+import {VariableServiceMock} from '../../services/mocks/variable.service.mock';
+import {CountService} from '../../services/count.service';
+import {CountServiceMock} from '../../services/mocks/count.service.mock';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -66,7 +74,7 @@ describe('GbMainComponent', () => {
         GrowlModule,
         GbNavBarModule,
         GbSidePanelModule,
-        GbDataSelectionModule,
+        GbCohortSelectionModule,
         GbAnalysisModule,
         routing
       ],
@@ -96,8 +104,16 @@ describe('GbMainComponent', () => {
           useClass: TransmartPackerHttpServiceMock
         },
         {
+          provide: GbBackendHttpService,
+          useClass: GbBackendHttpServiceMock
+        },
+        {
           provide: ResourceService,
           useClass: ResourceServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
         },
         {
           provide: TreeNodeService,
@@ -108,8 +124,16 @@ describe('GbMainComponent', () => {
           useClass: ConstraintServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: VariableService,
+          useClass: VariableServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        {
+          provide: FractalisService,
+          useClass: FractalisServiceMock
         },
         {
           provide: DataTableService,

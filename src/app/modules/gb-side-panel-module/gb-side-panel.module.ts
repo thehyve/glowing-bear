@@ -15,21 +15,30 @@ import {DataListModule} from 'primeng/components/datalist/datalist';
 import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
 import {TreeDragDropService} from 'primeng/components/common/api';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
-import {GbQueriesComponent} from './accordion-components/gb-queries/gb-queries.component';
+import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.component';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
   AutoCompleteModule,
   ButtonModule,
+  CheckboxModule,
   ConfirmationService,
   ConfirmDialogModule,
   InputTextModule,
   PanelModule,
   RadioButtonModule,
+  SelectButtonModule,
+  ToggleButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {Md2AccordionModule} from 'md2';
-import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
+import {GbVariablesComponent} from './accordion-components/gb-variables/gb-variables.component';
+import {MatExpansionModule} from '@angular/material';
+import {
+  GbCategorizedVariablesComponent
+} from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
+import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 
 @NgModule({
   imports: [
@@ -47,13 +56,20 @@ import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.c
     TooltipModule,
     ConfirmDialogModule,
     Md2AccordionModule,
-    RadioButtonModule
+    RadioButtonModule,
+    ToggleButtonModule,
+    CheckboxModule,
+    MatExpansionModule,
+    SelectButtonModule,
+    GbGenericModule
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
-    GbQueriesComponent,
-    GbSummaryComponent
+    GbCohortsComponent,
+    GbVariablesComponent,
+    GbCategorizedVariablesComponent,
+    GbVariablesTreeComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]

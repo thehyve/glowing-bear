@@ -40,4 +40,12 @@ export class StudyConstraint extends Constraint {
   set textRepresentation(value: string) {
     this._textRepresentation = value;
   }
+
+  clone(): StudyConstraint {
+    const clone = new StudyConstraint();
+    clone.studies = this.studies;
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

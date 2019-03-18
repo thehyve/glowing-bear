@@ -7,7 +7,9 @@
  */
 
 import {CrossTable} from '../../models/table-models/cross-table';
-import {GbDraggableCellComponent} from '../../modules/gb-analysis-module/gb-draggable-cell/gb-draggable-cell.component';
+import {
+  GbDraggableCellComponent
+} from '../../modules/gb-analysis-module/cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {Concept} from '../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
@@ -18,6 +20,8 @@ import {Col} from '../../models/table-models/col';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {FormatHelper} from '../../utilities/format-helper';
+import {ValueType} from '../../models/constraint-models/value-type';
+import {Operator} from '../../models/constraint-models/operator';
 
 export class CrossTableServiceMock {
   public readonly PrimeNgDragAndDropContext = 'PrimeNgDragAndDropContext';
@@ -142,8 +146,8 @@ export class CrossTableServiceMock {
     let categories = categoricalAggregate.values;
     for (let category of categories) {
       let val = new ValueConstraint();
-      val.valueType = 'STRING';
-      val.operator = '=';
+      val.valueType = <ValueType>'string';
+      val.operator = Operator.eq;
       val.value = (category === FormatHelper.nullValuePlaceholder) ? null : category;
       val.textRepresentation = val.value.toString();
       let combi = new CombinationConstraint();
@@ -385,6 +389,7 @@ export class CrossTableServiceMock {
     return false;
   }
 
-  clear() {}
+  clear() {
+  }
 
 }

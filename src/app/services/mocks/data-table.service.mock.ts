@@ -6,42 +6,46 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Dimension} from '../../models/table-models/dimension';
+import {TableDimension} from '../../models/table-models/table-dimension';
 import {DataTable} from '../../models/table-models/data-table';
 import {Row} from '../../models/table-models/row';
 import {Col} from '../../models/table-models/col';
-import {DimensionValue} from '../../models/table-models/dimension-value';
+import {TableDimensionValue} from '../../models/table-models/table-dimension-value';
+import {Subject} from 'rxjs';
 
 export class DataTableServiceMock {
 
-  private _prevRowDimensions: Array<Dimension>;
-  private _prevColDimensions: Array<Dimension>;
+  private _prevRowDimensions: Array<TableDimension>;
+  private _prevColDimensions: Array<TableDimension>;
   private _dataTable: DataTable;
   private _currentPage: number;
+  dataTableUpdated: Subject<any>;
 
   constructor() {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
     this.currentPage = 1;
+    this.dataTableUpdated = new Subject();
+    this.dataTableUpdated.next();
   }
 
   updateDataTable(targetDataTable?: DataTable) {
   }
 
-  get prevRowDimensions(): Array<Dimension> {
+  get prevRowDimensions(): Array<TableDimension> {
     return this._prevRowDimensions;
   }
 
-  set prevRowDimensions(value: Array<Dimension>) {
+  set prevRowDimensions(value: Array<TableDimension>) {
     this._prevRowDimensions = value;
   }
 
-  get prevColDimensions(): Array<Dimension> {
+  get prevColDimensions(): Array<TableDimension> {
     return this._prevColDimensions;
   }
 
-  set prevColDimensions(value: Array<Dimension>) {
+  set prevColDimensions(value: Array<TableDimension>) {
     this._prevColDimensions = value;
   }
 
@@ -69,19 +73,19 @@ export class DataTableServiceMock {
     return this.dataTable.cols;
   }
 
-  get rowDimensions(): Dimension[] {
+  get rowDimensions(): TableDimension[] {
     return this.dataTable.rowDimensions;
   }
 
-  set rowDimensions(value: Dimension[]) {
+  set rowDimensions(value: TableDimension[]) {
     this.dataTable.rowDimensions = value;
   }
 
-  get columnDimensions(): Dimension[] {
+  get columnDimensions(): TableDimension[] {
     return this.dataTable.columnDimensions;
   }
 
-  set columnDimensions(value: Dimension[]) {
+  set columnDimensions(value: TableDimension[]) {
     this.dataTable.columnDimensions = value;
   }
 }

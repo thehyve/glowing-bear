@@ -1,0 +1,14 @@
+<div>
+  <div class="float-right">
+    <button type="button"
+            (click)="update()"
+            class="btn btn-outline-primary btn-sm update-btn
+                      {{isDirty? 'update-btn-dirty' : ''}}">
+      <span *ngIf="isUpdating">Updating table...</span>
+      <span *ngIf="!isUpdating">Update table</span>
+    </button>
+  </div>
+
+  <gb-data-table-dimensions></gb-data-table-dimensions>
+  <gb-data-table-grid></gb-data-table-grid>
+</div>

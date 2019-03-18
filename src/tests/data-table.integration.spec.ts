@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,12 +17,16 @@ import {ConstraintService} from '../app/services/constraint.service';
 import {StudyService} from '../app/services/study.service';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
-import {TransmartHttpService} from '../app/services/transmart-services/transmart-http.service';
+import {TransmartHttpService} from '../app/services/http/transmart-http.service';
 import {TransmartHttpServiceMock} from '../app/services/mocks/transmart-http.service.mock';
-import {TransmartResourceService} from '../app/services/transmart-services/transmart-resource.service';
-import {TransmartPackerHttpService} from '../app/services/transmart-services/transmart-packer-http.service';
+import {TransmartResourceService} from '../app/services/transmart-resource.service';
+import {TransmartPackerHttpService} from '../app/services/http/transmart-packer-http.service';
 import Spy = jasmine.Spy;
 import {TransmartPackerHttpServiceMock} from '../app/services/mocks/transmart-packer-http.service.mock';
+import {GbBackendHttpService} from '../app/services/http/gb-backend-http.service';
+import {GbBackendHttpServiceMock} from '../app/services/mocks/gb-backend-http.service.mock';
+import {VariableService} from '../app/services/variable.service';
+import {VariableServiceMock} from '../app/services/mocks/variable.service.mock';
 
 const mockResponseData = {
   'columnDimensions': [{
@@ -174,8 +178,16 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
           useClass: TransmartPackerHttpServiceMock
         },
         {
+          provide: GbBackendHttpService,
+          useClass: GbBackendHttpServiceMock
+        },
+        {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         {
           provide: AppConfig,
@@ -207,7 +219,17 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
 
     dataTableService.updateDataTable();
 
-    // After the studies have been loaded, and the data table service has been initialised ...
+    /**
+     * After the studies have been loaded, and the data table service has been initialised ...
+     * The sequence of calls goes as follows:
+     * variable.service:variablesUpdated ->
+     * data-table.service:updateDataTable ->
+     * resource.service:getDataTable ->
+     * transmart-resource.service:getDataTable ->
+     * transmart-resource.service:getDimensions ->
+     * transmart-resource.service:getStudyIds ->
+     * transmart-http.service:getStudyIds
+     */
     resourceService.getStudies().subscribe(() => {
 
       // the table should be updated.

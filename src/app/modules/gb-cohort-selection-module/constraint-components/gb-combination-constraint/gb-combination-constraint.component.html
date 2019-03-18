@@ -1,0 +1,55 @@
+<div class="gb-combination-constraint-container" (drop)="onDrop($event)">
+
+  <div *ngIf="!hideDimensionDropdown" class="form-inline gb-constraint-dimension-dropdown">
+    <label>{{subjectBoxMessage}}</label>
+    <p-dropdown [options]="dimensions" [(ngModel)]="selectedDimension"
+                [disabled]="dimensions.length === 1"
+                [dropdownIcon]="dimensions.length === 1 ? '' : 'pi pi-chevron-down'"
+                (onChange)="onSelectedDimensionChange()" [autoWidth]="false" [style]="{'min-width':'10em'} ">
+      <ng-template let-item pTemplate="selectedItem">
+        <i class="{{getDimensionIcon(item.label)}} gb-dimension-icon"></i>&nbsp;{{item.label}}
+      </ng-template>
+      <ng-template let-dimension pTemplate="item">
+        <i class="{{getDimensionIcon(dimension.label)}} gb-dimension-icon"></i>&nbsp;{{dimension.label}}
+      </ng-template>
+    </p-dropdown>
+  </div>
+
+  <div class="{{childContainerClass}}">
+    <!-- Child Constraints -->
+    <div *ngFor="let child of children; let i = index">
+      <div *ngIf="i > 0" class="gb-constraint-state-container">
+        <button type="button" class="btn btn-outline-primary btn-sm"
+                (click)="toggleJunction()" [ngSwitch]="combinationState">
+          <i *ngSwitchCase="CombinationState.And">and</i>
+          <i *ngSwitchCase="CombinationState.Or">or</i>
+        </button>
+      </div>
+      <gb-constraint [constraint]="child"
+                     (constraintRemoved)="onConstraintRemoved(child)"></gb-constraint>
+    </div>
+
+    <div class="form-inline gb-combination-constraint-input-container">
+
+      <button type="button"
+              (click)="addChildCombinationConstraint()"
+              class="btn btn-outline-secondary gb-combination-constraint-add-btn"
+              pTooltip="Add group constraint">
+        <span class="fa fa-plus"></span>
+      </button>
+      <p-autoComplete #autoComplete
+                      [(ngModel)]="selectedConstraint"
+                      [suggestions]="searchResults"
+                      field="textRepresentation"
+                      (completeMethod)="onSearch($event)"
+                      (onSelect)="onSelect($event)"
+                      [style]="{'width':'100%'}"
+                      [inputStyle]="{'width':'100%'}"
+                      size="60"
+                      dropdown="true"
+                      (onDropdownClick)="onDropdown($event)"
+                      placeholder="add criterion"></p-autoComplete>
+    </div>
+  </div>
+
+</div>

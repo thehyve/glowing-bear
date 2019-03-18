@@ -5,32 +5,43 @@ given("I am on the login page", () => {
 given("I am logged in as {string}", (user) => {
   cy.visit('');
   cy.fixture(user).as("user");
-  cy.get('@user').then((userData) => {
-    if(Cypress.env('authentication-service-type') == 'oidc'){
-      cy.keycloakLogin(userData.username, userData.password);
-    } else {
-      cy.transmartLogin(userData.username, userData.password, userData.valid);
-    }
-  });
-  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
-  cy.contains("Step 1").should('be.visible');
+  cy.login();
+  cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
+  cy.contains("Summary:").should('be.visible');
 });
 
-given("I am on the data-selection tab", () => {
+given("I am on the cohort-selection tab", () => {
   cy.server();
   cy.route('POST', '**/v2/observations/counts_per_study').as('getCounts');
-  cy.visit('/data-selection');
+  cy.visit('/cohort-selection');
   cy.fixture('admin').as("user");
-  cy.get('@user').then((userData) => {
-      if(Cypress.env('authentication-service-type') == 'oidc'){
-        cy.keycloakLogin(userData.username, userData.password);
-      } else {
-        cy.transmartLogin(userData.username, userData.password, userData.valid);
-      }
-  });
-  cy.url().should('eq', Cypress.config('baseUrl') + '/data-selection');
+  cy.login();
+  cy.url().should('eq', Cypress.config('baseUrl') + '/cohort-selection');
   cy.get('input[placeholder="add criterion"]').eq(0).should('be.visible');
-
-  cy.wait('@getCounts', {timeout: 10000});
+  cy.wait('@getCounts');
 });
 
+given("I am on the Analysis tab", () => {
+  cy.server();
+  cy.visit('/analysis');
+  cy.fixture('admin').as("user");
+  cy.login();
+  cy.url().should('eq', Cypress.config('baseUrl') + '/analysis');
+  cy.get('.section-banner').first().contains('New chart');
+  cy.get('.section-banner').last().contains('Charts');
+  cy.get('.fractalis-control-container').contains('crosstable');
+});
+
+given("I am on the export tab", () => {
+  cy.server();
+  cy.visit('/export');
+  cy.fixture('admin').as("user");
+  cy.login();
+  cy.url().should('eq', Cypress.config('baseUrl') + '/export');
+  cy.get('.section-banner').first().contains('Data Table');
+  cy.get('.section-banner').last().contains('Recent exports');
+});
+
+then('I should see the message containing {string}', (msg) => {
+  cy.get('.ui-growl.ui-widget').contains(msg);
+});

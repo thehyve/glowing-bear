@@ -18,6 +18,7 @@ import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-c
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {Concept} from '../../models/constraint-models/concept';
 import {TransmartConstraintSerialiser} from '../transmart-utilities/transmart-constraint-serialiser';
+import {Operator} from '../../models/constraint-models/operator';
 
 describe('ConstraintVisitor', () => {
 
@@ -26,11 +27,13 @@ describe('ConstraintVisitor', () => {
     const concept = new Concept();
     concept.name = 'Concept name';
     conceptConstraint.concept = concept;
+    const valueConstraint = new ValueConstraint();
+    valueConstraint.operator = Operator.eq;
     const constraints = [
       new TrueConstraint(),
       new StudyConstraint(),
       conceptConstraint,
-      new ValueConstraint(),
+      valueConstraint,
       new NegationConstraint(new TrueConstraint()),
       new CombinationConstraint(),
       new PedigreeConstraint('PAR'),
@@ -45,6 +48,20 @@ describe('ConstraintVisitor', () => {
       expect(visitor.visit(constraint)).toBeDefined(
         `Visitor does not give a result for constraint type: ${constraint.className}`);
     }
+  });
+
+  it('TransmartConstraintSerialiser should include negation', () => {
+    const studyConstraint = new StudyConstraint();
+    studyConstraint.negated = true;
+    let visitor = new TransmartConstraintSerialiser(false);
+
+    let spy1 = spyOn(visitor, 'visitNegationConstraint').and.callThrough();
+    let spy2 = spyOn(visitor, 'visitStudyConstraint').and.callThrough();
+
+    expect(visitor.visit(studyConstraint)).toBeDefined(
+      `Visitor does not give a result for constraint type: ${studyConstraint.className}`);
+    expect(spy1).toHaveBeenCalled();
+    expect(spy2).toHaveBeenCalled();
   });
 
 });

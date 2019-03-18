@@ -1,17 +1,12 @@
-<div class="gb-side-panel-container">
+<div class="side-panel-container">
   <div class="gb-logo-panel">
     <img src="../../../assets/icons/glowingbear.png" (click)="goToDocUrl()">
     <span class="gb-logo-text" (click)="goToDocUrl()">GLOWING BEAR</span>
   </div>
 
-  <div class="gb-side-accordion-container">
-    <p-accordion [multiple]="true">
+  <div class="accordion-container">
 
-      <div>
-        <p-accordionTab header="Current Data Selection" [selected]="true">
-          <gb-summary></gb-summary>
-        </p-accordionTab>
-      </div>
+    <p-accordion [multiple]="true">
 
       <div *ngIf="isDataSelection">
         <p-accordionTab header="Ontology" [selected]="true">
@@ -19,12 +14,15 @@
         </p-accordionTab>
       </div>
 
-      <div *ngIf="isDataSelection">
-        <p-accordionTab header="Queries" [selected]="true">
-          <gb-queries></gb-queries>
-        </p-accordionTab>
-      </div>
+      <p-accordionTab header="Cohorts" [selected]="true">
+        <gb-cohorts></gb-cohorts>
+      </p-accordionTab>
+
+      <p-accordionTab header="Variables" [selected]="true">
+        <gb-variables></gb-variables>
+      </p-accordionTab>
 
     </p-accordion>
   </div>
+
 </div>

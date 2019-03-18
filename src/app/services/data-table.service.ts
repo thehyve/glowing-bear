@@ -1,37 +1,57 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {Injectable} from '@angular/core';
-import {Dimension} from '../models/table-models/dimension';
+import {TableDimension} from '../models/table-models/table-dimension';
 import {DataTable} from '../models/table-models/data-table';
 import {Row} from '../models/table-models/row';
 import {ResourceService} from './resource.service';
 import {Col} from '../models/table-models/col';
-import {ConstraintService} from './constraint.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
+import {Subject} from 'rxjs';
+import {VariableService} from './variable.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class DataTableService {
 
-  private _prevRowDimensions: Array<Dimension>;
-  private _prevColDimensions: Array<Dimension>;
+  private _prevRowDimensions: Array<TableDimension>;
+  private _prevColDimensions: Array<TableDimension>;
   private _dataTable: DataTable;
+// Indicate if the current data table is dirty
+  private _isDirty: boolean;
+  // Indicate if the current data table is updating
+  private _isUpdating: boolean;
+  // Emit event when data table is done updating
+  private _dataTableUpdated: Subject<any>;
 
   constructor(private resourceService: ResourceService,
-              private constraintService: ConstraintService) {
+              private variableService: VariableService) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
+    this.isDirty = false;
+    this.isUpdating = false;
+    this.dataTableUpdated = new Subject();
+    this.variableService.variablesUpdated.asObservable()
+      .subscribe(() => {
+        this.updateDataTable();
+      });
+    this.variableService.selectedVariablesUpdated.asObservable()
+      .subscribe(() => {
+        this.isDirty = true;
+      });
   }
 
   public validateDimensions() {
+    this.isDirty = true;
     let sortableDimensions = this.resourceService.sortableDimensions;
     let invalidRowDimensions = this.rowDimensions.filter(dimension =>
       !sortableDimensions.has(dimension.name)
@@ -50,21 +70,22 @@ export class DataTableService {
     }
   }
 
-  updateDataTable(targetDataTable?: DataTable): Promise<any> {
+  public updateDataTable(targetDataTable?: DataTable): Promise<any> {
+
     return new Promise((resolve, reject) => {
-      this.dataTable.isDirty = true;
-      this.dataTable.isUpdating = true;
+      this.isDirty = true;
+      this.isUpdating = true;
       this.dataTable = targetDataTable ? targetDataTable : this.dataTable;
-      const constraint_1_2 = this.constraintService.constraint_1_2();
-      this.dataTable.constraint = constraint_1_2;
+      this.dataTable.constraint = this.variableService.combination;
 
       this.resourceService.getDataTable(this.dataTable)
         .subscribe(
           (newDataTable: DataTable) => {
             // the new data table contains cell values that the old one does not have
             this.dataTable = newDataTable;
-            this.dataTable.isDirty = false;
-            this.dataTable.isUpdating = false;
+            this.isDirty = false;
+            this.isUpdating = false;
+            this.dataTableUpdated.next();
             this.updatePrevDimensions();
             resolve(true);
           },
@@ -90,30 +111,30 @@ export class DataTableService {
     }
   }
 
-  public updatePrevDimensions() {
+  private updatePrevDimensions() {
     this.prevRowDimensions = [];
-    this.rowDimensions.forEach((dim: Dimension) => {
-      this.prevRowDimensions.push(new Dimension(dim.name));
+    this.rowDimensions.forEach((dim: TableDimension) => {
+      this.prevRowDimensions.push(new TableDimension(dim.name));
     });
     this.prevColDimensions = [];
-    this.columnDimensions.forEach((dim: Dimension) => {
-      this.prevColDimensions.push(new Dimension(dim.name));
+    this.columnDimensions.forEach((dim: TableDimension) => {
+      this.prevColDimensions.push(new TableDimension(dim.name));
     });
   }
 
-  get rowDimensions(): Dimension[] {
+  get rowDimensions(): TableDimension[] {
     return this.dataTable.rowDimensions;
   }
 
-  set rowDimensions(value: Dimension[]) {
+  set rowDimensions(value: TableDimension[]) {
     this.dataTable.rowDimensions = value;
   }
 
-  get columnDimensions(): Dimension[] {
+  get columnDimensions(): TableDimension[] {
     return this.dataTable.columnDimensions;
   }
 
-  set columnDimensions(value: Dimension[]) {
+  set columnDimensions(value: TableDimension[]) {
     this.dataTable.columnDimensions = value;
   }
 
@@ -135,20 +156,43 @@ export class DataTableService {
     }
   }
 
-  get prevRowDimensions(): Array<Dimension> {
+  get prevRowDimensions(): Array<TableDimension> {
     return this._prevRowDimensions;
   }
 
-  set prevRowDimensions(value: Array<Dimension>) {
+  set prevRowDimensions(value: Array<TableDimension>) {
     this._prevRowDimensions = value;
   }
 
-  get prevColDimensions(): Array<Dimension> {
+  get prevColDimensions(): Array<TableDimension> {
     return this._prevColDimensions;
   }
 
-  set prevColDimensions(value: Array<Dimension>) {
+  set prevColDimensions(value: Array<TableDimension>) {
     this._prevColDimensions = value;
   }
 
+  get isDirty(): boolean {
+    return this._isDirty;
+  }
+
+  set isDirty(value: boolean) {
+    this._isDirty = value;
+  }
+
+  get isUpdating(): boolean {
+    return this._isUpdating;
+  }
+
+  set isUpdating(value: boolean) {
+    this._isUpdating = value;
+  }
+
+  get dataTableUpdated(): Subject<boolean> {
+    return this._dataTableUpdated;
+  }
+
+  set dataTableUpdated(value: Subject<boolean>) {
+    this._dataTableUpdated = value;
+  }
 }

@@ -11,6 +11,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbExportComponent} from './gb-export.component';
 import {
   AutoCompleteModule, CheckboxModule, DataListModule, DataTableModule, DropdownModule, FieldsetModule, MessagesModule,
+  OverlayPanelModule,
   PanelModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
@@ -20,11 +21,15 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock, AppConfigSurveyExportMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
+import {MockComponent} from 'ng2-mock-component';
+import {MatExpansionModule} from '@angular/material';
 import {ExportJob} from '../../models/export-models/export-job';
 import {GbValidatorsModule} from '../../validators/gb-validators.module';
 import {By} from '@angular/platform-browser';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {ExportDataType} from '../../models/export-models/export-data-type';
+import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+
 
 const createMockJob = (id: string, name: string) => {
   const job = new ExportJob();
@@ -54,7 +59,10 @@ describe('GbExportComponent (dataTable)', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbExportComponent],
+      declarations: [
+        GbExportComponent,
+        MockComponent({selector: 'gb-data-table'})
+      ],
       imports: [
         BrowserAnimationsModule,
         CommonModule,
@@ -67,7 +75,10 @@ describe('GbExportComponent (dataTable)', () => {
         PanelModule,
         DropdownModule,
         MessagesModule,
-        GbValidatorsModule
+        MatExpansionModule,
+        OverlayPanelModule,
+        GbValidatorsModule,
+        GbGenericModule
       ],
       providers: [
         {
@@ -100,7 +111,8 @@ describe('GbExportComponent (dataTable)', () => {
   });
 
   it('should not have a date column selector', () => {
-    expect(component.isTransmartSurveyTableDataView).toBeFalsy();
+    expect(component.isTransmartSurveyTable).toBeFalsy();
+    expect(component.isExternalExportAvailable).toBeFalsy();
     let dateColumnSelector = fixture.debugElement.query(By.css('.gb-include-date-columns-checkbox'));
     expect(dateColumnSelector).toBeFalsy();
   });
@@ -115,7 +127,10 @@ describe('GbExportComponent (surveyTable)', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbExportComponent],
+      declarations: [
+        GbExportComponent,
+        MockComponent({selector: 'gb-data-table'})
+      ],
       imports: [
         BrowserAnimationsModule,
         CommonModule,
@@ -128,7 +143,10 @@ describe('GbExportComponent (surveyTable)', () => {
         PanelModule,
         DropdownModule,
         MessagesModule,
+        MatExpansionModule,
+        OverlayPanelModule,
         GbValidatorsModule,
+        GbGenericModule
       ],
       providers: [
         {
@@ -163,9 +181,10 @@ describe('GbExportComponent (surveyTable)', () => {
 
   it('should have a date column selector', () => {
     exportService.exportDataTypes = mockDataTypes;
+    let spy = spyOnProperty(component, 'isTransmartSurveyTable', 'get').and.returnValue(true);
     fixture.detectChanges();
-    expect(component.isTransmartSurveyTableDataView).toBeTruthy();
-    expect(component.isLoadingExportDataTypes).toBeFalsy();
+
+    expect(component.isDataTypesUpdating).toBeFalsy();
     expect(component.exportDataTypes.length).toEqual(1);
     let dateColumnSelector = fixture.debugElement.query(By.css('.gb-include-date-columns-checkbox'));
     expect(dateColumnSelector).not.toBeNull();

@@ -1,0 +1,29 @@
+:host >>> .mat-expansion-panel-header {
+    padding: 0.25em 0.5em 0.25em 0.25em !important;
+    height: 2em !important;
+    background-color: var(--gb-clinical-green-light-light) !important;
+    margin-bottom: 1px;
+    font-size: small;
+}
+
+:host >>> .mat-expansion-panel-header:hover {
+    background-color: var(--gb-clinical-green-light) !important;
+}
+
+:host >>> .mat-expansion-panel-body {
+    padding: 0em 0.25em 0em 0.5em !important;
+    font-size: small !important;
+}
+
+:host >>> .mat-expansion-panel-spacing {
+    margin: 1px 0px 2px 0px !important;
+}
+
+.variable {
+    padding: 0.25em;
+}
+
+.variable:hover {
+    background-color: var(--gb-orange-light-light);
+    cursor: pointer;
+}

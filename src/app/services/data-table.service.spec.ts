@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,12 +7,13 @@
  */
 
 import {TestBed, inject} from '@angular/core/testing';
-
 import {DataTableService} from './data-table.service';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
 import {ConstraintService} from './constraint.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
+import {VariableService} from './variable.service';
+import {VariableServiceMock} from './mocks/variable.service.mock';
 
 describe('DataTableService', () => {
   beforeEach(() => {
@@ -25,6 +26,10 @@ describe('DataTableService', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: VariableService,
+          useClass: VariableServiceMock
         },
         DataTableService
       ]

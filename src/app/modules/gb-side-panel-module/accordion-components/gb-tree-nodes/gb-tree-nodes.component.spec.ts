@@ -16,8 +16,9 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 
 describe('TreeNodesComponent', () => {
   let component: GbTreeNodesComponent;
@@ -33,7 +34,8 @@ describe('TreeNodesComponent', () => {
         OverlayPanelModule,
         DragDropModule,
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        GbGenericModule
       ],
       providers: [
         {
@@ -45,8 +47,8 @@ describe('TreeNodesComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         }
       ]
     })
@@ -101,8 +103,7 @@ describe('TreeNodesComponent', () => {
       metadata: {
         key: 'foo',
         val: 'bar'
-      },
-      dropMode: 'a-mode'
+      }
     };
     let treeNodeElements = [elm];
     let treeNodes = [node];
@@ -127,8 +128,7 @@ describe('TreeNodesComponent', () => {
       }
     };
     let node = {
-      type: 'type-A',
-      dropMode: 'a-mode'
+      type: 'type-A'
     };
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {

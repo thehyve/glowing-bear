@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,6 +8,7 @@
 
 import * as moment from 'moment';
 import Diff = moment.unitOfTime.Diff;
+import {ChartType} from '../models/chart-models/chart-type';
 
 export class FormatHelper {
 
@@ -16,7 +17,7 @@ export class FormatHelper {
   static readonly timeUnits: Diff[] = ['year', 'month', 'day', 'hour', 'minute', 'second'];
 
   public static formatCountNumber(x: number): string {
-    if (typeof(x) === 'number') {
+    if (typeof (x) === 'number') {
       if (x > -1) {
         return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
       } else {
@@ -56,6 +57,14 @@ export class FormatHelper {
       metadataText += key + ': ' + value + '\n';
     });
     return metadataText;
+  }
+
+  /**
+   * Generate a unique identifier
+   * see https://gist.github.com/gordonbrander/2230317
+   */
+  public static generateId(): string {
+    return '_' + Math.random().toString(36).substr(2, 9);
   }
 
 }

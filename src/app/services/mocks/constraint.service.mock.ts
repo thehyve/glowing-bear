@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,62 +9,104 @@
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TreeNode} from 'primeng/api';
-import {DropMode} from '../../models/drop-mode';
 import {Concept} from '../../models/constraint-models/concept';
-import {Study} from '../../models/constraint-models/study';
+import {Subject} from 'rxjs';
+import {Cohort} from '../../models/cohort-models/cohort';
+import {Dimension} from '../../models/constraint-models/dimension';
 
 export class ConstraintServiceMock {
 
-  private _rootInclusionConstraint: CombinationConstraint;
-  private _rootExclusionConstraint: CombinationConstraint;
-  _constraint: Constraint = new CombinationConstraint();
-  validPedigreeTypes = [];
-  concepts: Concept[] = [];
-  conceptConstraints: Constraint[] = [];
-  conceptLabels: string[] = [];
-  allConstraints: Constraint[] = [];
-
+  private _rootConstraint: CombinationConstraint;
+  private _allConstraints: Constraint[] = [];
+  private _studyConstraints: Constraint[] = [];
+  private _validPedigreeTypes: object[] = [];
+  private _concepts: Concept[] = [];
+  private _conceptConstraints: Constraint[] = [];
+  private _maxNumSearchResults = 100;
+  private _constraint: Constraint = new CombinationConstraint();
+  private _allSubjectDimensionsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
+  private _allSubjectDimensions: Dimension[] = [];
   constructor() {
-    this._rootInclusionConstraint = new CombinationConstraint();
-    this._rootExclusionConstraint = new CombinationConstraint();
+    this._rootConstraint = new CombinationConstraint();
   }
 
   init() {
   }
 
-  public depthOfConstraint(constraint: Constraint): number {
-    return 1;
-  }
-
-  public constraint_1(): Constraint {
-    return this._constraint;
-  }
-
-  public constraint_2(): Constraint {
-    return this._constraint;
-  }
-
-  public generateInclusionConstraint(): Constraint {
-    return this._constraint;
-  }
-
-  public generateExclusionConstraint(): Constraint {
-    return this._constraint;
-  }
-
-  public hasExclusionConstraint(): Boolean {
-    return false;
-  }
-
-  public constraint_1_2(): Constraint {
-    return this._constraint;
-  }
-
-  public generateConstraintFromTreeNode(selectedNode: TreeNode, dropMode: DropMode): Constraint {
+  get combination(): Constraint {
     return this._constraint;
   }
 
   public searchAllConstraints(query: string): Constraint[] {
     return [];
   }
+
+  public cohortSelectionConstraint(): Constraint {
+    return this._constraint;
+  }
+
+  get allConstraints(): Constraint[] {
+    return this._allConstraints;
+  }
+
+  set allConstraints(value: Constraint[]) {
+    this._allConstraints = value;
+  }
+
+  get studyConstraints(): Constraint[] {
+    return this._studyConstraints;
+  }
+
+  set studyConstraints(value: Constraint[]) {
+    this._studyConstraints = value;
+  }
+
+  get validPedigreeTypes(): object[] {
+    return this._validPedigreeTypes;
+  }
+
+  set validPedigreeTypes(value: object[]) {
+    this._validPedigreeTypes = value;
+  }
+
+  get conceptConstraints(): Constraint[] {
+    return this._conceptConstraints;
+  }
+
+  set conceptConstraints(value: Constraint[]) {
+    this._conceptConstraints = value;
+  }
+
+  get concepts(): Concept[] {
+    return this._concepts;
+  }
+
+  set concepts(value: Concept[]) {
+    this._concepts = value;
+  }
+
+  get maxNumSearchResults(): number {
+    return this._maxNumSearchResults;
+  }
+
+  set maxNumSearchResults(value: number) {
+    this._maxNumSearchResults = value;
+  }
+
+  get allSubjectDimensionsUpdated(): Subject<Cohort[]> {
+    return this._allSubjectDimensionsUpdated;
+  }
+
+  set allSubjectDimensionsUpdated(value: Subject<Cohort[]>) {
+    this._allSubjectDimensionsUpdated = value;
+  }
+
+  get allSubjectDimensions(): Dimension[] {
+    return this._allSubjectDimensions;
+  }
+
+  set allSubjectDimensions(value: Dimension[]) {
+    this._allSubjectDimensions = value;
+  }
+
 }

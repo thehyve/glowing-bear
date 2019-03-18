@@ -3,7 +3,7 @@ os:
   - linux
 language: node_js
 node_js:
-  - '8'
+  - '11'
 
 addons:
   chrome: stable # have Travis install chrome stable.

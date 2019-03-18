@@ -9,7 +9,7 @@
 
 import {of as observableOf, Observable} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
@@ -20,9 +20,10 @@ import {TransmartCountItem} from '../../models/transmart-models/transmart-count-
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 
 export class TransmartResourceServiceMock {
   private _studies: Study[];
@@ -31,9 +32,7 @@ export class TransmartResourceServiceMock {
 
   private _autosaveSubjectSets: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
-  private _inclusionCounts: TransmartCountItem;
-  private _exclusionCounts: TransmartCountItem;
-  private _studyConceptCountObject: object;
+  private _cohortSelectionCounts: TransmartCountItem;
 
   constructor() {
     this._studies = [];
@@ -44,7 +43,7 @@ export class TransmartResourceServiceMock {
 
   private mockStudies() {
     let s1 = new Study();
-    s1.dimensions = ['study', 'cocnept', 'patient'];
+    s1.dimensions = ['study', 'concept', 'patient'];
     s1.id = 'CATEGORICAL_VALUES';
     let s2 = new Study();
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
@@ -71,139 +70,6 @@ export class TransmartResourceServiceMock {
     return observableOf(pedigrees);
   }
 
-  getQueries(): Observable<TransmartQuery[]> {
-    let q1: TransmartQuery = new TransmartQuery('dt');
-    q1.bookmarked = false;
-    q1.createDate = '2018-07-03T13:18:31Z';
-    q1.subscribed = false;
-    q1.subscriptionFreq = null;
-    q1.updateDate = '2018-07-03T13:18:31Z';
-    q1.observationsQuery = {
-      data: ['\\Public Studies\\CATEGORICAL_VALUES\\Demography\\Race\\']
-    };
-    q1.patientsQuery = {type: 'true'};
-    q1.queryBlob = {
-      dataTableState: {
-        columnDimensions: ['study'],
-        columnSort: [],
-        rowDimensions: ['patient', 'concept'],
-        rowSort: []
-      }
-    };
-    q1.queryBlob = {
-      patientsQueryFull: q1.patientsQuery
-    };
-    let q2: TransmartQuery = new TransmartQuery('test');
-    q2.bookmarked = false;
-    q2.createDate = '2018-07-04T10:08:33Z';
-    q2.subscribed = false;
-    q2.subscriptionFreq = null;
-    q2.updateDate = '2018-07-04T10:08:33Z';
-    q2.observationsQuery = {
-      data: [
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Age\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Gender\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\']
-    };
-    q2.patientsQuery = {
-      type: 'and',
-      args: [
-        {
-          constraint: {
-            type: 'or',
-            args: [
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'SCSCP:DEM:AGE',
-                      conceptPath: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      name: 'Age',
-                      type: 'concept',
-                      valueType: 'NUMERIC'
-                    },
-                    {
-                      operator: '<=',
-                      type: 'value',
-                      value: 35,
-                      valueType: 'NUMERIC'
-                    }
-                  ]
-                }
-              },
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'O1KP:CAT8',
-                      conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      name: 'categorical_8',
-                      type: 'concept',
-                      valueType: 'CATEGORICAL'
-                    },
-                    {
-                      type: 'or',
-                      args: [
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Heart',
-                          valueType: 'STRING'
-                        },
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Liver',
-                          valueType: 'STRING'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          dimension: 'patient',
-          type: 'subselection'
-        },
-        {
-          arg: {
-            type: 'subselection',
-            dimension: 'patient',
-            constraint: {
-              conceptCode: 'VSIGN:HR',
-              conceptPath: '\\Vital Signs\\Heart Rate\\',
-              fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Vital Signs\\Heart Rate\\',
-              name: 'Heart Rate',
-              type: 'concept',
-              valueType: 'NUMERIC'
-            }
-          },
-          type: 'negation'
-        }
-      ]
-    };
-    q2.queryBlob = {
-      dataTableState: {
-        columnDimensions: [],
-        columnSort: [],
-        rowDimensions: ['patient', 'study', 'concept'],
-        rowSort: []
-      },
-      patientsQueryFull: q2.patientsQuery
-    };
-    let queries: TransmartQuery[] = [q1, q2];
-    return observableOf(queries);
-  }
-
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
     return observableOf(this.treeNodes);
   }
@@ -218,6 +84,12 @@ export class TransmartResourceServiceMock {
 
   getStudyIds(constraint: Constraint): Observable<string[]> {
     return observableOf([]);
+  }
+
+  getPatients(constraint: Constraint): Observable<TransmartPatient[]> {
+    let p = new TransmartPatient();
+    p.id = 100;
+    return observableOf([p]);
   }
 
   getDataTable(dataTable: DataTable): Observable<TransmartDataTable> {
@@ -322,52 +194,19 @@ export class TransmartResourceServiceMock {
     this._subjectSetConstraint = value;
   }
 
-  get inclusionCounts(): TransmartCountItem {
-    return this._inclusionCounts;
+  get cohortSelectionCounts(): TransmartCountItem {
+    return this._cohortSelectionCounts;
   }
 
-  set inclusionCounts(value: TransmartCountItem) {
-    this._inclusionCounts = value;
+  set cohortSelectionCounts(value: TransmartCountItem) {
+    this._cohortSelectionCounts = value;
   }
 
-  get exclusionCounts(): TransmartCountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: TransmartCountItem) {
-    this._exclusionCounts = value;
-  }
-
-  get studyConceptCountObject(): object {
-    return this._studyConceptCountObject;
-  }
-
-  set studyConceptCountObject(value: object) {
-    this._studyConceptCountObject = value;
-  }
-
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new TransmartCountItem();
-      this.inclusionCounts.patientCount = 10;
-      this.inclusionCounts.observationCount = 100;
-      this.exclusionCounts = new TransmartCountItem();
-      this.exclusionCounts.patientCount = 0;
-      this.exclusionCounts.observationCount = 0;
-      this.studyConceptCountObject = {
-        EHR: {
-          'EHR:DEM:AGE': {
-            patientCount: 4,
-            observationCount: 30
-          },
-          'EHR:VSIGN:HR': {
-            patientCount: 6,
-            observationCount: 70
-          }
-        }
-      }
+      this.cohortSelectionCounts = new TransmartCountItem();
+      this.cohortSelectionCounts.patientCount = 10;
+      this.cohortSelectionCounts.observationCount = 100;
       resolve(true);
     });
   }

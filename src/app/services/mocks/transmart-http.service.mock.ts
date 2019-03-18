@@ -12,7 +12,7 @@ import {ExportJob} from '../../models/export-models/export-job';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
 import {Pedigree} from '../../models/constraint-models/pedigree';
-import {TransmartQuery} from '../../models/transmart-models/transmart-query';
+import {CohortRepresentation} from '../../models/gb-backend-models/cohort-representation';
 import {TransmartExportElement} from '../../models/transmart-models/transmart-export-element';
 import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TransmartDataTable} from '../../models/transmart-models/transmart-data-table';
@@ -20,6 +20,7 @@ import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/transmart-constraint-mapper';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
 export class TransmartHttpServiceMock {
   private _studies: TransmartStudy[];
@@ -62,139 +63,6 @@ export class TransmartHttpServiceMock {
     p2.label = 'DZ';
     let pedigrees: Pedigree[] = [p1, p2];
     return observableOf(pedigrees);
-  }
-
-  getQueries(): Observable<TransmartQuery[]> {
-    let q1: TransmartQuery = new TransmartQuery('dt');
-    q1.bookmarked = false;
-    q1.createDate = '2018-07-03T13:18:31Z';
-    q1.subscribed = false;
-    q1.subscriptionFreq = null;
-    q1.updateDate = '2018-07-03T13:18:31Z';
-    q1.observationsQuery = {
-      data: ['\\Public Studies\\CATEGORICAL_VALUES\\Demography\\Race\\']
-    };
-    q1.patientsQuery = {type: 'true'};
-    q1.queryBlob = {
-      dataTableState: {
-        columnDimensions: ['study'],
-        columnSort: [],
-        rowDimensions: ['patient', 'concept'],
-        rowSort: []
-      }
-    };
-    q1.queryBlob = {
-      patientsQueryFull: q1.patientsQuery
-    };
-    let q2: TransmartQuery = new TransmartQuery('test');
-    q2.bookmarked = false;
-    q2.createDate = '2018-07-04T10:08:33Z';
-    q2.subscribed = false;
-    q2.subscriptionFreq = null;
-    q2.updateDate = '2018-07-04T10:08:33Z';
-    q2.observationsQuery = {
-      data: [
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Age\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\Gender\\',
-        '\\Public Studies\\Oracle_1000_Patient\\Demographics\\']
-    };
-    q2.patientsQuery = {
-      type: 'and',
-      args: [
-        {
-          constraint: {
-            type: 'or',
-            args: [
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'SCSCP:DEM:AGE',
-                      conceptPath: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Demography\\Age\\',
-                      name: 'Age',
-                      type: 'concept',
-                      valueType: 'NUMERIC'
-                    },
-                    {
-                      operator: '<=',
-                      type: 'value',
-                      value: 35,
-                      valueType: 'NUMERIC'
-                    }
-                  ]
-                }
-              },
-              {
-                type: 'subselection',
-                dimension: 'patient',
-                constraint: {
-                  type: 'and',
-                  args: [
-                    {
-                      conceptCode: 'O1KP:CAT8',
-                      conceptPath: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      fullName: '\\Public Studies\\Oracle_1000_Patient\\Categorical_locations\\categorical_8\\',
-                      name: 'categorical_8',
-                      type: 'concept',
-                      valueType: 'CATEGORICAL'
-                    },
-                    {
-                      type: 'or',
-                      args: [
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Heart',
-                          valueType: 'STRING'
-                        },
-                        {
-                          operator: '=',
-                          type: 'value',
-                          value: 'Liver',
-                          valueType: 'STRING'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          dimension: 'patient',
-          type: 'subselection'
-        },
-        {
-          arg: {
-            type: 'subselection',
-            dimension: 'patient',
-            constraint: {
-              conceptCode: 'VSIGN:HR',
-              conceptPath: '\\Vital Signs\\Heart Rate\\',
-              fullName: '\\Private Studies\\SHARED_CONCEPTS_STUDY_C_PRIV\\Vital Signs\\Heart Rate\\',
-              name: 'Heart Rate',
-              type: 'concept',
-              valueType: 'NUMERIC'
-            }
-          },
-          type: 'negation'
-        }
-      ]
-    };
-    q2.queryBlob = {
-      dataTableState: {
-        columnDimensions: [],
-        columnSort: [],
-        rowDimensions: ['patient', 'study', 'concept'],
-        rowSort: []
-      },
-      patientsQueryFull: q2.patientsQuery
-    };
-    let queries: TransmartQuery[] = [q1, q2];
-    return observableOf(queries);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
@@ -296,6 +164,29 @@ export class TransmartHttpServiceMock {
     result.patientCount = 100;
     result.observationCount = 1000;
     return Observable.of(result);
+  }
+
+  getDimensions(): Observable<TransmartDimension[]> {
+    const results: TransmartDimension[] = [];
+    let td1 = new TransmartDimension();
+    td1.name = 'td1';
+    td1.dimensionType = 'attribute';
+    td1.sortIndex = 1;
+    let td2 = new TransmartDimension();
+    td2.name = 'td2';
+    td2.dimensionType = 'Subject';
+    let td3 = new TransmartDimension();
+    td3.name = 'td3';
+    td3.dimensionType = '';
+    let td4 = new TransmartDimension();
+    td4.name = 'td4';
+    td4.dimensionType = 'SUBJECT';
+    results.push(td1);
+    results.push(td2);
+    results.push(td3);
+    results.push(td4);
+
+    return Observable.of(results);
   }
 
 }
