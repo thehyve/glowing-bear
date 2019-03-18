@@ -15,8 +15,8 @@
   margin-top: 2px;
 }
 
-.gb-logo-panel img:hover {
-  cursor: pointer;
+.gb-logo-panel a {
+  text-decoration: none;
 }
 
 .gb-logo-text {
@@ -24,10 +24,6 @@
   font-weight: bolder;
   font-size: 20px;
   margin-left: 9px;
-}
-
-.gb-logo-text:hover {
-  cursor: pointer;
 }
 
 .accordion-container {
