@@ -82,6 +82,10 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     let queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
     if (queryConstraint.type === 'true') {
       return {'type': 'true'};
+    } else if (queryConstraint.type === 'negation') {
+      return new TransmartNegationConstraint(
+        this.wrapWithSubselection(dimension, (<TransmartNegationConstraint>queryConstraint).arg)
+      );
     } else {
       return {
         type: 'subselection',
