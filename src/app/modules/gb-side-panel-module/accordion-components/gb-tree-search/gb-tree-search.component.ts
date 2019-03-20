@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {TreeNode} from 'primeng/api';
+import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 
 @Component({
   selector: 'gb-tree-search',
@@ -8,10 +8,10 @@ import {TreeNode} from 'primeng/api';
 })
 export class GbTreeSearchComponent {
 
-  @Input() tree: TreeNode[];
+  @Input() tree: GbTreeNode[];
   @Output() onClear: EventEmitter<void> = new EventEmitter<void>();
   searchTerm: string;
-  collectedUniqueNodeLabels: Set<string>;
+  collectedUniqueNodeNames: Set<string>;
   hits: number;
 
   onFiltering() {
@@ -22,12 +22,12 @@ export class GbTreeSearchComponent {
   clearFilter() {
     this.searchTerm = '';
     this.resetHits();
-    this.highlightTreeNodes(this.tree, (node: TreeNode) => false);
+    this.highlightTreeNodes(this.tree, (node: GbTreeNode) => false);
     this.onClear.emit();
   }
 
   private resetHits() {
-    this.collectedUniqueNodeLabels = new Set();
+    this.collectedUniqueNodeNames = new Set();
     this.hits = 0;
   }
 
@@ -35,20 +35,20 @@ export class GbTreeSearchComponent {
     return text.toLowerCase();
   }
 
-  private registerIfMatch(normalisedSearchTerm: string): (node: TreeNode) => boolean {
-    return (node: TreeNode) => {
+  private registerIfMatch(normalisedSearchTerm: string): (node: GbTreeNode) => boolean {
+    return (node: GbTreeNode) => {
       let match = normalisedSearchTerm
-        && GbTreeSearchComponent.normalisedSearchText(node.label).includes(normalisedSearchTerm);
+        && GbTreeSearchComponent.normalisedSearchText(node.name).includes(normalisedSearchTerm);
       if (match) {
-        this.collectedUniqueNodeLabels.add(node.label);
+        this.collectedUniqueNodeNames.add(node.name);
       }
       return match;
     }
   }
 
-  private highlightTreeNodes(tree: TreeNode[], highlight: (node: TreeNode) => boolean): number {
+  private highlightTreeNodes(tree: GbTreeNode[], highlight: (node: GbTreeNode) => boolean): number {
     let nodesFound = 0;
-    tree.forEach((treeNode: TreeNode) => {
+    tree.forEach((treeNode: GbTreeNode) => {
       if (highlight(treeNode)) {
         treeNode.styleClass = 'gb-highlight-treenode';
         nodesFound += 1;

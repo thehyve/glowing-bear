@@ -2,9 +2,10 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTreeSearchComponent} from './gb-tree-search.component';
 import {TreeModule} from "primeng/tree";
-import {AutoCompleteModule, TreeNode} from "primeng/primeng";
+import {AutoCompleteModule} from "primeng/primeng";
 import {GbGenericModule} from "../../../gb-generic-module/gb-generic.module";
 import {FormsModule} from "@angular/forms";
+import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 
 describe('GbTreeSearchComponent', () => {
   let component: GbTreeSearchComponent;
@@ -31,8 +32,8 @@ describe('GbTreeSearchComponent', () => {
 
   it('should count hits', () => {
     component.tree = [
-      {label: 'foo'} as TreeNode,
-      {label: 'bar'} as TreeNode,
+      {name: 'foo'} as GbTreeNode,
+      {name: 'bar'} as GbTreeNode,
     ];
 
     component.searchTerm = 'bar';
@@ -42,8 +43,8 @@ describe('GbTreeSearchComponent', () => {
   });
 
   it('should highlight found tree nodes', () => {
-    let foo = {label: 'foo'} as TreeNode;
-    let bar = {label: 'bar'} as TreeNode;
+    let foo = {name: 'foo'} as GbTreeNode;
+    let bar = {name: 'bar'} as GbTreeNode;
     component.tree = [
       foo,
       bar,
@@ -56,9 +57,9 @@ describe('GbTreeSearchComponent', () => {
     expect(bar.styleClass).toEqual('gb-highlight-treenode');
   });
 
-  it('should collect unique node labels', () => {
-    let foo1 = {label: 'foo'} as TreeNode;
-    let foo2 = {label: 'foo'} as TreeNode;
+  it('should collect unique node names', () => {
+    let foo1 = {name: 'foo'} as GbTreeNode;
+    let foo2 = {name: 'foo'} as GbTreeNode;
     component.tree = [
       foo1,
       foo2,
@@ -67,12 +68,12 @@ describe('GbTreeSearchComponent', () => {
     component.searchTerm = 'foo';
     component.onFiltering();
 
-    expect(component.collectedUniqueNodeLabels).toEqual(new Set(['foo']));
+    expect(component.collectedUniqueNodeNames).toEqual(new Set(['foo']));
   });
 
-  it('should search ignoring case and collect original labels', () => {
-    let foo1 = {label: 'foo'} as TreeNode;
-    let foo2 = {label: 'FOO'} as TreeNode;
+  it('should search ignoring case and collect original names', () => {
+    let foo1 = {name: 'foo'} as GbTreeNode;
+    let foo2 = {name: 'FOO'} as GbTreeNode;
     component.tree = [
       foo1,
       foo2,
@@ -82,22 +83,22 @@ describe('GbTreeSearchComponent', () => {
     component.onFiltering();
 
     expect(component.hits).toEqual(2);
-    expect(component.collectedUniqueNodeLabels).toEqual(new Set(['foo', 'FOO']));
+    expect(component.collectedUniqueNodeNames).toEqual(new Set(['foo', 'FOO']));
   });
 
   it('should expand ancestor folders of found node', () => {
     let folder1 = {
-      label: 'folder1',
+      name: 'folder1',
       children: [
-        {label: 'foo'} as TreeNode,
+        {name: 'foo'} as GbTreeNode,
       ]
-    } as TreeNode;
+    } as GbTreeNode;
     let folder2 = {
-      label: 'folder2',
+      name: 'folder2',
       children: [
-        {label: 'bar'} as TreeNode,
+        {name: 'bar'} as GbTreeNode,
       ]
-    } as TreeNode;
+    } as GbTreeNode;
     component.tree = [
       folder1,
       folder2,
@@ -114,8 +115,8 @@ describe('GbTreeSearchComponent', () => {
     let spy = spyOn(component.onClear, 'emit');
 
     component.tree = [
-      {label: 'foo'} as TreeNode,
-      {label: 'bar'} as TreeNode,
+      {name: 'foo'} as GbTreeNode,
+      {name: 'bar'} as GbTreeNode,
     ];
 
     component.searchTerm = 'bar';
@@ -124,7 +125,7 @@ describe('GbTreeSearchComponent', () => {
     component.clearFilter();
 
     expect(component.searchTerm).toEqual('');
-    expect(component.collectedUniqueNodeLabels).toEqual(new Set());
+    expect(component.collectedUniqueNodeNames).toEqual(new Set());
     expect(component.hits).toEqual(0);
     expect(component.onClear.emit).toHaveBeenCalled();
   });
