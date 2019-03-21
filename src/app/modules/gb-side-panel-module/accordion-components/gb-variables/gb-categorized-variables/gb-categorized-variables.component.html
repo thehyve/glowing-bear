@@ -1,22 +1,24 @@
 <div>
 
   <mat-accordion [multi]="true">
-    <mat-expansion-panel *ngFor="let catVar of categorizedVariables" expanded="true">
+    <mat-expansion-panel *ngFor="let catNode of categorizedVariablesTree" expanded="{{catNode.expanded}}">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          {{catVar.type}}
+          {{catNode.name}}
         </mat-panel-title>
       </mat-expansion-panel-header>
 
       <div>
-        <div *ngFor="let concept of catVar.elements"
+        <div *ngFor="let varNode of catNode.children"
              [pDraggable]="variablesDragDropScope"
-             (dragstart)="onDragStart($event, concept)"
+             (dragstart)="onDragStart($event, varNode)"
              class="variable">
-          <p-checkbox *ngIf="isExport" [(ngModel)]="concept.selected" binary="true"
-                      (onChange)="onCheck($event, concept)"></p-checkbox>
+          <p-checkbox *ngIf="isExport" [ngModel]="isSelected(varNode)" binary="true"
+                      (onChange)="onCheck($event, varNode)"></p-checkbox>
 
-          {{concept.name}} ({{concept.counts.subjectCount}})
+          <span [ngClass]="{'gb-highlight-treenode': varNode.styleClass && varNode.styleClass.includes('gb-highlight-treenode')}">
+            {{varNode.name}} ({{varNode.subjectCount}})
+          </span>
         </div>
       </div>
     </mat-expansion-panel>

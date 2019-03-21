@@ -9,10 +9,11 @@ import {Component, OnInit} from '@angular/core';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {VariablesViewMode} from '../../../../models/variables-view-mode';
-import {SelectItem, TreeNode} from 'primeng/api';
+import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
 import {VariableService} from '../../../../services/variable.service';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 
 @Component({
   selector: 'gb-variables',
@@ -97,16 +98,15 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get numberOfSelected(): number {
-    return this.variableService.variables.filter(v =>
-      v.selected === true).length;
+    return this.variableService.selectedVariablesNumber;
   }
 
-  get variablesTreeData(): TreeNode[] {
+  get variablesTree(): GbTreeNode[] {
     return this.variableService.variablesTree;
   }
 
-  onTreeClear() {
-    this.variableService.updateVariablesTree();
+  get categorizedVariablesTree(): GbTreeNode[] {
+    return this.variableService.categorizedVariablesTree;
   }
 
 }

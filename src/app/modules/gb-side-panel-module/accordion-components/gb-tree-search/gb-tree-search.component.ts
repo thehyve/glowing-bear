@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 
 @Component({
@@ -8,22 +8,32 @@ import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 })
 export class GbTreeSearchComponent {
 
-  @Input() tree: GbTreeNode[];
-  @Output() onClear: EventEmitter<void> = new EventEmitter<void>();
-  searchTerm: string;
+  private _tree: GbTreeNode[];
+
+  get tree(): GbTreeNode[] {
+    return this._tree;
+  }
+
+  @Input()
+  set tree(value: GbTreeNode[]) {
+    this._tree = value;
+    this.onFiltering();
+  }
+
+  searchTerm: string = '';
   collectedUniqueNodeNames: Set<string>;
   hits: number;
 
   onFiltering() {
     this.resetHits();
-    this.hits = this.highlightTreeNodes(this.tree, this.registerIfMatch(GbTreeSearchComponent.normalisedSearchText(this.searchTerm)));
+    this.hits = this.highlightTreeNodes(this._tree,
+      this.registerIfMatch(GbTreeSearchComponent.normalisedSearchText(this.searchTerm)));
   }
 
   clearFilter() {
     this.searchTerm = '';
     this.resetHits();
-    this.highlightTreeNodes(this.tree, (node: GbTreeNode) => false);
-    this.onClear.emit();
+    this.highlightTreeNodes(this._tree, (node: GbTreeNode) => false);
   }
 
   private resetHits() {

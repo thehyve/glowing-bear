@@ -116,7 +116,7 @@ describe('VariableService', () => {
     const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
     variableService.variablesUpdated.next(dummyVariables);
     expect(dummyVariables[0].selected).toBe(true);
-    expect(variableService.categorizedVariables.length).toBe(3);
+    expect(variableService.categorizedVariablesTree.length).toBe(3);
     expect(spyTreeSelection).toHaveBeenCalled();
   });
 

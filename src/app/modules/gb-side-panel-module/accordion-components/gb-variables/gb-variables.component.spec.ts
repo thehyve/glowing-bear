@@ -16,7 +16,6 @@ import {NavbarService} from '../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
@@ -25,6 +24,7 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 import {GbTreeSearchComponent} from "../gb-tree-search/gb-tree-search.component";
+import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -85,7 +85,7 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should give correct number of checked variables', () => {
-    let categorizedVars: Array<CategorizedVariable> = [];
+    let categorizedVars: Array<GbTreeNode> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();
@@ -98,7 +98,7 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should check all the variables', () => {
-    let categorizedVars: Array<CategorizedVariable> = [];
+    let categorizedVars: Array<GbTreeNode> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();

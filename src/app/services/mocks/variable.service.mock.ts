@@ -6,16 +6,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {Concept} from '../../models/constraint-models/concept';
-import {CategorizedVariable} from '../../models/constraint-models/categorized-variable';
 import {Subject} from 'rxjs';
 import {TreeNode} from 'primeng/api';
 import {VariablesViewMode} from '../../models/variables-view-mode';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import {GbTreeNode} from "../../models/tree-node-models/gb-tree-node";
 
 export class VariableServiceMock {
   private _variables: Concept[] = [];
-  private _categorizedVariables: Array<CategorizedVariable> = [];
+  private _categorizedVariablesTree: GbTreeNode[] = [];
   // The async subject that tells if variables are updated according to the selectedConceptCountMap
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // The async subject that tells if the selection of variables is changed according to user action
@@ -80,12 +80,12 @@ export class VariableServiceMock {
     this._variablesUpdated = value;
   }
 
-  get categorizedVariables(): Array<CategorizedVariable> {
-    return this._categorizedVariables;
+  get categorizedVariables(): Array<GbTreeNode> {
+    return this._categorizedVariablesTree;
   }
 
-  set categorizedVariables(value: Array<CategorizedVariable>) {
-    this._categorizedVariables = value;
+  set categorizedVariablesTree(value: Array<GbTreeNode>) {
+    this._categorizedVariablesTree = value;
   }
 
   get isUpdatingVariables(): boolean {

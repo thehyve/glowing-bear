@@ -7,16 +7,15 @@
  */
 import {Injectable} from '@angular/core';
 import {Concept} from '../models/constraint-models/concept';
-import {CategorizedVariable} from '../models/constraint-models/categorized-variable';
 import {Observable, Subject} from 'rxjs';
 import {TreeNodeService} from './tree-node.service';
-import {TreeNode} from 'primeng/api';
 import {ConstraintService} from './constraint.service';
 import {Constraint} from '../models/constraint-models/constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
+import {GbTreeNode} from "../models/tree-node-models/gb-tree-node";
 
 @Injectable({
   providedIn: 'root'
@@ -34,17 +33,17 @@ export class VariableService {
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
   // The categorized variables used in the category view in gb-variables
-  private _categorizedVariables: Array<CategorizedVariable> = [];
+  private _categorizedVariablesTree: GbTreeNode[] = [];
   // The async subject that tells if the selection of variables is changed according to user action
+  //TODO Remove me?
   private _selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   /*
    * The variables represented as tree nodes used in the tree view in gb-variables
    */
-  private _variablesTree: TreeNode[] = [];
+  private _variablesTree: GbTreeNode[] = [];
   // The selected tree data in tree view in gb-variables
-  private _selectedVariablesTree: TreeNode[] = [];
+  private _selectedVariablesTree: GbTreeNode[] = [];
 
-  private _draggedVariable: Concept = null;
   // The scope identifier used by primeng for drag and drop
   // [pDraggable] in gb-variables.component
   // [pDroppable] in gb-fractalis-control.component
@@ -76,14 +75,7 @@ export class VariableService {
       }
     });
 
-    // when the variables and sub-tree are updated,
-    // check all variables and tree nodes, categorise the variables, be ready for visual rendering
-    this.variablesUpdated.asObservable()
-      .subscribe((variables: Concept[]) => {
-        this.setVariableSelection(true);
-        this.categorizeVariables();
-      });
-
+    //FIXME
     // when the user (un)selects / (un)checks variables in the category view,
     // update the selected tree nodes in the tree view
     this.selectedVariablesUpdated.asObservable()
@@ -100,16 +92,37 @@ export class VariableService {
       });
   }
 
-  private categorizeVariables() {
-    this.categorizedVariables.length = 0;
-    this.variables.forEach((variable: Concept) => {
-      let existingVariable = this.categorizedVariables.filter(x => x.type === variable.type)[0];
-      if (existingVariable) {
-        existingVariable.elements.push(variable);
-      } else {
-        this.categorizedVariables.push({type: variable.type, elements: [variable]});
-      }
+  private updateCategorizeVariablesTree(variablesTree: GbTreeNode[]) {
+    this.categorizedVariablesTree.length = 0;
+    let variableNodesByType = new Map<string, GbTreeNode[]>();
+    let isVariableNode = this.treeNodeService.isTreeNodeConcept;
+
+    groupDescendantVariableNodes(variablesTree);
+
+    new Map<string, GbTreeNode[]>([...variableNodesByType.entries()].sort())
+      .forEach((nodes: GbTreeNode[], type: string) => {
+        let typeNode = { name: type, children: nodes, expanded: true } as GbTreeNode;
+
+        this.categorizedVariablesTree.push(typeNode);
     });
+
+    function groupDescendantVariableNodes(variablesTree: GbTreeNode[]) {
+      variablesTree.forEach((node: GbTreeNode) => {
+        if (isVariableNode(node)) {
+          if (!variableNodesByType.has(node.type)) {
+            variableNodesByType.set(node.type, []);
+          }
+
+          variableNodesByType.get(node.type).push(node);
+        }
+
+        if (node.children) {
+          groupDescendantVariableNodes(node.children);
+        }
+
+      });
+    }
+
   }
 
   /**
@@ -117,9 +130,9 @@ export class VariableService {
    * update selected variables in the category view
    * @param selectedNodes
    */
-  private updateSelectedVariablesWithTreeNodes(selectedNodes: TreeNode[]) {
+  private updateSelectedVariablesWithTreeNodes(selectedNodes: GbTreeNode[]) {
     const codes = [];
-    selectedNodes.forEach((n: TreeNode) => {
+    selectedNodes.forEach((n: GbTreeNode) => {
       const code = n['conceptCode'];
       if (this.treeNodeService.isVariableNode(n) && code && !codes.includes(code)) {
         codes.push(code);
@@ -148,6 +161,7 @@ export class VariableService {
         });
         this.variablesUpdated.next(this.variables);
         this.updateVariablesTree();
+        this.updateCategorizeVariablesTree(this.variablesTree);
         this.isUpdatingVariables = false;
         resolve(true);
       }
@@ -164,11 +178,7 @@ export class VariableService {
   }
 
   public identifyDraggedElement(): Concept {
-    if (this.draggedVariable) {
-      const draggedVariable = this.draggedVariable.copy();
-      this.draggedVariable = null;
-      return draggedVariable;
-    } else if (this.treeNodeService.selectedTreeNode) {
+    if (this.treeNodeService.selectedTreeNode) {
       return this.treeNodeService.getConceptFromTreeNode(this.treeNodeService.selectedTreeNode);
     }
     return null;
@@ -188,7 +198,7 @@ export class VariableService {
     this.selectAllVariablesTree(true);
   }
 
-  private updateVariablesTreeRecursion(nodes: TreeNode[]) {
+  private updateVariablesTreeRecursion(nodes: GbTreeNode[]) {
     let nodesWithCodes = [];
     for (let node of nodes) {
       if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
@@ -241,8 +251,8 @@ export class VariableService {
     }
   }
 
-  public selectVariablesTreeByFields(nodes: TreeNode[], values: string[], fields: string[]) {
-    nodes.forEach((node: TreeNode) => {
+  public selectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[]) {
+    nodes.forEach((node: GbTreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
         if (
@@ -300,6 +310,7 @@ export class VariableService {
     this._variables = value;
   }
 
+  //TODO Remove?
   get variablesUpdated(): Subject<Concept[]> {
     return this._variablesUpdated;
   }
@@ -308,12 +319,12 @@ export class VariableService {
     this._variablesUpdated = value;
   }
 
-  get categorizedVariables(): Array<CategorizedVariable> {
-    return this._categorizedVariables;
+  get categorizedVariablesTree(): GbTreeNode[] {
+    return this._categorizedVariablesTree;
   }
 
-  set categorizedVariables(value: Array<CategorizedVariable>) {
-    this._categorizedVariables = value;
+  set categorizedVariablesTree(value: GbTreeNode[]) {
+    this._categorizedVariablesTree = value;
   }
 
   get isUpdatingVariables(): boolean {
@@ -324,14 +335,6 @@ export class VariableService {
     this._isUpdatingVariables = value;
   }
 
-  get draggedVariable(): Concept {
-    return this._draggedVariable;
-  }
-
-  set draggedVariable(value: Concept) {
-    this._draggedVariable = value;
-  }
-
   get selectedVariablesUpdated(): Subject<Concept[]> {
     return this._selectedVariablesUpdated;
   }
@@ -340,20 +343,24 @@ export class VariableService {
     this._selectedVariablesUpdated = value;
   }
 
-  get variablesTree(): TreeNode[] {
+  get variablesTree(): GbTreeNode[] {
     return this._variablesTree;
   }
 
-  set variablesTree(value: TreeNode[]) {
+  set variablesTree(value: GbTreeNode[]) {
     this._variablesTree = value;
   }
 
-  get selectedVariablesTree(): TreeNode[] {
+  get selectedVariablesTree(): GbTreeNode[] {
     return this._selectedVariablesTree;
   }
 
+  get selectedVariablesNumber(): number {
+    return this.selectedVariablesTree.filter(node => this.treeNodeService.isTreeNodeConcept(node)).length;
+  }
+
   // this setter is invoked each time the user clicks to (un)check a variable tree node
-  set selectedVariablesTree(value: TreeNode[]) {
+  set selectedVariablesTree(value: GbTreeNode[]) {
     this._selectedVariablesTree = value;
     this.updateSelectedVariablesWithTreeNodes(value);
   }
