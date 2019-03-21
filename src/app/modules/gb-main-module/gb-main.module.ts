@@ -18,7 +18,7 @@ import {AngularSplitModule} from 'angular-split';
 @NgModule({
   imports: [
     CommonModule,
-    AngularSplitModule,
+    AngularSplitModule.forRoot(),
     routing,
     GbNavBarModule,
     GbSidePanelModule

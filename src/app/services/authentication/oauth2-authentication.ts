@@ -185,7 +185,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
     let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
     let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
-    return observableFrom(new Promise((resolve) => {
+    return observableFrom(new Promise<AuthorizationResult>((resolve) => {
       resolve(AuthorizationResult.Unauthorized);
       RedirectHelper.redirectTo(target);
     }));
