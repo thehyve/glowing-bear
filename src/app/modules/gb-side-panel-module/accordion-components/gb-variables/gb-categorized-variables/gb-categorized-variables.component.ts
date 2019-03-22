@@ -30,16 +30,19 @@ export class GbCategorizedVariablesComponent {
     this.treeNodeService.selectedTreeNode = variableNode;
   }
 
-  onCheck(checked, variableNode) {
+  onCheck(checked: boolean, variableNode: GbTreeNode) {
     // TODO convert selectedVariablesTree to set
     const index = this.variableService.selectedVariablesTree.indexOf(variableNode, 0);
+    console.log(checked);
     if (checked) {
       if (index === -1) {
         this.variableService.selectedVariablesTree.push(variableNode);
+        this.variableService.updateSelectedVariablesWithTreeNodes(this.variableService.selectedVariablesTree);
       }
     } else {
       if (index > -1) {
         this.variableService.selectedVariablesTree.splice(index, 1);
+        this.variableService.updateSelectedVariablesWithTreeNodes(this.variableService.selectedVariablesTree);
       }
     }
   }
@@ -50,10 +53,6 @@ export class GbCategorizedVariablesComponent {
 
   isHighlighted(node: GbTreeNode) {
     return node.styleClass !== undefined && node.styleClass.includes(this.highlightClass);
-  }
-
-  get categorizedVariablesTree(): TreeNode[] {
-    return this.variableService.categorizedVariablesTree;
   }
 
   highlightedVariablesFirst(tree: GbTreeNode[]): GbTreeNode[] {
@@ -69,23 +68,19 @@ export class GbCategorizedVariablesComponent {
       if (n1.name > n2.name) {
         return 1;
       }
-      if (n1.name < n1.name) {
+      if (n1.name < n2.name) {
         return -1;
       }
       return 0;
     });
   }
 
-  set categorizedVariablesTree(value: TreeNode[]) {
+  get categorizedVariablesTree(): GbTreeNode[] {
+    return this.variableService.categorizedVariablesTree;
+  }
+
+  set categorizedVariablesTree(value: GbTreeNode[]) {
     this.variableService.categorizedVariablesTree = value;
-  }
-
-  get selectedVariablesTreeData(): TreeNode[] {
-    return this.variableService.selectedVariablesTree;
-  }
-
-  set selectedVariablesTreeData(value: TreeNode[]) {
-    this.variableService.selectedVariablesTree = value;
   }
 
   get isExport(): boolean {

@@ -92,7 +92,7 @@ export class VariableService {
       });
   }
 
-  private updateCategorizeVariablesTree(variablesTree: GbTreeNode[]) {
+  private updateCategorizedVariablesTree(variablesTree: GbTreeNode[]) {
     this.categorizedVariablesTree.length = 0;
     let variableNodesByType = new Map<string, GbTreeNode[]>();
     let isVariableNode = this.treeNodeService.isTreeNodeConcept;
@@ -130,7 +130,7 @@ export class VariableService {
    * update selected variables in the category view
    * @param selectedNodes
    */
-  private updateSelectedVariablesWithTreeNodes(selectedNodes: GbTreeNode[]) {
+  public updateSelectedVariablesWithTreeNodes(selectedNodes: GbTreeNode[]) {
     const codes = [];
     selectedNodes.forEach((n: GbTreeNode) => {
       const code = n['conceptCode'];
@@ -161,7 +161,7 @@ export class VariableService {
         });
         this.variablesUpdated.next(this.variables);
         this.updateVariablesTree();
-        this.updateCategorizeVariablesTree(this.variablesTree);
+        this.updateCategorizedVariablesTree(this.variablesTree);
         this.isUpdatingVariables = false;
         resolve(true);
       }

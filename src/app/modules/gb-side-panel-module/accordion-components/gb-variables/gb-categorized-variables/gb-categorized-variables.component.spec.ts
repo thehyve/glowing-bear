@@ -7,8 +7,9 @@ import {NavbarService} from '../../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
 import {VariableService} from '../../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
-import {TreeNodeService} from "../../../../../services/tree-node.service";
-import {TreeNodeServiceMock} from "../../../../../services/mocks/tree-node.service.mock";
+import {TreeNodeService} from '../../../../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../../../../services/mocks/tree-node.service.mock';
+import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';
 
 describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;
@@ -52,5 +53,31 @@ describe('GbCategorizedVariablesComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should show highlighted variables first', () => {
+    const node1: GbTreeNode = {
+      type: 'CATEGORICAL',
+      name: 'B',
+    };
+    const node2: GbTreeNode = {
+      type: 'CATEGORICAL',
+      name: 'A',
+    };
+    const node3: GbTreeNode = {
+      type: 'CATEGORICAL',
+      name: 'C',
+    };
+
+    expect(component.highlightedVariablesFirst([node1, node2, node3])).toEqual([node2, node1, node3]);
+
+    node1.styleClass = 'gb-highlight-treenode';
+    node3.styleClass = 'gb-highlight-treenode';
+
+    expect(component.highlightedVariablesFirst([node1, node2, node3])).toEqual([node1, node3, node2]);
+
+    node2.styleClass = 'gb-highlight-treenode';
+
+    expect(component.highlightedVariablesFirst([node1, node2, node3])).toEqual([node2, node1, node3]);
   });
 });
