@@ -19,7 +19,7 @@ export class VariableServiceMock {
   // The async subject that tells if variables are updated according to the selectedConceptCountMap
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // The async subject that tells if the selection of variables is changed according to user action
-  private _selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
+  private _selectedVariablesTreeUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
 
@@ -112,12 +112,12 @@ export class VariableServiceMock {
     this._variablesViewMode = value;
   }
 
-  get selectedVariablesUpdated(): Subject<Concept[]> {
-    return this._selectedVariablesUpdated;
+  get selectedVariablesTreeUpdated(): Subject<Concept[]> {
+    return this._selectedVariablesTreeUpdated;
   }
 
-  set selectedVariablesUpdated(value: Subject<Concept[]>) {
-    this._selectedVariablesUpdated = value;
+  set selectedVariablesTreeUpdated(value: Subject<Concept[]>) {
+    this._selectedVariablesTreeUpdated = value;
   }
 
   get variablesTree(): TreeNode[] {

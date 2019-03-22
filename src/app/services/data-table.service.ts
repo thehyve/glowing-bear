@@ -42,9 +42,10 @@ export class DataTableService {
     this.dataTableUpdated = new Subject();
     this.variableService.variablesUpdated.asObservable()
       .subscribe(() => {
+        this.isDirty = true;
         this.updateDataTable();
       });
-    this.variableService.selectedVariablesUpdated.asObservable()
+    this.variableService.selectedVariablesTreeUpdated.asObservable()
       .subscribe(() => {
         this.isDirty = true;
       });

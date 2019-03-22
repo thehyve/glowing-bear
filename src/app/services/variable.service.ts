@@ -32,17 +32,16 @@ export class VariableService {
   private _variablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   // Flag indicating if the variables are being updated (gb-variables)
   private _isUpdatingVariables = false;
-  // The categorized variables used in the category view in gb-variables
-  private _categorizedVariablesTree: GbTreeNode[] = [];
-  // The async subject that tells if the selection of variables is changed according to user action
-  // TODO Remove me?
-  private _selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
-  /*
-   * The variables represented as tree nodes used in the tree view in gb-variables
-   */
+
+  // The variables represented as tree nodes used in the tree view in gb-variables
   private _variablesTree: GbTreeNode[] = [];
+  // The categorized variables (flat  list of tree node leaves) used in the category view in gb-variables
+  private _categorizedVariablesTree: GbTreeNode[] = [];
+
   // The selected tree data in tree view in gb-variables
   private _selectedVariablesTree: GbTreeNode[] = [];
+  // The async subject that tells if the selection of variables is changed according to user action
+  private _selectedVariablesTreeUpdated: Subject<GbTreeNode[]> = new Subject<GbTreeNode[]>();
 
   // The scope identifier used by primeng for drag and drop
   // [pDraggable] in gb-variables.component
@@ -75,21 +74,6 @@ export class VariableService {
       }
     });
 
-    // FIXME
-    // when the user (un)selects / (un)checks variables in the category view,
-    // update the selected tree nodes in the tree view
-    this.selectedVariablesUpdated.asObservable()
-      .subscribe((variables: Concept[]) => {
-        const codes = variables
-          .filter((v: Concept) => {
-            return v.selected;
-          })
-          .map((v: Concept) => {
-            return v.code;
-          });
-
-        this.selectVariablesTreeByFields(this.variablesTree, codes, ['conceptCode']);
-      });
   }
 
   private updateCategorizedVariablesTree(variablesTree: GbTreeNode[]) {
@@ -141,6 +125,7 @@ export class VariableService {
     this.variables.forEach((v: Concept) => {
       v.selected = codes.includes(v.code);
     });
+    this.selectedVariablesTreeUpdated.next(selectedNodes);
   }
 
   public updateVariables(): Promise<any> {
@@ -310,7 +295,6 @@ export class VariableService {
     this._variables = value;
   }
 
-  // TODO Remove?
   get variablesUpdated(): Subject<Concept[]> {
     return this._variablesUpdated;
   }
@@ -335,14 +319,6 @@ export class VariableService {
     this._isUpdatingVariables = value;
   }
 
-  get selectedVariablesUpdated(): Subject<Concept[]> {
-    return this._selectedVariablesUpdated;
-  }
-
-  set selectedVariablesUpdated(value: Subject<Concept[]>) {
-    this._selectedVariablesUpdated = value;
-  }
-
   get variablesTree(): GbTreeNode[] {
     return this._variablesTree;
   }
@@ -355,13 +331,21 @@ export class VariableService {
     return this._selectedVariablesTree;
   }
 
-  get selectedVariablesNumber(): number {
-    return this.selectedVariablesTree.filter(node => this.treeNodeService.isTreeNodeConcept(node)).length;
-  }
-
   // this setter is invoked each time the user clicks to (un)check a variable tree node
   set selectedVariablesTree(value: GbTreeNode[]) {
     this._selectedVariablesTree = value;
     this.updateSelectedVariablesWithTreeNodes(value);
+  }
+
+  get selectedVariablesTreeUpdated(): Subject<GbTreeNode[]> {
+    return this._selectedVariablesTreeUpdated;
+  }
+
+  set selectedVariablesTreeUpdated(value: Subject<GbTreeNode[]>) {
+    this._selectedVariablesTreeUpdated = value;
+  }
+
+  get selectedVariablesNumber(): number {
+    return this.selectedVariablesTree.filter(node => this.treeNodeService.isTreeNodeConcept(node)).length;
   }
 }

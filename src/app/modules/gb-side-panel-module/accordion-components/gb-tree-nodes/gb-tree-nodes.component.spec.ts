@@ -147,46 +147,4 @@ describe('TreeNodesComponent', () => {
     expect(spy2).not.toHaveBeenCalled()
   });
 
-  it('should filter tree nodes', () => {
-    let result = component.filterWithHighlightTreeNodes(null, '', '');
-    expect(result['hasMatching']).toBe(false);
-    result = component.filterWithHighlightTreeNodes([], '', '');
-    expect(result['hasMatching']).toBe(false);
-    let node = {};
-    component.filterWithHighlightTreeNodes([node], '', '');
-    expect(node['expanded']).toBe(false);
-    expect(node['styleClass']).not.toBeDefined();
-
-    node['children'] = [{}];
-    component.filterWithHighlightTreeNodes([node], '', '');
-    expect(node['styleClass']).toBe('is-not-leaf');
-
-    let word = 'some';
-    let field = 'name';
-    node['children'] = [];
-    node[field] = word + ' Something else 123';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(false);
-    expect(node['styleClass']).toBe('gb-highlight-treenode');
-
-    let leaf = {};
-    leaf[field] = 'test';
-    node['children'] = [leaf];
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['styleClass']).toBe('gb-highlight-treenode gb-is-not-leaf');
-
-    leaf[field] = word + ' test';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(true);
-
-    component.maxNumExpandedNodes = 0;
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(false);
-
-    node[field] = ' ABC else 123';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['styleClass']).not.toBeDefined();
-
-  });
-
 });

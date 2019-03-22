@@ -100,10 +100,6 @@ describe('VariableService', () => {
     expect(spyUpdateVariables).not.toHaveBeenCalled();
   });
 
-  it('should update categorised variables when variables tree get updated', () => {
-    // TODO
-  });
-
   it('should update variable in category view when tree-view nodes are checked', () => {
     let n: TreeNode = {};
     n['conceptCode'] = 'v2';
@@ -115,12 +111,32 @@ describe('VariableService', () => {
     expect(dummyVariables[1].selected).toBe(true);
   });
 
-  it('should update selected tree nodes in tree view when variables in category view are checked',
-    () => {
-      const spyTreeSelection = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
-      variableService.selectedVariablesUpdated.next(dummyVariables);
+  it('should update categorised and tree variables when variables get updated', () => {
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
+    const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
+    const spyVariablesUpdated = spyOn(variableService, 'variablesUpdated').and.stub();
+
+    variableService.updateVariables().then(() => {
+      expect(variableService.isUpdatingVariables).toBe(false);
+      expect(dummyVariables[0].selected).toBe(true);
+      expect(variableService.categorizedVariablesTree.length).toBe(3);
+      expect(variableService.variablesTree.length).toBe(3);
       expect(spyTreeSelection).toHaveBeenCalled();
+      expect(spyVariablesUpdated).toHaveBeenCalled();
     });
+
+  });
+
+  it('should update variables when tree nodes variables are checked', () => {
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
+    const spyTreeSelection = spyOn(variableService, 'updateSelectedVariablesWithTreeNodes').and.stub();
+
+    variableService.selectedVariablesTree = [{}];
+
+    expect(spyTreeSelection).toHaveBeenCalledWith([{}]);
+    let selectedVariables = variableService.variables.filter(v => v.selected === true);
+    expect(selectedVariables.length).toBe(0);
+  });
 
   it('should call treeNodeService.flattenTreeNodes when checking all variable tree nodes', () => {
     let node: TreeNode = {};
