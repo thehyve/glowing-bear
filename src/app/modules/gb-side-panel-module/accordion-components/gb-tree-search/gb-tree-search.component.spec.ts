@@ -1,11 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTreeSearchComponent} from './gb-tree-search.component';
-import {TreeModule} from "primeng/tree";
-import {AutoCompleteModule} from "primeng/primeng";
-import {GbGenericModule} from "../../../gb-generic-module/gb-generic.module";
-import {FormsModule} from "@angular/forms";
-import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
+import {TreeModule} from 'primeng/tree';
+import {AutoCompleteModule} from 'primeng/primeng';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
+import {FormsModule} from '@angular/forms';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 describe('GbTreeSearchComponent', () => {
   let component: GbTreeSearchComponent;
@@ -112,8 +112,6 @@ describe('GbTreeSearchComponent', () => {
   });
 
   it('should clear search results and notify parent', () => {
-    let spy = spyOn(component.onClear, 'emit');
-
     component.tree = [
       {name: 'foo'} as GbTreeNode,
       {name: 'bar'} as GbTreeNode,
@@ -127,7 +125,6 @@ describe('GbTreeSearchComponent', () => {
     expect(component.searchTerm).toEqual('');
     expect(component.collectedUniqueNodeNames).toEqual(new Set());
     expect(component.hits).toEqual(0);
-    expect(component.onClear.emit).toHaveBeenCalled();
   });
 
 });

@@ -23,8 +23,8 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
-import {GbTreeSearchComponent} from "../gb-tree-search/gb-tree-search.component";
-import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
+import {GbTreeSearchComponent} from '../gb-tree-search/gb-tree-search.component';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;

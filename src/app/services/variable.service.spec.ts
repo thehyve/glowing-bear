@@ -76,23 +76,12 @@ describe('VariableService', () => {
   });
 
   it('should identify tree node variable dragged', () => {
-    variableService.draggedVariable = null;
     treeNodeService.selectedTreeNode = {} as TreeNode;
     let spy = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
 
     let element = variableService.identifyDraggedElement();
 
     expect(spy).toHaveBeenCalled();
-    expect(element).not.toBeNull();
-    expect(element).toEqual(jasmine.any(Concept));
-  });
-
-  it('should identify categorized variable dragged', () => {
-    variableService.draggedVariable = new Concept();
-    treeNodeService.selectedTreeNode = null;
-
-    let element = variableService.identifyDraggedElement();
-
     expect(element).not.toBeNull();
     expect(element).toEqual(jasmine.any(Concept));
   });
@@ -111,13 +100,8 @@ describe('VariableService', () => {
     expect(spyUpdateVariables).not.toHaveBeenCalled();
   });
 
-  it('should check and categorise variables when they are updated', () => {
-    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
-    const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
-    variableService.variablesUpdated.next(dummyVariables);
-    expect(dummyVariables[0].selected).toBe(true);
-    expect(variableService.categorizedVariablesTree.length).toBe(3);
-    expect(spyTreeSelection).toHaveBeenCalled();
+  it('should update categorised variables when variables tree get updated', () => {
+    // TODO
   });
 
   it('should update variable in category view when tree-view nodes are checked', () => {

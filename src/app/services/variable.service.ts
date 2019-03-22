@@ -15,7 +15,7 @@ import {CombinationConstraint} from '../models/constraint-models/combination-con
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
-import {GbTreeNode} from "../models/tree-node-models/gb-tree-node";
+import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +35,7 @@ export class VariableService {
   // The categorized variables used in the category view in gb-variables
   private _categorizedVariablesTree: GbTreeNode[] = [];
   // The async subject that tells if the selection of variables is changed according to user action
-  //TODO Remove me?
+  // TODO Remove me?
   private _selectedVariablesUpdated: Subject<Concept[]> = new Subject<Concept[]>();
   /*
    * The variables represented as tree nodes used in the tree view in gb-variables
@@ -75,7 +75,7 @@ export class VariableService {
       }
     });
 
-    //FIXME
+    // FIXME
     // when the user (un)selects / (un)checks variables in the category view,
     // update the selected tree nodes in the tree view
     this.selectedVariablesUpdated.asObservable()
@@ -106,8 +106,8 @@ export class VariableService {
         this.categorizedVariablesTree.push(typeNode);
     });
 
-    function groupDescendantVariableNodes(variablesTree: GbTreeNode[]) {
-      variablesTree.forEach((node: GbTreeNode) => {
+    function groupDescendantVariableNodes(tree: GbTreeNode[]) {
+      tree.forEach((node: GbTreeNode) => {
         if (isVariableNode(node)) {
           if (!variableNodesByType.has(node.type)) {
             variableNodesByType.set(node.type, []);
@@ -310,7 +310,7 @@ export class VariableService {
     this._variables = value;
   }
 
-  //TODO Remove?
+  // TODO Remove?
   get variablesUpdated(): Subject<Concept[]> {
     return this._variablesUpdated;
   }

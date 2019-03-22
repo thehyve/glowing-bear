@@ -11,7 +11,7 @@ import {TreeNode} from 'primeng/api';
 import {VariablesViewMode} from '../../models/variables-view-mode';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {GbTreeNode} from "../../models/tree-node-models/gb-tree-node";
+import {GbTreeNode} from '../../models/tree-node-models/gb-tree-node';
 
 export class VariableServiceMock {
   private _variables: Concept[] = [];

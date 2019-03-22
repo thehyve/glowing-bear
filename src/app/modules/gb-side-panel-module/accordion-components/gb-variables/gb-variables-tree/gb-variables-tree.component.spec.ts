@@ -16,7 +16,7 @@ import {TreeModule} from 'primeng/tree';
 import {GbGenericModule} from '../../../../gb-generic-module/gb-generic.module';
 import {VariableService} from '../../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
-import {GbTreeSearchComponent} from "../../gb-tree-search/gb-tree-search.component";
+import {GbTreeSearchComponent} from '../../gb-tree-search/gb-tree-search.component';
 
 describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;

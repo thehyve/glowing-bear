@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {GbTreeNode} from "../../../../models/tree-node-models/gb-tree-node";
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-tree-search',
@@ -20,9 +20,13 @@ export class GbTreeSearchComponent {
     this.onFiltering();
   }
 
-  searchTerm: string = '';
+  searchTerm = '';
   collectedUniqueNodeNames: Set<string>;
   hits: number;
+
+  private static normalisedSearchText(text: string): string {
+    return text.toLowerCase();
+  }
 
   onFiltering() {
     this.resetHits();
@@ -39,10 +43,6 @@ export class GbTreeSearchComponent {
   private resetHits() {
     this.collectedUniqueNodeNames = new Set();
     this.hits = 0;
-  }
-
-  private static normalisedSearchText(text: string): string {
-    return text.toLowerCase();
   }
 
   private registerIfMatch(normalisedSearchTerm: string): (node: GbTreeNode) => boolean {

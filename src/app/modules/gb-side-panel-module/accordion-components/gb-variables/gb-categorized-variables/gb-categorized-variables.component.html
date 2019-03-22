@@ -9,14 +9,14 @@
       </mat-expansion-panel-header>
 
       <div>
-        <div *ngFor="let varNode of catNode.children"
+        <div *ngFor="let varNode of highlightedVariablesFirst(catNode.children)"
              [pDraggable]="variablesDragDropScope"
              (dragstart)="onDragStart($event, varNode)"
              class="variable">
           <p-checkbox *ngIf="isExport" [ngModel]="isSelected(varNode)" binary="true"
                       (onChange)="onCheck($event, varNode)"></p-checkbox>
 
-          <span [ngClass]="{'gb-highlight-treenode': varNode.styleClass && varNode.styleClass.includes('gb-highlight-treenode')}">
+          <span [ngClass]="{'gb-highlight-treenode': isHighlighted(varNode)}">
             {{varNode.name}} ({{varNode.subjectCount}})
           </span>
         </div>

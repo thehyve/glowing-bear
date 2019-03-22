@@ -7,6 +7,8 @@ import {NavbarService} from '../../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
 import {VariableService} from '../../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
+import {TreeNodeService} from "../../../../../services/tree-node.service";
+import {TreeNodeServiceMock} from "../../../../../services/mocks/tree-node.service.mock";
 
 describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;
@@ -30,8 +32,12 @@ describe('GbCategorizedVariablesComponent', () => {
           useClass: NavbarServiceMock
         },
         {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock,
+        },
+        {
           provide: VariableService,
-          useClass: VariableServiceMock
+          useClass: VariableServiceMock,
         }
       ]
     })

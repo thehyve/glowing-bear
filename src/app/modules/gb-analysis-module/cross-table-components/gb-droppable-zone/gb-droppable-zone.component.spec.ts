@@ -94,12 +94,10 @@ describe('GbDroppableZoneComponent', () => {
   it('should conditionally update cross table when a constraint cell is dropped', () => {
     let mockEvent = new DragEvent('drop');
     crossTableService.selectedConstraintCell = null;
-    variableService.draggedVariable = null;
     component.onDrop(mockEvent);
     expect(component.dragCounter).toEqual(0);
     expect(crossTableService.selectedConstraintCell).toBe(null);
 
-    variableService.draggedVariable = new Concept();
     let spy = spyOn(MessageHelper, 'alert').and.stub();
     component.onDrop(mockEvent);
     expect(spy).toHaveBeenCalledTimes(1);
