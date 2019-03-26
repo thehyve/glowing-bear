@@ -321,6 +321,7 @@ export class ResourceService {
    * @param {ExportDataType[]} dataTypes
    * @param {Constraint} constraint
    * @param {DataTable} dataTable - included only if at least one of the formats of elements is 'TSV'
+   * @param {boolean} dateColumnsIncluded
    * @returns {Observable<ExportJob>}
    */
   runExportJob(job: ExportJob,

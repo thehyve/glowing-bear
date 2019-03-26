@@ -37,14 +37,9 @@ export class DataTableService {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-    this.isDirty = false;
+    this.isDirty = true;
     this.isUpdating = false;
     this.dataTableUpdated = new Subject();
-    this.variableService.variablesUpdated.asObservable()
-      .subscribe(() => {
-        this.isDirty = true;
-        this.updateDataTable();
-      });
     this.variableService.selectedVariablesTreeUpdated.asObservable()
       .subscribe(() => {
         this.isDirty = true;
