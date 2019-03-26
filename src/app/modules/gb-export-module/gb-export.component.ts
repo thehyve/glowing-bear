@@ -125,4 +125,8 @@ export class GbExportComponent implements OnInit, OnDestroy {
       (!this.exportService.isTransmartDataTable && !this.isDataTypesUpdating);
   }
 
+  get includeDataTable(): boolean {
+    return this.exportService.includeDataTable;
+  }
+
 }

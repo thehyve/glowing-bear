@@ -319,6 +319,10 @@ export class ExportService {
     return this.dataTableService.isUpdating;
   }
 
+  get includeDataTable(): boolean {
+    return this.dataTableService.includeDataTable;
+  }
+
   get exportEnabled(): AsyncSubject<boolean> {
     return this._exportEnabled;
   }
