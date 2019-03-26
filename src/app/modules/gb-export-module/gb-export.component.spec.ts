@@ -10,15 +10,19 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbExportComponent} from './gb-export.component';
 import {
-  AutoCompleteModule, CheckboxModule, DataListModule, DataTableModule, DropdownModule, FieldsetModule, MessagesModule,
+  AutoCompleteModule,
+  CheckboxModule,
+  DataListModule,
+  DataTableModule,
+  DropdownModule,
+  FieldsetModule,
+  MessagesModule,
   OverlayPanelModule,
   PanelModule
 } from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {AppConfig} from '../../config/app.config';
-import {AppConfigMock, AppConfigSurveyExportMock} from '../../config/app.config.mock';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
 import {MockComponent} from 'ng2-mock-component';
@@ -81,10 +85,6 @@ describe('GbExportComponent (dataTable)', () => {
         GbGenericModule
       ],
       providers: [
-        {
-          provide: AppConfig,
-          useClass: AppConfigMock
-        },
         {
           provide: ExportService,
           useClass: ExportServiceMock
@@ -149,10 +149,6 @@ describe('GbExportComponent (surveyTable)', () => {
         GbGenericModule
       ],
       providers: [
-        {
-          provide: AppConfig,
-          useClass: AppConfigSurveyExportMock
-        },
         {
           provide: ExportService,
           useClass: ExportServiceMock

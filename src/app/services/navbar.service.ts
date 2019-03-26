@@ -51,12 +51,19 @@ export class NavbarService {
       this.configFractalis();
     } else if (this.isExport) {
       this.activeItem = this._items[2];
+      this.configExport();
     }
   }
 
   private configFractalis() {
     if (!this.fractalisService.isInitialized) {
       this.fractalisService.setupFractalis();
+    }
+  }
+
+  private configExport() {
+    if (this.exportService.isTransmartDataTable) {
+      this.exportService.updateDataTableExportFormats();
     }
   }
 
