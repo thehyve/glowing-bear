@@ -153,7 +153,8 @@ Supported properties in the `config.*.json` files:
 | `export-mode`             |           | JSON object. Data export configuration. When using tranSMART directly, use: `export-mode`: { `name`: `transmart`, `data-view`: `export-data-view` }, where `export-data-view` defines a shape of the export (`dataTable`, `surveyTable`). When using external tool called `transmart-packer`, use: `export-mode`: { `name`: `packer`, `data-view`: `packer-job-name`, `export-url`:`http://example.com`, where `packer-job-name` is a name of the job in `transmart-packer` and `export-url` is an URL of `transmart-packer` } |
 | `enable-fractalis-analysis` | `false`   | Enable the Fractalis visual analytics in the `analysis` tab.
 | `fractalis-url`           |           | URL of the Fractalis application to connect to for visual analytics.
-| `fractalis-datasource-url` |           | The URL where the TranSMART API is reachable by Fractalis. (The value for `api-url` is used by default).
+| `fractalis-datasource-url`|           | The URL where the TranSMART API is reachable by Fractalis. (The value for `api-url` is used by default).
+| `include-data-table`      | `true`    | Show a data table in the export tab.
 
 
 ## License
