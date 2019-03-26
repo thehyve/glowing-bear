@@ -102,15 +102,21 @@ export class ExportService {
   public prepareExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
       let name = this.exportJobName === null ? '' : this.exportJobName.trim();
-
       if (!this.isDataAvailable) {
         return reject(`No data is available for exporting`);
       }
       let summary = 'Running export job "' + name + '".';
       MessageHelper.alert('info', summary);
+
       if (this.isTransmartDataTable && this.dataTableService.isDirty) {
         this.dataTableService.updateDataTable().then(() => {
-          return this.createExportJob(name);
+          this.createExportJob(name)
+            .then(() => {
+              resolve(true);
+            })
+            .catch(err => {
+              reject(err);
+            });
         }).catch(err => {
           summary = 'Fail to fetch a data table required for the export job "' + name + '".';
           MessageHelper.alert('error', summary);

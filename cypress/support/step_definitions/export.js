@@ -42,6 +42,8 @@ when('I select no data in Category View', () => {
 });
 
 when('I export this data with the name {string}', (jobName) => {
+  // wait for the page to finish rendering
+  cy.get('#exportJobNameInput').invoke('width').should('be.greaterThan', 0);
   cy.get('#exportJobNameInput').type(jobName);
   cy.contains('Create export').click();
 });
