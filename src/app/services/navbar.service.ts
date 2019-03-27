@@ -55,7 +55,7 @@ export class NavbarService {
   }
 
   private configFractalis() {
-    if (!this.fractalisService.isInitialized) {
+    if (this.fractalisService.isFractalisEnabled && !this.fractalisService.isInitialized) {
       this.fractalisService.setupFractalis();
     }
   }

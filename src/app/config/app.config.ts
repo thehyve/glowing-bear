@@ -69,7 +69,10 @@ export class AppConfig {
           throw Error('Gb-backend URL is unspecified in the configuration.')
         }
         case 'fractalis-url': {
-          throw Error('Fractalis URL is unspecified in the configuration.')
+          if (this.getConfig('enable-fractalis-analysis') === true) {
+            throw Error('Fractalis URL is unspecified in the configuration.')
+          }
+          return null;
         }
         case 'fractalis-datasource-url': {
           // Use the API URL by default.

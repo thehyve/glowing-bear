@@ -147,12 +147,6 @@ describe('AppConfig', () => {
     } catch (e) {
       expect(e.message).toBeDefined();
     }
-      try {
-      appConfig.getConfig('fractalis-url');
-      fail('The call to get fractalis-url config should not succeed.');
-    } catch (e) {
-      expect(e.message).toBeDefined();
-    }
     try {
       appConfig.getConfig('fractalis-datasource-url');
       fail('The call to get fractalis-datasource-url config should not succeed.');
@@ -174,6 +168,13 @@ describe('AppConfig', () => {
     expect(appConfig.getConfig('authentication-service-type')).toBe(AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE);
     expect(appConfig.getConfig('oidc-server-url')).toBe(AppConfig.DEFAULT_OIDC_SERVER_URL);
     expect(appConfig.getConfig('oidc-client-id')).toBe(AppConfig.DEFAULT_OIDC_CLIENT_ID);
+    try {
+      AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS = true;
+      appConfig.getConfig('fractalis-url');
+      fail('The call to get fractalis-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
   })
 
 });
