@@ -9,7 +9,7 @@
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": true,
   "autosave-subject-sets": false,
-  "show-observation-counts": false,
+  "show-observation-counts": true,
   "instant-counts-update": false,
   "include-data-table": true,
   "include-cohort-subscription": true,
