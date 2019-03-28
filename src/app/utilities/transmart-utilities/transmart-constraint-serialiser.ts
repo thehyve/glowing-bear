@@ -346,9 +346,10 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     // Collect children query objects
     const children = this.getNonEmptyChildObjects(constraint);
     const parentDimension = constraint.parentConstraint ? (<CombinationConstraint>constraint.parentConstraint).dimension : null;
-    if (children.length === 1) {
+    if (children.length === 1 && children[0].type !== 'subselection' ) {
       if (!parentDimension && dimension === 'patient') {
-        // Subselection not required for singleton patient-level combinations at the top level
+        // Subselection not required for singleton patient-level combinations at the top level,
+        // unless ensuring patient level constraint
         return children[0];
       }
     }
