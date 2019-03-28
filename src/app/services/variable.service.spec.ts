@@ -76,23 +76,12 @@ describe('VariableService', () => {
   });
 
   it('should identify tree node variable dragged', () => {
-    variableService.draggedVariable = null;
     treeNodeService.selectedTreeNode = {} as TreeNode;
     let spy = spyOn(treeNodeService, 'getConceptFromTreeNode').and.callThrough();
 
     let element = variableService.identifyDraggedElement();
 
     expect(spy).toHaveBeenCalled();
-    expect(element).not.toBeNull();
-    expect(element).toEqual(jasmine.any(Concept));
-  });
-
-  it('should identify categorized variable dragged', () => {
-    variableService.draggedVariable = new Concept();
-    treeNodeService.selectedTreeNode = null;
-
-    let element = variableService.identifyDraggedElement();
-
     expect(element).not.toBeNull();
     expect(element).toEqual(jasmine.any(Concept));
   });
@@ -111,15 +100,6 @@ describe('VariableService', () => {
     expect(spyUpdateVariables).not.toHaveBeenCalled();
   });
 
-  it('should check and categorise variables when they are updated', () => {
-    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
-    const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
-    variableService.variablesUpdated.next(dummyVariables);
-    expect(dummyVariables[0].selected).toBe(true);
-    expect(variableService.categorizedVariables.length).toBe(3);
-    expect(spyTreeSelection).toHaveBeenCalled();
-  });
-
   it('should update variable in category view when tree-view nodes are checked', () => {
     let n: TreeNode = {};
     n['conceptCode'] = 'v2';
@@ -131,12 +111,32 @@ describe('VariableService', () => {
     expect(dummyVariables[1].selected).toBe(true);
   });
 
-  it('should update selected tree nodes in tree view when variables in category view are checked',
-    () => {
-      const spyTreeSelection = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
-      variableService.selectedVariablesUpdated.next(dummyVariables);
+  it('should update categorised and tree variables when variables get updated', () => {
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
+    const spyTreeSelection = spyOn(variableService, 'selectAllVariablesTree').and.stub();
+    const spyVariablesUpdated = spyOn(variableService, 'variablesUpdated').and.stub();
+
+    variableService.updateVariables().then(() => {
+      expect(variableService.isUpdatingVariables).toBe(false);
+      expect(dummyVariables[0].selected).toBe(true);
+      expect(variableService.categorizedVariablesTree.length).toBe(3);
+      expect(variableService.variablesTree.length).toBe(3);
       expect(spyTreeSelection).toHaveBeenCalled();
+      expect(spyVariablesUpdated).toHaveBeenCalled();
     });
+
+  });
+
+  it('should update variables when tree nodes variables are checked', () => {
+    spyOnProperty(variableService, 'variables', 'get').and.returnValue(dummyVariables);
+    const spyTreeSelection = spyOn(variableService, 'updateSelectedVariablesWithTreeNodes').and.stub();
+
+    variableService.selectedVariablesTree = [{}];
+
+    expect(spyTreeSelection).toHaveBeenCalledWith([{}]);
+    let selectedVariables = variableService.variables.filter(v => v.selected === true);
+    expect(selectedVariables.length).toBe(0);
+  });
 
   it('should call treeNodeService.flattenTreeNodes when checking all variable tree nodes', () => {
     let node: TreeNode = {};

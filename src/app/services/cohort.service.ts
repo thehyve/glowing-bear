@@ -74,6 +74,7 @@ export class CohortService {
     this.isCohortSubscriptionIncluded = this.appConfig.getConfig('include-cohort-subscription');
     this.instantCohortCountsUpdate = this.appConfig.getConfig('instant-cohort-counts-update');
     this.saveSubjectSetBeforeUpdatingCounts = this.appConfig.getConfig('autosave-subject-sets');
+    this.createCurrentCohort();
     this.loadCohorts();
     // initial updates
     this.updateCountsWithCurrentCohort();
@@ -136,14 +137,6 @@ export class CohortService {
   handleLoadedCohorts(cohorts: Cohort[]) {
     // reset cohorts array
     this.cohorts.length = 0;
-    // create current cohort
-    let current: Cohort = new Cohort('', 'currently editing');
-    current.createDate = new Date().toISOString();
-    current.updateDate = new Date().toISOString();
-    current.selected = true;
-    current.controlsEnabled = false;
-    current.constraint = new TrueConstraint();
-    this.currentCohort = current;
     // process saved cohorts
     let bookmarkedCohorts = [];
     cohorts.forEach(c => {
@@ -163,6 +156,16 @@ export class CohortService {
       }
     });
     this.cohorts = [this.currentCohort].concat(bookmarkedCohorts).concat(this.cohorts);
+  }
+
+  private createCurrentCohort() {
+    let current: Cohort = new Cohort('', 'currently editing');
+    current.createDate = new Date().toISOString();
+    current.updateDate = new Date().toISOString();
+    current.selected = true;
+    current.controlsEnabled = false;
+    current.constraint = new TrueConstraint();
+    this.currentCohort = current;
   }
 
   public updateCountsWithAllCohorts(): Promise<any> {

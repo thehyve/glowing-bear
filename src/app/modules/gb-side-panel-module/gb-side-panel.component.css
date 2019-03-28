@@ -42,3 +42,10 @@
 :host >>> .ui-accordion .ui-accordion-header {
   background-color: white;
 }
+
+/*Style for the gb tree search*/
+:host >>> .gb-highlight-treenode {
+  background-color: var(--gb-orange-light) !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
+}

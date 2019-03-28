@@ -33,6 +33,9 @@ export class ExportServiceMock {
     })
   }
 
+  updateDataTableExportFormats() {
+  }
+
   /**
    * Checks if data is available for export.
    * @returns {boolean}
@@ -64,4 +67,9 @@ export class ExportServiceMock {
   set exportJobName(value: string) {
     this._exportJobName = value;
   }
+
+  get isTransmartDataTable(): boolean {
+    return true;
+  }
+
 }

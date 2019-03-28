@@ -8,7 +8,6 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ExportJob} from '../../models/export-models/export-job';
-import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import Timer = NodeJS.Timer;
@@ -28,8 +27,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   // 3. user arranges data table dimensions, retrieve the new data table
   // 4. retrieve export data types
   // 5. user create export job based on arranged data table and selected export data types
-  constructor(private appConfig: AppConfig,
-              private exportService: ExportService) {
+  constructor(private exportService: ExportService) {
   }
 
   ngOnInit() {
@@ -42,7 +40,7 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   createExportJob(exportJobForm: NgForm) {
-    this.exportService.createExportJob()
+    this.exportService.prepareExportJob()
       .then(() => exportJobForm.form.markAsPristine())
       .catch((error) => { console.error(error); });
   }

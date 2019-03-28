@@ -84,4 +84,18 @@ describe('NavbarService', () => {
     expect(navbarService.activeItem).toBe(navbarService.items[2]);
   });
 
+
+  it('should update data table if TransmartDataTable export', () => {
+    let spyTransmartDataTable = spyOnProperty(exportService, 'isTransmartDataTable', 'get')
+      .and.returnValue(false);
+    let spy = spyOn(exportService, 'updateDataTableExportFormats').and.stub();
+    let which = 'export';
+    navbarService.updateNavbar(which);
+    expect(spy).not.toHaveBeenCalled();
+
+    spyTransmartDataTable.and.returnValue( true);
+    navbarService.updateNavbar(which);
+    expect(spy).toHaveBeenCalled();
+  })
+
 });

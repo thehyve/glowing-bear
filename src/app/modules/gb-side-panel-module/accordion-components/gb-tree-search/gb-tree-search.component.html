@@ -1,0 +1,18 @@
+<!--the search/filter input-->
+<div>
+  <p-autoComplete [(ngModel)]="searchTerm"
+                  styleClass="gb-tree-filter-input"
+                  placeholder="filter"
+                  (onClear)="clearFilter()"
+                  (completeMethod)="onFiltering()"
+                  [suggestions]="collectedUniqueNodeNames"></p-autoComplete>
+  <span>&nbsp;</span>
+  <button class="btn btn-secondary btn-sm filter-btn"
+          (click)="clearFilter()"
+          type="button">clear
+  </button>
+  <div *ngIf="hits > 0" class="filter-result">
+    {{hits}} results found
+  </div>
+</div>
+

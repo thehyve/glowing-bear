@@ -187,7 +187,8 @@ export class ResourceServiceMock {
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
                constraint: Constraint,
-               dataTable: DataTable): Observable<ExportJob> {
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
     newExportJob.name = 'test job name';

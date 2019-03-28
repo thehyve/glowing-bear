@@ -13,6 +13,7 @@ import {SelectItem} from 'primeng/api';
 import {NavbarService} from '../../../../services/navbar.service';
 import {VariableService} from '../../../../services/variable.service';
 import {Concept} from '../../../../models/constraint-models/concept';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-variables',
@@ -97,8 +98,15 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get numberOfSelected(): number {
-    return this.variableService.variables.filter(v =>
-      v.selected === true).length;
+    return this.variableService.selectedVariablesNumber;
+  }
+
+  get variablesTree(): GbTreeNode[] {
+    return this.variableService.variablesTree;
+  }
+
+  get categorizedVariablesTree(): GbTreeNode[] {
+    return this.variableService.categorizedVariablesTree;
   }
 
 }
