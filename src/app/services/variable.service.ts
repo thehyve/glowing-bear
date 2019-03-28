@@ -236,7 +236,20 @@ export class VariableService {
     }
   }
 
-  public selectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[]) {
+  public updateVariableSelection(changedNode: GbTreeNode, isChecked: boolean) {
+    let variableNodes: GbTreeNode[] = [];
+    this.treeNodeService.getAllVariablesFromTreeNode(changedNode, variableNodes);
+    if (isChecked) {
+      this.selectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
+        ['conceptCode'], false)
+    } else {
+      this.unselectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
+        ['conceptCode']);
+    }
+    this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
+  }
+
+  public selectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[], isSelectionIncremental: boolean) {
     nodes.forEach((node: GbTreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
@@ -245,7 +258,7 @@ export class VariableService {
           && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
         } else if (
-          !this.isAdditionalImport
+          !isSelectionIncremental
           && !values.includes(val)
           && this.treeNodeService.isVariableNode(node)
           && this.selectedVariablesTree.includes(node)
@@ -254,7 +267,22 @@ export class VariableService {
           this.selectedVariablesTree.splice(index, 1);
         }
         if (node['children']) {
-          this.selectVariablesTreeByFields(node['children'], values, fields);
+          this.selectVariablesTreeByFields(node['children'], values, fields, isSelectionIncremental);
+        }
+      }
+    });
+  }
+
+  public unselectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[]) {
+    nodes.forEach((node: GbTreeNode) => {
+      if (node) {
+        const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
+        if (values.includes(val) && this.selectedVariablesTree.includes(node)) {
+          const index = this.selectedVariablesTree.indexOf(node);
+          this.selectedVariablesTree.splice(index, 1);
+        }
+        if (node['children']) {
+          this.unselectVariablesTreeByFields(node['children'], values, fields);
         }
       }
     });
@@ -262,14 +290,14 @@ export class VariableService {
 
   public importVariablesByNames(names: string[]) {
     // update the selected tree nodes in gb-variables
-    this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name']);
+    this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name'], this.isAdditionalImport);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
 
   public importVariablesByPaths(paths: string[]) {
     // update the selected tree nodes in gb-variables
-    this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName']);
+    this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName'], this.isAdditionalImport);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
