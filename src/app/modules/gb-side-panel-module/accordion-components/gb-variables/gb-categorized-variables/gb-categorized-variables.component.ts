@@ -31,20 +31,7 @@ export class GbCategorizedVariablesComponent {
   }
 
   onCheck(checked: boolean, variableNode: GbTreeNode) {
-    // TODO convert selectedVariablesTree to set
-    const index = this.variableService.selectedVariablesTree.indexOf(variableNode, 0);
-    console.log(checked);
-    if (checked) {
-      if (index === -1) {
-        this.variableService.selectedVariablesTree.push(variableNode);
-        this.variableService.updateSelectedVariablesWithTreeNodes(this.variableService.selectedVariablesTree);
-      }
-    } else {
-      if (index > -1) {
-        this.variableService.selectedVariablesTree.splice(index, 1);
-        this.variableService.updateSelectedVariablesWithTreeNodes(this.variableService.selectedVariablesTree);
-      }
-    }
+    this.variableService.updateVariableSelection(variableNode, checked);
   }
 
   isSelected(variableNode: GbTreeNode) {

@@ -11,6 +11,7 @@ import {ConstraintService} from '../../../../../services/constraint.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
 import {VariableService} from '../../../../../services/variable.service';
+import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-variables-tree',
@@ -75,6 +76,14 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
       }
       index++;
     }
+  }
+
+  nodeSelect(event) {
+    this.variableService.updateVariableSelection(event.node, true);
+  }
+
+  nodeUnselect(event) {
+    this.variableService.updateVariableSelection(event.node, false);
   }
 
   get variablesTreeData(): TreeNode[] {

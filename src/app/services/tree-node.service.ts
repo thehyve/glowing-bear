@@ -380,6 +380,16 @@ export class TreeNodeService {
     }
   }
 
+  public getAllVariablesFromTreeNode(node: GbTreeNode, variables: GbTreeNode[]) {
+    if (node.children) {
+      for (let child of node.children) {
+        this.getAllVariablesFromTreeNode(child, variables);
+      }
+    } else if (this.isVariableNode(node)) {
+      variables.push(node);
+    }
+  }
+
   public copyTreeNodes(nodes: GbTreeNode[]): GbTreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
