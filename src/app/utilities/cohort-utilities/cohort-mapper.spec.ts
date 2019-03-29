@@ -39,20 +39,28 @@ describe('CohortMapper', () => {
       subjectDimension: 'patient',
       queryConstraint: {
         type: 'subselection',
-        dimension: 'sample',
+        dimension: 'patient',
         constraint: {
-          type: 'concept',
-          conceptCode: 'xyz'
+          type: 'subselection',
+          dimension: 'sample',
+          constraint: {
+            type: 'concept',
+            conceptCode: 'xyz'
+          }
         }
       } as TransmartSubSelectionConstraint,
       queryBlob: {
         queryConstraintFull: {
           type: 'subselection',
-          dimension: 'sample',
+          dimension: 'patient',
           constraint: {
-            type: 'concept',
-            conceptCode: 'xyz',
-            fullName: '\\test\\xyz\\'
+            type: 'subselection',
+            dimension: 'sample',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'xyz',
+              fullName: '\\test\\xyz\\'
+            }
           }
         } as TransmartSubSelectionConstraint,
       },

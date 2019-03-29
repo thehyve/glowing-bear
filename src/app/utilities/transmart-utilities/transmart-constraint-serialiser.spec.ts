@@ -163,8 +163,6 @@ describe('TransmartConstraintSerialiser', () => {
     typeConstraint.valueConstraints.push(typeValueConstraint);
     const biomaterialConstraint = new CombinationConstraint(
       [typeConstraint], CombinationState.And, 'biomaterial');
-    const patientConstraint = new CombinationConstraint(
-      [biomaterialConstraint], CombinationState.And, 'patient');
     const expected: TransmartSubSelectionConstraint = {
       type: 'subselection',
       dimension: 'biomaterial',
@@ -184,7 +182,7 @@ describe('TransmartConstraintSerialiser', () => {
         ]
       } as TransmartAndConstraint
     };
-    testConstraint(patientConstraint, expected);
+    testConstraint(biomaterialConstraint, expected);
   });
 
   it('should serialise "select all parents of patients with biomaterials of type A"', () => {
