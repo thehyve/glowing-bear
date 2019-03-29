@@ -73,7 +73,6 @@ export class VariableService {
         this.updateVariables();
       }
     });
-
   }
 
   private updateCategorizedVariablesTree(variablesTree: GbTreeNode[]) {
@@ -85,10 +84,10 @@ export class VariableService {
 
     new Map<string, GbTreeNode[]>([...variableNodesByType.entries()].sort())
       .forEach((nodes: GbTreeNode[], type: string) => {
-        let typeNode = { name: type, children: nodes, expanded: true } as GbTreeNode;
+        let typeNode = {name: type, children: nodes, expanded: true} as GbTreeNode;
 
         this.categorizedVariablesTree.push(typeNode);
-    });
+      });
 
     function groupDescendantVariableNodes(tree: GbTreeNode[]) {
       tree.forEach((node: GbTreeNode) => {
@@ -241,7 +240,7 @@ export class VariableService {
     this.treeNodeService.getAllVariablesFromTreeNode(changedNode, variableNodes);
     if (isChecked) {
       this.selectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
-        ['conceptCode'], false)
+        ['conceptCode'], true);
     } else {
       this.unselectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
         ['conceptCode']);
@@ -373,7 +372,17 @@ export class VariableService {
     this._selectedVariablesTreeUpdated = value;
   }
 
-  get selectedVariablesNumber(): number {
-    return this.selectedVariablesTree.filter(node => this.treeNodeService.isTreeNodeConcept(node)).length;
+  private updateNumberOfSelectedVariables(): number {
+    let num = 0;
+    this.variables.forEach((variable: Concept) => {
+      if (variable.selected) {
+        num++;
+      }
+    });
+    return num;
+  }
+
+  get numSelectedVariables(): number {
+    return this.updateNumberOfSelectedVariables();
   }
 }

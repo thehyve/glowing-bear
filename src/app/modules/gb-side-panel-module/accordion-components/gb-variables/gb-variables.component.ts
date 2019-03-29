@@ -98,7 +98,7 @@ export class GbVariablesComponent implements OnInit {
   }
 
   get numberOfSelected(): number {
-    return this.variableService.selectedVariablesNumber;
+    return this.variableService.numSelectedVariables;
   }
 
   get variablesTree(): GbTreeNode[] {
