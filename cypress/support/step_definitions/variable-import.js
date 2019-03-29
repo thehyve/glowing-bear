@@ -1,3 +1,8 @@
+given('I unselect all variables', () => {
+  cy.get('.loading-container').should('not.be.visible');
+  cy.get('.checkAllText').find(".ui-chkbox-box").click();
+})
+
 when('I import variables with {string}', (fileName) => {
   const fileType = 'application/json';
   const fileInputSelector = 'gb-variables input[type=file]';

@@ -16,6 +16,10 @@ then('A cross table should show up', () => {
  * also, the descendant element should be a div
  */
 then('Drag CATEGORICAL_VALUES:Demography:Race from tree view to row zone', () => {
+  // collapse cohorts panel
+  cy.get('.ui-accordion-header').contains('Cohorts').click();
+  cy.toggleNode('Public Studies ');
+  cy.toggleNode('CATEGORICAL_VALUES ');
   cy.toggleNode('Demography');
   cy.drag('Race', '.gb-variables-tree-container').drop(1, 'div.gb-droppable-zone-info-container');
 });
@@ -26,6 +30,10 @@ then('Cross table has Latino and Caucasian labels', () => {
 });
 
 then('Drag Oracle_1000_Patient:Categorical_locations:categorical_12 from tree view to column zone', () => {
+  // collapse cohorts panel
+  cy.get('.ui-accordion-header').contains('Cohorts').click();
+  cy.toggleNode('Public Studies ');
+  cy.toggleNode('Oracle_1000_Patient ');
   cy.toggleNode('Categorical_locations');
   cy.drag('categorical_12', '.gb-variables-tree-container').drop(0, 'div.gb-droppable-zone-info-container');
 });

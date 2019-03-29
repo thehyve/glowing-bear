@@ -4,6 +4,7 @@ when('I select a box plot', () => {
 
 then('I drag numerical_11 variable from the Category View to variable drop zone', () => {
   cy.get('gb-variables .ui-button').contains('Category view').click();
+  cy.get('gb-categorized-variables').contains('NUMERIC').click();
   cy.drag('numerical_11', 'gb-variables').drop(0, '.fractalis-control-container .drop-zone');
 });
 
