@@ -3,16 +3,18 @@ Feature: variable import
 
   Scenario: import variables by names
     Given I am on the export tab
+    And I unselect all variables
     When I import variables with 'variable-names.json'
     Then The number of selected variables should be '1'
 
   Scenario: import variables by paths
     Given I am on the export tab
+    And I unselect all variables
     When I import variables with 'variable-paths.json'
     Then The number of selected variables should be '3'
 
   Scenario: handle invalid variable import
     Given I am on the export tab
     When I import variables with 'variable-invalid.json'
-    Then The number of selected variables should be '183'
     Then I should see the message containing 'Invalid'
+    Then The number of selected variables should be '194'
