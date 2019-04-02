@@ -372,17 +372,9 @@ export class VariableService {
     this._selectedVariablesTreeUpdated = value;
   }
 
-  private updateNumberOfSelectedVariables(): number {
-    let num = 0;
-    this.variables.forEach((variable: Concept) => {
-      if (variable.selected) {
-        num++;
-      }
-    });
-    return num;
-  }
-
   get numSelectedVariables(): number {
-    return this.updateNumberOfSelectedVariables();
+    return this.variables.filter((variable: Concept) => {
+      return variable.selected;
+    }).length
   }
 }
