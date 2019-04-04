@@ -72,13 +72,13 @@ describe('Integration test for data export', () => {
     // newExportJob.id = 'id1';
     // newExportJob.name = 'test job name 1';
     // exportService.exportJobName = 'test export name 1';
-    // let spyCreate = spyOn(resourceService, 'createExportJob').and.callThrough();
+    // let spyCreate = spyOn(resourceService, 'prepareExportJob').and.callThrough();
     // let spyRun = spyOn(resourceService, 'runExportJob').and.callThrough();
     // let spyGet = spyOn(resourceService, 'getExportJobs').and.callThrough();
     // queryService.counts_2.subjectCount = 1;
     // queryService.counts_2.observationCount = 1;
     // treeNodeService.finalTreeNodes = [{}];
-    // exportService.createExportJob()
+    // exportService.prepareExportJob()
     //   .then(() => {
     //     expect(spyCreate).toHaveBeenCalled();
     //     expect(spyRun).toHaveBeenCalled();

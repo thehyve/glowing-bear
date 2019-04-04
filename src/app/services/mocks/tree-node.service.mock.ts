@@ -12,6 +12,7 @@ import {Subject} from 'rxjs';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {GbTreeNode} from '../../models/tree-node-models/gb-tree-node';
 
 export class TreeNodeServiceMock {
   private _treeNodes: TreeNode[] = [];
@@ -88,6 +89,10 @@ export class TreeNodeServiceMock {
 
   public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
     return this._constraint;
+  }
+
+  public getAllVariablesFromTreeNode(node: GbTreeNode, variables: GbTreeNode[]) {
+
   }
 
   get treeNodesCopy(): TreeNode[] {

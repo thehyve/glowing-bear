@@ -39,6 +39,8 @@ import {
 } from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
 import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-variables-tree/gb-variables-tree.component';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import {RouterModule} from '@angular/router';
+import {GbTreeSearchComponent} from './accordion-components/gb-tree-search/gb-tree-search.component';
 
 @NgModule({
   imports: [
@@ -57,6 +59,7 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     ConfirmDialogModule,
     Md2AccordionModule,
     RadioButtonModule,
+    RouterModule,
     ToggleButtonModule,
     CheckboxModule,
     MatExpansionModule,
@@ -69,7 +72,8 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     GbCohortsComponent,
     GbVariablesComponent,
     GbCategorizedVariablesComponent,
-    GbVariablesTreeComponent
+    GbVariablesTreeComponent,
+    GbTreeSearchComponent,
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]

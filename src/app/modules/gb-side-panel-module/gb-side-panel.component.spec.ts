@@ -30,7 +30,12 @@ import {AppConfig} from '../../config/app.config';
 import {AppConfigMock} from '../../config/app.config.mock';
 import {MockComponent} from 'ng2-mock-component';
 import {MatExpansionModule} from '@angular/material';
-import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import {routing} from '../../app.routing';
+import {GbMainModule} from '../gb-main-module/gb-main.module';
+import {TreeNodeService} from '../../services/tree-node.service';
+import {TreeNodeServiceMock} from '../../services/mocks/tree-node.service.mock';
+import {CountService} from '../../services/count.service';
+import {CountServiceMock} from '../../services/mocks/count.service.mock';
 
 describe('GbSidePanelComponent', () => {
   let component: GbSidePanelComponent;
@@ -39,7 +44,6 @@ describe('GbSidePanelComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbSidePanelComponent,
         MockComponent({selector: 'gb-tree-nodes'}),
         MockComponent({selector: 'gb-cohorts'}),
         MockComponent({selector: 'gb-variables'})
@@ -64,7 +68,8 @@ describe('GbSidePanelComponent', () => {
         CheckboxModule,
         MatExpansionModule,
         SelectButtonModule,
-        GbGenericModule
+        GbMainModule,
+        routing
       ],
       providers: [
         {
@@ -86,6 +91,18 @@ describe('GbSidePanelComponent', () => {
         {
           provide: CrossTableService,
           useClass: CrossTableServiceMock
+        },
+        {
+          provide: TreeNodeService,
+          useClass: TreeNodeServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
+        },
+        {
+          provide: CountService,
+          useClass: CountServiceMock
         },
         ConfirmationService
       ]

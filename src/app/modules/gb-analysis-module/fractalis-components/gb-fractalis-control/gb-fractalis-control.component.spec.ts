@@ -90,8 +90,6 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should drop variable', () => {
-    const dummy = new Concept();
-    variableService.draggedVariable = dummy;
     component.onDropVariable(new DragEvent(''));
     expect(component.dragCounter).toBe(0);
     expect(component.selectedVariables.length).toBe(1);
@@ -135,8 +133,6 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should identify categorized variable dragged', () => {
-    const dummy = new Concept();
-    variableService.draggedVariable = dummy;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();
     component.onDropVariable(new DragEvent(''));
@@ -147,7 +143,6 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should identify tree node dragged', () => {
-    variableService.draggedVariable = null;
     treeNodeService.selectedTreeNode = {} as TreeNode;
     component.selectedChartType = ChartType.BOXPLOT;
     let spy1 = spyOn(fractalisService, 'clearValidation').and.callThrough();

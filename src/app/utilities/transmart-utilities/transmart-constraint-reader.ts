@@ -219,7 +219,10 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
         result.dimension = dimensions.values().next().value;
         const flattenedChildren: Constraint[] = [];
         result.children.forEach((child: CombinationConstraint) =>
-          child.children.forEach(c => flattenedChildren.push(c))
+          child.children.forEach(c => {
+              c.negated = child.negated;
+              flattenedChildren.push(c);
+            })
         );
         result.children = flattenedChildren;
       }

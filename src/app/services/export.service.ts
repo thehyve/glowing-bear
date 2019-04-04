@@ -20,7 +20,6 @@ import {AuthenticationService} from './authentication/authentication.service';
 import {StudyService} from './study.service';
 import {AsyncSubject} from 'rxjs';
 import {AppConfig} from '../config/app.config';
-import {CohortService} from './cohort.service';
 import {CountService} from './count.service';
 import {VariableService} from './variable.service';
 
@@ -98,21 +97,43 @@ export class ExportService {
   }
 
   /**
-   * Create the export job when the user clicks the 'Export selected sets' button
+   * Prepare and create the export job when the user clicks the 'Create export' button
    */
-  public createExportJob(): Promise<any> {
+  public prepareExportJob(): Promise<any> {
     return new Promise((resolve, reject) => {
       let name = this.exportJobName === null ? '' : this.exportJobName.trim();
-
       if (!this.isDataAvailable) {
         return reject(`No data is available for exporting`);
       }
       let summary = 'Running export job "' + name + '".';
       MessageHelper.alert('info', summary);
+
+      if (this.isTransmartDataTable && this.dataTableService.isDirty) {
+        this.dataTableService.updateDataTable().then(() => {
+          this.createExportJob(name)
+            .then(() => {
+              resolve(true);
+            })
+            .catch(err => {
+              reject(err);
+            });
+        }).catch(err => {
+          summary = 'Fail to fetch a data table required for the export job "' + name + '".';
+          MessageHelper.alert('error', summary);
+          reject(err);
+        });
+      } else {
+        return this.createExportJob(name);
+      }
+    });
+  }
+
+  private createExportJob(name): Promise<any> {
+    return new Promise((resolve, reject) => {
       this.resourceService.createExportJob(name)
         .subscribe(
           (newJob: ExportJob) => {
-            summary = 'Export job "' + name + '" is created.';
+            let summary = 'Export job "' + name + '" is created.';
             MessageHelper.alert('success', summary);
             this.exportJobName = '';
             this.runExportJob(newJob)
@@ -120,8 +141,8 @@ export class ExportService {
                 resolve(true);
               })
               .catch(err => {
-                reject(err)
-              });
+                reject(err);
+            });
           },
           (err: HttpErrorResponse) => {
             ErrorHelper.handleError(err);
@@ -249,6 +270,12 @@ export class ExportService {
     });
   }
 
+  updateDataTableExportFormats() {
+    if (this.dataTableService.isDirty) {
+      this.dataTableService.updateDataTable();
+    }
+  }
+
   /**
    * Checks if data is available for export.
    * @returns {boolean}
@@ -317,6 +344,10 @@ export class ExportService {
 
   get isDataTableUpdating(): boolean {
     return this.dataTableService.isUpdating;
+  }
+
+  get includeDataTable(): boolean {
+    return this.dataTableService.includeDataTable;
   }
 
   get exportEnabled(): AsyncSubject<boolean> {

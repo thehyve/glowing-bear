@@ -30,7 +30,10 @@ export class DataTableServiceMock {
     this.dataTableUpdated.next();
   }
 
-  updateDataTable(targetDataTable?: DataTable) {
+  updateDataTable(targetDataTable?: DataTable): Promise<any> {
+    return new Promise<any>((resolve) => {
+      resolve(true);
+    })
   }
 
   get prevRowDimensions(): Array<TableDimension> {

@@ -9,14 +9,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
 import {MatExpansionModule} from '@angular/material';
-import {CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
+import {AutoCompleteModule, CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {MockComponent} from 'ng2-mock-component';
 import {NavbarService} from '../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../services/mocks/navbar.service.mock';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {ConstraintServiceMock} from '../../../../services/mocks/constraint.service.mock';
-import {CategorizedVariable} from '../../../../models/constraint-models/categorized-variable';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
@@ -24,6 +23,8 @@ import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
+import {GbTreeSearchComponent} from '../gb-tree-search/gb-tree-search.component';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;
@@ -37,14 +38,16 @@ describe('GbVariablesComponent', () => {
       declarations: [
         GbVariablesComponent,
         MockComponent({selector: 'gb-variables-tree'}),
-        MockComponent({selector: 'gb-categorized-variables'})
+        MockComponent({selector: 'gb-categorized-variables'}),
+        GbTreeSearchComponent
       ],
       imports: [
         FormsModule,
         DragDropModule,
         MatExpansionModule,
         CheckboxModule,
-        SelectButtonModule
+        SelectButtonModule,
+        AutoCompleteModule,
       ],
       providers: [
         {
@@ -82,7 +85,7 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should give correct number of checked variables', () => {
-    let categorizedVars: Array<CategorizedVariable> = [];
+    let categorizedVars: Array<GbTreeNode> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();
@@ -95,7 +98,7 @@ describe('GbVariablesComponent', () => {
   });
 
   it('should check all the variables', () => {
-    let categorizedVars: Array<CategorizedVariable> = [];
+    let categorizedVars: Array<GbTreeNode> = [];
     let c1 = new Concept();
     c1.selected = true;
     let c2 = new Concept();

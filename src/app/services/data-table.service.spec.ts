@@ -14,6 +14,8 @@ import {ConstraintService} from './constraint.service';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {VariableService} from './variable.service';
 import {VariableServiceMock} from './mocks/variable.service.mock';
+import {AppConfig} from '../config/app.config';
+import {AppConfigMock} from '../config/app.config.mock';
 
 describe('DataTableService', () => {
   beforeEach(() => {
@@ -30,6 +32,10 @@ describe('DataTableService', () => {
         {
           provide: VariableService,
           useClass: VariableServiceMock
+        },
+        {
+          provide: AppConfig,
+          useClass: AppConfigMock
         },
         DataTableService
       ]

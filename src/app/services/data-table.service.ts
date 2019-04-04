@@ -16,6 +16,7 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Subject} from 'rxjs';
 import {VariableService} from './variable.service';
+import {AppConfig} from '../config/app.config';
 
 @Injectable({
   providedIn: 'root',
@@ -25,29 +26,29 @@ export class DataTableService {
   private _prevRowDimensions: Array<TableDimension>;
   private _prevColDimensions: Array<TableDimension>;
   private _dataTable: DataTable;
-// Indicate if the current data table is dirty
+  // Indicate if the current data table is dirty
   private _isDirty: boolean;
   // Indicate if the current data table is updating
   private _isUpdating: boolean;
   // Emit event when data table is done updating
   private _dataTableUpdated: Subject<any>;
+  // Show a data table in the export tab
+  private _includeDataTable: boolean;
 
   constructor(private resourceService: ResourceService,
-              private variableService: VariableService) {
+              private variableService: VariableService,
+              private appConfig: AppConfig) {
     this.dataTable = new DataTable();
     this.prevRowDimensions = [];
     this.prevColDimensions = [];
-    this.isDirty = false;
+    this.isDirty = true;
     this.isUpdating = false;
     this.dataTableUpdated = new Subject();
-    this.variableService.variablesUpdated.asObservable()
-      .subscribe(() => {
-        this.updateDataTable();
-      });
-    this.variableService.selectedVariablesUpdated.asObservable()
+    this.variableService.selectedVariablesTreeUpdated.asObservable()
       .subscribe(() => {
         this.isDirty = true;
       });
+    this.includeDataTable = this.appConfig.getConfig('include-data-table');
   }
 
   public validateDimensions() {
@@ -194,5 +195,13 @@ export class DataTableService {
 
   set dataTableUpdated(value: Subject<boolean>) {
     this._dataTableUpdated = value;
+  }
+
+  get includeDataTable(): boolean {
+    return this._includeDataTable;
+  }
+
+  set includeDataTable(value: boolean) {
+    this._includeDataTable = value;
   }
 }

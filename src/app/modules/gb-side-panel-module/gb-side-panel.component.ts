@@ -18,11 +18,7 @@ import {TreeNodeService} from '../../services/tree-node.service';
 })
 export class GbSidePanelComponent implements OnInit {
 
-  docUrl: string;
-
-  constructor(private appConfig: AppConfig,
-              private navbarService: NavbarService) {
-    this.docUrl = appConfig.getConfig('doc-url');
+  constructor(private navbarService: NavbarService) {
   }
 
   ngOnInit() {
@@ -32,7 +28,4 @@ export class GbSidePanelComponent implements OnInit {
     return this.navbarService.isDataSelection;
   }
 
-  goToDocUrl() {
-    window.open(this.docUrl);
-  }
 }

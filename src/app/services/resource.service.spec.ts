@@ -19,8 +19,6 @@ import {of as observableOf} from 'rxjs';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {Pedigree} from '../models/constraint-models/pedigree';
 import {Cohort} from '../models/cohort-models/cohort';
-import {AppConfigMock} from '../config/app.config.mock';
-import {AppConfig} from '../config/app.config';
 import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.mock';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
@@ -43,10 +41,6 @@ describe('ResourceService', () => {
         {
           provide: GbBackendHttpService,
           useClass: GbBackendHttpServiceMock
-        },
-        {
-          provide: AppConfig,
-          useClass: AppConfigMock
         }
       ]
     });

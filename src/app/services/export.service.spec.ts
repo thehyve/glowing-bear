@@ -30,6 +30,7 @@ import {CountService} from './count.service';
 describe('ExportService', () => {
   let exportService: ExportService;
   let resourceService: ResourceService;
+  let dataTableService: DataTableService;
   let exportJob: ExportJob;
 
   beforeEach(() => {
@@ -72,6 +73,7 @@ describe('ExportService', () => {
     });
     resourceService = TestBed.get(ResourceService);
     exportService = TestBed.get(ExportService);
+    dataTableService = TestBed.get(DataTableService);
     exportJob = new ExportJob();
     exportJob.id = 'id';
     exportJob.name = 'test job name';
@@ -160,10 +162,25 @@ describe('ExportService', () => {
         expect(spy).toHaveBeenCalled();
       })
   });
+
+  it('should update data table when creating an export job', () => {
+    spyOnProperty(exportService, 'isDataAvailable', 'get').and.returnValue(true);
+    dataTableService.isDirty = true;
+    exportService.exportJobName = 'test';
+    let spy = spyOn(dataTableService, 'updateDataTable').and.callThrough();
+    exportService.prepareExportJob()
+      .then(() => {
+        expect(spy).toHaveBeenCalled();
+      })
+      .catch(err => {
+        fail('should have succeeded preparing export job but failed. ' + err);
+      });
+  });
 });
 
 describe('ExportService with surveyTable', () => {
   let exportService: ExportService;
+  let dataTableService: DataTableService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -204,6 +221,7 @@ describe('ExportService with surveyTable', () => {
       ]
     });
     exportService = TestBed.get(ExportService);
+    dataTableService = TestBed.get(DataTableService);
   });
 
   it('should be injected', inject([ExportService], (service: ExportService) => {
@@ -212,6 +230,20 @@ describe('ExportService with surveyTable', () => {
 
   it('should properly set surveyTable flag', () => {
     expect(exportService.isTransmartSurveyTable).toEqual(true);
+  });
+
+  it('should not update data table when creating an export job', () => {
+    spyOnProperty(exportService, 'isDataAvailable', 'get').and.returnValue(true);
+    dataTableService.isDirty = true;
+    exportService.exportJobName = 'test';
+    let spy = spyOn(dataTableService, 'updateDataTable').and.callThrough();
+    exportService.prepareExportJob()
+      .then(() => {
+        expect(spy).not.toHaveBeenCalled();
+      })
+      .catch(err => {
+        fail('should have succeeded preparing export job but failed. ' + err);
+      });
   });
 
 });

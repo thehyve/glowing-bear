@@ -1,0 +1,21 @@
+:host >>> .gb-tree-filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  width: 100%;
+  min-width: 3em;
+  max-width: 7em;
+}
+
+.filter-btn {
+  font-size: small;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  color: gray;
+}
+
+.filter-result {
+  font-size: small;
+  color: grey;
+  padding-top: 3px;
+  padding-left: 5px;
+}

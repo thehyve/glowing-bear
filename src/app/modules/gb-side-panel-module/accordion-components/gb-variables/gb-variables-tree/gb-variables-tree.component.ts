@@ -11,6 +11,7 @@ import {ConstraintService} from '../../../../../services/constraint.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
 import {VariableService} from '../../../../../services/variable.service';
+import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-variables-tree',
@@ -44,15 +45,16 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
   }
 
   update() {
-    let treeNodeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
+    let treeNodeContainer: Element = this.element.nativeElement.querySelector('.ui-tree-container');
     if (treeNodeContainer) {
-      let treeNodeElements = treeNodeContainer.children;
+      let treeNodeElements = Array.from(treeNodeContainer.children);
       this.updateEventListeners(treeNodeElements, this.variablesTreeData);
     }
   }
 
-  updateEventListeners(treeNodeElements: any[], treeNodes: TreeNode[]) {
+  updateEventListeners(treeNodeElements: Element[], treeNodes: TreeNode[]) {
     let index = 0;
+
     for (let elm of treeNodeElements) {
       let dataObject: TreeNode = treeNodes[index];
       let dataObjectType = dataObject['type'];
@@ -65,15 +67,23 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
       // if the data object type belongs to the listed types
       if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)
         && !treeNodeElm.hasAttribute('hasEventListener')) {
-        treeNodeElm.setAttribute('hasEventListener', true);
+        treeNodeElm.setAttribute('hasEventListener', 'true');
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
-        this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
+        this.updateEventListeners(Array.from(uiTreeNodeChildrenElm.children), dataObject.children);
       }
       index++;
     }
+  }
+
+  nodeSelect(event) {
+    this.variableService.updateVariableSelection(event.node, true);
+  }
+
+  nodeUnselect(event) {
+    this.variableService.updateVariableSelection(event.node, false);
   }
 
   get variablesTreeData(): TreeNode[] {

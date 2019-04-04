@@ -67,3 +67,9 @@
   font-size: medium;
   text-align: left;
 }
+
+:host >>> .ui-paginator-bottom,
+:host >>> .ui-paginator-element,
+:host >>> .ui-paginator-pages {
+  min-height: 2em;
+}

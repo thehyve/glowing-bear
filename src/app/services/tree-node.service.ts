@@ -9,7 +9,6 @@
 import {Injectable, Injector} from '@angular/core';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {TreeNode} from 'primeng/primeng';
 import {ResourceService} from './resource.service';
 import {ConstraintService} from './constraint.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
@@ -35,9 +34,9 @@ import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
 export class TreeNodeService {
 
   // the variable that holds the entire tree structure, used by the tree on the left side bar
-  private _treeNodes: TreeNode[] = [];
+  private _treeNodes: GbTreeNode[] = [];
   // the copy of the tree nodes that is used for constructing the tree in the variables panel
-  private _treeNodesCopy: TreeNode[] = [];
+  private _treeNodesCopy: GbTreeNode[] = [];
 
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
@@ -123,7 +122,7 @@ export class TreeNodeService {
         .subscribe(
           (treeNodes: object[]) => {
             this.treeNodeCallsReceived++;
-            const refNode: TreeNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
+            const refNode: GbTreeNode = treeNodes && treeNodes.length > 0 ? treeNodes[0] : undefined;
             const children = refNode ? refNode.children : undefined;
             if (children) {
               parentNode.children = children;
@@ -315,13 +314,13 @@ export class TreeNodeService {
 
   /**
    * Get the descendants of a tree node up to a predefined depth
-   * @param {TreeNode} treeNode
+   * @param {GbTreeNode} treeNode
    * @param {number} depth
-   * @param {TreeNode[]} descendants
+   * @param {GbTreeNode[]} descendants
    */
-  public getTreeNodeDescendantsWithDepth(treeNode: TreeNode,
+  public getTreeNodeDescendantsWithDepth(treeNode: GbTreeNode,
                                          depth: number,
-                                         descendants: TreeNode[]) {
+                                         descendants: GbTreeNode[]) {
     if (treeNode) {
       if (depth === 2) {
         if (treeNode.children) {
@@ -343,13 +342,13 @@ export class TreeNodeService {
   /**
    * Get the descendants of a tree node if a descendant has a type
    * that is not excluded
-   * @param {TreeNode} treeNode
+   * @param {GbTreeNode} treeNode
    * @param {string[]} excludedTypes
-   * @param {TreeNode[]} descendants
+   * @param {GbTreeNode[]} descendants
    */
-  public getTreeNodeDescendantsWithExcludedTypes(treeNode: TreeNode,
+  public getTreeNodeDescendantsWithExcludedTypes(treeNode: GbTreeNode,
                                                  excludedTypes: string[],
-                                                 descendants: TreeNode[]) {
+                                                 descendants: GbTreeNode[]) {
     if (treeNode) {
       // If the tree node has children
       if (treeNode.children) {
@@ -372,7 +371,7 @@ export class TreeNodeService {
     node.label = `${node.name} (${countsText})`;
   }
 
-  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
+  public flattenTreeNodes(nodes: GbTreeNode[], flattened: GbTreeNode[]) {
     for (let node of nodes) {
       flattened.push(node);
       if (node.children) {
@@ -381,7 +380,17 @@ export class TreeNodeService {
     }
   }
 
-  public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
+  public getAllVariablesFromTreeNode(node: GbTreeNode, variables: GbTreeNode[]) {
+    if (node.children) {
+      for (let child of node.children) {
+        this.getAllVariablesFromTreeNode(child, variables);
+      }
+    } else if (this.isVariableNode(node)) {
+      variables.push(node);
+    }
+  }
+
+  public copyTreeNodes(nodes: GbTreeNode[]): GbTreeNode[] {
     let nodesCopy = [];
     for (let node of nodes) {
       let parent = node.parent;
@@ -405,8 +414,8 @@ export class TreeNodeService {
    * @param {TreeNode} node
    * @returns {TreeNode}
    */
-  public copyTreeNodeUpward(node: TreeNode): TreeNode {
-    let nodeCopy: TreeNode = {};
+  public copyTreeNodeUpward(node: GbTreeNode): GbTreeNode {
+    let nodeCopy: GbTreeNode = {};
     let parentCopy = null;
     for (let key in node) {
       if (key === 'parent') {
@@ -430,7 +439,7 @@ export class TreeNodeService {
    * @param {TreeNode} node
    * @returns {boolean}
    */
-  public isTreeNodeConcept(node: TreeNode): boolean {
+  public isTreeNodeConcept(node: GbTreeNode): boolean {
     const type = node.type;
     return type === 'NUMERIC' ||
       type === 'CATEGORICAL' ||
@@ -444,15 +453,15 @@ export class TreeNodeService {
    * @param {TreeNode} node
    * @returns {boolean}
    */
-  public isTreeNodeStudy(node: TreeNode): boolean {
+  public isTreeNodeStudy(node: GbTreeNode): boolean {
     return node.type ? node.type === 'STUDY' : false;
   }
 
-  public isTreeNodeLeaf(node: TreeNode): boolean {
-    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
+  public isTreeNodeLeaf(node: GbTreeNode): boolean {
+    return node.visualAttributes ? node.visualAttributes.includes(VisualAttribute.LEAF) : false;
   }
 
-  public isVariableNode(node: TreeNode): boolean {
+  public isVariableNode(node: GbTreeNode): boolean {
     const treeNodeType = node.type;
     return (treeNodeType === 'NUMERIC' ||
       treeNodeType === 'CATEGORICAL' ||
@@ -507,19 +516,19 @@ export class TreeNodeService {
     });
   }
 
-  get treeNodes(): TreeNode[] {
+  get treeNodes(): GbTreeNode[] {
     return this._treeNodes;
   }
 
-  set treeNodes(value: TreeNode[]) {
+  set treeNodes(value: GbTreeNode[]) {
     this._treeNodes = value;
   }
 
-  get treeNodesCopy(): TreeNode[] {
+  get treeNodesCopy(): GbTreeNode[] {
     return this._treeNodesCopy;
   }
 
-  set treeNodesCopy(value: TreeNode[]) {
+  set treeNodesCopy(value: GbTreeNode[]) {
     this._treeNodesCopy = value;
   }
 
