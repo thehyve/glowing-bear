@@ -76,7 +76,7 @@ export class VariableService {
   }
 
   private updateCategorizedVariablesTree(variablesTree: GbTreeNode[]) {
-    this.categorizedVariablesTree.length = 0;
+    this.categorizedVariablesTree = [];
     let variableNodesByType = new Map<string, GbTreeNode[]>();
     let isVariableNode = this.treeNodeService.isTreeNodeConcept;
 
