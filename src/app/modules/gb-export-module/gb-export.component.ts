@@ -40,8 +40,8 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   createExportJob(exportJobForm: NgForm) {
+    exportJobForm.form.markAsPristine();
     this.exportService.prepareExportJob()
-      .then(() => exportJobForm.form.markAsPristine())
       .catch((error) => { console.error(error); });
   }
 
