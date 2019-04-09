@@ -103,7 +103,8 @@ export class ExportService {
     return new Promise((resolve, reject) => {
       let name = this.exportJobName === null ? '' : this.exportJobName.trim();
       if (!this.isDataAvailable) {
-        return reject(`No data is available for exporting`);
+        reject(`No data is available for exporting`);
+        return;
       }
       let summary = 'Running export job "' + name + '".';
       MessageHelper.alert('info', summary);
@@ -123,7 +124,12 @@ export class ExportService {
           reject(err);
         });
       } else {
-        return this.createExportJob(name);
+        this.createExportJob(name).then(() => {
+            resolve(true);
+          })
+          .catch(err => {
+            reject(err);
+          });
       }
     });
   }
