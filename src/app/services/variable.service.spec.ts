@@ -86,18 +86,33 @@ describe('VariableService', () => {
     expect(element).toEqual(jasmine.any(Concept));
   });
 
-  it('should update variables when tree finishes loading', () => {
+  it('should trigger variables update when both concept count and tree are changed', () => {
     const spyUpdateVariables = spyOn(variableService, 'updateVariables').and.stub();
     countService.selectedConceptCountMapUpdated.next(null);
     treeNodeService.treeNodesUpdated.next(true);
     expect(spyUpdateVariables).toHaveBeenCalled();
   });
 
-  it('should not update variables when tree is still loading', () => {
+  it('should not trigger variables update when concept count is not changed', () => {
     const spyUpdateVariables = spyOn(variableService, 'updateVariables').and.stub();
-    countService.selectedConceptCountMapUpdated.next(null);
-    treeNodeService.treeNodesUpdated.next(false);
+    treeNodeService.treeNodesUpdated.next(true);
     expect(spyUpdateVariables).not.toHaveBeenCalled();
+  });
+
+  it('should update variables tree when ontology tree finishes loading', () => {
+    const spyUpdateVariablesTree = spyOn(variableService, 'updateVariablesTree').and.stub();
+    spyOnProperty(treeNodeService, 'isTreeNodesLoadingCompleted', 'get').and.returnValue(true);
+    variableService.updateVariables().then(() => {
+      expect(spyUpdateVariablesTree).toHaveBeenCalled();
+    });
+  });
+
+  it('should not update variables tree when ontology tree is still loading', () => {
+    const spyUpdateVariablesTree = spyOn(variableService, 'updateVariablesTree').and.stub();
+    spyOnProperty(treeNodeService, 'isTreeNodesLoadingCompleted', 'get').and.returnValue(false);
+    variableService.updateVariables().then(() => {
+      expect(spyUpdateVariablesTree).not.toHaveBeenCalled();
+    });
   });
 
   it('should update variable in category view when tree-view nodes are checked', () => {
