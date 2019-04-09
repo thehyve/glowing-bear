@@ -21,6 +21,7 @@
       <span *ngIf="!isUpdating">Update cohort</span>
     </button>
 
+
   </div>
 
   <!-- cohort query composer -->
@@ -30,7 +31,9 @@
       <div class="subject-count-box">
         <span><b>Summary: </b></span>
         <span>{{subjectCount}} subjects match your selection.</span>
+        <i class="fa fa-info" (mouseenter)="op.show($event)"></i>
       </div>
+
       <gb-constraint #rootConstraintComponent
                      [constraint]="rootConstraint"
                      [isRoot]="true"></gb-constraint>
@@ -43,9 +46,13 @@
                   [style]="{'background':'#339C90', 'width': '50%'}">
     <div class="gb-cohort-selection-information-text">
       To define a cohort for which you want to select data,
-      either drag nodes from the tree into an "add criteria" box or use the "+" icon to
-      add criteria to your selection. When you are done adding criteria, please click the “Update” button on the right
-      to get feedback about your group size, or to submit your selection before advancing.
+      either drag nodes from the tree into an "add criterion" box, or use the box directly to add criteria to
+      your selection. The box consists of an autocomplete text input field and a dropdown list that contains all the
+      possible criteria options.
+      When you are done adding criteria, please click the “Update cohort” button
+      to get feedback about your group size, or to submit your selection before advancing. For more details regarding
+      the cohort creation see
+      <a href="http://glowingbear.app/docs/">the&nbsp;User&nbsp;Manual</a>.
     </div>
   </p-overlayPanel>
 
