@@ -67,11 +67,8 @@ export class VariableService {
     Observable.combineLatest(
       this.countService.selectedConceptCountMapUpdated.asObservable(),
       this.treeNodeService.treeNodesUpdated.asObservable()
-    ).subscribe(res => {
-      const isTreeLoadingFinished = res[1];
-      if (isTreeLoadingFinished) {
-        this.updateVariables();
-      }
+    ).subscribe(() => {
+      this.updateVariables();
     });
   }
 
