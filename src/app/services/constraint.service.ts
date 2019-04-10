@@ -189,6 +189,7 @@ export class ConstraintService {
     if (hasUnselected) {
       let result: CombinationConstraint = new CombinationConstraint();
       result.combinationState = CombinationState.Or;
+      result.dimension = 'observation';
       variables
         .filter((variable: Concept) => {
           return variable.selected;
