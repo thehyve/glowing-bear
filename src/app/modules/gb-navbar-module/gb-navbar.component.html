@@ -8,6 +8,9 @@
 </div>
 
 <div class="gb-nav-right">
+  <span *ngIf="msie" class="gb-nav-element" pButton
+        pTooltip="Microsoft Internet Explorer is not supported. Please get a newer browser." tooltipPosition="bottom">
+    <i class="fa fa-exclamation-triangle" style="color: red;"></i></span>
   <a [href]="docUrl" target="_blank"><small>{{appVersion}}</small>&nbsp; <i class="fa fa-question-circle-o"></i></a>
   <a (click)="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
 </div>

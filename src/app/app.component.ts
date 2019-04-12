@@ -9,6 +9,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {MessageHelper} from './utilities/message-helper';
+import {CompatibilityHelper} from './utilities/compatibility-helper';
 
 @Component({
   selector: 'gb-app-root',
@@ -32,6 +33,10 @@ export class AppComponent implements OnInit {
         console.warn('Authenticated failed.');
       }
     });
+    if (CompatibilityHelper.isMSIE()) {
+      MessageHelper.alert('error', 'Microsoft Internet Explorer is not supported\n' +
+        'Some features may not work correctly.');
+    }
   }
 
   logout() {

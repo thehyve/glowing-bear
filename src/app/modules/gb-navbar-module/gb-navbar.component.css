@@ -7,7 +7,7 @@
 }
 
 /* Style the links inside the navigation bar */
-.gb-nav a {
+.gb-nav a, .gb-nav-element {
   float: left;
   color: #f2f2f2;
   text-align: center;
@@ -35,7 +35,7 @@
   height: var(--gb-navbar-height);
 }
 
-.gb-nav-right a {
+.gb-nav-right a, .gb-nav-element {
   float: left;
   color: #f2f2f2;
   text-align: center;
