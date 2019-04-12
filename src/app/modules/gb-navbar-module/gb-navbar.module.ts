@@ -12,7 +12,7 @@ import {GbNavbarComponent} from './gb-navbar.component';
 import {RouterModule} from '@angular/router';
 import {TabMenuModule} from 'primeng/components/tabmenu/tabmenu';
 import {FormsModule} from '@angular/forms';
-import {MessagesModule} from 'primeng/primeng';
+import {MessagesModule, TooltipModule} from 'primeng/primeng';
 
 @NgModule({
   imports: [
@@ -20,7 +20,8 @@ import {MessagesModule} from 'primeng/primeng';
     RouterModule,
     TabMenuModule,
     FormsModule,
-    MessagesModule
+    MessagesModule,
+    TooltipModule
   ],
   declarations: [GbNavbarComponent],
   exports: [GbNavbarComponent]
