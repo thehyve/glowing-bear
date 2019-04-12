@@ -47,6 +47,7 @@
     "rxjs": "^6.4.0",
     "rxjs-compat": "^6.4.0",
     "sanitize-filename": "^1.6.1",
+    "ua-parser-js": "^0.7.19",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
