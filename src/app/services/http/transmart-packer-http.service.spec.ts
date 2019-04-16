@@ -114,7 +114,7 @@ describe('TransmartPackerHttpService', () => {
       (httpMock: HttpTestingController, service: TransmartPackerHttpService) => {
         const jobName = 'custom_name';
         let mockConstraint = new TrueConstraint();
-        service.runJob(jobName, mockConstraint).subscribe((res) => {
+        service.runJob(jobName, mockConstraint, mockConstraint).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
         const url = service.endpointUrl + '/jobs/create';
@@ -133,11 +133,11 @@ describe('TransmartPackerHttpService', () => {
         const jobName = 'custom_name';
         const c1 = new ConceptConstraint();
         c1.concept = new Concept();
-        const mockConstraint = new CombinationConstraint();
-        mockConstraint.isRoot = true;
-        mockConstraint.dimension = 'Biosource ID';
-        mockConstraint.addChild(c1);
-        service.runJob(jobName, mockConstraint).subscribe((res) => {
+        const subjectConstraint = new CombinationConstraint();
+        subjectConstraint.isRoot = true;
+        subjectConstraint.dimension = 'Biosource ID';
+        subjectConstraint.addChild(c1);
+        service.runJob(jobName, subjectConstraint, subjectConstraint).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
         const url = service.endpointUrl + '/jobs/create';

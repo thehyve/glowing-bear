@@ -80,14 +80,12 @@ export class TransmartPackerHttpService {
   /**
    * Create and run an export job for the current user, with a given name
    *
-   * FIXME: There should be different constraints for the subjects and for the
-   * combination of subjects and variables.
-   *
    * @param {string} jobName
    * @param {Constraint} targetConstraint
+   * @param {Constraint} rowFilterConstraint
    * @returns {Observable<ExportJob>}
    */
-  runJob(jobName: string, targetConstraint: Constraint): Observable<TransmartPackerJob> {
+  runJob(jobName: string, targetConstraint: Constraint, rowFilterConstraint: Constraint): Observable<TransmartPackerJob> {
     const urlPart = `jobs/create`;
     const responseField = 'job';
 
@@ -95,7 +93,7 @@ export class TransmartPackerHttpService {
     packerJobParameters.constraint = TransmartConstraintMapper.mapConstraint(
       ConstraintHelper.ensurePatientLevelConstraint(targetConstraint));
     packerJobParameters.custom_name = jobName;
-    packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(targetConstraint);
+    packerJobParameters.row_filter = TransmartConstraintMapper.mapConstraint(rowFilterConstraint);
 
     let packerJob = new TransmartPackerJob();
     packerJob.job_type = this.customExportJobName;
