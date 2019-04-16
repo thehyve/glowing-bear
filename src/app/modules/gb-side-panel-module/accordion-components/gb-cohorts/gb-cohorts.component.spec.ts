@@ -18,7 +18,8 @@ import {
   DragDropModule,
   InputTextModule,
   PanelModule,
-  RadioButtonModule, ToggleButtonModule,
+  RadioButtonModule,
+  ToggleButtonModule,
   TooltipModule
 } from 'primeng/primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -32,7 +33,6 @@ import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-rec
 import {DownloadHelper} from '../../../../utilities/download-helper';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {FileImportHelper} from '../../../../utilities/file-import-helper';
-import {TransmartConstraintMapper} from '../../../../utilities/transmart-utilities/transmart-constraint-mapper';
 import {CountService} from '../../../../services/count.service';
 import {CountServiceMock} from '../../../../services/mocks/count.service.mock';
 import {CohortMapper} from '../../../../utilities/cohort-utilities/cohort-mapper';
@@ -141,7 +141,7 @@ describe('GbCohortsComponent', () => {
   it('should have cohort import with cohort json file', () => {
     const e = {
       target: {
-        result: '{"constraint":"sth"}'
+        result: '{"queryConstraint":"sth"}'
       }
     };
     const fileJson = new File(
@@ -150,7 +150,7 @@ describe('GbCohortsComponent', () => {
       {type: 'application/json'});
 
     const spyFileImporter = spyOn(FileImportHelper, 'getFile').and.returnValue(fileJson);
-    const spyTMmapper = spyOn(TransmartConstraintMapper, 'generateConstraintFromObject').and.stub();
+    const spyTMmapper = spyOn(CohortMapper, 'deserialise').and.stub();
     const spyCohortRestore = spyOn(cohortService, 'restoreCohort').and.stub();
     const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
     component.handleCohortImport(e);
@@ -180,7 +180,7 @@ describe('GbCohortsComponent', () => {
 
   it('should read uploaded cohort file', () => {
     fixture.detectChanges();
-    const contents = '{"constraint": {"type": "true"}}';
+    const contents = '{"queryConstraint": {"type": "true"}, "id": "test", "name": "test cohort"}';
     const file = new File([contents], 'testFile', {type: 'application/json'});
     let event = {
       target: {
@@ -191,10 +191,12 @@ describe('GbCohortsComponent', () => {
     spyOn(FileImportHelper, 'getFile').and.returnValue(file);
     let spy1 = spyOn(MessageHelper, 'alert').and.stub();
     let spy2 = spyOn(cohortService, 'restoreCohort').and.stub();
+    let spy3 = spyOn(CohortMapper, 'deserialise').and.callThrough();
 
     component.handleCohortImport(event);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
+    expect(spy3).toHaveBeenCalled();
   });
 
   it('should parse uploaded cohort file if file type is json', () => {

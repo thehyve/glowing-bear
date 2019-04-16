@@ -5,7 +5,7 @@
   "subscribed": false,
   "createDate": "2019-01-23T19:01:09.262Z",
   "updateDate": "2019-01-23T19:01:09.286Z",
-  "constraint": {
+  "queryConstraint": {
     "type": "or",
     "args": [
       {
