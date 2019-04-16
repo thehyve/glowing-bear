@@ -21,6 +21,7 @@ import {TransmartConstraintMapper} from '../../../../utilities/transmart-utiliti
 import {CountService} from '../../../../services/count.service';
 import {IconHelper} from '../../../../utilities/icon-helper';
 import {CohortMapper} from '../../../../utilities/cohort-utilities/cohort-mapper';
+import {CohortRepresentation} from '../../../../models/gb-backend-models/cohort-representation';
 
 @Component({
   selector: 'gb-cohorts',
@@ -84,10 +85,12 @@ export class GbCohortsComponent implements OnInit {
   }
 
   private processCohortUpload(data, name: string) {
-    let _json = JSON.parse(data);
-    if (_json && _json['constraint']) {
-      let cohort = new Cohort('', name);
-      cohort.constraint = TransmartConstraintMapper.generateConstraintFromObject(_json['constraint']);
+    let cohortRepresentation = JSON.parse(data) as CohortRepresentation;
+    if (cohortRepresentation && cohortRepresentation.queryConstraint) {
+      let cohort = CohortMapper.deserialise(cohortRepresentation);
+      if (cohort && !cohort.name) {
+        cohort.name = name
+      }
       this.cohortService.restoreCohort(cohort);
     } else {
       MessageHelper.alert('error', 'Invalid json format for cohort import.');
