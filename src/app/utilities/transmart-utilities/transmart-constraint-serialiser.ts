@@ -311,12 +311,16 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     return result;
   }
 
+  /*
+   * --------------------- combination constraint related methods ---------------------
+   */
+
   /**
    * Collects all non-empty query objects of a combination constraint
    * @param {CombinationConstraint} constraint
    * @returns {TransmartConstraint[]}
    */
-  private getNonEmptyChildObjects(constraint: CombinationConstraint): TransmartConstraint[] {
+  private getNonEmptyChildObjectsWithSubselection(constraint: CombinationConstraint): TransmartConstraint[] {
     return constraint.children.reduce((result: TransmartConstraint[], child: Constraint) => {
       const queryObject: TransmartConstraint = this.visit(child);
       if (!queryObject) {
@@ -333,40 +337,53 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
           return result;
         }
       }
-      result.push(queryObject);
-      return result;
+      return this.getChildObjectsWithSubselection(result, queryObject, constraint, child);
     }, []);
   }
 
-  /*
-   * --------------------- combination constraint related methods ---------------------
+  /**
+   * Wraps query objects with subselection if needed
+   * @param {TransmartConstraint[]} result
+   * @param {TransmartConstraint} queryObject
+   * @param {CombinationConstraint} constraint
+   * @param {Constraint} child
+   * @returns {TransmartConstraint[]}
    */
-  visitCombinationConstraint(constraint: CombinationConstraint): TransmartConstraint {
-    const dimension = constraint.dimension;
-    // Collect children query objects
-    const children = this.getNonEmptyChildObjects(constraint);
-    const parentDimension = constraint.parentConstraint ? (<CombinationConstraint>constraint.parentConstraint).dimension : null;
-    if (children.length === 1 && children[0].type !== 'subselection') {
-      if (!parentDimension && dimension === 'patient') {
+  private getChildObjectsWithSubselection(result: TransmartConstraint[],
+                                          queryObject: TransmartConstraint,
+                                          constraint: CombinationConstraint,
+                                          child: Constraint): TransmartConstraint[] {
+
+    if (constraint.children.length === 1 && queryObject.type !== 'subselection') {
+      if (constraint.isRoot && constraint.dimension === 'patient') {
         // Subselection not required for singleton patient-level combinations at the top level,
         // unless ensuring patient level constraint
-        return children[0];
+        result.push(queryObject);
+        return result;
       }
     }
-    let args = children.map(child => {
-      if (child.type === 'subselection' && parentDimension === dimension) {
-        // Subselection not required if the dimension equals the parent dimension and the child is a subselection
-        return child;
-      } else if (child.type === 'subselection' && (<TransmartSubSelectionConstraint>child).dimension === 'observation') {
-        // Observation-level constraint should be unwrapped
-        return (<TransmartSubSelectionConstraint>child).constraint;
-      } else {
-        return TransmartConstraintSerialiser.wrapWithSubselection(dimension, child);
-      }
-    });
+    if (queryObject.type === 'subselection' && constraint.parentDimension === constraint.dimension) {
+      // Subselection not required if the dimension equals the parent dimension and the child is a subselection
+      result.push(queryObject);
+    } else if (constraint.dimension === 'observation'
+      || (child.className === 'CombinationConstraint' && (<CombinationConstraint>child).dimension === 'observation')) {
+      // Subselection not required if the dimension equals 'observation'
+      result.push(queryObject);
+    } else {
+      result.push(TransmartConstraintSerialiser.wrapWithSubselection(constraint.dimension, queryObject));
+    }
+    return result;
+  }
+
+  visitCombinationConstraint(constraint: CombinationConstraint): TransmartConstraint {
+    // Collect children query objects
+    const children = this.getNonEmptyChildObjectsWithSubselection(constraint);
+    if (children.length === 1) {
+      return children[0];
+    }
     const result = {
       type: constraint.combinationState === CombinationState.And ? 'and' : 'or',
-      args: args
+      args: children
     } as TransmartCombinationConstraint;
     return new TransmartConstraintRewriter().visit(result);
   }

@@ -4,8 +4,10 @@ import {Concept} from '../../models/constraint-models/concept';
 import {ConceptType} from '../../models/constraint-models/concept-type';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {
-  TransmartAndConstraint, TransmartConceptConstraint,
-  TransmartConstraint, TransmartNegationConstraint,
+  TransmartAndConstraint,
+  TransmartConceptConstraint,
+  TransmartConstraint,
+  TransmartNegationConstraint, TransmartOrConstraint,
   TransmartRelationConstraint,
   TransmartSubSelectionConstraint,
   TransmartValueConstraint
@@ -310,9 +312,13 @@ describe('TransmartConstraintSerialiser', () => {
       type: 'relation',
       relationTypeLabel: 'parent',
       relatedSubjectsConstraint: {
-        type: 'concept',
-        conceptCode: 'TEST'
-      } as TransmartConceptConstraint
+        type: 'subselection',
+        dimension: 'patient',
+        constraint: {
+          type: 'concept',
+          conceptCode: 'TEST'
+        } as TransmartConceptConstraint
+      } as TransmartSubSelectionConstraint
     };
     testConstraint(pedigree, expected);
 
@@ -322,9 +328,13 @@ describe('TransmartConstraintSerialiser', () => {
       relationTypeLabel: 'parent',
       biological: true,
       relatedSubjectsConstraint: {
-        type: 'concept',
-        conceptCode: 'TEST'
-      } as TransmartConceptConstraint
+        type: 'subselection',
+        dimension: 'patient',
+        constraint: {
+          type: 'concept',
+          conceptCode: 'TEST'
+        } as TransmartConceptConstraint
+      } as TransmartSubSelectionConstraint
     };
     testConstraint(pedigree, expected);
 
@@ -336,9 +346,13 @@ describe('TransmartConstraintSerialiser', () => {
       biological: false,
       shareHousehold: true,
       relatedSubjectsConstraint: {
-        type: 'concept',
-        conceptCode: 'TEST'
-      } as TransmartConceptConstraint
+        type: 'subselection',
+        dimension: 'patient',
+        constraint: {
+          type: 'concept',
+          conceptCode: 'TEST'
+        } as TransmartConceptConstraint
+      } as TransmartSubSelectionConstraint
     };
     testConstraint(pedigree, expected);
   });
@@ -379,6 +393,76 @@ describe('TransmartConstraintSerialiser', () => {
             }
           } as TransmartSubSelectionConstraint
         } as TransmartNegationConstraint
+      ]
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise combination with subject and variables constraints', () => {
+    // Female patients
+    const genderConstraint = new ConceptConstraint();
+    const genderConcept = new Concept();
+    genderConcept.code = 'PERSON:GENDER';
+    genderConcept.type = ConceptType.CATEGORICAL;
+    genderConstraint.concept = genderConcept;
+    const genderValueConstraint = new ValueConstraint();
+    genderValueConstraint.operator = Operator.eq;
+    genderValueConstraint.valueType = ValueType.string;
+    genderValueConstraint.value = 'Female';
+    genderConstraint.valueConstraints.push(genderValueConstraint);
+    // Variables
+    const variableConstraint = new CombinationConstraint();
+    variableConstraint.combinationState = CombinationState.Or;
+    variableConstraint.dimension = 'observation';
+    const v1 = new ConceptConstraint();
+    const variable1 = new Concept();
+    variable1.code = 'PERSON:AGE';
+    variable1.type = ConceptType.NUMERICAL;
+    v1.concept = variable1;
+    const v2 = new ConceptConstraint();
+    const variable2 = new Concept();
+    variable2.code = 'PERSON:HEART_RATE';
+    variable2.type = ConceptType.NUMERICAL;
+    v2.concept = variable2;
+    variableConstraint.addChild(v1);
+    variableConstraint.addChild(v2);
+    const combination = new CombinationConstraint(
+      [genderConstraint, variableConstraint], CombinationState.And, 'patient');
+    const expected: TransmartAndConstraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'PERSON:GENDER',
+              },
+              {
+                type: 'value',
+                valueType: 'string',
+                operator: '=',
+                value: 'Female'
+              }
+            ]
+          }
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'or',
+          args: [
+            {
+              type: 'concept',
+              conceptCode: 'PERSON:AGE',
+            } as TransmartConceptConstraint,
+            {
+              type: 'concept',
+              conceptCode: 'PERSON:HEART_RATE',
+            } as TransmartConceptConstraint,
+          ]
+        } as TransmartOrConstraint
       ]
     };
     testConstraint(combination, expected);
