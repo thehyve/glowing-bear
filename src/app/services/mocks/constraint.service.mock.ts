@@ -13,6 +13,7 @@ import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
 import {Cohort} from '../../models/cohort-models/cohort';
 import {Dimension} from '../../models/constraint-models/dimension';
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 
 export class ConstraintServiceMock {
 
@@ -43,6 +44,10 @@ export class ConstraintServiceMock {
 
   public cohortSelectionConstraint(): Constraint {
     return this._constraint;
+  }
+
+  public variableConstraint(variables: Concept[]): Constraint {
+    return new TrueConstraint();
   }
 
   get allConstraints(): Constraint[] {

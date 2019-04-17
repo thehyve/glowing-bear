@@ -19,7 +19,6 @@ import {ExportDataType} from '../models/export-models/export-data-type';
 import {ExportFileFormat} from '../models/export-models/export-file-format';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
-import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
 describe('TransmartResourceService', () => {
@@ -79,7 +78,8 @@ describe('TransmartResourceService', () => {
     const dataType = new ExportDataType('clinical', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
     dataType.fileFormats.push(new ExportFileFormat('SPSS', true));
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [dataType], null, false);
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
+      [dataType], null, false);
     expect(exportSurveyTableSpy).toHaveBeenCalled();
   });
 
@@ -102,7 +102,8 @@ describe('TransmartResourceService', () => {
     table.columnDimensions = [new TableDimension(('concept'))];
     const dataType = new ExportDataType('clinical', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [dataType], table, false);
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
+      [dataType], table, false);
     expect(exportSpy).toHaveBeenCalled();
   });
 
@@ -126,7 +127,8 @@ describe('TransmartResourceService', () => {
     const table = new DataTable();
     const dataType = new ExportDataType('clinical', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [dataType], table, false)
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
+      [dataType], table, false)
       .subscribe(() => {
         expect(dimensionsSpy).toHaveBeenCalled();
         expect(exportSpy).toHaveBeenCalled();
@@ -152,7 +154,8 @@ describe('TransmartResourceService', () => {
     const table = new DataTable();
     const dataType = new ExportDataType('mrna', true);
     dataType.fileFormats.push(new ExportFileFormat('TSV', true));
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [dataType], table, false)
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
+      [dataType], table, false)
       .subscribe(() => {
         expect(dimensionsSpy).not.toHaveBeenCalled();
         expect(exportSpy).toHaveBeenCalled();
@@ -168,8 +171,10 @@ describe('TransmartResourceService', () => {
     let exportSpy = spyOn(transmartPackerHttpService, 'runJob').and.callFake(() => {
       return observableOf(null);
     });
-    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, [], null, false);
-    expect(exportSpy).toHaveBeenCalledWith(jobName, mockConstraint);
+
+    transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
+      [], null, false);
+    expect(exportSpy).toHaveBeenCalledWith(jobName, jasmine.any(CombinationConstraint), mockConstraint);
   });
 
   const createMockConstraints = () => {

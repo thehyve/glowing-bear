@@ -319,14 +319,16 @@ export class ResourceService {
    * Run an export job
    * @param {ExportJob} job
    * @param {ExportDataType[]} dataTypes
-   * @param {Constraint} constraint
+   * @param {Constraint} subjectConstraint
+   * @param {Constraint} variableConstraint
    * @param {DataTable} dataTable - included only if at least one of the formats of elements is 'TSV'
    * @param {boolean} dateColumnsIncluded
    * @returns {Observable<ExportJob>}
    */
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
-               constraint: Constraint,
+               subjectConstraint: Constraint,
+               variableConstraint: Constraint,
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<ExportJob> {
     let hasSelectedFormat = false;
@@ -343,7 +345,7 @@ export class ResourceService {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           return this.transmartResourceService
-            .runExportJob(job.id, job.name, constraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
+            .runExportJob(job.id, job.name, subjectConstraint, variableConstraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
               map((tmExportJob: TransmartExportJob) => {
                 return TransmartMapper.mapTransmartExportJob(tmExportJob);
               })

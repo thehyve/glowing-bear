@@ -63,7 +63,13 @@ export class CountServiceMock {
     });
   }
 
-  updateAllCounts(constraint: Constraint) {
+  updateAllCounts(constraint: Constraint): Promise<any>  {
+    return new Promise<any>(resolve => {
+      resolve(true);
+    });
+  }
+
+  updateCurrentSelectionCount(constraint: Constraint): Promise<any> {
     return new Promise<any>(resolve => {
       resolve(true);
     });
