@@ -356,7 +356,8 @@ export class TransmartResourceService {
    * Run an export job
    * @param {string} jobId
    * @param {string} jobName
-   * @param {Constraint} constraint
+   * @param {Constraint} subjectConstraint
+   * @param {Constraint} variableConstraint
    * @param {ExportDataType[]} dataTypes
    * @param {DataTable} dataTable
    * @param {boolean} dateColumnsIncluded
@@ -364,21 +365,22 @@ export class TransmartResourceService {
    */
   runExportJob(jobId: string,
                jobName: string,
-               constraint: Constraint,
+               subjectConstraint: Constraint,
+               variableConstraint: Constraint,
                dataTypes: ExportDataType[],
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
-    let targetConstraint = constraint;
-    if (this.autosaveSubjectSets &&
-      constraint.className === 'CombinationConstraint') {
-      let combo = new CombinationConstraint();
-      combo.addChild(this.subjectSetConstraint);
-      combo.addChild((<CombinationConstraint>constraint).children[1]);
-      targetConstraint = combo;
+    let targetConstraint = new CombinationConstraint();
+    if (this.autosaveSubjectSets) {
+      targetConstraint.addChild(this.subjectSetConstraint);
+      targetConstraint.addChild(variableConstraint);
+    } else {
+      targetConstraint.addChild(subjectConstraint);
+      targetConstraint.addChild(variableConstraint);
     }
 
     if (this.useExternalExportJob) {
-      return this.transmartPackerHttpService.runJob(jobName, targetConstraint).pipe(
+      return this.transmartPackerHttpService.runJob(jobName, targetConstraint, subjectConstraint).pipe(
         map((tmExJob: TransmartPackerJob) => {
           return TransmartPackerMapper.mapCustomExportJob(tmExJob);
         }));

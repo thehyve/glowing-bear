@@ -167,7 +167,8 @@ export class ExportService {
       this.resourceService.runExportJob(
         job,
         this.exportDataTypes,
-        this.variableService.combination,
+        this.constraintService.cohortSelectionConstraint,
+        this.constraintService.variableConstraint(this.variableService.variables),
         this.dataTableService.dataTable,
         this.isTransmartDateColumnsIncluded
       )
