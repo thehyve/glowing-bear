@@ -354,11 +354,12 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
       }
     }
     let args = children.map(child => {
-      if (parentDimension === dimension && child.type === 'subselection') {
+      if (child.type === 'subselection' && parentDimension === dimension) {
         // Subselection not required if the dimension equals the parent dimension and the child is a subselection
         return child;
-      } else if (dimension === 'observation') {
-        return child;
+      } else if (child.type === 'subselection' && (<TransmartSubSelectionConstraint>child).dimension === 'observation') {
+        // Observation-level constraint should be unwrapped
+        return (<TransmartSubSelectionConstraint>child).constraint;
       } else {
         return TransmartConstraintSerialiser.wrapWithSubselection(dimension, child);
       }
