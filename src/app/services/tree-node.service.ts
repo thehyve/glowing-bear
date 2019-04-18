@@ -179,9 +179,12 @@ export class TreeNodeService {
       let constraintService: ConstraintService = this.injector.get(ConstraintService);
       constraintService.conceptLabels = [];
       // Retrieve all tree nodes and extract the concepts iteratively
+      this.treeNodeCallsSent++;
       this.resourceService.getRootTreeNodes(2, false, true)
         .subscribe(
           (treeNodes: TreeNode[]) => {
+            this.treeNodeCallsReceived++;
+
             // reset concepts and concept constraints
             constraintService.concepts = [];
             constraintService.conceptConstraints = [];
