@@ -2,6 +2,7 @@ import {TreeNode as PrimeNgTreeNode} from 'primeng/api';
 import {DropMode} from '../drop-mode';
 import {ConceptType} from '../constraint-models/concept-type';
 import {TreeNodeType} from './tree-node-type';
+import {MedcoEncryptionDescriptor} from "../picsure-models/i2b2-medco/medco-encryption-descriptor";
 
 export class TreeNode implements PrimeNgTreeNode {
 
@@ -30,6 +31,8 @@ export class TreeNode implements PrimeNgTreeNode {
 
   // flag to signal if the children were requested to the backend
   childrenAttached: boolean;
+
+  encryptionDescriptor: MedcoEncryptionDescriptor;
 
   // --- fields for PrimeNg TreeNode logic
   children: TreeNode[];

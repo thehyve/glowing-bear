@@ -8,6 +8,7 @@
 
 import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
+import {MedcoEncryptionDescriptor} from "../picsure-models/i2b2-medco/medco-encryption-descriptor";
 
 export class Concept {
   private _path: string;
@@ -18,6 +19,7 @@ export class Concept {
   private _code: string;
   private _name: string;
   private _fullName: string;
+  private _encryptionDescriptor?: MedcoEncryptionDescriptor;
 
   constructor() {
   }
@@ -76,5 +78,13 @@ export class Concept {
 
   set fullName(value: string) {
     this._fullName = value;
+  }
+
+  get encryptionDescriptor(): MedcoEncryptionDescriptor {
+    return this._encryptionDescriptor;
+  }
+
+  set encryptionDescriptor(value: MedcoEncryptionDescriptor) {
+    this._encryptionDescriptor = value;
   }
 }

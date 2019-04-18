@@ -8,6 +8,5 @@
 
 export enum AggregateType {
   CATEGORICAL = 'CATEGORICAL',
-  NUMERICAL = 'NUMERIC',
-  ENCRYPT_IDS = 'ENCRYPT_IDS'
+  NUMERICAL = 'NUMERIC'
 }

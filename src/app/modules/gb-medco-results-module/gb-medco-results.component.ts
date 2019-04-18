@@ -8,7 +8,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {MedcoService} from "../../services/picsure-services/medco.service";
-import {MedcoResult} from "../../models/picsure-models/medco-result";
+import {MedcoNodeResult} from "../../models/picsure-models/i2b2-medco/medco-node-result";
 import {Chart} from 'chart.js';
 
 @Component({
@@ -20,7 +20,7 @@ export class GbMedcoResultsComponent implements OnInit {
 
 
   private _resultChart: Chart;
-  private _medcoResult: MedcoResult[];
+  private _medcoResult: MedcoNodeResult[];
 
   constructor(private medcoService: MedcoService) { }
 
@@ -58,11 +58,11 @@ export class GbMedcoResultsComponent implements OnInit {
       }
     });
 
-    this.medcoService.results.subscribe( (results: MedcoResult[]) => {
+    this.medcoService.results.subscribe( (results: MedcoNodeResult[]) => {
       this._medcoResult = results;
 
-      this.resultChart.data.labels = results.map((r) => r.siteName);
-      this.resultChart.data.datasets[0].data = results.map((r) => r.subjectCount);
+      this.resultChart.data.labels = results.map((r) => r.nodeName);
+      this.resultChart.data.datasets[0].data = results.map((r) => r.decryptedCount);
       this.resultChart.update();
     });
   }

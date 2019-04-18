@@ -72,7 +72,7 @@ describe('TreeNodeService', () => {
     let dummyNodes = [node1, node2];
     constraintService.concepts = [new Concept()];
     constraintService.conceptConstraints = [new ConceptConstraint()];
-    let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'getI2b2TreeNodes').and.callFake(() => {
       return Observable.of(dummyNodes);
     });
     let spy2 = spyOn(treeNodeService, 'processTreeNodes').and.stub();
@@ -87,7 +87,7 @@ describe('TreeNodeService', () => {
   })
 
   it('should handle error for the initial loading of tree nodes', () => {
-    let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'getI2b2TreeNodes').and.callFake(() => {
       return Observable.throw(httpErrorResponse);
     });
     let spy2 = spyOn(ErrorHelper, 'handleError').and.stub();
@@ -107,7 +107,7 @@ describe('TreeNodeService', () => {
     let otherNode = {
       fullName: 'other full name'
     }
-    let spy1 = spyOn(resourceService, 'getTreeNodes')
+    let spy1 = spyOn(resourceService, 'getI2b2TreeNodes')
       .and.callFake((fullname, depth, hasCounts, hasTag) => {
         if (fullname === parentFullName) {
           return Observable.of([parentNode]);
@@ -140,7 +140,7 @@ describe('TreeNodeService', () => {
         {}
       ]
     }
-    let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'getI2b2TreeNodes').and.callFake(() => {
       return Observable.of(null);
     })
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth').and.stub();
@@ -161,7 +161,7 @@ describe('TreeNodeService', () => {
         {}
       ]
     }
-    let spy1 = spyOn(resourceService, 'getTreeNodes').and.callFake(() => {
+    let spy1 = spyOn(resourceService, 'getI2b2TreeNodes').and.callFake(() => {
       return Observable.throw(httpErrorResponse);
     })
     let spy2 = spyOn(treeNodeService, 'getTreeNodeDescendantsWithDepth').and.stub();

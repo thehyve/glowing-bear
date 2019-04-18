@@ -1,4 +1,4 @@
-import {PicsureResource} from '../../models/picsure-models/resource-definition/picsure-resource';
+import {PicsureResource} from '../../models/picsure-models/picsure-resource';
 
 // todo
 export class PicSureResourceServiceMock {

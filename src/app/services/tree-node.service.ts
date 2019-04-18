@@ -365,6 +365,7 @@ export class TreeNodeService {
     concept.code = treeNode.conceptCode;
     concept.fullName = treeNode.path;
     concept.name = treeNode.name;
+    concept.encryptionDescriptor = treeNode.encryptionDescriptor;
     return concept;
   }
 

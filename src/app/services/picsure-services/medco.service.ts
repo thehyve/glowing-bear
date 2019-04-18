@@ -9,17 +9,20 @@
 
 import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {GenerateKeyPair, AggregateKeys, EncryptInt, DecryptInt} from '@medco/medco-unlynx-js'
+import {AggregateKeys, GenerateKeyPair, EncryptInt, DecryptInt} from '@medco/medco-unlynx-js'
 import {HttpClient} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {NavbarService} from "../navbar.service";
 import {BehaviorSubject} from "rxjs";
-import {MedcoResult} from "../../models/picsure-models/medco-result";
+import {MedcoNodeResult} from "../../models/picsure-models/i2b2-medco/medco-node-result";
+
+// todo 12/04/19: delayed upgrade of medco-unlynx-js (stay with 0.1.8),
+//  wait for bug fix of wasm go compiler (?) (changes marked XXX)
 
 @Injectable()
 export class MedcoService {
 
-  private _results: BehaviorSubject<MedcoResult[]>;
+  private _results: BehaviorSubject<MedcoNodeResult[]>;
 
   private _publicKey: string;
   private privateKey: string;
@@ -27,6 +30,8 @@ export class MedcoService {
   private cothorityKey: string;
 
   private navbarService: NavbarService;
+
+  // private cryptoEngine: any; XXX
 
   /**
    * If the configuration key `medco-cothority-key-url` is present, the file will be fetched and the service enabled.
@@ -39,32 +44,38 @@ export class MedcoService {
               private injector: Injector) {
     this._results = new BehaviorSubject([]);
 
-    // fetch and load the cothority key
-    let cothorityKeyUrl = config.getConfig('medco-cothority-key-url');
-    if (cothorityKeyUrl) {
-      this.http
-        .get(cothorityKeyUrl, {responseType: 'text'})
-        .subscribe((keyResp) => {
-          this.cothorityKey = String(AggregateKeys(String(keyResp)));
-          if (this.cothorityKey) {
-            console.log(`Loaded the MedCo cothority key from ${cothorityKeyUrl}`);
-          } else {
-            ErrorHelper.handleError(`Failed to load the MedCo cothority key ${cothorityKeyUrl}`);
-          }
-        },
-        (err) => ErrorHelper.handleError(err)
-        );
+    // XXX
+    // this.cryptoEngine = CryptoEngine;
+    // this.cryptoEngine.Ready.then(() => {
 
-      this.loadUserKeyPair();
-    }
+      // fetch and load the cothority key
+      let cothorityKeyUrl = config.getConfig('medco-cothority-key-url');
+      if (cothorityKeyUrl) {
+        this.http
+          .get(cothorityKeyUrl, {responseType: 'text'})
+          .subscribe((keyResp) => {
+              this.cothorityKey = String(AggregateKeys(String(keyResp))); // XXX
+              if (this.cothorityKey) {
+                console.log(`Loaded the MedCo cothority key from ${cothorityKeyUrl}`);
+              } else {
+                ErrorHelper.handleError(`Failed to load the MedCo cothority key ${cothorityKeyUrl}`);
+              }
+            },
+            (err) => ErrorHelper.handleError(err)
+          );
+
+        this.loadUserKeyPair();
+      }
+    // });
   }
 
   /**
    * Generates a random pair of keys for the user to be used during this instance.
    */
   loadUserKeyPair() {
-    [this.privateKey, this._publicKey] = GenerateKeyPair();
-    console.log(`Generated the MedCo pair of keys (public: ${this._publicKey})`);
+    let keyPair = String(GenerateKeyPair()); // XXX
+    [this.privateKey, this._publicKey] = keyPair.split(',', 2);
+    console.log(`Generated the MedCo pair of keys (public: ${this.publicKey})`);
   }
 
   /**
@@ -73,7 +84,7 @@ export class MedcoService {
    * @returns {string}
    */
   encryptInteger(integer: string): string {
-    return EncryptInt(this.cothorityKey, integer);
+    return EncryptInt(this.cothorityKey, integer); // XXX
   }
 
   /**
@@ -82,7 +93,7 @@ export class MedcoService {
    * @returns {number}
    */
   decryptInteger(encInteger: string): string {
-    return DecryptInt(encInteger, this.privateKey);
+    return DecryptInt(encInteger, this.privateKey); // XXX
   }
 
   /**
@@ -90,45 +101,41 @@ export class MedcoService {
    * Stores the breakdown by hospital and the other information.
    * Make available the "MedCo Results" tab in UI.
    *
-   * @param {object} data the PIC-SURE data object
    * @returns {number} the total number of matching patients.
+   * @param results
    */
-  parseMedCoResults(data: object): number {
-    let results: MedcoResult[] = [];
+  parseMedCoResults(results: MedcoNodeResult[]): number {
 
     // k is 0, 1, 2, ....
-    for (let k in data) {
-      let b64EncodedResultObject = data[k][`medco_results_${k}`];
-      let resultObject = JSON.parse(atob(b64EncodedResultObject));
+    for (let k in results) {
+      // let b64EncodedResultObject = data[k][`medco_results_${k}`];
+      // let resultObject = JSON.parse(atob(b64EncodedResultObject));
 
-      if (this._publicKey !== resultObject['pub_key']) {
-        console.warn(`Returned public key is different from public key, expect problems (${resultObject['pub_key']})`);
+      if (this.publicKey !== results[k].encryptionKey) {
+        console.warn(`Returned public key is different from public key, expect problems (${results[k].encryptionKey})`);
       }
 
-      let result: MedcoResult = {
-        siteName: `Clinical Site ${k}`,
-        encryptedSubjectCount: resultObject['enc_count_result'],
-        publicKey: resultObject['pub_key'],
-        subjectCount: Number(this.decryptInteger(resultObject['enc_count_result'])),
-        times: resultObject['times']
-      };
+      results[k].nodeName = `Clinical Site ${k}`; // todo: get from node
+      results[k].networkName = 'MedCo Network'; // todo: get from node
+      results[k].decryptedCount = Number(this.decryptInteger(results[k].encryptedCount));
+      results[k].timeMeasurements = {}; // todo
 
-      results.push(result);
-      console.log(`${k}: ${result.subjectCount}, times: ${JSON.stringify(result.times)}`)
+      // results.push(result);
+      console.log(`${k}: ${results[k].decryptedCount}, times: ${JSON.stringify(results[k].timeMeasurements)}`)
     }
 
     // randomize results (according to configuration)
     let medcoResultsRandomization = this.config.getConfig('medco-results-randomization');
     if (medcoResultsRandomization) {
       results.forEach((res) =>
-        res.subjectCount += Math.floor(Math.random() * Number(medcoResultsRandomization))
+        res.decryptedCount += Math.floor(Math.random() * Number(medcoResultsRandomization))
       );
     }
 
     this.results.next(results);
     this.addMedcoResultsTab();
 
-    return results.map((r) => r.subjectCount).reduce((a, b) => Number(a) + Number(b));
+    return results.map((r) => r.decryptedCount).reduce((a, b) => Number(a) + Number(b));
   }
 
   /**
@@ -144,7 +151,7 @@ export class MedcoService {
     }
   }
 
-  get results(): BehaviorSubject<MedcoResult[]> {
+  get results(): BehaviorSubject<MedcoNodeResult[]> {
     return this._results;
   }
 

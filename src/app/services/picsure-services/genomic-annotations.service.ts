@@ -34,7 +34,7 @@ export class GenomicAnnotationsService {
    * Queries for values of a specific annotation.
    * Used for UI autocompletion.
    *
-   * @param annotationName name of the queried annotation
+   * @param annotation the queried annotation
    * @param annotationValue partial value of the annotation
    * @return array of corresponding values
    */

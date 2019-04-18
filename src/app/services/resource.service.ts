@@ -115,7 +115,7 @@ export class ResourceService {
         return this.transmartResourceService.getTreeNodes('\\', depth, hasCounts, hasTags);
 
       case EndpointMode.PICSURE:
-        return this.picSureResourceService.getRootTreeNodes();
+        return this.picSureResourceService.getI2b2TreeNodes("/");
 
       default:
         return this.handleEndpointModeError();
@@ -136,7 +136,7 @@ export class ResourceService {
         return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
 
       case EndpointMode.PICSURE:
-        return this.picSureResourceService.getChildNodes(root);
+        return this.picSureResourceService.getI2b2TreeNodes(root);
 
       default:
         return this.handleEndpointModeError();
@@ -170,14 +170,14 @@ export class ResourceService {
       case EndpointMode.PICSURE: {
         return Promise.all([
           new Promise<any>((resolve) => {
-            this.picSureResourceService.getPatientsCounts(inclusionConstraint).subscribe((inclusionCount) => {
+            this.picSureResourceService.getI2b2MedCoPatientsCounts(inclusionConstraint).subscribe((inclusionCount) => {
               this.inclusionCounts = inclusionCount;
               resolve(true);
             });
           }),
           new Promise<any>((resolve) => {
             if (exclusionConstraint) {
-              this.picSureResourceService.getPatientsCounts(exclusionConstraint).subscribe((exclusionCount) => {
+              this.picSureResourceService.getI2b2MedCoPatientsCounts(exclusionConstraint).subscribe((exclusionCount) => {
                   this.exclusionCounts = exclusionCount;
                   resolve(true);
                 }
@@ -281,7 +281,7 @@ export class ResourceService {
           });
       }
       case EndpointMode.PICSURE:
-        return this.picSureResourceService.getPatientsCounts(constraint);
+        return this.picSureResourceService.getI2b2MedCoPatientsCounts(constraint);
 
       default:
         return this.handleEndpointModeError();
