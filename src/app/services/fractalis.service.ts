@@ -90,10 +90,6 @@ export class FractalisService {
    * knows which variables to visualize in its charts;
    *
    * 4. retrieving the chart types supported by Fractalis backend.
-   *
-   * TODO: each time the user navigates to the Analysis tab, Fractalis gets initialized redundantly
-   * either only initialize Fractalis when it has not been initialized before,
-   * or destroy/clear old Fractalis instance when the user navigates out of the Analysis tab
    */
   public setupFractalis(): Promise<any> {
     let token = this.authService.token;
