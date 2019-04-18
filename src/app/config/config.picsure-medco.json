@@ -1,5 +1,5 @@
 {
-  "api-url": "https://glowingbear-on-i2b2.thehyve.net:8082/IRCT-CL/rest",
+  "api-url": "http://localhost/pic-sure-api-2/PICSURE",
   "app-url": "http://localhost:4200",
   "autosave-subject-sets": false,
   "export-data-view": "default",
@@ -9,11 +9,16 @@
   "instant-counts-update-3": false,
 
   "authentication-service-type": "oidc",
-  "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
-  "oidc-client-id": "i2b2",
+  "oidc-server-url": "http://localhost/auth/realms/master/protocol/openid-connect",
+  "oidc-client-id": "medco",
 
   "endpoint-mode": "picsure",
-  "picsure-resource-name": "i2b2-medco-local",
+  "picsure-query-resource-names": [
+    "MEDCO_testnetwork_0_a",
+    "MEDCO_testnetwork_1_b",
+    "MEDCO_testnetwork_2_c"
+  ],
+  "picsure-search-resource-name": "MEDCO_testnetwork_0_a",
   "include-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
@@ -23,5 +28,9 @@
   "force-i2b2-nesting-style": true,
   "enable-greedy-tree-loading": false,
 
-  "medco-cothority-key-url": "app/config/medco-cothority-key.toml"
+  "medco-cothority-key-url": "http://localhost/cothority-key.pub.toml",
+  "medco-genomic-annotations-url": "http://localhost/genomicAnnotations",
+  "medco-results-randomization": 0,
+
+  "footer-text": ""
 }

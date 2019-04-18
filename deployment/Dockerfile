@@ -41,9 +41,10 @@ ENV GB_API_URL="http://localhost:8082/IRCT-CL/rest" \
     GB_URL="http://localhost:4200" \
     GB_OIDC_URL="http://localhost:8081/auth/realms/master/protocol/openid-connect" \
     GB_OIDC_CLIENT_ID="i2b2" \
-    GB_PICSURE_RES_NAME="i2b2-medco" \
     GB_COTHORITY_KEY_URL="http://localhost/cothority-key.pub.toml" \
     GB_GENOMIC_ANNOTATIONS_URL="http://localhost/php" \
-    GB_MEDCO_RESULTS_RANDOMIZATION="0"
+    GB_MEDCO_RESULTS_RANDOMIZATION="0" \
+    MEDCO_NETWORK_NAME="testnetwork" \
+    MEDCO_NODES_NAME="a,b,c"
 
 ENTRYPOINT /bin/bash -c "/write-gb-config.sh && exec nginx -g 'daemon off;'"

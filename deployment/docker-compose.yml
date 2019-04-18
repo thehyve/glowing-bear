@@ -11,8 +11,8 @@ services:
     volumes:
       - ..:/glowing-bear-src
 
-  glowing-bear:
-    image: medco/glowing-bear:dev
+  glowing-bear-medco:
+    image: medco/glowing-bear-medco:dev
     build:
       context: ..
       dockerfile: ./deployment/Dockerfile
@@ -20,12 +20,13 @@ services:
     ports:
       - "82:80"
     environment:
-      - GB_API_URL=http://pic-sure.localhost/IRCT-CL/rest
-      - GB_URL=http://localhost:81
-      - GB_OIDC_URL=http://keycloak.localhost/auth/realms/master/protocol/openid-connect
-      - GB_OIDC_CLIENT_ID=i2b2-local
-      - GB_PICSURE_RES_NAME=i2b2-medco-local
+      - GB_API_URL=http://localhost/pic-sure-api-2/PICSURE
+      - GB_URL=http://localhost:82
+      - GB_OIDC_URL=http://localhost/auth/realms/master/protocol/openid-connect
+      - GB_OIDC_CLIENT_ID=medco
       - GB_COTHORITY_KEY_URL=http://localhost/cothority-key.pub.toml
       - GB_GENOMIC_ANNOTATIONS_URL=http://localhost/genomicAnnotations
       - GB_MEDCO_RESULTS_RANDOMIZATION=0
       - GB_FOOTER_TEXT=
+      - MEDCO_NETWORK_NAME=testnetwork
+      - MEDCO_NODES_NAME=a,b,c
