@@ -84,6 +84,10 @@
   height: var(--gb-top-panel-height);
 }
 
+.gb-top-panel span {
+  color: white;
+}
+
 .gb-top-panel button {
   background-color: transparent;
   border: none;
