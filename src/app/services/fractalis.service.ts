@@ -77,6 +77,24 @@ export class FractalisService {
     }
   }
 
+  /**
+   * When the user navigates (see navbar service) to the Analysis tab in Glowing bear,
+   * this method will be triggered to configure Fractalis, incl.
+   * 1. providing Fractalis backend with config parameters;
+   *
+   * 2. subscribing to changed selected cohorts on the left-side panel (see cohort service),
+   * so that Fractalis backend can visualize multiple subsets that correspond to cohorts in its charts;
+   *
+   * 3. subscribing to changed selected variables when the user add or remove variables
+   * in the Fractalis control panel (see gb-fractalis-control component), so that Fractalis backend
+   * knows which variables to visualize in its charts;
+   *
+   * 4. retrieving the chart types supported by Fractalis backend.
+   *
+   * TODO: each time the user navigates to the Analysis tab, Fractalis gets initialized redundantly
+   * either only initialize Fractalis when it has not been initialized before,
+   * or destroy/clear old Fractalis instance when the user navigates out of the Analysis tab
+   */
   public setupFractalis(): Promise<any> {
     let token = this.authService.token;
     let oidcClientId = this.appConfig.getConfig('oidc-client-id');
@@ -209,6 +227,11 @@ export class FractalisService {
       });
   }
 
+  /**
+   * When variables for a chart are updated, Fractalis backend needs to be informed about this
+   * so that it prepares the cache of these new variables for upcoming chart rendering.
+   * There is no need to cache old variables that have been cached already.
+   */
   private configVariablesUpdate() {
     this.selectedVariablesUpdated.asObservable().subscribe(variables => {
       this.cachingVariables = this.getNewVariablesToPrepare(variables);
@@ -227,6 +250,14 @@ export class FractalisService {
     });
   }
 
+  /**
+   * TODO: potential improvement on Fractalis backend: clear designated cached variables,
+   * as the user creates more charts, more variables are cached, but there is no method to
+   * clear the cached variables that are no longer needed on the frontend.
+   * Better yet, Fractalis backend can keep track of which charts are created, which charts are removed
+   * by the user, and automatically manage chart variable caching without frontend explicitly instructing
+   * it to prepare cache or clear cache.
+   */
   public clearCache(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.isClearingCache = true;
