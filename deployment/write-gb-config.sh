@@ -18,7 +18,7 @@ cat > "${GB_CONFIG_FILE}" <<EOL
   "oidc-client-id": "${GB_OIDC_CLIENT_ID}",
 
   "endpoint-mode": "picsure",
-  "include-query-saving": false,
+  "enable-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
   "include-variable-selection": false,

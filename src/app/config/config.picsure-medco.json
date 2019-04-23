@@ -19,7 +19,7 @@
     "MEDCO_testnetwork_2_c"
   ],
   "picsure-search-resource-name": "MEDCO_testnetwork_0_a",
-  "include-query-saving": false,
+  "enable-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
   "include-variable-selection": false,
