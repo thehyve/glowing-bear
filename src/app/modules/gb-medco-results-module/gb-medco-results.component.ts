@@ -71,7 +71,7 @@ export class GbMedcoResultsComponent implements OnInit {
     return this._resultChart;
   }
 
-  get medcoResult(): object {
+  get medcoResult(): MedcoNodeResult[] {
     return this._medcoResult;
   }
 }
