@@ -113,7 +113,6 @@ export class PicSureResourceService {
     return rc;
   }
 
-  /// tbd
   /**
    * Get a specific branch of the tree nodes
    *
@@ -170,7 +169,7 @@ export class PicSureResourceService {
 
             case 'genomic_annotation':
               treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
-              treeNode.name = treeNodeObj['ontologyId']; // todo: needed for annotation query, change it in loader
+              treeNode.conceptType = undefined;
               break;
 
             default:
