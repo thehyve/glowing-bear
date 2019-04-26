@@ -47,9 +47,9 @@ for (( IDX=0; ; IDX++ )); do
       echo "\"picsure-search-resource-name\": \"${PICSURE_RES_NAME}\"," >> "${GB_CONFIG_FILE}"
       echo "\"picsure-query-resource-names\": [" >> "${GB_CONFIG_FILE}"
     else
-      echo "," >> "${GB_CONFIG_FILE}"
+      echo -n "," >> "${GB_CONFIG_FILE}"
     fi
-    echo "\"${PICSURE_RES_NAME}\"" >> "${GB_CONFIG_FILE}"
+    echo -n "\"${PICSURE_RES_NAME}\"" >> "${GB_CONFIG_FILE}"
 
 done
 echo "]}" >> "${GB_CONFIG_FILE}"
