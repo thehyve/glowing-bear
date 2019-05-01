@@ -2,12 +2,14 @@
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
-An [Angular](https://github.com/angular/angular)-based frontend application for clinical data selection and analysis 
+An [Angular]-based frontend application for clinical data selection and analysis 
 based on [TranSMART]. Visit https://glowingbear.app for more information.
 
+If you are interested in additional features, like visual analytics or using a custom format for data export, 
+see the [extentions](#extensions) section for details.
 
 ### How to install
-* First, make sure the latest Angular CLI and Yarn are installed globally.
+* First, make sure the latest [Angular CLI] and [Yarn] are installed globally.
 
 * Second, clone Glowing Bear's code and install its dependencies
     ```
@@ -18,11 +20,8 @@ based on [TranSMART]. Visit https://glowingbear.app for more information.
 
 
 ### How to run locally
-We assume that a TranSMART backend has been installed and run,
-either locally, e.g. on [localhost:8081](localhost:8081), 
-or remotely, e.g. on https://transmart-dev.thehyve.net. 
-For information on how to install and run TranSMART, 
-please refer to its [documentation](https://github.com/thehyve/transmart-core).
+We assume that a [tranSMART] backend and [gb-backend] have been installed and run,
+either locally, or remotely (follow the links for the information on how to install and run them).
 
 * First, use the configuration for development 
 by changing [env.json](src/app/config/env.json) to
@@ -34,13 +33,7 @@ by changing [env.json](src/app/config/env.json) to
     ```
 
 * Second, modify [config.dev.json](src/app/config/config.dev.json) 
-so that the `api-url` points to your running transmart instance.
-
-    ```json
-    {
-      "api-url": "http://localhost:8081"
-    }
-    ```
+(see the [configuration](#configuration) section for details).
 
 * Third, run
     ```
@@ -75,7 +68,7 @@ Here are settings you would need to modify for that:
 | Option | Description |
 |:-------|:------------|
 | `baseUrl` | URL of the glowingbear to run tests against |
-| `fixturesFolder` | Folder with envirounment specific configurations (e.g. test users credentials), so-called fixtures. e.g. `dev`, `test`. |
+| `fixturesFolder` | Folder with environment specific configurations (e.g. test users credentials), so-called fixtures. e.g. `dev`, `test`. |
 | `env.apiUrl` | A transmart backend. It has to be the same that the glowingbear (specified in `baseUrl`) is communicating with. It is used by tests as shortcuts for data preparation and cleaning (e.g. remove export jobs). |
 | `env.authentication-service-type` | When set to `oidc` expects keycloak interface to provide user credentials. Otherwise, the old transmart login page. Please note that for the [transmart-api-server] `oidc` is the only valid option. |
 | `env.oidc-server-url` | URL of the identity provider that is used by the glowingbear and transmart. |
@@ -114,7 +107,7 @@ in [build.gradle](build.gradle) is set to a release repository.
 
 
 
-### Configuration
+## Configuration
 
 The application can be configured by changing the `env.json` and `config.*.json`
 files in `app/config`.
@@ -130,11 +123,14 @@ Example `config.dev.json`:
 
 ```json
 {
-  "api-url": "https://transmart.thehyve.net",
+  "api-url": "https://transmart.example.com",
   "api-version": "v2",
-  "app-url": "https://glowingbear.thehyve.net",
+  "app-url": "https://glowingbear.example.com",
+  "gb-backend-url": "https://gb-backend.example.com",
   "tree-node-counts-update": true,
-  "autosave-subject-sets": false
+  "autosave-subject-sets": false,
+  "authentication-service-type": "oidc",
+  "oidc-server-url": "https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect"
 }
 ```
 
@@ -151,17 +147,28 @@ Supported properties in the `config.*.json` files:
 | `instant-counts-update` | `false`   | |
 | `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
-| `oidc-client-id`          | `glowingbear-js` | |
+| `oidc-client-id`          | `transmart` | |
 | `export-mode`             |           | JSON object. Data export configuration. When using tranSMART directly, use: `export-mode`: { `name`: `transmart`, `data-view`: `export-data-view` }, where `export-data-view` defines a shape of the export (`dataTable`, `surveyTable`). When using external tool called `transmart-packer`, use: `export-mode`: { `name`: `packer`, `data-view`: `packer-job-name`, `export-url`:`http://example.com`, where `packer-job-name` is a name of the job in `transmart-packer` and `export-url` is an URL of `transmart-packer` } |
 | `enable-fractalis-analysis` | `false`   | Enable the Fractalis visual analytics in the `analysis` tab.
 | `fractalis-url`           |           | URL of the Fractalis application to connect to for visual analytics.
 | `fractalis-datasource-url`|           | The URL where the TranSMART API is reachable by Fractalis. (The value for `api-url` is used by default).
 | `include-data-table`      | `true`    | Show a data table in the export tab.
+| `include-cohort-subscription` | `false` | Enable cohort subscription.
+
+
+## Extensions
+
+To use interactive visual analytics, you need to install [Fractalis back-end] and, 
+either install [Fractalis front-end] from the repository, or use a [`npm` package](https://www.npmjs.com/package/fractalis). 
+
+To be able to use additional export formats, install [transmart-packer].
+
+All extensions require a proper configuration, as described in [configuration](#configuration) section.
 
 
 ## License
 
-Copyright &copy; 2017&ndash;2018 &nbsp; The Hyve B.V.
+Copyright &copy; 2017&ndash;2019 &nbsp; The Hyve B.V.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [Mozilla Public License 2.0](LICENSE).
@@ -171,7 +178,13 @@ If not, see https://opensource.org/licenses/MPL-2.0.
 
 
 [tranSMART]: https://github.com/thehyve/transmart-core
+[gb-backend]: https://github.com/thehyve/gb-backend
+[Fractalis front-end]: https://github.com/thehyve/Fractal.js
+[Fractalis back-end]: https://github.com/thehyve/Fractalis
+[transmart-packer]: https://github.com/thehyve/transmart-packer
+[Angular]: https://github.com/angular/angular
 [Angular CLI]: https://github.com/angular/angular-cli
+[Yarn]: https://yarnpkg.com/en/docs/install
 [Karma]: https://karma-runner.github.io
 [cucumber-js]: https://github.com/cucumber/cucumber-js
 [nginx]: https://nginx.org

@@ -320,59 +320,67 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
    * @param {CombinationConstraint} constraint
    * @returns {TransmartConstraint[]}
    */
-  private getNonEmptyChildObjectsWithSubselection(constraint: CombinationConstraint): TransmartConstraint[] {
-    return constraint.children.reduce((result: TransmartConstraint[], child: Constraint) => {
+  private getNonEmptyChildObjectsWithSubselection(combination: CombinationConstraint): TransmartConstraint[] {
+    const nonEmptyChildren = combination.children.reduce((result: TransmartConstraint[], child: Constraint) => {
       const queryObject: TransmartConstraint = this.visit(child);
       if (!queryObject) {
         return result;
       }
-      if (constraint.combinationState === CombinationState.And && queryObject.type === 'true') {
+      if (combination.combinationState === CombinationState.And && queryObject.type === 'true') {
         // skip 'true' for conjunctive constraints
         return result;
       }
-      if (constraint.combinationState === CombinationState.Or && queryObject.type === 'negation') {
+      if (combination.combinationState === CombinationState.Or && queryObject.type === 'negation') {
         const negatedConstraint = (<TransmartNegationConstraint>queryObject).arg;
         if (negatedConstraint.type === 'true') {
           // skip 'false' for disjunctive constraints
           return result;
         }
       }
-      return this.getChildObjectsWithSubselection(result, queryObject, constraint, child);
+      result.push(this.getChildObjectsWithSubselection(queryObject, combination, child));
+      return result;
     }, []);
+
+    if (nonEmptyChildren.length === 1 && nonEmptyChildren[0].type === 'subselection') {
+      const childConstraint = (<TransmartSubSelectionConstraint>nonEmptyChildren[0]).constraint;
+      if (combination.dimension === 'patient' && childConstraint.type !== 'subselection' &&
+          (combination.isRoot ||
+            (combination.parentConstraint && combination.parentConstraint.className === 'PedigreeConstraint'))) {
+        // Subselection not required for singleton patient-level combinations at the top level,
+        // unless ensuring patient level constraint
+        return [childConstraint];
+      }
+    }
+    return nonEmptyChildren;
   }
 
   /**
-   * Wraps query objects with subselection if needed
-   * @param {TransmartConstraint[]} result
-   * @param {TransmartConstraint} queryObject
-   * @param {CombinationConstraint} constraint
-   * @param {Constraint} child
-   * @returns {TransmartConstraint[]}
+   * Wraps query objects with subselection if needed.
+   * To be used in with Array.reduce.
+   *
+   * @param {TransmartConstraint} queryObject: the serialised child node
+   * @param {CombinationConstraint} combination: the original combination constraint
+   * @param {Constraint} child: the original child constraint node
+   * @returns {TransmartConstraint} the resulting serialised constraints, possibly wrapped in a subselection.
    */
-  private getChildObjectsWithSubselection(result: TransmartConstraint[],
-                                          queryObject: TransmartConstraint,
-                                          constraint: CombinationConstraint,
-                                          child: Constraint): TransmartConstraint[] {
-
-    if (constraint.children.length === 1 && queryObject.type !== 'subselection') {
-      if (constraint.isRoot && constraint.dimension === 'patient') {
-        // Subselection not required for singleton patient-level combinations at the top level,
-        // unless ensuring patient level constraint
-        result.push(queryObject);
-        return result;
-      }
+  private getChildObjectsWithSubselection(queryObject: TransmartConstraint,
+                                          combination: CombinationConstraint,
+                                          child: Constraint): TransmartConstraint {
+    if (combination.dimension === 'patient' && (
+      child.className === 'SubjectSetConstraint' || child.className === 'PedigreeConstraint')) {
+      // Subselection not required for patient set constraints if the dimension is 'patient'
+      return queryObject;
     }
-    if (queryObject.type === 'subselection' && constraint.parentDimension === constraint.dimension) {
+    if (queryObject.type === 'subselection' && combination.parentDimension === combination.dimension) {
       // Subselection not required if the dimension equals the parent dimension and the child is a subselection
-      result.push(queryObject);
-    } else if (constraint.dimension === 'observation'
+      return queryObject;
+    } else if (combination.dimension === 'observation'
       || (child.className === 'CombinationConstraint' && (<CombinationConstraint>child).dimension === 'observation')) {
       // Subselection not required if the dimension equals 'observation'
-      result.push(queryObject);
+      return queryObject;
     } else {
-      result.push(TransmartConstraintSerialiser.wrapWithSubselection(constraint.dimension, queryObject));
+      return TransmartConstraintSerialiser.wrapWithSubselection(combination.dimension, queryObject);
     }
-    return result;
   }
 
   visitCombinationConstraint(constraint: CombinationConstraint): TransmartConstraint {

@@ -26,7 +26,6 @@ import {FractalisVariablesStatus} from '../models/fractalis-models/fractalis-var
 import {forkJoin, Subject} from 'rxjs';
 import {CohortService} from './cohort.service';
 import {ResourceService} from './resource.service';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {Cohort} from '../models/cohort-models/cohort';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 
@@ -51,6 +50,11 @@ export class FractalisService {
   private _chartDivSize: number;
   private timer: Timer;
   private _variablesStatus: FractalisVariablesStatus;
+  // keeping track of the variables that have been cached by Fractalis
+  // so as to avoid loading variables that have already been loaded
+  private _cachedVariables: Concept[] = [];
+  // keeping track of the variables that are being cached by Fractalis
+  private _cachingVariables: Concept[] = [];
 
 
   static dataObjectToFractalisDataList(data: any): FractalisData[] {
@@ -103,8 +107,9 @@ export class FractalisService {
     return this.clearCache();
   }
 
-  public prepareCache(variables: Concept[]) {
-    if (variables && variables.length > 0) {
+  private prepareCache() {
+    const variables: Concept[] = this.cachingVariables;
+    if (!this.isPreparingCache && variables && variables.length > 0) {
       this.isPreparingCache = true;
       let descriptors = [];
       variables.forEach((variable: Concept) => {
@@ -159,8 +164,12 @@ export class FractalisService {
           }
         });
         this._variablesStatus = {successCount, submittedCount, failureCount};
-        this.isPreparingCache = submittedCount > 0;
-        console.log(this.variablesStatus);
+        if (this.isPreparingCache && submittedCount === 0) {
+          this.isPreparingCache = false;
+          this.cachedVariables = this.cachedVariables.concat(this.cachingVariables);
+          this.cachingVariables = [];
+          console.log('Fractalis finishes caching. ', this.variablesStatus);
+        }
         resolve(true);
       }).catch(err => {
         console.error('Failed to fetch tracked variables from Fractalis.');
@@ -202,10 +211,20 @@ export class FractalisService {
 
   private configVariablesUpdate() {
     this.selectedVariablesUpdated.asObservable().subscribe(variables => {
-      this.prepareCache(variables);
+      this.cachingVariables = this.getNewVariablesToPrepare(variables);
+      this.prepareCache();
     });
     this.timer = setInterval(() =>
       this.updateVariablesStatus(), FractalisService.TIMEOUT_VARIABLE_STATUS_UPDATE);
+  }
+
+  private getNewVariablesToPrepare(selectedVariables: Concept[]): Concept[] {
+    const existingCodes: string[] = this.cachedVariables.map((c: Concept) => {
+      return c.code;
+    })
+    return selectedVariables.filter((c: Concept) => {
+      return !existingCodes.includes(c.code);
+    });
   }
 
   public clearCache(): Promise<any> {
@@ -215,6 +234,7 @@ export class FractalisService {
         .then(res => {
           this.isClearingCache = false;
           this._currentCacheTrys = 0;
+          this.cachedVariables = [];
           resolve(true);
         })
         .catch(error => {
@@ -404,5 +424,21 @@ export class FractalisService {
 
   get selectedVariablesUpdated(): Subject<Concept[]> {
     return this._selectedVariablesUpdated;
+  }
+
+  get cachedVariables(): Concept[] {
+    return this._cachedVariables;
+  }
+
+  set cachedVariables(value: Concept[]) {
+    this._cachedVariables = value;
+  }
+
+  get cachingVariables(): Concept[] {
+    return this._cachingVariables;
+  }
+
+  set cachingVariables(value: Concept[]) {
+    this._cachingVariables = value;
   }
 }

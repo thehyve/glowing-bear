@@ -105,6 +105,7 @@ describe('FractalisService', () => {
         ]
       }
     };
+    fractalisService.isPreparingCache = true;
     spyOn(fractalisService, 'getTrackedVariables').and.returnValue(Promise.resolve(dataObj));
 
     fractalisService.updateVariablesStatus().then(_ => {

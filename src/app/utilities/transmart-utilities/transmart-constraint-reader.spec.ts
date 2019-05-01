@@ -85,7 +85,7 @@ describe('TransmartConstraintReader', () => {
     testConstraint(constraint);
 
     constraint.rightHandSideConstraint = new CombinationConstraint([]);
-    testConstraint(constraint)
+    testConstraint(constraint);
 
     const studyConstraint = new StudyConstraint();
     const study = new Study();
