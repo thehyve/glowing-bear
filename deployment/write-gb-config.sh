@@ -18,7 +18,7 @@ cat > "${GB_CONFIG_FILE}" <<EOL
   "oidc-client-id": "${GB_OIDC_CLIENT_ID}",
 
   "endpoint-mode": "picsure",
-  "include-query-saving": false,
+  "enable-query-saving": false,
   "include-data-table": false,
   "include-query-subscription": false,
   "include-variable-selection": false,
@@ -47,9 +47,9 @@ for (( IDX=0; ; IDX++ )); do
       echo "\"picsure-search-resource-name\": \"${PICSURE_RES_NAME}\"," >> "${GB_CONFIG_FILE}"
       echo "\"picsure-query-resource-names\": [" >> "${GB_CONFIG_FILE}"
     else
-      echo "," >> "${GB_CONFIG_FILE}"
+      echo -n "," >> "${GB_CONFIG_FILE}"
     fi
-    echo "\"${PICSURE_RES_NAME}\"" >> "${GB_CONFIG_FILE}"
+    echo -n "\"${PICSURE_RES_NAME}\"" >> "${GB_CONFIG_FILE}"
 
 done
 echo "]}" >> "${GB_CONFIG_FILE}"

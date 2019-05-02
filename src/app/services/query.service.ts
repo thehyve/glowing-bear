@@ -133,7 +133,7 @@ export class QueryService {
     this.isVariableSelectionUsed = this.appConfig.getConfig('include-variable-selection', true);
     this.isDataTableUsed = this.appConfig.getConfig('include-data-table', true);
     this.isQuerySubscriptionIncluded = this.appConfig.getConfig('include-query-subscription', false);
-    this.isQuerySavingUsed = this.appConfig.getConfig('include-query-saving', true);
+    this.isQuerySavingUsed = this.appConfig.getConfig('enable-query-saving', true);
 
     this.initializeCounts();
     this.loadQueries();

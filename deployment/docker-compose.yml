@@ -21,7 +21,7 @@ services:
       - "82:80"
     environment:
       - GB_API_URL=http://localhost/pic-sure-api-2/PICSURE
-      - GB_URL=http://localhost:82
+      - GB_URL=http://localhost/glowing-bear
       - GB_OIDC_URL=http://localhost/auth/realms/master/protocol/openid-connect
       - GB_OIDC_CLIENT_ID=medco
       - GB_COTHORITY_KEY_URL=http://localhost/cothority-key.pub.toml
