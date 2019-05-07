@@ -1,0 +1,127 @@
+version: '3'
+services:
+  # ----- glowing-bear -----
+  glowing-bear:
+    container_name: glowing-bear
+    image: 'thehyve/glowing-bear'
+    ports:
+      - 9080:80
+    environment:
+      TRANSMART_API_SERVER_URL: ${TRANSMART_API_SERVER_URL}
+      TRANSMART_PACKER_URL: ${TRANSMART_PACKER_URL}
+      GB_BACKEND_URL: ${GB_BACKEND_URL}
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+    depends_on:
+      - gb-backend
+      - transmart-api-server
+      - transmart-packer
+
+  # ----- gb-backend + db -----
+  gb-backend-database:
+    container_name: gb-backend-database
+    image: postgres:11-alpine
+    environment:
+      POSTGRES_USER: gb
+      POSTGRES_PASSWORD: gb
+      POSTGRES_DB: gb_backend
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - gb-backend-db-network
+  gb-backend:
+    container_name: gb-backend
+    image: thehyve/glowing-bear-backend
+    ports:
+      - 9083:8083
+    environment:
+      TRANSMART_API_SERVER_URL: ${TRANSMART_API_SERVER_URL}
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      DB_USER: gb
+      DB_PASSWORD: gb
+      DB_HOST: gb-backend-database
+      DB_PORT: 5432
+      DB_NAME: gb_backend
+    depends_on:
+      - gb-backend-database
+      - transmart-api-server
+    networks:
+      - gb-backend-db-network
+
+  # ----- transmart-api-server + db -----
+  transmart-database:
+    container_name: transmart-database
+    image: postgres:11-alpine
+    ports:
+      - 9432:5432
+    environment:
+      POSTGRES_USER: biomart_user
+      POSTGRES_PASSWORD: biomart_user
+      POSTGRES_DB: transmart
+    volumes:
+      - transmart-db-data:/var/lib/postgresql/data
+    networks:
+      - transmart-db-network
+  transmart-api-server:
+    container_name: transmart-api-server
+    image: thehyve/transmart-api-server:17.1-HYVE-5.9-RC3
+    ports:
+      - 9081:8081
+    environment:
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL}/auth
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      PGHOST: transmart-database
+      PGPORT: 5432
+      PGDATABASE: transmart
+    depends_on:
+      - transmart-database
+    networks:
+      - transmart-db-network
+
+  # ----- transmart-packer -----
+  redis:
+    container_name: transmart-packer-redis
+    image: redis:alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    hostname: redis
+    volumes:
+      - redis-data:/data
+  transmart-packer:
+    container_name: transmart-packer
+    image: thehyve/transmart-packer
+    command: ['python', '-m', 'packer']
+    ports:
+      - 8999:8999
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      TRANSMART_URL: ${TRANSMART_API_SERVER_URL}
+      KEYCLOAK_URL: ${KEYCLOAK_SERVER_URL}/auth/realms/${KEYCLOAK_REALM}
+      CLIENT_ORIGIN_URL: '*'
+      CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+  transmart-packer-worker:
+    container_name: transmart-packer-worker
+    image: thehyve/transmart-packer
+    command:  ['celery', '-A', 'packer.tasks', 'worker', '-c', '4', '--loglevel', 'info']
+    depends_on:
+      - redis
+    links:
+      - redis
+    environment:
+      TRANSMART_URL: ${TRANSMART_API_SERVER_URL}
+
+volumes:
+  db-data:
+  transmart-db-data:
+  redis-data:
+networks:
+  gb-backend-db-network:
+    driver: bridge
+  transmart-db-network:
+    driver: bridge
