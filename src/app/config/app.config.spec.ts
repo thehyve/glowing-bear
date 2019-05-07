@@ -154,7 +154,6 @@ describe('AppConfig', () => {
       expect(e.message).toBeDefined();
     }
     expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
-    expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
     expect(appConfig.getConfig('enable-fractalis-analysis')).toBe(AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS);
