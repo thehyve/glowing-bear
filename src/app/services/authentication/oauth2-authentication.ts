@@ -16,7 +16,6 @@ import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
 import {RedirectHelper} from '../../utilities/redirect-helper';
 
@@ -132,7 +131,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.router = this.injector.get(Router);
       this.activatedRoute = this.injector.get(ActivatedRoute);
       this.http = this.injector.get(HttpClient);
-      this.appUrl = this.config.getConfig('app-url');
+      this.appUrl = location.origin;
       this.apiUrl = this.config.getConfig('api-url');
 
       let serviceType = this.config.getConfig('authentication-service-type');
