@@ -59,9 +59,6 @@ export class AppConfig {
         case 'api-version': {
           value = AppConfig.DEFAULT_API_VERSION; break;
         }
-        case 'app-url': {
-          value = AppConfig.DEFAULT_APP_URL; break;
-        }
         case 'app-version': {
           value = AppConfig.DEFAULT_APP_VERSION; break;
         }
