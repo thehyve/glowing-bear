@@ -5,13 +5,15 @@ ENV GB_SRC_URL https://repo.thehyve.nl/content/repositories/releases/nl/thehyve/
 
 WORKDIR /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf.template
 COPY config.template.json config.template.json
 
 # download and untar application artifacts
 RUN wget "${GB_SRC_URL}" -O "glowing-bear-${GB_VERSION}.tar" && \
     tar -xf "glowing-bear-${GB_VERSION}.tar" --strip 1
 
-# apply env variables to the application config starting the webserver
-CMD ["/bin/sh", "-c", "envsubst < /usr/share/nginx/html/config.template.json > /usr/share/nginx/html/app/config/config.default.json && \
+# apply env variables to the application config and nginx config, while starting the webserver
+CMD ["/bin/sh", "-c", "\
+      envsubst '$$NGINX_HOST' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && \
+      envsubst < /usr/share/nginx/html/config.template.json > /usr/share/nginx/html/app/config/config.default.json && \
       exec nginx -g 'daemon off;'"]
