@@ -14,6 +14,6 @@ RUN wget "${GB_SRC_URL}" -O "glowing-bear-${GB_VERSION}.tar" && \
 
 # apply env variables to the application config and nginx config, while starting the webserver
 CMD ["/bin/sh", "-c", "\
-      envsubst '$$NGINX_HOST' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && \
+      envsubst '$$NGINX_HOST, $$NGINX_PORT' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && \
       envsubst < /usr/share/nginx/html/config.template.json > /usr/share/nginx/html/app/config/config.default.json && \
       exec nginx -g 'daemon off;'"]
