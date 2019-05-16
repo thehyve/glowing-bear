@@ -4,6 +4,9 @@
 
 Nginx-based Docker image definition for Glowing Bear.
 
+The current [Nginx configuration](./nginx.nginx.conf) redirects all requests to HTTPS, 
+thus (self-)signed certificate is required.
+
 ## Run
 
 Follow the instructions in [glowing-bear-docker](https://github.com/thehyve/glowing-bear-docker) repository to run the full stack, including:
