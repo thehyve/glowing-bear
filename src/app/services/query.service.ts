@@ -258,7 +258,7 @@ export class QueryService {
       let constraint_1 = this.constraintService.constraint_1();
       let inclusionConstraint = this.constraintService.generateInclusionConstraint();
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
-      this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
+      this.resourceService.updateInclusionExclusionCounts(this.selectedQueryType, constraint_1, inclusionConstraint, exclusionConstraint)
         .then(() => {
           let inCounts = this.resourceService.inclusionCounts;
           let exCounts = this.resourceService.exclusionCounts;
@@ -344,7 +344,7 @@ export class QueryService {
         this.query = null; // clear query
         // update the subject count and observation count in the 2nd step
         const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
-        this.resourceService.getCounts(constraint_1_2)
+        this.resourceService.getCounts(this.selectedQueryType, constraint_1_2)
           .subscribe(
             (countItem: CountItem) => {
               // update counts and flags

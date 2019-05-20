@@ -39,6 +39,7 @@ import {AppConfig} from '../config/app.config';
 import {PicSureResourceService} from './picsure-services/picsure-resource.service';
 import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transmart-constraint-mapper';
 import {TreeNode} from '../models/tree-models/tree-node';
+import {MedcoQueryType} from "../models/picsure-models/i2b2-medco/medco-query-type";
 
 @Injectable()
 export class ResourceService {
@@ -144,7 +145,8 @@ export class ResourceService {
   }
 
   // -------------------------------------- count calls --------------------------------------
-  updateInclusionExclusionCounts(constraint: Constraint,
+  updateInclusionExclusionCounts(queryType: MedcoQueryType,
+                                 constraint: Constraint,
                                  inclusionConstraint: Constraint,
                                  exclusionConstraint?: Constraint): Promise<any> {
 
@@ -170,14 +172,14 @@ export class ResourceService {
       case EndpointMode.PICSURE: {
         return Promise.all([
           new Promise<any>((resolve) => {
-            this.picSureResourceService.getI2b2MedCoPatientsCounts(inclusionConstraint).subscribe((inclusionCount) => {
+            this.picSureResourceService.getI2b2MedCoPatientsCounts(queryType, inclusionConstraint).subscribe((inclusionCount) => {
               this.inclusionCounts = inclusionCount;
               resolve(true);
             });
           }),
           new Promise<any>((resolve) => {
             if (exclusionConstraint) {
-              this.picSureResourceService.getI2b2MedCoPatientsCounts(exclusionConstraint).subscribe((exclusionCount) => {
+              this.picSureResourceService.getI2b2MedCoPatientsCounts(queryType, exclusionConstraint).subscribe((exclusionCount) => {
                   this.exclusionCounts = exclusionCount;
                   resolve(true);
                 }
@@ -272,7 +274,7 @@ export class ResourceService {
    * @param {Constraint} constraint
    * @returns {Observable<Object>}
    */
-  getCounts(constraint: Constraint): Observable<CountItem> {
+  getCounts(queryType: MedcoQueryType, constraint: Constraint): Observable<CountItem> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
         return this.transmartResourceService.getCounts(constraint)
@@ -281,7 +283,7 @@ export class ResourceService {
           });
       }
       case EndpointMode.PICSURE:
-        return this.picSureResourceService.getI2b2MedCoPatientsCounts(constraint);
+        return this.picSureResourceService.getI2b2MedCoPatientsCounts(queryType, constraint);
 
       default:
         return this.handleEndpointModeError();
