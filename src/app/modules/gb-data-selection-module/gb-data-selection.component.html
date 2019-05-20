@@ -30,6 +30,14 @@
                 Update
               </button>
             </span>
+            <span class="float-right">
+              <label>Query Type: </label>
+              <select [(ngModel)]="selectedQueryType">
+                <option *ngFor="let queryType of availableQueryTypes" value={{queryType.id}}>
+                  {{queryType.name}}
+                </option>
+              </select>
+            </span>
           </div>
         </div>
       </md2-accordion-header>

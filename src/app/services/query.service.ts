@@ -29,6 +29,7 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
+import {MedcoQueryType} from "../models/picsure-models/i2b2-medco/medco-query-type";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -118,6 +119,11 @@ export class QueryService {
   // Flag indicating if saving a query is finished
   private _isSavingQueryCompleted = true;
   private _isQuerySavingUsed = true;
+
+  /*
+   * ------ MedCo variables ------
+   */
+  private _selectedQueryType = MedcoQueryType.COUNT_GLOBAL_OBFUSCATED; // todo: check if that should be the default
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
@@ -753,5 +759,26 @@ export class QueryService {
 
   set isQuerySavingUsed(value: boolean) {
     this._isQuerySavingUsed = value;
+  }
+
+  get availableQueryTypes(): MedcoQueryType[] {
+    // todo: parse authorizations from auth service
+    return [
+      MedcoQueryType.PATIENT_LIST,
+      MedcoQueryType.COUNT_PER_SITE,
+      MedcoQueryType.COUNT_PER_SITE_OBFUSCATED,
+      MedcoQueryType.COUNT_PER_SITE_SHUFFLED,
+      MedcoQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED,
+      MedcoQueryType.COUNT_GLOBAL,
+      MedcoQueryType.COUNT_GLOBAL_OBFUSCATED
+    ];
+  }
+
+  get selectedQueryType(): MedcoQueryType {
+    return this._selectedQueryType;
+  }
+
+  set selectedQueryType(queryType: MedcoQueryType) {
+    this._selectedQueryType = queryType;
   }
 }
