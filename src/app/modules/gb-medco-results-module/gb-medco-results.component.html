@@ -21,4 +21,18 @@
       </tr>
     </ng-template>
   </p-table>
+
+  <hr />
+
+  <div *ngIf="patientListAvailable">
+    <p><b>Patient List</b></p>
+    <p *ngFor="let nodeResults of medcoResult">
+      <span>{{nodeResults.nodeName}}:</span>
+      <i>
+        <span *ngFor="let patientId of nodeResults.decryptedPatientList">
+          {{patientId}}
+        </span>
+      </i>
+    </p>
+  </div>
 </div>

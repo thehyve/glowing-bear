@@ -11,6 +11,16 @@ export class MedcoQueryType {
   static readonly COUNT_GLOBAL_OBFUSCATED =
     new MedcoQueryType("count_global_obfuscated", "Global count (obfuscated)");
 
+  static readonly ALL_TYPES = [
+    MedcoQueryType.PATIENT_LIST,
+    MedcoQueryType.COUNT_PER_SITE,
+    MedcoQueryType.COUNT_PER_SITE_OBFUSCATED,
+    MedcoQueryType.COUNT_PER_SITE_SHUFFLED,
+    MedcoQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED,
+    MedcoQueryType.COUNT_GLOBAL,
+    MedcoQueryType.COUNT_GLOBAL_OBFUSCATED
+  ];
+
   private constructor(public readonly id: string, public readonly name: string) {}
 
   toString() {

@@ -10,6 +10,7 @@ import {Component, OnInit} from '@angular/core';
 import {MedcoService} from "../../services/picsure-services/medco.service";
 import {MedcoNodeResult} from "../../models/picsure-models/i2b2-medco/medco-node-result";
 import {Chart} from 'chart.js';
+import {MedcoQueryType} from "../../models/picsure-models/i2b2-medco/medco-query-type";
 
 @Component({
   selector: 'gb-medco-results',
@@ -21,6 +22,8 @@ export class GbMedcoResultsComponent implements OnInit {
 
   private _resultChart: Chart;
   private _medcoResult: MedcoNodeResult[];
+  private _perSiteCountAvailable: boolean = false;
+  private _patientListAvailable: boolean = false;
 
   constructor(private medcoService: MedcoService) { }
 
@@ -61,6 +64,10 @@ export class GbMedcoResultsComponent implements OnInit {
     this.medcoService.results.subscribe( (results: MedcoNodeResult[]) => {
       this._medcoResult = results;
 
+      this._perSiteCountAvailable = this.medcoResult[0].parsedQueryType !== MedcoQueryType.COUNT_GLOBAL &&
+        this.medcoResult[0].parsedQueryType !== MedcoQueryType.COUNT_GLOBAL_OBFUSCATED;
+      this._patientListAvailable = this.medcoResult[0].decryptedPatientList.length > 0;
+
       this.resultChart.data.labels = results.map((r) => r.nodeName);
       this.resultChart.data.datasets[0].data = results.map((r) => r.decryptedCount);
       this.resultChart.update();
@@ -73,5 +80,13 @@ export class GbMedcoResultsComponent implements OnInit {
 
   get medcoResult(): MedcoNodeResult[] {
     return this._medcoResult;
+  }
+
+  get perSiteCountAvailable(): boolean {
+    return this._perSiteCountAvailable;
+  }
+
+  get patientListAvailable(): boolean {
+    return this._patientListAvailable;
   }
 }
