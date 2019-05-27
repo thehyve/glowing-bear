@@ -29,7 +29,7 @@ Publish the image to [Docker Hub](https://hub.docker.com/r/thehyve/glowing-bear)
 
 ```bash
 docker login
-GLOWING_BEAR_VERSION="1.3.8"
+GLOWING_BEAR_VERSION="2.0.0"
 docker tag glowing-bear "thehyve/glowing-bear:${GLOWING_BEAR_VERSION}"
 docker push "thehyve/glowing-bear:${GLOWING_BEAR_VERSION}"
 ```

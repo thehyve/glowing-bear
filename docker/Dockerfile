@@ -1,6 +1,6 @@
 FROM nginx:alpine
 
-ENV GB_VERSION 1.3.8
+ENV GB_VERSION 2.0.0
 ENV GB_SRC_URL https://repo.thehyve.nl/content/repositories/releases/nl/thehyve/glowing-bear/${GB_VERSION}/glowing-bear-${GB_VERSION}.tar
 
 WORKDIR /usr/share/nginx/html

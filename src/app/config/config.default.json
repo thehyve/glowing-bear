@@ -1,6 +1,6 @@
 {
   "api-version": "v2",
-  "app-version": "1.3.8",
+  "app-version": "2.0.0",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": true,
   "autosave-subject-sets": false,
