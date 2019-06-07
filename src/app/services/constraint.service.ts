@@ -222,6 +222,7 @@ export class ConstraintService {
       }
       this.rootConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
     } else if (constraint.className !== 'TrueConstraint') {
+      this.rootConstraint.dimension = CombinationConstraint.TOP_LEVEL_DIMENSION;
       this.rootConstraint.addChild(constraint);
     }
   }

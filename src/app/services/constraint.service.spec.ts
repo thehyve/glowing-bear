@@ -93,4 +93,19 @@ describe('ConstraintService', () => {
       .toBe(1);
   });
 
+
+  it('should restore cohort constraint with proper root dimenstion', () => {
+    let constraint1 = new CombinationConstraint();
+    constraint1.dimension = 'diagnosis';
+    let constraint11 = new ConceptConstraint();
+    constraint1.addChild(constraint11);
+
+    let constraint2 = new ConceptConstraint();
+
+    constraintService.restoreCohortConstraint(constraint1);
+    expect(constraintService.rootConstraint.dimension).toEqual('diagnosis');
+
+    constraintService.restoreCohortConstraint(constraint2);
+    expect(constraintService.rootConstraint.dimension).toEqual('patient');
+  });
 });
