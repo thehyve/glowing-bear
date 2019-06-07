@@ -198,7 +198,7 @@ export class FractalisService {
       });
     let idSets = [];
     forkJoin(subjectCalls)
-      .subscribe(res => {
+      .subscribe((res: TransmartPatient[][]) => {
         for (let i = 0; i < subjectCalls.length; i++) {
           const ids = res[i].map((subject: TransmartPatient) => {
             return subject.subjectIds.SUBJ_ID;
@@ -221,7 +221,7 @@ export class FractalisService {
   private getNewVariablesToPrepare(selectedVariables: Concept[]): Concept[] {
     const existingCodes: string[] = this.cachedVariables.map((c: Concept) => {
       return c.code;
-    })
+    });
     return selectedVariables.filter((c: Concept) => {
       return !existingCodes.includes(c.code);
     });
