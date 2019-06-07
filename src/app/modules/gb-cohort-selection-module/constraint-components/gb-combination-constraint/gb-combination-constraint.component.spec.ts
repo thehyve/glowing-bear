@@ -143,7 +143,7 @@ describe('GbCombinationConstraintComponent', () => {
     constraint1.addChild(constraint12);
 
     component.constraint = constraint1;
-    expect(component.subjectBoxMessage).toBe('Select data for');
+    expect(component.subjectBoxMessage).toBe('Select data linked to');
 
     component.constraint = constraint11;
     expect(component.subjectBoxMessage).toBe('the patient is NOT linked to a');

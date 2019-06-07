@@ -86,8 +86,8 @@ when("I use public study {string} and negation of study {string} as a constraint
 
 then("constraint panel containing {string} is negated", (constraintName) => {
   cy.get('.gb-constraint-container').contains(constraintName).parents('.gb-negated-constraint');
-  cy.get('span').contains('excluded').should('be.visible');
-  cy.get('label').contains('for the patient there are NO observations:');
+  cy.get('span').contains('excluding').should('be.visible');
+  cy.get('label').contains('for the patient there is NO observation:');
 });
 
 when("I use negated pedigree constraint {string} with concept {string} and negated concept {string}",

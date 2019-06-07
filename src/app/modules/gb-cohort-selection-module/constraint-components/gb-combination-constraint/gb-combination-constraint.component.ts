@@ -179,7 +179,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   get subjectBoxMessage(): string {
     if ((<CombinationConstraint>this.constraint).isRoot) {
-      return 'Select data for';
+      return 'Select data linked to';
     } else {
       let parentDimension = this.constraint.parentDimension;
       if (this.constraint.negated) {

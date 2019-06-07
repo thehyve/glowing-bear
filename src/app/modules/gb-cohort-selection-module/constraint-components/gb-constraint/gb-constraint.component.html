@@ -9,7 +9,7 @@
   <div *ngIf="!isRoot" class="pull-right form-inline gb-constraint-control-container">
 
     <!-- Exclusion switch -->
-    <span>{{constraint.negated ? 'excluded' : 'included'}}</span>
+    <span>{{constraint.negated ? 'excluding' : 'including'}}</span>
     <p-inputSwitch [(ngModel)]="constraint.negated" (onChange)="update()"></p-inputSwitch>
     <!-- Remove Button -->
     <button type="button"
