@@ -1,0 +1,5 @@
+<div [id]="chart.id" [ngStyle]="{'width': chartWidth, 'height': chartHeight}">
+  <div *ngIf="chart.type === ChartType.CROSSTABLE">
+    <gb-cross-table></gb-cross-table>
+  </div>
+</div>

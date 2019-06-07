@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,12 +8,13 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {QueryService} from './query.service';
-import {MessageHelper} from '../utilities/message-helper';
 import {ExportService} from './export.service';
 import {AuthenticationService} from './authentication/authentication.service';
+import {FractalisService} from './fractalis.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class NavbarService {
 
   private _items: MenuItem[];
@@ -23,23 +24,23 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isExport = false;
 
-
   constructor(private authService: AuthenticationService,
-              private exportService: ExportService,
-              private queryService: QueryService) {
+              private fractalisService: FractalisService,
+              private exportService: ExportService) {
     this.items = [
-      {label: 'Data Selection', routerLink: '/data-selection'},
+      {label: 'Cohort Selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
-    this.exportService.isExportEnabled().subscribe((exportEnabled) => {
-      if (exportEnabled) {
-        this.items.push({label: 'Export', routerLink: '/export'});
-      }
-    });
+    this.exportService.exportEnabled.asObservable()
+      .subscribe((exportEnabled) => {
+        if (exportEnabled) {
+          this.items.push({label: 'Data Export', routerLink: '/export'});
+        }
+      });
   }
 
   updateNavbar(whichStep: string) {
-    this.isDataSelection = (whichStep === 'data-selection' || whichStep === '');
+    this.isDataSelection = (whichStep === 'cohort-selection' || whichStep === '');
     this.isAnalysis = (whichStep === 'analysis');
     this.isExport = (whichStep === 'export');
 
@@ -47,9 +48,22 @@ export class NavbarService {
       this.activeItem = this._items[0];
     } else if (this.isAnalysis) {
       this.activeItem = this._items[1];
+      this.configFractalis();
     } else if (this.isExport) {
-      this.queryService.updateAll();
       this.activeItem = this._items[2];
+      this.configExport();
+    }
+  }
+
+  private configFractalis() {
+    if (this.fractalisService.isFractalisEnabled && !this.fractalisService.isInitialized) {
+      this.fractalisService.setupFractalis();
+    }
+  }
+
+  private configExport() {
+    if (this.exportService.isTransmartDataTable) {
+      this.exportService.updateDataTableExportFormats();
     }
   }
 

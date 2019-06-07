@@ -19,14 +19,14 @@ export class NavbarServiceMock {
 
   constructor() {
     this.items = [
-      {label: 'Data Selection', routerLink: '/data-selection'},
+      {label: 'Cohort Selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'},
       {label: 'Export', routerLink: '/export'}
     ];
   }
 
   updateNavbar(whichStep: string) {
-    this.isDataSelection = (whichStep === 'data-selection' || whichStep === '');
+    this.isDataSelection = (whichStep === 'cohort-selection' || whichStep === '');
     this.isAnalysis = (whichStep === 'analysis');
     this.isExport = (whichStep === 'export');
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,19 +9,18 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {NavbarService} from './navbar.service';
-import {QueryService} from './query.service';
-import {QueryServiceMock} from './mocks/query.service.mock';
 import {ExportService} from './export.service';
 import {ExportServiceMock} from './mocks/export.service.mock';
-import {of as observableOf} from 'rxjs';
 import {AuthenticationService} from './authentication/authentication.service';
 import {AuthenticationServiceMock} from './mocks/authentication.service.mock';
+import {FractalisService} from './fractalis.service';
+import {FractalisServiceMock} from './mocks/fractalis.service.mock';
 
 describe('NavbarService', () => {
-  let queryService: QueryService;
   let navbarService: NavbarService;
   let exportService: ExportService;
   let authService: AuthenticationService;
+  let fractalisService: FractalisService;
   let exportEnabled: boolean;
 
   beforeEach(() => {
@@ -32,8 +31,8 @@ describe('NavbarService', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: FractalisService,
+          useClass: FractalisServiceMock
         },
         {
           provide: ExportService,
@@ -42,22 +41,21 @@ describe('NavbarService', () => {
         NavbarService
       ]
     });
-    queryService = TestBed.get(QueryService);
     exportService = TestBed.get(ExportService);
     authService = TestBed.get(AuthenticationService);
+    fractalisService = TestBed.get(FractalisService);
     exportEnabled = false;
-    spyOn(exportService, 'isExportEnabled').and.callFake(() => observableOf(exportEnabled));
     navbarService = TestBed.get(NavbarService);
   });
 
   it('should be injected', inject([NavbarService], (service: NavbarService) => {
     expect(service).toBeTruthy();
-    expect(service.items.length).toBe(2);
+    expect(service.items.length).toBe(3);
   }));
 
   it('should add export item when access level is full', () => {
     exportEnabled = true;
-    navbarService = new NavbarService(authService, exportService, queryService);
+    navbarService = new NavbarService(authService, fractalisService, exportService);
     expect(navbarService.items.length).toBe(3);
   });
 
@@ -72,7 +70,7 @@ describe('NavbarService', () => {
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
-    which = 'data-selection';
+    which = 'cohort-selection';
     navbarService.updateNavbar(which);
     expect(navbarService.isDataSelection).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
@@ -85,5 +83,19 @@ describe('NavbarService', () => {
     expect(navbarService.isExport).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[2]);
   });
+
+
+  it('should update data table if TransmartDataTable export', () => {
+    let spyTransmartDataTable = spyOnProperty(exportService, 'isTransmartDataTable', 'get')
+      .and.returnValue(false);
+    let spy = spyOn(exportService, 'updateDataTableExportFormats').and.stub();
+    let which = 'export';
+    navbarService.updateNavbar(which);
+    expect(spy).not.toHaveBeenCalled();
+
+    spyTransmartDataTable.and.returnValue( true);
+    navbarService.updateNavbar(which);
+    expect(spy).toHaveBeenCalled();
+  })
 
 });

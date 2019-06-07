@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,7 +16,6 @@ import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
-import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
 import {RedirectHelper} from '../../utilities/redirect-helper';
 
@@ -26,7 +25,9 @@ import {RedirectHelper} from '../../utilities/redirect-helper';
  * - Receive authorisation token via URL redirect
  * - Obtain access token using post with authorisation token
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class Oauth2Authentication implements AuthenticationMethod {
 
   private config: AppConfig;
@@ -68,7 +69,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       console.log(`Redirect to ${path}`);
       this.router.navigate([path]);
     } else {
-      this.router.navigate(['/']);
+      this.logout();
     }
   }
 
@@ -130,7 +131,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.router = this.injector.get(Router);
       this.activatedRoute = this.injector.get(ActivatedRoute);
       this.http = this.injector.get(HttpClient);
-      this.appUrl = this.config.getConfig('app-url');
+      this.appUrl = location.origin;
       this.apiUrl = this.config.getConfig('api-url');
 
       let serviceType = this.config.getConfig('authentication-service-type');
@@ -183,7 +184,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
     let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
     let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
-    return observableFrom(new Promise((resolve) => {
+    return observableFrom(new Promise<AuthorizationResult>((resolve) => {
       resolve(AuthorizationResult.Unauthorized);
       RedirectHelper.redirectTo(target);
     }));

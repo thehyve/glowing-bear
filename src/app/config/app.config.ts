@@ -11,20 +11,21 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AppConfig {
 
   public static DEFAULT_API_VERSION = 'v2';
-  public static DEFAULT_APP_URL = 'http://localhost:4200';
+  public static DEFAULT_APP_URL = 'https://localhost:4200';
   public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
+  public static DEFAULT_ENABLE_FRACTALIS_ANALYSIS = false;
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
   public static DEFAULT_SHOW_OBSERVATIONS_COUNTS = true;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_1 = false;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_2 = false;
-  public static DEFAULT_INSTANT_COUNTS_UPDATE_3 = false;
+  public static DEFAULT_INSTANT_COUNTS_UPDATE = false;
   public static DEFAULT_INCLUDE_DATA_TABLE = true;
-  public static DEFAULT_INCLUDE_QUERY_SUBSCRIPTION = false;
+  public static DEFAULT_INCLUDE_COHORT_SUBSCRIPTION = false;
   public static DEFAULT_AUTHENTICATION_SERVICE_TYPE = 'oidc';
   public static DEFAULT_OIDC_SERVER_URL =
     'https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect';
@@ -58,14 +59,27 @@ export class AppConfig {
         case 'api-version': {
           value = AppConfig.DEFAULT_API_VERSION; break;
         }
-        case 'app-url': {
-          value = AppConfig.DEFAULT_APP_URL; break;
-        }
         case 'app-version': {
           value = AppConfig.DEFAULT_APP_VERSION; break;
         }
+        case 'gb-backend-url': {
+          throw Error('Gb-backend URL is unspecified in the configuration.')
+        }
+        case 'fractalis-url': {
+          if (this.getConfig('enable-fractalis-analysis') === true) {
+            throw Error('Fractalis URL is unspecified in the configuration.')
+          }
+          return null;
+        }
+        case 'fractalis-datasource-url': {
+          // Use the API URL by default.
+          return this.getConfig('api-url');
+        }
         case 'doc-url': {
           value = AppConfig.DEFAULT_DOC_URL; break;
+        }
+        case 'enable-fractalis-analysis': {
+          value = AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS; break;
         }
         case 'autosave-subject-sets': {
           value = AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS; break;
@@ -73,20 +87,14 @@ export class AppConfig {
         case 'show-observation-counts': {
           value = AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS; break;
         }
-        case 'instant-counts-update-1': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1; break;
-        }
-        case 'instant-counts-update-2': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2; break;
-        }
-        case 'instant-counts-update-3': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3; break;
+        case 'instant-counts-update': {
+          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE; break;
         }
         case 'include-data-table': {
           value = AppConfig.DEFAULT_INCLUDE_DATA_TABLE; break;
         }
-        case 'include-query-subscription': {
-          value = AppConfig.DEFAULT_INCLUDE_QUERY_SUBSCRIPTION; break;
+        case 'include-cohort-subscription': {
+          value = AppConfig.DEFAULT_INCLUDE_COHORT_SUBSCRIPTION; break;
         }
         case 'authentication-service-type': {
           value = AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE; break;

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,29 +7,25 @@
  */
 
 import {TreeNode} from 'primeng/primeng';
+import {Concept} from '../../models/constraint-models/concept';
+import {Subject} from 'rxjs';
 import {CountItem} from '../../models/aggregate-models/count-item';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {GbTreeNode} from '../../models/tree-node-models/gb-tree-node';
 
 export class TreeNodeServiceMock {
-  // the variable that holds the entire tree structure, used by the tree on the left
-  public treeNodes: TreeNode[] = [];
-  // the copy of the tree nodes that is used for constructing the tree in the 2nd step (projection)
-  public treeNodesCopy: TreeNode[] = [];
-  // the entire tree table data that holds the patients' observations in the 2nd step (projection)
-  private _projectionTreeData: TreeNode[] = [];
-  // the selected tree table data that holds the patients' observations in the 2nd step (projection)
-  private _selectedProjectionTreeData: TreeNode[] = [];
-  // the final tree nodes resulted from data selection
-  private _finalTreeNodes: TreeNode[] = [];
-
-  public selectedTreeNode;
+  private _treeNodes: TreeNode[] = [];
+  private _treeNodesCopy: TreeNode[] = [];
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
-
-  public conceptCountMap: Map<string, CountItem>;
-  public studyCountMap: Map<string, CountItem>;
-  public studyConceptCountMap: Map<string, Map<string, CountItem>>;
-
+  public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
   private _validTreeNodeTypes: string[] = [];
+  private _showObservationCounts: boolean;
+  private processedConceptCodes: string[] = [];
+  private _constraint: Constraint = new CombinationConstraint();
+
+  public selectedTreeNode: TreeNode = null;
 
   constructor() {
     this._validTreeNodeTypes = [
@@ -41,27 +37,6 @@ export class TreeNodeServiceMock {
       'HIGH_DIMENSIONAL',
       'UNKNOWN'
     ];
-    // construct the maps
-    let map1 = new Map<string, CountItem>();
-    let item1 = new CountItem(10, 20);
-    map1.set('concept1', item1);
-    let map2 = new Map<string, CountItem>();
-    let item2 = new CountItem(30, 110);
-    let item3 = new CountItem(70, 90);
-    map2.set('concept2', item2);
-    map2.set('concept3', item3);
-    this.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
-    this.studyConceptCountMap.set('study1', map1);
-    this.studyConceptCountMap.set('study2', map2);
-
-    this.studyCountMap = new Map<string, CountItem>();
-    this.studyCountMap.set('study1', new CountItem(10, 20));
-    this.studyCountMap.set('study2', new CountItem(100, 200));
-
-    this.conceptCountMap = new Map<string, CountItem>();
-    this.conceptCountMap.set('concept1', new CountItem(10, 20));
-    this.conceptCountMap.set('concept2', new CountItem(30, 110));
-    this.conceptCountMap.set('concept3', new CountItem(70, 90));
   }
 
   public load() {
@@ -70,24 +45,30 @@ export class TreeNodeServiceMock {
   public loadTreeNodes() {
   }
 
-  getFullProjectionTreeDataChecklist(existingChecklist?: string[]): string[] {
+  isVariableNode(n: TreeNode): boolean {
+    return true;
+  }
+
+  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
+  }
+
+  public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
     return [];
   }
 
-  get projectionTreeData(): TreeNode[] {
-    return this._projectionTreeData;
+  public isTreeNodeLeaf(node: TreeNode): boolean {
+    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
   }
 
-  set projectionTreeData(value: TreeNode[]) {
-    this._projectionTreeData = value;
+  public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
   }
 
-  get selectedProjectionTreeData(): TreeNode[] {
-    return this._selectedProjectionTreeData;
+  public copyTreeNodeUpward(node: TreeNode): TreeNode {
+    return node;
   }
 
-  set selectedProjectionTreeData(value: TreeNode[]) {
-    this._selectedProjectionTreeData = value;
+  public depthOfTreeNode(node: TreeNode): number {
+    return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
   }
 
   get validTreeNodeTypes(): string[] {
@@ -98,22 +79,43 @@ export class TreeNodeServiceMock {
     this._validTreeNodeTypes = value;
   }
 
-  get isTreeNodeLoadingCompleted(): boolean {
+  get isTreeNodesLoadingCompleted(): boolean {
     return true;
   }
 
-  public updateProjectionTreeData(conceptCountMap: object, checklist: Array<string>) {
+  public getConceptFromTreeNode(treeNode: TreeNode): Concept {
+    return new Concept();
   }
 
-  public updateFinalTreeNodes() {
+  public generateConstraintFromTreeNode(selectedNode: TreeNode): Constraint {
+    return this._constraint;
   }
 
-  get finalTreeNodes(): TreeNode[] {
-    return this._finalTreeNodes;
+  public getAllVariablesFromTreeNode(node: GbTreeNode, variables: GbTreeNode[]) {
+
   }
 
-  set finalTreeNodes(value: TreeNode[]) {
-    this._finalTreeNodes = value;
+  get treeNodesCopy(): TreeNode[] {
+    return this._treeNodesCopy;
   }
 
+  set treeNodesCopy(value: TreeNode[]) {
+    this._treeNodesCopy = value;
+  }
+
+  get treeNodes(): TreeNode[] {
+    return this._treeNodes;
+  }
+
+  set treeNodes(value: TreeNode[]) {
+    this._treeNodes = value;
+  }
+
+  get showObservationCounts(): boolean {
+    return this._showObservationCounts;
+  }
+
+  set showObservationCounts(value: boolean) {
+    this._showObservationCounts = value;
+  }
 }

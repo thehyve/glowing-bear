@@ -1,0 +1,12 @@
+<div>
+  <p-tree [value]="variablesTreeData"
+          [selectionMode]="treeNodeSelectionMode"
+          [(selection)]="selectedVariablesTreeData"
+          (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
+          draggableNodes="true"
+          styleClass="gb-variables-tree-container">
+  </p-tree>
+
+  <!-- the loading indicator -->
+  <gb-loading [loading]="!isTreeNodeLoadingCompleted"></gb-loading>
+</div>

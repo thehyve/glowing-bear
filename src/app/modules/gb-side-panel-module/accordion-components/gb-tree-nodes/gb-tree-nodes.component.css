@@ -1,17 +1,18 @@
-.gb-metadata-row {
+.metadata-row {
   font-size: small;
 }
 
-.gb-treenodes-filter-btn {
+/*Make the font size in the tree smaller*/
+:host >>> p-treenode {
   font-size: small;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  color: gray;
 }
 
-.gb-treenodes-filter-result {
-  font-size: small;
-  color: grey;
-  padding-top: 3px;
-  padding-left: 5px;
+/*
+ * style class for loading tree nodes and patient counts
+ */
+/*style fix for the primeng tree-container in the side-panel*/
+:host >>> .gb-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
 }

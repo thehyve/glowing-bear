@@ -6,16 +6,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TransmartDimension} from './transmart-dimension';
 import {TransmartRow} from 'app/models/transmart-models/transmart-row';
 import {TransmartSort} from './transmart-sort';
 import {TransmartColumnHeaders} from './transmart-column-headers';
+import {TransmartTableDimension} from './transmart-table-dimension';
 
 export class TransmartDataTable {
   rows: Array<TransmartRow>;
   columnHeaders: Array<TransmartColumnHeaders>;
-  rowDimensions: Array<TransmartDimension>;
-  columnDimensions: Array<TransmartDimension>;
+  rowDimensions: Array<TransmartTableDimension>;
+  columnDimensions: Array<TransmartTableDimension>;
   sort: Array<TransmartSort>;
   offset: number;
   rowCount: number;

@@ -1,0 +1,44 @@
+.fractalis-control-container {
+  padding-top: 0.5em;
+}
+
+.validation-error-message {
+  color: red;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.drop-zone {
+  background-color: #f2f2f2;
+  border: 1px solid lightgray;
+  border-radius: 0.5em;
+  padding: 0.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.5em;
+  font-size: large;
+  font-weight: bold;
+  color: lightgray;
+  text-align: center;
+  vertical-align: middle;
+  min-height: 5em;
+}
+
+.drop-zone-highlight {
+  background-color: var(--gb-orange-light-light);
+  fill-opacity: .6;
+}
+
+.drop-zone-highlight-invalid {
+  background-color: #ffdddd;
+  fill-opacity: .6;
+}
+
+.btn-container {
+  margin-top: 0.5em;
+}
+
+.btn-container button {
+  min-width: 6em;
+  margin-right: 1em;
+}

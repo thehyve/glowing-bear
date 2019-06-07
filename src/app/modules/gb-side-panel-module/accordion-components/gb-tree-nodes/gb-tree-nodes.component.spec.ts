@@ -16,8 +16,10 @@ import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from '../../../../services/resource.service';
 import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
-import {QueryService} from '../../../../services/query.service';
-import {QueryServiceMock} from '../../../../services/mocks/query.service.mock';
+import {CohortService} from '../../../../services/cohort.service';
+import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
+import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
+import {GbTreeSearchComponent} from '../gb-tree-search/gb-tree-search.component';
 
 describe('TreeNodesComponent', () => {
   let component: GbTreeNodesComponent;
@@ -26,14 +28,15 @@ describe('TreeNodesComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [GbTreeNodesComponent],
+      declarations: [GbTreeNodesComponent, GbTreeSearchComponent],
       imports: [
         BrowserAnimationsModule,
         TreeModule,
         OverlayPanelModule,
         DragDropModule,
         FormsModule,
-        AutoCompleteModule
+        AutoCompleteModule,
+        GbGenericModule
       ],
       providers: [
         {
@@ -45,8 +48,8 @@ describe('TreeNodesComponent', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: QueryService,
-          useClass: QueryServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         }
       ]
     })
@@ -74,7 +77,7 @@ describe('TreeNodesComponent', () => {
     expect(component.metadataContent[0].val).toEqual('bar1');
     expect(component.metadataContent[1].key).toEqual('foo2');
     expect(component.metadataContent[1].val).toEqual('bar2');
-  })
+  });
 
   it('should update event listners', () => {
     let elm = {
@@ -87,11 +90,11 @@ describe('TreeNodesComponent', () => {
           return null;
         }
       }
-    };
+    } as Element;
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
-    }
+    };
     let treeNodeElmIcon = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
@@ -101,8 +104,7 @@ describe('TreeNodesComponent', () => {
       metadata: {
         key: 'foo',
         val: 'bar'
-      },
-      dropMode: 'a-mode'
+      }
     };
     let treeNodeElements = [elm];
     let treeNodes = [node];
@@ -112,7 +114,7 @@ describe('TreeNodesComponent', () => {
     expect(spy2).not.toHaveBeenCalled();
     expect(spy3).toHaveBeenCalledTimes(2)
 
-  })
+  });
 
   it('should not add event listeners to treenode icon when there is no metadata', () => {
     let elm = {
@@ -125,15 +127,14 @@ describe('TreeNodesComponent', () => {
           return null;
         }
       }
-    };
+    } as Element;
     let node = {
-      type: 'type-A',
-      dropMode: 'a-mode'
+      type: 'type-A'
     };
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
-    }
+    };
     let treeNodeElmIcon = {
       addEventListener: function (onWhich: string, callback: Function) {
       }
@@ -144,47 +145,6 @@ describe('TreeNodesComponent', () => {
     component.updateEventListeners([elm], [node]);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled()
-  })
+  });
 
-  it('should filter tree nodes', () => {
-    let result = component.filterWithHighlightTreeNodes(null, '', '');
-    expect(result['hasMatching']).toBe(false);
-    result = component.filterWithHighlightTreeNodes([], '', '');
-    expect(result['hasMatching']).toBe(false);
-    let node = {};
-    component.filterWithHighlightTreeNodes([node], '', '');
-    expect(node['expanded']).toBe(false);
-    expect(node['styleClass']).not.toBeDefined();
-
-    node['children'] = [{}];
-    component.filterWithHighlightTreeNodes([node], '', '');
-    expect(node['styleClass']).toBe('is-not-leaf');
-
-    let word = 'some';
-    let field = 'name';
-    node['children'] = [];
-    node[field] = word + ' Something else 123';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(false);
-    expect(node['styleClass']).toBe('gb-highlight-treenode');
-
-    let leaf = {};
-    leaf[field] = 'test';
-    node['children'] = [leaf];
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['styleClass']).toBe('gb-highlight-treenode gb-is-not-leaf');
-
-    leaf[field] = word + ' test';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(true);
-
-    component.maxNumExpandedNodes = 0;
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['expanded']).toBe(false);
-
-    node[field] = ' ABC else 123';
-    component.filterWithHighlightTreeNodes([node], field, word);
-    expect(node['styleClass']).not.toBeDefined();
-
-  })
 });

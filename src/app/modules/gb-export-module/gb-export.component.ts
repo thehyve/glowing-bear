@@ -8,7 +8,6 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ExportJob} from '../../models/export-models/export-job';
-import {AppConfig} from '../../config/app.config';
 import {ExportService} from '../../services/export.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import Timer = NodeJS.Timer;
@@ -23,8 +22,12 @@ export class GbExportComponent implements OnInit, OnDestroy {
 
   private timer: Timer;
 
-  constructor(private appConfig: AppConfig,
-              private exportService: ExportService) {
+  // 1. user defines cohort in cohort selection
+  // 2. user goes to export tab, the variables on the left become selectable
+  // 3. user arranges data table dimensions, retrieve the new data table
+  // 4. retrieve export data types
+  // 5. user create export job based on arranged data table and selected export data types
+  constructor(private exportService: ExportService) {
   }
 
   ngOnInit() {
@@ -37,8 +40,8 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   createExportJob(exportJobForm: NgForm) {
-    this.exportService.createExportJob()
-      .then(() => exportJobForm.form.markAsPristine())
+    exportJobForm.form.markAsPristine();
+    this.exportService.prepareExportJob()
       .catch((error) => { console.error(error); });
   }
 
@@ -68,12 +71,11 @@ export class GbExportComponent implements OnInit, OnDestroy {
   }
 
   get isExternalExportAvailable(): boolean {
-    return this.appConfig.getConfig('export-mode')['name'] !== 'transmart';
+    return this.exportService.isExternalExportAvailable;
   }
 
-  get isTransmartSurveyTableDataView(): boolean {
-    let exportMode =  this.appConfig.getConfig('export-mode');
-    return exportMode['name'] === 'transmart' && exportMode['data-view'] === 'surveyTable';
+  get isTransmartSurveyTable(): boolean {
+    return this.exportService.isTransmartSurveyTable;
   }
 
   get isTransmartDateColumnIncluded(): boolean {
@@ -108,8 +110,21 @@ export class GbExportComponent implements OnInit, OnDestroy {
     return this.exportService.exportJobs;
   }
 
-  get isLoadingExportDataTypes(): boolean {
-    return this.exportService.isLoadingExportDataTypes;
+  get isDataTypesUpdating(): boolean {
+    return this.exportService.isDataTypesUpdating;
+  }
+
+  get isDataTableUpdating(): boolean {
+    return this.exportService.isDataTableUpdating;
+  }
+
+  get isExportCreationUIShown(): boolean {
+    return (this.exportService.isTransmartDataTable && !this.isDataTableUpdating && !this.isDataTypesUpdating) ||
+      (!this.exportService.isTransmartDataTable && !this.isDataTypesUpdating);
+  }
+
+  get includeDataTable(): boolean {
+    return this.exportService.includeDataTable;
   }
 
 }

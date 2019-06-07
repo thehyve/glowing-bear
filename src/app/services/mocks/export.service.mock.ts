@@ -7,7 +7,7 @@
  */
 
 
-import {of as observableOf, Observable} from 'rxjs';
+import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportJob} from '../../models/export-models/export-job';
 
@@ -15,10 +15,12 @@ export class ExportServiceMock {
   private _exportDataTypes: ExportDataType[] = [];
   private _exportJobs: ExportJob[];
   private _exportJobName: string;
-  private _isLoadingExportDataTypes = false;
+  exportEnabled: AsyncSubject<boolean> = new AsyncSubject<boolean>();
+  isDataTypesUpdating = false;
 
-  public isExportEnabled(): Observable<boolean> {
-    return observableOf(true);
+  constructor() {
+    this.exportEnabled.next(true);
+    this.exportEnabled.complete();
   }
 
   public updateExports() {
@@ -29,6 +31,9 @@ export class ExportServiceMock {
     return new Promise<any>((resolve) => {
       resolve(true);
     })
+  }
+
+  updateDataTableExportFormats() {
   }
 
   /**
@@ -47,14 +52,6 @@ export class ExportServiceMock {
     this._exportDataTypes = value;
   }
 
-  get isLoadingExportDataTypes(): boolean {
-    return this._isLoadingExportDataTypes;
-  }
-
-  set isLoadingExportDataTypes(value: boolean) {
-    this._isLoadingExportDataTypes = value;
-  }
-
   get exportJobs(): ExportJob[] {
     return this._exportJobs;
   }
@@ -70,4 +67,9 @@ export class ExportServiceMock {
   set exportJobName(value: string) {
     this._exportJobName = value;
   }
+
+  get isTransmartDataTable(): boolean {
+    return true;
+  }
+
 }

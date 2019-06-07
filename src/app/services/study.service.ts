@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,7 +16,9 @@ import {map} from 'rxjs/operators';
  * This service loads all studies at startup and makes them available
  * for other components.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class StudyService {
 
   private _loaded: AsyncSubject<boolean> = new AsyncSubject<boolean>();

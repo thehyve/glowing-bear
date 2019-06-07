@@ -8,9 +8,9 @@
 
 import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
+import {CountItem} from '../aggregate-models/count-item';
 
 export class Concept {
-  private _path: string;
   private _type: ConceptType;
   // the display text
   private _label: string;
@@ -18,16 +18,27 @@ export class Concept {
   private _code: string;
   private _name: string;
   private _fullName: string;
+  private _counts: CountItem;
+  // a flag indicating if the concept is selected/checked/marked
+  private _selected = true;
+  private _subjectDimensions: string[];
 
   constructor() {
+    this.subjectDimensions = [];
   }
 
-  get path(): string {
-    return this._path;
-  }
-
-  set path(value: string) {
-    this._path = value;
+  copy(): Concept {
+    let c = new Concept();
+    c.type = this.type;
+    c.label = this.label;
+    c.aggregate = this.aggregate;
+    c.code = this.code;
+    c.name = this.name;
+    c.fullName = this.fullName;
+    c.counts = this.counts;
+    c.selected = this.selected;
+    c.subjectDimensions = this.subjectDimensions;
+    return c;
   }
 
   get type(): ConceptType {
@@ -76,5 +87,29 @@ export class Concept {
 
   set fullName(value: string) {
     this._fullName = value;
+  }
+
+  get selected(): boolean {
+    return this._selected;
+  }
+
+  set selected(value: boolean) {
+    this._selected = value;
+  }
+
+  get counts(): CountItem {
+    return this._counts;
+  }
+
+  set counts(value: CountItem) {
+    this._counts = value;
+  }
+
+  get subjectDimensions(): string[] {
+    return this._subjectDimensions;
+  }
+
+  set subjectDimensions(value: string[]) {
+    this._subjectDimensions = value;
   }
 }

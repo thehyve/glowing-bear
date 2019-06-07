@@ -1,0 +1,20 @@
+.btn-outline-secondary {
+  color: #333333;
+}
+.btn-outline-secondary:hover {
+  background-color: var(--gb-clinical-green-light-light);
+  color: black;
+}
+
+.btn-outline-secondary:active {
+  background-color: var(--gb-clinical-green-light);
+  color: black;
+}
+
+.gray-text {
+  color: darkgray;
+}
+
+:host >>> .ui-panel .ui-panel-titlebar {
+  background-color: transparent;
+}

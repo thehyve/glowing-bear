@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,7 @@
 import {of as observableOf, Observable} from 'rxjs';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
-import {Query} from '../../models/query-models/query';
+import {Cohort} from '../../models/cohort-models/cohort';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {DataTable} from '../../models/table-models/data-table';
 import {CrossTable} from '../../models/table-models/cross-table';
@@ -18,23 +18,23 @@ import {Aggregate} from '../../models/aggregate-models/aggregate';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {TrialVisit} from '../../models/constraint-models/trial-visit';
 import {CountItem} from '../../models/aggregate-models/count-item';
-import {TransmartHttpService} from '../transmart-services/transmart-http.service';
+import {TransmartHttpService} from '../http/transmart-http.service';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {CategoricalAggregate} from '../../models/aggregate-models/categorical-aggregate';
-import {EndpointMode} from '../../models/endpoint-mode';
+import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {SubjectSet} from '../../models/constraint-models/subject-set';
+import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
 
 export class ResourceServiceMock {
   private studies: Study[];
-  private queries: Query[];
+  private queries: Cohort[];
   private treeNodes: object[];
   private exportJobs: ExportJob[];
   private dataTable: DataTable;
   private crossTable: CrossTable;
   private aggregate: Aggregate;
 
-  inclusionCounts: CountItem;
-  exclusionCounts: CountItem;
-  selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  cohortSelectionCounts: CountItem;
 
   constructor() {
     this.studies = [];
@@ -46,13 +46,9 @@ export class ResourceServiceMock {
     this.aggregate = new Aggregate();
   }
 
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.inclusionCounts = new CountItem(200, 1000);
-      this.exclusionCounts = new CountItem(30, 200);
-      this.selectedStudyConceptCountMap = null;
+      this.cohortSelectionCounts = new CountItem(200, 1000);
       resolve(true);
     });
   }
@@ -65,8 +61,24 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  getQueries(): Observable<Query[]> {
+  getCohorts(): Observable<Cohort[]> {
     return observableOf(this.queries);
+  }
+
+  getSubjects(constraint: Constraint): Observable<TransmartPatient[]> {
+    let p1 = new TransmartPatient();
+    p1.id = 1;
+    p1.inTrialId = 'in1';
+    p1.subjectIds = { SUBJ_ID: 'one' };
+    let p2 = new TransmartPatient();
+    p2.id = 2;
+    p2.inTrialId = 'in2';
+    p2.subjectIds = { SUBJ_ID: 'two' };
+    let p3 = new TransmartPatient();
+    p3.id = 3;
+    p3.inTrialId = 'in3';
+    p3.subjectIds = { SUBJ_ID: 'three' };
+    return observableOf([p1, p2, p3]);
   }
 
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
@@ -149,11 +161,11 @@ export class ResourceServiceMock {
     return observableOf({});
   }
 
-  diffQuery(queryId: string): Observable<object[]> {
+  diffCohort(id: string): Observable<object[]> {
     return observableOf([{}]);
   }
 
-  deleteQuery(queryId: string): Observable<{}> {
+  deleteCohort(id: string): Observable<{}> {
     return observableOf({});
   }
 
@@ -161,8 +173,8 @@ export class ResourceServiceMock {
     return observableOf([]);
   }
 
-  saveQuery(query: Query): Observable<Query> {
-    return observableOf(new Query('id', 'name'));
+  saveCohort(target: Cohort): Observable<Cohort> {
+    return observableOf(new Cohort('id', 'name'));
   }
 
   createExportJob(name: string): Observable<ExportJob> {
@@ -175,7 +187,8 @@ export class ResourceServiceMock {
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
                constraint: Constraint,
-               dataTable: DataTable): Observable<ExportJob> {
+               dataTable: DataTable,
+               dateColumnsIncluded: boolean): Observable<ExportJob> {
     let newExportJob = new ExportJob();
     newExportJob.id = 'id';
     newExportJob.name = 'test job name';
@@ -193,4 +206,16 @@ export class ResourceServiceMock {
   archiveExportJob(jobId: string): Observable<{}> {
     return Observable.of({});
   }
+
+  saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
+    let subjectSet = new SubjectSet();
+    subjectSet.id = 1;
+    subjectSet.requestConstraints = constraint;
+    return Observable.of(subjectSet);
+  }
+
+  get subjectDimensions(): Observable<TransmartDimension[]> {
+    return Observable.of([]);
+  }
+
 }

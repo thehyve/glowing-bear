@@ -141,22 +141,39 @@ describe('AppConfig', () => {
     } catch (e) {
       expect(e.message).toBeDefined();
     }
+    try {
+      appConfig.getConfig('gb-backend-url');
+      fail('The call to get gb-backend-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
+    try {
+      appConfig.getConfig('fractalis-datasource-url');
+      fail('The call to get fractalis-datasource-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
     expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
-    expect(appConfig.getConfig('app-url')).toBe(AppConfig.DEFAULT_APP_URL);
     expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
+    expect(appConfig.getConfig('enable-fractalis-analysis')).toBe(AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS);
     expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
     expect(appConfig.getConfig('export-mode')['name']).toBe(AppConfig.DEFAULT_EXPORT_MODE['name']);
     expect(appConfig.getConfig('export-mode')['data-view']).toBe(AppConfig.DEFAULT_EXPORT_MODE['data-view']);
     expect(appConfig.getConfig('show-observation-counts')).toBe(AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS);
-    expect(appConfig.getConfig('instant-counts-update-1')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_1);
-    expect(appConfig.getConfig('instant-counts-update-2')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_2);
-    expect(appConfig.getConfig('instant-counts-update-3')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE_3);
+    expect(appConfig.getConfig('instant-counts-update')).toBe(AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE);
     expect(appConfig.getConfig('include-data-table')).toBe(AppConfig.DEFAULT_INCLUDE_DATA_TABLE);
-    expect(appConfig.getConfig('include-query-subscription')).toBe(AppConfig.DEFAULT_INCLUDE_QUERY_SUBSCRIPTION);
+    expect(appConfig.getConfig('include-cohort-subscription')).toBe(AppConfig.DEFAULT_INCLUDE_COHORT_SUBSCRIPTION);
     expect(appConfig.getConfig('authentication-service-type')).toBe(AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE);
     expect(appConfig.getConfig('oidc-server-url')).toBe(AppConfig.DEFAULT_OIDC_SERVER_URL);
     expect(appConfig.getConfig('oidc-client-id')).toBe(AppConfig.DEFAULT_OIDC_CLIENT_ID);
+    try {
+      AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS = true;
+      appConfig.getConfig('fractalis-url');
+      fail('The call to get fractalis-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
   })
 
 });

@@ -6,13 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
-import {trigger, transition, animate, style} from '@angular/animations';
-import {DropMode} from '../../../../models/drop-mode';
+import {animate, style, transition, trigger} from '@angular/animations';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {QueryService} from '../../../../services/query.service';
+import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -31,7 +30,7 @@ import {QueryService} from '../../../../services/query.service';
     ])
   ]
 })
-export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
   @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
 
@@ -41,32 +40,16 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
   expansionStatus: any;
   // the variable holding the current metadata overlay content being shown
   metadataContent: any = [];
-  // the search term in the text input box to filter the tree
-  searchTerm = '';
-  // the delay before triggering updating methods
-  // as the PrimeNg tree nodes reconstruct DOM nodes and css styles when data changes,
-  // and this will take a while
-  delay: number;
   // indicate if the initUpdate is finished
   initUpdated: boolean;
-  // max number of expanded nodes in search
-  maxNumExpandedNodes = 30;
-  numExpandedNodes = 0;
-  // current number of hits in search
-  hits = 0;
 
   constructor(public treeNodeService: TreeNodeService,
-              private queryService: QueryService,
               private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
       treeNodeElm: null,
       treeNode: null
     };
-    this.delay = 500;
-  }
-
-  ngOnInit() {
   }
 
   ngAfterViewInit() {
@@ -105,17 +88,16 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    * @param treeNodeElements
    * @param treeNodes
    */
-  updateEventListeners(treeNodeElements, treeNodes) {
+  updateEventListeners(treeNodeElements: Element[], treeNodes: GbTreeNode[]) {
     let index = 0;
     for (let elm of treeNodeElements) {
-      let dataObject: TreeNode = treeNodes[index];
-      let dataObjectType = dataObject['type'];
-      let metadata = dataObject['metadata'];
-      let treeNodeElm = elm.querySelector('li.ui-treenode');
-      let treeNodeElmLabel = elm.querySelector('li.ui-treenode .ui-treenode-label');
+      let dataObject: GbTreeNode = treeNodes[index];
+      let dataObjectType = dataObject.type;
+      let metadata = dataObject.metadata;
+      let treeNodeElm: Element = elm.querySelector('li.ui-treenode');
+      let treeNodeElmLabel: Element = elm.querySelector('li.ui-treenode .ui-treenode-label');
       let handleDragstart = (function (event) {
         event.stopPropagation();
-        dataObject['dropMode'] = DropMode.TreeNode;
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
@@ -141,7 +123,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
       if (uiTreeNodeChildrenElm) {
-        this.updateEventListeners(uiTreeNodeChildrenElm.children, dataObject.children);
+        this.updateEventListeners(Array.from(uiTreeNodeChildrenElm.children), dataObject.children);
       }
       index++;
     }
@@ -151,7 +133,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (!this.initUpdated) {
       let treeContainer = this.element.nativeElement.querySelector('.ui-tree-container');
       if (treeContainer) {
-        let treeNodeElements = treeContainer.children;
+        let treeNodeElements: Element[] = Array.from(treeContainer.children);
         if (treeNodeElements && treeNodeElements.length > 0) {
           this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
           this.initUpdated = true;
@@ -164,14 +146,13 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (this.expansionStatus['expanded']) {
       let treeNodeElm = this.expansionStatus['treeNodeElm'];
       let treeNode = this.expansionStatus['treeNode'];
-      let newChildren = treeNodeElm.querySelector('ul.ui-treenode-children').children;
+      let newChildren: Element[] = Array.from(treeNodeElm.querySelector('ul.ui-treenode-children').children);
       this.updateEventListeners(newChildren, treeNode.children);
 
       this.expansionStatus['expanded'] = false;
       this.expansionStatus['treeNodeElm'] = null;
       this.expansionStatus['treeNode'] = null;
     }
-    this.removeFalsePrimeNgClasses(this.delay);
   }
 
   /**
@@ -188,125 +169,8 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     }
   }
 
-  /**
-   * Recursively filter the original tree nodes in the dimension registry,
-   * assign highlight css classes to tree nodes
-   * @param {TreeNode[]} treeNodes
-   * @param {string} field
-   * @param filterWord
-   * @returns {{hasMatching: boolean}}
-   */
-  filterWithHighlightTreeNodes(treeNodes: TreeNode[], field: string, filterWord: string) {
-    let result = {
-      hasMatching: false
-    };
-    // if the tree nodes are defined
-    if (treeNodes) {
-      // if there is a filter word
-      if (filterWord.length > 0) {
-        for (let node of treeNodes) {
-          node['expanded'] = false;
-          node['styleClass'] = undefined;
-          let fieldString = node[field].toLowerCase();
-          if (fieldString.includes(filterWord)) { // if there is a hit
-            this.hits++;
-            result.hasMatching = true;
-            if (node['children'] && node['children'].length > 0) {
-              node['styleClass'] = 'gb-highlight-treenode gb-is-not-leaf';
-            } else {
-              node['styleClass'] = 'gb-highlight-treenode';
-            }
-          } else { // if there is no hit
-            node['styleClass'] = undefined;
-          }
-          if (node['children'] && node['children'].length > 0) {
-            let subResult =
-              this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
-            if (subResult.hasMatching) {
-              result.hasMatching = true;
-              if (this.numExpandedNodes < this.maxNumExpandedNodes) {
-                node['expanded'] = true;
-                this.numExpandedNodes++;
-              }
-            }
-          }
-        }
-      } else { // if the filter word is empty
-        for (let node of treeNodes) {
-          node['expanded'] = false;
-          if (node['children'] && node['children'].length > 0) {
-            node['styleClass'] = 'is-not-leaf';
-            this.filterWithHighlightTreeNodes(node['children'], field, filterWord);
-          } else {
-            node['styleClass'] = undefined;
-          }
-        }
-      }
-    }
-    return result;
-  }
-
-  /**
-   * PrimeNg tree is behaving strangely when dynamically adding custom class to tree nodes:
-   * sometimes a tree node with children is marked with the 'ui-treenode-leaf' class.
-   * Furthermore, sometimes a loader element is unnecessarily attached (.ui-autocomplete-loader)
-   * This function is to remove any false ui-treenode-leaf classes and
-   * the loader element with ui-autocomplete-loader class.
-   * Also add some delay to wait for the tree construction, typically 1 to 2 seconds.
-   */
-  removeFalsePrimeNgClasses(delay: number) {
-    window.setTimeout((function () {
-      let leaves = this.element.nativeElement.querySelectorAll('.ui-treenode-leaf');
-      if (leaves) {
-        for (let supposedLeaf of leaves) {
-          if (supposedLeaf.classList.contains('is-not-leaf')) {
-            supposedLeaf.classList.remove('ui-treenode-leaf');
-          }
-        }
-      }
-      let loaderIcon = this.element.nativeElement.querySelector('.ui-autocomplete-loader');
-      if (loaderIcon) {
-        loaderIcon.remove();
-      }
-    }).bind(this), delay);
-  }
-
-  /**
-   * User typing in the input box of the filter search box triggers this handler
-   * @param event
-   */
-  onFiltering(event) {
-    let filterWord = this.searchTerm.trim().toLowerCase();
-    if (filterWord.length > 1) {
-      this.hits = 0;
-      this.numExpandedNodes = 0;
-      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', filterWord);
-      this.treeNodeService.treeNodes.forEach((topNode: TreeNode) => {
-        topNode.expanded = true;
-      });
-      this.removeFalsePrimeNgClasses(this.delay);
-
-      window.setTimeout((function () {
-        let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-        let treeNodes = this.treeNodeService.treeNodes;
-        this.updateEventListeners(treeNodeElements, treeNodes);
-      }).bind(this), this.delay);
-    }
-  }
-
-  /**
-   * Clear filtering words
-   */
-  clearFilter() {
-    this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
-    this.removeFalsePrimeNgClasses(this.delay);
-    const input = this.element.nativeElement.querySelector('.ui-inputtext');
-    input.value = '';
-    this.hits = 0;
-  }
-
   get isLoading(): boolean {
-    return !this.treeNodeService.isTreeNodeLoadingCompleted;
+    return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
 }

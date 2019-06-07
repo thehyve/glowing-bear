@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Dimension} from '../table-models/dimension';
+import {TableDimension} from '../table-models/table-dimension';
 
 export class TransmartStudyDimensions {
 
-  availableDimensions: Dimension[] = [];
+  availableDimensions: TableDimension[] = [];
 
 }

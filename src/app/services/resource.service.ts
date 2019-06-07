@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,17 +8,16 @@
 
 
 import {Observable, of as observableOf, throwError as observableThrowError} from 'rxjs';
-
 import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Study} from '../models/constraint-models/study';
 import {Constraint} from '../models/constraint-models/constraint';
 import {TrialVisit} from '../models/constraint-models/trial-visit';
 import {ExportJob} from '../models/export-models/export-job';
-import {Query} from '../models/query-models/query';
+import {Cohort} from '../models/cohort-models/cohort';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {Pedigree} from '../models/constraint-models/pedigree';
-import {TransmartQuery} from '../models/transmart-models/transmart-query';
+import {CohortRepresentation} from '../models/gb-backend-models/cohort-representation';
 import {DataTable} from '../models/table-models/data-table';
 import {TransmartMapper} from '../utilities/transmart-utilities/transmart-mapper';
 import {ExportDataType} from '../models/export-models/export-data-type';
@@ -33,20 +32,23 @@ import {TransmartCountItem} from '../models/transmart-models/transmart-count-ite
 import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
-import {TransmartResourceService} from './transmart-services/transmart-resource.service';
+import {TransmartResourceService} from './transmart-resource.service';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
+import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import {GbBackendHttpService} from './http/gb-backend-http.service';
+import {CohortMapper} from '../utilities/cohort-utilities/cohort-mapper';
+import {Dimension} from '../models/constraint-models/dimension';
+import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ResourceService {
 
   private _endpointMode: EndpointMode;
-  private _inclusionCounts: CountItem;
-  private _exclusionCounts: CountItem;
-  private _selectedStudyConceptCountMap: Map<string, Map<string, CountItem>>;
-  private _selectedStudyCountMap: Map<string, CountItem>;
-  private _selectedConceptCountMap: Map<string, CountItem>;
 
-  constructor(private transmartResourceService: TransmartResourceService) {
+  constructor(private transmartResourceService: TransmartResourceService,
+              private gbBackendHttpService: GbBackendHttpService) {
     this.endpointMode = EndpointMode.TRANSMART;
   }
 
@@ -92,25 +94,14 @@ export class ResourceService {
   }
 
   // -------------------------------------- count calls --------------------------------------
-  updateInclusionExclusionCounts(constraint: Constraint,
-                                 inclusionConstraint: Constraint,
-                                 exclusionConstraint?: Constraint): Promise<any> {
+  updateCohortSelectionCounts(constraint: Constraint): Promise<CountItem> {
     return new Promise<any>((resolve, reject) => {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
-          this.transmartResourceService.updateInclusionExclusionCounts(constraint, inclusionConstraint, exclusionConstraint)
+          this.transmartResourceService
+            .updateCohortSelectionCounts(constraint)
             .then(() => {
-              this.inclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.inclusionCounts);
-              this.exclusionCounts =
-                TransmartMapper.mapTransmartCountItem(this.transmartResourceService.exclusionCounts);
-              this.selectedStudyConceptCountMap =
-                TransmartMapper.mapStudyConceptCountObject(this.transmartResourceService.studyConceptCountObject);
-              this.selectedStudyCountMap =
-                TransmartMapper.mapStudyCountObject(this.transmartResourceService.studyCountObject);
-              this.selectedConceptCountMap =
-                TransmartMapper.mapConceptCountObject(this.transmartResourceService.conceptCountObject);
-              resolve(true);
+              resolve(TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts));
             })
             .catch(err => {
               reject(err);
@@ -328,13 +319,16 @@ export class ResourceService {
    * Run an export job
    * @param {ExportJob} job
    * @param {ExportDataType[]} dataTypes
-   * @param {Constraint} constraint
+   * @param {Constraint} subjectConstraint
+   * @param {Constraint} variableConstraint
    * @param {DataTable} dataTable - included only if at least one of the formats of elements is 'TSV'
+   * @param {boolean} dateColumnsIncluded
    * @returns {Observable<ExportJob>}
    */
   runExportJob(job: ExportJob,
                dataTypes: ExportDataType[],
-               constraint: Constraint,
+               subjectConstraint: Constraint,
+               variableConstraint: Constraint,
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<ExportJob> {
     let hasSelectedFormat = false;
@@ -351,7 +345,7 @@ export class ResourceService {
       switch (this.endpointMode) {
         case EndpointMode.TRANSMART: {
           return this.transmartResourceService
-            .runExportJob(job.id, job.name, constraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
+            .runExportJob(job.id, job.name, subjectConstraint, variableConstraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
               map((tmExportJob: TransmartExportJob) => {
                 return TransmartMapper.mapTransmartExportJob(tmExportJob);
               })
@@ -414,79 +408,56 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query calls --------------------------------------
+  // -------------------------------------- cohort calls --------------------------------------
   /**
    * Get the queries that the current user has saved.
-   * @returns {Observable<TransmartQuery[]>}
+   * @returns {Observable<CohortRepresentation[]>}
    */
-  getQueries(): Observable<Query[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getQueries().pipe(
-          map((transmartQueries: TransmartQuery[]) => {
-            return TransmartMapper.mapTransmartQueries(transmartQueries);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+  getCohorts(): Observable<Cohort[]> {
+    return this.gbBackendHttpService.getQueries().pipe(
+      map((gbBackendQueries: CohortRepresentation[]) => {
+        return CohortMapper.deserialiseList(gbBackendQueries);
+      }));
   }
 
   /**
    * Save a new query.
-   * @param {Query} query
-   * @returns {Observable<Query>}
+   * @param {Cohort} cohort
+   * @returns {Observable<Cohort>}
    */
-  saveQuery(query: Query): Observable<Query> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        let transmartQuery: TransmartQuery = TransmartMapper.mapQuery(query);
-        return this.transmartResourceService.saveQuery(transmartQuery).pipe(
-          map((savedTransmartQuery: TransmartQuery) => {
-            return TransmartMapper.mapTransmartQuery(savedTransmartQuery);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+  saveCohort(cohort: Cohort): Observable<Cohort> {
+    let gbBackendQuery: CohortRepresentation = CohortMapper.serialise(cohort);
+    return this.gbBackendHttpService.saveQuery(gbBackendQuery).pipe(
+      map((savedGbBackendQuery: CohortRepresentation) => {
+        return CohortMapper.deserialise(savedGbBackendQuery);
+      }));
   }
 
   /**
-   * Modify an existing query.
-   * @param {string} queryId
-   * @param {Object} queryBody
+   * Modify an existing cohort.
+   * @param {string} id
+   * @param {Object} body
    * @returns {Observable<{}>}
    */
-  updateQuery(queryId: string, queryBody: object): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.updateQuery(queryId, queryBody);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+  editCohort(id: string, body: object): Observable<{}> {
+    return this.gbBackendHttpService.updateQuery(id, body);
   }
 
   /**
-   * Delete an existing query.
-   * @param {string} queryId
+   * Delete an existing cohort.
+   * @param {string} id
    * @returns {Observable<any>}
    */
-  deleteQuery(queryId: string): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.deleteQuery(queryId);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+  deleteCohort(id: string): Observable<{}> {
+    return this.gbBackendHttpService.deleteQuery(id);
   }
 
-  // -------------------------------------- patient set calls --------------------------------------
+  // -------------------------------------- cohort differences --------------------------------------
+  diffCohort(id: string): Observable<object[]> {
+    return this.gbBackendHttpService.diffQuery(id);
+  }
+
+  // -------------------------------------- subject calls --------------------------------------
   saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
@@ -498,17 +469,18 @@ export class ResourceService {
     }
   }
 
-  // -------------------------------------- query differences --------------------------------------
-  diffQuery(queryId: string): Observable<object[]> {
+  getSubjects(constraint: Constraint): Observable<TransmartPatient[]> {
     switch (this.endpointMode) {
       case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.diffQuery(queryId);
+        return this.transmartResourceService.getPatients(constraint);
       }
       default: {
         return this.handleEndpointModeError();
       }
     }
   }
+
+
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(dataTable: DataTable): Observable<DataTable> {
@@ -533,8 +505,16 @@ export class ResourceService {
     }
   }
 
-  get transmartExportDataView(): string {
-    return this.transmartResourceService.exportDataView;
+  get subjectDimensions(): Observable<Dimension[]> {
+    switch (this.endpointMode) {
+      case EndpointMode.TRANSMART: {
+        return this.transmartResourceService.getSubjectDimensions().pipe(
+          map((transmartDimensions: TransmartDimension[]) => TransmartMapper.mapDimensions(transmartDimensions)))
+      }
+      default: {
+        this.handleEndpointModeError();
+      }
+    }
   }
 
   // -------------------------------------- cross table ---------------------------------------------
@@ -544,8 +524,11 @@ export class ResourceService {
         return this.transmartResourceService
           .getCrossTable(
             crossTable.constraint,
-            crossTable.rowHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints.map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints))).pipe(
+            crossTable.rowHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+            crossTable.columnHeaderConstraints
+              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
+          .pipe(
             map((tmCrossTable: TransmartCrossTable) => {
               return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
             }));
@@ -554,47 +537,6 @@ export class ResourceService {
         return this.handleEndpointModeError();
       }
     }
-  }
-
-
-  get inclusionCounts(): CountItem {
-    return this._inclusionCounts;
-  }
-
-  set inclusionCounts(value: CountItem) {
-    this._inclusionCounts = value;
-  }
-
-  get exclusionCounts(): CountItem {
-    return this._exclusionCounts;
-  }
-
-  set exclusionCounts(value: CountItem) {
-    this._exclusionCounts = value;
-  }
-
-  get selectedStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
-    return this._selectedStudyConceptCountMap;
-  }
-
-  set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
-    this._selectedStudyConceptCountMap = value;
-  }
-
-  get selectedStudyCountMap(): Map<string, CountItem> {
-    return this._selectedStudyCountMap;
-  }
-
-  set selectedStudyCountMap(value: Map<string, CountItem>) {
-    this._selectedStudyCountMap = value;
-  }
-
-  get selectedConceptCountMap(): Map<string, CountItem> {
-    return this._selectedConceptCountMap;
-  }
-
-  set selectedConceptCountMap(value: Map<string, CountItem>) {
-    this._selectedConceptCountMap = value;
   }
 
   get endpointMode(): EndpointMode {

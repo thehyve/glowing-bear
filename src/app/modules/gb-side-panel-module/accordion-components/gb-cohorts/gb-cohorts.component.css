@@ -1,0 +1,217 @@
+/*
+ * adding :host, the trick to make primeng component style overriding work locally
+ */
+:host >>> .filter-input > input {
+  font-size: small !important;
+  height: 1.8em;
+  width: 100%;
+  min-width: 3em;
+  max-width: 7em;
+}
+
+/*Make the font size in the saved query list smaller*/
+:host >>> p-dataList {
+  font-size: small;
+}
+
+/*style fix for hiding the border in data list in saved queries in the side panel*/
+:host >>> .ui-widget-content {
+  border: none;
+}
+
+:host >>> md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
+  border-width: medium;
+  border-color: lightgray !important;
+  box-shadow: 0 1px 0 lightgray !important;
+  background-color: var(--gb-clinical-green-light-light);
+  padding-left: 0.5em;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-header {
+  background-color: white;
+  padding-left: 0.5em;
+  font-size: small;
+  min-width: 200px;
+  color: dimgray;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-tab-body {
+  background-color: #fbfbfb;
+  padding-left: 0.5em;
+  font-size: small;
+  color: dimgray;
+}
+
+:host >>> md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
+  color: transparent;
+}
+
+:host >>> .ui-radiobutton .ui-radiobutton-box .ui-radiobutton-icon {
+  top: 0px !important;
+  left: 2px !important;
+}
+
+:host >>> .ui-radiobutton, .ui-radiobutton-label {
+  vertical-align: text-top !important;
+  padding-top: 3px;
+}
+
+:host >>> .ui-togglebutton {
+  padding: 0.1em;
+  background-color: transparent;
+  border: 1px solid var(--gb-clinical-green-light-light);
+  color: var(--gb-clinical-green);
+}
+
+:host >>> .ui-togglebutton:hover {
+  color: white;
+  background-color: var(--gb-clinical-green-light);
+}
+
+:host >>> .ui-togglebutton.ui-state-active {
+  color: white !important;
+}
+
+.top-panel {
+  margin-bottom: 3px;
+}
+
+.fa.fa-circle {
+  font-size: 10px;
+  color: darkgray;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 3px;
+}
+
+.clear-btn {
+  font-size: small;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  color: gray;
+}
+
+.import-btn {
+  font-size: small;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.sort-btn-container {
+  margin-top: 6px;
+  margin-bottom: -10px;
+  display: flow-root;
+}
+
+.subscription-panel-header {
+  padding: 3px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-left: -3px;
+  max-width: 162px;
+  box-shadow: 1px 1px 1px 1px lightgrey;
+}
+.subscription-panel-header:hover {
+  background-color: lightgray;
+}
+
+.subscription-panel-body {
+  padding-left: 3px;
+  margin-top: 3px;
+}
+
+.subscription-panel-body-record {
+  margin-bottom: 1px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+.subscription-panel-body-record:hover {
+  background-color: var(--gb-clinical-green-light-light);
+}
+.subscription-panel-body-record:active {
+  background-color: var(--gb-clinical-green-light);
+}
+
+.log-download-btn {
+  background-color: transparent;
+  border: none;
+  color: grey;
+}
+.log-download-btn:hover {
+  background-color: #e6e6e6;
+  opacity: 0.9;
+}
+.log-download-btn:active {
+  opacity: 1;
+}
+
+hr {
+  margin-top: 1px;
+  margin-bottom: 2px;
+}
+
+
+/*
+ * margin: top right bottom left
+ */
+md2-accordion-header .ui-button-secondary {
+  margin-top: auto;
+  padding-left: 8px;
+  padding-right: 8px;
+  color: #505050;
+  border: none;
+  background-color: transparent;
+}
+md2-accordion-header .ui-button-secondary:hover {
+  background-color: var(--gb-orange-light-light);
+}
+
+.sort-btn {
+  color: #606060 !important;
+  background-color: transparent !important;
+  border: black;
+  padding: 0em;
+  margin: 0px -3px 0px 0px;
+  -moz-margin-start: 1.1em;
+}
+
+.sort-btn:hover {
+  background-color: var(--gb-clinical-green) !important;
+  opacity: 0.8 !important;
+  color: white !important;
+}
+
+.sort-btn:active {
+  background-color: #236d64 !important;
+  opacity: 0.8 !important;
+}
+
+.cohort-header-name {
+  border: none;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+  height: 2.5em;
+  float: left;
+}
+
+.cohort-header {
+  display: flow-root;
+  padding-bottom: 0.1em;
+}
+
+.cohort-type-icon {
+  font-size: medium;
+  width: 1em;
+}
+
+.counts-info {
+  font-size: small;
+  color: grey;
+  margin-bottom: 1em;
+  text-align: left;
+}
+
+.counts-info hr {
+  background-color: var(--gb-clinical-green-light);
+}

@@ -15,45 +15,16 @@ export class TimeConstraint extends Constraint {
   date1: Date = new Date();
   date2: Date = new Date();
 
-  // the flag indicating if the constraint is negated
-  private _isNegated = false;
   // the flag indicating if the constraint is related to observation date
   private _isObservationDate = false;
 
-  constructor(operator?: string) {
+  constructor() {
     super();
-    if (operator) {
-      switch (operator) {
-        case '<-->': {
-          this.dateOperator = DateOperatorState.BETWEEN;
-          break;
-        }
-        case '<=': {
-          this.dateOperator = DateOperatorState.BEFORE;
-          break;
-        }
-        case '>=': {
-          this.dateOperator = DateOperatorState.AFTER;
-          break;
-        }
-      }
-    }
     this.textRepresentation = 'Time constraint';
   }
 
   get className(): string {
     return 'TimeConstraint';
-  }
-
-  get isNegated(): boolean {
-    return this._isNegated;
-  }
-
-  set isNegated(value: boolean) {
-    this._isNegated = value;
-    if (value) {
-      this.dateOperator = DateOperatorState.NOT_BETWEEN;
-    }
   }
 
   get isObservationDate(): boolean {
@@ -63,4 +34,15 @@ export class TimeConstraint extends Constraint {
   set isObservationDate(value: boolean) {
     this._isObservationDate = value;
   }
+
+  clone(): TimeConstraint {
+    const clone = new TimeConstraint();
+    clone.dateOperator = this.dateOperator;
+    clone.date1 = this.date1;
+    clone.date2 = this.date2;
+    clone.isObservationDate = this.isObservationDate;
+    clone.negated = this.negated;
+    return clone;
+  }
+
 }

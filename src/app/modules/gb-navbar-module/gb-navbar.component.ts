@@ -11,6 +11,7 @@ import {Router, NavigationEnd} from '@angular/router';
 import {NavbarService} from '../../services/navbar.service';
 import {MenuItem} from 'primeng/api';
 import {AppConfig} from '../../config/app.config';
+import {CompatibilityHelper} from '../../utilities/compatibility-helper';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -39,6 +40,10 @@ export class GbNavbarComponent implements OnInit {
 
   logout() {
     this.navbarService.logout();
+  }
+
+  get msie(): boolean {
+    return CompatibilityHelper.isMSIE();
   }
 
   get items(): MenuItem[] {

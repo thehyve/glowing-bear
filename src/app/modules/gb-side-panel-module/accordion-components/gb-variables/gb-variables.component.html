@@ -1,0 +1,35 @@
+<div>
+
+  <gb-tree-search
+    [tree]="viewMode === VariablesViewMode.CATEGORIZED_VIEW ? categorizedVariablesTree : variablesTree"
+  ></gb-tree-search>
+
+  <div *ngIf="isExport">
+    <!-- check all checkbox -->
+    <span class="checkAllText">
+      <p-checkbox [(ngModel)]="allChecked" binary="true"></p-checkbox>
+      {{checkAllText}}
+    </span>
+
+    <!--Import variables -->
+    <div class="pull-right">
+      <button class="btn btn-outline-primary import-btn"
+              (click)="importVariables()"
+              type="button">
+        <span>import</span>
+        <input [id]="fileElementId"
+               type="file"
+               style="display: none"/>
+      </button>
+    </div>
+  </div>
+
+  <div class="variable-mode-selection-container">
+    <p-selectButton [options]="availableViewModes"
+                    [(ngModel)]="viewMode"></p-selectButton>
+  </div>
+
+  <gb-variables-tree *ngIf="viewMode === VariablesViewMode.TREE_VIEW"></gb-variables-tree>
+  <gb-categorized-variables *ngIf="viewMode === VariablesViewMode.CATEGORIZED_VIEW"></gb-categorized-variables>
+
+</div>

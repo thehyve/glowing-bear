@@ -15,7 +15,10 @@ export class AppConfigMock {
       'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
-      'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-url': 'https://transmart.example.com',
+      'enable-fractalis-analysis': true,
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',
@@ -28,9 +31,8 @@ export class AppConfigMock {
     return this.config[key];
   }
 
-
   public getEnv(key: any) {
-    return this.env[key];
+    return 'default';
   }
 
   load() {}
@@ -45,7 +47,7 @@ export class OidcConfigMock {
       'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
-      'app-url': 'https://glowingbear.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'oidc',
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
       'oidc-client-id': 'transmart-client'
@@ -72,7 +74,8 @@ export class AppConfigPackerMock {
       'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
-      'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'packer',
@@ -103,7 +106,40 @@ export class AppConfigSurveyExportMock {
       'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
-      'app-url': 'https://glowingbear.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
+      'authentication-service-type': 'transmart',
+      'export-mode': {
+        'name': 'transmart',
+        'data-view': 'surveyTable'
+      },
+    };
+  }
+
+  public getConfig(key: any) {
+    return this.config[key];
+  }
+
+
+  public getEnv(key: any) {
+    return this.env[key];
+  }
+
+  load() {}
+}
+
+export class AppConfigFractalisDisabledMock {
+  private config: Object = null;
+  private env: Object = null;
+
+  constructor() {
+    this.config = {
+      'app-version': '0.0.1-test',
+      'api-version': 'v2',
+      'api-url': 'https://transmart.example.com',
+      'gb-backend-url': 'https://gb-backend.example.com',
+      'fractalis-url': 'https://fractalis.example.com',
+      'enable-fractalis-analysis': false,
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',

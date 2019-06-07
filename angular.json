@@ -27,6 +27,7 @@
             ],
             "styles": [
               "src/assets/icons/icons.style.css",
+              "src/styles/material-theme.scss",
               "src/styles/styles.css"
             ],
             "scripts": []
@@ -54,7 +55,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "glowing-bear:build"
+            "browserTarget": "glowing-bear:build",
+            "sslKey": "ssl/sever.key",
+            "sslCert": "ssl/server.crt"
           },
           "configurations": {
             "production": {
@@ -78,6 +81,7 @@
             "scripts": [],
             "styles": [
               "src/assets/icons/icons.style.css",
+              "src/styles/material-theme.scss",
               "src/styles/styles.css"
             ],
             "assets": [
@@ -98,27 +102,6 @@
               "src/tsconfig.spec.json",
               "tsconfig.json"
             ],
-            "exclude": []
-          }
-        }
-      }
-    },
-    "glowing-bear-e2e": {
-      "root": "e2e",
-      "sourceRoot": "e2e",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "glowing-bear:serve"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [],
             "exclude": []
           }
         }

@@ -12,13 +12,6 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {CombinationState} from '../../models/constraint-models/combination-state';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {ConstraintMark} from '../../models/constraint-models/constraint-mark';
-import {TransmartConstraintMapper} from '../transmart-utilities/transmart-constraint-mapper';
-import {Query} from '../../models/query-models/query';
-import {QuerySubscriptionFrequency} from '../../models/query-models/query-subscription-frequency';
-import {MessageHelper} from '../message-helper';
-import {DataTable} from '../../models/table-models/data-table';
-import {Dimension} from '../../models/table-models/dimension';
 
 export class ConstraintHelper {
 
@@ -28,7 +21,7 @@ export class ConstraintHelper {
    * @param {Constraint} constraint
    * @return {boolean} true if the constraint is a categorical concept constraint; false otherwise.
    */
-  public static isCategoricalConceptConstraint(constraint: Constraint): boolean {
+  static isCategoricalConceptConstraint(constraint: Constraint): boolean {
     if (constraint.className !== 'ConceptConstraint') {
       return false;
     }
@@ -45,7 +38,7 @@ export class ConstraintHelper {
    * @return {Constraint[][]} a list of lists with the length of the input list,
    * enumerating all combinations with an elements from the first list, one from the second list, etc.
    */
-  public static permuteConstraints(constraints: Constraint[][]): Constraint[][] {
+  static permuteConstraints(constraints: Constraint[][]): Constraint[][] {
     if (constraints.length < 1) {
       return [[]];
     }
@@ -69,7 +62,7 @@ export class ConstraintHelper {
    * @return {Constraint} True, if the list is empty, the contained element if it is singleton,
    * or a subject-level combination constraint otherwise.
    */
-  public static combineSubjectLevelConstraints(constraints: Constraint[]): Constraint {
+  static combineSubjectLevelConstraints(constraints: Constraint[]): Constraint {
     if (constraints.length < 1) {
       // empty list of patient level constraints
       return new TrueConstraint();
@@ -80,10 +73,26 @@ export class ConstraintHelper {
       // wrap patient level constraints in a patient-level combination
       let combination = new CombinationConstraint();
       combination.combinationState = CombinationState.And;
-      combination.mark = ConstraintMark.SUBJECT;
       constraints.forEach(child => combination.addChild(child));
       return combination;
     }
+  }
+
+  /**
+   * Ensures that the resulting constraint selects all patients related to the observations
+   * selected by observationConstraint.
+   * E.g., when the observationConstraint selects samples, the constraint is wrapped
+   * in a patient-level combination constraint.
+   *
+   * @param {Constraint} observationConstraint
+   * @return {Constraint}
+   */
+  static ensurePatientLevelConstraint(observationConstraint: Constraint): Constraint {
+    if (observationConstraint.className === 'CombinationConstraint' &&
+      (<CombinationConstraint>observationConstraint).dimension !== 'patient') {
+      return new CombinationConstraint([observationConstraint], CombinationState.And, 'patient');
+    }
+    return observationConstraint;
   }
 
   /**
@@ -126,98 +135,26 @@ export class ConstraintHelper {
   }
 
   /**
-   * map a constraint to plain object that can be downloaded in json, and later imported as well
-   * @param {Constraint} constraint
-   * @returns {object}
+   * Return a brief string representation of a constraint.
+   * Note that not all constraint types are supported.
    */
-  static mapConstraintToObject(constraint: Constraint): object {
-    let obj: object = TransmartConstraintMapper.mapConstraint(constraint, true);
-    return obj;
-  }
-
-  /**
-   * map an object to constraint
-   * @param {object} obj
-   * @returns {Constraint}
-   */
-  static mapObjectToConstraint(obj: object): Constraint {
-    let constraint: Constraint = TransmartConstraintMapper.generateConstraintFromObject(obj);
-    return constraint;
-  }
-
-  static mapQueryToObject(query: Query): object {
-    let obj = {};
-    obj['id'] = query.id;
-    obj['name'] = query.name;
-    obj['bookmarked'] = query.bookmarked;
-    obj['subscribed'] = query.subscribed;
-    if (query.subscriptionFreq) {
-      obj['subscriptionFreq'] = query.subscriptionFreq;
-    }
-    if (query.description) {
-      obj['description'] = query.description;
-    }
-    if (query.createDate) {
-      obj['createDate'] = query.createDate;
-    }
-    if (query.updateDate) {
-      obj['updateDate'] = query.updateDate;
-    }
-    if (query.subjectQuery) {
-      obj['subjectQuery'] = ConstraintHelper.mapConstraintToObject(query.subjectQuery);
-    }
-    if (query.observationQuery) {
-      obj['observationQuery'] = query.observationQuery;
-    }
-    if (query.dataTable) {
-      obj['dataTable'] = ConstraintHelper.mapDataTabletoObject(query.dataTable);
-    }
-    return obj;
-  }
-
-  static mapObjectToQuery(obj: object): Query {
-    try {
-      let query = new Query(obj['id'], obj['name']);
-      query.bookmarked = obj['bookmarked'] ? true : false;
-      query.subscribed = obj['subscribed'] ? true : false;
-      if (query.subscribed) {
-        query.subscriptionFreq = obj['subscriptionFreq'] ?
-          obj['subscriptionFreq'] : QuerySubscriptionFrequency.WEEKLY;
-      }
-      query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
-      query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
-      query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
-      query.observationQuery = obj['observationQuery'];
-      if (obj['dataTable']) {
-        query.dataTable = new DataTable();
-        if (obj['dataTable']['rowDimensions']) {
-          obj['dataTable']['rowDimensions'].forEach((name: string) => {
-            query.dataTable.rowDimensions.push(new Dimension(name));
-          });
-        }
-        if (obj['dataTable']['columnDimensions']) {
-          obj['dataTable']['columnDimensions'].forEach((name: string) => {
-            query.dataTable.columnDimensions.push(new Dimension(name));
-          });
+  static brief(constraint: Constraint): string {
+    // For a combination with one concept constraint, return the concept name
+    if (constraint.className === 'CombinationConstraint') {
+      let combiConstraint = <CombinationConstraint>constraint;
+      if (combiConstraint.isAnd()) {
+        let categoricalConceptConstraints = combiConstraint.children.filter((child: Constraint) =>
+          ConstraintHelper.isCategoricalConceptConstraint(child)
+        );
+        if (categoricalConceptConstraints.length === 1) {
+          return (<ConceptConstraint>categoricalConceptConstraints[0]).concept.name;
         }
       }
-      return query;
-    } catch (e) {
-      const message = 'Failed to convert to query.';
-      console.error(message);
-      MessageHelper.alert('error', message);
+    } else if (ConstraintHelper.isCategoricalConceptConstraint(constraint)) {
+      return (<ConceptConstraint>constraint).concept.name;
     }
-    return null;
+    // Else, create a brief representation of the constraint
+    return constraint.textRepresentation;
   }
 
-  static mapDataTabletoObject(dataTable: DataTable): object {
-    let obj = {};
-    obj['columnDimensions'] = dataTable.columnDimensions.map((dim: Dimension) => {
-      return dim.name;
-    });
-    obj['rowDimensions'] = dataTable.rowDimensions.map((dim: Dimension) => {
-      return dim.name;
-    });
-    return obj;
-  }
 }

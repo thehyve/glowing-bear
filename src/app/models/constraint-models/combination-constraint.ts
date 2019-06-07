@@ -9,20 +9,31 @@
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
 import {PedigreeConstraint} from './pedigree-constraint';
-import {TrueConstraint} from './true-constraint';
+import {ConceptConstraint} from './concept-constraint';
 
 export class CombinationConstraint extends Constraint {
+
+  static readonly TOP_LEVEL_DIMENSION: string = 'patient';
 
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
+  private _dimension: string;
 
-  constructor() {
+  constructor(children?: Constraint[],
+              state?: CombinationState,
+              dimension?: string) {
     super();
-    this._children = [];
-    this.combinationState = CombinationState.And;
+    this.children = [];
     this.isRoot = false;
     this.textRepresentation = 'Group';
+    if (children) {
+      children.forEach((child: Constraint) => {
+        this.addChild(child);
+      });
+    }
+    this.combinationState = state ? state : CombinationState.And;
+    this.dimension = dimension ? dimension : CombinationConstraint.TOP_LEVEL_DIMENSION;
   }
 
   get className(): string {
@@ -81,21 +92,43 @@ export class CombinationConstraint extends Constraint {
     this._isRoot = value;
   }
 
-  optimize(): Constraint {
-    if (this.children.length > 0) {
-      if (this.children.length > 1) {
-        return this;
-      } else {
-        let child = this.children[0];
-        child.mark = this.mark;
-        if (child.className === 'CombinationConstraint') {
-          return (<CombinationConstraint>child).optimize();
-        } else {
-          return child;
-        }
-      }
+  get dimension(): string {
+    return this._dimension;
+  }
+
+  set dimension(value: string) {
+    this._dimension = value;
+  }
+
+  get validDimensions(): string[] {
+    let result = [];
+    if (this.children.filter(constraint => constraint.className === 'PedigreeConstraint').length > 0) {
+      // for pedigree constraint only 'patient' dimension is allowed
+      return [CombinationConstraint.TOP_LEVEL_DIMENSION];
     } else {
-      return new TrueConstraint();
+      let childrenWithConceptDimRestrictions = this.children.filter(constraint =>
+        constraint.className === 'ConceptConstraint'
+        && (<ConceptConstraint>constraint).concept
+        && (<ConceptConstraint>constraint).concept.subjectDimensions.length > 0
+      );
+      if (childrenWithConceptDimRestrictions.length > 0) {
+        result = (<ConceptConstraint>childrenWithConceptDimRestrictions[0]).concept.subjectDimensions;
+        // find the dimensions intersection for each child concept constraint
+        childrenWithConceptDimRestrictions.forEach(constraint =>
+          result = result.filter(x => (<ConceptConstraint>constraint).concept.subjectDimensions.includes(x))
+        );
+      }
     }
+    return result;
+  }
+
+  clone(): CombinationConstraint {
+    const clone = new CombinationConstraint(
+      this.children.map(child => child.clone()),
+      this.combinationState,
+      this.dimension
+    );
+    clone.negated = this.negated;
+    return clone;
   }
 }

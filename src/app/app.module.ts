@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,33 +13,21 @@ import {FormsModule} from '@angular/forms';
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 
-import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
-import {ResourceService} from './services/resource.service';
-import {TreeNodeService} from './services/tree-node.service';
+import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-cohort-selection.module';
 import {AppConfig} from './config/app.config';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
-import {QueryService} from './services/query.service';
-import {DataTableService} from './services/data-table.service';
-import {CrossTableService} from './services/cross-table.service';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
-import {NavbarService} from './services/navbar.service';
-import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 
-import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
+import {ApiHttpInterceptor} from './services/http/api-http-interceptor.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
-import {TransmartHttpService} from './services/transmart-services/transmart-http.service';
-import {StudyService} from './services/study.service';
-import {TransmartPackerHttpService} from './services/transmart-services/transmart-packer-http.service';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load().then(() => authService.load());
@@ -58,24 +46,12 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     routing,
     GbMainModule,
     GbNavBarModule,
-    GbDataSelectionModule,
+    GbCohortSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
     GbExportModule
   ],
   providers: [
-    ResourceService,
-    TransmartResourceService,
-    TransmartHttpService,
-    TransmartPackerHttpService,
-    StudyService,
-    TreeNodeService,
-    ConstraintService,
-    QueryService,
-    DataTableService,
-    CrossTableService,
-    NavbarService,
-    ExportService,
     DatePipe,
     AppConfig,
     AuthenticationService,

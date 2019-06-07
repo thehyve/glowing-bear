@@ -15,8 +15,8 @@
   margin-top: 2px;
 }
 
-.gb-logo-panel img:hover {
-  cursor: pointer;
+.gb-logo-panel a {
+  text-decoration: none;
 }
 
 .gb-logo-text {
@@ -26,14 +26,26 @@
   margin-left: 9px;
 }
 
-.gb-logo-text:hover {
-  cursor: pointer;
-}
-
-.gb-side-accordion-container {
+.accordion-container {
   margin-top: var(--gb-navbar-height-extra);
 }
 
-.gb-side-panel-container {
+.side-panel-container {
   margin-bottom: 5em;
+}
+
+
+:host >>> .ui-accordion .ui-accordion-content {
+  padding: 1em;
+}
+
+:host >>> .ui-accordion .ui-accordion-header {
+  background-color: white;
+}
+
+/*Style for the gb tree search*/
+:host >>> .gb-highlight-treenode {
+  background-color: var(--gb-orange-light) !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
 }
