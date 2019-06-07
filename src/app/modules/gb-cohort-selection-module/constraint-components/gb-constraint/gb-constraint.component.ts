@@ -98,7 +98,7 @@ export class GbConstraintComponent implements OnInit {
   get observationBoxMessage(): string {
     let parentDimension = this.constraint.parentDimension;
     if (this.constraint.negated) {
-      return `for the ${parentDimension} there are NO observations:`;
+      return `for the ${parentDimension} there is NO observation:`;
     } else {
       return `for the ${parentDimension} there is an observation:`;
     }
