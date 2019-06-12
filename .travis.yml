@@ -1,9 +1,11 @@
 sudo: required
-os:
-  - linux
+dist: xenial
 language: node_js
 node_js:
   - '11'
+
+services:
+  - xvfb
 
 addons:
   chrome: stable # have Travis install chrome stable.
@@ -25,7 +27,6 @@ before_install:
   - date
   - export CHROME_BIN=google-chrome-stable
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
 install:
   - yarn
   - yarn package
