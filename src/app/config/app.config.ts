@@ -10,6 +10,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
+const { version: appVersion } = require('../../../package.json');
 
 @Injectable({
   providedIn: 'root',
@@ -17,8 +18,6 @@ import {ErrorHelper} from '../utilities/error-helper';
 export class AppConfig {
 
   public static DEFAULT_API_VERSION = 'v2';
-  public static DEFAULT_APP_URL = 'https://localhost:4200';
-  public static DEFAULT_APP_VERSION = 'unspecified';
   public static DEFAULT_DOC_URL = 'https://glowingbear.app';
   public static DEFAULT_ENABLE_FRACTALIS_ANALYSIS = false;
   public static DEFAULT_AUTOSAVE_SUBJECT_SETS = false;
@@ -45,6 +44,10 @@ export class AppConfig {
     this.envs = ['default', 'dev', 'transmart'];
   }
 
+  get version() {
+    return appVersion;
+  }
+
   /**
    * Use to get the data found in the second file (config file)
    * if present; returns default value otherwise.
@@ -58,9 +61,6 @@ export class AppConfig {
         }
         case 'api-version': {
           value = AppConfig.DEFAULT_API_VERSION; break;
-        }
-        case 'app-version': {
-          value = AppConfig.DEFAULT_APP_VERSION; break;
         }
         case 'gb-backend-url': {
           throw Error('Gb-backend URL is unspecified in the configuration.')
@@ -162,7 +162,6 @@ export class AppConfig {
           console.error(summary);
           resolve(err);
         });
-
     });
   }
 }

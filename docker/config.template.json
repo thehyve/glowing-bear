@@ -1,7 +1,6 @@
 {
   "api-url": "${TRANSMART_API_SERVER_URL}",
   "api-version": "v2",
-  "app-version": "${GB_VERSION}",
   "gb-backend-url": "${GB_BACKEND_URL}",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": false,
