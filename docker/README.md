@@ -17,20 +17,15 @@ Follow the instructions in [glowing-bear-docker](https://github.com/thehyve/glow
 
 ## Development
 
-### Build
+### Build and publish
+
+Build the images and publish it to [Docker Hub](https://hub.docker.com/r/thehyve/glowing-bear).
 
 ```bash
-docker build -t glowing-bear glowing-bear
-```
-
-### Publish
-
-Publish the image to [Docker Hub](https://hub.docker.com/r/thehyve/glowing-bear):
-
-```bash
+# Build image
+GB_VERSION=$(node -pe "require('./package.json').version")
+docker build --build-arg "GB_VERSION=${GB_VERSION}" -t "thehyve/glowing-bear:${GB_VERSION}" docker/
+# Publish images to Docker Hub
 docker login
-GLOWING_BEAR_VERSION="1.3.8"
-docker tag glowing-bear "thehyve/glowing-bear:${GLOWING_BEAR_VERSION}"
-docker push "thehyve/glowing-bear:${GLOWING_BEAR_VERSION}"
+docker push "thehyve/glowing-bear:${GB_VERSION}"
 ```
-
