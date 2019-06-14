@@ -67,7 +67,7 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     }
   }
 
-  addMetadataToConcept(concept: Concept, constraintObject: ExtendedConstraint) {
+  static addMetadataToConcept(concept: Concept, constraintObject: ExtendedConstraint) {
     const fullName = constraintObject.fullName;
     concept.fullName = fullName;
     const tail = '\\' + constraintObject.name + '\\';
@@ -77,11 +77,35 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     concept.type = constraintObject.valueType;
   }
 
+  static flattenNestedSubselectionConstraint(result: CombinationConstraint, combinationState: CombinationState) {
+    if (result.children.every(child => child.className === 'CombinationConstraint')) {
+      const dimensions = new Set(result.children.map((child: CombinationConstraint) => child.dimension));
+      // Only flatten when all children have the same dimension
+      if (dimensions.size === 1) {
+        result.dimension = dimensions.values().next().value;
+        const flattenedChildren: Constraint[] = [];
+        result.children.forEach((child: CombinationConstraint) => {
+            // Only flatten children that has the same combinationState as parent or if single child
+            if ((child as CombinationConstraint).combinationState === combinationState || child.children.length === 1) {
+              child.children.forEach(c => {
+                c.negated = child.negated;
+                flattenedChildren.push(c);
+              })
+            } else {
+              flattenedChildren.push(child);
+            }
+          }
+        );
+        result.children = flattenedChildren;
+      }
+    }
+  }
+
   visitConceptConstraint(constraintObject: ExtendedConceptConstraint): Constraint {
     let concept = new Concept();
     concept.code = constraintObject.conceptCode;
     if (constraintObject.fullName) {
-      this.addMetadataToConcept(concept, constraintObject);
+      TransmartConstraintReader.addMetadataToConcept(concept, constraintObject);
     }
     const constraint = new ConceptConstraint();
     constraint.concept = concept;
@@ -146,7 +170,7 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
         if (child.className === 'ConceptConstraint') {
           prospectConcept = <ConceptConstraint>child;
           if (!prospectConcept.concept.fullName && constraintObject['fullName'] && operator === 'and') {
-            this.addMetadataToConcept(prospectConcept.concept, <ExtendedAndConstraint>constraintObject);
+            TransmartConstraintReader.addMetadataToConcept(prospectConcept.concept, <ExtendedAndConstraint>constraintObject);
           }
         } else if (child.className === 'TimeConstraint') {
           const timeConstraint = <TimeConstraint>child;
@@ -209,24 +233,9 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     const result = new CombinationConstraint();
     result.combinationState = combinationState;
     children.forEach(child => result.addChild(child));
-    /*
-     * Flatten nested subselection constraint
-     */
-    if (result.children.every(child => child.className === 'CombinationConstraint')) {
-      const dimensions = new Set(result.children.map((child: CombinationConstraint) => child.dimension));
-      // Only flatten when all children have the same dimension
-      if (dimensions.size === 1) {
-        result.dimension = dimensions.values().next().value;
-        const flattenedChildren: Constraint[] = [];
-        result.children.forEach((child: CombinationConstraint) =>
-          child.children.forEach(c => {
-              c.negated = child.negated;
-              flattenedChildren.push(c);
-            })
-        );
-        result.children = flattenedChildren;
-      }
-    }
+
+    TransmartConstraintReader.flattenNestedSubselectionConstraint(result, combinationState);
+
     return result;
   }
 
