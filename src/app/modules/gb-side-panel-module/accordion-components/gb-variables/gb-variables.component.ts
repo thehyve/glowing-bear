@@ -71,6 +71,7 @@ export class GbVariablesComponent implements OnInit {
         MessageHelper.alert('error', 'Invalid file content for variables import.');
         return;
       }
+      MessageHelper.alert('info', 'Variables file upload successful!');
     } else {
       MessageHelper.alert('error', 'Invalid file format for variables import.');
       return;
