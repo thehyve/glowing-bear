@@ -16,6 +16,7 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
+import {UIHelper} from '../utilities/ui-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -249,10 +250,9 @@ export class VariableService {
     nodes.forEach((node: GbTreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
-        if (
-          values.includes(val)
-          && !this.selectedVariablesTree.includes(node)) {
+        if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
+          UIHelper.selectPrimeNgParentTreeNode(node, this.selectedVariablesTree);
         } else if (
           !isSelectionIncremental
           && !values.includes(val)
@@ -263,6 +263,7 @@ export class VariableService {
           this.selectedVariablesTree.splice(index, 1);
         }
         if (node['children']) {
+          node.children.forEach((child) => child.parent = node);
           this.selectVariablesTreeByFields(node['children'], values, fields, isSelectionIncremental);
         }
       }
