@@ -263,7 +263,11 @@ export class VariableService {
           this.selectedVariablesTree.splice(index, 1);
         }
         if (node['children']) {
-          node.children.forEach((child) => child.parent = node);
+          node.children.forEach((child) => {
+            if (child) {
+              child.parent = node
+            }
+          });
           this.selectVariablesTreeByFields(node['children'], values, fields, isSelectionIncremental);
         }
       }
