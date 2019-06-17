@@ -26,10 +26,6 @@
   margin-left: 9px;
 }
 
-.accordion-container {
-  margin-top: var(--gb-navbar-height-extra);
-}
-
 .side-panel-container {
   margin-bottom: 5em;
 }
@@ -41,6 +37,7 @@
 
 :host >>> .ui-accordion .ui-accordion-header {
   background-color: white;
+  margin-top: 0;
 }
 
 /*Style for the gb tree search*/
