@@ -7,8 +7,6 @@
  */
 
 import {ElementRef} from '@angular/core';
-import {TreeNode} from 'primeng/api';
-import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
 
 export class UIHelper {
 
@@ -25,28 +23,6 @@ export class UIHelper {
         loaderIcon.remove();
       }
     }).bind(this), delay);
-  }
-
-  /**
-   * For a tree node, this function selects its parent nodes recursively.
-   *
-   * It should be used, when selecting a tree node programmatically.
-   * Reason: the PrimeNg library does not handle selecting of a parent node,
-   * when the selection of the node is not triggered by a mouse click event.
-   *
-   * @param parent a parent node of a selected node
-   * @param selectedNodes array of currently selected nodes
-   */
-  public static selectPrimeNgTreeParentNodesRecursively(parent: TreeNode, selectedNodes: GbTreeNode[]) {
-    if (parent === undefined) {
-      return;
-    }
-    if (parent.children.every((child: TreeNode) => selectedNodes.includes(child))) {
-      selectedNodes.push(parent);
-    } else {
-      parent.partialSelected = true;
-    }
-    this.selectPrimeNgTreeParentNodesRecursively(parent.parent, selectedNodes);
   }
 
 }

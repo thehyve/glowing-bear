@@ -194,6 +194,8 @@ describe('VariableService', () => {
     expect(variableService.selectedVariablesTree).not.toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
     expect(variableService.selectedVariablesTree).toContain(node_1_1);
+    expect(node.partialSelected).toBe(true);
+    expect(node_1.partialSelected).toBe(true);
   });
 
   it('should unselect all variables that are shared between nodes', () => {
@@ -214,6 +216,7 @@ describe('VariableService', () => {
 
     variableService.selectedVariablesTree = [node];
     variableService.unselectVariablesTreeByFields([node], [node_1_1['conceptCode']], ['conceptCode']);
+    expect(variableService.selectedVariablesTree.length).toBe(1);
     expect(variableService.selectedVariablesTree).not.toContain(node_2);
     expect(variableService.selectedVariablesTree).not.toContain(node_1_1);
   });
