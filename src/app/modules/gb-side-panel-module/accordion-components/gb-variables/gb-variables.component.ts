@@ -26,7 +26,7 @@ export class GbVariablesComponent implements OnInit {
   public availableViewModes: SelectItem[];
 
   public VariablesViewMode = VariablesViewMode; // make enum visible in template
-  public readonly fileElementId: string = 'variablesCriteriaFileUpload';
+  public readonly variableFileElementId: string = 'variablesCriteriaFileUpload';
 
   public isUploadListenerNotAdded: boolean;
   public file: File; // holds the uploaded cohort file
@@ -53,13 +53,13 @@ export class GbVariablesComponent implements OnInit {
   importVariables() {
     let reader = new FileReader();
     reader.onload = this.handleVariablesFileUploadEvent.bind(this);
-    FileImportHelper.importCriteria(this.fileElementId, reader, this.isUploadListenerNotAdded);
+    FileImportHelper.importCriteria(this.variableFileElementId, reader, this.isUploadListenerNotAdded);
     this.isUploadListenerNotAdded = false;
   }
 
   handleVariablesFileUploadEvent(e) {
     let data = e.target['result'];
-    this.file = FileImportHelper.getFile(this.fileElementId);
+    this.file = FileImportHelper.getFile(this.variableFileElementId);
     // file.type is empty for some browsers and Windows OS
     if (FileImportHelper.isJsonFile(this.file)) {
       let _json = JSON.parse(data);
