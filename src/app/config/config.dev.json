@@ -1,7 +1,6 @@
 {
   "api-url": "https://transmart-dev.thehyve.net",
   "api-version": "v2",
-  "app-version": "0.0.1-SNAPSHOT",
   "gb-backend-url": "https://gb-backend-dev.thehyve.net",
   "fractalis-url": "https://fractalis-dev.thehyve.net",
   "fractalis-datasource-url": "http://localhost:8080",

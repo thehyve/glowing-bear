@@ -8,10 +8,10 @@
 
 import {TestBed, inject} from '@angular/core/testing';
 import {AppConfig} from './app.config';
-import {HttpClientModule, HttpErrorResponse} from '@angular/common/http';
+import {HttpClientModule} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {MessageHelper} from '../utilities/message-helper';
-import {Observable} from 'rxjs/Observable';
+const { version: appVersion } = require('../../../package.json');
 
 describe('AppConfig', () => {
   let appConfig: AppConfig;
@@ -71,17 +71,8 @@ describe('AppConfig', () => {
     expect(spyMessage).toHaveBeenCalledTimes(0);
   });
 
-  it('should return the version from the json file', () => {
-    AppConfig.path = 'somepath/';
-    let configResponse = {
-      'app-version': '0.0.1-test'
-    };
-    let spy = spyOn(appConfig.http, 'get').and.callThrough();
-    appConfig.load();
-    httpMock.expectOne(AppConfig.path + 'env.json').flush({env: 'dev'});
-    httpMock.expectOne(AppConfig.path + 'config.dev.json').flush(configResponse);
-    expect(spy).toHaveBeenCalledTimes(2);
-    expect(appConfig.getConfig('app-version')).toEqual('0.0.1-test');
+  it('should return the version', () => {
+    expect(appConfig.version).toEqual(appVersion);
   });
 
   it('should not load config file when env is wrong', () => {
@@ -153,8 +144,6 @@ describe('AppConfig', () => {
     } catch (e) {
       expect(e.message).toBeDefined();
     }
-    expect(appConfig.getConfig('api-version')).toBe(AppConfig.DEFAULT_API_VERSION);
-    expect(appConfig.getConfig('app-version')).toBe(AppConfig.DEFAULT_APP_VERSION);
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
     expect(appConfig.getConfig('enable-fractalis-analysis')).toBe(AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS);
     expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
