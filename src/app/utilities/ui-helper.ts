@@ -28,21 +28,25 @@ export class UIHelper {
   }
 
   /**
-   * The PrimeNg library does not handle selecting of a parent node
-   * when selecting the node programmatically
-   * @param node parent of which has to be (partially) selected
-   * @param selectedNodes array of currently selecte nodes
+   * For a tree node, this function selects its parent nodes recursively.
+   *
+   * It should be used, when selecting a tree node programmatically.
+   * Reason: the PrimeNg library does not handle selecting of a parent node,
+   * when the selection of the node is not triggered by a mouse click event.
+   *
+   * @param parent a parent node of a selected node
+   * @param selectedNodes array of currently selected nodes
    */
-  public static selectPrimeNgParentTreeNode(node: TreeNode, selectedNodes: GbTreeNode[]) {
-    if (node.parent != null) {
-      if (node.parent.children.every((child: TreeNode) => selectedNodes.includes(child))) {
-        selectedNodes.push(node.parent);
-      } else {
-        node.parent.partialSelected = true;
-      }
-      if (node.parent.parent != null) {
-        this.selectPrimeNgParentTreeNode(node.parent, selectedNodes);
-      }
+  public static selectPrimeNgTreeParentNodesRecursively(parent: TreeNode, selectedNodes: GbTreeNode[]) {
+    if (parent === undefined) {
+      return;
     }
+    if (parent.children.every((child: TreeNode) => selectedNodes.includes(child))) {
+      selectedNodes.push(parent);
+    } else {
+      parent.partialSelected = true;
+    }
+    this.selectPrimeNgTreeParentNodesRecursively(parent.parent, selectedNodes);
   }
+
 }

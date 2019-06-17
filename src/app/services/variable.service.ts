@@ -252,7 +252,7 @@ export class VariableService {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
         if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
           this.selectedVariablesTree.push(node);
-          UIHelper.selectPrimeNgParentTreeNode(node, this.selectedVariablesTree);
+          UIHelper.selectPrimeNgTreeParentNodesRecursively(node.parent, this.selectedVariablesTree);
         } else if (
           !isSelectionIncremental
           && !values.includes(val)
