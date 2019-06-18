@@ -194,6 +194,8 @@ describe('VariableService', () => {
     expect(variableService.selectedVariablesTree).not.toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
     expect(variableService.selectedVariablesTree).toContain(node_1_1);
+    expect(node.partialSelected).toBe(true);
+    expect(node_1.partialSelected).toBe(true);
   });
 
   it('should unselect all variables that are shared between nodes', () => {
@@ -214,6 +216,7 @@ describe('VariableService', () => {
 
     variableService.selectedVariablesTree = [node];
     variableService.unselectVariablesTreeByFields([node], [node_1_1['conceptCode']], ['conceptCode']);
+    expect(variableService.selectedVariablesTree.length).toBe(1);
     expect(variableService.selectedVariablesTree).not.toContain(node_2);
     expect(variableService.selectedVariablesTree).not.toContain(node_1_1);
   });
@@ -240,6 +243,9 @@ describe('VariableService', () => {
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
+    expect(node_1_1.partialSelected).toBe(undefined);
+    expect(node_1.partialSelected).toBe(true);
+    expect(node.partialSelected).toBe(true);
 
     spyOn(treeNodeService, 'isVariableNode').and.returnValue(true);
 
@@ -249,6 +255,9 @@ describe('VariableService', () => {
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
+    expect(node_1_1.partialSelected).toBe(undefined);
+    expect(node_1.partialSelected).toBe(true);
+    expect(node.partialSelected).toBe(true);
   });
 
   it('should remove unselected tree nodes when additional import is off', () => {
@@ -274,7 +283,7 @@ describe('VariableService', () => {
       [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName'], false);
     expect(variableService.selectedVariablesTree.length).toBe(1);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
-  })
+  });
 
   it('should select variables tree nodes by names', () => {
     let nodeABC: TreeNode = {};
@@ -293,8 +302,14 @@ describe('VariableService', () => {
     nodeA.children = [nodeAB, nodeAD];
     variableService.selectVariablesTreeByFields([nodeA], ['name1'], ['metadata', 'item_name'], true);
 
-    expect(variableService.selectedVariablesTree.length).toBe(1);
+    expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(nodeADE);
+    // parent nodes:
+    expect(variableService.selectedVariablesTree).toContain(nodeAD);
+    expect(nodeA.partialSelected).toBe(true);
+
+    expect(nodeAB.partialSelected).toBe(undefined);
+    expect(nodeABC.partialSelected).toBe(undefined);
   });
 
   it('should update variables tree data', () => {

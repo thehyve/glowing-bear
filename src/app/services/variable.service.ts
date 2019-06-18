@@ -16,6 +16,9 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
+import {UIHelper} from '../utilities/ui-helper';
+import {TreeNode} from 'primeng/api';
+import {TreeNodeHelper} from '../utilities/tree-node-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -249,20 +252,20 @@ export class VariableService {
     nodes.forEach((node: GbTreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
-        if (
-          values.includes(val)
-          && !this.selectedVariablesTree.includes(node)) {
-          this.selectedVariablesTree.push(node);
+        if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
+          TreeNodeHelper.addNodeToSelectedNodes(node, this.selectedVariablesTree);
+          TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
         } else if (
           !isSelectionIncremental
           && !values.includes(val)
           && this.treeNodeService.isVariableNode(node)
           && this.selectedVariablesTree.includes(node)
         ) {
-          const index = this.selectedVariablesTree.indexOf(node);
-          this.selectedVariablesTree.splice(index, 1);
+          TreeNodeHelper.removeNodeFromSelectedNodes(node, this.selectedVariablesTree);
+          TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
         }
         if (node['children']) {
+          TreeNodeHelper.updateParentForAllChildren(node);
           this.selectVariablesTreeByFields(node['children'], values, fields, isSelectionIncremental);
         }
       }
@@ -274,10 +277,11 @@ export class VariableService {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
         if (values.includes(val) && this.selectedVariablesTree.includes(node)) {
-          const index = this.selectedVariablesTree.indexOf(node);
-          this.selectedVariablesTree.splice(index, 1);
+          TreeNodeHelper.removeNodeFromSelectedNodes(node, this.selectedVariablesTree);
+          TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
         }
         if (node['children']) {
+          TreeNodeHelper.updateParentForAllChildren(node);
           this.unselectVariablesTreeByFields(node['children'], values, fields);
         }
       }
