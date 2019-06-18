@@ -202,20 +202,21 @@ describe('GbCombinationConstraintComponent', () => {
 
   it('should disable dimension dropdown when root dimension selection is disabled', () => {
 
-    constraintService.rootDimensionSelectionDisabled = false;
+    constraintService.dimensionSelectionDisabled = false;
     expect(component.disableDimensionDropdown).toBe(false);
 
-    constraintService.rootDimensionSelectionDisabled = true;
+    constraintService.dimensionSelectionDisabled = true;
     constraintService.rootConstraint = new CombinationConstraint();
     expect(component.disableDimensionDropdown).toBe(false);
 
     let c1 = new ConceptConstraint();
     c1.textRepresentation = 'foo';
-    constraintService.rootDimensionSelectionDisabled = true;
-    constraintService.rootConstraint = new CombinationConstraint([c1], CombinationState.And, 'diagnosis');
+    constraintService.dimensionSelectionDisabled = true;
+    component.constraint = new CombinationConstraint([c1], CombinationState.And, 'diagnosis');
+    constraintService.rootConstraint = <CombinationConstraint>component.constraint;
     expect(component.disableDimensionDropdown).toBe(true);
 
-    component.updateDimensionDropdownOptions();
+    component.onConstraintRemoved(c1);
     expect(component.disableDimensionDropdown).toBe(false);
   });
 

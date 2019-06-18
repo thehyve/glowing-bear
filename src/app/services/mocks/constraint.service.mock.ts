@@ -27,7 +27,7 @@ export class ConstraintServiceMock {
   private _constraint: Constraint = new CombinationConstraint();
   private _allSubjectDimensionsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
   private _allSubjectDimensions: Dimension[] = [];
-  private _rootDimensionSelectionDisabled = false;
+  private _dimensionSelectionDisabled = false;
   constructor() {
     this._rootConstraint = new CombinationConstraint();
   }
@@ -115,12 +115,12 @@ export class ConstraintServiceMock {
     this._allSubjectDimensions = value;
   }
 
-  get rootDimensionSelectionDisabled(): boolean {
-    return this._rootDimensionSelectionDisabled;
+  get dimensionSelectionDisabled(): boolean {
+    return this._dimensionSelectionDisabled;
   }
 
-  set rootDimensionSelectionDisabled(value: boolean) {
-    this._rootDimensionSelectionDisabled = value;
+  set dimensionSelectionDisabled(value: boolean) {
+    this._dimensionSelectionDisabled = value;
   }
 
 

@@ -57,7 +57,7 @@ export class ConstraintService {
    * The maximum number of search results allowed when searching for a constraint
    */
   private _maxNumSearchResults = 100;
-  private _rootDimensionSelectionDisabled: boolean;
+  private _dimensionSelectionDisabled: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
@@ -67,7 +67,7 @@ export class ConstraintService {
     // Initialize the root constraints in the cohort selection
     this.rootConstraint = new CombinationConstraint();
     this.rootConstraint.isRoot = true;
-    this.rootDimensionSelectionDisabled = false;
+    this.dimensionSelectionDisabled = false;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -227,7 +227,7 @@ export class ConstraintService {
       this.rootConstraint.dimension = CombinationConstraint.TOP_LEVEL_DIMENSION;
       this.rootConstraint.addChild(constraint);
     }
-    this.rootDimensionSelectionDisabled = true;
+    this.dimensionSelectionDisabled = true;
   }
 
   /*
@@ -307,11 +307,11 @@ export class ConstraintService {
     return this._allSubjectDimensionsUpdated;
   }
 
-  get rootDimensionSelectionDisabled(): boolean {
-    return this._rootDimensionSelectionDisabled;
+  get dimensionSelectionDisabled(): boolean {
+    return this._dimensionSelectionDisabled;
   }
 
-  set rootDimensionSelectionDisabled(value: boolean) {
-    this._rootDimensionSelectionDisabled = value;
+  set dimensionSelectionDisabled(value: boolean) {
+    this._dimensionSelectionDisabled = value;
   }
 }

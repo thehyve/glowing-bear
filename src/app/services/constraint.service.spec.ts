@@ -102,13 +102,13 @@ describe('ConstraintService', () => {
 
     let constraint2 = new ConceptConstraint();
 
-    expect(constraintService.rootDimensionSelectionDisabled).toBe(false);
+    expect(constraintService.dimensionSelectionDisabled).toBe(false);
     constraintService.restoreCohortConstraint(constraint1);
     expect(constraintService.rootConstraint.dimension).toEqual('diagnosis');
-    expect(constraintService.rootDimensionSelectionDisabled).toBe(true);
+    expect(constraintService.dimensionSelectionDisabled).toBe(true);
 
     constraintService.restoreCohortConstraint(constraint2);
     expect(constraintService.rootConstraint.dimension).toEqual('patient');
-    expect(constraintService.rootDimensionSelectionDisabled).toBe(true);
+    expect(constraintService.dimensionSelectionDisabled).toBe(true);
   });
 });

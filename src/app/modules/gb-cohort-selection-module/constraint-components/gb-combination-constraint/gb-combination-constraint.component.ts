@@ -68,6 +68,9 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
    */
   onConstraintRemoved(childConstraint: Constraint) {
     (<CombinationConstraint>this.constraint).removeChildConstraint(childConstraint);
+    if (this.constraintService.rootConstraint.children.length === 0) {
+      this.constraintService.dimensionSelectionDisabled = false;
+    }
     this.updateDimensionDropdownOptions();
     this.update();
   }
@@ -163,7 +166,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   updateDimensionDropdownOptions() {
-    this.constraintService.rootDimensionSelectionDisabled = false;
     let validDimensions = (<CombinationConstraint>this.constraint).validDimensions;
     if (validDimensions.length > 0) {
       this.dimensions = GbCombinationConstraintComponent.dimensionToDimensionOption(validDimensions);
@@ -199,7 +201,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   get disableDimensionDropdown(): boolean {
     return this.dimensions.length === 1 ||
-      (this.constraintService.rootDimensionSelectionDisabled &&
+      (this.constraintService.dimensionSelectionDisabled &&
         !(this.constraintService.rootConstraint.children.length === 0)
       );
   }
