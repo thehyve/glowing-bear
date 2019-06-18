@@ -96,8 +96,11 @@ export class CohortService {
         let constraint = this.constraintService.cohortSelectionConstraint;
         this.countService.updateCurrentSelectionCount(constraint)
           .then(() => {
-            this.currentCohort.constraint = constraint;
+            this.currentCohort.constraint = constraint.clone();
             this.currentCohort.updateDate = new Date().toISOString();
+            if (constraint.className === 'CombinationConstraint') {
+              this.currentCohort.type = (<CombinationConstraint>constraint).dimension;
+            }
             this.isUpdatingCurrent = false;
             this.isDirty = false;
 
@@ -159,7 +162,7 @@ export class CohortService {
   }
 
   private createCurrentCohort() {
-    let current: Cohort = new Cohort('', 'currently editing');
+    let current: Cohort = new Cohort('', 'Unsaved cohort (currently editing)');
     current.createDate = new Date().toISOString();
     current.updateDate = new Date().toISOString();
     current.selected = true;
