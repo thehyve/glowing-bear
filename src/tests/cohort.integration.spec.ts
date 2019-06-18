@@ -212,20 +212,6 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(spySave).toHaveBeenCalled();
   });
 
-  it('should clear cohorts in relation to other dependent services', () => {
-    treeNodeService.treeNodeCallsSent = 10;
-    treeNodeService.treeNodeCallsReceived = 10;
-    cohortService.restoreCohort(q0)
-      .then(() => {
-        cohortService.clearAll()
-          .then(() => {
-            expect(constraintService.rootConstraint.children.length).toBe(0);
-            expect(cohortService.isDirty).toBe(false);
-          });
-        expect(cohortService.isDirty).toBe(true);
-      });
-  });
-
   it('should restore cohort containing subject set constraint', () => {
     let target = new Cohort(null, 'test');
     let subjectSetConstraint = new SubjectSetConstraint();

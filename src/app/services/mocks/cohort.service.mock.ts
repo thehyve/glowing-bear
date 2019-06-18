@@ -31,10 +31,6 @@ export class CohortServiceMock {
     });
   }
 
-  clearAll(): Promise<any> {
-    return new Promise<any>(resolve => resolve(true));
-  }
-
   get cohorts(): Cohort[] {
     return this._cohorts;
   }
