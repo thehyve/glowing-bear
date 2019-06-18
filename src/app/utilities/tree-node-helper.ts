@@ -29,7 +29,10 @@ export class TreeNodeHelper {
       this.addNodeToSelectedNodes(parent, selectedNodes);
     } else {
       this.removeNodeFromSelectedNodes(parent, selectedNodes);
-      this.updateNodePartialSelection(parent, selectedNodes);
+      if (parent.children.some((child: GbTreeNode) =>
+        (selectedNodes.includes(child) || child.partialSelected === true))) {
+        parent.partialSelected = true;
+      }
     }
     this.updateParentNodesSelectionRecursively(parent.parent, selectedNodes);
   }
@@ -69,21 +72,6 @@ export class TreeNodeHelper {
    */
   public static  addNodeToSelectedNodes(node: GbTreeNode, selectedNodes: GbTreeNode[]) {
     selectedNodes.push(node);
-  }
-
-  /**
-   * Function to partially select a tree node with the '-' icon.
-   *
-   * Partial selection means that only part of the children nodes is selected.
-   *
-   * @param node to be partially select
-   * @param selectedNodes current tree nodes selection
-   */
-  private static updateNodePartialSelection(node: GbTreeNode, selectedNodes: GbTreeNode[]) {
-    if (node.children.some((child: GbTreeNode) =>
-      (selectedNodes.includes(child) || child.partialSelected === true))) {
-      node.partialSelected = true;
-    }
   }
 
 }
