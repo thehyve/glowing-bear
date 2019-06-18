@@ -27,9 +27,9 @@ import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
-import {Constraint} from '../../../../models/constraint-models/constraint';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
+import {CombinationState} from '../../../../models/constraint-models/combination-state';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -198,6 +198,25 @@ describe('GbCombinationConstraintComponent', () => {
     expect((<CombinationConstraint>children[0]).dimension).toBe('patient');
     expect((<CombinationConstraint>children[0]).children.length).toBe(1);
     expect((<CombinationConstraint>children[0]).children[0].className).toBe('PedigreeConstraint');
+  });
+
+  it('should disable dimension dropdown when root dimension selection is disabled', () => {
+
+    constraintService.rootDimensionSelectionDisabled = false;
+    expect(component.disableDimensionDropdown).toBe(false);
+
+    constraintService.rootDimensionSelectionDisabled = true;
+    constraintService.rootConstraint = new CombinationConstraint();
+    expect(component.disableDimensionDropdown).toBe(false);
+
+    let c1 = new ConceptConstraint();
+    c1.textRepresentation = 'foo';
+    constraintService.rootDimensionSelectionDisabled = true;
+    constraintService.rootConstraint = new CombinationConstraint([c1], CombinationState.And, 'diagnosis');
+    expect(component.disableDimensionDropdown).toBe(true);
+
+    component.updateDimensionDropdownOptions();
+    expect(component.disableDimensionDropdown).toBe(false);
   });
 
 });
