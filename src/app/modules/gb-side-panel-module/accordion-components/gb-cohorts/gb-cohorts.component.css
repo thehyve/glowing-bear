@@ -195,6 +195,11 @@ md2-accordion-header .ui-button-secondary:hover {
   float: left;
 }
 
+.current-cohort-header-name {
+  font-style: italic;
+  font-weight: bold;
+}
+
 .cohort-header {
   display: flow-root;
   padding-bottom: 0.1em;
