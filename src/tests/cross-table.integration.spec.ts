@@ -32,6 +32,7 @@ import {
   TransmartStudyNameConstraint
 } from '../app/models/transmart-models/transmart-constraint';
 import {ConstraintHelper} from '../app/utilities/constraint-utilities/constraint-helper';
+import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 
 describe('Integration tests for cross table ', () => {
 
@@ -95,6 +96,8 @@ describe('Integration tests for cross table ', () => {
   });
 
   it('should update the cross table on tree node drop', () => {
+    let constraint = new ConceptConstraint();
+    constraintService.rootConstraint = new CombinationConstraint([constraint]);
     // tree node drop to row zone
     let spy1 = spyOn(resourceService, 'getCategoricalAggregate').and.callFake(() => {
       let agg = new CategoricalAggregate();
@@ -120,6 +123,9 @@ describe('Integration tests for cross table ', () => {
       expect(spy3).toHaveBeenCalled();
       expect(crossTableService.crossTable.rowConstraints.length).toBe(1);
       expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(2);
+      expect(crossTableService.crossTable.constraint.className).toBe('CombinationConstraint');
+      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.length).toBe(1);
+      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children[0].className).toBe('ConceptConstraint');
     });
   });
 

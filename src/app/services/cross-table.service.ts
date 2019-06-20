@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,6 +24,7 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
 import {ValueType} from '../models/constraint-models/value-type';
 import {Operator} from '../models/constraint-models/operator';
+import {ConstraintService} from './constraint.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,7 +42,8 @@ export class CrossTableService {
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
-  constructor(private resourceService: ResourceService,
+  constructor(private constraintService: ConstraintService,
+              private resourceService: ResourceService,
               private applicationRef: ApplicationRef) {
     this.clear();
   }
@@ -181,6 +183,7 @@ export class CrossTableService {
       try {
         this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
         this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
+        this.crossTable.constraint = this.constraintService.cohortSelectionConstraint;
         this.resourceService.getCrossTable(this.crossTable)
           .subscribe((crossTable: CrossTable) => {
             this.crossTable = crossTable;
