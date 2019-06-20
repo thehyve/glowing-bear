@@ -51,13 +51,12 @@ export class ConstraintService {
 
   // List of all available subject dimensions
   private _allSubjectDimensions: Dimension[] = [];
-  private _allSubjectDimensionsUpdated: Subject<Dimension[]> = new Subject<Dimension[]>();
+  private _validSubjectDimensionsUpdated: Subject<boolean> = new Subject<boolean>();
 
   /*
    * The maximum number of search results allowed when searching for a constraint
    */
   private _maxNumSearchResults = 100;
-  private _dimensionSelectionDisabled: boolean;
 
   constructor(private treeNodeService: TreeNodeService,
               private studyService: StudyService,
@@ -67,7 +66,6 @@ export class ConstraintService {
     // Initialize the root constraints in the cohort selection
     this.rootConstraint = new CombinationConstraint();
     this.rootConstraint.isRoot = true;
-    this.dimensionSelectionDisabled = false;
 
     // Construct constraints
     this.loadEmptyConstraints();
@@ -216,6 +214,7 @@ export class ConstraintService {
 
   public restoreCohortConstraint(cohortConstraint: Constraint) {
     const constraint = cohortConstraint.clone();
+    this.restoreSubjectDimensions(constraint);
     if (constraint.className === 'CombinationConstraint' && !constraint.negated) { // If it is a combination constraint
       this.rootConstraint.dimension = (<CombinationConstraint>constraint).dimension;
       const children = (<CombinationConstraint>constraint).children;
@@ -227,12 +226,25 @@ export class ConstraintService {
       this.rootConstraint.dimension = CombinationConstraint.TOP_LEVEL_DIMENSION;
       this.rootConstraint.addChild(constraint);
     }
-    this.dimensionSelectionDisabled = true;
+    this.validSubjectDimensionsUpdated.next();
+  }
+
+  private restoreSubjectDimensions(constraint: Constraint) {
+    if (constraint.className === 'ConceptConstraint') {
+      let concept = this.concepts.find(c => c.code === (<ConceptConstraint>constraint).concept.code);
+      if (concept) {
+        (<ConceptConstraint>constraint).concept.subjectDimensions = concept.subjectDimensions;
+      }
+    } else if (constraint.className === 'CombinationConstraint') {
+      for (let child of (<CombinationConstraint>constraint).children) {
+        this.restoreSubjectDimensions(child);
+      }
+    }
   }
 
   /*
-   * ------------------------------------------------------------------------- getters and setters
-   */
+     * ------------------------------------------------------------------------- getters and setters
+     */
 
   get isTreeNodesLoading(): boolean {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
@@ -300,18 +312,11 @@ export class ConstraintService {
 
   set allSubjectDimensions(values: Dimension[]) {
     this._allSubjectDimensions = values;
-    this.allSubjectDimensionsUpdated.next(values);
+    this.validSubjectDimensionsUpdated.next();
   }
 
-  get allSubjectDimensionsUpdated(): Subject<Dimension[]> {
-    return this._allSubjectDimensionsUpdated;
+  get validSubjectDimensionsUpdated(): Subject<boolean> {
+    return this._validSubjectDimensionsUpdated;
   }
 
-  get dimensionSelectionDisabled(): boolean {
-    return this._dimensionSelectionDisabled;
-  }
-
-  set dimensionSelectionDisabled(value: boolean) {
-    this._dimensionSelectionDisabled = value;
-  }
 }

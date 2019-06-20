@@ -159,3 +159,7 @@ then('the cohort {string} has type {string}', (cohortName, cohortType) => {
 then('the dimension selection is disabled', () => {
   cy.get('.gb-constraint').find('p-dropdown').children('div').should('have.class', 'ui-state-disabled');
 })
+
+then('the dimension selection is NOT disabled', () => {
+  cy.get('.gb-constraint').find('p-dropdown').children('div').should('not.have.class', 'ui-state-disabled');
+})

@@ -200,20 +200,18 @@ describe('GbCombinationConstraintComponent', () => {
     expect((<CombinationConstraint>children[0]).children[0].className).toBe('PedigreeConstraint');
   });
 
-  it('should disable dimension dropdown when root dimension selection is disabled', () => {
+  it('should restore constraints with subject dimensions', () => {
 
-    constraintService.dimensionSelectionDisabled = false;
-    expect(component.disableDimensionDropdown).toBe(false);
-
-    constraintService.dimensionSelectionDisabled = true;
-    constraintService.rootConstraint = new CombinationConstraint();
+    component.constraint = new CombinationConstraint();
+    component.updateDimensionDropdownOptions();
     expect(component.disableDimensionDropdown).toBe(false);
 
     let c1 = new ConceptConstraint();
     c1.textRepresentation = 'foo';
-    constraintService.dimensionSelectionDisabled = true;
+    c1.concept = new Concept();
+    c1.concept.subjectDimensions.push('diagnosis');
     component.constraint = new CombinationConstraint([c1], CombinationState.And, 'diagnosis');
-    constraintService.rootConstraint = <CombinationConstraint>component.constraint;
+    component.updateDimensionDropdownOptions();
     expect(component.disableDimensionDropdown).toBe(true);
 
     component.onConstraintRemoved(c1);
