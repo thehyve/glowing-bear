@@ -28,6 +28,7 @@ Feature: save cohort
     And I restore the cohort 'Biomaterial ID'
     Then the current cohort has biomaterial selected
     And the cohort 'Biomaterial ID' has type 'Biomaterial ID'
+    And the dimension selection is NOT disabled
 
   Scenario: save and restore complex multi-dimension cohort
     Given I am on the cohort-selection tab
@@ -36,3 +37,4 @@ Feature: save cohort
     And I restore the cohort 'Multi dim'
     Then the current cohort has multiple dimensions selected
     And the cohort 'Multi dim' has type 'Biosource ID'
+    And the dimension selection is disabled

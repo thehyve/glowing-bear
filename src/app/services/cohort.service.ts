@@ -80,12 +80,6 @@ export class CohortService {
     this.updateCountsWithCurrentCohort();
   }
 
-  clearAll(): Promise<any> {
-    this.constraintService.clearCohortConstraint();
-    this.isDirty = true;
-    return this.updateCountsWithCurrentCohort();
-  }
-
   /**
    * ----------------------------- Update the current cohort panel -----------------------------
    */

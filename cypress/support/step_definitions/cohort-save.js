@@ -155,3 +155,11 @@ then('the cohort {string} has type {string}', (cohortName, cohortType) => {
   cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).parent().parent().parent().parent().click();
   cy.get('.ng-trigger-tabContent').eq(1).contains('Type: ' + cohortType);
 })
+,
+then('the dimension selection is disabled', () => {
+  cy.get('.gb-constraint').find('p-dropdown').children('div').should('have.class', 'ui-state-disabled');
+})
+
+then('the dimension selection is NOT disabled', () => {
+  cy.get('.gb-constraint').find('p-dropdown').children('div').should('not.have.class', 'ui-state-disabled');
+})

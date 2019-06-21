@@ -47,7 +47,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   ngOnInit(): void {
     this.updateDimensionDropdownOptions();
-    this.constraintService.allSubjectDimensionsUpdated.asObservable().subscribe(() => {
+    this.constraintService.validSubjectDimensionsUpdated.asObservable().subscribe(() => {
       this.updateDimensionDropdownOptions();
       }
     );
@@ -194,6 +194,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     return !(<CombinationConstraint>this.constraint).isRoot
       && this.constraint.parentConstraint
       && this.constraint.parentConstraint.className === 'PedigreeConstraint'
+  }
+
+  get disableDimensionDropdown(): boolean {
+    return this.dimensions.length === 1;
   }
 
 }
