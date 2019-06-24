@@ -14,7 +14,7 @@
   "oidc-client-id": "${KEYCLOAK_CLIENT_ID}",
   "export-mode": {
     "name": "packer",
-    "data-view": "basic",
+    "data-view": "basic_export",
     "export-url": "${TRANSMART_PACKER_URL}"
   }
 }
