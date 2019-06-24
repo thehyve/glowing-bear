@@ -180,22 +180,18 @@ export class FractalisService {
   }
 
   private configSubsetsUpdate() {
-    this.setSubsets(this.cohortService.cohorts);
+    this.setSubsets();
     this.cohortService.cohortsUpdated.asObservable()
-      .subscribe((cohorts: Cohort[]) => {
-        this.setSubsets(cohorts);
+      .subscribe(() => {
+        this.setSubsets();
       });
   }
 
-  private setSubsets(cohorts: Cohort[]) {
+  private setSubsets() {
     let subjectCalls = [];
-    cohorts
-      .filter((cohort: Cohort) => {
-        return cohort.selected;
-      })
-      .forEach((cohort: Cohort) => {
-        subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
-      });
+    this.cohortService.selectedCohorts.forEach((cohort: Cohort) => {
+      subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
+    });
     let idSets = [];
     forkJoin(subjectCalls)
       .subscribe((res: TransmartPatient[][]) => {

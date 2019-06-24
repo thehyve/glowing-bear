@@ -16,10 +16,7 @@ import {CohortService} from './cohort.service';
 import {CohortServiceMock} from './mocks/cohort.service.mock';
 import {ResourceService} from './resource.service';
 import {ResourceServiceMock} from './mocks/resource.service.mock';
-import {TransmartPatient} from '../models/transmart-models/transmart-patient';
-import {of as observableOf} from 'rxjs';
 import {Cohort} from '../models/cohort-models/cohort';
-import {catchError} from 'rxjs/operators';
 
 describe('FractalisService', () => {
 
@@ -191,6 +188,8 @@ describe('FractalisService', () => {
       .subscribe(res => {
         expect(spySetSubsets).toHaveBeenCalledWith([['one', 'two', 'three'], ['one', 'two', 'three']])
       });
+    cohortService.cohorts.push(cohort1);
+    cohortService.cohorts.push(cohort2);
     cohortService.cohortsUpdated.next([cohort1, cohort2]);
   });
 

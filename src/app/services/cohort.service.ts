@@ -169,31 +169,18 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       console.log('Updating counts from all cohorts...');
       this.isUpdatingAll = true;
-      const selectedCohorts = this.cohorts.filter(cohort => cohort.selected);
-      let constraint: Constraint;
-      if (selectedCohorts.length === 1) {
-        constraint = selectedCohorts[0].constraint;
-      } else {
-        const combination = new CombinationConstraint();
-        combination.combinationState = CombinationState.Or;
-        this.cohorts.forEach((cohort: Cohort) => {
-          if (cohort.selected) {
-            combination.addChild(cohort.constraint);
-          }
-        });
-        constraint = combination;
-      }
       if (this.saveSubjectSetBeforeUpdatingCounts) {
-        this.resourceService.saveSubjectSet('temp', constraint).subscribe((subjectSet: SubjectSet) => {
-          return this.updateAllCounts(new SubjectSetConstraint(subjectSet))
-            .then(() =>
-              resolve(true)
-            ).catch(err => {
-              reject(err);
-            });
-        });
+        this.resourceService.saveSubjectSet('temp', this.allSelectedCohortsConstraint)
+          .subscribe((subjectSet: SubjectSet) => {
+            return this.updateAllCounts(new SubjectSetConstraint(subjectSet))
+              .then(() =>
+                resolve(true)
+              ).catch(err => {
+                reject(err);
+              });
+          });
       } else {
-        return this.updateAllCounts(constraint)
+        return this.updateAllCounts(this.allSelectedCohortsConstraint)
           .then(() =>
             resolve(true)
           ).catch(err => {
@@ -367,12 +354,19 @@ export class CohortService {
     this.editCohort(target, obj);
   }
 
-  get currentCohort(): Cohort {
-    return this._currentCohort;
-  }
-
-  set currentCohort(value: Cohort) {
-    this._currentCohort = value;
+  get allSelectedCohortsConstraint(): Constraint {
+    if (this.selectedCohorts.length === 1) {
+      return this.selectedCohorts[0].constraint;
+    } else {
+      const combination = new CombinationConstraint();
+      combination.combinationState = CombinationState.Or;
+      this.cohorts.forEach((cohort: Cohort) => {
+        if (cohort.selected) {
+          combination.addChild(cohort.constraint);
+        }
+      });
+      return combination;
+    }
   }
 
   get cohorts(): Cohort[] {
@@ -381,6 +375,18 @@ export class CohortService {
 
   set cohorts(value: Cohort[]) {
     this._cohorts = value;
+  }
+
+  get selectedCohorts(): Cohort[] {
+    return this.cohorts.filter(cohort => cohort.selected);
+  }
+
+  get currentCohort(): Cohort {
+    return this._currentCohort;
+  }
+
+  set currentCohort(value: Cohort) {
+    this._currentCohort = value;
   }
 
   get isDirty(): boolean {

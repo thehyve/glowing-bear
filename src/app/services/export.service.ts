@@ -22,6 +22,7 @@ import {AsyncSubject} from 'rxjs';
 import {AppConfig} from '../config/app.config';
 import {CountService} from './count.service';
 import {VariableService} from './variable.service';
+import {CohortService} from './cohort.service';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,7 @@ export class ExportService {
 
   constructor(private appConfig: AppConfig,
               private constraintService: ConstraintService,
+              private cohortService: CohortService,
               private resourceService: ResourceService,
               private authService: AuthenticationService,
               private studyService: StudyService,
@@ -64,7 +66,7 @@ export class ExportService {
      *        dataTableService.dataTableUpdated -> updateExportDataTypes()
      * Else, there is no need to wait for data table to complete,
      *        directly update export data types whenever the variables are updated, i.e.
-     *        constraintService.variablesUpdated -> updateExportDataTypes()
+     *        variableService.variablesUpdated -> updateExportDataTypes()
      */
     if (this.isTransmartDataTable) {
       this.dataTableService.dataTableUpdated.asObservable()
@@ -167,7 +169,7 @@ export class ExportService {
       this.resourceService.runExportJob(
         job,
         this.exportDataTypes,
-        this.constraintService.cohortSelectionConstraint,
+        this.cohortService.allSelectedCohortsConstraint,
         this.constraintService.variableConstraint(this.variableService.variables),
         this.dataTableService.dataTable,
         this.isTransmartDateColumnsIncluded
