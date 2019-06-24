@@ -24,7 +24,7 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {Promise} from 'es6-promise';
 import {ValueType} from '../models/constraint-models/value-type';
 import {Operator} from '../models/constraint-models/operator';
-import {ConstraintService} from './constraint.service';
+import {CohortService} from './cohort.service';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +42,16 @@ export class CrossTableService {
   private _crossTable: CrossTable;
   private _selectedConstraintCell: GbDraggableCellComponent;
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private cohortService: CohortService,
               private resourceService: ResourceService,
               private applicationRef: ApplicationRef) {
     this.clear();
+    this.cohortService.cohortsUpdated.asObservable().subscribe(() => {
+      this.crossTable.isUpdating = true;
+      this.updateCells().then(() => {
+        this.crossTable.isUpdating = false;
+      });
+    });
   }
 
   clear() {
@@ -69,10 +75,10 @@ export class CrossTableService {
            * Here we force it to update.
            */
           this.applicationRef.tick();
-          resolve(true)
+          resolve(true);
         })
         .catch(err => {
-          reject()
+          reject();
         });
     });
   }
@@ -183,7 +189,7 @@ export class CrossTableService {
       try {
         this.crossTable.rowHeaderConstraints = this.crossConstraints(this.rowConstraints);
         this.crossTable.columnHeaderConstraints = this.crossConstraints(this.columnConstraints);
-        this.crossTable.constraint = this.constraintService.cohortSelectionConstraint;
+        this.crossTable.constraint = this.cohortService.allSelectedCohortsConstraint;
         this.resourceService.getCrossTable(this.crossTable)
           .subscribe((crossTable: CrossTable) => {
             this.crossTable = crossTable;

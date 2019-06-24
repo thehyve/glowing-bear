@@ -16,8 +16,7 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
-import {UIHelper} from '../utilities/ui-helper';
-import {TreeNode} from 'primeng/api';
+import {CohortService} from './cohort.service';
 import {TreeNodeHelper} from '../utilities/tree-node-helper';
 
 @Injectable({
@@ -60,6 +59,7 @@ export class VariableService {
 
   constructor(private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
+              private cohortService: CohortService,
               private countService: CountService) {
     this.subscribeToVariableChanges();
   }
@@ -305,7 +305,7 @@ export class VariableService {
   // get the combination of cohort constraint and variable constraint
   get combination(): Constraint {
     return new CombinationConstraint(
-      [this.constraintService.cohortSelectionConstraint,
+      [this.cohortService.allSelectedCohortsConstraint,
         this.constraintService.variableConstraint(this.variables)],
       CombinationState.And
     );

@@ -17,6 +17,8 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {CountService} from './count.service';
 import {CountServiceMock} from './mocks/count.service.mock';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
 
 describe('VariableService', () => {
   let variableService: VariableService;
@@ -56,6 +58,10 @@ describe('VariableService', () => {
         {
           provide: ConstraintService,
           useClass: ConstraintServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         {
           provide: CountService,

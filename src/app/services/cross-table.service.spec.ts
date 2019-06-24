@@ -16,11 +16,13 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
-import {ConstraintService} from './constraint.service';
-import {ConstraintServiceMock} from './mocks/constraint.service.mock';
+import {CohortService} from './cohort.service';
+import {CohortServiceMock} from './mocks/cohort.service.mock';
+import {Cohort} from '../models/cohort-models/cohort';
 
 describe('CrossTableService', () => {
   let crossTableService: CrossTableService;
+  let cohortService: CohortService;
   let resourceService: ResourceService;
 
   beforeEach(() => {
@@ -31,14 +33,15 @@ describe('CrossTableService', () => {
           useClass: ResourceServiceMock
         },
         {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         CrossTableService
       ]
     });
     crossTableService = TestBed.get(CrossTableService);
     resourceService = TestBed.get(ResourceService);
+    cohortService = TestBed.get(CohortService);
   });
 
   it('should be created',
@@ -79,6 +82,19 @@ describe('CrossTableService', () => {
     expect(crossTableService.selectedConstraintCell).toBe(null);
     expect(spyGet).toHaveBeenCalled();
     expect(spySet).toHaveBeenCalled();
+  });
+
+  it('should update cells when cohorts are changed', () => {
+    let spyUpdateCells = spyOn(crossTableService, 'updateCells').and.callThrough();
+    let cohort1 = new Cohort('id1', 'name1');
+    cohort1.selected = true;
+    let cohort2 = new Cohort('id2', 'name2');
+    cohort2.selected = true;
+    cohortService.cohortsUpdated.asObservable()
+      .subscribe(res => {
+        expect(spyUpdateCells).toHaveBeenCalled();
+      });
+    cohortService.cohortsUpdated.next([cohort1, cohort2]);
   });
 
 });

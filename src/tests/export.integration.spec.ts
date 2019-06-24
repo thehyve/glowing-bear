@@ -30,6 +30,8 @@ import {TreeNode} from 'primeng/api';
 import {CountService} from '../app/services/count.service';
 import {Concept} from '../app/models/constraint-models/concept';
 import {Constraint} from '../app/models/constraint-models/constraint';
+import {Cohort} from '../app/models/cohort-models/cohort';
+import {ConceptConstraint} from '../app/models/constraint-models/concept-constraint';
 
 describe('Integration test for data export', () => {
 
@@ -165,6 +167,10 @@ describe('Integration test for data export', () => {
     rootConstraint.dimension = 'patient';
     rootConstraint.addChild(new TrueConstraint());
     constraintService.rootConstraint = rootConstraint;
+    let cohort = new Cohort('test1', 'test1');
+    cohort.selected = true;
+    cohort.constraint = new ConceptConstraint();
+    cohortService.cohorts.push(cohort);
     // mock params in export service
     exportService.exportJobName = 'foobar';
 
@@ -179,8 +185,14 @@ describe('Integration test for data export', () => {
       expect((combination as CombinationConstraint).dimension).toBe('patient');
       // verify that the cohort constraint is true constraint as mocked
       expect((combination as CombinationConstraint).children[0].className).toBe('CombinationConstraint');
+      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint).children.length).toBe(2);
+      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
+        .children[0].className).toBe('TrueConstraint');
+      // verify that combination contains selected cohort constraint
+      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
+        .children[1].className).toBe('ConceptConstraint');
       // verify that the variable constraint is a combination constraint
-      const variableConstraint = <CombinationConstraint>(combination as CombinationConstraint).children[1]
+      const variableConstraint = <CombinationConstraint>(combination as CombinationConstraint).children[1];
       expect(variableConstraint.className).toBe('CombinationConstraint');
       // verify that the variable constraint's dimension is indeed 'observation', not other dimensions that result in subselection wrapping
       expect(variableConstraint.dimension).toBe('observation');
@@ -189,7 +201,7 @@ describe('Integration test for data export', () => {
       expect(variableConstraint.children[0]['concept'].code).toBe('VSIGN:HR');
       expect(variableConstraint.children[1]['concept'].code).toBe('EHR:DEM:AGE');
     }).catch(err => {
-      fail('Preparing export job should go through, but did not.')
+      fail('Preparing export job should go through, but did not. ' + err)
     });
   });
 
