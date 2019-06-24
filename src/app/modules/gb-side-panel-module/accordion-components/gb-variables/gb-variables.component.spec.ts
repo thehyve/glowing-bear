@@ -148,23 +148,27 @@ describe('GbVariablesComponent', () => {
   it('should handle importing variables by names', () => {
     const result = '{"names": ["test-name-1", "test-name-3"]}';
     const e = new Event('');
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
     spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
     const file = new File([], 'test.json', {type: 'application/json'});
     spyOn(FileImportHelper, 'getFile').and.returnValue(file);
     const spyCall = spyOn(variableService, 'importVariablesByNames').and.stub();
     component.handleVariablesFileUploadEvent(e);
     expect(spyCall).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledWith('info', 'Variables file upload successful!');
   });
 
   it('should handle importing variables by paths', () => {
     const result = '{"paths": ["foobar"]}';
     const e = new Event('');
+    const spyMessage = spyOn(MessageHelper, 'alert').and.stub();
     spyOnProperty(e, 'target', 'get').and.returnValue({result: result});
     const file = new File([], 'test.json', {type: 'application/json'});
     spyOn(FileImportHelper, 'getFile').and.returnValue(file);
     const spyCall = spyOn(variableService, 'importVariablesByPaths').and.stub();
     component.handleVariablesFileUploadEvent(e);
     expect(spyCall).toHaveBeenCalled();
+    expect(spyMessage).toHaveBeenCalledWith('info', 'Variables file upload successful!');
   });
 
   it('should enable check mark only when all variables are selected', () => {

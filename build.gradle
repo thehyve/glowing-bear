@@ -1,27 +1,18 @@
 import groovy.json.JsonSlurper
 
-buildscript {
-  ext {
-    gradleNodeVersion = '1.2.0'
-  }
-  repositories {
-    mavenLocal()
-    mavenCentral()
-    maven { url 'https://plugins.gradle.org/m2/' }
-  }
-  dependencies {
-    classpath "com.moowork.gradle:gradle-node-plugin:${gradleNodeVersion}"
-    classpath 'net.linguica.gradle:maven-settings-plugin:0.5'
-  }
+plugins {
+  id 'com.moowork.node' version '1.3.1'
+  id 'net.linguica.maven-settings' version '0.5'
+
 }
 
-def versionFile = new File('src/app/config/config.default.json')
+def versionFile = new File('package.json')
 def versionObject = new JsonSlurper().parseText(versionFile.text)
 
 ext {
-  glowingBearVersion = versionObject['app-version']
-  nodeVersion = '11.10.0'
-  yarnVersion = '1.13.0'
+  glowingBearVersion = versionObject['version']
+  nodeVersion = '10.16.0'
+  yarnVersion = '1.16.0'
   gradleWrapperVersion = '4.0'
 }
 

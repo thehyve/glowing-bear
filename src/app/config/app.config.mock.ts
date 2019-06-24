@@ -12,7 +12,6 @@ export class AppConfigMock {
 
   constructor() {
     this.config = {
-      'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
@@ -25,6 +24,10 @@ export class AppConfigMock {
         'data-view': 'dataTable'
       },
     };
+  }
+
+  get version() {
+    return '0.0.1-test';
   }
 
   public getConfig(key: any) {
@@ -44,7 +47,6 @@ export class OidcConfigMock {
 
   constructor() {
     this.config = {
-      'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'fractalis-url': 'https://fractalis.example.com',
@@ -52,6 +54,10 @@ export class OidcConfigMock {
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
       'oidc-client-id': 'transmart-client'
     };
+  }
+
+  get version() {
+    return '0.0.1-test';
   }
 
   public getConfig(key: any) {
@@ -71,7 +77,6 @@ export class AppConfigPackerMock {
 
   constructor() {
     this.config = {
-      'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
@@ -83,6 +88,10 @@ export class AppConfigPackerMock {
         'data-view': 'basic-packer-export'
       },
     };
+  }
+
+  get version() {
+    return '0.0.1-test';
   }
 
   public getConfig(key: any) {
@@ -103,7 +112,6 @@ export class AppConfigSurveyExportMock {
 
   constructor() {
     this.config = {
-      'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
@@ -114,6 +122,10 @@ export class AppConfigSurveyExportMock {
         'data-view': 'surveyTable'
       },
     };
+  }
+
+  get version() {
+    return '0.0.1-test';
   }
 
   public getConfig(key: any) {
@@ -134,7 +146,6 @@ export class AppConfigFractalisDisabledMock {
 
   constructor() {
     this.config = {
-      'app-version': '0.0.1-test',
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
@@ -146,6 +157,10 @@ export class AppConfigFractalisDisabledMock {
         'data-view': 'surveyTable'
       },
     };
+  }
+
+  get version() {
+    return '0.0.1-test';
   }
 
   public getConfig(key: any) {

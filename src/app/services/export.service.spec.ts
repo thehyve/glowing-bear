@@ -94,7 +94,7 @@ describe('ExportService', () => {
       .catch(err => {
         fail('should have succeeded canceling export job but failed');
       });
-  })
+  });
 
   it('should handle error when canceling export job', () => {
     let spy = spyOn(resourceService, 'cancelExportJob').and.callFake(() => {

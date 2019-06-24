@@ -1,30 +1,27 @@
 <div class="side-panel-container">
   <div class="gb-logo-panel">
     <a [routerLink]="''">
-      <img src="../../../assets/icons/glowingbear.png" alt="" />
+      <img src="../../../assets/icons/glowingbear.png" alt=""/>
       <span class="gb-logo-text">GLOWING BEAR</span>
     </a>
   </div>
 
-  <div class="accordion-container">
+  <p-accordion [multiple]="true">
 
-    <p-accordion [multiple]="true">
-
-      <div *ngIf="isDataSelection">
-        <p-accordionTab header="Ontology" [selected]="true">
-          <gb-tree-nodes></gb-tree-nodes>
-        </p-accordionTab>
-      </div>
-
-      <p-accordionTab header="Cohorts" [selected]="true">
-        <gb-cohorts></gb-cohorts>
+    <div *ngIf="isDataSelection">
+      <p-accordionTab header="Ontology" [selected]="true">
+        <gb-tree-nodes></gb-tree-nodes>
       </p-accordionTab>
+    </div>
 
-      <p-accordionTab header="Variables" [selected]="true">
-        <gb-variables></gb-variables>
-      </p-accordionTab>
+    <p-accordionTab header="Cohorts" [selected]="true">
+      <gb-cohorts></gb-cohorts>
+    </p-accordionTab>
 
-    </p-accordion>
-  </div>
+    <p-accordionTab header="Variables" [selected]="true">
+      <gb-variables></gb-variables>
+    </p-accordionTab>
+
+  </p-accordion>
 
 </div>

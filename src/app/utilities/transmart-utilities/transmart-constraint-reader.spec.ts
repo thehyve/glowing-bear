@@ -245,4 +245,26 @@ describe('TransmartConstraintReader', () => {
     testConstraint(constraint);
   });
 
+  it('should correctly (de)serialise subselection with nested subselections', () => {
+    const studyConstraint11 = new StudyConstraint();
+    const study11 = new Study();
+    study11.id = 'ABC1';
+    studyConstraint11.studies.push(study11);
+    const studyConstraint12 = new StudyConstraint();
+    const study12 = new Study();
+    study12.id = 'ABC2';
+    studyConstraint12.studies.push(study12);
+    const subselectionConstraint1 = new CombinationConstraint(
+      [studyConstraint11, studyConstraint12], CombinationState.And, 'patient');
+
+    const studyConstraint2 = new StudyConstraint();
+    const study2 = new Study();
+    study2.id = 'DEF';
+    studyConstraint2.studies.push(study2);
+
+    const constraint = new CombinationConstraint(
+      [subselectionConstraint1, studyConstraint2], CombinationState.Or, 'patient');
+    testConstraint(constraint);
+  });
+
 });

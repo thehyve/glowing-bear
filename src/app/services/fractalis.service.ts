@@ -180,25 +180,21 @@ export class FractalisService {
   }
 
   private configSubsetsUpdate() {
-    this.setSubsets(this.cohortService.cohorts);
+    this.setSubsets();
     this.cohortService.cohortsUpdated.asObservable()
-      .subscribe((cohorts: Cohort[]) => {
-        this.setSubsets(cohorts);
+      .subscribe(() => {
+        this.setSubsets();
       });
   }
 
-  private setSubsets(cohorts: Cohort[]) {
+  private setSubsets() {
     let subjectCalls = [];
-    cohorts
-      .filter((cohort: Cohort) => {
-        return cohort.selected;
-      })
-      .forEach((cohort: Cohort) => {
-        subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
-      });
+    this.cohortService.selectedCohorts.forEach((cohort: Cohort) => {
+      subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
+    });
     let idSets = [];
     forkJoin(subjectCalls)
-      .subscribe(res => {
+      .subscribe((res: TransmartPatient[][]) => {
         for (let i = 0; i < subjectCalls.length; i++) {
           const ids = res[i].map((subject: TransmartPatient) => {
             return subject.subjectIds.SUBJ_ID;
@@ -221,7 +217,7 @@ export class FractalisService {
   private getNewVariablesToPrepare(selectedVariables: Concept[]): Concept[] {
     const existingCodes: string[] = this.cachedVariables.map((c: Concept) => {
       return c.code;
-    })
+    });
     return selectedVariables.filter((c: Concept) => {
       return !existingCodes.includes(c.code);
     });

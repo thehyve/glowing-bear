@@ -152,7 +152,7 @@ describe('GbConstraintComponent', () => {
     expect(component.observationBoxMessage).toBe('for the patient there is an observation:');
 
     component.constraint.negated = true;
-    expect(component.observationBoxMessage).toBe('for the patient there are NO observations:');
+    expect(component.observationBoxMessage).toBe('for the patient there is NO observation:');
   });
 
 });

@@ -1,7 +1,6 @@
 {
   "api-url": "${TRANSMART_API_SERVER_URL}",
   "api-version": "v2",
-  "app-version": "${GB_VERSION}",
   "gb-backend-url": "${GB_BACKEND_URL}",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": false,
@@ -15,7 +14,7 @@
   "oidc-client-id": "${KEYCLOAK_CLIENT_ID}",
   "export-mode": {
     "name": "packer",
-    "data-view": "basic",
+    "data-view": "basic_export",
     "export-url": "${TRANSMART_PACKER_URL}"
   }
 }

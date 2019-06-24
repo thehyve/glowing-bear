@@ -1,20 +1,17 @@
 sudo: required
-os:
-  - linux
+dist: xenial
 language: node_js
 node_js:
   - '11'
 
+services:
+  - xvfb
+
 addons:
   chrome: stable # have Travis install chrome stable.
 
-before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -rf $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches
-    - $HOME/.gradle/wrapper
     - node
     - node_modules
 
@@ -30,17 +27,14 @@ before_install:
   - date
   - export CHROME_BIN=google-chrome-stable
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - gradle wrapper
-  - GRADLE_SCRIPT="$(pwd)/gradlew"
-  - ${GRADLE_SCRIPT} --version
 install:
-  - ${GRADLE_SCRIPT} assemble
-  - ${GRADLE_SCRIPT} publishToMavenLocal
+  - yarn
+  - yarn package
 script:
-  - ${GRADLE_SCRIPT} check
+  - yarn lint
+  - yarn testOnce
 after_success:
-  - ${GRADLE_SCRIPT} yarnCodecov
+  - yarn report-coverage
 
 notifications:
   webhooks:

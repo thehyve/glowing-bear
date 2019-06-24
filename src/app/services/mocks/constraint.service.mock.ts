@@ -25,7 +25,7 @@ export class ConstraintServiceMock {
   private _conceptConstraints: Constraint[] = [];
   private _maxNumSearchResults = 100;
   private _constraint: Constraint = new CombinationConstraint();
-  private _allSubjectDimensionsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
+  private _validSubjectDimensionsUpdated: Subject<Cohort[]> = new Subject<Cohort[]>();
   private _allSubjectDimensions: Dimension[] = [];
   constructor() {
     this._rootConstraint = new CombinationConstraint();
@@ -98,12 +98,12 @@ export class ConstraintServiceMock {
     this._maxNumSearchResults = value;
   }
 
-  get allSubjectDimensionsUpdated(): Subject<Cohort[]> {
-    return this._allSubjectDimensionsUpdated;
+  get validSubjectDimensionsUpdated(): Subject<Cohort[]> {
+    return this._validSubjectDimensionsUpdated;
   }
 
-  set allSubjectDimensionsUpdated(value: Subject<Cohort[]>) {
-    this._allSubjectDimensionsUpdated = value;
+  set validSubjectDimensionsUpdated(value: Subject<Cohort[]>) {
+    this._validSubjectDimensionsUpdated = value;
   }
 
   get allSubjectDimensions(): Dimension[] {

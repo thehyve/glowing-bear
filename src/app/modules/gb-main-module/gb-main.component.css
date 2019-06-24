@@ -8,6 +8,11 @@
   will-change: overflow;
 }
 
+.left-split-area {
+  margin-top: var(--gb-navbar-height-extra) !important;
+  height: initial !important;
+}
+
 .gb-router-outlet-container {
   padding-left: 1px;
 }
