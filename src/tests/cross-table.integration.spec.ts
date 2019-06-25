@@ -32,6 +32,10 @@ import {
   TransmartStudyNameConstraint
 } from '../app/models/transmart-models/transmart-constraint';
 import {ConstraintHelper} from '../app/utilities/constraint-utilities/constraint-helper';
+import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
+import {CohortService} from '../app/services/cohort.service';
+import {Cohort} from '../app/models/cohort-models/cohort';
+import {StudyConstraint} from '../app/models/constraint-models/study-constraint';
 
 describe('Integration tests for cross table ', () => {
 
@@ -40,6 +44,7 @@ describe('Integration tests for cross table ', () => {
   let crossTableService: CrossTableService;
   let treeNodeService: TreeNodeService;
   let selectedTreeNode: TreeNode;
+  let cohortService: CohortService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -56,11 +61,13 @@ describe('Integration tests for cross table ', () => {
         StudyService,
         CrossTableService,
         TreeNodeService,
-        NavbarService
+        NavbarService,
+        CohortService
       ]
     });
     resourceService = TestBed.get(ResourceService);
     constraintService = TestBed.get(ConstraintService);
+    cohortService = TestBed.get(CohortService);
     crossTableService = TestBed.get(CrossTableService);
     treeNodeService = TestBed.get(TreeNodeService);
 
@@ -95,6 +102,14 @@ describe('Integration tests for cross table ', () => {
   });
 
   it('should update the cross table on tree node drop', () => {
+    let selectedCohort1 = new Cohort('c1', 'name');
+    selectedCohort1.selected = true;
+    selectedCohort1.constraint = new ConceptConstraint();
+    let selectedCohort2 = new Cohort('c1', 'name');
+    selectedCohort2.selected = true;
+    selectedCohort2.constraint = new StudyConstraint();
+    cohortService.cohorts.push(selectedCohort1);
+    cohortService.cohorts.push(selectedCohort2);
     // tree node drop to row zone
     let spy1 = spyOn(resourceService, 'getCategoricalAggregate').and.callFake(() => {
       let agg = new CategoricalAggregate();
@@ -120,6 +135,11 @@ describe('Integration tests for cross table ', () => {
       expect(spy3).toHaveBeenCalled();
       expect(crossTableService.crossTable.rowConstraints.length).toBe(1);
       expect(crossTableService.crossTable.rowHeaderConstraints.length).toBe(2);
+      expect(cohortService.allSelectedCohortsConstraint.className).toBe('CombinationConstraint');
+      expect(crossTableService.crossTable.constraint.className).toBe('CombinationConstraint');
+      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.length).toBe(3);
+      expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.map(it => it.className))
+        .toEqual(<any>jasmine.arrayContaining(['ConceptConstraint', 'TrueConstraint', 'StudyConstraint']));
     });
   });
 
@@ -141,8 +161,8 @@ describe('Integration tests for cross table ', () => {
         fail('should have failed retrieving cross table cells because there is no constraint values.')
       })
       .catch((err) => {
-        expect(crossTableService.crossTable.rowHeaderConstraints).not.toBeDefined();
-        expect(crossTableService.crossTable.columnHeaderConstraints).not.toBeDefined();
+        expect(crossTableService.crossTable.rowHeaderConstraints).toEqual([[]]);
+        expect(crossTableService.crossTable.columnHeaderConstraints).toEqual([[]]);
       });
     // when the value constraints are defined
     crossTableService.crossTable.valueConstraints = new Map<Constraint, Array<Constraint>>();
@@ -170,9 +190,9 @@ describe('Integration tests for cross table ', () => {
     crossTableService.crossTable.valueConstraints.set(conjunctiveCategorical, [v3, v4, v5]);
     crossTableService.updateCells()
       .then(() => {
-        // since this does not involve real backend calls, no header constraints are defined
-        expect(crossTableService.crossTable.rowHeaderConstraints).not.toBeDefined();
-        expect(crossTableService.crossTable.columnHeaderConstraints).not.toBeDefined();
+        // since this does not involve real backend calls, header constraints are empty
+        expect(crossTableService.crossTable.rowHeaderConstraints).toEqual([[]]);
+        expect(crossTableService.crossTable.columnHeaderConstraints).toEqual([[]]);
       })
       .catch((err) => {
         fail('should have succeeded retrieving cross table cells because there is constraint values.')

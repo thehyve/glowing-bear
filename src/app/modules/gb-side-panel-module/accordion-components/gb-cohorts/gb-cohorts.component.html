@@ -70,7 +70,7 @@
         <md2-accordion-header>
           <div *ngIf="cohort.visible">
             <div class="cohort-header clearfix">
-              <div class="cohort-header-name">
+              <div class="cohort-header-name" [ngClass]="{'current-cohort-header-name': !cohort.controlsEnabled}">
                 <i *ngIf="cohort.controlsEnabled" class="{{getCohortTypeIcon(cohort.type)}} cohort-type-icon">
                 </i>&nbsp;
                 <p-toggleButton [(ngModel)]="cohort.selected"

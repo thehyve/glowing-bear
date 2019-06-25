@@ -27,9 +27,9 @@ import {StudyService} from '../../../../services/study.service';
 import {StudyServiceMock} from '../../../../services/mocks/study.service.mock';
 import {AuthenticationService} from '../../../../services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../../../../services/mocks/authentication.service.mock';
-import {Constraint} from '../../../../models/constraint-models/constraint';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
+import {CombinationState} from '../../../../models/constraint-models/combination-state';
 
 describe('GbCombinationConstraintComponent', () => {
   let component: GbCombinationConstraintComponent;
@@ -143,7 +143,7 @@ describe('GbCombinationConstraintComponent', () => {
     constraint1.addChild(constraint12);
 
     component.constraint = constraint1;
-    expect(component.subjectBoxMessage).toBe('Select data for');
+    expect(component.subjectBoxMessage).toBe('Select data linked to');
 
     component.constraint = constraint11;
     expect(component.subjectBoxMessage).toBe('the patient is NOT linked to a');
@@ -198,6 +198,24 @@ describe('GbCombinationConstraintComponent', () => {
     expect((<CombinationConstraint>children[0]).dimension).toBe('patient');
     expect((<CombinationConstraint>children[0]).children.length).toBe(1);
     expect((<CombinationConstraint>children[0]).children[0].className).toBe('PedigreeConstraint');
+  });
+
+  it('should restore constraints with subject dimensions', () => {
+
+    component.constraint = new CombinationConstraint();
+    component.updateDimensionDropdownOptions();
+    expect(component.disableDimensionDropdown).toBe(false);
+
+    let c1 = new ConceptConstraint();
+    c1.textRepresentation = 'foo';
+    c1.concept = new Concept();
+    c1.concept.subjectDimensions.push('diagnosis');
+    component.constraint = new CombinationConstraint([c1], CombinationState.And, 'diagnosis');
+    component.updateDimensionDropdownOptions();
+    expect(component.disableDimensionDropdown).toBe(true);
+
+    component.onConstraintRemoved(c1);
+    expect(component.disableDimensionDropdown).toBe(false);
   });
 
 });

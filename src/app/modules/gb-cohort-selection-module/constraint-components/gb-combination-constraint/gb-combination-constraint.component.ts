@@ -47,7 +47,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   ngOnInit(): void {
     this.updateDimensionDropdownOptions();
-    this.constraintService.allSubjectDimensionsUpdated.asObservable().subscribe(() => {
+    this.constraintService.validSubjectDimensionsUpdated.asObservable().subscribe(() => {
       this.updateDimensionDropdownOptions();
       }
     );
@@ -179,7 +179,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   get subjectBoxMessage(): string {
     if ((<CombinationConstraint>this.constraint).isRoot) {
-      return 'Select data for';
+      return 'Select data linked to';
     } else {
       let parentDimension = this.constraint.parentDimension;
       if (this.constraint.negated) {
@@ -194,6 +194,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     return !(<CombinationConstraint>this.constraint).isRoot
       && this.constraint.parentConstraint
       && this.constraint.parentConstraint.className === 'PedigreeConstraint'
+  }
+
+  get disableDimensionDropdown(): boolean {
+    return this.dimensions.length === 1;
   }
 
 }

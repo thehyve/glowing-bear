@@ -19,10 +19,8 @@ import {StudyConstraint} from '../models/constraint-models/study-constraint';
 import {Concept} from '../models/constraint-models/concept';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Constraint} from '../models/constraint-models/constraint';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {CountService} from './count.service';
-import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
 
 describe('ConstraintService', () => {
   let constraintService: ConstraintService;
@@ -91,6 +89,22 @@ describe('ConstraintService', () => {
     expect((result2 as CombinationConstraint).children
       .filter(c => c instanceof ConceptConstraint).length)
       .toBe(1);
+  });
+
+  it('should restore cohort constraint with proper subject dimensions', () => {
+    let concept = new Concept();
+    let constraint1 = new CombinationConstraint();
+    constraint1.dimension = 'diagnosis';
+    let constraint11 = new ConceptConstraint();
+    constraint11.concept = concept;
+    constraint1.addChild(constraint11);
+    concept.subjectDimensions.push('diagnosis');
+    constraintService.concepts.push(concept);
+
+    constraintService.restoreCohortConstraint(constraint1);
+    expect(constraintService.rootConstraint.dimension).toEqual('diagnosis');
+    expect((<ConceptConstraint>constraintService.rootConstraint.children[0]).concept.subjectDimensions)
+      .toContain('diagnosis');
   });
 
 });

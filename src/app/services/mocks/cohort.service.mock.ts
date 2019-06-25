@@ -9,6 +9,7 @@
 import {Cohort} from '../../models/cohort-models/cohort';
 import {CountItem} from '../../models/aggregate-models/count-item';
 import {Subject} from 'rxjs';
+import {Constraint} from '../../models/constraint-models/constraint';
 
 export class CohortServiceMock {
   private _cohorts: Cohort[] = [];
@@ -31,8 +32,12 @@ export class CohortServiceMock {
     });
   }
 
-  clearAll(): Promise<any> {
-    return new Promise<any>(resolve => resolve(true));
+  get allSelectedCohortsConstraint(): Constraint[] {
+    return [];
+  }
+
+  get selectedCohorts(): Cohort[] {
+    return this.cohorts.filter(cohort => cohort.selected);
   }
 
   get cohorts(): Cohort[] {
