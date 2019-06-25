@@ -53,7 +53,7 @@ describe('GbFractalisChartComponent', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
     expect(component.chartWidth).toEqual('35em');
-    expect(component.chartHeight).toEqual('17.5em');
+    expect(component.chartHeight).toEqual('auto');
   });
 
   const mockFractalisTaskData: FractalisData[] = [

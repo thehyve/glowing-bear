@@ -100,9 +100,8 @@ export class GbFractalisChartComponent implements AfterViewInit {
   }
 
   get chartHeight(): string {
-    let size = this.chart.type === ChartType.CROSSTABLE ? this.fractalisService.chartDivSize / 2 :
-      this.fractalisService.chartDivSize;
-    return size + 'em';
+    return this.chart.type === ChartType.CROSSTABLE ? 'auto' :
+      this.fractalisService.chartDivSize + 'em';
   }
 
 }
