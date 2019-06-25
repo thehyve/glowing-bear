@@ -61,4 +61,8 @@ export class AuthenticationService implements OnDestroy {
   set accessLevel(value: AccessLevel) {
     this._accessLevel = value;
   }
+
+  get authorisations(): Observable<string[]> {
+    return this.authenticationMethod.authorisations;
+  }
 }

@@ -14,7 +14,7 @@ import {Observable} from 'rxjs/Observable';
 import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
-import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
@@ -100,7 +100,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.http.post(url, body.toString(), {headers: headers})
         .subscribe((result: any) => {
           console.log(`Token retrieved.`);
-          this._token = Oauth2Token.from(result);
+          this._token = new Oauth2Token(result);
           localStorage.setItem('token', JSON.stringify(this._token));
           this.authorisation.subscribe((authorisation: AuthorizationResult) => {
             resolve(authorisation);
@@ -252,6 +252,16 @@ export class Oauth2Authentication implements AuthenticationMethod {
         window.location.assign(target);
       }, 4000
     );
+  }
+
+  get authorisations(): Observable<string[]> {
+    return this.authorised.map((isAuthorized) => {
+      if (isAuthorized && this.validToken) {
+        return this._token.getAuthorisations(this.config.getConfig('oidc-client-id'));
+      } else {
+        return [];
+      }
+    });
   }
 
 }

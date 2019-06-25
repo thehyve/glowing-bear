@@ -11,6 +11,7 @@ import {FormatHelper} from '../../utilities/format-helper';
 import {QueryService} from '../../services/query.service';
 import {AppConfig} from '../../config/app.config';
 import {MedcoQueryType} from "../../models/picsure-models/i2b2-medco/medco-query-type";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'gb-data-selection',
@@ -93,7 +94,7 @@ export class GbDataSelectionComponent implements OnInit {
     return this.queryService.isQuerySavingUsed;
   }
 
-  get availableQueryTypes(): MedcoQueryType[] {
+  get availableQueryTypes(): Observable<MedcoQueryType[]> {
     return this.queryService.availableQueryTypes;
   }
 

@@ -33,7 +33,7 @@
             <span class="float-right">
               <label>Query Type: </label>
               <select [(ngModel)]="selectedQueryType">
-                <option *ngFor="let queryType of availableQueryTypes" [ngValue]="queryType">
+                <option *ngFor="let queryType of availableQueryTypes | async" [ngValue]="queryType">
                   {{queryType.name}}
                 </option>
               </select>
