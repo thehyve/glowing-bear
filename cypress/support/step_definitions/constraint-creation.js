@@ -61,7 +61,7 @@ when("I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TR
 when("I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10", () => {
   cy.toggleNode('Public Studies ')
     .toggleNode('Oracle_1000_Patient ')
-    .toggleNode('Demographics ')
+    .toggleVisibleNode('Demographics ')
     .toggleNode('Numerical Variables ');
 
   cy.contains('Age ').trigger('dragstart');
