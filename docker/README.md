@@ -2,10 +2,23 @@
 
 [![Docker Build Status](https://img.shields.io/docker/pulls/thehyve/glowing-bear.svg)](https://hub.docker.com/r/thehyve/glowing-bear)
 
-Nginx-based Docker image definition for Glowing Bear.
+Nginx-based Docker image for Glowing Bear with proxy for backend services.
 
-The current [Nginx configuration](./nginx.nginx.conf) allows to connect to the applications via either HTTP, or HTTPS, 
-depending on the specified `NGINX_PORT` and volumes with signed certificate, private key and ssl config (see [the configuration instruction](https://github.com/thehyve/glowing-bear-docker#configuration)). 
+The hostname and port in the [Nginx configuration](nginx/nginx.conf) can be changed via
+environment variables `NGINX_HOSTNAME` (default: `localhost`) and `NGINX_PORT` (default `80`).
+
+The container serves the Glowing Bear application at the specified port and provides
+a proxy for the backend services at the following locations:
+
+| Location                    | Target
+|:--------------------------- |:----------------------------------
+| `/api/transmart-api-server` | `http://transmart-api-server:8081`
+| `/api/gb-backend`           | `http://gb-backend:8083`
+| `/api/transmart-packer`     | `http://transmart-packer:8999`
+
+This assumes that these services are reachable by the container at these addresses.
+See [glowing-bear-docker](https://github.com/thehyve/glowing-bear-docker) for an example. 
+
 
 ## Run
 
@@ -23,8 +36,8 @@ Build the images and publish it to [Docker Hub](https://hub.docker.com/r/thehyve
 
 ```bash
 # Build image
-GB_VERSION=$(node -pe "require('./package.json').version")
-docker build --build-arg "GB_VERSION=${GB_VERSION}" -t "thehyve/glowing-bear:${GB_VERSION}" docker/
+GB_VERSION=$(node -pe "require('../package.json').version")
+docker build --build-arg "GB_VERSION=${GB_VERSION}" -t "thehyve/glowing-bear:${GB_VERSION}" . --no-cache
 # Publish images to Docker Hub
 docker login
 docker push "thehyve/glowing-bear:${GB_VERSION}"
