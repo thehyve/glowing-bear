@@ -7,6 +7,7 @@
  */
 
 import * as sanitize from 'sanitize-filename';
+import {saveAs} from 'file-saver';
 
 export class DownloadHelper {
 
@@ -21,14 +22,8 @@ export class DownloadHelper {
     if (fileName.length === 0) {
       throw new Error('Empty file name.');
     }
-    let data = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(dataObject));
-    let el = document.createElement('a');
-    el.setAttribute('href', data);
-    el.setAttribute('download', fileName + '.json');
-    el.style.display = 'none';
-    document.body.appendChild(el);
-    el.click();
-    document.body.removeChild(el);
+    const blob = new Blob([JSON.stringify(dataObject)], {type: 'text/json'});
+    saveAs(blob, `${fileName}.json`, true);
   }
 
 }
