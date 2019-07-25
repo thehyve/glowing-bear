@@ -11,7 +11,7 @@ import {
   TransmartOrConstraint,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
-  TransmartSubSelectionConstraint,
+  TransmartSubSelectionConstraint, TransmartTrueConstraint,
   TransmartValueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {CombinationState} from '../../models/constraint-models/combination-state';
@@ -36,6 +36,35 @@ describe('TransmartConstraintSerialiser', () => {
     }
     expect(serialisedConstraint).toEqual(expectedConstraint);
   }
+
+  /**
+   * FIXME: This test is currently failing.
+   *
+   * When using subject dimension constraints, e.g., patients
+   * are linked to samples, empty subconstraints are relevant.
+   * I.e., there is a difference between all patients with a sample
+   * and all patients. Subject dimension constraints without
+   * children should not be optimised away.
+   */
+  xit('should serialise samples query without children', () => {
+    // Subject set
+    const biomaterialCombination = new CombinationConstraint(
+      [], CombinationState.And, 'biomaterial');
+    const patientCombination = new CombinationConstraint(
+      [biomaterialCombination], CombinationState.And, 'patient');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'subselection',
+        dimension: 'biomaterial',
+        constraint: {
+          type: 'true'
+        } as TransmartTrueConstraint
+      } as TransmartSubSelectionConstraint
+    };
+    testConstraint(patientCombination, expected);
+  });
 
   it('should serialise "select all biomaterials for patients with age >= 50"', () => {
     const ageConstraint = new ConceptConstraint();

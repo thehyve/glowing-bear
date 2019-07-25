@@ -6,8 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {DataTable} from '../../models/table-models/data-table';
-import {TransmartTableState} from '../../models/transmart-models/transmart-table-state';
 import {TableDimension} from '../../models/table-models/table-dimension';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';

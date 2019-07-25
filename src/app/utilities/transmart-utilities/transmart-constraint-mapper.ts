@@ -8,10 +8,7 @@
 
 import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartConstraintSerialiser} from './transmart-constraint-serialiser';
-import {
-  TransmartCombinationConstraint,
-  TransmartConstraint, TransmartTrueConstraint
-} from '../../models/transmart-models/transmart-constraint';
+import {TransmartConstraint} from '../../models/transmart-models/transmart-constraint';
 import {TransmartConstraintReader} from './transmart-constraint-reader';
 import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 
