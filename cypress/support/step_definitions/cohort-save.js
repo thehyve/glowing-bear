@@ -87,6 +87,7 @@ given("there are no cohorts saved", () => {
 });
 
 when("I restore the cohort {string}", (cohortName) => {
+  cy.get('.ui-button-text').should('contain', cohortName);
   cy.get('gb-cohorts').contains(cohortName).parent().parent().parent().parent().find('.fa-arrow-right').click();
 });
 
@@ -110,6 +111,7 @@ when('I create a cohort with {string} dimension constraint', (dimension) => {
   cy.get('.gb-constraint-dimension-dropdown').get('.ui-dropdown').click();
   cy.get('.ui-dropdown').contains(dimension).click();
   cy.get('.update-btn').eq(0).click();
+  cy.get('.gb-constraint-dimension-dropdown').get('.ui-dropdown').click();
 });
 
 then('the cohort {string} is saved', (cohortName) => {

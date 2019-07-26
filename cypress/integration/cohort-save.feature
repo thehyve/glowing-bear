@@ -24,10 +24,10 @@ Feature: save cohort
   Scenario: save and restore simple biomaterial dimension cohort
     Given I am on the cohort-selection tab
     When I create a cohort with 'Biomaterial ID' dimension constraint
-    And I save the Cohort with name 'Biomaterial ID'
-    And I restore the cohort 'Biomaterial ID'
+    And I save the Cohort with name 'Biomaterials'
+    And I restore the cohort 'Biomaterials'
     Then the current cohort has biomaterial selected
-    And the cohort 'Biomaterial ID' has type 'Biomaterial ID'
+    And the cohort 'Biomaterials' has type 'Biomaterial ID'
     And the dimension selection is NOT disabled
 
   Scenario: save and restore complex multi-dimension cohort

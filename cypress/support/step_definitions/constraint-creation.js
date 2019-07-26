@@ -61,7 +61,7 @@ when("I select patients that are part of study CATEGORICAL_VALUES or CLINICAL_TR
 when("I select patients that are part of study Oracle_1000_Patient with age between 50 - 55  and numerical_1 between 0 - 10", () => {
   cy.toggleNode('Public Studies ')
     .toggleNode('Oracle_1000_Patient ')
-    .toggleNode('Demographics ')
+    .toggleVisibleNode('Demographics ')
     .toggleNode('Numerical Variables ');
 
   cy.contains('Age ').trigger('dragstart');
@@ -87,7 +87,7 @@ when("I use public study {string} and negation of study {string} as a constraint
 then("constraint panel containing {string} is negated", (constraintName) => {
   cy.get('.gb-constraint-container').contains(constraintName).parents('.gb-negated-constraint');
   cy.get('span').contains('excluding').should('be.visible');
-  cy.get('label').contains('for the patient there is NO observation:');
+  cy.get('label').contains('for the patient there is an observation other than observations:');
 });
 
 when("I use negated pedigree constraint {string} with concept {string} and negated concept {string}",

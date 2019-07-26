@@ -80,7 +80,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
    */
   static wrapWithSubselection(dimension: string, constraint: TransmartConstraint): TransmartConstraint {
     let queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
-    if (queryConstraint.type === 'true') {
+    if (queryConstraint.type === 'true' && dimension === 'patient') {
       return {'type': 'true'};
     } else if (queryConstraint.type === 'negation') {
       return new TransmartNegationConstraint(
@@ -350,6 +350,12 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
         // unless ensuring patient level constraint
         return [childConstraint];
       }
+    } else if (nonEmptyChildren.length === 0 && combination.dimension !== 'patient') {
+      // When using subject dimension constraints, e.g., patients are linked to samples, empty subconstraints are relevant.
+      // I.e., there is a difference between all patients with a sample and all patients.
+      return [ TransmartConstraintSerialiser.wrapWithSubselection(
+        combination.dimension, {'type': 'true'} as TransmartTrueConstraint)
+      ];
     }
     return nonEmptyChildren;
   }
