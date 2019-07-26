@@ -25,6 +25,10 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
 Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
+  cy.get('.ui-treenode').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler').click();
+});
+Cypress.Commands.add('toggleVisibleNode', (nodeName, options = {}) => {
   cy.get('.ui-treenode :visible').contains(nodeName)
     .parent().parent().children('.ui-tree-toggler').click();
 });
