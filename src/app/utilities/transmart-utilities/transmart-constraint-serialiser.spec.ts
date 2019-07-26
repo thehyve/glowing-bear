@@ -38,15 +38,13 @@ describe('TransmartConstraintSerialiser', () => {
   }
 
   /**
-   * FIXME: This test is currently failing.
-   *
    * When using subject dimension constraints, e.g., patients
    * are linked to samples, empty subconstraints are relevant.
    * I.e., there is a difference between all patients with a sample
    * and all patients. Subject dimension constraints without
    * children should not be optimised away.
    */
-  xit('should serialise samples query without children', () => {
+  it('should serialise samples query without children', () => {
     // Subject set
     const biomaterialCombination = new CombinationConstraint(
       [], CombinationState.And, 'biomaterial');
