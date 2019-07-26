@@ -122,11 +122,13 @@ export class ConstraintHelper {
    *
    * @param {CombinationConstraint} combination
    * @return {boolean} true iff the combination has any children other than combinations
-   * or this property holds recursively for any of its children.
+   * for the same dimension or this property holds recursively for any of its children.
    */
   static hasNonEmptyChildren(combination: CombinationConstraint): boolean {
     return combination.children.some((child: Constraint) => {
-      if (child.className === 'CombinationConstraint') {
+      if (child.className === 'CombinationConstraint' &&
+        (<CombinationConstraint>child).dimension === combination.dimension &&
+        child.negated === false) {
         return this.hasNonEmptyChildren(<CombinationConstraint>child);
       }
       // all other types of constraints count as non-empty children.
