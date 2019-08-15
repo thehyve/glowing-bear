@@ -7,17 +7,29 @@
  */
 
 import * as moment from 'moment';
+import {JwtHelper} from "./jwt-helper";
 
 export class Oauth2Token {
   accessToken: string;
   refreshToken: string;
   expires: Date;
 
-  static from(object: object): Oauth2Token {
-    return {
-      accessToken: object['access_token'],
-      refreshToken: object['refresh_token'],
-      expires: moment(Date.now()).add(object['expires_in'] as number, 'seconds').toDate()
-    }
+  constructor(object: object) {
+    this.accessToken = object['access_token'];
+    this.refreshToken = object['refresh_token'];
+    this.expires = moment(Date.now()).add(object['expires_in'] as number, 'seconds').toDate();
   }
+
+  getAuthorisations(oidcClientId: string): string[] {
+    let parsedToken = JwtHelper.decodeToken(this.accessToken);
+
+    if (parsedToken['resource_access'] &&
+        parsedToken['resource_access'][oidcClientId] &&
+        parsedToken['resource_access'][oidcClientId]['roles']) {
+      return parsedToken['resource_access'][oidcClientId]['roles'];
+    }
+
+    return undefined;
+  }
+
 }

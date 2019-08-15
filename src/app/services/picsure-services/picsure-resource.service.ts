@@ -17,6 +17,8 @@ import {GenomicAnnotationsService} from "./genomic-annotations.service";
 import {ResourceCredentials} from "../../models/picsure-models/resource-credentials";
 import {MedcoNodeResult} from "../../models/picsure-models/i2b2-medco/medco-node-result";
 import {AuthenticationService} from "../authentication/authentication.service";
+import {MedcoQueryType} from "../../models/picsure-models/i2b2-medco/medco-query-type";
+import {QueryService} from "../query.service";
 
 @Injectable()
 export class PicSureResourceService {
@@ -198,12 +200,12 @@ export class PicSureResourceService {
 
   /**
    * @returns {Observable<number>} the resultId
-   * @param select
+   * @param queryType
    * @param userPublicKey
    * @param resource
    * @param panels
    */
-  querySync(select: string[], userPublicKey: string, resource: PicsureResource, panels: I2b2Panel[]): Observable<MedcoNodeResult> {
+  querySync(queryType: MedcoQueryType, userPublicKey: string, resource: PicsureResource, panels: I2b2Panel[]): Observable<MedcoNodeResult> {
     let urlPart = 'query/sync';
     let body = {
       resourceCredentials: this.getResourceCredentials(),
@@ -211,7 +213,7 @@ export class PicSureResourceService {
       query: {
         name: this.generateQueryName(),
         'i2b2-medco': {
-          select: select,
+          queryType: queryType.id,
           panels: panels,
           userPublicKey: userPublicKey
         }
@@ -224,14 +226,14 @@ export class PicSureResourceService {
    * Execute simultaneously the specified MedCo query on all the nodes.
    * Ensures before execute that the token is still valid.
    *
-   * @param select
+   * @param queryType
    * @param userPublicKey
    * @param panels
    */
-  querySyncAllNodes(select: string[], userPublicKey: string, panels: I2b2Panel[]): Observable<MedcoNodeResult[]> {
+  querySyncAllNodes(queryType: MedcoQueryType, userPublicKey: string, panels: I2b2Panel[]): Observable<MedcoNodeResult[]> {
     return this.authenticationService.authorise().switchMap(() =>
     Observable
-      .forkJoin(...this.queryResources.map((res) => this.querySync(select, userPublicKey, res, panels)))
+      .forkJoin(...this.queryResources.map((res) => this.querySync(queryType, userPublicKey, res, panels)))
       .timeout(PicSureResourceService.QUERY_TIMEOUT_MS));
   }
 
@@ -306,7 +308,7 @@ export class PicSureResourceService {
     // }
   }
 
-  getI2b2MedCoPatientsCounts(constraint: Constraint): Observable<CountItem> {
+  getI2b2MedCoPatientsCounts(queryType: MedcoQueryType, constraint: Constraint): Observable<CountItem> {
     if (constraint.className === 'TrueConstraint') {
       return Observable.of(new CountItem(0, 0));
     } else if (constraint.className !== 'CombinationConstraint') {
@@ -315,7 +317,7 @@ export class PicSureResourceService {
 
     return this.genomicAnnotationsService.addVariantIdsToConstraints(constraint)
       .switchMap(() => this.querySyncAllNodes(
-        ['count'],
+        queryType,
         this.medcoService.publicKey,
         this.picsureMappingService.mapI2b2MedCoConstraint(constraint)
         )

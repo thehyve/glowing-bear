@@ -15,6 +15,7 @@ import {ErrorHelper} from '../../utilities/error-helper';
 import {NavbarService} from "../navbar.service";
 import {BehaviorSubject} from "rxjs";
 import {MedcoNodeResult} from "../../models/picsure-models/i2b2-medco/medco-node-result";
+import {MedcoQueryType} from "../../models/picsure-models/i2b2-medco/medco-query-type";
 
 // todo 12/04/19: delayed upgrade of medco-unlynx-js (stay with 0.1.8),
 //  wait for bug fix of wasm go compiler (?) (changes marked XXX)
@@ -106,10 +107,7 @@ export class MedcoService {
    */
   parseMedCoResults(results: MedcoNodeResult[]): number {
 
-    // k is 0, 1, 2, ....
     for (let k in results) {
-      // let b64EncodedResultObject = data[k][`medco_results_${k}`];
-      // let resultObject = JSON.parse(atob(b64EncodedResultObject));
 
       if (this.publicKey !== results[k].encryptionKey) {
         console.warn(`Returned public key is different from public key, expect problems (${results[k].encryptionKey})`);
@@ -117,11 +115,22 @@ export class MedcoService {
 
       results[k].nodeName = `Clinical Site ${k}`; // todo: get from node
       results[k].networkName = 'MedCo Network'; // todo: get from node
-      results[k].decryptedCount = Number(this.decryptInteger(results[k].encryptedCount));
       results[k].timeMeasurements = {}; // todo
 
-      // results.push(result);
-      console.log(`${k}: ${results[k].decryptedCount}, times: ${JSON.stringify(results[k].timeMeasurements)}`)
+      // decrypt count
+      results[k].decryptedCount = Number(this.decryptInteger(results[k].encryptedCount));
+
+      // decrypt patient list, ignore IDs that are zero (= dummies nullified)
+      results[k].decryptedPatientList = results[k].encryptedPatientList?
+        results[k].encryptedPatientList
+          .map((encId) => Number(this.decryptInteger(encId)))
+          .filter((pId) => pId !== 0):
+        [];
+
+      // parse query type
+      results[k].parsedQueryType = MedcoQueryType.ALL_TYPES.find((type) => type.id === results[k].queryType);
+
+      console.log(`${k}: count=${results[k].decryptedCount}, #patient IDs=${results[k].decryptedPatientList.length}, times: ${JSON.stringify(results[k].timeMeasurements)}`)
     }
 
     // randomize results (according to configuration)
@@ -133,9 +142,15 @@ export class MedcoService {
     }
 
     this.results.next(results);
-    this.addMedcoResultsTab();
 
-    return results.map((r) => r.decryptedCount).reduce((a, b) => Number(a) + Number(b));
+    if (results[0].parsedQueryType === MedcoQueryType.COUNT_GLOBAL ||
+      results[0].parsedQueryType === MedcoQueryType.COUNT_GLOBAL_OBFUSCATED) {
+      // count is global: all results should be the same, return the first one
+      return results[0].decryptedCount;
+    } else {
+      this.addMedcoResultsTab();
+      return results.map((r) => r.decryptedCount).reduce((a, b) => Number(a) + Number(b));
+    }
   }
 
   /**

@@ -37,12 +37,12 @@ COPY deployment/write-gb-config.sh /
 RUN chmod +x /write-gb-config.sh
 
 # run-time env
-ENV GB_API_URL="http://localhost:8082/IRCT-CL/rest" \
+ENV GB_API_URL="http://localhost/pic-sure-api-2/PICSURE" \
     GB_URL="http://localhost:4200" \
-    GB_OIDC_URL="http://localhost:8081/auth/realms/master/protocol/openid-connect" \
-    GB_OIDC_CLIENT_ID="i2b2" \
+    GB_OIDC_URL="http://localhost/auth/realms/master/protocol/openid-connect" \
+    GB_OIDC_CLIENT_ID="medco" \
     GB_COTHORITY_KEY_URL="http://localhost/cothority-key.pub.toml" \
-    GB_GENOMIC_ANNOTATIONS_URL="http://localhost/php" \
+    GB_GENOMIC_ANNOTATIONS_URL="http://localhost/genomicAnnotations" \
     GB_MEDCO_RESULTS_RANDOMIZATION="0" \
     MEDCO_NETWORK_NAME="testnetwork" \
     MEDCO_NODES_NAME="a,b,c"

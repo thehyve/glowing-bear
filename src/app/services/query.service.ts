@@ -29,6 +29,9 @@ import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
 import {HttpErrorResponse} from '@angular/common/http';
+import {MedcoQueryType} from "../models/picsure-models/i2b2-medco/medco-query-type";
+import {AuthenticationService} from "./authentication/authentication.service";
+import {Observable} from "rxjs";
 
 type LoadingState = 'loading' | 'complete';
 
@@ -119,13 +122,20 @@ export class QueryService {
   private _isSavingQueryCompleted = true;
   private _isQuerySavingUsed = true;
 
+  /*
+   * ------ MedCo variables ------
+   */
+  private _availableQueryTypes: MedcoQueryType[];
+  private _selectedQueryType = MedcoQueryType.COUNT_GLOBAL_OBFUSCATED; // todo: check if that should be the default
+
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private dataTableService: DataTableService,
               private crossTableService: CrossTableService,
-              private exportService: ExportService) {
+              private exportService: ExportService,
+              private authService: AuthenticationService) {
     this.instantCountsUpdate_1 = this.appConfig.getConfig('instant-counts-update-1', false);
     this.instantCountsUpdate_2 = this.appConfig.getConfig('instant-counts-update-2', false);
     this.instantCountsUpdate_3 = this.appConfig.getConfig('instant-counts-update-3', false);
@@ -252,7 +262,7 @@ export class QueryService {
       let constraint_1 = this.constraintService.constraint_1();
       let inclusionConstraint = this.constraintService.generateInclusionConstraint();
       let exclusionConstraint = this.constraintService.generateExclusionConstraint();
-      this.resourceService.updateInclusionExclusionCounts(constraint_1, inclusionConstraint, exclusionConstraint)
+      this.resourceService.updateInclusionExclusionCounts(this.selectedQueryType, constraint_1, inclusionConstraint, exclusionConstraint)
         .then(() => {
           let inCounts = this.resourceService.inclusionCounts;
           let exCounts = this.resourceService.exclusionCounts;
@@ -338,7 +348,7 @@ export class QueryService {
         this.query = null; // clear query
         // update the subject count and observation count in the 2nd step
         const constraint_1_2: Constraint = this.constraintService.constraint_1_2();
-        this.resourceService.getCounts(constraint_1_2)
+        this.resourceService.getCounts(this.selectedQueryType, constraint_1_2)
           .subscribe(
             (countItem: CountItem) => {
               // update counts and flags
@@ -753,5 +763,65 @@ export class QueryService {
 
   set isQuerySavingUsed(value: boolean) {
     this._isQuerySavingUsed = value;
+  }
+
+  get availableQueryTypes(): Observable<MedcoQueryType[]> {
+
+    if (this._availableQueryTypes) {
+      return Observable.of(this._availableQueryTypes);
+    }
+
+    return this.authService.authorisations.map((authorizations) => {
+
+      this._availableQueryTypes = [];
+
+      for (let authorization of authorizations) {
+        switch (authorization) {
+          case MedcoQueryType.PATIENT_LIST.id:
+            this._availableQueryTypes.push(MedcoQueryType.PATIENT_LIST);
+            break;
+
+          case MedcoQueryType.COUNT_PER_SITE.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_PER_SITE);
+            break;
+
+          case MedcoQueryType.COUNT_PER_SITE_OBFUSCATED.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_PER_SITE_OBFUSCATED);
+            break;
+
+          case MedcoQueryType.COUNT_PER_SITE_SHUFFLED.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_PER_SITE_SHUFFLED);
+            break;
+
+          case MedcoQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED);
+            break;
+
+          case MedcoQueryType.COUNT_GLOBAL.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_GLOBAL);
+            break;
+
+          case MedcoQueryType.COUNT_GLOBAL_OBFUSCATED.id:
+            this._availableQueryTypes.push(MedcoQueryType.COUNT_GLOBAL_OBFUSCATED);
+            break;
+
+          default:
+            console.log("could not parse authorization " + authorization);
+            break;
+        }
+      }
+
+      return this._availableQueryTypes;
+    });
+
+
+  }
+
+  get selectedQueryType(): MedcoQueryType {
+    return this._selectedQueryType;
+  }
+
+  set selectedQueryType(queryType: MedcoQueryType) {
+    this._selectedQueryType = queryType;
   }
 }

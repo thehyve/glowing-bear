@@ -50,4 +50,9 @@ export interface AuthenticationMethod {
    */
   logout(): void;
 
+  /**
+   * Returns the authorizations of the user in a list.
+   */
+  authorisations: Observable<string[]>;
+
 }
