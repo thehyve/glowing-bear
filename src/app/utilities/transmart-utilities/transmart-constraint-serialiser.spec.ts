@@ -11,7 +11,8 @@ import {
   TransmartOrConstraint,
   TransmartPatientSetConstraint,
   TransmartRelationConstraint,
-  TransmartSubSelectionConstraint, TransmartTrueConstraint,
+  TransmartSubSelectionConstraint,
+  TransmartTrueConstraint,
   TransmartValueConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {CombinationState} from '../../models/constraint-models/combination-state';
@@ -22,6 +23,7 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import deepEqual = require('deep-equal');
+import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 
 describe('TransmartConstraintSerialiser', () => {
 
@@ -35,6 +37,28 @@ describe('TransmartConstraintSerialiser', () => {
       console.error('Expected', JSON.stringify(expectedConstraint, null, 2));
     }
     expect(serialisedConstraint).toEqual(expectedConstraint);
+  }
+
+  const ageValueConstraint =  new ValueConstraint();
+  ageValueConstraint.operator = Operator.geq;
+  ageValueConstraint.valueType = ValueType.numeric;
+  ageValueConstraint.value = 50;
+
+  function createConceptConstraint(type: ConceptType, conceptCode: string): ConceptConstraint {
+    const constraint = new ConceptConstraint();
+    const concept = new Concept();
+    concept.code = conceptCode;
+    concept.type = type;
+    constraint.concept = concept;
+    return constraint;
+  }
+
+  function createStringValueConstraint(value: string): ValueConstraint {
+    const valueConstraint = new ValueConstraint();
+    valueConstraint.operator = Operator.eq;
+    valueConstraint.valueType = ValueType.string;
+    valueConstraint.value = value;
+    return valueConstraint;
   }
 
   /**
@@ -65,18 +89,8 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise "select all biomaterials for patients with age >= 50"', () => {
-    const ageConstraint = new ConceptConstraint();
-    const ageConcept = new Concept();
-    ageConcept.code = 'CODE:AGE';
-    ageConcept.name = 'Age';
-    ageConcept.fullName = '\\Personal\\Age\\';
-    ageConstraint.concept = ageConcept;
-    ageConcept.type = ConceptType.NUMERICAL;
-    const ageValueConstraint = new ValueConstraint();
-    ageValueConstraint.operator = Operator.geq;
-    ageValueConstraint.valueType = ValueType.numeric;
-    ageValueConstraint.value = 50;
-    ageConstraint.valueConstraints.push(ageValueConstraint);
+    const ageConstraint = createConceptConstraint(ConceptType.NUMERICAL, 'CODE:AGE');
+    ageConstraint.valueConstraints.push(ageValueConstraint.clone());
     const patientAgeConstraint = new CombinationConstraint(
       [ageConstraint], CombinationState.And, 'patient');
     const biomaterialConstraint = new CombinationConstraint(
@@ -105,16 +119,8 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise "select all biomaterials of type A for patients with age >= 50"', () => {
-    const ageConstraint = new ConceptConstraint();
-    const ageConcept = new Concept();
-    ageConcept.code = 'CODE:AGE';
-    ageConcept.type = ConceptType.NUMERICAL;
-    ageConstraint.concept = ageConcept;
-    const ageValueConstraint = new ValueConstraint();
-    ageValueConstraint.operator = Operator.geq;
-    ageValueConstraint.valueType = ValueType.numeric;
-    ageValueConstraint.value = 50;
-    ageConstraint.valueConstraints.push(ageValueConstraint);
+    const ageConstraint = createConceptConstraint(ConceptType.NUMERICAL, 'CODE:AGE');
+    ageConstraint.valueConstraints.push(ageValueConstraint.clone());
     const patientAgeConstraint = new CombinationConstraint(
       [ageConstraint], CombinationState.And, 'patient');
     const typeConstraint = new ConceptConstraint();
@@ -122,10 +128,7 @@ describe('TransmartConstraintSerialiser', () => {
     typeConcept.code = 'BIO:TYPE';
     typeConcept.type = ConceptType.CATEGORICAL;
     typeConstraint.concept = typeConcept;
-    const typeValueConstraint = new ValueConstraint();
-    typeValueConstraint.operator = Operator.eq;
-    typeValueConstraint.valueType = ValueType.string;
-    typeValueConstraint.value = 'A';
+    const typeValueConstraint = createStringValueConstraint('A');
     typeConstraint.valueConstraints.push(typeValueConstraint);
     const biomaterialConstraint = new CombinationConstraint(
       [typeConstraint, patientAgeConstraint], CombinationState.And, 'biomaterial');
@@ -183,15 +186,8 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise "select all patients with biomaterials of type A"', () => {
-    const typeConstraint = new ConceptConstraint();
-    const typeConcept = new Concept();
-    typeConcept.code = 'BIO:TYPE';
-    typeConcept.type = ConceptType.CATEGORICAL;
-    typeConstraint.concept = typeConcept;
-    const typeValueConstraint = new ValueConstraint();
-    typeValueConstraint.operator = Operator.eq;
-    typeValueConstraint.valueType = ValueType.string;
-    typeValueConstraint.value = 'A';
+    const typeConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'BIO:TYPE');
+    const typeValueConstraint = createStringValueConstraint('A');
     typeConstraint.valueConstraints.push(typeValueConstraint);
     const biomaterialConstraint = new CombinationConstraint(
       [typeConstraint], CombinationState.And, 'biomaterial');
@@ -218,15 +214,8 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise "select all parents of patients with biomaterials of type A"', () => {
-    const typeConstraint = new ConceptConstraint();
-    const typeConcept = new Concept();
-    typeConcept.code = 'BIO:TYPE';
-    typeConcept.type = ConceptType.CATEGORICAL;
-    typeConstraint.concept = typeConcept;
-    const typeValueConstraint = new ValueConstraint();
-    typeValueConstraint.operator = Operator.eq;
-    typeValueConstraint.valueType = ValueType.string;
-    typeValueConstraint.value = 'A';
+    const typeConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'BIO:TYPE');
+    const typeValueConstraint = createStringValueConstraint('A');
     typeConstraint.valueConstraints.push(typeValueConstraint);
     const biomaterialConstraint = new CombinationConstraint(
       [typeConstraint], CombinationState.And, 'biomaterial');
@@ -259,29 +248,14 @@ describe('TransmartConstraintSerialiser', () => {
     testConstraint(parentConstraint, expected);
   });
 
-  it('should serialise "select all female patients with age > 50"', () => {
+  it('should serialise "select all female patients with age >= 50"', () => {
     // Female patients
-    const genderConstraint = new ConceptConstraint();
-    const genderConcept = new Concept();
-    genderConcept.code = 'PERSON:GENDER';
-    genderConcept.type = ConceptType.CATEGORICAL;
-    genderConstraint.concept = genderConcept;
-    const genderValueConstraint = new ValueConstraint();
-    genderValueConstraint.operator = Operator.eq;
-    genderValueConstraint.valueType = ValueType.string;
-    genderValueConstraint.value = 'Female';
+    const genderConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'PERSON:GENDER');
+    const genderValueConstraint = createStringValueConstraint('Female');
     genderConstraint.valueConstraints.push(genderValueConstraint);
     // Age > 50
-    const ageConstraint = new ConceptConstraint();
-    const ageConcept = new Concept();
-    ageConcept.code = 'PERSON:AGE';
-    ageConcept.type = ConceptType.NUMERICAL;
-    ageConstraint.concept = ageConcept;
-    const ageValueConstraint = new ValueConstraint();
-    ageValueConstraint.operator = Operator.gt;
-    ageValueConstraint.valueType = ValueType.numeric;
-    ageValueConstraint.value = 50;
-    ageConstraint.valueConstraints.push(ageValueConstraint);
+    const ageConstraint = createConceptConstraint(ConceptType.NUMERICAL, 'PERSON:AGE');
+    ageConstraint.valueConstraints.push(ageValueConstraint.clone());
     const combination = new CombinationConstraint(
       [genderConstraint, ageConstraint], CombinationState.And, 'patient');
     const expected: TransmartAndConstraint = {
@@ -319,7 +293,7 @@ describe('TransmartConstraintSerialiser', () => {
               {
                 type: 'value',
                 valueType: 'numeric',
-                operator: '>',
+                operator: '>=',
                 value: 50
               }
             ]
@@ -331,14 +305,8 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise pedigree constraints with attributes', () => {
-    const conceptConstraint = new ConceptConstraint();
-    const concept = new Concept();
-    concept.code = 'TEST';
-    conceptConstraint.concept = concept;
-    const secondConstraint = new ConceptConstraint();
-    const secondConcept = new Concept();
-    secondConcept.code = 'SECOND';
-    secondConstraint.concept = secondConcept;
+    const conceptConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'TEST');
+    const secondConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'SECOND');
     const combination = new CombinationConstraint(
       [conceptConstraint, secondConstraint], CombinationState.Or, 'patient');
     const pedigree = new PedigreeConstraint('parent');
@@ -432,16 +400,9 @@ describe('TransmartConstraintSerialiser', () => {
   });
 
   it('should serialise combination constraint with negation and subselection', () => {
-    const conceptConstraint = new ConceptConstraint();
-    const concept1 = new Concept();
-    concept1.code = 'TEST';
-    conceptConstraint.concept = concept1;
-
-    const negatedConceptConstraint = new ConceptConstraint();
+    const conceptConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'TEST');
+    const negatedConceptConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'NEG:TEST');
     negatedConceptConstraint.negated = true;
-    const concept2 = new Concept();
-    concept2.code = 'NEG:TEST';
-    negatedConceptConstraint.concept = concept2;
     const combination = new CombinationConstraint(
       [conceptConstraint, negatedConceptConstraint], CombinationState.And, 'patient');
 
@@ -457,16 +418,20 @@ describe('TransmartConstraintSerialiser', () => {
           }
         } as TransmartSubSelectionConstraint,
         {
-          type: 'negation',
-          arg: {
-            type: 'subselection',
-            dimension: 'patient',
-            constraint: {
-              type: 'concept',
-              conceptCode: 'NEG:TEST',
-            }
-          } as TransmartSubSelectionConstraint
-        } as TransmartNegationConstraint
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'negation',
+            arg: {
+              type: 'subselection',
+              dimension: 'patient',
+              constraint: {
+                type: 'concept',
+                conceptCode: 'NEG:TEST',
+              }
+            } as TransmartSubSelectionConstraint
+          } as TransmartNegationConstraint
+        } as TransmartSubSelectionConstraint
       ]
     };
     testConstraint(combination, expected);
@@ -474,30 +439,15 @@ describe('TransmartConstraintSerialiser', () => {
 
   it('should serialise combination with subject and variables constraints', () => {
     // Female patients
-    const genderConstraint = new ConceptConstraint();
-    const genderConcept = new Concept();
-    genderConcept.code = 'PERSON:GENDER';
-    genderConcept.type = ConceptType.CATEGORICAL;
-    genderConstraint.concept = genderConcept;
-    const genderValueConstraint = new ValueConstraint();
-    genderValueConstraint.operator = Operator.eq;
-    genderValueConstraint.valueType = ValueType.string;
-    genderValueConstraint.value = 'Female';
+    const genderConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'PERSON:GENDER');
+    const genderValueConstraint = createStringValueConstraint('Female');
     genderConstraint.valueConstraints.push(genderValueConstraint);
     // Variables
     const variableConstraint = new CombinationConstraint();
     variableConstraint.combinationState = CombinationState.Or;
     variableConstraint.dimension = 'observation';
-    const v1 = new ConceptConstraint();
-    const variable1 = new Concept();
-    variable1.code = 'PERSON:AGE';
-    variable1.type = ConceptType.NUMERICAL;
-    v1.concept = variable1;
-    const v2 = new ConceptConstraint();
-    const variable2 = new Concept();
-    variable2.code = 'PERSON:HEART_RATE';
-    variable2.type = ConceptType.NUMERICAL;
-    v2.concept = variable2;
+    const v1 = createConceptConstraint(ConceptType.NUMERICAL, 'PERSON:AGE');
+    const v2 = createConceptConstraint(ConceptType.NUMERICAL, 'PERSON:HEART_RATE');
     variableConstraint.addChild(v1);
     variableConstraint.addChild(v2);
     const combination = new CombinationConstraint(
@@ -550,16 +500,8 @@ describe('TransmartConstraintSerialiser', () => {
     const variableConstraint = new CombinationConstraint();
     variableConstraint.combinationState = CombinationState.Or;
     variableConstraint.dimension = 'observation';
-    const v1 = new ConceptConstraint();
-    const variable1 = new Concept();
-    variable1.code = 'PERSON:AGE';
-    variable1.type = ConceptType.NUMERICAL;
-    v1.concept = variable1;
-    const v2 = new ConceptConstraint();
-    const variable2 = new Concept();
-    variable2.code = 'PERSON:HEART_RATE';
-    variable2.type = ConceptType.NUMERICAL;
-    v2.concept = variable2;
+    const v1 = createConceptConstraint(ConceptType.NUMERICAL, 'PERSON:AGE');
+    const v2 = createConceptConstraint(ConceptType.NUMERICAL, 'PERSON:HEART_RATE');
     variableConstraint.addChild(v1);
     variableConstraint.addChild(v2);
     const combination = new CombinationConstraint(
@@ -616,10 +558,7 @@ describe('TransmartConstraintSerialiser', () => {
     groupConcept.code = 'GROUP';
     groupConstraint.concept = groupConcept;
     pedigreeConstraint.rightHandSideConstraint.addChild(groupConstraint);
-    const sportsConcept = new Concept();
-    sportsConcept.code = 'Sports';
-    const sportsConstraint = new ConceptConstraint();
-    sportsConstraint.concept = sportsConcept;
+    const sportsConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'Sports');
     const combinationConstraint = new CombinationConstraint(
       [pedigreeConstraint, sportsConstraint], CombinationState.And, 'patient');
     const expected: TransmartAndConstraint = {
@@ -644,6 +583,487 @@ describe('TransmartConstraintSerialiser', () => {
       ]
     };
     testConstraint(combinationConstraint, expected);
+  });
+
+  it('should serialise male individuals query', () => {
+    const constraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:GENDER');
+    const valueConstraint = createStringValueConstraint('male');
+    constraint.valueConstraints.push(valueConstraint);
+
+    // Patient selection
+    const combination = new CombinationConstraint([constraint], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'and',
+        args: [
+          {
+            type: 'concept',
+            conceptCode: 'CODE:GENDER'
+          } as TransmartConceptConstraint,
+          {
+            type: 'value',
+            valueType: 'string',
+            operator: '=',
+            value: 'male'
+          } as TransmartValueConstraint
+        ]
+      } as TransmartAndConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise individuals with no informed consent query', () => {
+    const constraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:INFORMED_CONSENT');
+    const valueConstraint = createStringValueConstraint('no');
+    constraint.valueConstraints.push(valueConstraint);
+
+    // Patient selection
+    const combination = new CombinationConstraint([constraint], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'and',
+        args: [
+          {
+            type: 'concept',
+            conceptCode: 'CODE:INFORMED_CONSENT'
+          } as TransmartConceptConstraint,
+          {
+            type: 'value',
+            valueType: 'string',
+            operator: '=',
+            value: 'no'
+          } as TransmartValueConstraint
+        ]
+      } as TransmartAndConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise individuals with negation of no informed consent query', () => {
+    const constraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:INFORMED_CONSENT');
+    const valueConstraint = createStringValueConstraint('no');
+    constraint.valueConstraints.push(valueConstraint);
+
+    // Patient selection
+    const combination = new CombinationConstraint([constraint], CombinationState.And);
+    combination.negated = true;
+    const expected: TransmartNegationConstraint = {
+      type: 'negation',
+      arg: {
+        type: 'subselection',
+        dimension: 'patient',
+        constraint:
+          {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'CODE:INFORMED_CONSENT'
+              } as TransmartConceptConstraint,
+              {
+                type: 'value',
+                valueType: 'string',
+                operator: '=',
+                value: 'no'
+              } as TransmartValueConstraint
+            ]
+          } as TransmartAndConstraint
+      } as TransmartSubSelectionConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise male individuals with no informed consent query', () => {
+    const constraint1 = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:GENDER');
+    const valueConstraint1 = createStringValueConstraint('male');
+    constraint1.valueConstraints.push(valueConstraint1);
+    const constraint2 = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:INFORMED_CONSENT');
+    const valueConstraint2 = createStringValueConstraint('no');
+    constraint2.valueConstraints.push(valueConstraint2);
+
+    // Patient selection
+    const combination = new CombinationConstraint([constraint1, constraint2], CombinationState.And);
+    const expected: TransmartAndConstraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint:
+            {
+              type: 'and',
+              args: [
+                {
+                  type: 'concept',
+                  conceptCode: 'CODE:GENDER'
+                } as TransmartConceptConstraint,
+                {
+                  type: 'value',
+                  valueType: 'string',
+                  operator: '=',
+                  value: 'male'
+                } as TransmartValueConstraint
+              ]
+            } as TransmartAndConstraint
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint:
+            {
+              type: 'and',
+              args: [
+                {
+                  type: 'concept',
+                  conceptCode: 'CODE:INFORMED_CONSENT'
+                } as TransmartConceptConstraint,
+                {
+                  type: 'value',
+                  valueType: 'string',
+                  operator: '=',
+                  value: 'no'
+                } as TransmartValueConstraint
+              ]
+            } as TransmartAndConstraint
+        } as TransmartSubSelectionConstraint
+      ]
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise male individuals except with no informed consent query', () => {
+    const constraint1 = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:GENDER');
+    const valueConstraint1 = createStringValueConstraint('male');
+    constraint1.valueConstraints.push(valueConstraint1);
+    const constraint2 = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:INFORMED_CONSENT');
+    const valueConstraint2 = createStringValueConstraint('no');
+    constraint2.valueConstraints.push(valueConstraint2);
+    constraint2.negated = true;
+
+    // Patient selection
+    const combination = new CombinationConstraint([constraint1, constraint2], CombinationState.And);
+    const expected: TransmartAndConstraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint:
+            {
+              type: 'and',
+              args: [
+                {
+                  type: 'concept',
+                  conceptCode: 'CODE:GENDER'
+                } as TransmartConceptConstraint,
+                {
+                  type: 'value',
+                  valueType: 'string',
+                  operator: '=',
+                  value: 'male'
+                } as TransmartValueConstraint
+              ]
+            } as TransmartAndConstraint
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'negation',
+            arg: {
+              type: 'subselection',
+              dimension: 'patient',
+              constraint:
+                {
+                  type: 'and',
+                  args: [
+                    {
+                      type: 'concept',
+                      conceptCode: 'CODE:INFORMED_CONSENT'
+                    } as TransmartConceptConstraint,
+                    {
+                      type: 'value',
+                      valueType: 'string',
+                      operator: '=',
+                      value: 'no'
+                    } as TransmartValueConstraint
+                  ]
+                } as TransmartAndConstraint
+            } as TransmartSubSelectionConstraint
+          } as TransmartNegationConstraint
+        } as TransmartSubSelectionConstraint
+      ]
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise "individuals with diagnosis"', () => {
+    // Patient selection
+    const combination = new CombinationConstraint([
+      new CombinationConstraint([new TrueConstraint()], CombinationState.And, 'diagnosis')
+    ], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'subselection',
+        dimension: 'diagnosis',
+        constraint:
+          {
+            type: 'true'
+          }
+      } as TransmartSubSelectionConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise "individuals with neuroblastoma diagnosis"', () => {
+    const tumorType = createConceptConstraint(ConceptType.CATEGORICAL, 'TUMOR_TYPE');
+    tumorType.valueConstraints.push(createStringValueConstraint('neuroblastoma'));
+    // Patient selection
+    const combination = new CombinationConstraint([
+      new CombinationConstraint([tumorType], CombinationState.And, 'diagnosis')
+    ], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'subselection',
+        dimension: 'diagnosis',
+        constraint:
+          {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'TUMOR_TYPE'
+              } as TransmartConceptConstraint,
+              {
+                type: 'value',
+                valueType: 'string',
+                operator: '=',
+                value: 'neuroblastoma'
+              } as TransmartValueConstraint
+            ]
+          } as TransmartAndConstraint
+      } as TransmartSubSelectionConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise "individuals with stage II neuroblastoma diagnosis"', () => {
+    const tumorType = createConceptConstraint(ConceptType.CATEGORICAL, 'TUMOR_TYPE');
+    tumorType.valueConstraints.push(createStringValueConstraint('neuroblastoma'));
+    const tumorStage = createConceptConstraint(ConceptType.CATEGORICAL, 'TUMOR_STAGE');
+    tumorStage.valueConstraints.push(createStringValueConstraint('II'));
+    // Patient selection
+    const combination = new CombinationConstraint([
+      new CombinationConstraint([tumorType, tumorStage], CombinationState.And, 'diagnosis')
+    ], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'and',
+        args: [
+          {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint:
+              {
+                type: 'and',
+                args: [
+                  {
+                    type: 'concept',
+                    conceptCode: 'TUMOR_TYPE'
+                  } as TransmartConceptConstraint,
+                  {
+                    type: 'value',
+                    valueType: 'string',
+                    operator: '=',
+                    value: 'neuroblastoma'
+                  } as TransmartValueConstraint
+                ]
+              } as TransmartAndConstraint
+          } as TransmartSubSelectionConstraint,
+          {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint:
+              {
+                type: 'and',
+                args: [
+                  {
+                    type: 'concept',
+                    conceptCode: 'TUMOR_STAGE'
+                  } as TransmartConceptConstraint,
+                  {
+                    type: 'value',
+                    valueType: 'string',
+                    operator: '=',
+                    value: 'II'
+                  } as TransmartValueConstraint
+                ]
+              } as TransmartAndConstraint
+          } as TransmartSubSelectionConstraint
+        ]
+      } as TransmartAndConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise "individuals with neuroblastoma diagnosis except stage II"', () => {
+    const tumorType = createConceptConstraint(ConceptType.CATEGORICAL, 'TUMOR_TYPE');
+    tumorType.valueConstraints.push(createStringValueConstraint('neuroblastoma'));
+    const tumorStage = createConceptConstraint(ConceptType.CATEGORICAL, 'TUMOR_STAGE');
+    tumorStage.valueConstraints.push(createStringValueConstraint('II'));
+    tumorStage.negated = true;
+    // Patient selection
+    const combination = new CombinationConstraint([
+      new CombinationConstraint([tumorType, tumorStage], CombinationState.And, 'diagnosis')
+    ], CombinationState.And);
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'and',
+        args: [
+          {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint:
+              {
+                type: 'and',
+                args: [
+                  {
+                    type: 'concept',
+                    conceptCode: 'TUMOR_TYPE'
+                  } as TransmartConceptConstraint,
+                  {
+                    type: 'value',
+                    valueType: 'string',
+                    operator: '=',
+                    value: 'neuroblastoma'
+                  } as TransmartValueConstraint
+                ]
+              } as TransmartAndConstraint
+          } as TransmartSubSelectionConstraint,
+          {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint: {
+              type: 'negation',
+              arg: {
+                type: 'subselection',
+                dimension: 'diagnosis',
+                constraint:
+                  {
+                    type: 'and',
+                    args: [
+                      {
+                        type: 'concept',
+                        conceptCode: 'TUMOR_STAGE'
+                      } as TransmartConceptConstraint,
+                      {
+                        type: 'value',
+                        valueType: 'string',
+                        operator: '=',
+                        value: 'II'
+                      } as TransmartValueConstraint
+                    ]
+                  } as TransmartAndConstraint
+              } as TransmartSubSelectionConstraint
+            } as TransmartNegationConstraint
+          } as TransmartSubSelectionConstraint
+        ]
+      } as TransmartAndConstraint
+    };
+    testConstraint(combination, expected);
+  });
+
+  it('should serialise "all diagnoses"', () => {
+    // Diagnosis set
+    const diagnosisCombination = new CombinationConstraint([new TrueConstraint()], CombinationState.And, 'diagnosis');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'diagnosis',
+      constraint: {
+        type: 'true'
+      }
+    };
+    testConstraint(diagnosisCombination, expected);
+  });
+
+  it('should serialise "all neuroblastoma diagnoses"', () => {
+    const tumorTypeConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:TUMOR_TYPE');
+    const tumorTypeValueConstraint = createStringValueConstraint('neuroblastoma');
+    tumorTypeConstraint.valueConstraints.push(tumorTypeValueConstraint);
+
+    // Diagnosis set
+    const diagnosisCombination = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'diagnosis',
+      constraint: {
+        type: 'and',
+        args: [
+          {
+            type: 'concept',
+            conceptCode: 'CODE:TUMOR_TYPE'
+          },
+          {
+            type: 'value',
+            valueType: 'string',
+            operator: '=',
+            value: 'neuroblastoma'
+          } as TransmartValueConstraint
+        ]
+      } as TransmartAndConstraint
+    };
+    testConstraint(diagnosisCombination, expected);
+  });
+
+  it('should serialise "all diagnoses except neuroblastoma"', () => {
+    const tumorTypeConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:TUMOR_TYPE');
+    const tumorTypeValueConstraint = createStringValueConstraint('neuroblastoma');
+    tumorTypeConstraint.valueConstraints.push(tumorTypeValueConstraint);
+    tumorTypeConstraint.negated = true;
+
+    // Diagnosis set
+    const diagnosisCombination = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'diagnosis',
+      constraint: {
+        type: 'negation',
+        arg: {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'and',
+            args: [
+              {
+                type: 'concept',
+                conceptCode: 'CODE:TUMOR_TYPE'
+              },
+              {
+                type: 'value',
+                valueType: 'string',
+                operator: '=',
+                value: 'neuroblastoma'
+              } as TransmartValueConstraint
+            ]
+          } as TransmartAndConstraint
+        } as TransmartSubSelectionConstraint
+      } as TransmartNegationConstraint
+    };
+    testConstraint(diagnosisCombination, expected);
   });
 
 });

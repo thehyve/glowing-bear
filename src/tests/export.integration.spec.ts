@@ -183,11 +183,9 @@ describe('Integration test for data export', () => {
       // verify that there are two constraints created, based on the mocked selected tree nodes
       expect((combination as CombinationConstraint).children.length).toBe(2);
       expect((combination as CombinationConstraint).dimension).toBe('patient');
-      // verify that the cohort constraint is true constraint as mocked
+      // verify the cohort constraint
       expect((combination as CombinationConstraint).children[0].className).toBe('CombinationConstraint');
       expect(((combination as CombinationConstraint).children[0] as CombinationConstraint).children.length).toBe(2);
-      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
-        .children[0].className).toBe('TrueConstraint');
       // verify that combination contains selected cohort constraint
       expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
         .children[1].className).toBe('ConceptConstraint');
