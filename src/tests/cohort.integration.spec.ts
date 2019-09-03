@@ -29,6 +29,7 @@ import {CountService} from '../app/services/count.service';
 import {TransmartAndConstraint, TransmartNegationConstraint} from '../app/models/transmart-models/transmart-constraint';
 import {CohortMapper} from '../app/utilities/cohort-utilities/cohort-mapper';
 import {CohortRepresentation} from '../app/models/gb-backend-models/cohort-representation';
+import {ConstraintHelper} from '../app/utilities/constraint-utilities/constraint-helper';
 
 describe('Integration test for cohort saving and restoring', () => {
 
@@ -221,6 +222,23 @@ describe('Integration test for cohort saving and restoring', () => {
       .catch(err => {
         fail('should have successfully restored the cohort with subject-set constraint but not')
       });
+  });
+
+  it('should ensure patient level constraint before updating counts', () => {
+    let spy1 = spyOn(ConstraintHelper, 'ensurePatientLevelConstraint').and.callThrough();
+    let spy2 = spyOn(countService, 'updateAllCounts').and.callThrough();
+    let spy3 = spyOn(resourceService, 'getCountsPerConcept').and.callThrough();
+
+    cohortService.cohorts = [new Cohort('test', 'test')];
+    cohortService.cohorts[0].selected = true;
+    cohortService.cohorts[0].constraint = new ConceptConstraint();
+
+    let promise = cohortService.updateCountsWithAllCohorts();
+    promise.then(() => {
+      expect(spy1).toHaveBeenCalled();
+      expect(spy2).toHaveBeenCalledWith(jasmine.any(ConceptConstraint));
+      expect(spy3).toHaveBeenCalledWith(jasmine.any(CombinationConstraint));
+    });
   });
 
   it('should save subject set before updating counts', () => {
