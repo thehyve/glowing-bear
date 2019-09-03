@@ -364,10 +364,12 @@ export class TreeNodeService {
   }
 
   public formatNodeWithCounts(node: GbTreeNode, countItem: CountItem) {
-    let countsText = `sub: ${FormatHelper.formatCountNumber(countItem.subjectCount)}`;
+    let subjectCount = FormatHelper.formatCountNumber(countItem.subjectCount);
+    let countsText = `sub: ${subjectCount}`;
     if (this.countService.showObservationCounts) {
       countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
     }
+    node.subjectCount = subjectCount;
     node.label = `${node.name} (${countsText})`;
   }
 
