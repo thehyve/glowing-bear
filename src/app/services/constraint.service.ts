@@ -171,11 +171,7 @@ export class ConstraintService {
    * @returns {Constraint}
    */
   get cohortSelectionConstraint(): Constraint {
-    let constraint = <Constraint>this.rootConstraint;
-    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>constraint)) {
-      constraint = new TrueConstraint();
-    }
-    return constraint;
+    return this.rootConstraint;
   }
 
   /**

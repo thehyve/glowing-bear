@@ -86,9 +86,8 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
         const flattenedChildren: Constraint[] = [];
         result.children.forEach((child: CombinationConstraint) => {
             // Only flatten children that has the same combinationState as parent or if single child
-            if ((child as CombinationConstraint).combinationState === combinationState || child.children.length === 1) {
+            if (!child.negated && ((<CombinationConstraint>child).combinationState === combinationState || child.children.length === 1)) {
               child.children.forEach(c => {
-                c.negated = child.negated;
                 flattenedChildren.push(c);
               })
             } else {
@@ -132,8 +131,8 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     const children = constraintObject.args.filter(arg => arg).map(arg => this.visit(arg));
 
     /*
-    * Check conditions for a study constraint
-    */
+     * Check conditions for a study constraint
+     */
     if (combinationState === CombinationState.Or &&
       children.every(child => child.className === 'StudyConstraint')) {
       const studyConstraint = new StudyConstraint();
@@ -315,6 +314,8 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
     const result = this.visit(constraintObject.arg);
     if (result.className === 'TimeConstraint' && (<TimeConstraint>result).dateOperator === DateOperatorState.BETWEEN) {
       (<TimeConstraint>result).dateOperator = DateOperatorState.NOT_BETWEEN
+    } else if (result.className === 'CombinationConstraint' && (<CombinationConstraint>result).children.length === 1) {
+      (<CombinationConstraint>result).children[0].negated = true;
     } else {
       result.negated = true;
     }

@@ -20,6 +20,8 @@ import {DateOperatorState} from '../../models/constraint-models/date-operator-st
 import {Operator} from '../../models/constraint-models/operator';
 import {ValueType} from '../../models/constraint-models/value-type';
 import {ConceptType} from '../../models/constraint-models/concept-type';
+import deepEqual = require('deep-equal');
+import {ConstraintSerialiser} from '../constraint-utilities/constraint-serialiser';
 
 describe('TransmartConstraintReader', () => {
 
@@ -30,6 +32,10 @@ describe('TransmartConstraintReader', () => {
     const serialisedConstraint = JSON.parse(JSON.stringify(serialiser.visit(constraint)));
     const importedConstraint = reader.visit(serialisedConstraint);
     const serialisedImportedConstraint = JSON.parse(JSON.stringify(serialiser.visit(importedConstraint)));
+    if (!deepEqual(serialisedImportedConstraint, serialisedConstraint)) {
+      console.error('Serialised', JSON.stringify(serialisedImportedConstraint, null, 2));
+      console.error('Expected', JSON.stringify(serialisedConstraint, null, 2));
+    }
     expect(serialisedImportedConstraint).toEqual(serialisedConstraint);
   }
 
@@ -225,8 +231,9 @@ describe('TransmartConstraintReader', () => {
     const study = new Study();
     study.id = 'ABC';
     studyConstraint.studies.push(study);
+    studyConstraint.negated = true;
     const constraint = new CombinationConstraint([
-      new NegationConstraint(studyConstraint)
+      studyConstraint
     ], CombinationState.And, 'biomaterial');
     testConstraint(constraint);
   });
@@ -265,6 +272,123 @@ describe('TransmartConstraintReader', () => {
     const constraint = new CombinationConstraint(
       [subselectionConstraint1, studyConstraint2], CombinationState.Or, 'patient');
     testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise empty diagnosis constraint', () => {
+    const constraint = new CombinationConstraint(
+      [], CombinationState.And, 'diagnosis');
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise singleton diagnosis constraint', () => {
+    const conceptConstraint = createConceptConstraint();
+    const constraint = new CombinationConstraint(
+      [conceptConstraint], CombinationState.And, 'diagnosis');
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise negated diagnosis constraint', () => {
+    const conceptConstraint = createConceptConstraint();
+    conceptConstraint.negated = true;
+    const constraint = new CombinationConstraint(
+      [conceptConstraint], CombinationState.And, 'diagnosis');
+    testConstraint(constraint);
+  });
+
+  it('should correctly (de)serialise combination with negated diagnosis constraint', () => {
+    const tumorType = new ConceptConstraint();
+    tumorType.concept = new Concept();
+    tumorType.concept.code = 'TUMOR_TYPE';
+    tumorType.concept.fullName = '\\Test studies\\Tumor type';
+    tumorType.concept.type = ConceptType.CATEGORICAL;
+    const tumorTypeValue = new ValueConstraint();
+    tumorTypeValue.valueType = ValueType.string;
+    tumorTypeValue.operator = Operator.eq;
+    tumorTypeValue.value = 'neuroblastoma';
+    tumorType.valueConstraints.push(tumorTypeValue);
+    const negatedTumorStage = new ConceptConstraint();
+    negatedTumorStage.concept = new Concept();
+    negatedTumorStage.concept.type = ConceptType.CATEGORICAL;
+    negatedTumorStage.concept.code = 'TUMOR_STAGE';
+    negatedTumorStage.concept.fullName = '\\Test studies\\Tumor stage';
+    const tumorStageValue = new ValueConstraint();
+    tumorStageValue.valueType = ValueType.string;
+    tumorStageValue.operator = Operator.eq;
+    tumorStageValue.value = 'II';
+    negatedTumorStage.valueConstraints.push(tumorStageValue);
+    negatedTumorStage.negated = true;
+    const constraint = new CombinationConstraint([negatedTumorStage, tumorType], CombinationState.And, 'diagnosis');
+    testConstraint(constraint);
+  });
+
+  it('reads correctly negated constraints', () => {
+    const constraint = {
+      type: 'subselection',
+      dimension: 'diagnosis',
+      constraint: {
+        type: 'negation',
+        arg: {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'concept',
+            conceptCode: 'TUMOR_STAGE'
+          },
+        }
+      }
+    };
+    const result = new TransmartConstraintReader().visit(constraint);
+
+    const negatedTumorStage = new ConceptConstraint();
+    negatedTumorStage.concept = new Concept();
+    negatedTumorStage.concept.code = 'TUMOR_STAGE';
+    negatedTumorStage.negated = true;
+    const expected = new CombinationConstraint([negatedTumorStage], CombinationState.And, 'diagnosis');
+
+    expect(ConstraintSerialiser.serialise(result)).toEqual(ConstraintSerialiser.serialise(expected));
+  });
+
+  it('reads correctly combination with negated constraint', () => {
+    const constraint = {
+      type: 'and',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'concept',
+            conceptCode: 'TUMOR_TYPE'
+          }
+        },
+        {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'negation',
+            arg: {
+              type: 'subselection',
+              dimension: 'diagnosis',
+              constraint: {
+                type: 'concept',
+                conceptCode: 'TUMOR_STAGE'
+              },
+            }
+          }
+        }
+      ]
+    };
+    const result = new TransmartConstraintReader().visit(constraint);
+
+    const tumorType = new ConceptConstraint();
+    tumorType.concept = new Concept();
+    tumorType.concept.code = 'TUMOR_TYPE';
+    const negatedTumorStage = new ConceptConstraint();
+    negatedTumorStage.concept = new Concept();
+    negatedTumorStage.concept.code = 'TUMOR_STAGE';
+    negatedTumorStage.negated = true;
+    const expected = new CombinationConstraint([tumorType, negatedTumorStage], CombinationState.And, 'diagnosis');
+
+    expect(ConstraintSerialiser.serialise(result)).toEqual(ConstraintSerialiser.serialise(expected));
   });
 
 });

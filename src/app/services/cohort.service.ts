@@ -15,7 +15,6 @@ import {CohortSetType} from '../models/cohort-models/cohort-set-type';
 import {CohortDiffItem} from '../models/cohort-models/cohort-diff-item';
 import {CohortDiffType} from '../models/cohort-models/cohort-diff-type';
 import {CohortSubscriptionFrequency} from '../models/cohort-models/cohort-subscription-frequency';
-import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {MessageHelper} from '../utilities/message-helper';
 import {ErrorHelper} from '../utilities/error-helper';
 import {TrueConstraint} from '../models/constraint-models/true-constraint';
