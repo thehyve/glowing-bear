@@ -83,3 +83,35 @@ describe('ConstraintHelper.hasNonEmptyChildren', () => {
   });
 
 });
+
+describe('ConstraintHelper.ensurePatientLevelConstraint', () => {
+
+  it('should wrap combination selecting samples into patient subselection', () => {
+    let sampleLevelCombination = new CombinationConstraint();
+    sampleLevelCombination.dimension = 'sample-dimension';
+    let resultConstraint = ConstraintHelper.ensurePatientLevelConstraint(sampleLevelCombination);
+    expect(resultConstraint).toEqual(jasmine.any(CombinationConstraint));
+    expect((resultConstraint as CombinationConstraint).dimension).toEqual('patient');
+    expect(((resultConstraint as CombinationConstraint).children[0] as CombinationConstraint).dimension)
+      .toEqual('sample-dimension');
+  });
+
+  it('should wrap non-combination constraint into patient subselection', () => {
+    let conceptConstraint = new ConceptConstraint();
+    let resultConstraint = ConstraintHelper.ensurePatientLevelConstraint(conceptConstraint);
+    expect(resultConstraint).toEqual(jasmine.any(CombinationConstraint));
+    expect((resultConstraint as CombinationConstraint).dimension).toEqual('patient');
+    expect((resultConstraint as CombinationConstraint).children[0]).toEqual(jasmine.any(ConceptConstraint));
+  });
+
+  it('should not wrap combination selecting patients into patient subselection', () => {
+    let patientLevelCombination = new CombinationConstraint();
+    patientLevelCombination.dimension = 'patient';
+    patientLevelCombination.addChild(new ConceptConstraint());
+    let resultConstraint = ConstraintHelper.ensurePatientLevelConstraint(patientLevelCombination);
+    expect(resultConstraint).toEqual(jasmine.any(CombinationConstraint));
+    expect((resultConstraint as CombinationConstraint).dimension).toEqual('patient');
+    expect((resultConstraint as CombinationConstraint).children[0]).toEqual(jasmine.any(ConceptConstraint));
+  });
+
+});

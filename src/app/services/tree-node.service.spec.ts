@@ -605,11 +605,12 @@ describe('TreeNodeService', () => {
   });
 
   it('should format node with counts', () => {
-    let node: TreeNode = {};
+    let node: GbTreeNode = {};
     const countItem = new CountItem(10, 20);
     treeNodeService.formatNodeWithCounts(node, countItem);
     expect(node.label).toBeDefined();
     expect(node.label).toContain('10');
+    expect(node.subjectCount).toEqual('10');
   });
 
   it('should flatten tree nodes', () => {

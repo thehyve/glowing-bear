@@ -139,7 +139,7 @@ describe('Integration tests for cross table ', () => {
       expect(crossTableService.crossTable.constraint.className).toBe('CombinationConstraint');
       expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.length).toBe(3);
       expect((<CombinationConstraint>crossTableService.crossTable.constraint).children.map(it => it.className))
-        .toEqual(<any>jasmine.arrayContaining(['ConceptConstraint', 'TrueConstraint', 'StudyConstraint']));
+        .toEqual(<any>jasmine.arrayContaining(['ConceptConstraint', 'CombinationConstraint', 'StudyConstraint']));
     });
   });
 
