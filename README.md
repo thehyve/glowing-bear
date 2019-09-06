@@ -101,8 +101,8 @@ e.g. [Apache] or [nginx].
 
 ### How to create a release
 
-For creating a new release, increase the version in [config.default.json](src/app/config/config.default.json)
-and [package.json](package.json). Make sure the `publishing.repositories.maven.url` property
+For creating a new release, increase the version in [package.json](package.json).
+Make sure the `publishing.repositories.maven.url` property
 in [build.gradle](build.gradle) is set to a release repository.
 
 
