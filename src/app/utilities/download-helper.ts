@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as sanitize from 'sanitize-filename';
+const sanitize = require('sanitize-filename');
 import {saveAs} from 'file-saver';
 
 export class DownloadHelper {

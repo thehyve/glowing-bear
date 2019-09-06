@@ -37,6 +37,7 @@ import {Constraint} from '../../models/constraint-models/constraint';
 import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 import {Operator, OperatorValues} from '../../models/constraint-models/operator';
 import {ValueType} from '../../models/constraint-models/value-type';
+import {ConceptType} from '../../models/constraint-models/concept-type';
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -79,13 +80,21 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
    * @returns {TransmartConstraint}
    */
   static wrapWithSubselection(dimension: string, constraint: TransmartConstraint): TransmartConstraint {
-    let queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
+    const queryConstraint: TransmartConstraint = this.unWrapNestedQueryObject(constraint);
     if (queryConstraint.type === 'true' && dimension === 'patient') {
       return {'type': 'true'};
-    } else if (queryConstraint.type === 'negation') {
-      return new TransmartNegationConstraint(
-        this.wrapWithSubselection(dimension, (<TransmartNegationConstraint>queryConstraint).arg)
-      );
+    }
+    if (queryConstraint.type === 'negation') {
+      const arg = this.wrapWithSubselection(dimension, (<TransmartNegationConstraint>queryConstraint).arg);
+      if (arg.type === 'subselection') {
+        return {
+          type: 'subselection',
+          dimension: dimension,
+          constraint: new TransmartNegationConstraint(arg)
+        } as TransmartSubSelectionConstraint;
+      } else {
+        return new TransmartNegationConstraint(arg);
+      }
     } else {
       return {
         type: 'subselection',
@@ -261,12 +270,12 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     args.push(conceptConstraint);
 
     if (constraint.valueConstraints.length > 0) {
-      if (constraint.concept.type === 'NUMERIC') {
+      if (constraint.concept.type === ConceptType.NUMERICAL) {
         // Add numerical values directly to the main constraint
         for (let val of constraint.valueConstraints) {
           args.push(this.visit(val));
         }
-      } else if (constraint.concept.type === 'CATEGORICAL') {
+      } else if (constraint.concept.type === ConceptType.CATEGORICAL) {
         // Wrap categorical values in an OR constraint
         let categorical = {
           type: 'or',

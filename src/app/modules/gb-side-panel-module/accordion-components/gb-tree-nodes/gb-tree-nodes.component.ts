@@ -36,8 +36,6 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
   // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
-  // a utility variable storing temporary information on the node that is being expanded
-  expansionStatus: any;
   // the variable holding the current metadata overlay content being shown
   metadataContent: any = [];
   // indicate if the initUpdate is finished
@@ -45,11 +43,6 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
   constructor(public treeNodeService: TreeNodeService,
               private element: ElementRef) {
-    this.expansionStatus = {
-      expanded: false,
-      treeNodeElm: null,
-      treeNode: null
-    };
   }
 
   ngAfterViewInit() {
@@ -135,7 +128,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       if (treeContainer) {
         let treeNodeElements: Element[] = Array.from(treeContainer.children);
         if (treeNodeElements && treeNodeElements.length > 0) {
-          this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+          this.updateEventListeners(treeNodeElements, this.treeData);
           this.initUpdated = true;
         }
       }
@@ -143,34 +136,18 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
   }
 
   update() {
-    if (this.expansionStatus['expanded']) {
-      let treeNodeElm = this.expansionStatus['treeNodeElm'];
-      let treeNode = this.expansionStatus['treeNode'];
-      let newChildren: Element[] = Array.from(treeNodeElm.querySelector('ul.ui-treenode-children').children);
-      this.updateEventListeners(newChildren, treeNode.children);
-
-      this.expansionStatus['expanded'] = false;
-      this.expansionStatus['treeNodeElm'] = null;
-      this.expansionStatus['treeNode'] = null;
-    }
-  }
-
-  /**
-   * Event handler when the user expands one of the tree nodes,
-   * once a tree node is expanded,
-   * it triggers the MutationObserver to do a further update.
-   * @param event
-   */
-  expandNode(event) {
-    if (event.node) {
-      this.expansionStatus['expanded'] = true;
-      this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
-      this.expansionStatus['treeNode'] = event.node;
-    }
+      let treeNodeContainer: Element = this.element.nativeElement.querySelector('.ui-tree-container');
+      if (treeNodeContainer) {
+        let treeNodeElements = Array.from(treeNodeContainer.children);
+        this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+      }
   }
 
   get isLoading(): boolean {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
+  get treeData(): TreeNode[] {
+    return this.treeNodeService.treeNodes;
+  }
 }

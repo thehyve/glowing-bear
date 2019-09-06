@@ -145,7 +145,9 @@ export class ConstraintSerialiser extends AbstractConstraintVisitor<object> {
 
   visit(constraint: Constraint): object {
     const result = super.visit(constraint);
-    result['className'] = constraint.className;
+    if (result) {
+      result['className'] = constraint.className;
+    }
     return result;
   }
 

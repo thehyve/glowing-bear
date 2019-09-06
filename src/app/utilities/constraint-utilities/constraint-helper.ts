@@ -89,7 +89,8 @@ export class ConstraintHelper {
    */
   static ensurePatientLevelConstraint(observationConstraint: Constraint): Constraint {
     if (observationConstraint.className === 'CombinationConstraint' &&
-      (<CombinationConstraint>observationConstraint).dimension !== 'patient') {
+      (<CombinationConstraint>observationConstraint).dimension !== 'patient'
+      || observationConstraint.className !== 'CombinationConstraint') {
       return new CombinationConstraint([observationConstraint], CombinationState.And, 'patient');
     }
     return observationConstraint;
