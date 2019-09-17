@@ -2,34 +2,25 @@
 
   <!-- Header and description -->
   <div class="description">
-    Cross Table
+    Cross table
     <i class="fa fa-info"
-       matTooltip='Drag categorical variables from the "Variables" section on the left
-       into the "drop zones" below to see the intersection counts.'
-       aria-label="Tooltip on how to use Cross Table"></i>
+       matTooltip="Drag categorical variables from the &lsquo;Variables&rsquo; section on the left
+       into the &lsquo;drop zones&rsquo; below to create rows and columns of groups of patients
+       for different values. The table displays the patient count of the intersection of these groups."
+       aria-label="Tooltip on how to use the cross table"></i>
   </div>
-
-  <p-overlayPanel #gb_cross_table_info
-                  [dismissable]="true"
-                  [showCloseIcon]="false"
-                  [style]="{'background':'#339C90', 'width': '50%'}">
-    <div class="info-text">
-      Create a cross table by dragging categorical tree nodes, in the "Current Data Selection" panel on the left side,
-      into the drop zones below.
-    </div>
-  </p-overlayPanel>
 
   <!-- The cross table -->
   <div class="row" style="margin-bottom: 10px">
     <div class="col-md-3"></div>
     <div class="col-md-9">
-      <gb-droppable-zone [constraints]="columnConstraints" axis="Column"></gb-droppable-zone>
+      <gb-droppable-zone [disabled]="isUpdating" [constraints]="columnConstraints" axis="Column"></gb-droppable-zone>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-3">
-      <gb-droppable-zone [constraints]="rowConstraints" axis="Row"></gb-droppable-zone>
+      <gb-droppable-zone [disabled]="isUpdating" [constraints]="rowConstraints" axis="Row"></gb-droppable-zone>
     </div>
     <div class="col-md-9">
       <!-- when the table is still updating -->
@@ -37,18 +28,7 @@
 
       <!-- when the table finished updating, the table content goes here -->
       <div *ngIf="!isUpdating">
-        <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
-          <ng-template pTemplate="header" let-columns>
-            <tr>
-              <th *ngFor="let col of columns" pResizableColumn
-                  class="top-header"
-                  style="color: transparent">
-              <span>
-                {{col.header}}
-              </span>
-              </th>
-            </tr>
-          </ng-template>
+        <p-table [autoLayout]="true" [value]="rows" [columns]="cols" [customSort]="true">
 
           <!-- table body -->
           <ng-template pTemplate="body" let-row let-columns="columns">

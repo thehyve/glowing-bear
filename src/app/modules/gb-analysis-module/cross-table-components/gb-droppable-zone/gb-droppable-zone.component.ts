@@ -24,6 +24,7 @@ import {ConstraintSerialiser} from '../../../../utilities/constraint-utilities/c
 export class GbDroppableZoneComponent implements OnInit {
   @Input() constraints: Constraint[] = [];
   @Input() axis: AxisType = null;
+  @Input() disabled = false;
 
   public dragCounter = 0;
 
@@ -61,7 +62,9 @@ export class GbDroppableZoneComponent implements OnInit {
     let constraint = selectedConstraintCell ? selectedConstraintCell.constraint : null;
     // if no existing constraint (from one of the already created draggable cells) is used,
     // try to create a new one based on the (possible) variable drop
-    if (!constraint) {
+    if (this.disabled) {
+      // do nothing, data loading is in progress
+    } else if (!constraint) {
       let variable = this.variableService.identifyDraggedElement();
       if (variable) {
         constraint = new ConceptConstraint();
