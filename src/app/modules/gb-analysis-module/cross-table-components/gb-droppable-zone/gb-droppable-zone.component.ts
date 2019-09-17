@@ -22,7 +22,7 @@ import {ConstraintSerialiser} from '../../../../utilities/constraint-utilities/c
   styleUrls: ['./gb-droppable-zone.component.css']
 })
 export class GbDroppableZoneComponent implements OnInit {
-  @Input() constraints: Array<Constraint> = [];
+  @Input() constraints: Constraint[] = [];
   @Input() axis: AxisType = null;
 
   public dragCounter = 0;
@@ -97,7 +97,6 @@ export class GbDroppableZoneComponent implements OnInit {
 
   /**
    * Remove the selected constraint from the list
-   * @param {any} onlyUpdateHeaders - indicate if to update the cells or just the headers
    * @param {Constraint} constraint
    */
   onConstraintCellRemoved(constraint: Constraint) {

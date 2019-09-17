@@ -37,11 +37,11 @@ export class GbCrossTableComponent implements OnInit {
     return this.crossTableService.columnConstraints;
   }
 
-  get rows(): Array<Row> {
+  get rows(): Row[] {
     return this.crossTableService.rows;
   }
 
-  get cols(): Array<Col> {
+  get cols(): Col[] {
     return this.crossTableService.cols;
   }
 
