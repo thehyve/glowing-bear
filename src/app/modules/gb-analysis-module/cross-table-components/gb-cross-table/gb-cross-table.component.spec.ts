@@ -37,7 +37,7 @@ describe('GbCrossTableComponent', () => {
       ],
       declarations: [
         GbCrossTableComponent,
-        MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints']})
+        MockComponent({selector: 'gb-droppable-zone', inputs: ['constraints', 'axis', 'disabled']})
       ]
     })
       .compileComponents();

@@ -14,13 +14,13 @@
   <div class="row" style="margin-bottom: 10px">
     <div class="col-md-3"></div>
     <div class="col-md-9">
-      <gb-droppable-zone [disabled]="isUpdating" [constraints]="columnConstraints" axis="Column"></gb-droppable-zone>
+      <gb-droppable-zone [disabled]="isUpdating" [constraints]="columnConstraints" [axis]="AxisType.COL"></gb-droppable-zone>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-3">
-      <gb-droppable-zone [disabled]="isUpdating" [constraints]="rowConstraints" axis="Row"></gb-droppable-zone>
+      <gb-droppable-zone [disabled]="isUpdating" [constraints]="rowConstraints" [axis]="AxisType.ROW"></gb-droppable-zone>
     </div>
     <div class="col-md-9">
       <!-- when the table is still updating -->
