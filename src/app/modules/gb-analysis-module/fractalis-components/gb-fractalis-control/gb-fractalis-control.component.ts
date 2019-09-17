@@ -95,7 +95,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   get isClearButtonShown(): boolean {
-    return this.selectedChartType ? true : false;
+    return this.fractalisService.isFractalisEnabled && !!this.selectedChartType;
   }
 
   get selectedChartType(): ChartType {
