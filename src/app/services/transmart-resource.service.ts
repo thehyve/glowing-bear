@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {from as observableFrom, Observable} from 'rxjs';
+import {AsyncSubject, from as observableFrom, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Constraint} from '../models/constraint-models/constraint';
 import {Pedigree} from '../models/constraint-models/pedigree';
@@ -36,6 +36,7 @@ import {Study} from '../models/constraint-models/study';
 import {TransmartExportJob} from '../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
+import {ServerStatus} from '../models/server-status';
 
 
 @Injectable({
@@ -57,15 +58,37 @@ export class TransmartResourceService {
   private _useExternalExportJob: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
   private _counts: TransmartCountItem;
+  private _status: AsyncSubject<ServerStatus> = new AsyncSubject<ServerStatus>();
 
   constructor(private appConfig: AppConfig,
               private transmartHttpService: TransmartHttpService,
               private transmartPackerHttpService: TransmartPackerHttpService) {
-    this.exportDataView = appConfig.getConfig('export-mode')['data-view'];
-    this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
-    this.useExternalExportJob = appConfig.getConfig('export-mode')['name'] !== 'transmart';
+    if (this.appConfig.isLoaded) {
+      this.exportDataView = appConfig.getConfig('export-mode')['data-view'];
+      this.autosaveSubjectSets = appConfig.getConfig('autosave-subject-sets');
+      this.useExternalExportJob = appConfig.getConfig('export-mode')['name'] !== 'transmart';
+    }
     this.subjectSetConstraint = new SubjectSetConstraint();
     this.counts = new TransmartCountItem();
+  }
+
+  init() {
+    this.transmartHttpService.getStatus().subscribe(status => {
+      if (status.toLowerCase() === 'up') {
+        this._status.next(ServerStatus.UP);
+      } else {
+        this._status.next(ServerStatus.DOWN);
+      }
+      this._status.complete();
+    }, error => {
+      console.error(error);
+      this._status.next(ServerStatus.ERROR);
+      this._status.complete();
+    });
+  }
+
+  get status(): AsyncSubject<ServerStatus> {
+    return this._status;
   }
 
   get exportDataView(): string {

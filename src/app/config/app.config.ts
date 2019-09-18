@@ -33,15 +33,15 @@ export class AppConfig {
     'name': 'transmart',
     'data-view': 'dataTable'
   };
+  public static DEFAULT_CHECK_SERVER_STATUS = false;
 
   static path = 'app/config/';
   config: Object = null;
   env: Object = null;
-  envs: Array<string> = null;
+  configError: string = null;
+  validConfig: boolean = null;
 
-  // see this gist: https://gist.github.com/fernandohu/122e88c3bcd210bbe41c608c36306db9
   constructor(public http: HttpClient) {
-    this.envs = ['default', 'dev', 'transmart'];
   }
 
   get version() {
@@ -54,66 +54,69 @@ export class AppConfig {
    */
   public getConfig(key: any) {
     let value = this.config[key];
-    if (value === null || value === undefined) {
-      switch (key) {
-        case 'api-url': {
-          throw Error('The API URL is unspecified in the configuration.')
+    if (value !== null && value !== undefined) {
+      return value;
+    }
+    switch (key) {
+      case 'api-url': {
+        throw Error('The API URL is unspecified in the configuration.')
+      }
+      case 'api-version': {
+        return AppConfig.DEFAULT_API_VERSION;
+      }
+      case 'gb-backend-url': {
+        throw Error('Gb-backend URL is unspecified in the configuration.')
+      }
+      case 'fractalis-url': {
+        if (this.getConfig('enable-fractalis-analysis') === true) {
+          throw Error('Fractalis URL is unspecified in the configuration.')
         }
-        case 'api-version': {
-          value = AppConfig.DEFAULT_API_VERSION; break;
-        }
-        case 'gb-backend-url': {
-          throw Error('Gb-backend URL is unspecified in the configuration.')
-        }
-        case 'fractalis-url': {
-          if (this.getConfig('enable-fractalis-analysis') === true) {
-            throw Error('Fractalis URL is unspecified in the configuration.')
-          }
-          return null;
-        }
-        case 'fractalis-datasource-url': {
-          // Use the API URL by default.
-          return this.getConfig('api-url');
-        }
-        case 'doc-url': {
-          value = AppConfig.DEFAULT_DOC_URL; break;
-        }
-        case 'enable-fractalis-analysis': {
-          value = AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS; break;
-        }
-        case 'autosave-subject-sets': {
-          value = AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS; break;
-        }
-        case 'show-observation-counts': {
-          value = AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS; break;
-        }
-        case 'instant-counts-update': {
-          value = AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE; break;
-        }
-        case 'include-data-table': {
-          value = AppConfig.DEFAULT_INCLUDE_DATA_TABLE; break;
-        }
-        case 'include-cohort-subscription': {
-          value = AppConfig.DEFAULT_INCLUDE_COHORT_SUBSCRIPTION; break;
-        }
-        case 'authentication-service-type': {
-          value = AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE; break;
-        }
-        case 'oidc-server-url': {
-          value = AppConfig.DEFAULT_OIDC_SERVER_URL; break;
-        }
-        case 'oidc-client-id': {
-          value = AppConfig.DEFAULT_OIDC_CLIENT_ID; break;
-        }
-        case 'export-mode': {
-          value = AppConfig.DEFAULT_EXPORT_MODE; break;
-        }
-        default: {
-          value = null; break;
-        }
+        return null;
+      }
+      case 'fractalis-datasource-url': {
+        // Use the API URL by default.
+        return this.getConfig('api-url');
+      }
+      case 'doc-url': {
+        return AppConfig.DEFAULT_DOC_URL;
+      }
+      case 'enable-fractalis-analysis': {
+        return AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS;
+      }
+      case 'autosave-subject-sets': {
+        return AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS;
+      }
+      case 'show-observation-counts': {
+        return AppConfig.DEFAULT_SHOW_OBSERVATIONS_COUNTS;
+      }
+      case 'instant-counts-update': {
+        return AppConfig.DEFAULT_INSTANT_COUNTS_UPDATE;
+      }
+      case 'include-data-table': {
+        return AppConfig.DEFAULT_INCLUDE_DATA_TABLE;
+      }
+      case 'include-cohort-subscription': {
+        return AppConfig.DEFAULT_INCLUDE_COHORT_SUBSCRIPTION;
+      }
+      case 'authentication-service-type': {
+        return AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE;
+      }
+      case 'oidc-server-url': {
+        return AppConfig.DEFAULT_OIDC_SERVER_URL;
+      }
+      case 'oidc-client-id': {
+        return AppConfig.DEFAULT_OIDC_CLIENT_ID;
+      }
+      case 'export-mode': {
+        return AppConfig.DEFAULT_EXPORT_MODE;
+      }
+      case 'check-server-status': {
+        return AppConfig.DEFAULT_CHECK_SERVER_STATUS;
+      }
+      default: {
+        return null;
       }
     }
-    return value;
   }
 
   /**
@@ -123,12 +126,28 @@ export class AppConfig {
     return this.env['env'];
   }
 
-  public load() {
+  private checkConfig() {
+    for (let key of ['api-url', 'gb-backend-url']) {
+      try {
+        this.getConfig(key);
+      } catch (e) {
+        this.configError = e.message;
+        this.validConfig = false;
+      }
+    }
+    this.validConfig = true;
+  }
+
+  get isLoaded(): boolean {
+    return this.config && !this.configError && this.validConfig;
+  }
+
+  public load(): Promise<void> {
     return new Promise((resolve, reject) => {
 
       const options = {
         headers: new HttpHeaders({
-          'Content-Type': 'application/json'
+          'Accept': 'application/json'
         })
       };
       this.http
@@ -136,31 +155,28 @@ export class AppConfig {
         .subscribe((envResponse) => {
           this.env = envResponse;
           const envString = this.getEnv();
-          let request = this.envs.includes(envString) ?
-            this.http.get(AppConfig.path + 'config.' + envString + '.json') : null;
+          const configLocation = `${AppConfig.path}config.${envString}.json`;
+          const request = this.http.get(configLocation, options);
           if (request) {
             request
               .subscribe((responseData) => {
                 this.config = responseData;
                 console.log('Successfully retrieved config: ', this.config);
-                resolve(true);
+                this.checkConfig();
+                resolve();
               }, (err) => {
                 ErrorHelper.handleError(err);
-                const summary = 'Error reading ' + envString + ' configuration file';
-                console.error(summary);
-                resolve(err);
+                this.configError = `Error reading configuration file: ${configLocation}`;
+                reject();
               });
           } else {
-            const summary = 'Env config file "env.json" is  invalid';
-            MessageHelper.alert('error', summary);
-            console.error(summary);
-            resolve(true);
+            this.configError = 'Env config file "env.json" is invalid.';
+            reject();
           }
         }, (err) => {
           ErrorHelper.handleError(err);
-          const summary = 'Configuration environment could not be read.';
-          console.error(summary);
-          resolve(err);
+          this.configError = 'Configuration environment could not be read.';
+          reject();
         });
     });
   }

@@ -152,6 +152,7 @@ Supported properties in the `config.*.json` files:
 | `fractalis-datasource-url`|           | The URL where the TranSMART API is reachable by Fractalis. (The value for `api-url` is used by default).
 | `include-data-table`      | `true`    | Show a data table in the export tab.
 | `include-cohort-subscription` | `false` | Enable cohort subscription.
+| `check-server-status` | `false` | Enable checking server status before requesting data.
 
 
 ## Extensions

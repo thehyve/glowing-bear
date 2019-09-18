@@ -22,8 +22,10 @@ export class GbBackendHttpService {
   private _endpointUrl: string;
 
   constructor(private appConfig: AppConfig, httpClient: HttpClient) {
-    this.endpointUrl = `${this.appConfig.getConfig('gb-backend-url')}`;
-    this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+    if (this.appConfig.isLoaded) {
+      this.endpointUrl = `${this.appConfig.getConfig('gb-backend-url')}`;
+      this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+    }
   }
 
   get endpointUrl(): string {

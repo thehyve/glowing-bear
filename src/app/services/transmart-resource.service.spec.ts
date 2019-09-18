@@ -20,6 +20,7 @@ import {ExportFileFormat} from '../models/export-models/export-file-format';
 import {SubjectSet} from '../models/constraint-models/subject-set';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
+import {ServerStatus} from '../models/server-status';
 
 describe('TransmartResourceService', () => {
 
@@ -54,6 +55,32 @@ describe('TransmartResourceService', () => {
     inject([TransmartResourceService], (service: TransmartResourceService) => {
       expect(service).toBeTruthy();
     }));
+
+  it('should check server status (up)', (done) => {
+    transmartResourceService.status.subscribe(status => {
+      expect(status).toEqual(ServerStatus.UP);
+      done();
+    });
+    transmartResourceService.init();
+  });
+
+  it('should check server status (down)', (done) => {
+    (<TransmartHttpServiceMock><unknown>transmartHttpService).serverStatus = 'down';
+    transmartResourceService.status.subscribe(status => {
+      expect(status).toEqual(ServerStatus.DOWN);
+      done();
+    });
+    transmartResourceService.init();
+  });
+
+  it('should check server status (error)', (done) => {
+    (<TransmartHttpServiceMock><unknown>transmartHttpService).serverStatus = new Error('Could not connect');
+    transmartResourceService.status.subscribe(status => {
+      expect(status).toEqual(ServerStatus.ERROR);
+      done();
+    });
+    transmartResourceService.init();
+  });
 
   it('should run transmart export job for survey table view', () => {
     transmartResourceService.useExternalExportJob = false;

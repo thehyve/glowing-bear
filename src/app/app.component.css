@@ -14,3 +14,16 @@
   background-color: #f0f0f0;
   border-left: 6px solid #13b4e6;
 }
+
+.gb-error {
+  color: black;
+  background-color: #f0f0f0;
+  border-left: 6px solid #e61138;
+}
+
+.gb-title, a.gb-title {
+  background-color: var(--gb-clinical-green-light-light);
+  color: var(--gb-gray-dark);
+  text-align: right;
+  padding: 14px 16px;
+}

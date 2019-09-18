@@ -29,6 +29,8 @@ export class TransmartHttpServiceMock {
 
   private _studyConceptCountObject: object;
 
+  serverStatus: string|Error = 'UP';
+
   constructor() {
     this._studies = [];
     this.treeNodes = [];
@@ -44,6 +46,16 @@ export class TransmartHttpServiceMock {
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
     s2.studyId = 'EHR';
     this._studies = [s1, s2];
+  }
+
+  getStatus(): Observable<string> {
+    return Observable.from(new Promise<string>((resolve, reject) => {
+      if (typeof this.serverStatus === 'string') {
+        resolve(<string>this.serverStatus);
+      } else {
+        reject((<Error>this.serverStatus).message);
+      }
+    }));
   }
 
   getStudies(): Observable<TransmartStudy[]> {

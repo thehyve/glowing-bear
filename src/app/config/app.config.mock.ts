@@ -7,8 +7,10 @@
  */
 
 export class AppConfigMock {
-  private config: Object = null;
+  config: Object = null;
   private env: Object = null;
+  loaded = true;
+  error: string = null;
 
   constructor() {
     this.config = {
@@ -36,6 +38,14 @@ export class AppConfigMock {
 
   public getEnv(key: any) {
     return 'default';
+  }
+
+  get isLoaded(): boolean {
+    return this.loaded;
+  }
+
+  get configError(): string {
+    return this.error;
   }
 
   load() {}
@@ -66,6 +76,10 @@ export class OidcConfigMock {
 
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  get isLoaded(): boolean {
+    return true;
   }
 
   load() {}
@@ -103,6 +117,10 @@ export class AppConfigPackerMock {
     return this.env[key];
   }
 
+  get isLoaded(): boolean {
+    return true;
+  }
+
   load() {}
 }
 
@@ -137,6 +155,10 @@ export class AppConfigSurveyExportMock {
     return this.env[key];
   }
 
+  get isLoaded(): boolean {
+    return true;
+  }
+
   load() {}
 }
 
@@ -167,9 +189,12 @@ export class AppConfigFractalisDisabledMock {
     return this.config[key];
   }
 
-
   public getEnv(key: any) {
     return this.env[key];
+  }
+
+  get isLoaded(): boolean {
+    return true;
   }
 
   load() {}
