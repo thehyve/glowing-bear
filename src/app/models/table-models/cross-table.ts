@@ -15,14 +15,14 @@ export class CrossTable {
   // the base constraint that the row/col constraints are conditioned on
   private _constraint: Constraint;
   // the row and column constraints used in the drag & drop zones
-  private _rowConstraints: Array<Constraint> = [];
-  private _columnConstraints: Array<Constraint> = [];
+  private _rowConstraints: Constraint[] = [];
+  private _columnConstraints: Constraint[] = [];
   /*
    * the keys of the value constraints are the row/column constraints,
    * a value constraint is typically a categorical value constraint,
    * sometimes combined with a study constraint
    */
-  private _valueConstraints: Map<Constraint, Array<Constraint>>;
+  private _valueConstraints: Map<Constraint, Constraint[]>;
   /*
    * the header constraints used as input params for backend call
    */
@@ -37,15 +37,15 @@ export class CrossTable {
    * _rows[3] ------> _rows[3].data[_col[0]], _rows[3].data[_col[1]], _rows[3].data[_col[2]], ...
    */
   // The actual rows
-  private _rows: Array<Row> = [];
+  private _rows: Row[] = [];
   // The index top row
-  private _cols: Array<Col> = [];
+  private _cols: Col[] = [];
   // Flag indicating is the cross table is updating
   private _isUpdating: boolean;
 
   constructor() {
     this.constraint = new TrueConstraint();
-    this.valueConstraints = new Map<Constraint, Array<Constraint>>();
+    this.valueConstraints = new Map<Constraint, Constraint[]>();
     this.isUpdating = false;
   }
 
@@ -56,43 +56,43 @@ export class CrossTable {
     this.valueConstraints.set(keyConstraint, valueConstraints);
   }
 
-  get rowConstraints(): Array<Constraint> {
+  get rowConstraints(): Constraint[] {
     return this._rowConstraints;
   }
 
-  set rowConstraints(value: Array<Constraint>) {
+  set rowConstraints(value: Constraint[]) {
     this._rowConstraints = value;
   }
 
-  get columnConstraints(): Array<Constraint> {
+  get columnConstraints(): Constraint[] {
     return this._columnConstraints;
   }
 
-  set columnConstraints(value: Array<Constraint>) {
+  set columnConstraints(value: Constraint[]) {
     this._columnConstraints = value;
   }
 
-  get rows(): Array<Row> {
+  get rows(): Row[] {
     return this._rows;
   }
 
-  set rows(value: Array<Row>) {
+  set rows(value: Row[]) {
     this._rows = value;
   }
 
-  get cols(): Array<Col> {
+  get cols(): Col[] {
     return this._cols;
   }
 
-  set cols(value: Array<Col>) {
+  set cols(value: Col[]) {
     this._cols = value;
   }
 
-  get valueConstraints(): Map<Constraint, Array<Constraint>> {
+  get valueConstraints(): Map<Constraint, Constraint[]> {
     return this._valueConstraints;
   }
 
-  set valueConstraints(value: Map<Constraint, Array<Constraint>>) {
+  set valueConstraints(value: Map<Constraint, Constraint[]>) {
     this._valueConstraints = value;
   }
 

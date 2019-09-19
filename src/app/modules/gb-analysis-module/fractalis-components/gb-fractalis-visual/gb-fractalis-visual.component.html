@@ -8,7 +8,7 @@
 
   <div class="charts">
     <div *ngFor="let chart of charts">
-      <span [ngClass]="{'fractatis-chart-hidden': !chart.isValid}">
+      <span [ngClass]="{'fractalis-chart-hidden': !chart.isValid}">
         <button mat-icon-button color="primary" (click)="onRemoveChart($event, chart)">
           <mat-icon aria-label="Close the chart">close</mat-icon>
         </button>

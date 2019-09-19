@@ -75,21 +75,6 @@ describe('AppConfig', () => {
     expect(appConfig.version).toEqual(appVersion);
   });
 
-  it('should not load config file when env is wrong', () => {
-    AppConfig.path = 'somepath/';
-    let dummyEnvResponse = {
-      env: 'sth.wrong',
-      foo: 'bar'
-    };
-    let spy = spyOn(appConfig.http, 'get').and.callThrough();
-    let spyMessage = spyOn(MessageHelper, 'alert');
-    appConfig.load();
-    httpMock.expectOne(AppConfig.path + 'env.json').flush(dummyEnvResponse);
-    httpMock.expectNone(AppConfig.path + 'config.' + dummyEnvResponse.env + '.json');
-    expect(spy).toHaveBeenCalledTimes(1);
-    expect(spyMessage).toHaveBeenCalledTimes(1);
-  });
-
   it('should report error when retrieving env.json fails', () => {
     let errorResponse = {
       status: 404,

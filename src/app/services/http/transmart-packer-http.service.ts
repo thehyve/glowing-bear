@@ -32,9 +32,11 @@ export class TransmartPackerHttpService {
   private httpHelper: HttpHelper;
 
   constructor(private appConfig: AppConfig, private httpClient: HttpClient) {
-    this.customExportJobName = this.appConfig.getConfig('export-mode')['data-view'];
-    this.endpointUrl = this.appConfig.getConfig('export-mode')['export-url'];
-    this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+    if (this.appConfig.isLoaded) {
+      this.customExportJobName = this.appConfig.getConfig('export-mode')['data-view'];
+      this.endpointUrl = this.appConfig.getConfig('export-mode')['export-url'];
+      this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+    }
   }
 
   get customExportJobName(): string {

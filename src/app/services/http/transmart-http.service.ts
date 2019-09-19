@@ -21,10 +21,10 @@ import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/tra
 import {ErrorHelper} from '../../utilities/error-helper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {map} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {HttpHelper} from '../../utilities/http-helper';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
@@ -46,9 +46,11 @@ export class TransmartHttpService {
   private _studiesSubject: AsyncSubject<TransmartStudy[]>;
 
 
-  constructor(private appConfig: AppConfig, httpClient: HttpClient) {
-    this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
-    this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+  constructor(private appConfig: AppConfig, private httpClient: HttpClient) {
+    if (this.appConfig.isLoaded) {
+      this.endpointUrl = `${this.appConfig.getConfig('api-url')}/${this.appConfig.getConfig('api-version')}`;
+      this.httpHelper = new HttpHelper(this.endpointUrl, httpClient);
+    }
   }
 
   get endpointUrl(): string {
@@ -57,6 +59,22 @@ export class TransmartHttpService {
 
   set endpointUrl(value: string) {
     this._endpointUrl = value;
+  }
+
+  getStatus(): Observable<string> {
+    return Observable.from(new Promise<string>((resolve, reject) =>
+      this.httpClient.get(`${this.appConfig.getConfig('api-url')}/health`)
+        .subscribe(response => {
+          resolve(response['status']);
+        }, error => {
+          if (error['status'] === 503) {
+            resolve(error['error']['status']);
+          } else {
+            console.error('Error response', error);
+            reject(error);
+          }
+        })
+    ));
   }
 
 

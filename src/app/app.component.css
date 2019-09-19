@@ -14,3 +14,27 @@
   background-color: #f0f0f0;
   border-left: 6px solid #13b4e6;
 }
+
+.gb-error {
+  color: black;
+  background-color: #f0f0f0;
+  border-left: 6px solid #e61138;
+}
+
+.gb-title, .gb-title a {
+  background-color: var(--gb-clinical-green-dark);
+  color: #f2f2f2;
+  text-align: right;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.gb-title a:hover {
+  background-color: #e3e3e3;
+  color: var(--gb-gray-dark);
+}
+
+.gb-title a.active {
+  background-color: #fdfdfd;
+  color: var(--gb-gray-dark);
+}

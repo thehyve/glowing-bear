@@ -17,20 +17,23 @@ export class IconHelper {
     if (!dimensionName) {
       return '';
     }
-    switch (dimensionName.toLowerCase()) {
-      case 'patient':
-        return 'fa fa-male';
-      case 'diagnosis id':
-        return 'fa fa-stethoscope';
-      case 'biosource id':
-        return 'fa fa-pagelines';
-      case 'biomaterial id':
-        return 'fa fa-leaf';
-      case 'images id':
-        return 'fa fa-image';
-      default:
-        return 'fa fa-sticky-note';
+    const dimension = dimensionName.toLowerCase();
+    if (/patient/.test(dimension)) {
+      return 'fa fa-male';
     }
+    if (/diagnosis/.test(dimension)) {
+      return 'fa fa-stethoscope';
+    }
+    if (/biosource/.test(dimension)) {
+      return 'fa fa-pagelines';
+    }
+    if (/biomaterial/.test(dimension)) {
+      return 'fa fa-leaf';
+    }
+    if (/image/.test(dimension)) {
+      return 'fa fa-image';
+    }
+    return 'fa fa-sticky-note';
   }
 
 }

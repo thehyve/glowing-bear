@@ -1,9 +1,51 @@
 <p-growl [(value)]="messages" life="3000"></p-growl>
 
-<gb-main *ngIf="authenticationCompleted"></gb-main>
+<gb-main *ngIf="authenticatedAndServerUp"></gb-main>
 
-<div class="gb-page" *ngIf="!authenticationCompleted">
-  <div class="gb-message-box gb-info">
-  You are being redirected to the login page to authenticate ...
+<div *ngIf="!authenticatedAndServerUp">
+
+  <div class="gb-title">
+    Glowing Bear
+    <a *ngIf="docUrl" [href]="docUrl" target="_blank"><small>{{appVersion}}</small>&nbsp; <i class="fa fa-question-circle-o"></i></a>
+    <span *ngIf="!docUrl"><small>{{appVersion}}</small></span>
+    <a *ngIf="authenticationCompleted" (click)="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
   </div>
+
+  <div id="statusMessages">
+
+    <div class="gb-page" *ngIf="configLoaded && !authenticationCompleted">
+      <div class="gb-message-box gb-info">
+      You are being redirected to the login page to authenticate ...
+      </div>
+    </div>
+
+    <div class="gb-page" *ngIf="!configLoaded">
+      <div class="gb-message-box gb-error">
+        <p>The configuration is not loaded correctly</p>
+        <code *ngIf="configError">
+          {{configError}}
+        </code>
+      </div>
+    </div>
+
+    <div class="gb-page" *ngIf="isAccessDenied">
+      <div class="gb-message-box gb-error">
+        Access is denied.
+      </div>
+    </div>
+
+    <div class="gb-page" *ngIf="serverDown">
+      <div class="gb-message-box gb-error">
+        The server is down.
+      </div>
+    </div>
+
+    <div class="gb-page" *ngIf="serverError">
+      <div class="gb-message-box gb-error">
+        There is an error connecting to the server.
+      </div>
+    </div>
+
+  </div>
+
 </div>
