@@ -153,7 +153,7 @@ Supported properties in the `config.*.json` files:
 | `include-data-table`      | `true`    | Show a data table in the export tab.
 | `include-cohort-subscription` | `false` | Enable cohort subscription.
 | `check-server-status` | `false` | Enable checking server status before requesting data.
-
+| `deny-access-to-users-without-role` | `false` | Deny access to users without any roles assigned to them. The corresponding configuration needs to be set for the backends.
 
 ## Extensions
 

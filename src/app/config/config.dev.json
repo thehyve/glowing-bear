@@ -18,5 +18,6 @@
     "name": "transmart",
     "data-view": "dataTable"
   },
-  "check-server-status": true
+  "check-server-status": true,
+  "deny-access-to-users-without-role": true
 }

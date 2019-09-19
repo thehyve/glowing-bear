@@ -13,6 +13,7 @@ import {CompatibilityHelper} from './utilities/compatibility-helper';
 import {ResourceService} from './services/resource.service';
 import {ServerStatus} from './models/server-status';
 import {AppConfig} from './config/app.config';
+import {AccessLevel} from './services/authentication/access-level';
 
 @Component({
   selector: 'gb-app-root',
@@ -25,6 +26,7 @@ export class AppComponent implements OnInit {
   appVersion: string;
 
   private _authenticationCompleted = false;
+  private _accessLevel: AccessLevel = null;
   private _serverStatus = ServerStatus.NONE;
 
   constructor(private authenticationService: AuthenticationService,
@@ -44,14 +46,19 @@ export class AppComponent implements OnInit {
       if (authenticated) {
         MessageHelper.alert('success', 'Authentication successful!');
         this._authenticationCompleted = true;
-        if (this.config.getConfig('check-server-status')) {
-          this.resourceService.status.subscribe((serverStatus) => {
-            this._serverStatus = serverStatus;
-          });
-          this.resourceService.init();
-        } else {
-          this._serverStatus = ServerStatus.UP;
-        }
+        this.authenticationService.accessLevel.subscribe((accessLevel) => {
+          this._accessLevel = accessLevel;
+          if (accessLevel && accessLevel !== AccessLevel.None) {
+            if (this.config.getConfig('check-server-status')) {
+              this.resourceService.status.subscribe((serverStatus) => {
+                this._serverStatus = serverStatus;
+              });
+              this.resourceService.init();
+            } else {
+              this._serverStatus = ServerStatus.UP;
+            }
+          }
+        });
       } else {
         console.warn('Authenticated failed.');
       }
@@ -80,17 +87,25 @@ export class AppComponent implements OnInit {
 
   get authenticatedAndServerUp(): boolean {
     return this._authenticationCompleted &&
+      this._accessLevel && this._accessLevel !== AccessLevel.None &&
       this._serverStatus === ServerStatus.UP;
+  }
+
+  get isAccessDenied(): boolean {
+    return this._authenticationCompleted &&
+      this._accessLevel && this._accessLevel === AccessLevel.None;
   }
 
   get serverDown(): boolean {
     return this._authenticationCompleted &&
+      this._accessLevel && this._accessLevel !== AccessLevel.None &&
       this._serverStatus === ServerStatus.DOWN;
   }
 
   get serverError(): boolean {
     return this._authenticationCompleted &&
-    this._serverStatus === ServerStatus.ERROR;
+      this._accessLevel && this._accessLevel !== AccessLevel.None &&
+      this._serverStatus === ServerStatus.ERROR;
   }
 
   get messages(): any[] {
