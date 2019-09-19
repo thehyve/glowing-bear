@@ -34,6 +34,7 @@ export class AppConfig {
     'data-view': 'dataTable'
   };
   public static DEFAULT_CHECK_SERVER_STATUS = false;
+  public static DEFAULT_DENY_ACCESS_WITHOUT_ROLE = false;
 
   static path = 'app/config/';
   config: Object = null;
@@ -112,6 +113,9 @@ export class AppConfig {
       }
       case 'check-server-status': {
         return AppConfig.DEFAULT_CHECK_SERVER_STATUS;
+      }
+      case 'deny-access-to-users-without-role': {
+        return AppConfig.DEFAULT_DENY_ACCESS_WITHOUT_ROLE;
       }
       default: {
         return null;

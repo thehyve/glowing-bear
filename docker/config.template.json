@@ -17,5 +17,6 @@
     "data-view": "basic_export",
     "export-url": "${TRANSMART_PACKER_URL}"
   },
-  "check-server-status": ${CHECK_SERVER_STATUS}
+  "check-server-status": ${CHECK_SERVER_STATUS},
+  "deny-access-to-users-without-role": ${DENY_ACCESS_WITHOUT_ROLE}
 }

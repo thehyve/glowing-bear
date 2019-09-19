@@ -8,11 +8,11 @@
 
 import {Injectable, Injector, OnDestroy} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {Observable, AsyncSubject} from 'rxjs';
+import {AsyncSubject, Observable} from 'rxjs';
 import {AuthenticationMethod} from './authentication-method';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorizationResult} from './authorization-result';
-import {AccessLevel} from './access-level';
+import {AccessLevel, StudyLevel} from './access-level';
 import * as jwt_decode from 'jwt-decode';
 import {Subject} from 'rxjs/Rx';
 
@@ -25,22 +25,39 @@ export class AuthenticationService implements OnDestroy {
   private authenticationMethod: AuthenticationMethod;
   private _accessLevel: Subject<AccessLevel> = new AsyncSubject<AccessLevel>();
 
+  static parseStudyLevel(role: string): StudyLevel {
+    let parts = role.split('|');
+    if (parts.length === 2) {
+      return {
+        studyId: parts[0],
+        level: parts[1]
+      }
+    }
+    return null;
+  }
+
+  static isValidRole(role: string): boolean {
+    if (['ROLE_ADMIN', 'ROLE_PUBLIC'].includes(role)) {
+      return true;
+    }
+    const studyLevel = AuthenticationService.parseStudyLevel(role);
+    return studyLevel !== null;
+  }
+
   static getAccessLevelFromRoles(roles: string[]): AccessLevel {
     if (roles.includes('ROLE_ADMIN')) {
       return AccessLevel.Full;
     }
-    let rolesPerStudy = new Map<string, string[]>();
+    const rolesPerStudy = new Map<string, string[]>();
     roles.forEach((role) => {
-      let parts = role.split('|');
-      if (parts.length === 2) {
-        let studyId = parts[0];
-        let level = parts[1];
-        let studyRoles = rolesPerStudy.get(studyId);
-        if (!studyRoles) {
-          studyRoles = [];
+      const studyLevel = this.parseStudyLevel(role);
+      if (studyLevel) {
+        let studyLevels = rolesPerStudy.get(studyLevel.studyId);
+        if (!studyLevels) {
+          studyLevels = [];
         }
-        studyRoles.push(level);
-        rolesPerStudy.set(studyId, studyRoles);
+        studyLevels.push(studyLevel.level);
+        rolesPerStudy.set(studyLevel.studyId, studyLevels);
       }
     });
     if (rolesPerStudy.size === 0) {
@@ -60,25 +77,36 @@ export class AuthenticationService implements OnDestroy {
   constructor(private injector: Injector) {
   }
 
+  private readRolesFromToken(): string[] {
+    const clientId = this.config.getConfig('oidc-client-id');
+    let token = jwt_decode(this.token);
+    if (token['resource_access']) {
+      let clientAccess = token['resource_access'][clientId];
+      if (clientAccess) {
+        const roles = clientAccess['roles'];
+        if (roles && roles.constructor === Array) {
+          return (<string[]>roles).filter(AuthenticationService.isValidRole);
+        }
+      }
+    }
+    return [];
+  }
+
   /**
    * Parse the decoded token, determine the access level
    */
   private readAccessLevelFromToken() {
-    let serviceType = this.config.getConfig('authentication-service-type');
+    const serviceType = this.config.getConfig('authentication-service-type');
+    const denyAccessWithoutRoles = this.config.getConfig('deny-access-to-users-without-role');
     switch (serviceType) {
       case 'oidc': {
-        const clientId = this.config.getConfig('oidc-client-id');
         try {
-          let roles: string[] = [];
-          let token = jwt_decode(this.token);
-          if (token['resource_access']) {
-            let clientAccess = token['resource_access'][clientId];
-            if (clientAccess) {
-              let clientAccessRoles = clientAccess['roles'];
-              if (clientAccessRoles && clientAccessRoles.constructor === Array) {
-                roles = clientAccessRoles;
-              }
-            }
+          const roles = this.readRolesFromToken();
+          if (denyAccessWithoutRoles && roles.length === 0) {
+            this.accessLevel.next(AccessLevel.None);
+            this.accessLevel.complete();
+            console.log(`Access level: ${AccessLevel.None}`);
+            return;
           }
           const level = AuthenticationService.getAccessLevelFromRoles(roles);
           this.accessLevel.next(level);

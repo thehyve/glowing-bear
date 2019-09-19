@@ -8,6 +8,7 @@
     Glowing Bear
     <a *ngIf="docUrl" [href]="docUrl" target="_blank"><small>{{appVersion}}</small>&nbsp; <i class="fa fa-question-circle-o"></i></a>
     <span *ngIf="!docUrl"><small>{{appVersion}}</small></span>
+    <a *ngIf="authenticationCompleted" (click)="logout()"><i class="fa fa-sign-out" aria-hidden="true"></i></a>
   </div>
 
   <div id="statusMessages">
@@ -24,6 +25,12 @@
         <code *ngIf="configError">
           {{configError}}
         </code>
+      </div>
+    </div>
+
+    <div class="gb-page" *ngIf="isAccessDenied">
+      <div class="gb-message-box gb-error">
+        Access is denied.
       </div>
     </div>
 
