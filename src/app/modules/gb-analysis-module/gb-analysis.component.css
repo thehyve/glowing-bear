@@ -4,6 +4,10 @@
   padding: 0.5em;
 }
 
+.visual-panel {
+  overflow-x: auto;
+}
+
 :host >>> .section-banner {
   color: gray;
   padding: 0px;

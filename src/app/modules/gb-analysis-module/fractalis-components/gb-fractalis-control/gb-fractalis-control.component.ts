@@ -85,7 +85,8 @@ export class GbFractalisControlComponent implements OnInit {
     let shown = false;
     if (this.selectedChartType) {
       if (this.selectedChartType === ChartType.CROSSTABLE) {
-        shown = true;
+        // only enable adding a cross table if there is not one already.
+        shown = !this.fractalisService.charts.some(chart => chart.type === ChartType.CROSSTABLE);
       } else if (this.selectedVariables.length > 0) {
         shown = true;
       }
@@ -94,7 +95,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   get isClearButtonShown(): boolean {
-    return this.selectedChartType ? true : false;
+    return this.fractalisService.isFractalisEnabled && !!this.selectedChartType;
   }
 
   get selectedChartType(): ChartType {
