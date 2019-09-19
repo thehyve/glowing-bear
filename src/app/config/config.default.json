@@ -12,5 +12,6 @@
   "export-mode": {
     "name": "transmart",
     "data-view": "dataTable"
-  }
+  },
+  "check-server-status": false
 }

@@ -16,5 +16,6 @@
     "name": "packer",
     "data-view": "basic_export",
     "export-url": "${TRANSMART_PACKER_URL}"
-  }
+  },
+  "check-server-status": ${CHECK_SERVER_STATUS}
 }

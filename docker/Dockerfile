@@ -7,6 +7,8 @@ ENV GB_SRC_URL https://repo.thehyve.nl/service/local/artifact/maven/redirect?r=$
 ENV NGINX_HOST="${NGINX_HOST:-localhost}"
 ENV NGINX_PORT="${NGINX_PORT:-80}"
 
+ENV CHECK_SERVER_STATUS=${CHECK_SERVER_STATUS:-false}
+
 WORKDIR /usr/share/nginx/html
 
 COPY nginx/nginx.conf /etc/nginx/nginx.conf.template

@@ -7,7 +7,7 @@
  */
 
 
-import {of as observableOf, Observable} from 'rxjs';
+import {of as observableOf, Observable, AsyncSubject} from 'rxjs';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Cohort} from '../../models/cohort-models/cohort';
 import {TransmartCrossTable} from '../../models/transmart-models/transmart-cross-table';
@@ -24,6 +24,7 @@ import {CohortRepresentation} from '../../models/gb-backend-models/cohort-repres
 import {Study} from '../../models/constraint-models/study';
 import {DataTable} from '../../models/table-models/data-table';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
+import {ServerStatus} from '../../models/server-status';
 
 export class TransmartResourceServiceMock {
   private _studies: Study[];
@@ -33,6 +34,9 @@ export class TransmartResourceServiceMock {
   private _autosaveSubjectSets: boolean;
   private _subjectSetConstraint: SubjectSetConstraint;
   private _cohortSelectionCounts: TransmartCountItem;
+
+  private _status: AsyncSubject<ServerStatus> = new AsyncSubject<ServerStatus>();
+  serverStatus = ServerStatus.UP;
 
   constructor() {
     this._studies = [];
@@ -49,6 +53,15 @@ export class TransmartResourceServiceMock {
     s2.dimensions = ['concept', 'visit', 'patient', 'end time', 'start time', 'study'];
     s2.id = 'EHR';
     this._studies = [s1, s2];
+  }
+
+  init() {
+    this._status.next(this.serverStatus);
+    this._status.complete();
+  }
+
+  get status(): AsyncSubject<ServerStatus> {
+    return this._status;
   }
 
   getStudies(): Observable<Study[]> {

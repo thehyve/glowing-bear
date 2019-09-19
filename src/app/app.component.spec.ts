@@ -12,48 +12,26 @@ import {AppComponent} from './app.component';
 import {routing} from './app.routing';
 import {AppConfig} from './config/app.config';
 import {APP_INITIALIZER, DebugElement} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {BrowserModule, By} from '@angular/platform-browser';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ResourceService} from './services/resource.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
-import {TreeNodeService} from './services/tree-node.service';
-import {ConstraintService} from './services/constraint.service';
 import {APP_BASE_HREF} from '@angular/common';
 import {AuthenticationServiceMock} from './services/mocks/authentication.service.mock';
 import {ResourceServiceMock} from './services/mocks/resource.service.mock';
-import {TreeNodeServiceMock} from './services/mocks/tree-node.service.mock';
-import {ConstraintServiceMock} from './services/mocks/constraint.service.mock';
 import {AppConfigMock} from './config/app.config.mock';
 import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-cohort-selection.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
-import {CohortService} from './services/cohort.service';
-import {CohortServiceMock} from './services/mocks/cohort.service.mock';
-import {DataTableService} from './services/data-table.service';
-import {DataTableServiceMock} from './services/mocks/data-table.service.mock';
-import {TransmartHttpService} from './services/http/transmart-http.service';
-import {TransmartHttpServiceMock} from './services/mocks/transmart-http.service.mock';
-import {CrossTableService} from './services/cross-table.service';
-import {CrossTableServiceMock} from './services/mocks/cross-table.service.mock';
-import {NavbarService} from './services/navbar.service';
-import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
-import {ExportService} from './services/export.service';
-import {ExportServiceMock} from './services/mocks/export.service.mock';
 import {GrowlModule} from 'primeng/growl';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
-import {TransmartPackerHttpService} from './services/http/transmart-packer-http.service';
-import {TransmartPackerHttpServiceMock} from './services/mocks/transmart-packer-http.service.mock';
-import {TransmartResourceService} from './services/transmart-resource.service';
-import {TransmartResourceServiceMock} from './services/mocks/transmart-resource.service.mock';
-import {GbBackendHttpService} from './services/http/gb-backend-http.service';
-import {GbBackendHttpServiceMock} from './services/mocks/gb-backend-http.service.mock';
-import {CountServiceMock} from './services/mocks/count.service.mock';
-import {CountService} from './services/count.service';
+import {ServerStatus} from './models/server-status';
+import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -65,6 +43,8 @@ describe('AppComponent', () => {
   let debugElement: DebugElement;
   let component: AppComponent;
   let authenticationService: AuthenticationService;
+  let resourceService: ResourceService;
+  let config: AppConfig;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -104,56 +84,8 @@ describe('AppComponent', () => {
           useClass: AuthenticationServiceMock
         },
         {
-          provide: TransmartResourceService,
-          useClass: TransmartResourceServiceMock
-        },
-        {
-          provide: TransmartHttpService,
-          useClass: TransmartHttpServiceMock
-        },
-        {
-          provide: TransmartPackerHttpService,
-          useClass: TransmartPackerHttpServiceMock
-        },
-        {
-          provide: GbBackendHttpService,
-          useClass: GbBackendHttpServiceMock
-        },
-        {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        },
-        {
-          provide: CountService,
-          useClass: CountServiceMock
-        },
-        {
-          provide: TreeNodeService,
-          useClass: TreeNodeServiceMock
-        },
-        {
-          provide: ConstraintService,
-          useClass: ConstraintServiceMock
-        },
-        {
-          provide: CohortService,
-          useClass: CohortServiceMock
-        },
-        {
-          provide: DataTableService,
-          useClass: DataTableServiceMock
-        },
-        {
-          provide: CrossTableService,
-          useClass: CrossTableServiceMock
-        },
-        {
-          provide: NavbarService,
-          useClass: NavbarServiceMock
-        },
-        {
-          provide: ExportService,
-          useClass: ExportServiceMock
         }
       ]
     }).compileComponents();
@@ -162,6 +94,8 @@ describe('AppComponent', () => {
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
     authenticationService = TestBed.get(AuthenticationService);
+    resourceService = TestBed.get(ResourceService);
+    config = TestBed.get(AppConfig);
   }));
 
   it('should be created', async(() => {
@@ -213,6 +147,54 @@ describe('AppComponent', () => {
     expect(authorisedCall).toHaveBeenCalledTimes(1);
     expect(messageHelperCall).toHaveBeenCalledTimes(0);
     expect(component.authenticationCompleted).toEqual(false);
+  });
+
+  it('should handle configuration error', () => {
+    (<AppConfigMock><unknown>config).loaded = false;
+    (<AppConfigMock><unknown>config).error = 'Error fetching config';
+    component.ngOnInit();
+    fixture.detectChanges();
+    const messages = debugElement.query(By.css('#statusMessages')).nativeElement.innerText;
+    expect(messages).toMatch(/The configuration is not loaded correctly/);
+    expect(messages).toMatch(/Error fetching config/);
+  });
+
+  it('should handle server up', () => {
+    (<AppConfigMock><unknown>config).config['check-server-status'] = true;
+    (<ResourceServiceMock><unknown>resourceService).serverStatus = ServerStatus.UP;
+    spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+      return observableOf(true);
+    });
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(debugElement.query(By.directive(GbMainComponent))).not.toBeNull();
+  });
+
+  it('should handle server down', () => {
+    (<AppConfigMock><unknown>config).config['check-server-status'] = true;
+    (<ResourceServiceMock><unknown>resourceService).serverStatus = ServerStatus.DOWN;
+    spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+        return observableOf(true);
+      });
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(debugElement.query(By.css('#statusMessages')).nativeElement.innerText)
+      .toBe('The server is down.');
+  });
+
+  it('should handle server error', () => {
+    (<AppConfigMock><unknown>config).config['check-server-status'] = true;
+    (<ResourceServiceMock><unknown>resourceService).serverStatus = ServerStatus.ERROR;
+    spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+      return observableOf(true);
+    });
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(debugElement.query(By.css('#statusMessages')).nativeElement.innerText)
+      .toBe('There is an error connecting to the server.');
   });
 
 });
