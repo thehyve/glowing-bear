@@ -7,11 +7,11 @@
  */
 
 import {AfterViewChecked, AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {TreeNode} from 'primeng/components/common/api';
 import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
+import {TreeNodeHelper} from '../../../../utilities/tree-node-helper';
 
 @Component({
   selector: 'gb-tree-nodes',
@@ -105,7 +105,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       }).bind(this);
 
       // if the data object type belongs to the listed types
-      if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)) {
+      if (TreeNodeHelper.VALID_TREE_NODE_TYPES.includes(dataObjectType)) {
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       // if metadata exits
@@ -147,7 +147,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
     return !this.treeNodeService.isTreeNodesLoadingCompleted;
   }
 
-  get treeData(): TreeNode[] {
+  get treeData(): GbTreeNode[] {
     return this.treeNodeService.treeNodes;
   }
 }

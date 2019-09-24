@@ -26,7 +26,7 @@ import {TransmartConstraintMapper} from '../utilities/transmart-utilities/transm
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
-import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
+import {TreeNodeHelper} from '../utilities/tree-node-helper';
 
 @Injectable({
   providedIn: 'root',
@@ -53,16 +53,6 @@ export class TreeNodeService {
   constructor(private countService: CountService,
               private resourceService: ResourceService,
               private injector: Injector) {
-    this.validTreeNodeTypes = [
-      'NUMERIC',
-      'CATEGORICAL',
-      'CATEGORICAL_OPTION',
-      'DATE',
-      'STUDY',
-      'TEXT',
-      'HIGH_DIMENSIONAL',
-      'UNKNOWN'
-    ];
   }
 
   // this method must be called after the count maps are retrieved,
@@ -183,7 +173,7 @@ export class TreeNodeService {
     node.label = node.name + tail;
     let nodeCountItem: CountItem = undefined;
     // Extract concept
-    if (node.visualAttributes.includes(VisualAttribute.LEAF)) {
+    if (TreeNodeHelper.isVariableNode(node)) {
       let concept = this.getConceptFromTreeNode(node);
       let code = concept.code;
       if (typeof code === 'string' && this.processedConceptCodes.indexOf(code) === -1) {
@@ -273,13 +263,13 @@ export class TreeNodeService {
    * @returns {Constraint}
    */
   public generateConstraintFromTreeNode(node: GbTreeNode): Constraint {
-    if (this.isTreeNodeStudy(node)) {
+    if (TreeNodeHelper.isTreeNodeStudy(node)) {
       let study: Study = new Study();
       study.id = node.studyId;
       const constraint = new StudyConstraint();
       constraint.studies.push(study);
       return constraint;
-    } else if (this.isTreeNodeLeaf(node)) {
+    } else if (TreeNodeHelper.isVariableNode(node)) {
       const concept = this.getConceptFromTreeNode(node);
       if (node.constraint) {
         const constraint = TransmartConstraintMapper.generateConstraintFromObject(node.constraint);
@@ -363,116 +353,6 @@ export class TreeNodeService {
     }
   }
 
-  public formatNodeWithCounts(node: GbTreeNode, countItem: CountItem) {
-    let subjectCount = FormatHelper.formatCountNumber(countItem.subjectCount);
-    let countsText = `sub: ${subjectCount}`;
-    if (this.countService.showObservationCounts) {
-      countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
-    }
-    node.subjectCount = subjectCount;
-    node.label = `${node.name} (${countsText})`;
-  }
-
-  public flattenTreeNodes(nodes: GbTreeNode[], flattened: GbTreeNode[]) {
-    for (let node of nodes) {
-      flattened.push(node);
-      if (node.children) {
-        this.flattenTreeNodes(node.children, flattened);
-      }
-    }
-  }
-
-  public getAllVariablesFromTreeNode(node: GbTreeNode, variables: GbTreeNode[]) {
-    if (node.children) {
-      for (let child of node.children) {
-        this.getAllVariablesFromTreeNode(child, variables);
-      }
-    } else if (this.isVariableNode(node)) {
-      variables.push(node);
-    }
-  }
-
-  public copyTreeNodes(nodes: GbTreeNode[]): GbTreeNode[] {
-    let nodesCopy = [];
-    for (let node of nodes) {
-      let parent = node.parent;
-      let children = node.children;
-      node.parent = null;
-      node.children = null;
-      let nodeCopy = JSON.parse(JSON.stringify(node));
-      if (children) {
-        let childrenCopy = this.copyTreeNodes(children);
-        nodeCopy.children = childrenCopy;
-      }
-      nodesCopy.push(nodeCopy);
-      node.parent = parent;
-      node.children = children;
-    }
-    return nodesCopy;
-  }
-
-  /**
-   * Copy the given treenode upward, i.e. excluding its children
-   * @param {TreeNode} node
-   * @returns {TreeNode}
-   */
-  public copyTreeNodeUpward(node: GbTreeNode): GbTreeNode {
-    let nodeCopy: GbTreeNode = {};
-    let parentCopy = null;
-    for (let key in node) {
-      if (key === 'parent') {
-        parentCopy = this.copyTreeNodeUpward(node[key]);
-      } else if (key !== 'children') {
-        nodeCopy[key] = JSON.parse(JSON.stringify(node[key]));
-      }
-    }
-    if (parentCopy) {
-      nodeCopy.parent = parentCopy;
-    }
-    return nodeCopy;
-  }
-
-  public depthOfTreeNode(node: GbTreeNode): number {
-    return node.fullName ? node.fullName.split('\\').length - 2 : null;
-  }
-
-  /**
-   * Check if a tree node is a concept node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeConcept(node: GbTreeNode): boolean {
-    const type = node.type;
-    return type === 'NUMERIC' ||
-      type === 'CATEGORICAL' ||
-      type === 'DATE' ||
-      type === 'TEXT' ||
-      type === 'HIGH_DIMENSIONAL';
-  }
-
-  /**
-   * Check if a tree node is a study node
-   * @param {TreeNode} node
-   * @returns {boolean}
-   */
-  public isTreeNodeStudy(node: GbTreeNode): boolean {
-    return node.type ? node.type === 'STUDY' : false;
-  }
-
-  public isTreeNodeLeaf(node: GbTreeNode): boolean {
-    return node.visualAttributes ? node.visualAttributes.includes(VisualAttribute.LEAF) : false;
-  }
-
-  public isVariableNode(node: GbTreeNode): boolean {
-    const treeNodeType = node.type;
-    return (treeNodeType === 'NUMERIC' ||
-      treeNodeType === 'CATEGORICAL' ||
-      treeNodeType === 'CATEGORICAL_OPTION' ||
-      treeNodeType === 'DATE' ||
-      treeNodeType === 'HIGH_DIMENSIONAL' ||
-      treeNodeType === 'TEXT')
-  }
-
   /**
    * Check if the tree_nodes calls are finished,
    * excluding the case where sent calls and received calls are both 0
@@ -532,14 +412,6 @@ export class TreeNodeService {
 
   set treeNodesCopy(value: GbTreeNode[]) {
     this._treeNodesCopy = value;
-  }
-
-  get validTreeNodeTypes(): string[] {
-    return this._validTreeNodeTypes;
-  }
-
-  set validTreeNodeTypes(value: string[]) {
-    this._validTreeNodeTypes = value;
   }
 
   get selectedTreeNode(): GbTreeNode {
