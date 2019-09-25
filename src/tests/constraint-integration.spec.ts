@@ -48,6 +48,10 @@ import {Md2AccordionModule} from 'md2';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
+import {GbTreeNode} from '../app/models/tree-node-models/gb-tree-node';
+import {VisualAttribute} from '../app/models/tree-node-models/visual-attribute';
+import {ConceptType} from '../app/models/constraint-models/concept-type';
+import {ExtendedStudyNameConstraint} from '../app/models/transmart-models/transmart-constraint';
 
 describe('Integration tests for constraint composing', () => {
   let combiComponent: GbCombinationConstraintComponent;
@@ -148,12 +152,12 @@ describe('Integration tests for constraint composing', () => {
   });
 
   it('should accept drop of a leaf tree node without constraint field', () => {
-    let node: TreeNode = {};
-    node['visualAttributes'] = ['foo', 'LEAF'];
-    node['name'] = 'name';
-    node['fullName'] = 'full\\name';
-    node['conceptPath'] = 'full\\name';
-    node['conceptCode'] = 'code';
+    let node: GbTreeNode = {};
+    node.visualAttributes = [VisualAttribute.NUMERICAL];
+    node.name = 'name';
+    node.fullName = 'full\\name';
+    node.conceptCode = 'code';
+    node.type = ConceptType.NUMERICAL;
     spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;
@@ -164,21 +168,22 @@ describe('Integration tests for constraint composing', () => {
   });
 
   it('should accept drop of a tree node with UNKNOWN type', () => {
-    let node: TreeNode = {};
-    node['type'] = 'UNKNOWN';
-    let studyNode: TreeNode = {};
-    studyNode['type'] = 'STUDY';
-    studyNode['constraint'] = {
+    let node: GbTreeNode = {};
+    node.type = 'UNKNOWN';
+    let studyNode: GbTreeNode = {};
+    studyNode.type = 'STUDY';
+    studyNode.constraint = {
+      type: 'study_name',
       studyId: 'foobar'
-    };
-    let leafNode: TreeNode = {};
-    leafNode['visualAttributes'] = ['foo', 'LEAF'];
-    leafNode['name'] = 'name';
-    leafNode['fullName'] = 'full\\name';
-    leafNode['conceptPath'] = 'full\\name';
-    leafNode['conceptCode'] = 'code';
-    studyNode['children'] = [leafNode];
-    node['children'] = [studyNode];
+    } as ExtendedStudyNameConstraint;
+    let leafNode: GbTreeNode = {};
+    leafNode.visualAttributes = [VisualAttribute.CATEGORICAL];
+    leafNode.name = 'name';
+    leafNode.fullName = 'full\\name';
+    leafNode.conceptCode = 'code';
+    leafNode.type = ConceptType.CATEGORICAL;
+    studyNode.children = [leafNode];
+    node.children = [studyNode];
     spyOnProperty(treeNodeService, 'selectedTreeNode', 'get').and.returnValue(node);
     cohortService.instantCohortCountsUpdate = true;
     cohortService.isDirty = false;

@@ -18,6 +18,7 @@ import {CountService} from './count.service';
 import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
 import {CohortService} from './cohort.service';
 import {TreeNodeHelper} from '../utilities/tree-node-helper';
+import {FormatHelper} from '../utilities/format-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -50,12 +51,6 @@ export class VariableService {
   // [pDroppable] in gb-fractalis-control.component
   // [pDroppable] in gb-cross-table.component
   public variablesDragDropScope = 'PrimeNGVariablesDragDropContext';
-  /**
-   *   when set to true, variable import will be additional,
-   *   meaning that the previously selected variables will remain selected,
-   *   when set to false, the selected variables will only be the ones imported
-   */
-  private isAdditionalImport = true;
 
   constructor(private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
@@ -78,7 +73,7 @@ export class VariableService {
   private updateCategorizedVariablesTree(variablesTree: GbTreeNode[]) {
     this.categorizedVariablesTree = [];
     let variableNodesByType = new Map<string, GbTreeNode[]>();
-    let isVariableNode = this.treeNodeService.isTreeNodeConcept;
+    let isVariableNode = TreeNodeHelper.isVariableNode;
 
     groupDescendantVariableNodes(variablesTree);
 
@@ -115,9 +110,9 @@ export class VariableService {
    */
   public updateSelectedVariablesWithTreeNodes(selectedNodes: GbTreeNode[]) {
     const codes = [];
-    selectedNodes.forEach((n: GbTreeNode) => {
-      const code = n['conceptCode'];
-      if (this.treeNodeService.isVariableNode(n) && code && !codes.includes(code)) {
+    selectedNodes.forEach((node: GbTreeNode) => {
+      const code = node.conceptCode;
+      if (TreeNodeHelper.isVariableNode(node) && code && !codes.includes(code)) {
         codes.push(code);
       }
     });
@@ -175,60 +170,92 @@ export class VariableService {
   public updateVariablesTree() {
     // If the tree nodes copy is empty, create it by duplicating the tree nodes
     if (this.treeNodeService.treeNodesCopy.length === 0) {
-      this.treeNodeService.treeNodesCopy = this.treeNodeService.copyTreeNodes(this.treeNodeService.treeNodes);
+      this.treeNodeService.treeNodesCopy = TreeNodeHelper.copyTreeNodes(this.treeNodeService.treeNodes);
     }
-    this.variablesTree =
-      this.updateVariablesTreeRecursion(this.treeNodeService.treeNodesCopy);
+    this.variablesTree = this.updateVariablesTreeRecursion(this.treeNodeService.treeNodesCopy);
     this.selectAllVariablesTree(true);
   }
 
-  private updateVariablesTreeRecursion(nodes: GbTreeNode[]) {
-    let nodesWithCodes = [];
+  private formatNodeWithCounts(node: GbTreeNode, countItem: CountItem) {
+    let subjectCount = FormatHelper.formatCountNumber(countItem.subjectCount);
+    let countsText = `sub: ${subjectCount}`;
+    if (this.countService.showObservationCounts) {
+      countsText += `, obs: ${FormatHelper.formatCountNumber(countItem.observationCount)}`;
+    }
+    node.subjectCount = subjectCount;
+    node.label = `${node.name} (${countsText})`;
+  }
+
+  /**
+   * Fetch variable counts for a variable tree node for the currently selected data.
+   * If the node is a study specific node and study specific counts are available,
+   * there will be returned, if it is a generic concept node, concept counts are returned.
+   * If no counts are available for the node, null is returned.
+   *
+   * @param node the variable node.
+   */
+  private getVariableCounts(node: GbTreeNode): CountItem {
+    let conceptMap = node.studyId && this.countService.selectedStudyConceptCountMap ?
+      this.countService.selectedStudyConceptCountMap.get(node.studyId) : null;
+    if (conceptMap && conceptMap.size > 0) {
+      return conceptMap.get(node.conceptCode);
+    } else {
+      return this.countService.selectedConceptCountMap ?
+        this.countService.selectedConceptCountMap.get(node.conceptCode) : null;
+    }
+  }
+
+  /**
+   * Update the variable tree with node counts for the current data selection,
+   * filtering for nodes with positive counts (data is in the current data selection).
+   * The first two levels are the tree are expanded by default.
+   *
+   * @param nodes
+   */
+  private updateVariablesTreeRecursion(nodes: GbTreeNode[]): GbTreeNode[] {
+    let result = [];
     for (let node of nodes) {
-      if (this.treeNodeService.isTreeNodeLeaf(node)) { // if the tree node is a leaf node
-        let countItem: CountItem = null;
-        let conceptMap = this.countService.selectedStudyConceptCountMap ?
-          this.countService.selectedStudyConceptCountMap.get(node['studyId']) : null;
-        if (conceptMap && conceptMap.size > 0) {
-          node['expanded'] = false;
-          countItem = conceptMap.get(node['conceptCode']);
-        } else {
-          countItem = this.countService.selectedConceptCountMap ?
-            this.countService.selectedConceptCountMap.get(node['conceptCode']) : null;
-        }
+      if (node.children && node.children.length > 0) { // if the node is an intermediate node
+        let children = this.updateVariablesTreeRecursion(node.children);
+        node = TreeNodeHelper.copyTreeNodeUpward(node);
+        node.expanded = TreeNodeHelper.depthOfTreeNode(node) <= 2;
+        node.children = children;
+      }
+      let hasPositiveSubjectCount = false;
+      if (TreeNodeHelper.isTreeNodeStudy(node)) {
+        // if the tree node is a study node, fetch subject counts for the study
+        // only include the node if there are observations for the study
+        const countItem = this.countService.selectedStudyCountMap ?
+          this.countService.selectedStudyCountMap.get(node.studyId) : null;
         if (countItem && countItem.subjectCount > 0) {
-          this.treeNodeService.formatNodeWithCounts(node, countItem);
-          node.styleClass = '';
-          nodesWithCodes.push(node);
+          this.formatNodeWithCounts(node, countItem);
+          hasPositiveSubjectCount = true;
         }
-      } else if (node['children']) { // if the node is an intermediate node
-        let newNodeChildren =
-          this.updateVariablesTreeRecursion(node['children']);
-        if (newNodeChildren.length > 0) {
-          let nodeCopy = this.treeNodeService.copyTreeNodeUpward(node);
-          nodeCopy['expanded'] = this.treeNodeService.depthOfTreeNode(nodeCopy) <= 2;
-          nodeCopy['children'] = newNodeChildren;
-          if (nodeCopy['type'] === 'STUDY') {
-            const countItem = this.countService.selectedStudyCountMap ?
-              this.countService.selectedStudyCountMap.get(nodeCopy['studyId']) : null;
-            if (countItem && countItem.subjectCount > 0) {
-              this.treeNodeService.formatNodeWithCounts(node, countItem);
-              nodesWithCodes.push(nodeCopy);
-            }
-          } else {
-            // Always add intermediate nodes
-            nodesWithCodes.push(nodeCopy);
+      } else if (TreeNodeHelper.isVariableNode(node)) {
+        // if the tree node is a variable node, fetch subject counts for the variable
+        // only include the node if there are observations for the variable
+        const countItem = this.getVariableCounts(node);
+        if (countItem && countItem.subjectCount > 0) {
+          this.formatNodeWithCounts(node, countItem);
+          if (!('expanded' in node)) {
+            node.expanded = false;
           }
+          node.styleClass = '';
+          hasPositiveSubjectCount = true;
         }
       }
+      if (hasPositiveSubjectCount || (node.children && node.children.length > 0)) {
+        // Include nodes with positive counts and intermediate nodes
+        result.push(node);
+      }
     }
-    return nodesWithCodes;
+    return result;
   }
 
   public selectAllVariablesTree(b: boolean) {
     if (b) {
       let flattenedVariablesTreeData = [];
-      this.treeNodeService.flattenTreeNodes(this.variablesTree, flattenedVariablesTreeData);
+      TreeNodeHelper.flattenTreeNodes(this.variablesTree, flattenedVariablesTreeData);
       this.selectedVariablesTree = flattenedVariablesTreeData;
     } else {
       this.selectedVariablesTree = [];
@@ -237,10 +264,10 @@ export class VariableService {
 
   public updateVariableSelection(changedNode: GbTreeNode, isChecked: boolean) {
     let variableNodes: GbTreeNode[] = [];
-    this.treeNodeService.getAllVariablesFromTreeNode(changedNode, variableNodes);
+    TreeNodeHelper.getAllVariablesFromTreeNode(changedNode, variableNodes);
     if (isChecked) {
       this.selectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
-        ['conceptCode'], true);
+        ['conceptCode']);
     } else {
       this.unselectVariablesTreeByFields(this.variablesTree, variableNodes.map(vn => vn.conceptCode),
         ['conceptCode']);
@@ -248,25 +275,17 @@ export class VariableService {
     this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
 
-  public selectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[], isSelectionIncremental: boolean) {
+  public selectVariablesTreeByFields(nodes: GbTreeNode[], values: string[], fields: string[]) {
     nodes.forEach((node: GbTreeNode) => {
       if (node) {
         const val = fields.length < 2 ? node[fields[0]] : (node[fields[0]] || {})[fields[1]];
         if (values.includes(val) && !this.selectedVariablesTree.includes(node)) {
           TreeNodeHelper.addNodeToSelectedNodes(node, this.selectedVariablesTree);
           TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
-        } else if (
-          !isSelectionIncremental
-          && !values.includes(val)
-          && this.treeNodeService.isVariableNode(node)
-          && this.selectedVariablesTree.includes(node)
-        ) {
-          TreeNodeHelper.removeNodeFromSelectedNodes(node, this.selectedVariablesTree);
-          TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
         }
-        if (node['children']) {
+        if (node.children) {
           TreeNodeHelper.updateParentForAllChildren(node);
-          this.selectVariablesTreeByFields(node['children'], values, fields, isSelectionIncremental);
+          this.selectVariablesTreeByFields(node.children, values, fields);
         }
       }
     });
@@ -280,9 +299,9 @@ export class VariableService {
           TreeNodeHelper.removeNodeFromSelectedNodes(node, this.selectedVariablesTree);
           TreeNodeHelper.updateParentNodesSelectionRecursively(node.parent, this.selectedVariablesTree);
         }
-        if (node['children']) {
+        if (node.children) {
           TreeNodeHelper.updateParentForAllChildren(node);
-          this.unselectVariablesTreeByFields(node['children'], values, fields);
+          this.unselectVariablesTreeByFields(node.children, values, fields);
         }
       }
     });
@@ -290,14 +309,14 @@ export class VariableService {
 
   public importVariablesByNames(names: string[]) {
     // update the selected tree nodes in gb-variables
-    this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name'], this.isAdditionalImport);
+    this.selectVariablesTreeByFields(this.variablesTree, names, ['metadata', 'item_name']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
 
   public importVariablesByPaths(paths: string[]) {
     // update the selected tree nodes in gb-variables
-    this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName'], this.isAdditionalImport);
+    this.selectVariablesTreeByFields(this.variablesTree, paths, ['fullName']);
     // dispatch the event telling its subscribers that the selected tree nodes have been updated
     this.updateSelectedVariablesWithTreeNodes(this.selectedVariablesTree);
   }
