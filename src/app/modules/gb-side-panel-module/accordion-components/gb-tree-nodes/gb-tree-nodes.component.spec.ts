@@ -129,7 +129,7 @@ describe('TreeNodesComponent', () => {
       }
     } as Element;
     let node = {
-      type: 'type-A'
+      type: 'NUMERIC'
     };
     let treeNodeElm = {
       addEventListener: function (onWhich: string, callback: Function) {
@@ -141,7 +141,6 @@ describe('TreeNodesComponent', () => {
     };
     let spy1 = spyOn(treeNodeElm, 'addEventListener').and.stub();
     let spy2 = spyOn(treeNodeElmIcon, 'addEventListener').and.stub();
-    treeNodeService.validTreeNodeTypes = ['type-A'];
     component.updateEventListeners([elm], [node]);
     expect(spy1).toHaveBeenCalled();
     expect(spy2).not.toHaveBeenCalled()
