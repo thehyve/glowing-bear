@@ -89,7 +89,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.4.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.4/glowing-bear-2.0.4.tar).
+The latest release is [glowing-bear-2.0.5.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.5/glowing-bear-2.0.5.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -101,8 +101,8 @@ e.g. [Apache] or [nginx].
 
 ### How to create a release
 
-For creating a new release, increase the version in [config.default.json](src/app/config/config.default.json)
-and [package.json](package.json). Make sure the `publishing.repositories.maven.url` property
+For creating a new release, increase the version in [package.json](package.json).
+Make sure the `publishing.repositories.maven.url` property
 in [build.gradle](build.gradle) is set to a release repository.
 
 
@@ -152,7 +152,8 @@ Supported properties in the `config.*.json` files:
 | `fractalis-datasource-url`|           | The URL where the TranSMART API is reachable by Fractalis. (The value for `api-url` is used by default).
 | `include-data-table`      | `true`    | Show a data table in the export tab.
 | `include-cohort-subscription` | `false` | Enable cohort subscription.
-
+| `check-server-status` | `false` | Enable checking server status before requesting data.
+| `deny-access-to-users-without-role` | `false` | Deny access to users without any roles assigned to them. The corresponding configuration needs to be set for the backends.
 
 ## Extensions
 

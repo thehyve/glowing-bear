@@ -7,7 +7,7 @@
  */
 
 
-import {of as observableOf, Observable} from 'rxjs';
+import {AsyncSubject, Observable, of as observableOf} from 'rxjs';
 import {Study} from '../../models/constraint-models/study';
 import {ExportJob} from '../../models/export-models/export-job';
 import {Cohort} from '../../models/cohort-models/cohort';
@@ -24,6 +24,7 @@ import {CategoricalAggregate} from '../../models/aggregate-models/categorical-ag
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 import {SubjectSet} from '../../models/constraint-models/subject-set';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
+import {ServerStatus} from '../../models/server-status';
 
 export class ResourceServiceMock {
   private studies: Study[];
@@ -36,6 +37,9 @@ export class ResourceServiceMock {
 
   cohortSelectionCounts: CountItem;
 
+  private _status: AsyncSubject<ServerStatus> = new AsyncSubject<ServerStatus>();
+  serverStatus = ServerStatus.UP;
+
   constructor() {
     this.studies = [];
     this.queries = [];
@@ -44,6 +48,15 @@ export class ResourceServiceMock {
     this.dataTable = new DataTable();
     this.crossTable = new CrossTable();
     this.aggregate = new Aggregate();
+  }
+
+  init() {
+    this._status.next(this.serverStatus);
+    this._status.complete();
+  }
+
+  get status(): AsyncSubject<ServerStatus> {
+    return this._status;
   }
 
   updateCohortSelectionCounts(constraint: Constraint): Promise<any> {

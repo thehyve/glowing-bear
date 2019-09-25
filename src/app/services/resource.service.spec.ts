@@ -24,6 +24,7 @@ import {TransmartResourceServiceMock} from './mocks/transmart-resource.service.m
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {GbBackendHttpService} from './http/gb-backend-http.service';
 import {GbBackendHttpServiceMock} from './mocks/gb-backend-http.service.mock';
+import {ServerStatus} from '../models/server-status';
 
 describe('ResourceService', () => {
   let resourceService: ResourceService;
@@ -53,13 +54,29 @@ describe('ResourceService', () => {
     expect(service).toBeTruthy();
   }));
 
+  it('should check server status (up)', (done) => {
+    resourceService.status.subscribe(status => {
+      expect(status).toEqual(ServerStatus.UP);
+      done();
+    });
+    resourceService.init();
+  });
+
+  it('should check server status (down)', (done) => {
+    (<TransmartResourceServiceMock><unknown>transmartResourceService).serverStatus = ServerStatus.DOWN;
+    resourceService.status.subscribe(status => {
+      expect(status).toEqual(ServerStatus.DOWN);
+      done();
+    });
+    resourceService.init();
+  });
+
   it('should get studies', () => {
     resourceService.getStudies()
       .subscribe((studies: Study[]) => {
         expect(studies.length).toBe(2);
         expect(studies[0].id).toBe('CATEGORICAL_VALUES');
       });
-    resourceService.endpointMode = null;
     resourceService.getStudies()
       .subscribe(res => {
       }, err => {
@@ -73,7 +90,6 @@ describe('ResourceService', () => {
       .then((cohortSelectionCounts) => {
         expect(cohortSelectionCounts.subjectCount).toEqual(10);
       });
-    resourceService.endpointMode = null;
     resourceService.updateCohortSelectionCounts(dummy)
       .catch(err => {
         expect(err).toBeDefined();
@@ -87,7 +103,6 @@ describe('ResourceService', () => {
         expect(map.size).toBe(2);
         expect(map.has('EHR:VSIGN:HR')).toBe(true);
       });
-    resourceService.endpointMode = null;
     resourceService.getCountsPerConcept(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
@@ -101,7 +116,6 @@ describe('ResourceService', () => {
       .subscribe((map: Map<string, CountItem>) => {
         expect(map.size).toBe(2);
       });
-    resourceService.endpointMode = null;
     resourceService.getCountsPerStudy(dummy)
       .subscribe((map: Map<string, CountItem>) => {
       }, err => {
@@ -116,7 +130,6 @@ describe('ResourceService', () => {
         expect(map.size).toBe(1);
         expect(map.get('EHR').size).toBe(2);
       });
-    resourceService.endpointMode = null;
     resourceService.getCountsPerStudyAndConcept(dummy)
       .subscribe((map: Map<string, Map<string, CountItem>>) => {
       }, err => {
@@ -131,7 +144,6 @@ describe('ResourceService', () => {
         expect(item.subjectCount).toBe(23);
         expect(item.observationCount).toBe(46);
       });
-    resourceService.endpointMode = null;
     resourceService.getCounts(dummy)
       .subscribe((item: CountItem) => {
       }, err => {
@@ -171,7 +183,6 @@ describe('ResourceService', () => {
         expect(res.values.includes('Caucasian')).toBe(true);
         expect(res.values.includes('Latino')).toBe(true);
       });
-    resourceService.endpointMode = null;
     resourceService.getAggregate(dummy)
       .subscribe((res) => {
       }, err => {
@@ -199,7 +210,6 @@ describe('ResourceService', () => {
         expect(pedigrees[0].label).toBe('PAR');
         expect(pedigrees[1].label).toBe('DZ');
       });
-    resourceService.endpointMode = null;
     resourceService.getPedigrees()
       .subscribe(res => {
       }, err => {
@@ -215,7 +225,6 @@ describe('ResourceService', () => {
         expect(res[0].constraint.className).toBe('TrueConstraint');
         expect(res[1].constraint.className).toBe('CombinationConstraint');
       });
-    resourceService.endpointMode = null;
     resourceService.getCohorts()
       .subscribe(res => {
       }, err => {
@@ -230,7 +239,6 @@ describe('ResourceService', () => {
         expect(res.length).toBe(1);
         expect(res[0].id).toBe(100);
       });
-    resourceService.endpointMode = null;
     resourceService.getCohorts()
       .subscribe(res => {
       }, err => {

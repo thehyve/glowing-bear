@@ -7,7 +7,7 @@
  */
 
 
-import {Observable, of as observableOf, throwError as observableThrowError} from 'rxjs';
+import {AsyncSubject, Observable, of as observableOf} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Injectable} from '@angular/core';
 import {Study} from '../models/constraint-models/study';
@@ -29,7 +29,6 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {CountItem} from '../models/aggregate-models/count-item';
 import {TransmartCrossTableMapper} from '../utilities/transmart-utilities/transmart-cross-table-mapper';
 import {TransmartCountItem} from '../models/transmart-models/transmart-count-item';
-import {EndpointMode} from '../models/endpoint-mode';
 import {TransmartTrialVisit} from '../models/transmart-models/transmart-trial-visit';
 import {CategoricalAggregate} from '../models/aggregate-models/categorical-aggregate';
 import {TransmartResourceService} from './transmart-resource.service';
@@ -39,23 +38,23 @@ import {GbBackendHttpService} from './http/gb-backend-http.service';
 import {CohortMapper} from '../utilities/cohort-utilities/cohort-mapper';
 import {Dimension} from '../models/constraint-models/dimension';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
+import {ServerStatus} from '../models/server-status';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ResourceService {
 
-  private _endpointMode: EndpointMode;
-
   constructor(private transmartResourceService: TransmartResourceService,
               private gbBackendHttpService: GbBackendHttpService) {
-    this.endpointMode = EndpointMode.TRANSMART;
   }
 
-  handleEndpointModeError(): Observable<any> {
-    const msg = 'Incorrect Endpoint Mode is used.';
-    console.error(msg);
-    return observableThrowError(new Error(msg));
+  init() {
+    this.transmartResourceService.init();
+  }
+
+  get status(): AsyncSubject<ServerStatus> {
+    return this.transmartResourceService.status;
   }
 
   // -------------------------------------- tree node calls --------------------------------------
@@ -64,14 +63,7 @@ export class ResourceService {
    * @returns {Observable<Study[]>}
    */
   getStudies(): Observable<Study[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getStudies();
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getStudies();
   }
 
   /**
@@ -83,35 +75,20 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getTreeNodes(root, depth, hasCounts, hasTags);
   }
 
   // -------------------------------------- count calls --------------------------------------
   updateCohortSelectionCounts(constraint: Constraint): Promise<CountItem> {
     return new Promise<any>((resolve, reject) => {
-      switch (this.endpointMode) {
-        case EndpointMode.TRANSMART: {
-          this.transmartResourceService
-            .updateCohortSelectionCounts(constraint)
-            .then(() => {
-              resolve(TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts));
-            })
-            .catch(err => {
-              reject(err);
-            });
-          break;
-        }
-        default: {
-          return this.handleEndpointModeError();
-        }
-      }
+      this.transmartResourceService
+        .updateCohortSelectionCounts(constraint)
+        .then(() => {
+          resolve(TransmartMapper.mapTransmartCountItem(this.transmartResourceService.counts));
+        })
+        .catch(err => {
+          reject(err);
+        });
     });
   }
 
@@ -122,17 +99,10 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCountsPerStudyAndConcept(constraint: Constraint): Observable<Map<string, Map<string, CountItem>>> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerStudyAndConcept(constraint).pipe(
-          map((response: object) => {
-            return TransmartMapper.mapStudyConceptCountObject(response);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getCountsPerStudyAndConcept(constraint).pipe(
+      map((response: object) => {
+        return TransmartMapper.mapStudyConceptCountObject(response);
+      }));
   }
 
   /**
@@ -142,17 +112,10 @@ export class ResourceService {
    * @returns {Observable<Map<string, CountItem>>}
    */
   getCountsPerStudy(constraint: Constraint): Observable<Map<string, CountItem>> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerStudy(constraint).pipe(
-          map((response: object) => {
-            return TransmartMapper.mapStudyCountObject(response);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getCountsPerStudy(constraint).pipe(
+      map((response: object) => {
+        return TransmartMapper.mapStudyCountObject(response);
+      }));
   }
 
   /**
@@ -161,17 +124,10 @@ export class ResourceService {
    * @returns {Observable<Map<string, CountItem>>}
    */
   getCountsPerConcept(constraint: Constraint): Observable<Map<string, CountItem>> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCountsPerConcept(constraint).pipe(
-          map((response: object) => {
-            return TransmartMapper.mapConceptCountObject(response);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getCountsPerConcept(constraint).pipe(
+      map((response: object) => {
+        return TransmartMapper.mapConceptCountObject(response);
+      }));
   }
 
   /**
@@ -180,17 +136,10 @@ export class ResourceService {
    * @returns {Observable<Object>}
    */
   getCounts(constraint: Constraint): Observable<CountItem> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCounts(constraint).pipe(
-          map((tmCountItem: TransmartCountItem) => {
-            return TransmartMapper.mapTransmartCountItem(tmCountItem);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getCounts(constraint).pipe(
+      map((tmCountItem: TransmartCountItem) => {
+        return TransmartMapper.mapTransmartCountItem(tmCountItem);
+      }));
   }
 
   // -------------------------------------- aggregate calls --------------------------------------
@@ -201,31 +150,17 @@ export class ResourceService {
    * @returns {Observable<object>}
    */
   getAggregate(constraint: ConceptConstraint): Observable<Aggregate> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getAggregate(constraint).pipe(
-          map((tmConceptAggregate: object) => {
-            return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getAggregate(constraint).pipe(
+      map((tmConceptAggregate: object) => {
+        return TransmartMapper.mapTransmartConceptAggregate(tmConceptAggregate, constraint.concept.code);
+      }));
   }
 
   getCategoricalAggregate(constraint: ConceptConstraint): Observable<CategoricalAggregate> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getCategoricalAggregate(constraint).pipe(
-          map((tmConceptAggregate: object) => {
-            return TransmartMapper.mapTransmartCategoricalConceptAggregate(tmConceptAggregate, constraint.concept.code);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getCategoricalAggregate(constraint).pipe(
+      map((tmConceptAggregate: object) => {
+        return TransmartMapper.mapTransmartCategoricalConceptAggregate(tmConceptAggregate, constraint.concept.code);
+      }));
   }
 
   // -------------------------------------- trial visit calls --------------------------------------
@@ -235,17 +170,10 @@ export class ResourceService {
    * @returns {Observable<R|T>}
    */
   getTrialVisits(constraint: Constraint): Observable<TrialVisit[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getTrialVisits(constraint).pipe(
-          map((tmTrialVisits: TransmartTrialVisit[]) => {
-            return TransmartMapper.mapTransmartTrialVisits(tmTrialVisits);
-          }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getTrialVisits(constraint).pipe(
+      map((tmTrialVisits: TransmartTrialVisit[]) => {
+        return TransmartMapper.mapTransmartTrialVisits(tmTrialVisits);
+      }));
   }
 
   // -------------------------------------- pedigree calls --------------------------------------
@@ -254,26 +182,12 @@ export class ResourceService {
    * @returns {Observable<Object[]>}
    */
   getPedigrees(): Observable<Pedigree[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getPedigrees();
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getPedigrees();
   }
 
   // -------------------------------------- export calls --------------------------------------
   getExportDataTypes(constraint: Constraint): Observable<ExportDataType[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportDataTypes(constraint);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getExportDataTypes(constraint);
   }
 
   /**
@@ -281,18 +195,11 @@ export class ResourceService {
    * @returns {Observable<ExportJob[]>}
    */
   getExportJobs(): Observable<ExportJob[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getExportJobs().pipe(
-          map((tmExportJobs: TransmartExportJob[]) => {
-            return TransmartMapper.mapTransmartExportJobs(tmExportJobs);
-          })
-        );
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getExportJobs().pipe(
+      map((tmExportJobs: TransmartExportJob[]) => {
+        return TransmartMapper.mapTransmartExportJobs(tmExportJobs);
+      })
+    );
   }
 
   /**
@@ -301,18 +208,11 @@ export class ResourceService {
    * @returns {Observable<ExportJob>}
    */
   createExportJob(name: string): Observable<ExportJob> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.createExportJob(name).pipe(
-          map((tmExportJob: TransmartExportJob) => {
-            return TransmartMapper.mapTransmartExportJob(tmExportJob);
-          })
-        );
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.createExportJob(name).pipe(
+      map((tmExportJob: TransmartExportJob) => {
+        return TransmartMapper.mapTransmartExportJob(tmExportJob);
+      })
+    );
   }
 
   /**
@@ -342,19 +242,12 @@ export class ResourceService {
       }
     }
     if (hasSelectedFormat) {
-      switch (this.endpointMode) {
-        case EndpointMode.TRANSMART: {
-          return this.transmartResourceService
-            .runExportJob(job.id, job.name, subjectConstraint, variableConstraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
-              map((tmExportJob: TransmartExportJob) => {
-                return TransmartMapper.mapTransmartExportJob(tmExportJob);
-              })
-            );
-        }
-        default: {
-          return this.handleEndpointModeError();
-        }
-      }
+      return this.transmartResourceService
+        .runExportJob(job.id, job.name, subjectConstraint, variableConstraint, dataTypes, dataTable, dateColumnsIncluded).pipe(
+          map((tmExportJob: TransmartExportJob) => {
+            return TransmartMapper.mapTransmartExportJob(tmExportJob);
+          })
+        );
     } else {
       return observableOf(null);
     }
@@ -366,14 +259,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   downloadExportJob(jobId: string): Observable<Blob> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.downloadExportJob(jobId);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.downloadExportJob(jobId);
   }
 
   /**
@@ -382,14 +268,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   cancelExportJob(jobId: string): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.cancelExportJob(jobId);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.cancelExportJob(jobId);
   }
 
   /**
@@ -398,14 +277,7 @@ export class ResourceService {
    * @returns {Observable<blob>}
    */
   archiveExportJob(jobId: string): Observable<{}> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.archiveExportJob(jobId);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.archiveExportJob(jobId);
   }
 
   // -------------------------------------- cohort calls --------------------------------------
@@ -459,92 +331,42 @@ export class ResourceService {
 
   // -------------------------------------- subject calls --------------------------------------
   saveSubjectSet(name: string, constraint: Constraint): Observable<SubjectSet> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.savePatientSet(name, constraint);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.savePatientSet(name, constraint);
   }
 
   getSubjects(constraint: Constraint): Observable<TransmartPatient[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getPatients(constraint);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getPatients(constraint);
   }
 
 
 
   // -------------------------------------- data table ---------------------------------------------
   getDataTable(dataTable: DataTable): Observable<DataTable> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getDataTable(dataTable);
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getDataTable(dataTable);
   }
 
   get sortableDimensions(): Set<string> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.sortableDimensions;
-      }
-      default: {
-        this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.sortableDimensions;
   }
 
   get subjectDimensions(): Observable<Dimension[]> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService.getSubjectDimensions().pipe(
-          map((transmartDimensions: TransmartDimension[]) => TransmartMapper.mapDimensions(transmartDimensions)))
-      }
-      default: {
-        this.handleEndpointModeError();
-      }
-    }
+    return this.transmartResourceService.getSubjectDimensions().pipe(
+      map((transmartDimensions: TransmartDimension[]) => TransmartMapper.mapDimensions(transmartDimensions)))
   }
 
   // -------------------------------------- cross table ---------------------------------------------
   public getCrossTable(crossTable: CrossTable): Observable<CrossTable> {
-    switch (this.endpointMode) {
-      case EndpointMode.TRANSMART: {
-        return this.transmartResourceService
-          .getCrossTable(
-            crossTable.constraint,
-            crossTable.rowHeaderConstraints
-              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
-            crossTable.columnHeaderConstraints
-              .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
-          .pipe(
-            map((tmCrossTable: TransmartCrossTable) => {
-              return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
-            }));
-      }
-      default: {
-        return this.handleEndpointModeError();
-      }
-    }
-  }
-
-  get endpointMode(): EndpointMode {
-    return this._endpointMode;
-  }
-
-  set endpointMode(value: EndpointMode) {
-    this._endpointMode = value;
+    return this.transmartResourceService
+      .getCrossTable(
+        crossTable.constraint,
+        crossTable.rowHeaderConstraints
+          .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)),
+        crossTable.columnHeaderConstraints
+          .map(constraints => ConstraintHelper.combineSubjectLevelConstraints(constraints)))
+      .pipe(
+        map((tmCrossTable: TransmartCrossTable) => {
+          return TransmartCrossTableMapper.mapTransmartCrossTable(tmCrossTable, crossTable);
+        }));
   }
 
 }

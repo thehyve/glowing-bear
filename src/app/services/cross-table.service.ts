@@ -60,9 +60,9 @@ export class CrossTableService {
 
   /**
    * Update the cross table given row/column constraints
-   * @param {Array<Constraint>} constraints
+   * @param {Constraint[]} constraints
    */
-  public update(constraints: Array<Constraint>): Promise<any> {
+  public update(constraints: Constraint[]): Promise<any> {
     return new Promise((resolve, reject) => {
       this.crossTable.isUpdating = true;
       this.updateValueConstraints(constraints)
@@ -98,9 +98,9 @@ export class CrossTableService {
    * since the value constraints will be recreated and old pointers are lost,
    * the cells of the table will also be renewed
    *
-   * @param {Array<Constraint>} constraints - the row/column constraints of the cross table
+   * @param {Constraint[]} constraints - the row/column constraints of the cross table
    */
-  private updateValueConstraints(constraints: Array<Constraint>): Promise<any> {
+  private updateValueConstraints(constraints: Constraint[]): Promise<any> {
     return new Promise((resolve, reject) => {
       // clear existing value constraints
       this.clearValueConstraints(constraints);
@@ -270,15 +270,15 @@ export class CrossTableService {
     this._selectedConstraintCell = value;
   }
 
-  get rowConstraints(): Array<Constraint> {
+  get rowConstraints(): Constraint[] {
     return this.crossTable.rowConstraints;
   }
 
-  get columnConstraints(): Array<Constraint> {
+  get columnConstraints(): Constraint[] {
     return this.crossTable.columnConstraints;
   }
 
-  get valueConstraints(): Map<Constraint, Array<Constraint>> {
+  get valueConstraints(): Map<Constraint, Constraint[]> {
     return this.crossTable.valueConstraints;
   }
 
@@ -296,10 +296,6 @@ export class CrossTableService {
 
   get cols(): Col[] {
     return this.crossTable.cols;
-  }
-
-  get rowHeaderConstraints(): Constraint[][] {
-    return this.crossTable.rowHeaderConstraints;
   }
 
   get crossTable(): CrossTable {

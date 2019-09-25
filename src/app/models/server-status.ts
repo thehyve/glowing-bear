@@ -6,7 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum EndpointMode {
-  TRANSMART = 'TranSMART',
-  I2B2 = 'i2b2'
+export enum ServerStatus {
+  UP = 'Up',
+  DOWN = 'Down',
+  ERROR = 'Error',
+  NONE = 'None'
 }
