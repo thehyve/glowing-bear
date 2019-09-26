@@ -51,6 +51,13 @@ export class FormatHelper {
     }
   }
 
+  public static formatValue(value: object): string {
+    if (Array.isArray(value)) {
+      return (value.map(v => this.formatValue(v))).join('; ')
+    }
+    return value === null || value === undefined ? '' : `${value}`;
+  }
+
   public static formatMetadata(metadata: Map<string, string>): string {
     let metadataText = '';
     metadata.forEach((value, key) => {
