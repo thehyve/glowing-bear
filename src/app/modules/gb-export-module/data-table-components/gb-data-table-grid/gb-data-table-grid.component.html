@@ -4,7 +4,7 @@
 
 <ng-template #showDataTableGrid>
   <div class="grid-container">
-    <p-table [value]="rows" [columns]="cols" [resizableColumns]="true" [customSort]="true">
+    <p-table [value]="rows" [columns]="cols" [autoLayout]="true" [customSort]="true">
       <!-- table body -->
       <ng-template pTemplate="body" let-row let-columns="columns">
         <!-- Header row -->
