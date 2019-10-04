@@ -89,7 +89,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.6.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.6/glowing-bear-2.0.6.tar).
+The latest release is [glowing-bear-2.0.7.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.7/glowing-bear-2.0.7.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
