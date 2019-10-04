@@ -12,11 +12,11 @@ import {TransmartColumnHeaders} from './transmart-column-headers';
 import {TransmartTableDimension} from './transmart-table-dimension';
 
 export class TransmartDataTable {
-  rows: Array<TransmartRow>;
-  columnHeaders: Array<TransmartColumnHeaders>;
-  rowDimensions: Array<TransmartTableDimension>;
-  columnDimensions: Array<TransmartTableDimension>;
-  sort: Array<TransmartSort>;
+  rows: TransmartRow[];
+  columnHeaders: TransmartColumnHeaders[];
+  rowDimensions: TransmartTableDimension[];
+  columnDimensions: TransmartTableDimension[];
+  sort: TransmartSort[];
   offset: number;
   rowCount: number;
 }

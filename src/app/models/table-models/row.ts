@@ -18,13 +18,14 @@ export class Row {
   private _data: object;
   private _metadata: Map<string, Map<string, string>>;
   private _metadataText: Map<string, string>;
-  private _length: number;
+  private _length = 0;
+  private _isHeaderRow = false;
+  private _headerCellCount = 0;
 
   constructor() {
     this.data = {};
     this.metadata = new Map<string, Map<string, string>>();
     this.metadataText = new Map<string, string>();
-    this.length = 0;
   }
 
   /**
@@ -44,17 +45,26 @@ export class Row {
     }
   }
 
+  addHeader(value: any, metadataValue?: Map<string, string>) {
+    this.addDatum(value, metadataValue);
+    this._headerCellCount++;
+  }
+
   /**
    * Add a datum to the data array of the row,
    * with more complex structure than addDatum,
    * mainly used to add more information to a datum.
    * DO NOT use addDatum() and addDatumObject() together.
-   * @param value
+   * @param obj
    */
   addDatumObject(obj: object) {
     this.length++;
     const field = Col.COLUMN_FIELD_PREFIX + this.length.toString();
     this.data[field] = obj;
+  }
+
+  render(field: string): string {
+    return FormatHelper.formatValue(this._data[field]);
   }
 
   get data(): Object {
@@ -91,4 +101,17 @@ export class Row {
   set metadataText(value: Map<string, string>) {
     this._metadataText = value;
   }
+
+  get isHeaderRow(): boolean {
+    return this._isHeaderRow;
+  }
+
+  set isHeaderRow(value: boolean) {
+    this._isHeaderRow = value;
+  }
+
+  get headerCellCount(): number {
+    return this._headerCellCount;
+  }
+
 }
