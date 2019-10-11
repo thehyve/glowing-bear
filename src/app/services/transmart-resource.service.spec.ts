@@ -201,7 +201,7 @@ describe('TransmartResourceService', () => {
 
     transmartResourceService.runExportJob(jobId, jobName, mockConstraint, mockConstraint,
       [], null, false);
-    expect(exportSpy).toHaveBeenCalledWith(jobName, jasmine.any(CombinationConstraint), mockConstraint);
+    expect(exportSpy).toHaveBeenCalledWith(jobName, jasmine.any(CombinationConstraint), jasmine.any(TrueConstraint));
   });
 
   const createMockConstraints = () => {

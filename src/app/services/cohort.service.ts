@@ -243,7 +243,6 @@ export class CohortService {
     return new Promise((resolve, reject) => {
       MessageHelper.alert('info', `Start importing cohort "${cohort.name}".`);
       if (cohort.constraint) {
-        cohort.selected = true;
         this.currentCohort.constraint = cohort.constraint;
         this.constraintService.clearCohortConstraint();
         this.constraintService.restoreCohortConstraint(cohort.constraint);
@@ -355,7 +354,9 @@ export class CohortService {
 
   get allSelectedCohortsConstraint(): Constraint {
     if (this.selectedCohorts.length === 1) {
-      return this.selectedCohorts[0].constraint;
+      let constraint = this.selectedCohorts[0].constraint.clone();
+      constraint.parentConstraint = null;
+      return constraint;
     } else {
       const combination = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
