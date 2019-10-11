@@ -394,6 +394,7 @@ export class TransmartResourceService {
                dataTable: DataTable,
                dateColumnsIncluded: boolean): Observable<TransmartExportJob> {
     let targetConstraint = new CombinationConstraint();
+    let filterConstraint = subjectConstraint.clone();
     if (this.autosaveSubjectSets) {
       targetConstraint.addChild(this.subjectSetConstraint);
       targetConstraint.addChild(variableConstraint);
@@ -403,7 +404,7 @@ export class TransmartResourceService {
     }
 
     if (this.useExternalExportJob) {
-      return this.transmartPackerHttpService.runJob(jobName, targetConstraint, subjectConstraint).pipe(
+      return this.transmartPackerHttpService.runJob(jobName, targetConstraint, filterConstraint).pipe(
         map((tmExJob: TransmartPackerJob) => {
           return TransmartPackerMapper.mapCustomExportJob(tmExJob);
         }));
