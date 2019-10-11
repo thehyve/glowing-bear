@@ -26,9 +26,17 @@ import {AuthenticationServiceMock} from '../app/services/mocks/authentication.se
 import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 import {CountService} from '../app/services/count.service';
-import {TransmartAndConstraint, TransmartNegationConstraint} from '../app/models/transmart-models/transmart-constraint';
+import {
+  TransmartAndConstraint, TransmartConceptConstraint,
+  TransmartNegationConstraint,
+  TransmartSubSelectionConstraint
+} from '../app/models/transmart-models/transmart-constraint';
 import {CohortMapper} from '../app/utilities/cohort-utilities/cohort-mapper';
 import {CohortRepresentation} from '../app/models/gb-backend-models/cohort-representation';
+import {TransmartConstraintMapper} from '../app/utilities/transmart-utilities/transmart-constraint-mapper';
+import {ConceptType} from '../app/models/constraint-models/concept-type';
+import {CombinationState} from '../app/models/constraint-models/combination-state';
+import {Concept} from '../app/models/constraint-models/concept';
 
 describe('Integration test for cohort saving and restoring', () => {
 
@@ -210,6 +218,61 @@ describe('Integration test for cohort saving and restoring', () => {
     expect(cohortService.cohorts.length).toBe(2);
     expect(cohortService.isSavingCohortCompleted).toBe(true);
     expect(spySave).toHaveBeenCalled();
+  });
+
+  it('should restore cohort containing diagnosis constraint', (done) => {
+    const tumorTypeConstraint = new ConceptConstraint();
+    const tumorTypeConcept = new Concept();
+    tumorTypeConcept.code = 'CODE:TUMOR_TYPE';
+    tumorTypeConcept.type = ConceptType.CATEGORICAL;
+    tumorTypeConstraint.concept = tumorTypeConcept;
+    // Diagnosis set
+    const diagnosisCombination = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const patientsWithDiagnosis = new CombinationConstraint(
+      [diagnosisCombination], CombinationState.And, 'patient');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'subselection',
+        dimension: 'diagnosis',
+        constraint: {
+          type: 'concept',
+          conceptCode: 'CODE:TUMOR_TYPE'
+        } as TransmartConceptConstraint
+      } as TransmartSubSelectionConstraint
+    };
+
+    const patientsWithDiagnosisSerialised = TransmartConstraintMapper.mapConstraint(patientsWithDiagnosis);
+    expect(JSON.stringify(patientsWithDiagnosisSerialised, null, 2))
+      .toEqual(JSON.stringify(expected, null, 2));
+
+    const patientsWithDiagnosisCohort = new Cohort('', 'Patients with diagnosis');
+    patientsWithDiagnosisCohort.constraint = patientsWithDiagnosis;
+    cohortService.cohorts.push(patientsWithDiagnosisCohort);
+
+    cohortService.restoreCohort(patientsWithDiagnosisCohort)
+      .then(() => {
+        const currentCohortConstraint = TransmartConstraintMapper.mapConstraint(cohortService.allSelectedCohortsConstraint);
+        expect(JSON.stringify(currentCohortConstraint, null, 2))
+          .toEqual(JSON.stringify(expected, null, 2));
+
+        expect(cohortService.cohorts.length).toBe(2);
+
+        cohortService.currentCohort.selected = false;
+        patientsWithDiagnosisCohort.selected = true;
+        const selectedCohortConstraint = TransmartConstraintMapper.mapConstraint(cohortService.allSelectedCohortsConstraint);
+        expect(JSON.stringify(selectedCohortConstraint, null, 2))
+          .toEqual(JSON.stringify(expected, null, 2));
+
+        done();
+      })
+      .catch(err => {
+        console.error(err);
+        fail('Should have successfully restored the cohort with diagnosis constraint');
+        done();
+      });
   });
 
   it('should restore cohort containing subject set constraint', () => {
