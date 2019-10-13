@@ -27,7 +27,8 @@ import {SubjectSetConstraint} from '../app/models/constraint-models/subject-set-
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 import {CountService} from '../app/services/count.service';
 import {
-  TransmartAndConstraint, TransmartConceptConstraint,
+  TransmartAndConstraint,
+  TransmartConceptConstraint,
   TransmartNegationConstraint,
   TransmartSubSelectionConstraint
 } from '../app/models/transmart-models/transmart-constraint';
@@ -273,6 +274,138 @@ describe('Integration test for cohort saving and restoring', () => {
         fail('Should have successfully restored the cohort with diagnosis constraint');
         done();
       });
+  });
+
+  it('should combine multiple diagnosis cohorts', () => {
+    const tumorTypeConstraint = new ConceptConstraint();
+    const tumorTypeConcept = new Concept();
+    tumorTypeConcept.code = 'CODE:TUMOR_TYPE';
+    tumorTypeConcept.type = ConceptType.CATEGORICAL;
+    tumorTypeConstraint.concept = tumorTypeConcept;
+    // Diagnosis set
+    const diagnosisCombination1 = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const tumorStageConstraint = new ConceptConstraint();
+    const tumorStage = new Concept();
+    tumorStage.code = 'CODE:TUMOR_STAGE';
+    tumorStage.type = ConceptType.CATEGORICAL;
+    tumorStageConstraint.concept = tumorStage;
+    // Diagnosis set
+    const diagnosisCombination2 = new CombinationConstraint(
+      [tumorStageConstraint], CombinationState.And, 'diagnosis');
+
+    const expected = {
+      type: 'or',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'CODE:TUMOR_TYPE'
+            } as TransmartConceptConstraint
+          } as TransmartSubSelectionConstraint
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'subselection',
+          dimension: 'diagnosis',
+          constraint: {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'CODE:TUMOR_STAGE'
+            } as TransmartConceptConstraint
+          } as TransmartSubSelectionConstraint
+        } as TransmartSubSelectionConstraint
+      ]
+    } as TransmartAndConstraint;
+
+    const diagnosisCohort1 = new Cohort('', 'Diagnosis 1');
+    diagnosisCohort1.constraint = diagnosisCombination1;
+    diagnosisCohort1.selected = true;
+    cohortService.cohorts.push(diagnosisCohort1);
+
+    const diagnosisCohort2 = new Cohort('', 'Diagnosis 2');
+    diagnosisCohort2.constraint = diagnosisCombination2;
+    diagnosisCohort2.selected = true;
+    cohortService.cohorts.push(diagnosisCohort2);
+
+    cohortService.currentCohort.selected = false;
+
+    const selectedCohortConstraint = TransmartConstraintMapper.mapConstraint(cohortService.allSelectedCohortsConstraint);
+    expect(JSON.stringify(selectedCohortConstraint, null, 2))
+      .toEqual(JSON.stringify(expected, null, 2));
+  });
+
+  it('should combine combination of patient and diagnosis cohorts', () => {
+    // Tumor type diagnosis patients
+    const tumorTypeConstraint = new ConceptConstraint();
+    const tumorTypeConcept = new Concept();
+    tumorTypeConcept.code = 'CODE:TUMOR_TYPE';
+    tumorTypeConcept.type = ConceptType.CATEGORICAL;
+    tumorTypeConstraint.concept = tumorTypeConcept;
+    const diagnosisCombination1 = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const diagnosisPatientCombination1 = new CombinationConstraint(
+      [diagnosisCombination1], CombinationState.And, 'patient');
+    // Tumor stage diagnosis
+    const tumorStageConstraint = new ConceptConstraint();
+    const tumorStage = new Concept();
+    tumorStage.code = 'CODE:TUMOR_STAGE';
+    tumorStage.type = ConceptType.CATEGORICAL;
+    tumorStageConstraint.concept = tumorStage;
+    const diagnosisCombination2 = new CombinationConstraint(
+      [tumorStageConstraint], CombinationState.And, 'diagnosis');
+
+    const expected = {
+      type: 'or',
+      args: [
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'CODE:TUMOR_TYPE'
+            } as TransmartConceptConstraint
+          } as TransmartSubSelectionConstraint
+        } as TransmartSubSelectionConstraint,
+        {
+          type: 'subselection',
+          dimension: 'patient',
+          constraint: {
+            type: 'subselection',
+            dimension: 'diagnosis',
+            constraint: {
+              type: 'concept',
+              conceptCode: 'CODE:TUMOR_STAGE'
+            } as TransmartConceptConstraint
+          } as TransmartSubSelectionConstraint
+        } as TransmartSubSelectionConstraint
+      ]
+    } as TransmartAndConstraint;
+
+    const diagnosisPatientsCohort1 = new Cohort('', 'Diagnosis patients 1');
+    diagnosisPatientsCohort1.constraint = diagnosisPatientCombination1;
+    diagnosisPatientsCohort1.selected = true;
+    cohortService.cohorts.push(diagnosisPatientsCohort1);
+
+    const diagnosisCohort2 = new Cohort('', 'Diagnosis 2');
+    diagnosisCohort2.constraint = diagnosisCombination2;
+    diagnosisCohort2.selected = true;
+    cohortService.cohorts.push(diagnosisCohort2);
+
+    cohortService.currentCohort.selected = false;
+
+    const selectedCohortConstraint = TransmartConstraintMapper.mapConstraint(cohortService.allSelectedCohortsConstraint);
+    expect(JSON.stringify(selectedCohortConstraint, null, 2))
+      .toEqual(JSON.stringify(expected, null, 2));
   });
 
   it('should restore cohort containing subject set constraint', () => {
