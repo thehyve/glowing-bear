@@ -360,11 +360,20 @@ export class CohortService {
     } else {
       const combination = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
+      const dimensions = new Set<string>();
       this.cohorts.forEach((cohort: Cohort) => {
         if (cohort.selected) {
           combination.addChild(cohort.constraint);
+          if (cohort.constraint.className === 'CombinationConstraint') {
+            dimensions.add((<CombinationConstraint>cohort.constraint).dimension);
+          } else {
+            dimensions.add(CombinationConstraint.TOP_LEVEL_DIMENSION);
+          }
         }
       });
+      if (dimensions.size === 1) {
+        combination.dimension = dimensions.values().next().value;
+      }
       return combination;
     }
   }
