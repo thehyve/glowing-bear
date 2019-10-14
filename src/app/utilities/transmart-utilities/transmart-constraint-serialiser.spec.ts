@@ -22,8 +22,8 @@ import {Operator} from '../../models/constraint-models/operator';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
-import deepEqual = require('deep-equal');
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
+import deepEqual = require('deep-equal');
 
 describe('TransmartConstraintSerialiser', () => {
 
@@ -1064,6 +1064,42 @@ describe('TransmartConstraintSerialiser', () => {
       } as TransmartNegationConstraint
     };
     testConstraint(diagnosisCombination, expected);
+  });
+
+  it('should serialise "all patients with neuroblastoma diagnoses"', () => {
+    const tumorTypeConstraint = createConceptConstraint(ConceptType.CATEGORICAL, 'CODE:TUMOR_TYPE');
+    const tumorTypeValueConstraint = createStringValueConstraint('neuroblastoma');
+    tumorTypeConstraint.valueConstraints.push(tumorTypeValueConstraint);
+
+    // Diagnosis set
+    const diagnosisCombination = new CombinationConstraint(
+      [tumorTypeConstraint], CombinationState.And, 'diagnosis');
+    const patientCombination = new CombinationConstraint(
+      [diagnosisCombination], CombinationState.And, 'patient');
+    const expected: TransmartSubSelectionConstraint = {
+      type: 'subselection',
+      dimension: 'patient',
+      constraint: {
+        type: 'subselection',
+        dimension: 'diagnosis',
+        constraint: {
+          type: 'and',
+          args: [
+            {
+              type: 'concept',
+              conceptCode: 'CODE:TUMOR_TYPE'
+            },
+            {
+              type: 'value',
+              valueType: 'string',
+              operator: '=',
+              value: 'neuroblastoma'
+            } as TransmartValueConstraint
+          ]
+        } as TransmartAndConstraint
+      } as TransmartSubSelectionConstraint
+    };
+    testConstraint(patientCombination, expected);
   });
 
 });
