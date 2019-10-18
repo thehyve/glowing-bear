@@ -155,6 +155,20 @@ Supported properties in the `config.*.json` files:
 | `check-server-status` | `false` | Enable checking server status before requesting data.
 | `deny-access-to-users-without-role` | `false` | Deny access to users without any roles assigned to them. The corresponding configuration needs to be set for the backends.
 
+
+### Dimension icons
+
+Glowing bear has a list of icons defined for basic subject dimensions:
+- patients
+- diagnoses
+- biosources
+- biomaterials
+- images
+
+If there is a new dimension, it will have a default icon. In order to customize this, 
+for each new dimension that needs to be supported
+a new icon has to be added in [icon-helper file](src/app/utilities/icon-helper.ts).
+
 ## Extensions
 
 To use interactive visual analytics, you need to install [Fractalis back-end] and, 
