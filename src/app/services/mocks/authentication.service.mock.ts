@@ -7,11 +7,12 @@
  */
 
 
-import {AsyncSubject} from 'rxjs';
+import {AsyncSubject, Observable, of as observableOf} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {AuthenticationMethod} from '../authentication/authentication-method';
 import {AccessLevel} from '../authentication/access-level';
 import {Subject} from 'rxjs/Rx';
+import {AuthorizationResult} from '../authentication/authorization-result';
 
 @Injectable()
 export class AuthenticationServiceMock {
@@ -36,6 +37,11 @@ export class AuthenticationServiceMock {
     accessLevel.next(AccessLevel.Full);
     accessLevel.complete();
     return accessLevel;
+  }
+
+
+  authorise(): Observable<AuthorizationResult> {
+    return observableOf();
   }
 
 }

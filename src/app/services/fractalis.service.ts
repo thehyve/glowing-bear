@@ -78,21 +78,11 @@ export class FractalisService {
   }
 
   public setupFractalis(): Promise<any> {
-    let token = this.authService.token;
-    let oidcClientId = this.appConfig.getConfig('oidc-client-id');
-    let oidcServerUrl = this.appConfig.getConfig('oidc-server-url');
     const config = {
       handler: 'transmart',
       dataSource: this.appConfig.getConfig('fractalis-datasource-url'),
       fractalisNode: this.appConfig.getConfig('fractalis-url'),
-      getAuth() {
-        return {
-          token: token,
-          authServiceType: 'oidc',
-          oidcClientId: oidcClientId,
-          oidcServerUrl: oidcServerUrl,
-        }
-      },
+      getAuth: this.getAuth.bind(this),
       options: {
         controlPanelPosition: 'right',
         controlPanelExpanded: true,
@@ -105,6 +95,12 @@ export class FractalisService {
     this.configVariablesUpdate();
     this.retrieveFractalisChartTypes();
     return this.clearCache();
+  }
+
+  private getAuth() {
+    return {
+      token: this.authService.token
+    }
   }
 
   private prepareCache() {
@@ -128,11 +124,13 @@ export class FractalisService {
           }
         }
       );
-      this.F.loadData(descriptors)
-        .catch(err => {
-          MessageHelper.alert('error', 'Fail to prepare cache.');
-          console.error(err)
-        });
+      this.authService.authorise().subscribe(() => {
+        this.F.loadData(descriptors)
+          .catch(err => {
+            MessageHelper.alert('error', 'Fail to prepare cache.');
+            console.error(err)
+          });
+      });
     }
   }
 
@@ -226,26 +224,28 @@ export class FractalisService {
   public clearCache(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.isClearingCache = true;
-      this.F.clearCache()
-        .then(res => {
-          this.isClearingCache = false;
-          this._currentCacheTrys = 0;
-          this.cachedVariables = [];
-          resolve(true);
-        })
-        .catch(error => {
-          console.error(`Error clearing Fractalis cache: ${error}`);
-          if (this._currentCacheTrys < FractalisService.MAX_CACHE_TRYS) {
-            console.log('Retry caching...');
-            this.clearCache();
-            this._currentCacheTrys++;
-          } else {
-            const msg = 'Maximum number of caching calls exceeded, terminate!';
-            console.log(msg);
+      this.authService.authorise().subscribe(() => {
+        this.F.clearCache()
+          .then(res => {
+            this.isClearingCache = false;
             this._currentCacheTrys = 0;
-            reject(msg);
-          }
-        });
+            this.cachedVariables = [];
+            resolve(true);
+          })
+          .catch(error => {
+            console.error(`Error clearing Fractalis cache: ${error}`);
+            if (this._currentCacheTrys < FractalisService.MAX_CACHE_TRYS) {
+              console.log('Retry caching...');
+              this.clearCache();
+              this._currentCacheTrys++;
+            } else {
+              const msg = 'Maximum number of caching calls exceeded, terminate!';
+              console.log(msg);
+              this._currentCacheTrys = 0;
+              reject(msg);
+            }
+          });
+      });
     });
   }
 
