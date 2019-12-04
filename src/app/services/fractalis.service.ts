@@ -191,6 +191,7 @@ export class FractalisService {
       subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
     });
     let idSets = [];
+    let subsetLabels = this.cohortService.selectedCohorts.map(c => c.name);
     forkJoin(subjectCalls)
       .subscribe((res: TransmartPatient[][]) => {
         for (let i = 0; i < subjectCalls.length; i++) {
@@ -199,7 +200,7 @@ export class FractalisService {
           });
           idSets.push(ids);
         }
-        this.F.setSubsets(idSets);
+        this.F.setSubsets(idSets, subsetLabels);
       });
   }
 
