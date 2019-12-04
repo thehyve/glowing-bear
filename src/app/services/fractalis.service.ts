@@ -302,10 +302,14 @@ export class FractalisService {
   }
 
   public addOrRecreateChart() {
+    this.removePreviousChartIfInvalid();
+    this.addChart();
+  }
+
+  public removePreviousChartIfInvalid() {
     if (this.previousChart && !this.previousChart.isValid) {
       this.removeChart(this.previousChart);
     }
-    this.addChart();
   }
 
   public addChart() {

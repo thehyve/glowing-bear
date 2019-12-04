@@ -17,7 +17,8 @@
     </div>
   </div>
   <gb-loading [loading]="isClearingCache"></gb-loading>
-  <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert">
+  <div *ngFor="let message of validationErrorMessages" class="validation-error-message" role="alert"
+       [hidden]="!isValidationError">
     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
     {{message}}
   </div>

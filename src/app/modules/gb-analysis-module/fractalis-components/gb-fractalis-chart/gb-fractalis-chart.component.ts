@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -75,17 +75,19 @@ export class GbFractalisChartComponent implements AfterViewInit {
             if (mappedVariables) {
               this.setFractalisChartParameters(mappedVariables);
             } else {
-              console.warn(`No valid variable mapping`, mappedVariables);
+              console.warn(`No valid variable mapping for ${this.chart.type} chart.`, mappedVariables);
             }
           })
           .catch((errors: ValidationError[]) => {
-            console.error('Error mapping variables', errors);
             this.chart.isValid = false;
-            this.fractalisService.invalidateVariables(errors.map(error => error.message));
+            if (this.fractalisService.charts.indexOf(this.chart) >= 0) {
+              console.error('Error mapping variables for ${this.chart.type} chart.', errors);
+              this.fractalisService.invalidateVariables(errors.map(error => error.message));
+            }
           });
       })
       .catch(err => {
-        console.error(`Failed to set variables for a chart with id ${this.chart.id}. ${err}`);
+        console.error(`Failed to set variables for ${this.chart.type} chart with id ${this.chart.id}. ${err}`);
       });
   }
 

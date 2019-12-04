@@ -66,14 +66,16 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   onClearControl() {
-    this.fractalisService.clearValidation();
-    this.fractalisService.clearCache();
     this.selectedChartType = null;
     this.selectedVariables.length = 0;
+    this.fractalisService.removePreviousChartIfInvalid();
+    this.fractalisService.clearValidation();
+    this.fractalisService.clearCache();
   }
 
   onSelectedChartTypeChange() {
     this.selectedVariables.length = 0;
+    this.fractalisService.removePreviousChartIfInvalid();
     this.fractalisService.clearValidation();
   }
 
@@ -127,7 +129,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   get isValidationError(): boolean {
-    return this.fractalisService.variablesInvalid;
+    return this.selectedChartType && this.fractalisService.variablesInvalid;
   }
 
   get validationErrorMessages(): string[] {
