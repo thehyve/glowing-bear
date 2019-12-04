@@ -129,7 +129,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   get isValidationError(): boolean {
-    return this.selectedChartType && this.fractalisService.variablesInvalid;
+    return this.selectedChartType != null && this.fractalisService.variablesInvalid;
   }
 
   get validationErrorMessages(): string[] {

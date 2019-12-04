@@ -186,7 +186,8 @@ describe('FractalisService', () => {
     cohort2.selected = true;
     cohortService.cohortsUpdated.asObservable()
       .subscribe(res => {
-        expect(spySetSubsets).toHaveBeenCalledWith([['one', 'two', 'three'], ['one', 'two', 'three']])
+        expect(spySetSubsets).toHaveBeenCalledWith([['one', 'two', 'three'], ['one', 'two', 'three']],
+          [ 'name1', 'name2' ])
       });
     cohortService.cohorts.push(cohort1);
     cohortService.cohorts.push(cohort2);

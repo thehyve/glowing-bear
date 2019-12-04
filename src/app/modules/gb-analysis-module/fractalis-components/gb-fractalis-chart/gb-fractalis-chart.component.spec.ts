@@ -130,6 +130,7 @@ describe('GbFractalisChartComponent', () => {
     }));
     fractalisService.selectedVariables = [];
     component.chart = new Chart(ChartType.BOXPLOT);
+    fractalisService.charts.push(component.chart);
     fixture.detectChanges();
     expect(component).toBeTruthy();
     setTimeout(() => {
