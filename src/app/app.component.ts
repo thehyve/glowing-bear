@@ -14,6 +14,8 @@ import {ResourceService} from './services/resource.service';
 import {ServerStatus} from './models/server-status';
 import {AppConfig} from './config/app.config';
 import {AccessLevel} from './services/authentication/access-level';
+import {Router, NavigationEnd} from '@angular/router';
+import {NavbarService} from './services/navbar.service';
 
 @Component({
   selector: 'gb-app-root',
@@ -31,7 +33,9 @@ export class AppComponent implements OnInit {
 
   constructor(private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
-              private config: AppConfig) {
+              private config: AppConfig,
+              private router: Router,
+              private navbarService: NavbarService) {
     if (this.config.isLoaded) {
       this.docUrl = config.getConfig('doc-url');
     }
@@ -67,6 +71,12 @@ export class AppComponent implements OnInit {
       MessageHelper.alert('error', 'Microsoft Internet Explorer is not supported\n' +
         'Some features may not work correctly.');
     }
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        let whichStep = event.urlAfterRedirects.split('/')[1].split('#')[0];
+        this.navbarService.updateNavbar(whichStep);
+      }
+    });
   }
 
   logout() {
