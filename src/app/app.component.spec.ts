@@ -32,6 +32,9 @@ import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
 import {ServerStatus} from './models/server-status';
 import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
+import {Router} from '@angular/router';
+import {NavbarService} from './services/navbar.service';
+import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -42,9 +45,11 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let debugElement: DebugElement;
   let component: AppComponent;
+  let navbarService: NavbarService;
   let authenticationService: AuthenticationService;
   let resourceService: ResourceService;
   let config: AppConfig;
+  let router: Router;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -80,6 +85,10 @@ describe('AppComponent', () => {
           multi: true
         },
         {
+          provide: NavbarService,
+          useClass: NavbarServiceMock
+        },
+        {
           provide: AuthenticationService,
           useClass: AuthenticationServiceMock
         },
@@ -93,9 +102,11 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
+    navbarService = TestBed.get(NavbarService);
     authenticationService = TestBed.get(AuthenticationService);
     resourceService = TestBed.get(ResourceService);
     config = TestBed.get(AppConfig);
+    router = TestBed.get(Router);
   }));
 
   it('should be created', async(() => {
@@ -197,4 +208,15 @@ describe('AppComponent', () => {
       .toBe('There is an error connecting to the server.');
   });
 
+  it('should handle router events', () => {
+    let authenticated = true;
+    let authorisedCall = spyOnProperty(authenticationService, 'authorised', 'get')
+      .and.callFake(() => {
+        return observableOf(authenticated);
+      });
+    spyOn(router.events, 'subscribe').and.returnValue(event).and.callThrough();
+    component.ngOnInit();
+    fixture.detectChanges();
+    expect(router.events.subscribe).toHaveBeenCalled();
+  });
 });

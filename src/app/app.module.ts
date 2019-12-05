@@ -28,6 +28,7 @@ import {ApiHttpInterceptor} from './services/http/api-http-interceptor.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
+import {NavbarService} from './services/navbar.service';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load()
@@ -45,13 +46,13 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     HttpClientModule,
     BrowserAnimationsModule,
     GrowlModule,
-    routing,
     GbMainModule,
     GbNavBarModule,
     GbCohortSelectionModule,
     GbAnalysisModule,
     GbSidePanelModule,
-    GbExportModule
+    GbExportModule,
+    routing
   ],
   providers: [
     DatePipe,
@@ -68,6 +69,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
       useClass: ApiHttpInterceptor,
       multi: true
     },
+    NavbarService
   ],
   bootstrap: [AppComponent]
 })
