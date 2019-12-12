@@ -74,9 +74,11 @@ export class AppConfig {
         }
         return null;
       }
-      case 'fractalis-datasource-url': {
-        // Use the API URL by default.
-        return this.getConfig('api-url');
+      case 'fractalis-datasource-service': {
+        if (this.getConfig('enable-fractalis-analysis') === true) {
+          throw Error('Fractalis datasource service is unspecified in the configuration.');
+        }
+        return null;
       }
       case 'doc-url': {
         return AppConfig.DEFAULT_DOC_URL;
