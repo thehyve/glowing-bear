@@ -23,7 +23,6 @@ import {AppConfigMock} from '../../config/app.config.mock';
 describe('GbNavbarComponent', () => {
   let component: GbNavbarComponent;
   let fixture: ComponentFixture<GbNavbarComponent>;
-  let router: Router;
   let navbarService: NavbarService;
 
   beforeEach(async(() => {
@@ -58,20 +57,12 @@ describe('GbNavbarComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GbNavbarComponent);
     component = fixture.componentInstance;
-    router = TestBed.get(Router);
     navbarService = TestBed.get(NavbarService);
-    router.initialNavigation();
     fixture.detectChanges();
   });
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should handle router events', () => {
-    spyOn(router.events, 'subscribe').and.returnValue(event).and.callThrough();
-    component.ngOnInit();
-    expect(router.events.subscribe).toHaveBeenCalled();
   });
 
   it('should log out', () => {

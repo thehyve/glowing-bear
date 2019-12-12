@@ -89,7 +89,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.8.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.8/glowing-bear-2.0.8.tar).
+The latest release is [glowing-bear-2.0.9.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.9/glowing-bear-2.0.9.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -154,6 +154,20 @@ Supported properties in the `config.*.json` files:
 | `include-cohort-subscription` | `false` | Enable cohort subscription.
 | `check-server-status` | `false` | Enable checking server status before requesting data.
 | `deny-access-to-users-without-role` | `false` | Deny access to users without any roles assigned to them. The corresponding configuration needs to be set for the backends.
+
+
+### Dimension icons
+
+Glowing bear has a list of icons defined for basic subject dimensions:
+- patients
+- diagnoses
+- biosources
+- biomaterials
+- images
+
+If there is a new dimension, it will have a default icon. In order to customize this, 
+for each new dimension that needs to be supported
+a new icon has to be added in [icon-helper file](src/app/utilities/icon-helper.ts).
 
 ## Extensions
 
