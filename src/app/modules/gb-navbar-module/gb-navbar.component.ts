@@ -7,7 +7,6 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
 import {NavbarService} from '../../services/navbar.service';
 import {MenuItem} from 'primeng/api';
 import {AppConfig} from '../../config/app.config';
@@ -22,20 +21,13 @@ export class GbNavbarComponent implements OnInit {
   docUrl: string;
   appVersion: string;
 
-  constructor(private router: Router,
-              private appConfig: AppConfig,
+  constructor(private appConfig: AppConfig,
               private navbarService: NavbarService) {
     this.docUrl = appConfig.getConfig('doc-url');
     this.appVersion = appConfig.version;
   }
 
   ngOnInit() {
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        let whichStep = event.urlAfterRedirects.split('/')[1].split('#')[0];
-        this.navbarService.updateNavbar(whichStep);
-      }
-    });
   }
 
   logout() {

@@ -23,8 +23,8 @@ import {AppConfig} from '../config/app.config';
 })
 export class DataTableService {
 
-  private _prevRowDimensions: Array<TableDimension>;
-  private _prevColDimensions: Array<TableDimension>;
+  private _prevRowDimensions: TableDimension[];
+  private _prevColDimensions: TableDimension[];
   private _dataTable: DataTable;
   // Indicate if the current data table is dirty
   private _isDirty: boolean;
@@ -157,19 +157,19 @@ export class DataTableService {
     }
   }
 
-  get prevRowDimensions(): Array<TableDimension> {
+  get prevRowDimensions(): TableDimension[] {
     return this._prevRowDimensions;
   }
 
-  set prevRowDimensions(value: Array<TableDimension>) {
+  set prevRowDimensions(value: TableDimension[]) {
     this._prevRowDimensions = value;
   }
 
-  get prevColDimensions(): Array<TableDimension> {
+  get prevColDimensions(): TableDimension[] {
     return this._prevColDimensions;
   }
 
-  set prevColDimensions(value: Array<TableDimension>) {
+  set prevColDimensions(value: TableDimension[]) {
     this._prevColDimensions = value;
   }
 

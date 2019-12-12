@@ -22,22 +22,43 @@ export class TransmartDataTableMapper {
 
   private static getDimensionMetadata(name: string, data: any): Map<string, string> {
     let metadata = new Map<string, string>();
+    if (!data) {
+      return metadata;
+    }
     if (name === 'concept') {
       metadata.set('conceptPath', data.conceptPath);
       metadata.set('conceptCode', data.conceptCode);
-      metadata.set('name', data.name);
     } else if (name === 'trial visit') {
-      metadata.set('relTimeLabel', data.relTimeLabel);
-      metadata.set('relTimeUnit', data.relTimeUnit);
-      metadata.set('relTime', data.relTime);
-    } else if (name === 'study') {
-      metadata.set('label', data.label)
-    } else if (name === 'patient') {
-      let subjectIds: object = data.subjectIds;
-      if (subjectIds) {
-        for (let key in subjectIds) {
-          metadata.set(key, subjectIds[key]);
+      data.name = data.relTimeLabel;
+      for (let property of ['relTimeUnit', 'relTime']) {
+        if (property in data && data[property] !== null) {
+          metadata.set(property, data[property]);
         }
+      }
+    } else if (name === 'study') {
+    } else if (name === 'visit') {
+      const encounterIds: object = data.encounterIds;
+      if (data.encounterIds) {
+        data.name = data.encounterIds['VISIT_ID'];
+        for (let key in encounterIds) {
+          if (key !== 'VISIT_ID') {
+            metadata.set(key, encounterIds[key]);
+          }
+        }
+      } else {
+        data.name = data.id;
+      }
+    } else if (name === 'patient') {
+      const subjectIds: object = data.subjectIds;
+      if (subjectIds) {
+        data.name = subjectIds['SUBJ_ID'];
+        for (let key in subjectIds) {
+          if (key !== 'SUBJ_ID') {
+            metadata.set(key, subjectIds[key]);
+          }
+        }
+      } else {
+        data.name = data.patientId;
       }
     } else {
       // No metadata
@@ -121,6 +142,7 @@ export class TransmartDataTableMapper {
     // get data table column-header rows
     transmartTable.columnHeaders.forEach((transmartColumnHeader: TransmartColumnHeaders) => {
       let row = new Row();
+      row.isHeaderRow = true;
 
       // add empty space fillers on the top-left corner of the table
       for (let rowIndex = 0; rowIndex < dataTable.rowDimensions.length; rowIndex++) {
@@ -167,9 +189,9 @@ export class TransmartDataTableMapper {
           } else {
             val = dimensionObject.label;
           }
-          newRow.addDatum(val, this.getDimensionMetadata(indexedDimension.name, dimensionObject));
+          newRow.addHeader(val, this.getDimensionMetadata(indexedDimension.name, dimensionObject));
         } else {
-          newRow.addDatum(rowHeader.element);
+          newRow.addHeader(rowHeader.element);
         }
       });
       // get row values

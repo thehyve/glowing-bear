@@ -19,6 +19,8 @@ import {CountService} from './count.service';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {CohortService} from './cohort.service';
 import {CohortServiceMock} from './mocks/cohort.service.mock';
+import {GbTreeNode} from '../models/tree-node-models/gb-tree-node';
+import {VisualAttribute} from '../models/tree-node-models/visual-attribute';
 
 describe('VariableService', () => {
   let variableService: VariableService;
@@ -159,25 +161,6 @@ describe('VariableService', () => {
     expect(selectedVariables.length).toBe(0);
   });
 
-  it('should call treeNodeService.flattenTreeNodes when checking all variable tree nodes', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_1_3: TreeNode = {};
-    node_1_1['fullName'] = 'node_1_1_fullname';
-    node_1_2['fullName'] = 'node_1_2_fullname';
-    node_1_3['fullName'] = 'node_1_3_fullname';
-    node_1.children = [node_1_1, node_1_2, node_1_3];
-    node_1['fullName'] = 'node_1_fullname';
-    node.children = [node_1];
-    spyOnProperty(variableService, 'variablesTree', 'get').and.returnValue([node]);
-    const spy = spyOn(treeNodeService, 'flattenTreeNodes').and.stub();
-    variableService.selectedVariablesTree = [];
-    variableService.selectAllVariablesTree(true);
-    expect(spy).toHaveBeenCalledWith([node], []);
-  });
-
   it('should select all variables that are shared between nodes', () => {
     let node: TreeNode = {};
     let node_1: TreeNode = {};
@@ -195,7 +178,7 @@ describe('VariableService', () => {
     node.children = [node_1, node_2];
 
     variableService.selectedVariablesTree = [];
-    variableService.selectVariablesTreeByFields([node], [node_1_1['conceptCode']], ['conceptCode'], true);
+    variableService.selectVariablesTreeByFields([node], [node_1_1['conceptCode']], ['conceptCode']);
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).not.toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
@@ -244,7 +227,7 @@ describe('VariableService', () => {
     node.children = [node_1, node_2, null];
 
     variableService.selectVariablesTreeByFields(
-      [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName'], true);
+      [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName']);
 
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
@@ -252,43 +235,16 @@ describe('VariableService', () => {
     expect(node_1_1.partialSelected).toBe(undefined);
     expect(node_1.partialSelected).toBe(true);
     expect(node.partialSelected).toBe(true);
-
-    spyOn(treeNodeService, 'isVariableNode').and.returnValue(true);
 
     variableService['isAdditionalImport'] = true;
     variableService.selectVariablesTreeByFields(
-      [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName'], true);
+      [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName']);
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(node_1_2);
     expect(variableService.selectedVariablesTree).toContain(node_2);
     expect(node_1_1.partialSelected).toBe(undefined);
     expect(node_1.partialSelected).toBe(true);
     expect(node.partialSelected).toBe(true);
-  });
-
-  it('should remove unselected tree nodes when additional import is off', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    let node_1_2: TreeNode = {};
-    let node_2: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_2.parent = node_1;
-    node_1_1['fullName'] = '\\foo\\bar\\node_1_1\\';
-    node_1_2['fullName'] = '\\foo\\bar\\node_1_2\\';
-    node_1.children = [node_1_1, node_1_2];
-    node_1.parent = node;
-    node_2.parent = node;
-    node_2['fullName'] = '\\foo\\node_2\\';
-    node.children = [node_1, node_2];
-
-    variableService.selectVariablesTreeByFields(
-      [node], ['\\foo\\bar\\node_1_2\\', '\\foo\\node_2\\', '\\dummy\\'], ['fullName'], false);
-    variableService['isAdditionalImport'] = false;
-    variableService.selectVariablesTreeByFields(
-      [node], ['\\foo\\bar\\node_1_2\\', '\\dummy\\'], ['fullName'], false);
-    expect(variableService.selectedVariablesTree.length).toBe(1);
-    expect(variableService.selectedVariablesTree).toContain(node_1_2);
   });
 
   it('should select variables tree nodes by names', () => {
@@ -306,7 +262,7 @@ describe('VariableService', () => {
     nodeAD.children = [nodeADE];
     let nodeA: TreeNode = {};
     nodeA.children = [nodeAB, nodeAD];
-    variableService.selectVariablesTreeByFields([nodeA], ['name1'], ['metadata', 'item_name'], true);
+    variableService.selectVariablesTreeByFields([nodeA], ['name1'], ['metadata', 'item_name']);
 
     expect(variableService.selectedVariablesTree.length).toBe(2);
     expect(variableService.selectedVariablesTree).toContain(nodeADE);
@@ -320,18 +276,15 @@ describe('VariableService', () => {
 
   it('should update variables tree data', () => {
     let dummyTreeNodes = [{}];
-    let spy1 = spyOn(treeNodeService, 'copyTreeNodes').and.returnValue(dummyTreeNodes);
     let spy2 = spyOn<any>(variableService, 'updateVariablesTreeRecursion').and.stub();
     let spy3 = spyOnProperty(variableService, 'variablesTree', 'get').and.returnValue(dummyTreeNodes);
     treeNodeService.treeNodesCopy = dummyTreeNodes;
     variableService.updateVariablesTree();
-    expect(spy1).not.toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
 
     treeNodeService.treeNodesCopy = [];
     variableService.updateVariablesTree();
-    expect(spy1).toHaveBeenCalled();
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
   });
@@ -379,46 +332,54 @@ describe('VariableService', () => {
     countService.selectedConceptCountMap.set(conceptCode2, new CountItem(1, 1));
     countService.selectedStudyCountMap = new Map<string, CountItem>();
     conceptMap1.set(studyId, new CountItem(1, 1));
-    let node1: TreeNode = {};
-    let node2: TreeNode = {};
-    let node2a: TreeNode = {};
-    let node3: TreeNode = {};
-    let node4: TreeNode = {};
-    let node5: TreeNode = {};
-    let node6: TreeNode = {};
-    node1['visualAttributes'] = ['bar', 'foo', 'LEAF'];
-    node2['children'] = [node2a];
-    node4['visualAttributes'] = ['LEAF'];
-    node4['studyId'] = studyId;
-    node4['conceptCode'] = conceptCode;
-    node4['name'] = 'a-name';
-    node2a['visualAttributes'] = ['LEAF'];
-    node2a['studyId'] = studyId1;
-    node2a['conceptCode'] = conceptCode1;
-    node5['children'] = [{}];
-    node6['name'] = 'node6';
-    node6['studyId'] = undefined;
-    node6['conceptCode'] = conceptCode2;
-    node6['visualAttributes'] = ['LEAF'];
+    let node1: GbTreeNode = {};
+    let node2: GbTreeNode = {};
+    let node2a: GbTreeNode = {};
+    let node3: GbTreeNode = {};
+    let node4: GbTreeNode = {};
+    let node5: GbTreeNode = {};
+    let node6: GbTreeNode = {};
+    node1.type = 'LEAF';
+    node1.visualAttributes = [VisualAttribute.LEAF];
+    node2.type = 'FOLDER';
+    node2.children = [node2a];
+    node4.type = 'NUMERIC';
+    node4.visualAttributes = [VisualAttribute.LEAF, VisualAttribute.NUMERICAL];
+    node4.studyId = studyId;
+    node4.conceptCode = conceptCode;
+    node4.name = 'a-name';
+    node2a.type = 'DATE';
+    node2a.visualAttributes = [VisualAttribute.LEAF, VisualAttribute.DATE];
+    node2a.studyId = studyId1;
+    node2a.conceptCode = conceptCode1;
+    node5.type = 'FOLDER';
+    node5.children = [{}];
+    node5.name = 'node5';
+    node6.type = 'CATEGORICAL';
+    node6.name = 'node6';
+    node6.studyId = undefined;
+    node6.conceptCode = conceptCode2;
+    node6.visualAttributes = [VisualAttribute.LEAF, VisualAttribute.CATEGORICAL];
     let nodes = [node1, node2, node3, node4, node5, node6];
     let resultNodes = variableService['updateVariablesTreeRecursion'](nodes);
-    expect(node4['expanded']).toBe(false);
-    expect(resultNodes.length).toEqual(3);
-    expect(resultNodes[0]['label']).toBeUndefined();
-    expect(resultNodes[1]['label']).toBeUndefined();
+    expect(node4.expanded).toBe(false);
+    // test if node2, node4 and node6 are included
+    expect(resultNodes.map(node => node.name)).toEqual([undefined, 'a-name', 'node6']);
+    expect(resultNodes.map(node => node.type)).toEqual(['FOLDER', 'NUMERIC', 'CATEGORICAL']);
+    expect(resultNodes[0].label).toBeUndefined();
   });
 
   it('should import variables by names', () => {
     const spy = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
     const names = ['name1', 'name2'];
     variableService.importVariablesByNames(names);
-    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, names, ['metadata', 'item_name'], true);
+    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, names, ['metadata', 'item_name']);
   });
 
   it('should import variables by paths', () => {
     const spy = spyOn(variableService, 'selectVariablesTreeByFields').and.stub();
     const paths = ['path1', 'path2'];
     variableService.importVariablesByPaths(paths);
-    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, paths, ['fullName'], true);
+    expect(spy).toHaveBeenCalledWith(variableService.variablesTree, paths, ['fullName']);
   });
 });

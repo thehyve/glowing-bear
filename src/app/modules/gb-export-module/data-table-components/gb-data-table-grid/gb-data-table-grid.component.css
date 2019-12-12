@@ -3,8 +3,11 @@
 }
 
 :host >>> .grid-container .table-header {
-  border-left: 3px var(--gb-clinical-green-dark) solid !important;
-  border-right: 3px var(--gb-clinical-green-dark) solid !important;
+  text-align: center;
+  font-weight: bolder;
+  border-left: 1px var(--gb-clinical-green-dark) solid !important;
+  border-right: 1px var(--gb-clinical-green-dark) solid !important;
+  border-bottom: 1px var(--gb-clinical-green-light) solid !important;
   background-color: var(--gb-clinical-green-light-light) !important;
 }
 

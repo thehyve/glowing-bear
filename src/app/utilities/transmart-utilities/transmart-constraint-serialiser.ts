@@ -62,15 +62,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
    */
   static unWrapNestedQueryObject(constraint: TransmartConstraint): TransmartConstraint {
     // If the query object is a combination constraint
-    if (constraint.type === 'and' || constraint.type === 'or') {
-      if (constraint['args'].length === 1) {
-        return this.unWrapNestedQueryObject(constraint['args'][0]);
-      } else {
-        return constraint;
-      }
-    } else {
-      return constraint;
+    if ((constraint.type === 'and' || constraint.type === 'or') && constraint['args'].length === 1) {
+      return this.unWrapNestedQueryObject(constraint['args'][0]);
     }
+    return constraint;
+
   }
 
   /**

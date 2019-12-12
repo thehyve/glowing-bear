@@ -11,7 +11,7 @@ import {ConstraintService} from '../../../../../services/constraint.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
 import {VariableService} from '../../../../../services/variable.service';
-import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';
+import {TreeNodeHelper} from '../../../../../utilities/tree-node-helper';
 
 @Component({
   selector: 'gb-variables-tree',
@@ -65,7 +65,7 @@ export class GbVariablesTreeComponent implements OnInit, AfterViewInit {
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
       // if the data object type belongs to the listed types
-      if (this.treeNodeService.validTreeNodeTypes.includes(dataObjectType)
+      if (TreeNodeHelper.VALID_TREE_NODE_TYPES.includes(dataObjectType)
         && !treeNodeElm.hasAttribute('hasEventListener')) {
         treeNodeElm.setAttribute('hasEventListener', 'true');
         treeNodeElm.addEventListener('dragstart', handleDragstart);

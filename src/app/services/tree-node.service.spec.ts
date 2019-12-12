@@ -17,7 +17,6 @@ import {of as observableOf} from 'rxjs';
 import {ConstraintServiceMock} from './mocks/constraint.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from '../utilities/error-helper';
-import {TreeNode} from 'primeng/api';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {MessageHelper} from '../utilities/message-helper';
 import {CountItem} from '../models/aggregate-models/count-item';
@@ -233,13 +232,14 @@ describe('TreeNodeService', () => {
       fullName: 'full name',
       name: 'name',
       conceptCode: 'concept2',
-      type: 'type',
+      type: ConceptType.DATE,
       constraint: {
         type: 'concept',
         conceptCode: 'concept2'
       },
       visualAttributes: [
-        VisualAttribute.LEAF
+        VisualAttribute.LEAF,
+        VisualAttribute.DATE
       ],
       metadata: 1
     };
@@ -249,7 +249,7 @@ describe('TreeNodeService', () => {
     expect(node.constraint.fullName).toEqual('full name');
     expect(node.constraint.name).toEqual('name');
     expect(node.constraint.conceptCode).toEqual('concept2');
-    expect(node.constraint.valueType).toEqual('type');
+    expect(node.constraint.valueType).toEqual(ConceptType.DATE);
     expect(constraintService.concepts.length).toBe(1);
     expect(constraintService.conceptConstraints.length).toBe(1);
     expect(constraintService.allConstraints.length).toBe(1);
@@ -533,105 +533,6 @@ describe('TreeNodeService', () => {
     expect(paths[0]).toBe('\\A\\D\\E\\');
   });
 
-  it('should verify if a tree node is concept node', () => {
-    let node: GbTreeNode = {};
-    node.type = 'NUMERIC';
-    let isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(true);
-    node.type = 'CATEGORICAL';
-    isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(true);
-    node.type = 'DATE';
-    isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(true);
-    node.type = 'TEXT';
-    isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(true);
-    node.type = 'HIGH_DIMENSIONAL';
-    isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(true);
-    node.type = undefined;
-    isConcept = treeNodeService.isTreeNodeConcept(node);
-    expect(isConcept).toBe(false);
-  });
-
-  it('should verify if a tree node is study node', () => {
-    let node: GbTreeNode = {};
-    node.type = 'STUDY';
-    let isStudy = treeNodeService.isTreeNodeStudy(node);
-    expect(isStudy).toBe(true);
-    node.type = undefined;
-    isStudy = treeNodeService.isTreeNodeStudy(node);
-    expect(isStudy).toBe(false);
-  });
-
-  it('should verify if a tree node is leaf node', () => {
-    let node: GbTreeNode = {};
-    node.visualAttributes = ['bar', 'foo', 'LEAF'] as VisualAttribute[];
-    let is = treeNodeService.isTreeNodeLeaf(node);
-    expect(is).toBe(true);
-  });
-
-  it('should copy tree nodes', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_1.type = 'node_1_1_type';
-    node_1.children = [node_1_1];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node.children = [node_1];
-    let result = treeNodeService.copyTreeNodes([node]);
-    expect(result[0].children[0].type).toEqual('node_1_type');
-    expect(result[0].children[0].children[0].type).toEqual('node_1_1_type');
-  });
-
-  it('should copy tree nodes upwards', () => {
-    let node: TreeNode = {};
-    let node_1: TreeNode = {};
-    let node_1_1: TreeNode = {};
-    node_1_1.parent = node_1;
-    node_1_1.type = 'node_1_1_type';
-    node_1.children = [node_1_1];
-    node_1.type = 'node_1_type';
-    node_1.parent = node;
-    node.children = [node_1];
-    node.type = 'node_type';
-    let result = treeNodeService.copyTreeNodeUpward(node_1);
-    expect(result.type).toEqual('node_1_type');
-    expect(result.children).not.toBeDefined();
-    expect(result.parent.type).toBe('node_type');
-  });
-
-  it('should format node with counts', () => {
-    let node: GbTreeNode = {};
-    const countItem = new CountItem(10, 20);
-    treeNodeService.formatNodeWithCounts(node, countItem);
-    expect(node.label).toBeDefined();
-    expect(node.label).toContain('10');
-    expect(node.subjectCount).toEqual('10');
-  });
-
-  it('should flatten tree nodes', () => {
-    let node1: TreeNode = {};
-    let node1_1: TreeNode = {};
-    let node1_1_1: TreeNode = {};
-    node1_1.children = [node1_1_1];
-    node1.children = [node1_1];
-    let node2: TreeNode = {};
-    let flattened = [];
-    treeNodeService.flattenTreeNodes([node1, node2], flattened);
-    expect(flattened.length).toBe(4);
-  });
-
-  it('should compute depth of tree node', () => {
-    let node: GbTreeNode = {};
-    node.fullName = 'a\\b\\c\\d\\e\\';
-    const depth = treeNodeService.depthOfTreeNode(node);
-    expect(depth).toBe(4);
-  });
-
   it('should update tree nodes counts', () => {
     let node1: GbTreeNode = {};
     node1.name = 'one';
@@ -647,24 +548,6 @@ describe('TreeNodeService', () => {
     expect(node1.label).toContain('ⓘ');
     expect(node1.label).toContain('11');
     expect(node2.label).toContain('12');
-  });
-
-  it('should check if a tree node is variable node', () => {
-    let node: TreeNode = {};
-    node.type = 'NUMERIC';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node.type = 'CATEGORICAL';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node.type = 'CATEGORICAL_OPTION';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node.type = 'DATE';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node.type = 'foobar';
-    expect(treeNodeService.isVariableNode(node)).toBe(false);
-    node.type = 'HIGH_DIMENSIONAL';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
-    node.type = 'TEXT';
-    expect(treeNodeService.isVariableNode(node)).toBe(true);
   });
 
 });

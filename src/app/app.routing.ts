@@ -11,9 +11,10 @@ import {RouterModule, Routes} from '@angular/router';
 import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
 
 // Route Configuration
-export const routes: Routes = [
+const routes: Routes = [
   {path: '', redirectTo: 'main/cohort-selection', pathMatch: 'full'},
   {path: 'main', component: GbMainComponent},
   {path: '**', redirectTo: '/cohort-selection'}];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+

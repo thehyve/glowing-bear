@@ -20,7 +20,6 @@ export class TreeNodeServiceMock {
   public treeNodeCallsSent = 0; // the number of tree-node calls sent
   public treeNodeCallsReceived = 0; // the number of tree-node calls received
   public treeNodesUpdated: Subject<boolean> = new Subject<boolean>();
-  private _validTreeNodeTypes: string[] = [];
   private _showObservationCounts: boolean;
   private processedConceptCodes: string[] = [];
   private _constraint: Constraint = new CombinationConstraint();
@@ -28,15 +27,6 @@ export class TreeNodeServiceMock {
   public selectedTreeNode: TreeNode = null;
 
   constructor() {
-    this._validTreeNodeTypes = [
-      'NUMERIC',
-      'CATEGORICAL',
-      'DATE',
-      'STUDY',
-      'TEXT',
-      'HIGH_DIMENSIONAL',
-      'UNKNOWN'
-    ];
   }
 
   public load() {
@@ -45,38 +35,7 @@ export class TreeNodeServiceMock {
   public loadTreeNodes() {
   }
 
-  isVariableNode(n: TreeNode): boolean {
-    return true;
-  }
-
-  public flattenTreeNodes(nodes: TreeNode[], flattened: TreeNode[]) {
-  }
-
-  public copyTreeNodes(nodes: TreeNode[]): TreeNode[] {
-    return [];
-  }
-
-  public isTreeNodeLeaf(node: TreeNode): boolean {
-    return node['visualAttributes'] ? node['visualAttributes'].includes('LEAF') : false;
-  }
-
   public formatNodeWithCounts(node: TreeNode, countItem: CountItem) {
-  }
-
-  public copyTreeNodeUpward(node: TreeNode): TreeNode {
-    return node;
-  }
-
-  public depthOfTreeNode(node: TreeNode): number {
-    return node['fullName'] ? node['fullName'].split('\\').length - 2 : null;
-  }
-
-  get validTreeNodeTypes(): string[] {
-    return this._validTreeNodeTypes;
-  }
-
-  set validTreeNodeTypes(value: string[]) {
-    this._validTreeNodeTypes = value;
   }
 
   get isTreeNodesLoadingCompleted(): boolean {
