@@ -79,8 +79,7 @@ export class FractalisService {
 
   public setupFractalis(): Promise<any> {
     const config = {
-      handler: 'transmart',
-      dataSource: this.appConfig.getConfig('fractalis-datasource-url'),
+      service: this.appConfig.getConfig('fractalis-datasource-service'),
       fractalisNode: this.appConfig.getConfig('fractalis-url'),
       getAuth: this.getAuth.bind(this),
       options: {

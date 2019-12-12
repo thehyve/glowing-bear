@@ -18,7 +18,7 @@ export class AppConfigMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
-      'fractalis-datasource-url': 'https://transmart.example.com',
+      'fractalis-datasource-service': 'transmart-example-service',
       'enable-fractalis-analysis': true,
       'authentication-service-type': 'transmart',
       'export-mode': {
@@ -60,6 +60,7 @@ export class OidcConfigMock {
       'api-version': 'v2',
       'api-url': 'https://transmart.example.com',
       'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-service': 'transmart-example-service',
       'authentication-service-type': 'oidc',
       'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
       'oidc-client-id': 'transmart-client'
@@ -95,6 +96,7 @@ export class AppConfigPackerMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-service': 'transmart-example-service',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'packer',
@@ -134,6 +136,7 @@ export class AppConfigSurveyExportMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-service': 'transmart-example-service',
       'authentication-service-type': 'transmart',
       'export-mode': {
         'name': 'transmart',
@@ -172,6 +175,7 @@ export class AppConfigFractalisDisabledMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
+      'fractalis-datasource-service': 'transmart-example-service',
       'enable-fractalis-analysis': false,
       'authentication-service-type': 'transmart',
       'export-mode': {

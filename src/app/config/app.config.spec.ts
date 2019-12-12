@@ -123,12 +123,6 @@ describe('AppConfig', () => {
     } catch (e) {
       expect(e.message).toBeDefined();
     }
-    try {
-      appConfig.getConfig('fractalis-datasource-url');
-      fail('The call to get fractalis-datasource-url config should not succeed.');
-    } catch (e) {
-      expect(e.message).toBeDefined();
-    }
     expect(appConfig.getConfig('doc-url')).toBe(AppConfig.DEFAULT_DOC_URL);
     expect(appConfig.getConfig('enable-fractalis-analysis')).toBe(AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS);
     expect(appConfig.getConfig('autosave-subject-sets')).toBe(AppConfig.DEFAULT_AUTOSAVE_SUBJECT_SETS);
@@ -145,6 +139,13 @@ describe('AppConfig', () => {
       AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS = true;
       appConfig.getConfig('fractalis-url');
       fail('The call to get fractalis-url config should not succeed.');
+    } catch (e) {
+      expect(e.message).toBeDefined();
+    }
+    try {
+      AppConfig.DEFAULT_ENABLE_FRACTALIS_ANALYSIS = true;
+      appConfig.getConfig('fractalis-datasource-service');
+      fail('The call to get fractalis-datasource-service config should not succeed.');
     } catch (e) {
       expect(e.message).toBeDefined();
     }
