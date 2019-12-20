@@ -20,6 +20,7 @@ import {TransmartHttpService} from '../../services/http/transmart-http.service';
 import {GbBackendHttpService} from '../../services/http/gb-backend-http.service';
 import {VariableService} from '../../services/variable.service';
 import {CountService} from '../../services/count.service';
+import {NavbarService} from '../../services/navbar.service';
 
 @Component({
   selector: 'gb-main',
@@ -40,10 +41,14 @@ export class GbMainComponent implements OnInit {
               private constraintService: ConstraintService,
               private cohortService: CohortService,
               private variableService: VariableService,
+              private navbarService: NavbarService,
               private fractalisService: FractalisService) {
   }
 
   ngOnInit() {
   }
 
+  get isNotAnalysis(): boolean {
+    return !this.navbarService.isAnalysis;
+  }
 }
