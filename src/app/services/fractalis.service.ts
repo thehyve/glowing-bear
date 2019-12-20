@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {AuthenticationService} from './authentication/authentication.service';
-import * as fjs from 'fractalis';
+import * as fjs from '@thehyve/fractalis';
 import Timer = NodeJS.Timer;
 import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
