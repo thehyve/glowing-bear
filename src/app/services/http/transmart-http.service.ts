@@ -136,7 +136,7 @@ export class TransmartHttpService {
    * @returns {Observable<Object>}
    */
   getTreeNodes(root: string, depth: number, hasCounts: boolean, hasTags: boolean): Observable<object> {
-    let urlPart = `tree_nodes?root=${root}&depth=${depth}`;
+    let urlPart = `tree_nodes?root=${encodeURIComponent(root)}&depth=${depth}`;
     if (hasCounts) {
       urlPart += '&counts=true';
     }
