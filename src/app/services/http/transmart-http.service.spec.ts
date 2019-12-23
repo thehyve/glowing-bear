@@ -61,10 +61,11 @@ describe('TransmartHttpService', () => {
             foo: 'bar'
           }
         };
-        service.getTreeNodes('root', 2, false, false).subscribe((res) => {
+        service.getTreeNodes('\\', 2, false, false).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
-        const url = service.endpointUrl + '/tree_nodes?root=root&depth=2';
+        let encodedRoot = encodeURI('\\');
+        const url = service.endpointUrl + `/tree_nodes?root=${encodedRoot}&depth=2`;
         const req = httpMock.expectOne(url);
         expect(req.request.method).toEqual('GET');
         req.flush(mockData);
