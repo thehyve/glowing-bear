@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 import {GbAnalysisComponent} from './gb-analysis.component';
 import {routing} from './gb-analysis.routing';
 import {RouterModule} from '@angular/router';
-import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
+import {DialogModule, DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
 import {GbCrossTableComponent} from './cross-table-components/gb-cross-table/gb-cross-table.component';
 import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {GbDroppableZoneComponent} from './cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
@@ -23,6 +23,8 @@ import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-cha
 import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
 import {SliderModule} from 'primeng/slider';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import { GbChartSelectionComponent } from './gb-chart-selection/gb-chart-selection.component';
+import { GbChartEditingComponent } from './gb-chart-editing/gb-chart-editing.component';
 
 
 @NgModule({
@@ -34,6 +36,7 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     TableModule,
     OverlayPanelModule,
     SelectButtonModule,
+    DialogModule,
     MatIconModule,
     MatButtonModule,
     MatExpansionModule,
@@ -50,7 +53,9 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     GbDraggableCellComponent, GbDroppableZoneComponent,
     GbFractalisControlComponent,
     GbFractalisVisualComponent,
-    GbFractalisChartComponent
+    GbFractalisChartComponent,
+    GbChartSelectionComponent,
+    GbChartEditingComponent
   ]
 })
 export class GbAnalysisModule {

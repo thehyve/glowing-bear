@@ -114,7 +114,7 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should clear control', () => {
-    component.selectedChartType = ChartType.VOLCANOPLOT;
+    component.selectedChartType = ChartType.PCA;
     component.selectedVariables.push(new Concept());
     component.onClearControl();
     expect(component.selectedChartType).toBe(null);

@@ -75,7 +75,7 @@ describe('FractalisChartVariableMapper', () => {
   };
 
   const mockVolcanoChart: FractalisChart = {
-    type: ChartType.VOLCANOPLOT,
+    type: ChartType.BOXPLOT,
     chartObject: {},
     description: {
       numVars: {

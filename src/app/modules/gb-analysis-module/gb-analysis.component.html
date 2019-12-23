@@ -1,31 +1,9 @@
 <div class="analysis-container">
+  <p-dialog header="Chart editing" [(visible)]="isEditingMode" [modal]="true" [responsive]="true">
+    <gb-chart-selection></gb-chart-selection>
+  </p-dialog>
 
-  <mat-accordion [multi]="true">
-    <mat-expansion-panel expanded="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <div class="section-banner">
-            New chart
-          </div>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <gb-fractalis-control></gb-fractalis-control>
-    </mat-expansion-panel>
-
-    <mat-expansion-panel expanded="true">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          <div class="section-banner">
-            Charts
-          </div>
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-
-      <div class="visual-panel">
-        <gb-fractalis-visual></gb-fractalis-visual>
-      </div>
-    </mat-expansion-panel>
-  </mat-accordion>
-
+  <div class="btn-container">
+        <button type="button" class="btn btn-primary btn-sm" (click)="onCreateChart()">Create a new chart</button>
+  </div>
 </div>

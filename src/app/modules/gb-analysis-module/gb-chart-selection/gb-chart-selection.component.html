@@ -1,0 +1,15 @@
+<p>Choose your plot by clicking on the image below.</p>
+
+<div class="container chart-types-container">
+  <div class="row">
+    <ng-container *ngFor="let chartType of chartTypes">
+      <div class="col-sm-4 p-0">
+        <div class="chart-type-cell">
+          <h5>{{chartType}}</h5>
+          <img src="../../../../assets/images/charts/{{chartType.toLowerCase()}}.png" alt="{{chartType}}"
+               (click)="selectChartType(chartType)" class="img-fluid">
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -11,8 +11,6 @@ export enum ChartType {
   HISTOGRAM = 'histogram',
   PCA = 'pca',
   SCATTERPLOT = 'scatterPlot',
-  HEATMAP = 'heatmap',
   SURVIVALPLOT = 'survivalplot',
-  VOLCANOPLOT = 'volcanoplot',
   CROSSTABLE = 'crosstable'
 }

@@ -1,0 +1,16 @@
+.chart-types-container {
+  max-width: 800px;
+  text-align: center;
+}
+
+.chart-type-cell {
+  border: 1px solid lightgray;
+  text-align: center;
+  padding: 10px;
+  height: 100%;
+}
+
+.chart-type-cell:hover {
+  opacity: .5;
+  cursor: pointer;
+}

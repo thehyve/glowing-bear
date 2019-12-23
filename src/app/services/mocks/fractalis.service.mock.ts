@@ -25,13 +25,11 @@ export class FractalisServiceMock {
   private _selectedChartType: ChartType = null;
   private _availableChartTypes: ChartType[] = [
     ChartType.CROSSTABLE,
-    ChartType.HEATMAP,
     ChartType.BOXPLOT,
     ChartType.HISTOGRAM,
     ChartType.PCA,
     ChartType.SCATTERPLOT,
-    ChartType.SURVIVALPLOT,
-    ChartType.VOLCANOPLOT
+    ChartType.SURVIVALPLOT
   ];
   private chartDivSize = 35;
 

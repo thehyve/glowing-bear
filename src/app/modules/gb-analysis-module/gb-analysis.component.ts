@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2017 - 2019  The Hyve B.V.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,6 +7,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {ChartService} from '../../services/chart.service';
 
 @Component({
   selector: 'gb-analysis',
@@ -15,9 +16,22 @@ import {Component, OnInit} from '@angular/core';
 })
 export class GbAnalysisComponent implements OnInit {
 
-  constructor() {
+  constructor(private chartService: ChartService) {
   }
 
   ngOnInit() {
   }
+
+  onCreateChart() {
+    this.chartService.isChartEditingMode = true;
+  }
+
+ get isEditingMode(): boolean {
+    return this.chartService.isChartEditingMode;
+  }
+
+  set isEditingMode(value: boolean) {
+    this.chartService.isChartEditingMode = value;
+  }
+
 }

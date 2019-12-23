@@ -16,3 +16,8 @@
   font-size: large;
   font-weight: 500;
 }
+
+.btn-container {
+  margin: 50px;
+  text-align: center;
+}
