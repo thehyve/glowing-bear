@@ -1,8 +1,10 @@
 <div class="analysis-container">
-  <p-dialog header="Chart editing" [(visible)]="isEditingMode" [modal]="true" [responsive]="true">
+  <p-dialog header="Chart Type Selection" [(visible)]="isEditingMode" [modal]="true" [responsive]="true">
     <gb-chart-selection></gb-chart-selection>
   </p-dialog>
-
+  <p-dialog header="Chart Settings" [(visible)]="isChartSelected" [modal]="true" [responsive]="true">
+    <gb-chart-editing></gb-chart-editing>
+  </p-dialog>
   <div class="btn-container">
         <button type="button" class="btn btn-primary btn-sm" (click)="onCreateChart()">Create a new chart</button>
   </div>

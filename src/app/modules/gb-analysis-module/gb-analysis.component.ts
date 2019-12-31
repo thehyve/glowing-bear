@@ -34,4 +34,13 @@ export class GbAnalysisComponent implements OnInit {
     this.chartService.isChartEditingMode = value;
   }
 
+  get isChartSelected(): boolean {
+    return this.chartService.chartSelected && !this.isEditingMode;
+  }
+
+  set isChartSelected(value: boolean) {
+    if (!value) {
+      this.chartService.chartSelected = null;
+    }
+  }
 }

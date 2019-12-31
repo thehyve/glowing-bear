@@ -1,3 +1,16 @@
-<p>
-  gb-chart-editing works!
-</p>
+<div class="container chart-settings-container">
+  <div class="chart-settings-legend">
+    *=mandatory
+  </div>
+  <div class="chart-settings-option">
+    Chart type*: {{chartSelected}}
+  </div>
+  <p-footer>
+    <button type="button" class="btn btn-secondary btn-sm" (click)="onCancel()">Cancel</button>
+    &nbsp;
+    <button type="button" class="btn btn-primary btn-sm" (click)="onFinish()">Finish</button>
+  </p-footer>
+</div>
+
+<p-confirmDialog header="Chart cancelling" icon="pi pi-exclamation-triangle" key="confirmCancelChart"
+                 acceptIcon="" rejectIcon="" closable="false"></p-confirmDialog>

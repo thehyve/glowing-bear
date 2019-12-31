@@ -12,7 +12,13 @@ import {CommonModule} from '@angular/common';
 import {GbAnalysisComponent} from './gb-analysis.component';
 import {routing} from './gb-analysis.routing';
 import {RouterModule} from '@angular/router';
-import {DialogModule, DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
+import {
+  ConfirmDialogModule,
+  DialogModule,
+  DragDropModule,
+  OverlayPanelModule,
+  SelectButtonModule
+} from 'primeng/primeng';
 import {GbCrossTableComponent} from './cross-table-components/gb-cross-table/gb-cross-table.component';
 import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
 import {GbDroppableZoneComponent} from './cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
@@ -37,6 +43,7 @@ import { GbChartEditingComponent } from './gb-chart-editing/gb-chart-editing.com
     OverlayPanelModule,
     SelectButtonModule,
     DialogModule,
+    ConfirmDialogModule,
     MatIconModule,
     MatButtonModule,
     MatExpansionModule,

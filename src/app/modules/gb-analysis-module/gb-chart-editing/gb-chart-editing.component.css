@@ -1,0 +1,18 @@
+.chart-settings-container {
+  max-width: 800px;
+  text-align: right;
+}
+
+.chart-settings-legend {
+  text-align: right;
+  font-size: small;
+}
+
+.chart-settings-option {
+  text-align: left;
+  padding-bottom: 20px;
+}
+
+.chart-settings-footer {
+  text-align: right;
+}
