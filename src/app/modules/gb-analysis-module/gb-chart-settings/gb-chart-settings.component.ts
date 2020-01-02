@@ -5,11 +5,11 @@ import {CohortService} from '../../../services/cohort.service';
 import {Cohort} from '../../../models/cohort-models/cohort';
 
 @Component({
-  selector: 'gb-chart-editing',
-  templateUrl: './gb-chart-editing.component.html',
-  styleUrls: ['./gb-chart-editing.component.css']
+  selector: 'gb-chart-settings',
+  templateUrl: './gb-chart-settings.component.html',
+  styleUrls: ['./gb-chart-settings.component.css']
 })
-export class GbChartEditingComponent implements OnInit {
+export class GbChartSettingsComponent implements OnInit {
 
   constructor(private chartService: ChartService,
               private cohortService: CohortService,

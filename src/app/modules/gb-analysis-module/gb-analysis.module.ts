@@ -30,7 +30,7 @@ import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, Ma
 import {SliderModule} from 'primeng/slider';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 import {GbChartSelectionComponent} from './gb-chart-selection/gb-chart-selection.component';
-import {GbChartEditingComponent} from './gb-chart-editing/gb-chart-editing.component';
+import {GbChartSettingsComponent} from './gb-chart-settings/gb-chart-settings.component';
 
 
 @NgModule({
@@ -63,7 +63,7 @@ import {GbChartEditingComponent} from './gb-chart-editing/gb-chart-editing.compo
     GbFractalisVisualComponent,
     GbFractalisChartComponent,
     GbChartSelectionComponent,
-    GbChartEditingComponent
+    GbChartSettingsComponent
   ]
 })
 export class GbAnalysisModule {

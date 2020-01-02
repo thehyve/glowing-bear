@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GbChartEditingComponent } from './gb-chart-editing.component';
+import { GbChartSettingsComponent } from './gb-chart-settings.component';
 
 describe('GbChartEditingComponent', () => {
-  let component: GbChartEditingComponent;
-  let fixture: ComponentFixture<GbChartEditingComponent>;
+  let component: GbChartSettingsComponent;
+  let fixture: ComponentFixture<GbChartSettingsComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ GbChartEditingComponent ]
+      declarations: [ GbChartSettingsComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GbChartEditingComponent);
+    fixture = TestBed.createComponent(GbChartSettingsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
