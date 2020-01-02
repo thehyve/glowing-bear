@@ -2,7 +2,7 @@
   <p-dialog header="Chart Type Selection" [(visible)]="isEditingMode" [modal]="true" [responsive]="true">
     <gb-chart-selection></gb-chart-selection>
   </p-dialog>
-  <p-dialog header="Chart Settings" [(visible)]="isChartSelected" [modal]="true" [responsive]="true">
+  <p-dialog header="Chart Settings" [(visible)]="isChartSelected" [modal]="true" [responsive]="true" [closable]="false">
     <gb-chart-editing></gb-chart-editing>
   </p-dialog>
   <div class="btn-container">

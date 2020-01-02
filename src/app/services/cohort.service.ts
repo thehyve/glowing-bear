@@ -43,6 +43,8 @@ export class CohortService {
   // The current cohort, which is continuously being edited and stays in the browser memory
   private _currentCohort: Cohort;
   // The list of cohorts saved by the user
+  private _allSavedCohorts: Cohort[] = [];
+  // The ordered list of cohorts (bookmarked first), including currently editing and cohorts saved by the user
   private _cohorts: Cohort[] = [];
   // flag indicating if the current cohort is being updated (gb-cohort-selection)
   private _isUpdatingCurrent = false;
@@ -133,9 +135,11 @@ export class CohortService {
   handleLoadedCohorts(cohorts: Cohort[]) {
     // reset cohorts array
     this.cohorts.length = 0;
+    this.allSavedCohorts.length = 0;
     // process saved cohorts
     let bookmarkedCohorts = [];
     cohorts.forEach(c => {
+      this.allSavedCohorts.push(c);
       if (c.subscribed) {
         // load cohort diff records for this cohort
         this.resourceService.diffCohort(c.id)
@@ -384,6 +388,14 @@ export class CohortService {
 
   set cohorts(value: Cohort[]) {
     this._cohorts = value;
+  }
+
+  get allSavedCohorts(): Cohort[] {
+    return this._allSavedCohorts;
+  }
+
+  set allSavedCohorts(value: Cohort[]) {
+    this._allSavedCohorts = value;
   }
 
   get selectedCohorts(): Cohort[] {

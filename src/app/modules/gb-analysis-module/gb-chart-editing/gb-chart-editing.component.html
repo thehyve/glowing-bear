@@ -2,15 +2,25 @@
   <div class="chart-settings-legend">
     *=mandatory
   </div>
-  <div class="chart-settings-option">
-    Chart type*: {{chartSelected}}
+  <div class="row">
+    <div class="col-4">Chart type*:</div>
+    <div class="col-8">{{chartSelected}}</div>
   </div>
+  <div class="row">
+    <div class="col-4">Cohort selection*:</div>
+    <div class="col-8">
+      <p-multiSelect [options]="cohorts" [(ngModel)]="selectedCohorts" [panelStyle]="{minWidth:'12em'}"></p-multiSelect>
+    </div>
+  </div>
+
   <p-footer>
-    <button type="button" class="btn btn-secondary btn-sm" (click)="onCancel()">Cancel</button>
-    &nbsp;
-    <button type="button" class="btn btn-primary btn-sm" (click)="onFinish()">Finish</button>
+    <div class="chart-settings-footer">
+      <button type="button" class="btn btn-secondary btn-sm" (click)="onCancel()">Cancel</button>
+      &nbsp;
+      <button type="button" class="btn btn-primary btn-sm" (click)="onFinish()">Finish</button>
+    </div>
   </p-footer>
 </div>
 
-<p-confirmDialog header="Chart cancelling" icon="pi pi-exclamation-triangle" key="confirmCancelChart"
-                 acceptIcon="" rejectIcon="" closable="false"></p-confirmDialog>
+<p-confirmDialog header="Chart cancelling" icon="pi pi-exclamation-triangle" key="confirmCancelChart" appendTo="body"
+                 acceptIcon="" rejectIcon="" [closable]="false"></p-confirmDialog>

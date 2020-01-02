@@ -15,7 +15,7 @@ import {RouterModule} from '@angular/router';
 import {
   ConfirmDialogModule,
   DialogModule,
-  DragDropModule,
+  DragDropModule, MultiSelectModule,
   OverlayPanelModule,
   SelectButtonModule
 } from 'primeng/primeng';
@@ -29,8 +29,8 @@ import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-cha
 import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
 import {SliderModule} from 'primeng/slider';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
-import { GbChartSelectionComponent } from './gb-chart-selection/gb-chart-selection.component';
-import { GbChartEditingComponent } from './gb-chart-editing/gb-chart-editing.component';
+import {GbChartSelectionComponent} from './gb-chart-selection/gb-chart-selection.component';
+import {GbChartEditingComponent} from './gb-chart-editing/gb-chart-editing.component';
 
 
 @NgModule({
@@ -42,6 +42,7 @@ import { GbChartEditingComponent } from './gb-chart-editing/gb-chart-editing.com
     TableModule,
     OverlayPanelModule,
     SelectButtonModule,
+    MultiSelectModule,
     DialogModule,
     ConfirmDialogModule,
     MatIconModule,

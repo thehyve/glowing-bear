@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {ChartService} from '../../../services/chart.service';
-import {ConfirmationService} from 'primeng/api';
+import {ConfirmationService, SelectItem} from 'primeng/api';
+import {CohortService} from '../../../services/cohort.service';
+import {Cohort} from '../../../models/cohort-models/cohort';
 
 @Component({
   selector: 'gb-chart-editing',
@@ -10,6 +12,7 @@ import {ConfirmationService} from 'primeng/api';
 export class GbChartEditingComponent implements OnInit {
 
   constructor(private chartService: ChartService,
+              private cohortService: CohortService,
               private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
@@ -21,7 +24,12 @@ export class GbChartEditingComponent implements OnInit {
 
   onFinish() {
     //TODO create chart
+    this.resetCohortSelection();
+  }
+
+  private resetCohortSelection() {
     this.chartService.chartSelected = null;
+    this.chartService.cohortsSelected = null;
   }
 
   confirmCancellation() {
@@ -33,8 +41,7 @@ export class GbChartEditingComponent implements OnInit {
       acceptLabel: 'Delete current settings',
       rejectLabel: 'Back',
       accept: () => {
-        this.chartService.chartSelected = null;
-        return
+        this.resetCohortSelection();
       },
       reject: () => {
       }
@@ -43,6 +50,18 @@ export class GbChartEditingComponent implements OnInit {
 
   get chartSelected(): string {
     return this.chartService.chartSelected;
+  }
+
+  get cohorts(): SelectItem[] {
+    return this.chartService.cohorts;
+  }
+
+  get selectedCohorts(): SelectItem[] {
+    return this.chartService.cohortsSelected;
+  }
+
+  set selectedCohorts(value: SelectItem[]) {
+    this.chartService.cohortsSelected = value;
   }
 
 }

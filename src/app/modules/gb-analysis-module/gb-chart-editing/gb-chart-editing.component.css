@@ -1,6 +1,7 @@
 .chart-settings-container {
   max-width: 800px;
-  text-align: right;
+  text-align: left;
+  height: 400px;
 }
 
 .chart-settings-legend {
@@ -15,4 +16,14 @@
 
 .chart-settings-footer {
   text-align: right;
+}
+
+:host >>> .ui-multiselect {
+  padding: 0;
+}
+
+
+:host >>> .ui-multiselect-label {
+  padding: 0.1em 2em 0.1em 0.25em;
+  margin-bottom: 0;
 }
