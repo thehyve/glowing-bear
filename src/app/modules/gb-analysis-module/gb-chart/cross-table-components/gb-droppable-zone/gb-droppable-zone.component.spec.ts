@@ -10,15 +10,15 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDroppableZoneComponent} from './gb-droppable-zone.component';
 import {MockComponent} from 'ng2-mock-component';
-import {CrossTableService} from '../../../../services/cross-table.service';
-import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
+import {CrossTableService} from '../../../../../services/cross-table.service';
+import {CrossTableServiceMock} from '../../../../../services/mocks/cross-table.service.mock';
 import {DragDropModule} from 'primeng/primeng';
-import {TrueConstraint} from '../../../../models/constraint-models/true-constraint';
-import {MessageHelper} from '../../../../utilities/message-helper';
-import {Concept} from '../../../../models/constraint-models/concept';
-import {VariableService} from '../../../../services/variable.service';
-import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
-import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
+import {TrueConstraint} from '../../../../../models/constraint-models/true-constraint';
+import {MessageHelper} from '../../../../../utilities/message-helper';
+import {Concept} from '../../../../../models/constraint-models/concept';
+import {VariableService} from '../../../../../services/variable.service';
+import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
+import {ConstraintHelper} from '../../../../../utilities/constraint-utilities/constraint-helper';
 
 describe('GbDroppableZoneComponent', () => {
   let component: GbDroppableZoneComponent;

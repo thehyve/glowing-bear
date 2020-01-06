@@ -4,4 +4,18 @@
   <div class="btn-container">
     <button type="button" class="btn btn-primary btn-sm" (click)="onCreateChart()">Create a new chart</button>
   </div>
+  <div class="charts">
+    <div *ngIf="charts.length > 0" class="size-container form-inline">
+      <p-slider [(ngModel)]="chartSize" styleClass="settings-slider" [animate]="true"></p-slider>
+      <h6>Size: {{chartSize}}</h6>
+    </div>
+    <div *ngFor="let chart of charts">
+      <span [ngClass]="{'fractalis-chart-hidden': !chart.isValid}">
+        <button mat-icon-button color="primary" (click)="onRemoveChart($event, chart)">
+          <mat-icon aria-label="Close the chart">close</mat-icon>
+        </button>
+        <gb-chart [chart]="chart"></gb-chart>
+      </span>
+    </div>
+  </div>
 </div>

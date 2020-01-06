@@ -17,6 +17,18 @@
   font-weight: 500;
 }
 
+:host >>> .settings-slider {
+  width: 16em;
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+.setting-slider-container {
+  margin-bottom: 0.5em;
+  font-size: small;
+  color: grey;
+}
+
 .btn-container {
   margin: 50px;
   text-align: center;

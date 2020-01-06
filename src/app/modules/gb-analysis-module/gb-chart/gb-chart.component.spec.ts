@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Chart} from '../../../../models/chart-models/chart';
-import {GbFractalisChartComponent} from './gb-fractalis-chart.component';
+import {GbChartComponent} from './gb-chart.component';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {MockComponent} from 'ng2-mock-component';
 import {FractalisService} from '../../../../services/fractalis.service';
@@ -21,15 +21,15 @@ function createMockConcept(code: string, type: ConceptType): Concept {
   return concept;
 }
 
-describe('GbFractalisChartComponent', () => {
-  let component: GbFractalisChartComponent;
-  let fixture: ComponentFixture<GbFractalisChartComponent>;
+describe('GbChartComponent', () => {
+  let component: GbChartComponent;
+  let fixture: ComponentFixture<GbChartComponent>;
   let fractalisService: FractalisService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        GbFractalisChartComponent,
+        GbChartComponent,
         MockComponent({selector: 'gb-cross-table'})
       ],
       providers: [
@@ -44,7 +44,7 @@ describe('GbFractalisChartComponent', () => {
 
   beforeEach(() => {
     fractalisService = TestBed.get(FractalisService);
-    fixture = TestBed.createComponent(GbFractalisChartComponent);
+    fixture = TestBed.createComponent(GbChartComponent);
     component = fixture.componentInstance;
   });
 

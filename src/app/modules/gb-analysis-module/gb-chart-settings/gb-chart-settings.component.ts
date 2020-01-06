@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ChartService} from '../../../services/chart.service';
 import {ConfirmationService, SelectItem} from 'primeng/api';
 import {CohortService} from '../../../services/cohort.service';
+import {FractalisService} from '../../../services/fractalis.service';
 import {Cohort} from '../../../models/cohort-models/cohort';
 
 @Component({
@@ -12,8 +13,10 @@ import {Cohort} from '../../../models/cohort-models/cohort';
 export class GbChartSettingsComponent implements OnInit {
 
   constructor(private chartService: ChartService,
+              private fractalisService: FractalisService,
               private cohortService: CohortService,
-              private confirmationService: ConfirmationService) { }
+              private confirmationService: ConfirmationService) {
+  }
 
   ngOnInit() {
   }
@@ -23,17 +26,22 @@ export class GbChartSettingsComponent implements OnInit {
   }
 
   onFinish() {
-    //TODO create chart
-    this.resetCohortSelection();
+    this.addChart();
+    this.resetChartSettings();
+  }
+
+  private addChart() {
+    console.log('Subsets: ' + this.selectedCohorts);
+    this.fractalisService.setSubsets(this.selectedCohorts);
+    this.chartService.addOrRecreateChart();
   }
 
   onSelectionChange(){
     this.chartService.updateSelectedCohortsCounts();
   }
 
-  private resetCohortSelection() {
-    this.chartService.chartSelected = null;
-    this.chartService.selectedCohortIds = null;
+  private resetChartSettings() {
+    this.isChartSelected = false;
     this.chartService.chartVariablesTree = [];
   }
 
@@ -46,7 +54,7 @@ export class GbChartSettingsComponent implements OnInit {
       acceptLabel: 'Delete current settings',
       rejectLabel: 'Back',
       accept: () => {
-        this.resetCohortSelection();
+        this.resetChartSettings();
       },
       reject: () => {
       }
@@ -54,28 +62,32 @@ export class GbChartSettingsComponent implements OnInit {
   }
 
   get chartSelected(): string {
-    return this.chartService.chartSelected;
+    return this.chartService.selectedChartType;
   }
 
   get cohorts(): SelectItem[] {
     return this.chartService.cohortItems;
   }
 
-  get selectedCohorts(): string[] {
-    return this.chartService.selectedCohortIds;
+  get selectedCohorts(): Cohort[] {
+    return this.chartService.selectedCohorts;
   }
 
-  set selectedCohorts(value: string[]) {
-    this.chartService.selectedCohortIds = value;
+  get selectedCohortIds(): string[] {
+    return this.chartService.selectedChartCohortIds;
+  }
+
+  set selectedCohortIds(value: string[]) {
+    this.chartService.currentChart.cohortIds = value;
   }
 
   get isChartSelected(): boolean {
-    return this.chartService.chartSelected !== null;
+    return this.chartService.selectedChartType !== null;
   }
 
   set isChartSelected(value: boolean) {
     if (!value) {
-      this.chartService.chartSelected = null;
+      this.chartService.currentChart = null;
     }
   }
 

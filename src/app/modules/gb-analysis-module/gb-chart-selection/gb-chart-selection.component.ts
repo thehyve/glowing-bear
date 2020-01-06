@@ -19,14 +19,13 @@ export class GbChartSelectionComponent implements OnInit {
     } else {
       this.chartTypes = [ChartType.CROSSTABLE];
     }
-    this.chartService.chartSelected = null;
   }
 
   ngOnInit() {
   }
 
   selectChartType(chartType: string) {
-    this.chartService.chartSelected = ChartType[chartType];
+    this.chartService.createNewChart(ChartType[chartType]);
     this.chartService.isChartSelectionMode = false;
   }
 

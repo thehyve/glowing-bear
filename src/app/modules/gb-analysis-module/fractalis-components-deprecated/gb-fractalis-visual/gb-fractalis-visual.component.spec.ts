@@ -18,7 +18,7 @@ describe('GbFractalisVisualComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         GbFractalisVisualComponent,
-        MockComponent({selector: 'gb-fractalis-chart', inputs: ['chart']})
+        // MockComponent({selector: 'gb-fractalis-chart', inputs: ['chart']})
       ],
       providers: [
         {
@@ -48,6 +48,7 @@ describe('GbFractalisVisualComponent', () => {
 
   it('should remove chart', () => {
     fractalisService.selectedChartType = ChartType.SCATTERPLOT;
+    // @ts-ignore
     fractalisService.addChart();
     expect(component.charts.length).toBe(1);
     component.onRemoveChart(new Event(''), component.charts[0]);
@@ -56,6 +57,7 @@ describe('GbFractalisVisualComponent', () => {
 
   it('should clear charts', () => {
     fractalisService.selectedChartType = ChartType.SURVIVALPLOT;
+    // @ts-ignore
     fractalisService.addChart();
     component.onClearCharts();
     expect(component.charts.length).toBe(0);

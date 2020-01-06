@@ -25,22 +25,28 @@ export class GbFractalisVisualComponent implements OnInit {
   onRemoveChart(e, chart: Chart) {
     e.preventDefault();
     e.stopPropagation();
+    // @ts-ignore
     this.fractalisService.removeChart(chart);
   }
 
   onClearCharts() {
+    // @ts-ignore
     this.fractalisService.charts.length = 0;
   }
 
   get charts(): Chart[] {
+    // @ts-ignore
     return this.fractalisService.charts;
   }
 
   get chartSize(): number {
+
+    // @ts-ignore
     return this.fractalisService.chartDivSize;
   }
 
   set chartSize(value: number) {
+    // @ts-ignore
     this.fractalisService.chartDivSize = value;
   }
 }

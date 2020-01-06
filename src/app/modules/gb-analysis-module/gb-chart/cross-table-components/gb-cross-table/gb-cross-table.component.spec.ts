@@ -10,13 +10,13 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbCrossTableComponent} from './gb-cross-table.component';
 import {MockComponent} from 'ng2-mock-component';
-import {CrossTableService} from '../../../../services/cross-table.service';
+import {CrossTableService} from '../../../../../services/cross-table.service';
 import {TableModule} from 'primeng/table';
-import {ResourceService} from '../../../../services/resource.service';
-import {ResourceServiceMock} from '../../../../services/mocks/resource.service.mock';
-import {CrossTableServiceMock} from '../../../../services/mocks/cross-table.service.mock';
+import {ResourceService} from '../../../../../services/resource.service';
+import {ResourceServiceMock} from '../../../../../services/mocks/resource.service.mock';
+import {CrossTableServiceMock} from '../../../../../services/mocks/cross-table.service.mock';
 import {OverlayPanelModule} from 'primeng/primeng';
-import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
+import {GbGenericModule} from '../../../../gb-generic-module/gb-generic.module';
 
 describe('GbCrossTableComponent', () => {
   let component: GbCrossTableComponent;

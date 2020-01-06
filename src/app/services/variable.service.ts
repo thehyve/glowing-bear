@@ -266,7 +266,7 @@ export class VariableService {
       if (node.children && node.children.length > 0) { // if the node is an intermediate node
         let children = this.updateChartVariablesTreeRecursion(node.children, variableNodeFilter);
         node = TreeNodeHelper.copyTreeNodeUpward(node);
-        node.expanded = TreeNodeHelper.depthOfTreeNode(node) <= 2;
+        node.expanded = true;
         node.children = children;
         node.selectable = false;
       }
@@ -286,9 +286,6 @@ export class VariableService {
           this.countService.analysisStudyConceptCountMap,
           this.countService.analysisStudyCountMap);
         if (countItem && countItem.subjectCount > 0) {
-          if (!('expanded' in node)) {
-            node.expanded = false;
-          }
           node.styleClass = '';
           hasPositiveSubjectCount = true;
         }

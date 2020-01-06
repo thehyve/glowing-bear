@@ -9,10 +9,8 @@
 import {Injectable} from '@angular/core';
 import {AuthenticationService} from './authentication/authentication.service';
 import * as fjs from '@thehyve/fractalis';
-import Timer = NodeJS.Timer;
 import {MessageHelper} from '../utilities/message-helper';
 import {ChartType} from '../models/chart-models/chart-type';
-import {Chart} from '../models/chart-models/chart';
 import {SelectItem} from 'primeng/api';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptType} from '../models/constraint-models/concept-type';
@@ -24,10 +22,10 @@ import {FractalisChart} from '../models/fractalis-models/fractalis-chart';
 import {BehaviorSubject, Observable} from 'rxjs/Rx';
 import {FractalisVariablesStatus} from '../models/fractalis-models/fractalis-variables-status';
 import {forkJoin, Subject} from 'rxjs';
-import {CohortService} from './cohort.service';
 import {ResourceService} from './resource.service';
 import {Cohort} from '../models/cohort-models/cohort';
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
+import Timer = NodeJS.Timer;
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +37,6 @@ export class FractalisService {
   public F: any; // The fractalis object
   private _availableChartTypes: SelectItem[] = [];
   private _selectedChartType: ChartType = null;
-  private _charts: Chart[] = [];
   private _selectedVariables: Concept[] = [];
   private _selectedVariablesUpdated = new Subject<Concept[]>();
   private _isPreparingCache = false;
@@ -47,7 +44,6 @@ export class FractalisService {
   private _currentCacheTrys = 0;
   private _variablesInvalid = false;
   private _variablesValidationMessages: string[];
-  private _chartDivSize: number;
   private timer: Timer;
   private _variablesStatus: FractalisVariablesStatus;
   // keeping track of the variables that have been cached by Fractalis
@@ -63,9 +59,7 @@ export class FractalisService {
 
   constructor(private appConfig: AppConfig,
               private authService: AuthenticationService,
-              private cohortService: CohortService,
               private resourceService: ResourceService) {
-    this.chartDivSize = 35;
     const enabled = this.appConfig.getConfig('enable-fractalis-analysis');
     if (enabled && !fjs.fractalis) {
       MessageHelper.alert('error', 'Failed to import Fractalis.');
@@ -90,7 +84,6 @@ export class FractalisService {
       }
     };
     this.F = fjs.fractalis.init(config);
-    this.configSubsetsUpdate();
     this.configVariablesUpdate();
     this.retrieveFractalisChartTypes();
     return this.clearCache();
@@ -176,21 +169,13 @@ export class FractalisService {
     });
   }
 
-  private configSubsetsUpdate() {
-    this.setSubsets();
-    this.cohortService.cohortsUpdated.asObservable()
-      .subscribe(() => {
-        this.setSubsets();
-      });
-  }
-
-  private setSubsets() {
+  setSubsets(selectedCohorts: Cohort[]) {
     let subjectCalls = [];
-    this.cohortService.selectedCohorts.forEach((cohort: Cohort) => {
+    selectedCohorts.forEach((cohort: Cohort) => {
       subjectCalls.push(this.resourceService.getSubjects(cohort.constraint));
     });
     let idSets = [];
-    let subsetLabels = this.cohortService.selectedCohorts.map(c => c.name);
+    let subsetLabels = selectedCohorts.map(c => c.name);
     forkJoin(subjectCalls)
       .subscribe((res: TransmartPatient[][]) => {
         for (let i = 0; i < subjectCalls.length; i++) {
@@ -200,6 +185,7 @@ export class FractalisService {
           idSets.push(ids);
         }
         this.F.setSubsets(idSets, subsetLabels);
+        console.log("Subset labels " + subsetLabels);
       });
   }
 
@@ -301,29 +287,6 @@ export class FractalisService {
     }
   }
 
-  public addOrRecreateChart() {
-    this.removePreviousChartIfInvalid();
-    this.addChart();
-  }
-
-  public removePreviousChartIfInvalid() {
-    if (this.previousChart && !this.previousChart.isValid) {
-      this.removeChart(this.previousChart);
-    }
-  }
-
-  public addChart() {
-    if (this.selectedChartType) {
-      let chart = new Chart(this.selectedChartType);
-      chart.variables = [...this.selectedVariables]; // clone a new array
-      this.charts.push(chart);
-    }
-  }
-
-  public removeChart(chart: Chart) {
-    this.charts.splice(this.charts.indexOf(chart), 1);
-  }
-
   public invalidateVariables(errorMessages: string[]) {
     this.variablesValidationMessages = errorMessages;
     this.variablesInvalid = true;
@@ -342,10 +305,6 @@ export class FractalisService {
     return this.appConfig.getConfig('enable-fractalis-analysis') && fjs.fractalis;
   }
 
-  get previousChart(): Chart {
-    return this.charts[this.charts.length - 1];
-  }
-
   get availableChartTypes(): SelectItem[] {
     return this._availableChartTypes;
   }
@@ -360,14 +319,6 @@ export class FractalisService {
 
   set selectedChartType(value: ChartType) {
     this._selectedChartType = value;
-  }
-
-  get charts(): Chart[] {
-    return this._charts;
-  }
-
-  set charts(value: Chart[]) {
-    this._charts = value;
   }
 
   get isPreparingCache(): boolean {
@@ -408,14 +359,6 @@ export class FractalisService {
 
   set variablesInvalid(value: boolean) {
     this._variablesInvalid = value;
-  }
-
-  get chartDivSize(): number {
-    return this._chartDivSize;
-  }
-
-  set chartDivSize(value: number) {
-    this._chartDivSize = value;
   }
 
   get variablesStatus(): FractalisVariablesStatus {

@@ -7,14 +7,14 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {Constraint} from '../../../../models/constraint-models/constraint';
-import {CrossTableService} from '../../../../services/cross-table.service';
-import {MessageHelper} from '../../../../utilities/message-helper';
-import {AxisType} from '../../../../models/table-models/axis-type';
-import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
-import {VariableService} from '../../../../services/variable.service';
-import {ConstraintHelper} from '../../../../utilities/constraint-utilities/constraint-helper';
-import {ConstraintSerialiser} from '../../../../utilities/constraint-utilities/constraint-serialiser';
+import {Constraint} from '../../../../../models/constraint-models/constraint';
+import {CrossTableService} from '../../../../../services/cross-table.service';
+import {MessageHelper} from '../../../../../utilities/message-helper';
+import {AxisType} from '../../../../../models/table-models/axis-type';
+import {ConceptConstraint} from '../../../../../models/constraint-models/concept-constraint';
+import {VariableService} from '../../../../../services/variable.service';
+import {ConstraintHelper} from '../../../../../utilities/constraint-utilities/constraint-helper';
+import {ConstraintSerialiser} from '../../../../../utilities/constraint-utilities/constraint-serialiser';
 
 @Component({
   selector: 'gb-droppable-zone',

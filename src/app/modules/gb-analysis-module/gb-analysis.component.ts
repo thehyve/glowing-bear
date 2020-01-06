@@ -8,6 +8,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {ChartService} from '../../services/chart.service';
+import {Chart} from '../../models/chart-models/chart';
 
 @Component({
   selector: 'gb-analysis',
@@ -24,6 +25,28 @@ export class GbAnalysisComponent implements OnInit {
 
   onCreateChart() {
     this.chartService.isChartSelectionMode = true;
+  }
+
+  onRemoveChart(e, chart: Chart) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.chartService.removeChart(chart);
+  }
+
+  get currentChart(): Chart {
+    return this.chartService.currentChart;
+  }
+
+  get charts(): Chart[] {
+    return this.chartService.charts;
+  }
+
+  get chartSize(): number {
+    return this.chartService.chartDivSize;
+  }
+
+  set chartSize(value: number) {
+    this.chartService.chartDivSize = value;
   }
 
 }

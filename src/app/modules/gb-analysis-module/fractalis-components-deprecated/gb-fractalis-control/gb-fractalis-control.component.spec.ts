@@ -69,6 +69,7 @@ describe('GbFractalisControlComponent', () => {
   });
 
   it('should use fractalis service to add chart', () => {
+    // @ts-ignore
     let spy = spyOn(fractalisService, 'addChart').and.stub();
     component.onAddChart();
     expect(spy).toHaveBeenCalled();

@@ -6,13 +6,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {AfterViewInit, Component, Input} from '@angular/core';
-import {Chart} from '../../../../models/chart-models/chart';
-import {ChartType} from '../../../../models/chart-models/chart-type';
-import {FractalisService} from '../../../../services/fractalis.service';
-import {FractalisData} from '../../../../models/fractalis-models/fractalis-data';
-import {FractalisChart} from '../../../../models/fractalis-models/fractalis-chart';
-import {FractalisChartVariableMapper, ValidationError} from '../gb-fractalis-control/fractalis-chart-variable-mapper';
-import {Concept} from '../../../../models/constraint-models/concept';
+import {Chart} from '../../../models/chart-models/chart';
+import {ChartType} from '../../../models/chart-models/chart-type';
+import {FractalisService} from '../../../services/fractalis.service';
+import {FractalisData} from '../../../models/fractalis-models/fractalis-data';
+import {FractalisChart} from '../../../models/fractalis-models/fractalis-chart';
+import {
+  FractalisChartVariableMapper,
+  ValidationError
+} from './fractalis-chart-components/fractalis-chart-variable-mapper';
+import {ChartService} from '../../../services/chart.service';
 
 function convertMapToObject<T>(map: Map<string, T>): object {
   const obj = {};
@@ -21,21 +24,20 @@ function convertMapToObject<T>(map: Map<string, T>): object {
 }
 
 @Component({
-  selector: 'gb-fractalis-chart',
-  templateUrl: './gb-fractalis-chart.component.html',
-  styleUrls: ['./gb-fractalis-chart.component.css']
+  selector: 'gb-chart',
+  templateUrl: './gb-chart.component.html',
+  styleUrls: ['./gb-chart.component.css']
 })
-export class GbFractalisChartComponent implements AfterViewInit {
+export class GbChartComponent implements AfterViewInit {
 
   ChartType = ChartType;
 
   @Input()
   chart: Chart;
-
   fractalisChart: FractalisChart;
-  private variables: Concept[];
 
-  constructor(private fractalisService: FractalisService) {
+  constructor(private fractalisService: FractalisService,
+              private chartService: ChartService) {
   }
 
   ngAfterViewInit() {
@@ -44,7 +46,7 @@ export class GbFractalisChartComponent implements AfterViewInit {
 
   private initializeChart() {
     if (this.chart.type !== ChartType.CROSSTABLE) {
-      this.variables = this.fractalisService.selectedVariables;
+      // this.chart.numericVariables = this.fractalisService.selectedVariables;
       this.fractalisService.initChart(this.chart.type, '#' + this.chart.id)
         .subscribe((fractalisChart: FractalisChart) => {
           this.fractalisChart = fractalisChart;
@@ -70,7 +72,7 @@ export class GbFractalisChartComponent implements AfterViewInit {
       .then(data => {
         const fractalisVariables: FractalisData[] = FractalisService.dataObjectToFractalisDataList(data);
         const mapper = new FractalisChartVariableMapper(fractalisVariables);
-        mapper.mapVariables(this.fractalisChart, this.variables)
+        mapper.mapVariables(this.fractalisChart, this.chart.numericVariables)
           .then(mappedVariables => {
             if (mappedVariables) {
               this.setFractalisChartParameters(mappedVariables);
@@ -80,8 +82,8 @@ export class GbFractalisChartComponent implements AfterViewInit {
           })
           .catch((errors: ValidationError[]) => {
             this.chart.isValid = false;
-            if (this.fractalisService.charts.indexOf(this.chart) >= 0) {
-              console.error('Error mapping variables for ${this.chart.type} chart.', errors);
+            if (this.chartService.charts.indexOf(this.chart) >= 0) {
+              console.error(`Error mapping variables for ${this.chart.type} chart.`, errors);
               this.fractalisService.invalidateVariables(errors.map(error => error.message));
             }
           });
@@ -98,12 +100,12 @@ export class GbFractalisChartComponent implements AfterViewInit {
   }
 
   get chartWidth(): string {
-    return this.fractalisService.chartDivSize + 'em';
+    return this.chartService.chartDivSize + 'em';
   }
 
   get chartHeight(): string {
     return this.chart.type === ChartType.CROSSTABLE ? 'auto' :
-      this.fractalisService.chartDivSize + 'em';
+      this.chartService.chartDivSize + 'em';
   }
 
 }

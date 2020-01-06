@@ -7,12 +7,12 @@
  */
 
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {CrossTableService} from '../../../../services/cross-table.service';
-import {Constraint} from '../../../../models/constraint-models/constraint';
-import {Row} from '../../../../models/table-models/row';
-import {Col} from '../../../../models/table-models/col';
-import {FormatHelper} from '../../../../utilities/format-helper';
-import {AxisType} from '../../../../models/table-models/axis-type';
+import {CrossTableService} from '../../../../../services/cross-table.service';
+import {Constraint} from '../../../../../models/constraint-models/constraint';
+import {Row} from '../../../../../models/table-models/row';
+import {Col} from '../../../../../models/table-models/col';
+import {FormatHelper} from '../../../../../utilities/format-helper';
+import {AxisType} from '../../../../../models/table-models/axis-type';
 
 @Component({
   selector: 'gb-cross-table',

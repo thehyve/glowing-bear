@@ -30,6 +30,7 @@ export class GbFractalisControlComponent implements OnInit {
   }
 
   onAddChart() {
+    // @ts-ignore
     this.fractalisService.addOrRecreateChart();
   }
 
@@ -68,6 +69,7 @@ export class GbFractalisControlComponent implements OnInit {
   onClearControl() {
     this.selectedChartType = null;
     this.selectedVariables.length = 0;
+    // @ts-ignore
     this.fractalisService.removePreviousChartIfInvalid();
     this.fractalisService.clearValidation();
     this.fractalisService.clearCache();
@@ -75,6 +77,7 @@ export class GbFractalisControlComponent implements OnInit {
 
   onSelectedChartTypeChange() {
     this.selectedVariables.length = 0;
+    // @ts-ignore
     this.fractalisService.removePreviousChartIfInvalid();
     this.fractalisService.clearValidation();
   }
@@ -88,6 +91,7 @@ export class GbFractalisControlComponent implements OnInit {
     if (this.selectedChartType) {
       if (this.selectedChartType === ChartType.CROSSTABLE) {
         // only enable adding a cross table if there is not one already.
+        // @ts-ignore
         shown = !this.fractalisService.charts.some(chart => chart.type === ChartType.CROSSTABLE);
       } else if (this.selectedVariables.length > 0) {
         shown = true;

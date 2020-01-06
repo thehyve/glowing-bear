@@ -1,11 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 import {ChartService} from '../../../../services/chart.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {FractalisService} from '../../../../services/fractalis.service';
-import {ChartType} from '../../../../models/chart-models/chart-type';
-import {FractalisChart} from '../../../../models/fractalis-models/fractalis-chart';
-import {FractalisChartVariableMapper} from '../../fractalis-components/gb-fractalis-control/fractalis-chart-variable-mapper';
 
 @Component({
   selector: 'gb-chart-variables',
@@ -21,13 +18,13 @@ export class GbChartVariablesComponent implements OnInit {
               private fractalisService: FractalisService) {
   }
 
-
   ngOnInit() {
   }
 
   nodeSelect(event){
     let selectedVariable = this.treeNodeService.getConceptFromTreeNode(event.node);
-    this.chartService.chartNumericVariables.push(selectedVariable);
+    this.chartService.currentChart.numericVariables.push(selectedVariable);
+    this.fractalisService.selectedVariablesUpdated.next(this.chartService.currentChart.numericVariables);
 
   }
 
@@ -38,6 +35,7 @@ export class GbChartVariablesComponent implements OnInit {
     if (index >= 0) {
       this.chartService.chartNumericVariables.splice(index, 1);
     }
+    this.fractalisService.selectedVariablesUpdated.next(this.chartService.currentChart.numericVariables);
   }
 
   get chartVariablesTree(): GbTreeNode[] {

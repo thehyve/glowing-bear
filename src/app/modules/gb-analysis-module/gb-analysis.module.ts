@@ -19,13 +19,12 @@ import {
   OverlayPanelModule,
   SelectButtonModule, TreeModule
 } from 'primeng/primeng';
-import {GbCrossTableComponent} from './cross-table-components/gb-cross-table/gb-cross-table.component';
-import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
-import {GbDroppableZoneComponent} from './cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
+import {GbCrossTableComponent} from './gb-chart/cross-table-components/gb-cross-table/gb-cross-table.component';
+import {GbDraggableCellComponent} from './gb-chart/cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
+import {GbDroppableZoneComponent} from './gb-chart/cross-table-components/gb-droppable-zone/gb-droppable-zone.component';
 import {TableModule} from 'primeng/table';
-import {GbFractalisControlComponent} from './fractalis-components/gb-fractalis-control/gb-fractalis-control.component';
-import {GbFractalisVisualComponent} from './fractalis-components/gb-fractalis-visual/gb-fractalis-visual.component';
-import {GbFractalisChartComponent} from './fractalis-components/gb-fractalis-chart/gb-fractalis-chart.component';
+import {GbFractalisControlComponent} from './fractalis-components-deprecated/gb-fractalis-control/gb-fractalis-control.component';
+import {GbFractalisVisualComponent} from './fractalis-components-deprecated/gb-fractalis-visual/gb-fractalis-visual.component';
 import {MatIconModule, MatButtonModule, MatExpansionModule, MatTooltipModule, MatChipsModule} from '@angular/material';
 import {SliderModule} from 'primeng/slider';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
@@ -33,8 +32,8 @@ import {GbChartSelectionComponent} from './gb-chart-selection/gb-chart-selection
 import {GbChartSettingsComponent} from './gb-chart-settings/gb-chart-settings.component';
 import { GbChartVariablesComponent } from './gb-chart-settings/gb-chart-variables/gb-chart-variables.component';
 import { GbChartGroupingComponent } from './gb-chart-settings/gb-chart-grouping/gb-chart-grouping.component';
-import {GbTreeSearchComponent} from '../gb-side-panel-module/accordion-components/gb-tree-search/gb-tree-search.component';
 import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
+import {GbChartComponent} from './gb-chart/gb-chart.component';
 
 
 @NgModule({
@@ -67,11 +66,11 @@ import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
     GbDraggableCellComponent, GbDroppableZoneComponent,
     GbFractalisControlComponent,
     GbFractalisVisualComponent,
-    GbFractalisChartComponent,
     GbChartSelectionComponent,
     GbChartSettingsComponent,
     GbChartVariablesComponent,
-    GbChartGroupingComponent
+    GbChartGroupingComponent,
+    GbChartComponent
   ]
 })
 export class GbAnalysisModule {
