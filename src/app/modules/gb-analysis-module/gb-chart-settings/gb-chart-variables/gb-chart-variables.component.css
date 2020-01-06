@@ -1,0 +1,42 @@
+:host {
+  width: 100%;
+}
+
+:host >>> p-treenode {
+  font-size: small;
+}
+
+.chart-variables-container {
+  padding: 10px;
+  border: 1px solid var(--gb-gray-light);
+  width: 100%;
+}
+
+:host >>> .chart-variables-tree-container {
+  width: auto;
+  background-color: transparent;
+  border: none;
+  overflow: auto;
+}
+
+:host >>> .chart-variables-tree-container.ui-tree-container {
+  width: 100%;
+  overflow: auto;
+}
+
+:host >>> .chart-variables-tree-container.ui-tree .ui-treenode .ui-treenode-content .ui-treenode-label.ui-state-highlight {
+  padding: 1px 6px 1px 6px !important;
+  background-color: #67a2cf !important;
+}
+
+/*Style for the gb tree search*/
+:host >>> .gb-highlight-treenode {
+  background-color: var(--gb-orange-light) !important;
+  border-radius: 10px !important;
+  font-weight: bold !important;
+}
+
+.chart-variables-validation-message {
+  font-size: small;
+  color: orangered;
+}

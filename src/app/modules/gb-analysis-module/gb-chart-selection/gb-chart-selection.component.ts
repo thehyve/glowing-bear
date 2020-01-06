@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ChartType} from '../../../models/chart-models/chart-type';
 import {ChartService} from '../../../services/chart.service';
+import {FractalisService} from '../../../services/fractalis.service';
 
 @Component({
   selector: 'gb-chart-selection',
@@ -11,8 +12,13 @@ export class GbChartSelectionComponent implements OnInit {
 
   chartTypes: Array<string>;
 
-  constructor(private chartService: ChartService) {
-    this.chartTypes = Object.keys(ChartType);
+  constructor(private chartService: ChartService,
+              private fractalisService: FractalisService) {
+    if (this.fractalisService.isFractalisEnabled) {
+      this.chartTypes = Object.keys(ChartType);
+    } else {
+      this.chartTypes = [ChartType.CROSSTABLE];
+    }
     this.chartService.chartSelected = null;
   }
 
@@ -21,8 +27,14 @@ export class GbChartSelectionComponent implements OnInit {
 
   selectChartType(chartType: string) {
     this.chartService.chartSelected = ChartType[chartType];
-    console.log("Chart selected: " + ChartType[chartType]);
-    this.chartService.isChartEditingMode = false;
+    this.chartService.isChartSelectionMode = false;
   }
 
+  get isChartSelection(): boolean {
+    return this.chartService.isChartSelectionMode;
+  }
+
+  set isChartSelection(value: boolean) {
+    this.chartService.isChartSelectionMode = value;
+  }
 }

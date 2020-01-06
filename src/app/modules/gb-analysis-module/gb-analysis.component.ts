@@ -23,24 +23,7 @@ export class GbAnalysisComponent implements OnInit {
   }
 
   onCreateChart() {
-    this.chartService.isChartEditingMode = true;
+    this.chartService.isChartSelectionMode = true;
   }
 
- get isEditingMode(): boolean {
-    return this.chartService.isChartEditingMode;
-  }
-
-  set isEditingMode(value: boolean) {
-    this.chartService.isChartEditingMode = value;
-  }
-
-  get isChartSelected(): boolean {
-    return this.chartService.chartSelected && !this.isEditingMode;
-  }
-
-  set isChartSelected(value: boolean) {
-    if (!value) {
-      this.chartService.chartSelected = null;
-    }
-  }
 }

@@ -1,7 +1,10 @@
+:host {
+  width: 100%;
+}
+
 .chart-settings-container {
-  max-width: 800px;
   text-align: left;
-  height: 400px;
+  height: 600px;
 }
 
 .chart-settings-legend {
@@ -18,10 +21,17 @@
   text-align: right;
 }
 
+:host >>> .row {
+  padding-bottom: 15px;
+}
+
+:host >>> .row.chart-setting-tree {
+  padding-left: 5px;
+}
+
 :host >>> .ui-multiselect {
   padding: 0;
 }
-
 
 :host >>> .ui-multiselect-label {
   padding: 0.1em 2em 0.1em 0.25em;

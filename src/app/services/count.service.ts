@@ -85,6 +85,19 @@ export class CountService {
   private _selectedConceptCountMapUpdated: Subject<Map<string, CountItem>>
     = new Subject<Map<string, CountItem>>();
 
+  // the subset of _studyConceptCountMap that holds the selected maps,
+  // which corresponds to the selected cohort(s)
+  private _analysisStudyConceptCountMap: Map<string, Map<string, CountItem>>;
+  // the subset of _studyCountMap that holds the selected studies,
+  // which corresponds to the selected cohort(s)
+  private _analysisStudyCountMap: Map<string, CountItem>;
+  // the subset of _conceptCountMap that holds the selected maps,
+  // which corresponds to the selected cohort(s)
+  private _analysisConceptCountMap: Map<string, CountItem>;
+  // the async subject telling if the selectedConceptCountMap is updated
+  private _analysisConceptCountMapUpdated: Subject<Map<string, CountItem>>
+    = new Subject<Map<string, CountItem>>();
+
 
   constructor(private appConfig: AppConfig,
               private resourceService: ResourceService) {
@@ -110,6 +123,24 @@ export class CountService {
         this.selectedStudyCountMap = res[1];
         this.selectedStudyConceptCountMap = res[2];
         this.selectedConceptCountMap = res[3];
+        resolve(true);
+      }, (err) => {
+        reject(err);
+      })
+    });
+  }
+
+  updateAnalysisCounts(constraint: Constraint) {
+    const patientLevelConstraint = ConstraintHelper.ensurePatientLevelConstraint(constraint);
+    return new Promise((resolve, reject) => {
+      forkJoin(
+        this.resourceService.getCountsPerStudy(patientLevelConstraint),
+        this.resourceService.getCountsPerStudyAndConcept(patientLevelConstraint),
+        this.resourceService.getCountsPerConcept(patientLevelConstraint)
+      ).subscribe(res => {
+        this.analysisStudyCountMap = res[0];
+        this.analysisStudyConceptCountMap = res[1];
+        this.analysisConceptCountMap = res[2];
         resolve(true);
       }, (err) => {
         reject(err);
@@ -289,6 +320,35 @@ export class CountService {
 
   set selectedStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
     this._selectedStudyConceptCountMap = value;
+  }
+
+  get analysisConceptCountMapUpdated(): Subject<Map<string, CountItem>> {
+    return this._analysisConceptCountMapUpdated;
+  }
+
+  set analysisConceptCountMapUpdated(value: Subject<Map<string, CountItem>>) {
+    this._analysisConceptCountMapUpdated = value;
+  }
+  get analysisConceptCountMap(): Map<string, CountItem> {
+    return this._analysisConceptCountMap;
+  }
+
+  set analysisConceptCountMap(value: Map<string, CountItem>) {
+    this._analysisConceptCountMap = value;
+  }
+  get analysisStudyCountMap(): Map<string, CountItem> {
+    return this._analysisStudyCountMap;
+  }
+
+  set analysisStudyCountMap(value: Map<string, CountItem>) {
+    this._analysisStudyCountMap = value;
+  }
+  get analysisStudyConceptCountMap(): Map<string, Map<string, CountItem>> {
+    return this._analysisStudyConceptCountMap;
+  }
+
+  set analysisStudyConceptCountMap(value: Map<string, Map<string, CountItem>>) {
+    this._analysisStudyConceptCountMap = value;
   }
 
 }

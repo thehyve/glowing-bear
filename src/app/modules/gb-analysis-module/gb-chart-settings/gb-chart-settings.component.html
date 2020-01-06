@@ -1,18 +1,29 @@
-<div class="container chart-settings-container">
-  <div class="chart-settings-legend">
-    *=mandatory
-  </div>
-  <div class="row">
-    <div class="col-4">Chart type*:</div>
-    <div class="col-8">{{chartSelected}}</div>
-  </div>
-  <div class="row">
-    <div class="col-4">Cohort selection*:</div>
-    <div class="col-8">
-      <p-multiSelect [options]="cohorts" [(ngModel)]="selectedCohorts" [panelStyle]="{minWidth:'12em'}"></p-multiSelect>
+<p-dialog header="Chart Settings" [(visible)]="isChartSelected" [modal]="true" [responsive]="true" [closable]="false"
+          [contentStyle]="{'max-height':'600px'}">
+  <div class="container chart-settings-container">
+    <div class="chart-settings-legend">*=mandatory</div>
+    <div class="row">
+      <div class="col-3">Chart type*:</div>
+      <div class="col-9">{{chartSelected}}</div>
+    </div>
+    <div class="row">
+      <div class="col-3">Cohort selection*:</div>
+      <div class="col-9">
+        <p-multiSelect [options]="cohorts" [(ngModel)]="selectedCohorts" [panelStyle]="{minWidth:'12em'}"
+                       (onChange)="onSelectionChange()"></p-multiSelect>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3">Other settings:</div>
+      <div class="col-9">TODO - TMT-1078</div>
+    </div>
+    <div class="row">
+      <gb-chart-variables></gb-chart-variables>
+    </div>
+    <div class="row">
+      <gb-chart-grouping></gb-chart-grouping>
     </div>
   </div>
-
   <p-footer>
     <div class="chart-settings-footer">
       <button type="button" class="btn btn-secondary btn-sm" (click)="onCancel()">Cancel</button>
@@ -20,7 +31,7 @@
       <button type="button" class="btn btn-primary btn-sm" (click)="onFinish()">Finish</button>
     </div>
   </p-footer>
-</div>
+</p-dialog>
 
 <p-confirmDialog header="Chart cancelling" icon="pi pi-exclamation-triangle" key="confirmCancelChart" appendTo="body"
                  acceptIcon="" rejectIcon="" [closable]="false"></p-confirmDialog>

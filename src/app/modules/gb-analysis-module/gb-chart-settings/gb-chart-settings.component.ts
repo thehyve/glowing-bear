@@ -27,9 +27,14 @@ export class GbChartSettingsComponent implements OnInit {
     this.resetCohortSelection();
   }
 
+  onSelectionChange(){
+    this.chartService.updateSelectedCohortsCounts();
+  }
+
   private resetCohortSelection() {
     this.chartService.chartSelected = null;
-    this.chartService.cohortsSelected = null;
+    this.chartService.selectedCohortIds = null;
+    this.chartService.chartVariablesTree = [];
   }
 
   confirmCancellation() {
@@ -53,15 +58,25 @@ export class GbChartSettingsComponent implements OnInit {
   }
 
   get cohorts(): SelectItem[] {
-    return this.chartService.cohorts;
+    return this.chartService.cohortItems;
   }
 
-  get selectedCohorts(): SelectItem[] {
-    return this.chartService.cohortsSelected;
+  get selectedCohorts(): string[] {
+    return this.chartService.selectedCohortIds;
   }
 
-  set selectedCohorts(value: SelectItem[]) {
-    this.chartService.cohortsSelected = value;
+  set selectedCohorts(value: string[]) {
+    this.chartService.selectedCohortIds = value;
+  }
+
+  get isChartSelected(): boolean {
+    return this.chartService.chartSelected !== null;
+  }
+
+  set isChartSelected(value: boolean) {
+    if (!value) {
+      this.chartService.chartSelected = null;
+    }
   }
 
 }

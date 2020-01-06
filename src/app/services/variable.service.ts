@@ -176,6 +176,12 @@ export class VariableService {
     this.selectAllVariablesTree(true);
   }
 
+  public updateChartVariablesTree(): GbTreeNode[] {
+    // If the tree nodes copy is empty, create it by duplicating the tree nodes
+    let treeNodesCopy = TreeNodeHelper.copyTreeNodes(this.treeNodeService.treeNodes);
+    return this.updateChartVariablesTreeRecursion(treeNodesCopy, 'NUMERIC');
+  }
+
   private formatNodeWithCounts(node: GbTreeNode, countItem: CountItem) {
     let subjectCount = FormatHelper.formatCountNumber(countItem.subjectCount);
     let countsText = `sub: ${subjectCount}`;
@@ -194,14 +200,15 @@ export class VariableService {
    *
    * @param node the variable node.
    */
-  private getVariableCounts(node: GbTreeNode): CountItem {
-    let conceptMap = node.studyId && this.countService.selectedStudyConceptCountMap ?
-      this.countService.selectedStudyConceptCountMap.get(node.studyId) : null;
+  private getVariableCounts(node: GbTreeNode,
+                            studyConceptCountMap:  Map<string, Map<string, CountItem>>,
+                            conceptCountMap:  Map<string, CountItem>): CountItem {
+    let conceptMap = node.studyId && studyConceptCountMap ? studyConceptCountMap.get(node.studyId) : null;
     if (conceptMap && conceptMap.size > 0) {
       return conceptMap.get(node.conceptCode);
     } else {
-      return this.countService.selectedConceptCountMap ?
-        this.countService.selectedConceptCountMap.get(node.conceptCode) : null;
+      return conceptCountMap ?
+        conceptCountMap.get(node.conceptCode) : null;
     }
   }
 
@@ -234,7 +241,8 @@ export class VariableService {
       } else if (TreeNodeHelper.isVariableNode(node)) {
         // if the tree node is a variable node, fetch subject counts for the variable
         // only include the node if there are observations for the variable
-        const countItem = this.getVariableCounts(node);
+        const countItem = this.getVariableCounts(node, this.countService.selectedStudyConceptCountMap,
+          this.countService.selectedConceptCountMap);
         if (countItem && countItem.subjectCount > 0) {
           this.formatNodeWithCounts(node, countItem);
           if (!('expanded' in node)) {
@@ -246,6 +254,48 @@ export class VariableService {
       }
       if (hasPositiveSubjectCount || (node.children && node.children.length > 0)) {
         // Include nodes with positive counts and intermediate nodes
+        result.push(node);
+      }
+    }
+    return result;
+  }
+
+  private updateChartVariablesTreeRecursion(nodes: GbTreeNode[], variableNodeFilter: string = null): GbTreeNode[] {
+    let result = [];
+    for (let node of nodes) {
+      if (node.children && node.children.length > 0) { // if the node is an intermediate node
+        let children = this.updateChartVariablesTreeRecursion(node.children, variableNodeFilter);
+        node = TreeNodeHelper.copyTreeNodeUpward(node);
+        node.expanded = TreeNodeHelper.depthOfTreeNode(node) <= 2;
+        node.children = children;
+        node.selectable = false;
+      }
+      let hasPositiveSubjectCount = false;
+      if (TreeNodeHelper.isTreeNodeStudy(node)) {
+        // if the tree node is a study node, fetch subject counts for the study
+        // only include the node if there are observations for the study
+        const countItem =
+          this.countService.analysisStudyCountMap ?  this.countService.analysisStudyCountMap.get(node.studyId) : null;
+        if (countItem && countItem.subjectCount > 0) {
+          hasPositiveSubjectCount = true;
+        }
+      } else if (TreeNodeHelper.isVariableNode(node)) {
+        // if the tree node is a variable node, fetch subject counts for the variable
+        // only include the node if there are observations for the variable
+        const countItem = this.getVariableCounts(node,
+          this.countService.analysisStudyConceptCountMap,
+          this.countService.analysisStudyCountMap);
+        if (countItem && countItem.subjectCount > 0) {
+          if (!('expanded' in node)) {
+            node.expanded = false;
+          }
+          node.styleClass = '';
+          hasPositiveSubjectCount = true;
+        }
+      }
+      if ((hasPositiveSubjectCount && node.type === variableNodeFilter) || (node.children && node.children.length > 0)) {
+        // Include nodes with positive counts and intermediate nodes
+        node.label = node.name;
         result.push(node);
       }
     }

@@ -1,0 +1,9 @@
+:host {
+  width: 100%;
+}
+
+.chart-grouping-container {
+  padding: 10px;
+  border: 1px solid var(--gb-gray-light);
+  width: 100%;
+}

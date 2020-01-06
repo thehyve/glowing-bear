@@ -73,10 +73,10 @@ import {GbTreeSearchComponent} from './accordion-components/gb-tree-search/gb-tr
     GbVariablesComponent,
     GbCategorizedVariablesComponent,
     GbVariablesTreeComponent,
-    GbTreeSearchComponent,
+    GbTreeSearchComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
-  exports: [GbSidePanelComponent]
+  exports: [GbSidePanelComponent, GbTreeSearchComponent]
 })
 export class GbSidePanelModule {
 }

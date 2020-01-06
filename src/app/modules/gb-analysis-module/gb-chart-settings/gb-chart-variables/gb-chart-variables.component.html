@@ -1,0 +1,32 @@
+<div class="chart-variables-container">
+  <h5>Variables</h5>
+  <div class="row chart-setting-tree">
+    <div class="col-3">
+      <p>Numeric variables*:</p>
+      <div *ngFor="let message of validationErrorMessages" class="chart-variables-validation-message" role="alert"
+           [hidden]="!isValidationError">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+        {{message}}
+      </div>
+    </div>
+    <div class="col-9">
+      <div *ngIf="isTreeLoadingCompleted && chartVariablesTree.length > 0; else noVariableMessage"
+           class="chart-variables-tree">
+        <gb-tree-search [tree]="chartVariablesTree"></gb-tree-search>
+        <p-tree [value]="chartVariablesTree"
+                [selectionMode]="'checkbox'"
+                [(selection)]="selectedVariablesTreeData"
+                (onNodeSelect)="nodeSelect($event)" (onNodeUnselect)="nodeUnselect($event)"
+                draggableNodes="false"
+                styleClass="chart-variables-tree-container">
+        </p-tree>
+      </div>
+      <ng-template #noVariableMessage>
+        <i *ngIf="chartVariablesTree.length === 0">No variable matching selected cohorts.</i>
+      </ng-template>
+    </div>
+  </div>
+
+  <!--the loading indicator -->
+  <gb-loading [loading]="!isTreeLoadingCompleted"></gb-loading>
+</div>

@@ -17,7 +17,7 @@ import {
   DialogModule,
   DragDropModule, MultiSelectModule,
   OverlayPanelModule,
-  SelectButtonModule
+  SelectButtonModule, TreeModule
 } from 'primeng/primeng';
 import {GbCrossTableComponent} from './cross-table-components/gb-cross-table/gb-cross-table.component';
 import {GbDraggableCellComponent} from './cross-table-components/gb-draggable-cell/gb-draggable-cell.component';
@@ -31,6 +31,10 @@ import {SliderModule} from 'primeng/slider';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 import {GbChartSelectionComponent} from './gb-chart-selection/gb-chart-selection.component';
 import {GbChartSettingsComponent} from './gb-chart-settings/gb-chart-settings.component';
+import { GbChartVariablesComponent } from './gb-chart-settings/gb-chart-variables/gb-chart-variables.component';
+import { GbChartGroupingComponent } from './gb-chart-settings/gb-chart-grouping/gb-chart-grouping.component';
+import {GbTreeSearchComponent} from '../gb-side-panel-module/accordion-components/gb-tree-search/gb-tree-search.component';
+import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 
 
 @NgModule({
@@ -51,7 +55,9 @@ import {GbChartSettingsComponent} from './gb-chart-settings/gb-chart-settings.co
     MatTooltipModule,
     MatChipsModule,
     SliderModule,
-    GbGenericModule
+    TreeModule,
+    GbGenericModule,
+    GbSidePanelModule
   ],
   exports: [
     RouterModule
@@ -63,7 +69,9 @@ import {GbChartSettingsComponent} from './gb-chart-settings/gb-chart-settings.co
     GbFractalisVisualComponent,
     GbFractalisChartComponent,
     GbChartSelectionComponent,
-    GbChartSettingsComponent
+    GbChartSettingsComponent,
+    GbChartVariablesComponent,
+    GbChartGroupingComponent
   ]
 })
 export class GbAnalysisModule {

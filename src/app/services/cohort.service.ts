@@ -356,23 +356,21 @@ export class CohortService {
     this.editCohort(target, obj);
   }
 
-  get allSelectedCohortsConstraint(): Constraint {
-    if (this.selectedCohorts.length === 1) {
-      let constraint = this.selectedCohorts[0].constraint.clone();
+  public combineCohortsConstraint(cohorts: Cohort[]) {
+    if (cohorts.length === 1) {
+      let constraint = cohorts[0].constraint.clone();
       constraint.parentConstraint = null;
       return constraint;
     } else {
       const combination = new CombinationConstraint();
       combination.combinationState = CombinationState.Or;
       const dimensions = new Set<string>();
-      this.cohorts.forEach((cohort: Cohort) => {
-        if (cohort.selected) {
-          combination.addChild(cohort.constraint);
-          if (cohort.constraint.className === 'CombinationConstraint') {
-            dimensions.add((<CombinationConstraint>cohort.constraint).dimension);
-          } else {
-            dimensions.add(CombinationConstraint.TOP_LEVEL_DIMENSION);
-          }
+      cohorts.forEach((cohort: Cohort) => {
+        combination.addChild(cohort.constraint);
+        if (cohort.constraint.className === 'CombinationConstraint') {
+          dimensions.add((<CombinationConstraint>cohort.constraint).dimension);
+        } else {
+          dimensions.add(CombinationConstraint.TOP_LEVEL_DIMENSION);
         }
       });
       if (dimensions.size === 1) {
@@ -380,6 +378,10 @@ export class CohortService {
       }
       return combination;
     }
+  }
+
+  get allSelectedCohortsConstraint(): Constraint {
+    return this.combineCohortsConstraint(this.selectedCohorts);
   }
 
   get cohorts(): Cohort[] {
