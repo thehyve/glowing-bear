@@ -10,7 +10,6 @@ import {Constraint} from './constraint';
 import {Concept} from './concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
-import {TrialVisitConstraint} from './trial-visit-constraint';
 import {FormatHelper} from '../../utilities/format-helper';
 
 export class ConceptConstraint extends Constraint {
@@ -26,11 +25,6 @@ export class ConceptConstraint extends Constraint {
   private _applyObsDateConstraint = false;
   private _obsDateConstraint: TimeConstraint;
 
-  // trial visit
-  private _applyTrialVisitConstraint = false;
-  private _trialVisitConstraint: TrialVisitConstraint;
-
-
   constructor() {
     super();
     this.valueConstraints = [];
@@ -38,7 +32,6 @@ export class ConceptConstraint extends Constraint {
     this.valDateConstraint.isObservationDate = false;
     this.obsDateConstraint = new TimeConstraint();
     this.obsDateConstraint.isObservationDate = true;
-    this.trialVisitConstraint = new TrialVisitConstraint();
     this.textRepresentation = 'Concept';
   }
 
@@ -85,22 +78,6 @@ export class ConceptConstraint extends Constraint {
 
   set obsDateConstraint(value: TimeConstraint) {
     this._obsDateConstraint = value;
-  }
-
-  get applyTrialVisitConstraint(): boolean {
-    return this._applyTrialVisitConstraint;
-  }
-
-  set applyTrialVisitConstraint(value: boolean) {
-    this._applyTrialVisitConstraint = value;
-  }
-
-  get trialVisitConstraint(): TrialVisitConstraint {
-    return this._trialVisitConstraint;
-  }
-
-  set trialVisitConstraint(value: TrialVisitConstraint) {
-    this._trialVisitConstraint = value;
   }
 
   get applyValDateConstraint(): boolean {

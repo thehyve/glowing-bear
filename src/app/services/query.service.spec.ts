@@ -25,7 +25,7 @@ import {CrossTableService} from './cross-table.service';
 import {CrossTableServiceMock} from './mocks/cross-table.service.mock';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {Query} from '../models/query-models/query';
+import {ExploreQuery} from '../models/query-models/explore-query';
 import {QuerySubscriptionFrequency} from '../models/query-models/query-subscription-frequency';
 import {ErrorHelper} from '../utilities/error-helper';
 
@@ -85,19 +85,19 @@ describe('QueryService', () => {
   }));
 
   it('should handle loaded queries', () => {
-    let q = new Query('test query id', 'test query name');
+    let q = new ExploreQuery('test query id', 'test query name');
     q.createDate = '2015-03-25';
     q.updateDate = '2015-03-26';
     q.subscribed = true;
     q.bookmarked = true;
     q.subscriptionFreq = null;
-    let q1 = new Query('test query id 1', 'test query name 1');
+    let q1 = new ExploreQuery('test query id 1', 'test query name 1');
     q1.createDate = null;
     q1.updateDate = null;
     q1.subscribed = true;
     q1.bookmarked = false;
     q1.subscriptionFreq = QuerySubscriptionFrequency.DAILY;
-    let q2 = new Query('test query id 2', 'test query name 2');
+    let q2 = new ExploreQuery('test query id 2', 'test query name 2');
     q2.createDate = null;
     q2.updateDate = null;
     q2.subscribed = false;
@@ -118,13 +118,13 @@ describe('QueryService', () => {
 
   it('should delete a query', () => {
     let spy = spyOn(resourceService, 'deleteQuery').and.callThrough();
-    let query = new Query('test-id', 'test-name');
+    let query = new ExploreQuery('test-id', 'test-name');
     queryService.queries = [query];
     queryService.deleteQuery(query);
     expect(spy).toHaveBeenCalledWith(query.id);
     expect(queryService.queries.length).toEqual(0);
 
-    let query1 = new Query('test-id-1', 'test-name-1');
+    let query1 = new ExploreQuery('test-id-1', 'test-name-1');
     queryService.queries = [query1];
     queryService.deleteQuery(query);
     expect(queryService.queries.length).toEqual(1);
@@ -135,7 +135,7 @@ describe('QueryService', () => {
       return Observable.throw(null);
     })
     let spy1 = spyOn(ErrorHelper, 'handleError').and.stub();
-    let query = new Query('test-id', 'test-name');
+    let query = new ExploreQuery('test-id', 'test-name');
     queryService.queries = [query];
     queryService.deleteQuery(query);
     expect(spy).toHaveBeenCalledWith(query.id);

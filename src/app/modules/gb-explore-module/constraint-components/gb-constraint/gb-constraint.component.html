@@ -1,0 +1,18 @@
+<div class="{{containerClass}}">
+  <!-- Remove Button -->
+  <button *ngIf="!isRoot"
+          type="button"
+          class="btn btn-outline-danger btn-sm pull-right gb-constraint-remove-btn"
+          (click)="remove()">
+    <i class="fa fa-times" aria-hidden="true"></i>
+  </button>
+
+  <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
+                             [constraint]="constraint"></gb-combination-constraint>
+  <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "
+                         [constraint]="constraint"></gb-concept-constraint>
+  <gb-genomic-annotation-constraint *ngIf="constraint.className === 'GenomicAnnotationConstraint' "
+                                    [constraint]="constraint"></gb-genomic-annotation-constraint>
+  <gb-patient-set-constraint *ngIf="constraint.className === 'SubjectSetConstraint' "
+                             [constraint]="constraint"></gb-patient-set-constraint>
+</div>

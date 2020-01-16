@@ -1,0 +1,53 @@
+<div (drop)="onDrop($event)">
+  <!-- todo: use [multiple]="true" and a ngModel array in order to have multiple selection -->
+  <div class="form-inline gb-constraint-child-container">
+    <label>Genomic annotation: </label>
+    <p-autoComplete #annotationNameAutoComplete
+                    [(ngModel)]="selectedAnnotation"
+                    [suggestions]="searchedAnnotations"
+                    (completeMethod)="annotationNameOnSearch($event)"
+                    field="displayName"
+                    [style]="{'width':'100%'}"
+                    [inputStyle]="{'width':'100%'}"
+                    styleClass="gb-concept-constraint-input"
+                    size="60"
+                    dropdown="true"></p-autoComplete>
+  </div>
+
+  <div class="form-inline gb-constraint-child-container">
+    <label>Annotation value: </label>
+    <p-autoComplete #annotationValueAutoComplete
+                    [(ngModel)]="selectedAnnotationValue"
+                    [suggestions]="searchedAnnotationValues"
+                    (completeMethod)="annotationValueOnSearch($event)"
+                    [style]="{'width':'100%'}"
+                    [inputStyle]="{'width':'100%'}"
+                    styleClass="gb-concept-constraint-input"
+                    size="60"
+                    dropdown="true"></p-autoComplete>
+  </div>
+
+  <!-- ---------- more options ---------- -->
+  <div class="gb-constraint-child-container" style="margin-top: 2px">
+    <p-panel [collapsed]="!showMoreOptions">
+      <p-header class="form-inline" style="margin-left: -0.8em">
+        <button type="button"
+                (click)="toggleMoreOptions()"
+                class="btn btn-outline-secondary">
+          and more options
+        </button>
+      </p-header>
+
+      <!-- genomic zygosity -->
+      <div class="form-inline" style="margin-top: -1em">
+        <b>Zygosity</b>
+        <p-checkbox [(ngModel)]="zygosityHomozygous" label="homozygous" binary="true"></p-checkbox>
+        <p-checkbox [(ngModel)]="zygosityHeterozygous" label="heterozygous" binary="true"></p-checkbox>
+        <p-checkbox [(ngModel)]="zygosityUnknown" label="unknown" binary="true"></p-checkbox>
+      </div>
+
+    </p-panel>
+    <br>
+  </div>
+
+</div>

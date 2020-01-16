@@ -20,21 +20,15 @@ import {AppConfig} from '../../config/app.config';
   styleUrls: ['./gb-navbar.component.css']
 })
 export class GbNavbarComponent implements OnInit {
-
-  public queryName: string;
-
   constructor(private router: Router,
-              private navbarService: NavbarService,
-              private queryService: QueryService,
-              private config: AppConfig) {
-    this.queryName = '';
-  }
+              private navbarService: NavbarService
+  ) { }
 
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        let whichStep = event.urlAfterRedirects.split('/')[1].split('#')[0];
-        this.navbarService.updateNavbar(whichStep);
+        let routerLink = event.urlAfterRedirects.split('#')[0];
+        this.navbarService.updateNavbar(routerLink);
       }
     });
   }
@@ -55,36 +49,5 @@ export class GbNavbarComponent implements OnInit {
     this.navbarService.activeItem = value;
   }
 
-  get isDataSelection(): boolean {
-    return this.navbarService.isDataSelection;
-  }
-
-  get isQuerySavingUsed(): boolean {
-    return this.queryService.isQuerySavingUsed;
-  }
-
-  /**
-   * Prevent the default behavior of node drop
-   * @param event
-   */
-  preventNodeDrop(event) {
-    event.stopPropagation();
-    event.preventDefault();
-  }
-
-  saveQuery() {
-    let name = this.queryName ? this.queryName.trim() : '';
-    let queryNameIsValid = name !== '';
-    if (queryNameIsValid) {
-      this.queryService.saveQueryByName(name);
-      this.queryName = '';
-    } else {
-      MessageHelper.alert('error', 'Please specify the query name.', '');
-    }
-  }
-
-  get isSavingQueryCompleted(): boolean {
-    return this.queryService.isSavingQueryCompleted;
-  }
 }
 

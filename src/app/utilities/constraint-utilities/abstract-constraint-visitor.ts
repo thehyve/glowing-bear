@@ -9,15 +9,12 @@
 import {ConstraintVisitor} from './constraint-visitor';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {PedigreeConstraint} from '../../models/constraint-models/pedigree-constraint';
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
 import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {TrialVisitConstraint} from '../../models/constraint-models/trial-visit-constraint';
-import {StudyConstraint} from '../../models/constraint-models/study-constraint';
 import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
 
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
@@ -30,20 +27,14 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
         return this.visitNegationConstraint(<NegationConstraint>constraint);
       case 'CombinationConstraint':
         return this.visitCombinationConstraint(<CombinationConstraint>constraint);
-      case 'StudyConstraint':
-        return this.visitStudyConstraint(<StudyConstraint>constraint);
       case 'ConceptConstraint':
         return this.visitConceptConstraint(<ConceptConstraint>constraint);
       case 'GenomicAnnotationConstraint':
         return this.visitGenomicAnnotationConstraint(<GenomicAnnotationConstraint>constraint);
       case 'ValueConstraint':
         return this.visitValueConstraint(<ValueConstraint>constraint);
-      case 'PedigreeConstraint':
-        return this.visitPedigreeConstraint(<PedigreeConstraint>constraint);
       case 'SubjectSetConstraint':
         return this.visitSubjectSetConstraint(<SubjectSetConstraint>constraint);
-      case 'TrialVisitConstraint':
-        return this.visitTrialVisitConstraint(<TrialVisitConstraint>constraint);
       case 'TimeConstraint':
         return this.visitTimeConstraint(<TimeConstraint>constraint);
       default:
@@ -57,19 +48,13 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
 
   abstract visitCombinationConstraint(constraint: CombinationConstraint): T;
 
-  abstract visitStudyConstraint(constraint: StudyConstraint): T;
-
   abstract visitConceptConstraint(constraint: ConceptConstraint): T;
 
   abstract visitGenomicAnnotationConstraint(constraint: GenomicAnnotationConstraint): T;
 
   abstract visitValueConstraint(constraint: ValueConstraint): T;
 
-  abstract visitPedigreeConstraint(constraint: PedigreeConstraint): T;
-
   abstract visitSubjectSetConstraint(constraint: SubjectSetConstraint): T;
-
-  abstract visitTrialVisitConstraint(constraint: TrialVisitConstraint): T;
 
   abstract visitTimeConstraint(constraint: TimeConstraint): T;
 

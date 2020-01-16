@@ -13,78 +13,43 @@ import {FormsModule} from '@angular/forms';
 import {routing} from './app.routing';
 import {AppComponent} from './app.component';
 
-import {GbDataSelectionModule} from './modules/gb-data-selection-module/gb-data-selection.module';
-import {ResourceService} from './services/resource.service';
 import {TreeNodeService} from './services/tree-node.service';
 import {AppConfig} from './config/app.config';
-import {PicSureResourceService} from './services/picsure-services/picsure-resource.service';
+import {MedcoNetworkService} from './services/api/medco-network.service';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ConstraintService} from './services/constraint.service';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
-import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {QueryService} from './services/query.service';
-import {DataTableService} from './services/data-table.service';
-import {CrossTableService} from './services/cross-table.service';
-import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {NavbarService} from './services/navbar.service';
-import {ExportService} from './services/export.service';
 import {DatePipe} from '@angular/common';
 import {GrowlModule} from 'primeng/growl';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
-
-import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
+// import {ApiHttpInterceptor} from './services/api-http-interceptor.service';
 import {AuthenticationService} from './services/authentication/authentication.service';
-import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
+// import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
-import {TransmartResourceService} from './services/transmart-services/transmart-resource.service';
-import {AuthorizationResult} from './services/authentication/authorization-result';
-import * as jwt_decode from 'jwt-decode';
-import {AccessLevel} from './services/authentication/access-level';
 import {ApiEndpointService} from './services/api-endpoint.service';
-import {MedcoService} from './services/picsure-services/medco.service';
-import {GbMedcoResultsModule} from "./modules/gb-medco-results-module/gb-medco-results.module";
-import {GenomicAnnotationsService} from "./services/picsure-services/genomic-annotations.service";
-import {PicsureMappingService} from "./services/picsure-services/picsure-mapping-service";
+import {ExploreQueryService} from "./services/api/medco-node/explore-query.service";
+import {ExploreSearchService} from "./services/api/medco-node/explore-search.service";
+import {GenomicAnnotationsService} from "./services/api/genomic-annotations.service";
+import {CryptoService} from "./services/crypto.service";
+import {GbExploreModule} from "./modules/gb-explore-module/gb-explore.module";
+import {GbExploreResultsModule} from "./modules/gb-explore-results-module/gb-explore-results.module";
+import {ConstraintMappingService} from "./services/constraint-mapping.service";
+import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 
-export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
-  return () => config.load()
-    .then(() => {
-      authService.load()
-        .then((authResult: AuthorizationResult) => {
-          /*
-           * ------------------- start: if authorized -----------------------
-           */
-          if (authResult === AuthorizationResult.Authorized) {
-            /*
-             * Parse the decoded token, determine the access level
-             * TODO: in future
-             * 1. associate access level to showing data table;
-             * 2. fetch client id programmatically (i.e. glowingbear-js)
-             * 3. possibly create user service and user management
-             */
-            const clientId = config.getConfig('oidc-client-id', 'transmart-client');
-            let token = jwt_decode(authService.token);
-            if (token['resource_access']) {
-              let glowingBearJs = token['resource_access'][clientId];
-              if (glowingBearJs) {
-                let roles = glowingBearJs['roles'];
-                let str = '';
-                if (roles && roles.constructor === Array && roles.length > 0) {
-                  roles.forEach((role: string) => {
-                    str += role + ' ';
-                  });
-                  authService.accessLevel = str.includes('COUNTS_WITH_THRESHOLD')
-                    ? AccessLevel.Restricted : AccessLevel.Full;
-                }
-              }
-            }
-          }
-          /*
-           * ------------------- end: if authorized -----------------------
-           */
-        });
-    });
+export function loadServices(config: AppConfig, authService: AuthenticationService, medcoNetworkService: MedcoNetworkService, treeNodeService: TreeNodeService) {
+  return () => config.load().then(
+    () => authService.load().then(
+      () => Promise.all([
+        medcoNetworkService.load(),
+        treeNodeService.load()
+      ]).then( () => {
+        console.log('Application loaded.');
+      })
+    )
+  );
 }
 
 @NgModule({
@@ -92,6 +57,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     AppComponent
   ],
   imports: [
+    KeycloakAngularModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
@@ -99,42 +65,39 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     GrowlModule,
     routing,
     GbMainModule,
+    GbExploreModule,
+    GbExploreResultsModule,
     GbNavBarModule,
-    GbDataSelectionModule,
-    GbAnalysisModule,
-    GbSidePanelModule,
-    GbMedcoResultsModule,
-    GbExportModule
+    GbSidePanelModule
   ],
   providers: [
     ApiEndpointService,
-    ResourceService,
-    TransmartResourceService,
     TreeNodeService,
-    PicSureResourceService,
+    MedcoNetworkService,
+    ExploreQueryService,
+    ExploreSearchService,
+    GenomicAnnotationsService,
+    CryptoService,
     ConstraintService,
     QueryService,
-    DataTableService,
-    CrossTableService,
     NavbarService,
-    ExportService,
     DatePipe,
     AppConfig,
+    KeycloakService,
     AuthenticationService,
-    Oauth2Authentication,
-    MedcoService,
-    GenomicAnnotationsService,
-    PicsureMappingService,
+    ConstraintMappingService,
     {
       provide: APP_INITIALIZER,
-      useFactory: initConfigAndAuth,
-      deps: [AppConfig, AuthenticationService, Oauth2Authentication],
-      multi: true
-    }, {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ApiHttpInterceptor,
+      useFactory: loadServices,
+      deps: [AppConfig, AuthenticationService, MedcoNetworkService, TreeNodeService],
       multi: true
     },
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: ApiHttpInterceptor,
+    //   deps: [AppConfig],
+    //   multi: true
+    // },
   ],
   bootstrap: [AppComponent]
 })

@@ -18,7 +18,7 @@
 
 
   <!-- the tree itself -->
-  <p-tree [value]="treeNodeService.treeNodes"
+  <p-tree [value]="treeNodeService.rootTreeNodes"
           (onNodeExpand)="expandNode($event)"
           draggableNodes="true"
           styleClass="gb-tree-container"></p-tree>

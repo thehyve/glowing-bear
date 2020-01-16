@@ -1,23 +1,15 @@
 <div>
   <p-accordion [multiple]="true">
 
-    <!-- todo: fix display bug and restore
     <div>
       <p-accordionTab header="Current selection" [selected]="true">
         <gb-summary></gb-summary>
       </p-accordionTab>
     </div>
-    -->
 
-    <div *ngIf="isDataSelection">
+    <div *ngIf="tabIsExplore">
       <p-accordionTab header="Ontology" [selected]="true">
         <gb-tree-nodes></gb-tree-nodes>
-      </p-accordionTab>
-    </div>
-
-    <div *ngIf="isDataSelection && enableQuerySaving">
-      <p-accordionTab header="Queries" [selected]="true">
-        <gb-queries></gb-queries>
       </p-accordionTab>
     </div>
 

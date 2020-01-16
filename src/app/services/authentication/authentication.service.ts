@@ -8,61 +8,68 @@
 
 import {Injectable, Injector, OnDestroy} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {Observable} from 'rxjs/Observable';
+import {Observable, AsyncSubject} from 'rxjs';
 import {AuthenticationMethod} from './authentication-method';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorizationResult} from './authorization-result';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
-import {AccessLevel} from './access-level';
+import {KeycloakService} from "keycloak-angular";
 
 @Injectable()
-export class AuthenticationService implements OnDestroy {
+export class AuthenticationService {
 
-  private config: AppConfig;
-  private authenticationMethod: AuthenticationMethod;
-  private _accessLevel: AccessLevel = AccessLevel.Restricted;
+  // private config: AppConfig;
+  // private authenticationMethod: AuthenticationMethod;
 
-  constructor(private injector: Injector) { }
+  constructor(private config: AppConfig, private keycloakService: KeycloakService) { }
 
-  public load(): Promise<AuthorizationResult> {
-    this.config = this.injector.get(AppConfig);
-    this.authenticationMethod = this.injector.get(Oauth2Authentication);
-    return this.authenticationMethod.load();
+  public load(): Promise<boolean> {
+    return this.keycloakService.init({
+      config: {
+        url: this.config.getConfig('keycloak-url'),
+        realm: this.config.getConfig('keycloak-realm'),
+        clientId: this.config.getConfig('keycloak-client-id')
+      },
+      initOptions: {
+        onLoad: "login-required",
+        checkLoginIframe: false
+
+      },
+      enableBearerInterceptor: true,
+      bearerPrefix: "Bearer",
+      bearerExcludedUrls: ['/assets', '/app']
+    })
+
+
+    // this.config = this.injector.get(AppConfig);
+    // this.authenticationMethod = this.injector.get(Oauth2Authentication);
+    // return this.authenticationMethod.load();
   }
 
-  ngOnDestroy(): void {
-    this.authenticationMethod.onDestroy();
-  }
-
-  authorise(): Observable<AuthorizationResult> {
-    return this.authenticationMethod.authorisation;
-  }
-
-  logout() {
-    this.authenticationMethod.logout();
-  }
-
-  get authorised(): AsyncSubject<boolean> {
-    return this.authenticationMethod.authorised;
-  }
-
-  get validToken(): boolean {
-    return this.authenticationMethod.validToken;
-  }
-
-  get token(): string {
-    return this.authenticationMethod.token;
-  }
-
-  get accessLevel(): AccessLevel {
-    return this._accessLevel;
-  }
-
-  set accessLevel(value: AccessLevel) {
-    this._accessLevel = value;
-  }
-
-  get authorisations(): Observable<string[]> {
-    return this.authenticationMethod.authorisations;
-  }
+  // ngOnDestroy(): void {
+  //   this.authenticationMethod.onDestroy();
+  // }
+  //
+  // authorise(): Observable<AuthorizationResult> {
+  //   return this.authenticationMethod.authorisation;
+  // }
+  //
+  // logout() {
+  //   this.authenticationMethod.logout();
+  // }
+  //
+  // get authorised(): AsyncSubject<boolean> {
+  //   return this.authenticationMethod.authorised;
+  // }
+  //
+  // get validToken(): boolean {
+  //   return this.authenticationMethod.validToken;
+  // }
+  //
+  // get token(): string {
+  //   return this.authenticationMethod.token;
+  // }
+  //
+  // get authorisations(): Observable<string[]> {
+  //   return this.authenticationMethod.authorisations;
+  // }
 }

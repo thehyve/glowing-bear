@@ -1,0 +1,32 @@
+<div>
+
+  <div class="gb-data-selection-accordion-header">
+    <div class="gb-data-selection-accordion-sub-header-1">
+      Define your MedCo Explore query
+    </div>
+    <div class="gb-data-selection-accordion-sub-header-2">
+      <span class="gb-data-selection-accordion-sub-header-3 float-left">
+        <span class="gb-data-selection-emphasis-text">{{globalCount}} subjects</span>
+      </span>
+      <span class="float-right">
+        <i *ngIf="queryService.isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
+        <button type="button"
+                (click)="execQuery($event)"
+                class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+                {{queryService.isDirty? 'gb-explore-query-btn-dirty' : ''}}">
+          Query
+        </button>
+      </span>
+      <span class="float-right">
+        <label>Query Type: </label>
+        <select [(ngModel)]="selectedQueryType">
+          <option *ngFor="let queryType of availableQueryTypes | async" [ngValue]="queryType">
+            {{queryType.name}}
+          </option>
+        </select>
+      </span>
+    </div>
+  </div>
+  <gb-selection></gb-selection>
+
+</div>

@@ -83,7 +83,7 @@ describe('TreeNodeService', () => {
     expect(constraintService.conceptConstraints.length).toBe(0);
     expect(spy2).toHaveBeenCalled();
     expect(spy3).toHaveBeenCalled();
-    expect(treeNodeService.treeNodes.length).toBe(2);
+    expect(treeNodeService.rootTreeNodes.length).toBe(2);
   })
 
   it('should handle error for the initial loading of tree nodes', () => {

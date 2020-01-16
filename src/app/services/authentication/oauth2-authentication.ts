@@ -10,15 +10,15 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AppConfig} from '../../config/app.config';
 import {Injectable, Injector} from '@angular/core';
 import {AuthenticationMethod} from './authentication-method';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {AuthorizationResult} from './authorization-result';
 import {Oauth2Token} from './oauth2-token';
 import * as moment from 'moment';
-import {HttpClient, HttpErrorResponse, HttpHeaders, HttpParams} from '@angular/common/http';
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {BehaviorSubject, AsyncSubject, from} from 'rxjs';
 import {ErrorHelper} from '../../utilities/error-helper';
 import {MessageHelper} from '../../utilities/message-helper';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
+import {map} from "rxjs/operators";
 
 /**
  * Implementation of the OAuth2 authorisation flow:
@@ -38,8 +38,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private apiUrl: string;
   private appUrl: string;
   private clientId: string;
-
-  private serviceType: 'oidc' | 'transmart';
 
   private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _token: Oauth2Token = null;
@@ -124,7 +122,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     });
   }
 
-  load(): Promise<AuthorizationResult> {
+  load(): Promise<void> {
     return new Promise((resolve) => {
       // inject services (not in constructor to avoid cyclic dependency)
       this.config = this.injector.get(AppConfig);
@@ -134,21 +132,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.appUrl = this.config.getConfig('app-url');
       this.apiUrl = this.config.getConfig('api-url');
 
-      let serviceType = this.config.getConfig('authentication-service-type', 'oidc');
-      switch (serviceType) {
-        case 'oidc':
-          this.authUrl = this.config.getConfig('oidc-server-url');
-          this.clientId = this.config.getConfig('oidc-client-id');
-          break;
-        case 'transmart':
-          this.authUrl = this.config.getConfig('api-url') + '/oauth';
-          this.clientId = 'glowingbear-js';
-          break;
-        default:
-          throw new Error(`Unsupported authentication service type: ${serviceType}`);
-      }
-      this.serviceType = serviceType;
-      console.log(`Authentication service type: ${this.serviceType}`);
+      this.authUrl = this.config.getConfig('oidc-server-url');
+      this.clientId = this.config.getConfig('oidc-client-id');
 
       let authorisationCode = Oauth2Authentication.getAuthorisationCode();
       if (authorisationCode) {
@@ -158,16 +143,19 @@ export class Oauth2Authentication implements AuthenticationMethod {
           .then((authorisation: AuthorizationResult) => {
           console.log(`Authorisation result: ${authorisation}`);
           this.redirect(authorisation);
-          resolve(authorisation);
+          resolve();
         });
       } else {
         console.log(`Set redirect to: ${this.router.url}`);
         localStorage.setItem('redirect', JSON.stringify(this.router.url));
 
-        this._token = JSON.parse(localStorage.getItem('token'));
+        if (localStorage.getItem('token') !== null) {
+          this._token = new Oauth2Token(JSON.parse(localStorage.getItem('token')));
+        }
+
         this.authorisation.subscribe((authorisation: AuthorizationResult) => {
           console.log(`Authorisation result: ${authorisation}`);
-          resolve(authorisation);
+          resolve();
         });
       }
     });
@@ -182,17 +170,17 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let clientSecret = '';
     let redirectUri = encodeURI(this.appUrl);
     let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
-    let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
-    let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
-    return Observable.fromPromise(new Promise((resolve) => {
-      resolve(AuthorizationResult.Unauthorized);
+    let target = `${this.authUrl}/auth?response_type=code&${params}`;
+
+    return new Observable<AuthorizationResult>(function(observer) {
+      observer.next(AuthorizationResult.Unauthorized);
       console.log(`Redirecting to ${target} ...`);
       setTimeout(() => {
           // Redirect to login page
           window.location.assign(target);
         }, 2000
       );
-    }));
+    });
   }
 
   get authorisation(): Observable<AuthorizationResult> {
@@ -204,9 +192,9 @@ export class Oauth2Authentication implements AuthenticationMethod {
     }
     if (this.tokenExpired && this._token.refreshToken) {
       console.warn('Token expired.');
-      return Observable.from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
+      return from(this.fetchAccessToken('refresh_token', this._token.refreshToken));
     }
-    return Observable.from(new Promise<AuthorizationResult>(resolve => {
+    return from(new Promise<AuthorizationResult>(resolve => {
       console.log(`Token valid until: ${moment(this._token.expires).format()} (now: ${moment(Date.now()).format()})`);
       this._authorised.next(true);
       this._authorised.complete();
@@ -239,13 +227,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
 
   logout(): void {
     localStorage.removeItem('token');
-    let target: string;
-    if (this.serviceType === 'oidc') {
-      let redirectUri = encodeURI(this.appUrl);
-      target = `${this.authUrl}/logout?redirect_uri=${redirectUri}`;
-    } else {
-      target = `${this.apiUrl}/logout`;
-    }
+    let target = `${this.authUrl}/logout?redirect_uri=${encodeURI(this.appUrl)}`;
     MessageHelper.alert('info', 'Redirect to logout page ...');
     console.log(`Redirecting to ${target} ...`);
     setTimeout(() => {
@@ -255,13 +237,13 @@ export class Oauth2Authentication implements AuthenticationMethod {
   }
 
   get authorisations(): Observable<string[]> {
-    return this.authorised.map((isAuthorized) => {
-      if (isAuthorized && this.validToken) {
-        return this._token.getAuthorisations(this.config.getConfig('oidc-client-id'));
-      } else {
-        return [];
-      }
-    });
+    return this.authorised.pipe(
+      map((isAuthorized) => {
+        if (isAuthorized && this.validToken) {
+          return this._token.getAuthorisations(this.config.getConfig('oidc-client-id'));
+        } else {
+          return [];
+        }
+    }));
   }
-
 }

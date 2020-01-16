@@ -1,21 +1,3 @@
 <div class="gb-navbar">
   <p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
-
-  <!-- The data selection control panel -->
-  <div *ngIf="isDataSelection && isQuerySavingUsed" class="container form-inline gb-data-selection-overview-panel">
-    <!-- Saving query -->
-    <div>
-      <input id="queryName" type="text"
-             class="form-control gb-data-selection-overview-panel-input"
-             placeholder="Specify query name"
-             (drop)="preventNodeDrop($event)"
-             [(ngModel)]="queryName">
-      <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
-              (click)="saveQuery()"
-              type="button">
-        <span *ngIf="isSavingQueryCompleted">Save query</span>
-        <span *ngIf="!isSavingQueryCompleted">Saving...</span>
-      </button>
-    </div>
-  </div>
 </div>

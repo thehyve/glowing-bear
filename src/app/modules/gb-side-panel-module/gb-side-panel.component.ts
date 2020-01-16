@@ -17,18 +17,12 @@ import {AppConfig} from '../../config/app.config';
 })
 export class GbSidePanelComponent implements OnInit {
 
-  constructor(private navbarService: NavbarService,
-              private config: AppConfig) {
-  }
+  constructor(private navbarService: NavbarService) { }
 
   ngOnInit() {
   }
 
-  get isDataSelection(): boolean {
-    return this.navbarService.isDataSelection;
-  }
-
-  get enableQuerySaving(): boolean {
-    return this.config.getConfig('enable-query-saving', true);
+  get tabIsExplore(): boolean {
+    return this.navbarService.isExplore;
   }
 }

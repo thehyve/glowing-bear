@@ -54,17 +54,17 @@ describe('NavbarService', () => {
   it('should update navbar', () => {
     let which = 'others random';
     navbarService.updateNavbar(which);
-    expect(navbarService.isDataSelection).toBe(false);
+    expect(navbarService.isExplore).toBe(false);
     expect(navbarService.isAnalysis).toBe(false);
     expect(navbarService.isExport).toBe(false);
     expect(navbarService.activeItem).not.toBeDefined();
     which = '';
     navbarService.updateNavbar(which);
-    expect(navbarService.isDataSelection).toBe(true);
+    expect(navbarService.isExplore).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
     which = 'data-selection';
     navbarService.updateNavbar(which);
-    expect(navbarService.isDataSelection).toBe(true);
+    expect(navbarService.isExplore).toBe(true);
     expect(navbarService.activeItem).toBe(navbarService.items[0]);
     which = 'analysis';
     navbarService.updateNavbar(which);
@@ -79,7 +79,7 @@ describe('NavbarService', () => {
   it('should not update data selection when step 1 and 2 are clean', () => {
     let spy1 = spyOn(queryService, 'update_1').and.callThrough();
     let spy2 = spyOn(queryService, 'update_2').and.callThrough();
-    queryService.isDirty_1 = false;
+    queryService.isDirty = false;
     queryService.isDirty_2 = false;
     navbarService.updateDataSelection()
       .then(() => {
@@ -91,7 +91,7 @@ describe('NavbarService', () => {
   it('should update step 1 and 2 when step 1 is dirty', () => {
     let spy1 = spyOn(queryService, 'update_1').and.callThrough();
     let spy2 = spyOn(queryService, 'update_2').and.callThrough();
-    queryService.isDirty_1 = true;
+    queryService.isDirty = true;
     queryService.isDirty_2 = false;
     navbarService.updateDataSelection()
       .then(() => {
@@ -103,7 +103,7 @@ describe('NavbarService', () => {
   it('should update step 2 when step 2 is dirty', () => {
     let spy1 = spyOn(queryService, 'update_1').and.callThrough();
     let spy2 = spyOn(queryService, 'update_2').and.callThrough();
-    queryService.isDirty_1 = false;
+    queryService.isDirty = false;
     queryService.isDirty_2 = true;
     navbarService.updateDataSelection()
       .then(() => {
@@ -125,7 +125,7 @@ describe('NavbarService', () => {
         reject(error2);
       })
     });
-    queryService.isDirty_1 = true;
+    queryService.isDirty = true;
     queryService.isDirty_2 = false;
     navbarService.updateDataSelection()
       .then(() => {
@@ -146,7 +146,7 @@ describe('NavbarService', () => {
         reject(error2);
       })
     });
-    queryService.isDirty_1 = true;
+    queryService.isDirty = true;
     queryService.isDirty_2 = false;
     navbarService.updateDataSelection()
       .then(() => {
@@ -166,7 +166,7 @@ describe('NavbarService', () => {
         reject(error2);
       })
     });
-    queryService.isDirty_1 = false;
+    queryService.isDirty = false;
     queryService.isDirty_2 = true;
     navbarService.updateDataSelection()
       .then(() => {

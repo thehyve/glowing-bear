@@ -6,9 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Observable} from 'rxjs/Observable';
+import {Observable, AsyncSubject} from 'rxjs';
 import {AuthorizationResult} from './authorization-result';
-import {AsyncSubject} from 'rxjs/AsyncSubject';
 
 export interface AuthenticationMethod {
 
@@ -35,10 +34,9 @@ export interface AuthenticationMethod {
 
   /**
    * Initialise the authentication provider.
-   * @return {Promise<AuthorizationResult>} 'authorized' if the user is succesfully
-   * authorised after initialisation.
+   * @return {Promise<void>} if the user is successfully authorised after initialisation.
    */
-  load(): Promise<AuthorizationResult>;
+  load(): Promise<void>;
 
   /**
    * Clean up the provider state before shutdown.

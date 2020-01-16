@@ -1,0 +1,135 @@
+<div (drop)="onDrop($event)">
+  <div class="form-inline gb-constraint-child-container">
+    <label>Concept: </label>
+    <p-autoComplete #autoComplete
+                    [(ngModel)]="selectedConcept"
+                    [suggestions]="searchResults"
+                    field="label"
+                    (completeMethod)="onSearch($event)"
+                    [style]="{'width':'100%'}"
+                    [inputStyle]="{'width':'100%'}"
+                    styleClass="gb-concept-constraint-input"
+                    size="60"
+                    dropdown="true"
+                    (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+  </div>
+
+  <!-- if the concept is NUMERIC -->
+  <div *ngIf="constraintConcept.type === ConceptType.NUMERICAL" class="form-inline gb-constraint-child-container">
+    <span>with value</span>
+    <button type="button" class="btn btn-outline-secondary"
+            (click)="switchOperatorState()">
+      {{getOperatorButtonName()}}
+    </button>
+
+    <div *ngIf=" isBetween() " class="d-inline-block">
+      <input type="number" class="form-control col-sm-4" placeholder="min:{{minLimit}}"
+             [(ngModel)]="minVal"
+             (ngModelChange)="updateConceptValues()">
+      <label class="form-check-label d-inline-block">
+        <p-checkbox [(ngModel)]="isMinEqual" binary="true"
+                    (ngModelChange)="updateConceptValues()"></p-checkbox>
+      </label>
+      <span>&nbsp;and&nbsp;</span>
+      <input type="number" class="form-control col-sm-4" placeholder="max:{{maxLimit}}"
+             [(ngModel)]="maxVal"
+             (ngModelChange)="updateConceptValues()">
+      <label class="form-check-label d-inline-block">
+        <p-checkbox [(ngModel)]="isMaxEqual" binary="true"
+                    (ngModelChange)="updateConceptValues()"></p-checkbox>
+      </label>
+    </div>
+
+    <div *ngIf=" !isBetween() " class="d-inline-block">
+      <input type="number" class="form-control col-sm-8"
+             [(ngModel)]="equalVal"
+             (ngModelChange)="updateConceptValues()">
+    </div>
+  </div>
+
+  <!-- if the concept is CATEGORICAL -->
+  <div *ngIf="constraintConcept.type === ConceptType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
+    <span>with values</span>
+    <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
+                   [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"></p-multiSelect>
+  </div>
+
+  <!--  if the concept is DATE -->
+  <div *ngIf="constraintConcept.type === ConceptType.DATE" class="form-inline gb-constraint-child-container">
+    <span>with date</span>
+    <button type="button" class="btn btn-outline-secondary"
+            (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">
+      <i *ngSwitchCase="ValDateOperatorStateEnum.BEFORE">before </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.AFTER">after </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.BETWEEN">between </i>
+      <i *ngSwitchCase="ValDateOperatorStateEnum.NOT_BETWEEN">not between </i>
+    </button>
+    &nbsp;
+    <p-calendar [(ngModel)]="valDate1"
+                dateFormat="dd-mm-yy"
+                showTime="true"
+                showSeconds="true"
+                hourFormat="24"
+                (ngModelChange)="updateConceptValues()"
+                utc="true"></p-calendar>
+    <div *ngIf="[ValDateOperatorStateEnum.BETWEEN, ValDateOperatorStateEnum.NOT_BETWEEN].includes(valDateOperatorState)">
+      <span>&nbsp;and&nbsp;</span>
+      <p-calendar [(ngModel)]="valDate2"
+                  dateFormat="dd-mm-yy"
+                  showTime="true"
+                  showSeconds="true"
+                  hourFormat="24"
+                  (ngModelChange)="updateConceptValues()"
+                  utc="true"></p-calendar>
+    </div>
+  </div>
+
+  <!-- ---------- more options ---------- -->
+  <div class="gb-constraint-child-container" style="margin-top: 2px">
+    <p-panel [collapsed]="!showMoreOptions">
+      <p-header class="form-inline" style="margin-left: -0.8em">
+        <button type="button"
+                (click)="toggleMoreOptions()"
+                class="btn btn-outline-secondary">
+          and more options
+        </button>
+      </p-header>
+      <!-- observation date range constraint -->
+      <div class="form-inline" style="margin-top: -1em">
+        <p-checkbox [(ngModel)]="applyObsDateConstraint" binary="true"></p-checkbox>
+        <label *ngIf="!applyObsDateConstraint" class="gray-text">apply observation-date constraint</label>
+        <div *ngIf="applyObsDateConstraint" class="form-inline">
+          <span>and observation date &nbsp;</span>
+          <button type="button" class="btn btn-outline-secondary"
+                  (click)="switchObsDateOperatorState()" [ngSwitch]="obsDateOperatorState">
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.BEFORE">before </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.AFTER">after </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.BETWEEN">between </i>
+            <i *ngSwitchCase="ObsDateOperatorStateEnum.NOT_BETWEEN">not between </i>
+          </button>
+          &nbsp;
+          <p-calendar [(ngModel)]="obsDate1"
+                      (ngModelChange)="updateObservationDateValues()"
+                      dateFormat="dd-mm-yy"
+                      showTime="true"
+                      showSeconds="true"
+                      hourFormat="24"
+                      utc="true"></p-calendar>
+          <div *ngIf="[ObsDateOperatorStateEnum.BETWEEN, ObsDateOperatorStateEnum.NOT_BETWEEN].includes(obsDateOperatorState)">
+            <span>&nbsp;and&nbsp;</span>
+            <p-calendar [(ngModel)]="obsDate2"
+                        (ngModelChange)="updateObservationDateValues()"
+                        dateFormat="dd-mm-yy"
+                        showTime="true"
+                        showSeconds="true"
+                        hourFormat="24"
+                        utc="true"></p-calendar>
+          </div>
+        </div>
+      </div>
+
+    </p-panel>
+    <br>
+  </div>
+
+</div>
