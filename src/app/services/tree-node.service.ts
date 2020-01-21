@@ -157,20 +157,20 @@ export class TreeNodeService {
           node.icon = 'icon-abc';
           break;
         case ConceptType.DATE:
-          node.icon = 'fa-calendar';
+          node.icon = 'fa fa-calendar';
           break;
         case ConceptType.TEXT:
-          node.icon = 'fa-newspaper-o';
+          node.icon = 'fa fa-newspaper-o';
           break;
         case ConceptType.SIMPLE:
         default:
-          node.icon = 'fa-folder-o'; // todo: better logo for simple concepts and modifiers
+          node.icon = 'fa fa-folder-o';
       }
 
     } else {
       node.icon = '';
-      node.expandedIcon = 'fa-folder-open';
-      node.collapsedIcon = 'fa-folder';
+      node.expandedIcon = 'fa fa-folder-open';
+      node.collapsedIcon = 'fa fa-folder';
     }
   }
 
