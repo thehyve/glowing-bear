@@ -103,8 +103,8 @@ export class GbMainComponent implements OnInit {
     }
   };
 
-  logout() {
-    this.authenticationService.logout();
+  logout(): Promise<void> {
+    return this.authenticationService.logout;
   }
 
   get footerText(): string {

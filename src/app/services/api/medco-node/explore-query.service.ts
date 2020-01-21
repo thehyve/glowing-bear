@@ -65,12 +65,9 @@ export class ExploreQueryService {
    * @param panels
    */
   private exploreQueryAllNodes(queryId: string, queryType: ExploreQueryType, userPublicKey: string, panels: I2b2Panel[]): Observable<ExploreQueryResult[]> {
-    return this.authenticationService.authorise().pipe(switchMap(() =>
-      forkJoin(...this.medcoNetworkService.nodesUrl.map(
+    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
         (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, url)
-      )).pipe(
-        timeout(ExploreQueryService.QUERY_TIMEOUT_MS))
-    ));
+      )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }
 
   /**

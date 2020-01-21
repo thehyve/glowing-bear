@@ -30,7 +30,7 @@ export class GbExploreComponent implements OnInit {
     return FormatHelper.formatCountNumber(this.queryService.globalCount);
   }
 
-  get availableQueryTypes(): Observable<ExploreQueryType[]> {
+  get availableQueryTypes(): ExploreQueryType[] {
     return this.queryService.availableExploreQueryTypes;
   }
 

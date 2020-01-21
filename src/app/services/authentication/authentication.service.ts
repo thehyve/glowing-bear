@@ -8,11 +8,14 @@
 
 import {Injectable, Injector, OnDestroy} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {Observable, AsyncSubject} from 'rxjs';
+import {Observable, AsyncSubject, of, from} from 'rxjs';
 import {AuthenticationMethod} from './authentication-method';
 import {Oauth2Authentication} from './oauth2-authentication';
 import {AuthorizationResult} from './authorization-result';
 import {KeycloakService} from "keycloak-angular";
+import {catchError, map} from "rxjs/operators";
+import {JwtHelper} from "./jwt-helper";
+import {ErrorHelper} from "../../utilities/error-helper";
 
 @Injectable()
 export class AuthenticationService {
@@ -36,7 +39,8 @@ export class AuthenticationService {
       },
       enableBearerInterceptor: true,
       bearerPrefix: "Bearer",
-      bearerExcludedUrls: ['/assets', '/app']
+      bearerExcludedUrls: ['/assets', '/app'],
+      loadUserProfileAtStartUp: true
     })
 
 
@@ -58,6 +62,7 @@ export class AuthenticationService {
   // }
   //
   // get authorised(): AsyncSubject<boolean> {
+  //   this.keycloakService.
   //   return this.authenticationMethod.authorised;
   // }
   //
@@ -69,7 +74,32 @@ export class AuthenticationService {
   //   return this.authenticationMethod.token;
   // }
   //
-  // get authorisations(): Observable<string[]> {
-  //   return this.authenticationMethod.authorisations;
-  // }
+
+  /**
+   * Get user roles.
+   */
+  get userRoles(): string[] {
+    return this.keycloakService.getUserRoles(false);
+  }
+
+  /**
+   * Get username.
+   */
+  get username(): string {
+    return this.keycloakService.getUsername();
+  }
+
+  /**
+   * Get if user is logged in.
+   */
+  get userLoggedIn(): Observable<boolean> {
+    return from(this.keycloakService.isLoggedIn());
+  }
+
+  /**
+   * Initiate logout.
+   */
+  get logout(): Promise<void> {
+    return this.keycloakService.logout();
+  }
 }

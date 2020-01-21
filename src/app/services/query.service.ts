@@ -157,53 +157,41 @@ export class QueryService {
     this._isDirty = value;
   }
 
-  get availableExploreQueryTypes(): Observable<ExploreQueryType[]> {
+  get availableExploreQueryTypes(): ExploreQueryType[] {
 
     if (this._availableExploreQueryTypes) {
-      return of(this._availableExploreQueryTypes);
+      return this._availableExploreQueryTypes
     }
 
-    return this.authService.authorisations.pipe(map((authorizations) => {
+    this._availableExploreQueryTypes = this.authService.userRoles.map((role) => {
+      switch (role) {
+        case ExploreQueryType.PATIENT_LIST.id:
+          return ExploreQueryType.PATIENT_LIST;
 
-      this._availableExploreQueryTypes = [];
+        case ExploreQueryType.COUNT_PER_SITE.id:
+          return ExploreQueryType.COUNT_PER_SITE;
 
-      for (let authorization of authorizations) {
-        switch (authorization) {
-          case ExploreQueryType.PATIENT_LIST.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.PATIENT_LIST);
-            break;
+        case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
 
-          case ExploreQueryType.COUNT_PER_SITE.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_PER_SITE);
-            break;
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
+          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED;
 
-          case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_PER_SITE_OBFUSCATED);
-            break;
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
 
-          case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_PER_SITE_SHUFFLED);
-            break;
+        case ExploreQueryType.COUNT_GLOBAL.id:
+          return ExploreQueryType.COUNT_GLOBAL;
 
-          case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED);
-            break;
+        case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
 
-          case ExploreQueryType.COUNT_GLOBAL.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_GLOBAL);
-            break;
-
-          case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
-            this._availableExploreQueryTypes.push(ExploreQueryType.COUNT_GLOBAL_OBFUSCATED);
-            break;
-
-          default:
-            console.log("could not parse authorization " + authorization);
-            break;
-        }
+        default:
+          return null;
       }
+    }).filter((role) => role !== null);
 
-      return this._availableExploreQueryTypes;
-    }));
+    console.log(`User ${this.authService.username} explore query types: ${this._availableExploreQueryTypes}`);
+    return this._availableExploreQueryTypes;
   }
 }
