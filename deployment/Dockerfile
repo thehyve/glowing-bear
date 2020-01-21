@@ -1,4 +1,4 @@
-FROM node:8 as dev
+FROM node:12 as dev
 
 # build time env
 ENV GB_SRC="/glowing-bear-src"
@@ -11,7 +11,7 @@ ENTRYPOINT npm install && exec $NG_BIN serve --aot --port 4200 --host 0.0.0.0
 
 
 # -------------------------------------------
-FROM node:8 as build
+FROM node:12 as build
 
 # build time env
 ENV GB_SRC="/glowing-bear-src" \
