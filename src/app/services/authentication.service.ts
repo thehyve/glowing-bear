@@ -6,16 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, Injector, OnDestroy} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {Observable, AsyncSubject, of, from} from 'rxjs';
-import {AuthenticationMethod} from './authentication-method';
-import {Oauth2Authentication} from './oauth2-authentication';
-import {AuthorizationResult} from './authorization-result';
+import {Observable, from} from 'rxjs';
 import {KeycloakService} from "keycloak-angular";
-import {catchError, map} from "rxjs/operators";
-import {JwtHelper} from "./jwt-helper";
-import {ErrorHelper} from "../../utilities/error-helper";
 
 @Injectable()
 export class AuthenticationService {
