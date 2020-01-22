@@ -8,7 +8,7 @@ import {ConstraintMappingService} from '../../constraint-mapping.service';
 import {ApiEndpointService} from '../../api-endpoint.service';
 import {GenomicAnnotationsService} from "../genomic-annotations.service";
 import {ExploreQueryResult} from "../../../models/api-response-models/medco-node/explore-query-result";
-import {AuthenticationService} from "../../authentication/authentication.service";
+import {AuthenticationService} from "../../authentication.service";
 import {ExploreQueryType} from "../../../models/query-models/explore-query-type";
 import {MedcoNetworkService} from "../medco-network.service";
 import {ExploreQuery} from "../../../models/query-models/explore-query";
@@ -49,7 +49,8 @@ export class ExploreQueryService {
           userPublicKey: userPublicKey,
           panels: panels
         }
-      }
+      },
+      nodeUrl
     );
   }
 

@@ -27,7 +27,10 @@ export class ApiEndpointService {
    * @returns {Observable<any | any>}
    */
   postCall(urlPart: string, body: object, apiUrl?: string): Observable<any> {
-    const url = apiUrl ? apiUrl : this.endpointUrl + "/" + urlPart;
+    const url = apiUrl ?
+      apiUrl + "/" + urlPart :
+      this.endpointUrl + "/" + urlPart;
+
     return this.http.post(url, body).pipe(
       catchError(ErrorHelper.handleError.bind(this))
     );
