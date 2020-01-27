@@ -74,10 +74,6 @@ export class GbExploreResultsComponent implements OnInit {
     return this.medcoNetworkService.nodes.map((node) => node.name);
   }
 
-  get x() {
-    return this.nodesName.map((nodeName, idx) => [nodeName, this.perSiteCounts[idx]]);
-  }
-
   get perSiteCountsAvailable(): boolean {
     return this.patientListsAvailable ||
       this.queryType === ExploreQueryType.COUNT_PER_SITE ||
