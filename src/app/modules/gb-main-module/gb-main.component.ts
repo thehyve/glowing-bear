@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewChild, OnInit} from '@angular/core';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
+import {AuthenticationService} from '../../services/authentication.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
