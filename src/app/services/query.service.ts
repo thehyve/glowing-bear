@@ -13,7 +13,7 @@ import {ExploreQuery} from '../models/query-models/explore-query';
 import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {ExploreQueryType} from "../models/query-models/explore-query-type";
-import {AuthenticationService} from "./authentication/authentication.service";
+import {AuthenticationService} from "./authentication.service";
 import {Observable, of} from "rxjs";
 import {map, switchMap, tap} from 'rxjs/operators';
 import {ExploreQueryService} from "./api/medco-node/explore-query.service";
@@ -71,19 +71,26 @@ export class QueryService {
     }
 
     switch (this.query.type) {
-      case ExploreQueryType.COUNT_GLOBAL || ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
-        this.globalCount = this.cryptoService.decryptInteger(results[0].encryptedCount);
+      case ExploreQueryType.COUNT_GLOBAL:
+      case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
+        this.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(results[0].encryptedCount);
         break;
 
-      case ExploreQueryType.COUNT_PER_SITE || ExploreQueryType.COUNT_PER_SITE_OBFUSCATED ||
-        ExploreQueryType.COUNT_PER_SITE_SHUFFLED || ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED || ExploreQueryType.PATIENT_LIST:
-        this.perSiteCounts = results.map((result) => this.cryptoService.decryptInteger(result.encryptedCount));
+      case ExploreQueryType.COUNT_PER_SITE:
+      case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED:
+      case ExploreQueryType.COUNT_PER_SITE_SHUFFLED:
+      case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED:
+      case ExploreQueryType.PATIENT_LIST:
+        this.perSiteCounts = results.map((result) => this.cryptoService.decryptIntegerWithEphemeralKey(result.encryptedCount));
         this.globalCount = this.perSiteCounts.reduce((a, b) => a+b);
         break;
 
       default:
-        console.error(`unknown explore query type: ${this.query.type}`)
+        console.error(`unknown explore query type: ${this.query.type}`);
+        break;
     }
+
+    console.log(`Parsed results of ${results.length} nodes with a global count of ${this.globalCount}`);
 
     if (this.query.type === ExploreQueryType.PATIENT_LIST) {
       this.patientLists = results.map((result) => result.encryptedPatientList);
