@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {AuthenticationService} from './authentication/authentication.service';
+import {AuthenticationService} from './authentication.service';
 import {QueryService} from './query.service';
 import {MessageHelper} from '../utilities/message-helper';
 import {AppConfig} from '../config/app.config';
