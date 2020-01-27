@@ -1,5 +1,5 @@
 export class ExploreQueryResult {
-  status: string;
+  status: "queued"|"pending"|"error"|"available";
   encryptedCount: string;
   encryptedPatientList: string[];
   timers: {
