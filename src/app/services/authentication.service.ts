@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020  EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,18 +8,19 @@
  */
 
 import {Injectable} from '@angular/core';
-import {AppConfig} from '../../config/app.config';
+import {AppConfig} from '../config/app.config';
 import {Observable, from} from 'rxjs';
 import {KeycloakService} from "keycloak-angular";
 
 @Injectable()
 export class AuthenticationService {
 
-  // private config: AppConfig;
-  // private authenticationMethod: AuthenticationMethod;
+  constructor(private config: AppConfig,
+              private keycloakService: KeycloakService) { }
 
-  constructor(private config: AppConfig, private keycloakService: KeycloakService) { }
-
+  /**
+   * Init the keycloak service with proper parameters.
+   */
   public load(): Promise<boolean> {
     return this.keycloakService.init({
       config: {
@@ -29,45 +31,13 @@ export class AuthenticationService {
       initOptions: {
         onLoad: "login-required",
         checkLoginIframe: false
-
       },
       enableBearerInterceptor: true,
       bearerPrefix: "Bearer",
       bearerExcludedUrls: ['/assets', '/app'],
       loadUserProfileAtStartUp: true
     })
-
-
-    // this.config = this.injector.get(AppConfig);
-    // this.authenticationMethod = this.injector.get(Oauth2Authentication);
-    // return this.authenticationMethod.load();
   }
-
-  // ngOnDestroy(): void {
-  //   this.authenticationMethod.onDestroy();
-  // }
-  //
-  // authorise(): Observable<AuthorizationResult> {
-  //   return this.authenticationMethod.authorisation;
-  // }
-  //
-  // logout() {
-  //   this.authenticationMethod.logout();
-  // }
-  //
-  // get authorised(): AsyncSubject<boolean> {
-  //   this.keycloakService.
-  //   return this.authenticationMethod.authorised;
-  // }
-  //
-  // get validToken(): boolean {
-  //   return this.authenticationMethod.validToken;
-  // }
-  //
-  // get token(): string {
-  //   return this.authenticationMethod.token;
-  // }
-  //
 
   /**
    * Get user roles.
