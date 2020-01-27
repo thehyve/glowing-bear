@@ -101,7 +101,7 @@ export class ConstraintMappingService {
           // todo: children IDs implementation
           item.encrypted = true;
           item.operator = 'exists';
-          item.queryTerm = this.cryptoService.encryptInteger(constraint.concept.encryptionDescriptor.id);
+          item.queryTerm = this.cryptoService.encryptIntegerWithCothorityKey(constraint.concept.encryptionDescriptor.id);
 
         } else {
           item.encrypted = false;
