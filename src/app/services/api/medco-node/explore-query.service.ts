@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {Observable, forkJoin, of} from 'rxjs';
-import {timeout, switchMap} from "rxjs/operators";
+import {timeout, switchMap, map} from "rxjs/operators";
 import {I2b2Panel} from '../../../models/api-request-models/medco-node/i2b2-panel';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {ConstraintMappingService} from '../../constraint-mapping.service';
@@ -12,6 +12,7 @@ import {AuthenticationService} from "../../authentication.service";
 import {ExploreQueryType} from "../../../models/query-models/explore-query-type";
 import {MedcoNetworkService} from "../medco-network.service";
 import {ExploreQuery} from "../../../models/query-models/explore-query";
+import {CryptoService} from "../../crypto.service";
 
 @Injectable()
 export class ExploreQueryService {
@@ -26,7 +27,7 @@ export class ExploreQueryService {
               private medcoNetworkService: MedcoNetworkService,
               private genomicAnnotationsService: GenomicAnnotationsService,
               private constraintMappingService: ConstraintMappingService,
-              private authenticationService: AuthenticationService) { }
+              private cryptoService: CryptoService) { }
 
   //  ------------------- api calls ----------------------
 
@@ -51,7 +52,7 @@ export class ExploreQueryService {
         }
       },
       nodeUrl
-    );
+    ).pipe(map((expQueryResp) => expQueryResp['result']));
   }
 
   // -------------------------------------- helper calls --------------------------------------
@@ -85,7 +86,7 @@ export class ExploreQueryService {
     return this.exploreQueryAllNodes(
         query.uniqueId,
         query.type,
-        this.medcoNetworkService.networkPubKey,
+        this.cryptoService.ephemeralPublicKey,
         this.constraintMappingService.mapConstraint(query.constraint)
     );
   }
