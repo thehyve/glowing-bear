@@ -1,12 +1,12 @@
 <div class="medco-results-container">
 
-  <div *ngIf="perSiteCountsAvailable" class="medco-results-chart-container">
-    <canvas id="medco-results-chart">{{ resultChart }}</canvas>
+  <div class="medco-results-chart-container">
+    <canvas #medcoResultsChart id="medco-results-chart">{{ resultChart }}</canvas>
   </div>
 
   <hr />
 
-  <p-table *ngIf="perSiteCountsAvailable" [value]="perSiteCounts">
+  <p-table [value]="perSiteCounts">
     <ng-template pTemplate="header">
       <tr>
         <th>Clinical Site</th>

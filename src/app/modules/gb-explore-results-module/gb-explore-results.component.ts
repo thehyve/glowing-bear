@@ -6,12 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Chart} from 'chart.js';
-import {ExploreQueryType} from "../../models/query-models/explore-query-type";
-import {ExploreQueryResult} from "../../models/api-response-models/medco-node/explore-query-result";
-import {QueryService} from "../../services/query.service";
-import {MedcoNetworkService} from "../../services/api/medco-network.service";
+import {ExploreQueryType} from '../../models/query-models/explore-query-type';
+import {QueryService} from '../../services/query.service';
+import {MedcoNetworkService} from '../../services/api/medco-network.service';
 
 @Component({
   selector: 'gb-medco-results',
@@ -20,6 +19,7 @@ import {MedcoNetworkService} from "../../services/api/medco-network.service";
 })
 export class GbExploreResultsComponent implements OnInit {
 
+  @ViewChild('medcoResultsChart', { static: true }) medcoResultsChart: ElementRef;
 
   private _resultChart: Chart;
 
@@ -27,7 +27,7 @@ export class GbExploreResultsComponent implements OnInit {
               private queryService: QueryService) { }
 
   ngOnInit() {
-    this._resultChart = new Chart('medco-results-chart', {
+    this._resultChart = new Chart(this.medcoResultsChart.nativeElement, {
       type: 'doughnut',
       data: {
         labels: [],
