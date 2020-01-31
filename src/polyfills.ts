@@ -75,6 +75,7 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  */
 // import 'intl';  // Run `npm install --save intl`.
 
+// hack needed for some libraries that expect node.js
 (window as any).global = window;
 // @ts-ignore
 window.Buffer = window.Buffer || require('buffer').Buffer;
