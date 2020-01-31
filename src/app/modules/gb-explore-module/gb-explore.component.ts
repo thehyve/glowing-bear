@@ -9,9 +9,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormatHelper} from '../../utilities/format-helper';
 import {QueryService} from '../../services/query.service';
-import {AppConfig} from '../../config/app.config';
-import {ExploreQueryType} from "../../models/query-models/explore-query-type";
-import {Observable} from "rxjs";
+import {ExploreQueryType} from '../../models/query-models/explore-query-type';
 
 @Component({
   selector: 'gb-explore',

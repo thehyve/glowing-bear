@@ -15,14 +15,14 @@ import {GbCombinationConstraintComponent} from './constraint-components/gb-combi
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
 import {GbConceptConstraintComponent} from './constraint-components/gb-concept-constraint/gb-concept-constraint.component';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
-import {GbGenomicAnnotationConstraintComponent} from "./constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component";
-import {GbSelectionComponent} from "./gb-selection-component/gb-selection.component";
-import {FormsModule} from "@angular/forms";
-import {AutoCompleteModule} from "primeng/autocomplete";
-import {CheckboxModule} from "primeng/checkbox";
-import {CalendarModule} from "primeng/calendar";
-import {PanelModule} from "primeng/panel";
-import {MultiSelectModule} from "primeng/multiselect";
+import {GbGenomicAnnotationConstraintComponent} from './constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
+import {GbSelectionComponent} from './gb-selection-component/gb-selection.component';
+import {FormsModule} from '@angular/forms';
+import {AutoCompleteModule} from 'primeng/autocomplete';
+import {CheckboxModule} from 'primeng/checkbox';
+import {CalendarModule} from 'primeng/calendar';
+import {PanelModule} from 'primeng/panel';
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
   imports: [

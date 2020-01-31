@@ -13,21 +13,18 @@ import {AccordionModule} from 'primeng/components/accordion/accordion';
 import {TreeModule} from 'primeng/components/tree/tree';
 import {DataListModule} from 'primeng/components/datalist/datalist';
 import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
-import {TreeDragDropService} from 'primeng/components/common/api';
+import {ConfirmationService, TreeDragDropService} from 'primeng/components/common/api';
 import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
-import {
-  AutoCompleteModule,
-  ButtonModule,
-  ConfirmationService,
-  ConfirmDialogModule,
-  InputTextModule,
-  PanelModule,
-  RadioButtonModule,
-  TooltipModule
-} from 'primeng/primeng';
 import {FormsModule} from '@angular/forms';
 import {GbSummaryComponent} from './accordion-components/gb-summary/gb-summary.component';
+import {AutoCompleteModule} from 'primeng/autocomplete';
+import { PanelModule } from 'primeng/panel';
+import {ButtonModule} from 'primeng/button';
+import {InputTextModule} from 'primeng/inputtext';
+import {TooltipModule} from 'primeng/tooltip';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {RadioButtonModule} from 'primeng/radiobutton';
 
 @NgModule({
   imports: [
