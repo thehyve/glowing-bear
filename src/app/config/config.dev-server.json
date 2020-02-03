@@ -6,6 +6,5 @@
   "keycloak-realm": "master",
   "keycloak-client-id": "medco",
 
-  "medco-results-randomization": 0,
   "footer-text": ""
 }
