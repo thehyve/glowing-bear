@@ -37,14 +37,10 @@ COPY deployment/write-gb-config.sh /
 RUN chmod +x /write-gb-config.sh
 
 # run-time env
-ENV GB_API_URL="http://localhost/pic-sure-api-2/PICSURE" \
-    GB_URL="http://localhost:4200" \
-    GB_OIDC_URL="http://localhost/auth/realms/master/protocol/openid-connect" \
-    GB_OIDC_CLIENT_ID="medco" \
-    GB_COTHORITY_KEY_URL="http://localhost/cothority-key.pub.toml" \
-    GB_GENOMIC_ANNOTATIONS_URL="http://localhost/genomicAnnotations" \
-    GB_MEDCO_RESULTS_RANDOMIZATION="0" \
-    MEDCO_NETWORK_NAME="testnetwork" \
-    MEDCO_NODES_NAME="a,b,c"
+ENV GB_MEDCO_NODE_URL="http://localhost/local-3nodes/medco-0" \
+    GB_KEYCLOAK_URL="http://localhost/auth" \
+    GB_KEYCLOAK_REALM="master" \
+    GB_KEYCLOAK_CLIENT_ID="medco" \
+    GB_FOOTER_TEXT=""
 
 ENTRYPOINT /bin/bash -c "/write-gb-config.sh && exec nginx -g 'daemon off;'"

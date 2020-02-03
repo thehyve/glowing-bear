@@ -20,20 +20,15 @@ services:
     ports:
       - "82:80"
     environment:
-      - GB_API_URL=http://localhost/pic-sure-api-2/PICSURE
-      - GB_URL=http://localhost/glowing-bear
-      - GB_OIDC_URL=http://localhost/auth/realms/master/protocol/openid-connect
-      - GB_OIDC_CLIENT_ID=medco
-      - GB_COTHORITY_KEY_URL=http://localhost/cothority-key.pub.toml
-      - GB_GENOMIC_ANNOTATIONS_URL=http://localhost/genomicAnnotations
-      - GB_MEDCO_RESULTS_RANDOMIZATION=0
+      - GB_MEDCO_NODE_URL=http://localhost/local-3nodes/medco-0
+      - GB_KEYCLOAK_URL=http://localhost/auth
+      - GB_KEYCLOAK_REALM=master
+      - GB_KEYCLOAK_CLIENT_ID=medco
       - GB_FOOTER_TEXT=
-      - MEDCO_NETWORK_NAME=testnetwork
-      - MEDCO_NODES_NAME=a,b,c
 
   gen-mapping-table:
     image: medco/medco-unlynx:latest
-    user: ${USER_ID:?}
+    user: ${USER_ID}
     command: ["m", "--outputFile", "/output/point-to-int-mapping.ts", "--outputFormat", "typescript",
               "--nbMappings", "1000", "--checkNeg", "false"]
     volumes:

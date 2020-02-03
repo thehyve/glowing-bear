@@ -42,6 +42,8 @@
     "roboto-fontface": "^0.10.0",
     "rxjs": "^6.5.4",
     "sanitize-filename": "^1.6.3",
+    "stream": "0.0.2",
+    "vm": "^0.1.0",
     "zone.js": "^0.9.1"
   },
   "devDependencies": {

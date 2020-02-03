@@ -28,7 +28,7 @@ export class GenomicAnnotationsService {
    * @param apiEndpointService
    */
   constructor(private config: AppConfig, private apiEndpointService: ApiEndpointService) {
-    this.annotationsUrl = this.config.getConfig('api-url');
+    this.annotationsUrl = this.config.getConfig('medco-node-url');
   }
 
   //  ------------------- api calls ----------------------

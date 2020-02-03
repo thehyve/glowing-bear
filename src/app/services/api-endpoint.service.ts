@@ -16,7 +16,7 @@ export class ApiEndpointService {
 
   constructor(private http: HttpClient,
               private appConfig: AppConfig) {
-    this._endpointUrl = this.appConfig.getConfig('api-url');
+    this._endpointUrl = this.appConfig.getConfig('medco-node-url');
   }
 
   /**
