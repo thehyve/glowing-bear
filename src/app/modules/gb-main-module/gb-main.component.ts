@@ -37,7 +37,6 @@ export class GbMainComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(`Initialise main component ...`);
     const parentContainerElm = this.parentContainer.nativeElement;
     this.isGutterDragged = false;
     this.x_pos = 0;
@@ -47,6 +46,8 @@ export class GbMainComponent implements OnInit {
     parentContainerElm.addEventListener('mousemove', this.onMouseMove.bind(this));
     parentContainerElm.addEventListener('mouseup', this.onMouseUp.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
+
+    console.log(`Initialized main component.`);
   }
 
   onMouseDown = function (event) {
