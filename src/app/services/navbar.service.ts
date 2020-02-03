@@ -16,8 +16,6 @@ import {AppConfig} from '../config/app.config';
 @Injectable()
 export class NavbarService {
 
-  // todo: get in there the medco result thing
-
   private _items: MenuItem[];
   private _activeItem: MenuItem;
 
