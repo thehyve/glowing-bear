@@ -13,7 +13,7 @@ import {Constraint} from '../../../../models/constraint-models/constraint';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
-import {UIHelper} from "../../../../utilities/ui-helper";
+import {UIHelper} from '../../../../utilities/ui-helper';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -76,8 +76,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
       // force combination state if i2b2 style nesting
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
-      if (this.config.getConfig('force-i2b2-nesting-style', false) &&
-        parentConstraint && parentConstraint.isRoot) {
+      if (parentConstraint && parentConstraint.isRoot) {
         (<CombinationConstraint>this.constraint).combinationState = CombinationState.Or;
       }
       this.update();
@@ -101,8 +100,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
       // force combination state if free nesting not supported
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
-      if (this.config.getConfig('force-i2b2-nesting-style', false) &&
-        parentConstraint && parentConstraint.isRoot) {
+      if (parentConstraint && parentConstraint.isRoot) {
         combinationConstraint.combinationState = CombinationState.Or;
       }
 
@@ -113,13 +111,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   get combinationState() {
     return (<CombinationConstraint>this.constraint).combinationState;
-  }
-
-  toggleJunction() {
-    if (!this.config.getConfig('force-i2b2-nesting-style', false)) {
-      (<CombinationConstraint>this.constraint).switchCombinationState();
-      this.update();
-    }
   }
 
   get childContainerClass(): string {
@@ -136,10 +127,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       return false;
     }
 
-    if (!this.config.getConfig('force-i2b2-nesting-style', false)) {
-      return true;
-    } else {
-      return this.constraint.isRoot;
-    }
+    return this.constraint.isRoot;
   }
 }

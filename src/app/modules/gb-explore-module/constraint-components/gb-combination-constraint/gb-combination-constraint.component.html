@@ -4,8 +4,7 @@
     <!-- Child Constraints -->
     <div *ngFor="let child of children; let i = index">
       <div *ngIf="i > 0" class="gb-constraint-state-container">
-        <button type="button" class="btn btn-outline-primary btn-sm"
-                (click)="toggleJunction()" [ngSwitch]="combinationState">
+        <button type="button" class="btn btn-outline-primary btn-sm" [ngSwitch]="combinationState">
           <i *ngSwitchCase="CombinationState.And">and</i>
           <i *ngSwitchCase="CombinationState.Or">or</i>
         </button>
