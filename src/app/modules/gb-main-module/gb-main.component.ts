@@ -11,7 +11,7 @@ import {AuthenticationService} from '../../services/authentication.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
-import {AppConfig} from "../../config/app.config";
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-main',
@@ -110,6 +110,10 @@ export class GbMainComponent implements OnInit {
   get footerText(): string {
     let footerText = this.config.getConfig('footer-text');
     return footerText ? footerText : '';
+  }
+
+  get username(): string {
+    return this.authenticationService.username;
   }
 
 }
