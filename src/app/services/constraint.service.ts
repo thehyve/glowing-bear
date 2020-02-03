@@ -20,8 +20,8 @@ import {TreeNodeService} from './tree-node.service';
 import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
-import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
-import {GenomicAnnotation} from "../models/constraint-models/genomic-annotation";
+import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
+import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 
 /**
  * This service concerns with
@@ -66,14 +66,6 @@ export class ConstraintService {
     this.rootInclusionConstraint.isRoot = true;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-
-    // Construct constraints
-    this.loadEmptyConstraints();
-  }
-
-  private loadEmptyConstraints() {
-    this.allConstraints.push(new CombinationConstraint());
-    this.allConstraints.push(new ConceptConstraint());
   }
 
   /**

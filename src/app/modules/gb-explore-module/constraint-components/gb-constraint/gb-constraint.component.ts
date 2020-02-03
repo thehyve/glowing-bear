@@ -13,7 +13,7 @@ import {ConstraintService} from '../../../../services/constraint.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
 import {AppConfig} from '../../../../config/app.config';
-import {GenomicAnnotationsService} from "../../../../services/api/genomic-annotations.service";
+import {GenomicAnnotationsService} from '../../../../services/api/genomic-annotations.service';
 
 @Component({
   selector: 'gb-constraint',
