@@ -7,7 +7,7 @@
  */
 
 import {Constraint} from './constraint';
-import {GenomicAnnotation} from "./genomic-annotation";
+import {GenomicAnnotation} from './genomic-annotation';
 
 export class GenomicAnnotationConstraint extends Constraint {
 

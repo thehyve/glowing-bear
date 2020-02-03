@@ -8,27 +8,27 @@
 
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {HttpClient} from '@angular/common/http';
 import {ErrorHelper} from '../../utilities/error-helper';
-import {Observable, of, forkJoin} from "rxjs";
-import {catchError, map, tap} from "rxjs/operators";
-import {Constraint} from "../../models/constraint-models/constraint";
-import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
-import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
-import {GenomicAnnotation} from "../../models/constraint-models/genomic-annotation";
+import {Observable, of, forkJoin} from 'rxjs';
+import {catchError, map, tap} from 'rxjs/operators';
+import {Constraint} from '../../models/constraint-models/constraint';
+import {GenomicAnnotationConstraint} from '../../models/constraint-models/genomic-annotation-constraint';
+import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
+import {GenomicAnnotation} from '../../models/constraint-models/genomic-annotation';
+import {ApiEndpointService} from '../api-endpoint.service';
 
 @Injectable()
 export class GenomicAnnotationsService {
-
-  private annotationsUrl: string;
   private static readonly QUERY_RECORD_LIMIT: number = 15;
+
+  private readonly annotationsUrl: string;
 
   /**
    * @param {AppConfig} config
-   * @param http
+   * @param apiEndpointService
    */
-  constructor(private config: AppConfig, private http: HttpClient) {
-    this.annotationsUrl = this.config.getConfig('medco-genomic-annotations-url');
+  constructor(private config: AppConfig, private apiEndpointService: ApiEndpointService) {
+    this.annotationsUrl = this.config.getConfig('api-url');
   }
 
   //  ------------------- api calls ----------------------
@@ -42,11 +42,9 @@ export class GenomicAnnotationsService {
    * @return array of corresponding values
    */
   getAnnotationValues(annotation: GenomicAnnotation, annotationValue: string): Observable<string[]> {
-    return this.http.get(
-      `${this.annotationsUrl}/genomic-annotations/${annotation.name}?` +
-        `value=${annotationValue}` +
-        `&limit=${GenomicAnnotationsService.QUERY_RECORD_LIMIT}`,
-      {}).pipe(
+    return this.apiEndpointService.getCall(`genomic-annotations/${annotation.name}?` +
+      `value=${annotationValue}` +
+      `&limit=${GenomicAnnotationsService.QUERY_RECORD_LIMIT}`).pipe(
         catchError(ErrorHelper.handleError.bind(this)),
         map((rep: object) => rep as string[])
     );
@@ -63,7 +61,7 @@ export class GenomicAnnotationsService {
     this.getGenomicAnnotationConstraints(constraint, genomicAnnotationConstraints);
 
     let queries: Observable<void>[] = genomicAnnotationConstraints
-      .map((constraint) => this.addVariantIdsToConstraint(constraint));
+      .map((c) => this.addVariantIdsToConstraint(c));
 
     // execute all with forkjoin
     return queries.length === 0 ?
@@ -90,28 +88,27 @@ export class GenomicAnnotationsService {
    */
   addVariantIdsToConstraint(constraint: GenomicAnnotationConstraint): Observable<void> {
 
-    let queryUrl = `${this.annotationsUrl}/fetchVariants.php?` +
-    `query_type=generic_annotation_and_zygosity` +
-    `&annotation_name=${constraint.annotation.name}` +
-    `&annotation_value=${constraint.annotationValue}`;
+    let queryUrlPart = `genomic-annotations/${constraint.annotation.name}/${constraint.annotationValue}?encrypted=true`;
 
     if (constraint.zygosityHeterozygous) {
-      queryUrl = `${queryUrl}&zygosity[]=Heterozygous`;
+      queryUrlPart = `${queryUrlPart}&zygosity[]=heterozygous`;
     }
 
     if (constraint.zygosityHomozygous) {
-      queryUrl = `${queryUrl}&zygosity[]=Homozygous`;
+      queryUrlPart = `${queryUrlPart}&zygosity[]=homozygous`;
     }
 
     if (constraint.zygosityUnknown) {
-      queryUrl = `${queryUrl}&zygosity[]=Unknown`;
+      queryUrlPart = `${queryUrlPart}&zygosity[]=unknown`;
     }
 
-    return this.http.get(queryUrl, {}).pipe(
+    return this.apiEndpointService.getCall(queryUrlPart).pipe(
       catchError(ErrorHelper.handleError.bind(this)),
-      map((rep: object) => rep['variants'] as string[]),
+      map((rep: object) => rep as string[]),
       tap((variantIds: string[]) => constraint.variantIds = variantIds),
-      tap((variantIds: string[]) => console.log(`Fetched ${variantIds.length} variants for ${constraint.annotation.name} = ${constraint.annotationValue}`)),
+      tap((variantIds: string[]) => console.log(
+        `Fetched ${variantIds.length} variants for ${constraint.annotation.name} = ${constraint.annotationValue}`)
+      ),
       map(() => undefined)
     );
   }
