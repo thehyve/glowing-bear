@@ -10,8 +10,8 @@ import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
 import {Observable} from 'rxjs';
 import {ApiEndpointService} from '../api-endpoint.service';
-import {NetworkMetadata} from "../../models/api-response-models/medco-network/network-metadata";
-import {NodeMetadata} from "../../models/api-response-models/medco-network/node-metadata";
+import {ApiNetworkMetadata} from "../../models/api-response-models/medco-network/api-network-metadata";
+import {ApiNodeMetadata} from "../../models/api-response-models/medco-network/api-node-metadata";
 import {ErrorHelper} from "../../utilities/error-helper";
 
 @Injectable()
@@ -25,7 +25,7 @@ export class MedcoNetworkService {
   /**
    * Contains the list of nodes and their metadata.
    */
-  private _nodes: NodeMetadata[];
+  private _nodes: ApiNodeMetadata[];
 
   private config: AppConfig;
   private apiEndpointService: ApiEndpointService;
@@ -37,7 +37,7 @@ export class MedcoNetworkService {
       this.config = this.injector.get(AppConfig);
       this.apiEndpointService = this.injector.get(ApiEndpointService);
 
-      this.getNetwork().subscribe((metadata: NetworkMetadata) => {
+      this.getNetwork().subscribe((metadata: ApiNetworkMetadata) => {
         this._networkPubKey = metadata['public-key'];
         this._nodes = metadata.nodes;
         console.log(`Loaded nodes: ${metadata.nodes.map((a) => a.name).join(', ')}`);
@@ -56,7 +56,7 @@ export class MedcoNetworkService {
     return this._networkPubKey;
   }
 
-  get nodes(): NodeMetadata[] {
+  get nodes(): ApiNodeMetadata[] {
     return this._nodes;
   }
 
@@ -68,9 +68,9 @@ export class MedcoNetworkService {
 
   /**
    * Returns the MedCo network metadata.
-   * @returns {Observable<NetworkMetadata[]>}
+   * @returns {Observable<ApiNetworkMetadata[]>}
    */
-  getNetwork(): Observable<NetworkMetadata> {
+  getNetwork(): Observable<ApiNetworkMetadata> {
     const urlPart = 'network';
     return this.apiEndpointService.getCall(urlPart, false);
   }

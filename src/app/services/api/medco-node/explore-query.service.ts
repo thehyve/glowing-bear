@@ -2,12 +2,12 @@ import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {Observable, forkJoin, of} from 'rxjs';
 import {timeout, switchMap, map} from 'rxjs/operators';
-import {I2b2Panel} from '../../../models/api-request-models/medco-node/i2b2-panel';
+import {ApiI2b2Panel} from '../../../models/api-request-models/medco-node/api-i2b2-panel';
 import {Constraint} from '../../../models/constraint-models/constraint';
 import {ConstraintMappingService} from '../../constraint-mapping.service';
 import {ApiEndpointService} from '../../api-endpoint.service';
 import {GenomicAnnotationsService} from '../genomic-annotations.service';
-import {ExploreQueryResult} from '../../../models/api-response-models/medco-node/explore-query-result';
+import {ApiExploreQueryResult} from '../../../models/api-response-models/medco-node/api-explore-query-result';
 import {AuthenticationService} from '../../authentication.service';
 import {ExploreQueryType} from '../../../models/query-models/explore-query-type';
 import {MedcoNetworkService} from '../medco-network.service';
@@ -40,8 +40,8 @@ export class ExploreQueryService {
    * @param nodeUrl
    * @param sync
    */
-  private exploreQuerySingleNode(queryId: string, queryType: ExploreQueryType, userPublicKey: string, panels: I2b2Panel[],
-                                 nodeUrl: string, sync: boolean = true): Observable<ExploreQueryResult> {
+  private exploreQuerySingleNode(queryId: string, queryType: ExploreQueryType, userPublicKey: string, panels: ApiI2b2Panel[],
+                                 nodeUrl: string, sync: boolean = true): Observable<ApiExploreQueryResult> {
     return this.apiEndpointService.postCall(
       'node/explore/query?sync=' + sync,
       {
@@ -68,7 +68,7 @@ export class ExploreQueryService {
    * @param panels
    */
   private exploreQueryAllNodes(queryId: string, queryType: ExploreQueryType, userPublicKey: string,
-                               panels: I2b2Panel[]): Observable<ExploreQueryResult[]> {
+                               panels: ApiI2b2Panel[]): Observable<ApiExploreQueryResult[]> {
     return forkJoin(...this.medcoNetworkService.nodesUrl.map(
         (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, url)
       )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
@@ -78,7 +78,7 @@ export class ExploreQueryService {
    *
    * @param query
    */
-  exploreQuery(query: ExploreQuery): Observable<ExploreQueryResult[]> {
+  exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
     if (query.constraint.className === 'TrueConstraint') {
       return of([]);
     } else if (query.constraint.className !== 'CombinationConstraint') {

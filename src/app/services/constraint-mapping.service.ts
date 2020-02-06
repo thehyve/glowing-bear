@@ -1,9 +1,9 @@
 import {Constraint} from '../models/constraint-models/constraint';
-import {I2b2Panel} from '../models/api-request-models/medco-node/i2b2-panel';
+import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
 import {Injectable} from "@angular/core";
 import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
 import {CombinationState} from "../models/constraint-models/combination-state";
-import {I2b2Item} from "../models/api-request-models/medco-node/i2b2-item";
+import {ApiI2b2Item} from "../models/api-request-models/medco-node/api-i2b2-item";
 import {ConceptConstraint} from "../models/constraint-models/concept-constraint";
 import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
 import {ConceptType} from "../models/constraint-models/concept-type";
@@ -14,7 +14,7 @@ export class ConstraintMappingService {
 
   constructor(private cryptoService: CryptoService) { }
 
-  public mapConstraint(constraint: Constraint): I2b2Panel[] {
+  public mapConstraint(constraint: Constraint): ApiI2b2Panel[] {
     if (constraint.className === 'TrueConstraint') {
       console.log('Empty constraint, generated empty panels');
       return [];
@@ -29,7 +29,7 @@ export class ConstraintMappingService {
     }
   }
 
-  private mapCombinationConstraint(panels: I2b2Panel[], constraint: Constraint) {
+  private mapCombinationConstraint(panels: ApiI2b2Panel[], constraint: Constraint) {
     if (constraint.className !== 'CombinationConstraint' ||
       (constraint as CombinationConstraint).combinationState === CombinationState.Or) {
       panels.push(this.generateI2b2Panel(constraint));
@@ -47,8 +47,8 @@ export class ConstraintMappingService {
    *
    * @param constraint
    */
-  private generateI2b2Panel(constraint: Constraint): I2b2Panel {
-    let panel = new I2b2Panel();
+  private generateI2b2Panel(constraint: Constraint): ApiI2b2Panel {
+    let panel = new ApiI2b2Panel();
     panel.not = false; // todo: how to get the NOT?
 
     switch (constraint.className) {
@@ -90,8 +90,8 @@ export class ConstraintMappingService {
     return panel;
   }
 
-  private generateI2b2ItemFromConcept(constraint: ConceptConstraint): I2b2Item {
-    let item = new I2b2Item();
+  private generateI2b2ItemFromConcept(constraint: ConceptConstraint): ApiI2b2Item {
+    let item = new ApiI2b2Item();
 
     switch (constraint.concept.type) {
       // todo: missing types
@@ -116,9 +116,9 @@ export class ConstraintMappingService {
     return item;
   }
 
-  private generateI2b2ItemsFromGenomicAnnotation(constraint: GenomicAnnotationConstraint): I2b2Item[] {
+  private generateI2b2ItemsFromGenomicAnnotation(constraint: GenomicAnnotationConstraint): ApiI2b2Item[] {
     return constraint.variantIds.map((variantId) => {
-      let item = new I2b2Item();
+      let item = new ApiI2b2Item();
       item.encrypted = true;
       item.operator = 'exists';
       item.queryTerm = variantId; // todo: variant IDs are pre-encrypted

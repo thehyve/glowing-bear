@@ -10,7 +10,7 @@
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../config/app.config';
 import {Observable, from} from 'rxjs';
-import {KeycloakService} from "keycloak-angular";
+import {KeycloakService} from 'keycloak-angular';
 
 @Injectable()
 export class AuthenticationService {
@@ -29,11 +29,12 @@ export class AuthenticationService {
         clientId: this.config.getConfig('keycloak-client-id')
       },
       initOptions: {
-        onLoad: "login-required",
-        checkLoginIframe: false
+        onLoad: 'login-required',
+        checkLoginIframe: false,
+
       },
       enableBearerInterceptor: true,
-      bearerPrefix: "Bearer",
+      bearerPrefix: 'Bearer',
       bearerExcludedUrls: ['/assets', '/app'],
       loadUserProfileAtStartUp: true
     })
