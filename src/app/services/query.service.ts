@@ -12,14 +12,16 @@ import {TreeNodeService} from './tree-node.service';
 import {ExploreQuery} from '../models/query-models/explore-query';
 import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
-import {ExploreQueryType} from "../models/query-models/explore-query-type";
-import {AuthenticationService} from "./authentication.service";
-import {Observable, of} from "rxjs";
-import {map, switchMap, tap} from 'rxjs/operators';
-import {ExploreQueryService} from "./api/medco-node/explore-query.service";
-import {ExploreQueryResult} from "../models/api-response-models/medco-node/explore-query-result";
-import {CryptoService} from "./crypto.service";
-import {GenomicAnnotationsService} from "./api/genomic-annotations.service";
+import {ExploreQueryType} from '../models/query-models/explore-query-type';
+import {AuthenticationService} from './authentication.service';
+import {switchMap} from 'rxjs/operators';
+import {ExploreQueryService} from './api/medco-node/explore-query.service';
+import {ApiExploreQueryResult} from '../models/api-response-models/medco-node/api-explore-query-result';
+import {CryptoService} from './crypto.service';
+import {GenomicAnnotationsService} from './api/genomic-annotations.service';
+import {ExploreQueryResult} from '../models/query-models/explore-query-result';
+import {ReplaySubject} from 'rxjs';
+import {ErrorHelper} from '../utilities/error-helper';
 
 /**
  * This service concerns with updating subject counts.
@@ -30,19 +32,17 @@ export class QueryService {
   // the currently selected query
   private _query: ExploreQuery;
 
+  // the current query results
+  private readonly _queryResults: ReplaySubject<ExploreQueryResult>;
+
   // list of available query types
   private _availableExploreQueryTypes: ExploreQueryType[];
-
-  // the explore query results
-  private _globalCount: number;
-  private _perSiteCounts: number[];
-  private _patientLists: string[][];
 
   // flag indicating if the counts are being updated
   private _isUpdating;
 
   // flag indicating if the query has been changed
-  private _isDirty = false;
+  private _isDirty;
 
   constructor(private appConfig: AppConfig,
               private treeNodeService: TreeNodeService,
@@ -51,29 +51,32 @@ export class QueryService {
               private authService: AuthenticationService,
               private cryptoService: CryptoService,
               private genomicAnnotationsService: GenomicAnnotationsService) {
+    this._queryResults = new ReplaySubject<ExploreQueryResult>(1);
     this.clearAll();
   }
 
   clearAll() {
-    this.globalCount = 0;
-    this.perSiteCounts = [];
-    this.patientLists = [];
+    this.queryResults.next();
     this.isUpdating = false;
     this.isDirty = false;
     this.constraintService.clearConstraint();
     this.query = new ExploreQuery();
   }
 
-  private parseExploreQueryResults(results: ExploreQueryResult[]) {
-    if (results.length === 0) {
-      console.log("Empty results, no processing done");
-      return
+  /**
+   * Parse and decrypt results from MedCo nodes.
+   */
+  private parseExploreQueryResults(encResults: ApiExploreQueryResult[]): ExploreQueryResult {
+    if (encResults.length === 0) {
+      ErrorHelper.handleError('Empty results, no processing done');
+      return undefined;
     }
 
+    let parsedResults = new ExploreQueryResult();
     switch (this.query.type) {
       case ExploreQueryType.COUNT_GLOBAL:
       case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
-        this.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(results[0].encryptedCount);
+        parsedResults.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(encResults[0].encryptedCount);
         break;
 
       case ExploreQueryType.COUNT_PER_SITE:
@@ -81,8 +84,8 @@ export class QueryService {
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED:
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED:
       case ExploreQueryType.PATIENT_LIST:
-        this.perSiteCounts = results.map((result) => this.cryptoService.decryptIntegerWithEphemeralKey(result.encryptedCount));
-        this.globalCount = this.perSiteCounts.reduce((a, b) => a+b);
+        parsedResults.perSiteCounts = encResults.map((result) => this.cryptoService.decryptIntegerWithEphemeralKey(result.encryptedCount));
+        parsedResults.globalCount = parsedResults.perSiteCounts.reduce((a, b) => a + b);
         break;
 
       default:
@@ -90,11 +93,12 @@ export class QueryService {
         break;
     }
 
-    console.log(`Parsed results of ${results.length} nodes with a global count of ${this.globalCount}`);
-
     if (this.query.type === ExploreQueryType.PATIENT_LIST) {
-      this.patientLists = results.map((result) => result.encryptedPatientList);
+      parsedResults.patientLists = encResults.map((result) => result.encryptedPatientList);
     }
+
+    console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
+    return parsedResults;
   }
 
   public execQuery(): void {
@@ -107,21 +111,13 @@ export class QueryService {
     this.genomicAnnotationsService.addVariantIdsToConstraints(this.query.constraint).pipe(
       switchMap( () => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
-      (results: ExploreQueryResult[]) => {
-        this.parseExploreQueryResults(results);
+      (results: ApiExploreQueryResult[]) => {
+        this.queryResults.next(this.parseExploreQueryResults(results));
         this.isUpdating = false;
         this.isDirty = false;
       },
       err => console.error(`error during explore query: ${err}`)
     );
-  }
-
-  get globalCount(): number {
-    return this._globalCount;
-  }
-
-  set globalCount(value: number) {
-    this._globalCount = value;
   }
 
   get query(): ExploreQuery {
@@ -132,20 +128,8 @@ export class QueryService {
     this._query = value;
   }
 
-  get perSiteCounts(): number[] {
-    return this._perSiteCounts;
-  }
-
-  set perSiteCounts(value: number[]) {
-    this._perSiteCounts = value;
-  }
-
-  get patientLists(): string[][] {
-    return this._patientLists;
-  }
-
-  set patientLists(value: string[][]) {
-    this._patientLists = value;
+  get queryResults(): ReplaySubject<ExploreQueryResult> {
+    return this._queryResults;
   }
 
   get isUpdating(): boolean {

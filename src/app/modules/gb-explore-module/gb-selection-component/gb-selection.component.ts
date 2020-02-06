@@ -19,6 +19,8 @@ import {ConstraintService} from '../../../services/constraint.service';
 import {FormatHelper} from '../../../utilities/format-helper';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {SubjectSetConstraint} from '../../../models/constraint-models/subject-set-constraint';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -72,8 +74,10 @@ export class GbSelectionComponent implements OnInit {
   ngOnInit() {
   }
 
-  get globalCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.globalCount);
+  get globalCount(): Observable<string> {
+    return this.queryService.queryResults.pipe(map((queryResults) =>
+      queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
+    ));
   }
 
   get rootInclusionConstraint(): CombinationConstraint {

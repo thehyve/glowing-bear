@@ -6,7 +6,7 @@
     </div>
     <div class="gb-data-selection-accordion-sub-header-2">
       <span class="gb-data-selection-accordion-sub-header-3 float-left">
-        <span class="gb-data-selection-emphasis-text">{{globalCount}} subjects</span>
+        <span class="gb-data-selection-emphasis-text">{{globalCount | async}} subjects</span>
       </span>
       <span class="float-right">
         <i *ngIf="queryService.isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
@@ -18,12 +18,13 @@
         </button>
       </span>
       <span class="float-right">
-        <label>Query Type: </label>
-        <select [(ngModel)]="selectedQueryType">
-          <option *ngFor="let queryType of availableQueryTypes" [ngValue]="queryType">
-            {{queryType.name}}
-          </option>
-        </select>
+        <label>Query Type:
+          <select [(ngModel)]="selectedQueryType">
+            <option *ngFor="let queryType of availableQueryTypes" [ngValue]="queryType">
+              {{queryType.name}}
+            </option>
+          </select>
+        </label>
       </span>
     </div>
   </div>

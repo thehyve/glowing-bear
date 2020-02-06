@@ -14,6 +14,8 @@ import {DropMode} from '../../../../models/drop-mode';
 import {FormatHelper} from '../../../../utilities/format-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'gb-summary',
@@ -35,8 +37,9 @@ export class GbSummaryComponent implements OnInit {
     MessageHelper.alert('success', 'All selections are cleared.');
   }
 
-  get globalCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.globalCount);
+  get globalCount(): Observable<string> {
+    return this.queryService.queryResults.pipe(map((queryResults) =>
+      queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
+    ));
   }
-
 }

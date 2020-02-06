@@ -14,13 +14,6 @@ export class ExploreQuery {
   private _uniqueId: string;
   private _name: string;
   private _description: string;
-  private _createDate: string;
-  // The information about the creation date, e.g. 3 days ago
-  private _createDateInfo: string;
-  private _updateDate: string;
-  // The information about the update date, e.g. 3 days ago
-  private _updateDateInfo: string;
-  private _apiVersion: string;
   // the constraint of the query
   private _constraint: Constraint;
   // the type of the query
@@ -47,6 +40,19 @@ export class ExploreQuery {
     this.uniqueId = id;
   }
 
+  get hasPerSiteCounts(): boolean {
+    return this.hasPatientLists ||
+      this.type === ExploreQueryType.COUNT_PER_SITE ||
+      this.type === ExploreQueryType.COUNT_PER_SITE_OBFUSCATED ||
+      this.type === ExploreQueryType.COUNT_PER_SITE_SHUFFLED ||
+      this.type === ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
+  }
+
+  get hasPatientLists(): boolean {
+    return this.type === ExploreQueryType.PATIENT_LIST;
+  }
+
+  // --- getters / setters
   get uniqueId(): string {
     return this._uniqueId;
   }
@@ -77,46 +83,6 @@ export class ExploreQuery {
 
   set constraint(value: Constraint) {
     this._constraint = value;
-  }
-
-  get createDate(): string {
-    return this._createDate;
-  }
-
-  set createDate(value: string) {
-    this._createDate = value;
-  }
-
-  get updateDate(): string {
-    return this._updateDate;
-  }
-
-  set updateDate(value: string) {
-    this._updateDate = value;
-  }
-
-  get apiVersion(): string {
-    return this._apiVersion;
-  }
-
-  set apiVersion(value: string) {
-    this._apiVersion = value;
-  }
-
-  get createDateInfo(): string {
-    return this._createDateInfo;
-  }
-
-  set createDateInfo(value: string) {
-    this._createDateInfo = value;
-  }
-
-  get updateDateInfo(): string {
-    return this._updateDateInfo;
-  }
-
-  set updateDateInfo(value: string) {
-    this._updateDateInfo = value;
   }
 
   get type(): ExploreQueryType {

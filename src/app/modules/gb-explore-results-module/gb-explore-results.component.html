@@ -1,12 +1,12 @@
 <div class="medco-results-container">
 
   <div class="medco-results-chart-container">
-    <canvas #medcoResultsChart id="medco-results-chart">{{ resultChart }}</canvas>
+    <canvas #perSiteCountsChartElement id="medco-results-chart">{{ perSiteCountsChart }}</canvas>
   </div>
 
   <hr />
 
-  <p-table [value]="perSiteCounts">
+  <p-table [value]="perSiteCounts | async">
     <ng-template pTemplate="header">
       <tr>
         <th>Clinical Site</th>
@@ -26,7 +26,7 @@
 
   <div *ngIf="patientListsAvailable">
     <p><b>Patient List</b></p>
-    <p *ngFor="let patientList of patientLists; index as idx">
+    <p *ngFor="let patientList of patientLists | async; index as idx">
       <span>{{nodesName[idx]}}:</span>
       <i>
         <span *ngFor="let patient of patientList">

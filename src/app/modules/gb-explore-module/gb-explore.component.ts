@@ -10,6 +10,8 @@ import {Component, OnInit} from '@angular/core';
 import {FormatHelper} from '../../utilities/format-helper';
 import {QueryService} from '../../services/query.service';
 import {ExploreQueryType} from '../../models/query-models/explore-query-type';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'gb-explore',
@@ -24,8 +26,10 @@ export class GbExploreComponent implements OnInit {
   ngOnInit() {
   }
 
-  get globalCount(): string {
-    return FormatHelper.formatCountNumber(this.queryService.globalCount);
+  get globalCount(): Observable<string> {
+    return this.queryService.queryResults.pipe(map((queryResults) =>
+      queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
+    ));
   }
 
   get availableQueryTypes(): ExploreQueryType[] {
