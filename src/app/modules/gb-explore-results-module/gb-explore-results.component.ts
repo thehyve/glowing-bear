@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 EPFL LCA1
+ * Copyright 2018 - 2020 EPFL LCA1 / LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,10 @@ import {Chart} from 'chart.js';
 import {ExploreQueryType} from '../../models/query-models/explore-query-type';
 import {QueryService} from '../../services/query.service';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
+import {Observable} from 'rxjs';
+import {query} from '@angular/animations';
+import {map} from 'rxjs/operators';
+import {FormatHelper} from '../../utilities/format-helper';
 
 @Component({
   selector: 'gb-medco-results',
@@ -19,15 +23,15 @@ import {MedcoNetworkService} from '../../services/api/medco-network.service';
 })
 export class GbExploreResultsComponent implements OnInit {
 
-  @ViewChild('medcoResultsChart', { static: true }) medcoResultsChart: ElementRef;
+  @ViewChild('perSiteCountsChartElement', { static: true }) perSiteCountsChartElement: ElementRef;
 
-  private _resultChart: Chart;
+  private _perSiteCountsChart: Chart;
 
   constructor(private medcoNetworkService: MedcoNetworkService,
               private queryService: QueryService) { }
 
   ngOnInit() {
-    this._resultChart = new Chart(this.medcoResultsChart.nativeElement, {
+    this._perSiteCountsChart = new Chart(this.perSiteCountsChartElement.nativeElement, {
       type: 'doughnut',
       data: {
         labels: [],
@@ -60,41 +64,40 @@ export class GbExploreResultsComponent implements OnInit {
       }
     });
 
-    this.resultChart.data.labels = this.nodesName;
-    this.resultChart.data.datasets[0].data = this.perSiteCounts;
-    this.resultChart.update();
-    // todo: what about an update ?
+    this.queryService.queryResults.subscribe((queryResults) => {
+      if (queryResults && this.queryService.query.hasPerSiteCounts) {
+        this.perSiteCountsChart.data.labels = this.nodesName;
+        this.perSiteCountsChart.data.datasets[0].data = queryResults.perSiteCounts;
+      } else {
+        this.perSiteCountsChart.data.labels = [];
+        this.perSiteCountsChart.data.datasets[0].data = [];
+      }
+
+      this.perSiteCountsChart.update();
+    })
   }
 
-  get resultChart(): Chart {
-    return this._resultChart;
+  get perSiteCountsChart(): Chart {
+    return this._perSiteCountsChart;
   }
 
   get nodesName(): string[] {
     return this.medcoNetworkService.nodes.map((node) => node.name);
   }
 
-  get perSiteCountsAvailable(): boolean {
-    return this.patientListsAvailable ||
-      this.queryType === ExploreQueryType.COUNT_PER_SITE ||
-      this.queryType === ExploreQueryType.COUNT_PER_SITE_OBFUSCATED ||
-      this.queryType === ExploreQueryType.COUNT_PER_SITE_SHUFFLED ||
-      this.queryType === ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
-  }
-
-  get perSiteCounts(): number[] {
-    return this.queryService.perSiteCounts;
-  }
-
-  get queryType(): ExploreQueryType {
-    return this.queryService.query.type;
+  get perSiteCounts(): Observable<number[]> {
+    return this.queryService.queryResults.pipe(map((queryResults) =>
+      queryResults ? queryResults.perSiteCounts : []
+    ));
   }
 
   get patientListsAvailable(): boolean {
-    return this.queryType === ExploreQueryType.PATIENT_LIST;
+    return this.queryService.query.hasPatientLists;
   }
 
-  get patientLists(): string[][] {
-    return this.queryService.patientLists;
-}
+  get patientLists(): Observable<string[][]> {
+    return this.queryService.queryResults.pipe(map((queryResults) =>
+      queryResults ? queryResults.patientLists : []
+    ));
+  }
 }
