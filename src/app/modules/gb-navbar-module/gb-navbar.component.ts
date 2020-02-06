@@ -21,7 +21,7 @@ import {AppConfig} from '../../config/app.config';
 })
 export class GbNavbarComponent implements OnInit {
   constructor(private router: Router,
-              private navbarService: NavbarService
+              public navbarService: NavbarService
   ) { }
 
   ngOnInit() {
@@ -32,22 +32,5 @@ export class GbNavbarComponent implements OnInit {
       }
     });
   }
-
-  get items(): MenuItem[] {
-    return this.navbarService.items;
-  }
-
-  set items(value: MenuItem[]) {
-    this.navbarService.items = value;
-  }
-
-  get activeItem(): MenuItem {
-    return this.navbarService.activeItem;
-  }
-
-  set activeItem(value: MenuItem) {
-    this.navbarService.activeItem = value;
-  }
-
 }
 

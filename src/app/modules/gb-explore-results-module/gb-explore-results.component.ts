@@ -28,7 +28,7 @@ export class GbExploreResultsComponent implements OnInit {
   private _perSiteCountsChart: Chart;
 
   constructor(private medcoNetworkService: MedcoNetworkService,
-              private queryService: QueryService) { }
+              public queryService: QueryService) { }
 
   ngOnInit() {
     this._perSiteCountsChart = new Chart(this.perSiteCountsChartElement.nativeElement, {
@@ -89,10 +89,6 @@ export class GbExploreResultsComponent implements OnInit {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? queryResults.perSiteCounts : []
     ));
-  }
-
-  get patientListsAvailable(): boolean {
-    return this.queryService.query.hasPatientLists;
   }
 
   get patientLists(): Observable<string[][]> {

@@ -24,7 +24,7 @@
 
   <hr />
 
-  <div *ngIf="patientListsAvailable">
+  <div *ngIf="queryService.query.hasPatientLists">
     <p><b>Patient List</b></p>
     <p *ngFor="let patientList of patientLists | async; index as idx">
       <span>{{nodesName[idx]}}:</span>

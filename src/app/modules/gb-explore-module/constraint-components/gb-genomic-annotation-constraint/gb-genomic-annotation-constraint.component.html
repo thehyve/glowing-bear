@@ -41,9 +41,9 @@
       <!-- genomic zygosity -->
       <div class="form-inline" style="margin-top: -1em">
         <b>Zygosity</b>
-        <p-checkbox [(ngModel)]="zygosityHomozygous" label="homozygous" binary="true"></p-checkbox>
-        <p-checkbox [(ngModel)]="zygosityHeterozygous" label="heterozygous" binary="true"></p-checkbox>
-        <p-checkbox [(ngModel)]="zygosityUnknown" label="unknown" binary="true"></p-checkbox>
+        <p-checkbox [(ngModel)]="genomicConstraint.zygosityHomozygous" label="homozygous" binary="true"></p-checkbox>
+        <p-checkbox [(ngModel)]="genomicConstraint.zygosityHeterozygous" label="heterozygous" binary="true"></p-checkbox>
+        <p-checkbox [(ngModel)]="genomicConstraint.zygosityUnknown" label="unknown" binary="true"></p-checkbox>
       </div>
 
     </p-panel>

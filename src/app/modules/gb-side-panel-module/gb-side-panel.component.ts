@@ -15,14 +15,8 @@ import {AppConfig} from '../../config/app.config';
   templateUrl: './gb-side-panel.component.html',
   styleUrls: ['./gb-side-panel.component.css']
 })
-export class GbSidePanelComponent implements OnInit {
+export class GbSidePanelComponent {
 
-  constructor(private navbarService: NavbarService) { }
+  constructor(public navbarService: NavbarService) { }
 
-  ngOnInit() {
-  }
-
-  get tabIsExplore(): boolean {
-    return this.navbarService.isExplore;
-  }
 }

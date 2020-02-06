@@ -29,7 +29,7 @@ export class GbMainComponent implements OnInit {
   x_pos: number; // Stores x coordinate of the mouse pointer
   x_gap: number; // Stores x gap (edge) between mouse and gutter
 
-  constructor(private authenticationService: AuthenticationService,
+  constructor(public authenticationService: AuthenticationService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -104,17 +104,9 @@ export class GbMainComponent implements OnInit {
     }
   };
 
-  logout(): Promise<void> {
-    return this.authenticationService.logout;
-  }
-
   get footerText(): string {
     let footerText = this.config.getConfig('footer-text');
     return footerText ? footerText : '';
-  }
-
-  get username(): string {
-    return this.authenticationService.username;
   }
 
 }

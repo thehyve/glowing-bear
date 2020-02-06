@@ -18,30 +18,15 @@ import {map} from 'rxjs/operators';
   templateUrl: './gb-explore.component.html',
   styleUrls: ['./gb-explore.component.css']
 })
-export class GbExploreComponent implements OnInit {
+export class GbExploreComponent {
 
   constructor(public queryService: QueryService) {
-  }
-
-  ngOnInit() {
   }
 
   get globalCount(): Observable<string> {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
     ));
-  }
-
-  get availableQueryTypes(): ExploreQueryType[] {
-    return this.queryService.availableExploreQueryTypes;
-  }
-
-  get selectedQueryType(): ExploreQueryType {
-    return this.queryService.query.type;
-  }
-
-  set selectedQueryType(queryType: ExploreQueryType) {
-    this.queryService.query.type = queryType;
   }
 
   execQuery(event) {

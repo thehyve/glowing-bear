@@ -6,15 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
-import {GenomicAnnotationConstraint} from "../../../../models/constraint-models/genomic-annotation-constraint";
-import {Subject} from "rxjs";
+import {GenomicAnnotationConstraint} from '../../../../models/constraint-models/genomic-annotation-constraint';
+import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
-import {GenomicAnnotation} from "../../../../models/constraint-models/genomic-annotation";
+import {GenomicAnnotation} from '../../../../models/constraint-models/genomic-annotation';
 
 @Component({
   selector: 'gb-genomic-annotation-constraint',
@@ -43,9 +43,9 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
     return new Promise<any>((resolve, reject) => {
 
       // default zygosity
-      this.zygosityHomozygous = true;
-      this.zygosityHeterozygous = true;
-      this.zygosityUnknown = true;
+      this.genomicConstraint.zygosityHomozygous = true;
+      this.genomicConstraint.zygosityHeterozygous = true;
+      this.genomicConstraint.zygosityUnknown = true;
 
       this.searchedAnnotations = [];
       this.searchedAnnotationValues = [];
@@ -149,30 +149,6 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
     this.genomicConstraint.annotationValue = value;
     this.initializeConstraints();
     this.update();
-  }
-
-  get zygosityHomozygous(): boolean {
-    return this.genomicConstraint.zygosityHomozygous;
-  }
-
-  set zygosityHomozygous(value: boolean) {
-    this.genomicConstraint.zygosityHomozygous = value;
-  }
-
-  get zygosityHeterozygous(): boolean {
-    return this.genomicConstraint.zygosityHeterozygous;
-  }
-
-  set zygosityHeterozygous(value: boolean) {
-    this.genomicConstraint.zygosityHeterozygous = value;
-  }
-
-  get zygosityUnknown(): boolean {
-    return this.genomicConstraint.zygosityUnknown;
-  }
-
-  set zygosityUnknown(value: boolean) {
-    this.genomicConstraint.zygosityUnknown = value;
   }
 
   get searchedAnnotations(): GenomicAnnotation[] {

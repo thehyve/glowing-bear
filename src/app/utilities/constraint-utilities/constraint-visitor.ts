@@ -11,7 +11,6 @@ import {NegationConstraint} from '../../models/constraint-models/negation-constr
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {Constraint} from '../../models/constraint-models/constraint';
 
@@ -28,8 +27,6 @@ export interface ConstraintVisitor<T> {
   visitConceptConstraint(constraint: ConceptConstraint): T;
 
   visitValueConstraint(constraint: ValueConstraint): T;
-
-  visitSubjectSetConstraint(constraint: SubjectSetConstraint): T;
 
   visitTimeConstraint(constraint: TimeConstraint): T;
 

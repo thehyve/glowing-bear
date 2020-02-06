@@ -14,7 +14,6 @@ import {RouterModule} from '@angular/router';
 import {GbCombinationConstraintComponent} from './constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
 import {GbConceptConstraintComponent} from './constraint-components/gb-concept-constraint/gb-concept-constraint.component';
-import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbGenomicAnnotationConstraintComponent} from './constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
 import {GbSelectionComponent} from './gb-selection-component/gb-selection.component';
 import {FormsModule} from '@angular/forms';
@@ -43,7 +42,6 @@ import {MultiSelectModule} from 'primeng/multiselect';
     GbCombinationConstraintComponent,
     GbConstraintComponent,
     GbConceptConstraintComponent,
-    GbSubjectSetConstraintComponent,
     GbGenomicAnnotationConstraintComponent,
     GbSelectionComponent
   ],

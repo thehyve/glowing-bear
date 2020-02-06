@@ -33,7 +33,7 @@ import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
     ])
   ]
 })
-export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
   @ViewChild('treeNodeMetadataPanel', { static: true }) treeNodeMetadataPanel: OverlayPanel;
 
@@ -67,9 +67,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       treeNode: null
     };
     this.delay = 500;
-  }
-
-  ngOnInit() {
   }
 
   ngAfterViewInit() {
@@ -308,10 +305,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';
     }
-  }
-
-  get isLoading(): boolean {
-    return this.treeNodeService.isLoading;
   }
 
 }

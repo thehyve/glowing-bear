@@ -22,14 +22,9 @@ import {map} from 'rxjs/operators';
   templateUrl: './gb-summary.component.html',
   styleUrls: ['./gb-summary.component.css']
 })
-export class GbSummaryComponent implements OnInit {
+export class GbSummaryComponent {
 
-  constructor(private queryService: QueryService,
-              private treeNodeService: TreeNodeService,
-              private element: ElementRef) {
-  }
-
-  ngOnInit() {
+  constructor(private queryService: QueryService) {
   }
 
   clearAll() {

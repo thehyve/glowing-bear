@@ -13,6 +13,4 @@
                          [constraint]="constraint"></gb-concept-constraint>
   <gb-genomic-annotation-constraint *ngIf="constraint.className === 'GenomicAnnotationConstraint' "
                                     [constraint]="constraint"></gb-genomic-annotation-constraint>
-  <gb-patient-set-constraint *ngIf="constraint.className === 'SubjectSetConstraint' "
-                             [constraint]="constraint"></gb-patient-set-constraint>
 </div>

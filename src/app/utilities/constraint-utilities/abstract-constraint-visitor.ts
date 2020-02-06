@@ -13,9 +13,8 @@ import {TimeConstraint} from '../../models/constraint-models/time-constraint';
 import {TrueConstraint} from '../../models/constraint-models/true-constraint';
 import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
-import {SubjectSetConstraint} from '../../models/constraint-models/subject-set-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {GenomicAnnotationConstraint} from "../../models/constraint-models/genomic-annotation-constraint";
+import {GenomicAnnotationConstraint} from '../../models/constraint-models/genomic-annotation-constraint';
 
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
@@ -33,8 +32,6 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
         return this.visitGenomicAnnotationConstraint(<GenomicAnnotationConstraint>constraint);
       case 'ValueConstraint':
         return this.visitValueConstraint(<ValueConstraint>constraint);
-      case 'SubjectSetConstraint':
-        return this.visitSubjectSetConstraint(<SubjectSetConstraint>constraint);
       case 'TimeConstraint':
         return this.visitTimeConstraint(<TimeConstraint>constraint);
       default:
@@ -53,8 +50,6 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
   abstract visitGenomicAnnotationConstraint(constraint: GenomicAnnotationConstraint): T;
 
   abstract visitValueConstraint(constraint: ValueConstraint): T;
-
-  abstract visitSubjectSetConstraint(constraint: SubjectSetConstraint): T;
 
   abstract visitTimeConstraint(constraint: TimeConstraint): T;
 
