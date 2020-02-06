@@ -9,12 +9,14 @@
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
 import {GbExploreResultsComponent} from './gb-explore-results.component';
+import {GbExploreResultsGuard} from './gb-explore-results.guard';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: GbExploreResultsComponent
+    component: GbExploreResultsComponent,
+    canActivate: [GbExploreResultsGuard]
   }
 ];
 

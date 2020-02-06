@@ -10,15 +10,19 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GbExploreResultsComponent} from './gb-explore-results.component';
 import {routing} from './gb-explore-results.routing';
-import {ChartModule} from "primeng/chart";
-import {TableModule} from "primeng/table";
+import {ChartModule} from 'primeng/chart';
+import {TableModule} from 'primeng/table';
+import {GbExploreResultsGuard} from './gb-explore-results.guard';
 
 @NgModule({
   imports: [
     CommonModule,
     routing,
     ChartModule,
-    TableModule
+    TableModule,
+  ],
+  providers: [
+    GbExploreResultsGuard,
   ],
   declarations: [GbExploreResultsComponent],
   exports: [GbExploreResultsComponent]

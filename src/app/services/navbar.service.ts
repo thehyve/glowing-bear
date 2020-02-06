@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020  EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,10 +9,7 @@
 
 import {Injectable} from '@angular/core';
 import {MenuItem} from 'primeng/api';
-import {AuthenticationService} from './authentication.service';
 import {QueryService} from './query.service';
-import {MessageHelper} from '../utilities/message-helper';
-import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class NavbarService {
@@ -22,11 +20,20 @@ export class NavbarService {
   private _isExplore = true;
   private _isExploreResults = false;
 
-  constructor() {
+  constructor(private queryService: QueryService) {
     this.items = [
+
+      // 0: explore tab, default page
       {label: 'Explore', routerLink: '/explore'},
-      {label: 'Explore Results', routerLink: '/explore/results'},
+
+      // 1: explore results tab, not visible by default
+      {label: 'Explore Results', routerLink: '/explore/results', visible: false},
     ];
+
+    // hook to update explore results tab visibility
+    this.queryService.queryResults.subscribe((queryResults) => {
+      this.items[1].visible = queryResults !== undefined && this.queryService.query.hasPerSiteCounts;
+    })
   }
 
   updateNavbar(routerLink: string) {
