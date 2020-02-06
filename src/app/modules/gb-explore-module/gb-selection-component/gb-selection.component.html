@@ -3,9 +3,6 @@
   <div #inclusionCriteriaBox
        class="criteria-box">
     <p><b>Inclusion</b> criteria:</p>
-    <div class="subject-count-box">
-      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingState == 'loading'"></i>
-    </div>
     <gb-constraint #rootInclusionConstraintComponent
                 [constraint]="rootInclusionConstraint"
                 [isRoot]="true"></gb-constraint>
@@ -15,9 +12,6 @@
   <div #exclusionCriteriaBox
        class="criteria-box">
     <p><b>Exclusion</b> criteria:</p>
-    <div class="subject-count-box">
-      <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingState == 'loading'"></i>
-    </div>
     <gb-constraint #rootExclusionConstraintComponent
                 [constraint]="rootExclusionConstraint"
                 [isRoot]="true"></gb-constraint>
