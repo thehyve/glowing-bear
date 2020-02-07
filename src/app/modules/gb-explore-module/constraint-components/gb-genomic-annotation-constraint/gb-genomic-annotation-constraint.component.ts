@@ -15,6 +15,7 @@ import {GenomicAnnotationConstraint} from '../../../../models/constraint-models/
 import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {GenomicAnnotation} from '../../../../models/constraint-models/genomic-annotation';
+import {ErrorHelper} from '../../../../utilities/error-helper';
 
 @Component({
   selector: 'gb-genomic-annotation-constraint',
@@ -55,7 +56,10 @@ export class GbGenomicAnnotationConstraintComponent extends GbConstraintComponen
         debounceTime(200),
         distinctUntilChanged(),
         switchMap( (searchTerm: string) =>  this.genomicAnnotationsService.getAnnotationValues(this.selectedAnnotation, searchTerm))
-      ).subscribe((vals: string[]) => this.searchedAnnotationValues = vals);
+      ).subscribe(
+        (vals: string[]) => this.searchedAnnotationValues = vals,
+        (err) => ErrorHelper.handleError(`Error querying annotation ${this.selectedAnnotation.name}`, err)
+      );
 
       this.showMoreOptions = false;
     });

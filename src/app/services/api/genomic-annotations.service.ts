@@ -45,7 +45,6 @@ export class GenomicAnnotationsService {
     return this.apiEndpointService.getCall(`genomic-annotations/${annotation.name}?` +
       `value=${annotationValue}` +
       `&limit=${GenomicAnnotationsService.QUERY_RECORD_LIMIT}`).pipe(
-        catchError(ErrorHelper.handleError.bind(this)),
         map((rep: object) => rep as string[])
     );
   }
@@ -103,7 +102,6 @@ export class GenomicAnnotationsService {
     }
 
     return this.apiEndpointService.getCall(queryUrlPart).pipe(
-      catchError(ErrorHelper.handleError.bind(this)),
       map((rep: object) => rep as string[]),
       tap((variantIds: string[]) => constraint.variantIds = variantIds),
       tap((variantIds: string[]) => console.log(

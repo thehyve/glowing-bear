@@ -1,18 +1,17 @@
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {Observable, forkJoin, of} from 'rxjs';
-import {timeout, switchMap, map} from 'rxjs/operators';
+import {timeout, map} from 'rxjs/operators';
 import {ApiI2b2Panel} from '../../../models/api-request-models/medco-node/api-i2b2-panel';
-import {Constraint} from '../../../models/constraint-models/constraint';
 import {ConstraintMappingService} from '../../constraint-mapping.service';
 import {ApiEndpointService} from '../../api-endpoint.service';
 import {GenomicAnnotationsService} from '../genomic-annotations.service';
 import {ApiExploreQueryResult} from '../../../models/api-response-models/medco-node/api-explore-query-result';
-import {AuthenticationService} from '../../authentication.service';
 import {ExploreQueryType} from '../../../models/query-models/explore-query-type';
 import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
+import {ErrorHelper} from '../../../utilities/error-helper';
 
 @Injectable()
 export class ExploreQueryService {
@@ -82,7 +81,7 @@ export class ExploreQueryService {
     if (query.constraint.className === 'TrueConstraint') {
       return of([]);
     } else if (query.constraint.className !== 'CombinationConstraint') {
-      throw new Error('Only root constraint accepted.');
+      throw ErrorHelper.handleNewError('Only root constraint accepted.');
     }
 
     return this.exploreQueryAllNodes(

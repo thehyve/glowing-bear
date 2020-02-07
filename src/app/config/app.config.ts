@@ -56,14 +56,12 @@ export class AppConfig {
               console.log('Successfully retrieved config: ', this.config);
               resolve();
             }, (err) => {
-              ErrorHelper.handleError(err);
-              console.error('Error reading ' + this.getEnv() + ' configuration file');
+              ErrorHelper.handleError(`Error reading ${this.getEnv()} configuration file`, err);
               reject(err);
             });
 
         }, (err) => {
-          ErrorHelper.handleError(err);
-          console.error('Configuration environment could not be read.');
+          ErrorHelper.handleError('Configuration environment could not be read.', err);
           reject(err);
         });
     });

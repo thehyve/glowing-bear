@@ -1,14 +1,14 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {catchError} from "rxjs/operators";
+import {Observable, of} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import {AppConfig} from 'app/config/app.config';
 import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class ApiEndpointService {
 
-  private _endpointUrl: string;
+  private readonly _endpointUrl: string;
 
   get endpointUrl(): string {
     return this._endpointUrl;
@@ -28,11 +28,11 @@ export class ApiEndpointService {
    */
   postCall(urlPart: string, body: object, apiUrl?: string): Observable<any> {
     const url = apiUrl ?
-      apiUrl + "/" + urlPart :
-      this.endpointUrl + "/" + urlPart;
+      apiUrl + '/' + urlPart :
+      this.endpointUrl + '/' + urlPart;
 
     return this.http.post(url, body).pipe(
-      catchError(ErrorHelper.handleError.bind(this))
+      catchError(ErrorHelper.handleHTTPError)
     );
   }
 
@@ -45,7 +45,7 @@ export class ApiEndpointService {
   getCall(urlPart, additionalParam?): Observable<any> {
     const url = `${this.endpointUrl}/${urlPart}`;
     return this.http.get(url, additionalParam).pipe(
-      catchError(ErrorHelper.handleError.bind(this))
+      catchError(ErrorHelper.handleHTTPError)
     );
   }
 
@@ -58,7 +58,7 @@ export class ApiEndpointService {
   putCall(urlPart, body) {
     let url = `${this.endpointUrl}/${urlPart}`;
     return this.http.put(url, body).pipe(
-      catchError(ErrorHelper.handleError.bind(this))
+      catchError(ErrorHelper.handleHTTPError)
     );
   }
 
@@ -70,7 +70,7 @@ export class ApiEndpointService {
   deleteCall(urlPart) {
     let url = `${this.endpointUrl}/${urlPart}`;
     return this.http.delete(url).pipe(
-      catchError(ErrorHelper.handleError.bind(this))
+      catchError(ErrorHelper.handleHTTPError)
     );
   }
 }

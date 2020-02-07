@@ -49,21 +49,22 @@ export class TreeNodeService {
 
       // retrieve root tree nodes and extract the concepts
       this._isLoading = true;
-      this.exploreSearchService.exploreSearch('/').subscribe((treeNodes: TreeNode[]) => {
+      this.exploreSearchService.exploreSearch('/').subscribe(
+        (treeNodes: TreeNode[]) => {
 
-        // reset concepts and concept constraints
-        this.constraintService.concepts = [];
-        this.constraintService.conceptConstraints = [];
+          // reset concepts and concept constraints
+          this.constraintService.concepts = [];
+          this.constraintService.conceptConstraints = [];
 
-        this.processTreeNodes(treeNodes, this.constraintService);
-        treeNodes.forEach((node) => this.rootTreeNodes.push(node));
-        this._isLoading = false;
-        resolve();
-
-      },(err: HttpErrorResponse) => {
-        ErrorHelper.handleError(err);
-        this._isLoading = false;
-        reject(err);
+          this.processTreeNodes(treeNodes, this.constraintService);
+          treeNodes.forEach((node) => this.rootTreeNodes.push(node));
+          this._isLoading = false;
+          resolve();
+        },
+        (err) => {
+          ErrorHelper.handleError('Error during initial tree loading', err);
+          this._isLoading = false;
+          reject(err);
       });
     });
   }
@@ -86,8 +87,8 @@ export class TreeNodeService {
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
       },
-      (err: HttpErrorResponse) => {
-        ErrorHelper.handleError(err);
+      (err) => {
+        ErrorHelper.handleError('Error during tree children loading', err);
         this._isLoading = false;
       }
     );

@@ -8,6 +8,7 @@ import {ConceptConstraint} from "../models/constraint-models/concept-constraint"
 import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
 import {ConceptType} from "../models/constraint-models/concept-type";
 import {CryptoService} from "./crypto.service";
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class ConstraintMappingService {
@@ -25,7 +26,7 @@ export class ConstraintMappingService {
       this.mapCombinationConstraint(panels, constraint as CombinationConstraint);
       return panels;
     } else {
-      throw new Error('illegal constraints provided')
+      throw ErrorHelper.handleNewError('illegal constraints provided');
     }
   }
 
@@ -63,7 +64,7 @@ export class ConstraintMappingService {
       case 'CombinationConstraint':
         let combConstraint = constraint as CombinationConstraint;
         if (combConstraint.combinationState !== CombinationState.Or) {
-          throw new Error("combination state should be OR");
+          throw ErrorHelper.handleNewError('combination state should be OR');
         }
 
         for (let i in combConstraint.children) {
@@ -77,13 +78,13 @@ export class ConstraintMappingService {
               break;
 
             default:
-              throw new Error(`unexpected constraint type (${combConstraint.children[i].className})`)
+              throw ErrorHelper.handleNewError(`unexpected constraint type (${combConstraint.children[i].className})`)
           }
         }
         break;
 
       default:
-        throw new Error(`illegal constraint (${constraint.className})`);
+        throw ErrorHelper.handleNewError(`illegal constraint (${constraint.className})`);
     }
 
     console.log(`Generated panel: ${JSON.stringify(panel)}`);
@@ -111,7 +112,7 @@ export class ConstraintMappingService {
         break;
 
       default:
-        throw new Error(`Concept type not supported: ${constraint.concept.type.toString()}`);
+        throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
     }
     return item;
   }

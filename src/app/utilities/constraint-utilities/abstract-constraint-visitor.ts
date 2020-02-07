@@ -35,7 +35,7 @@ export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<
       case 'TimeConstraint':
         return this.visitTimeConstraint(<TimeConstraint>constraint);
       default:
-        throw new Error(`Unsupported constraint type: ${constraint.className}`);
+        throw ErrorHelper.handleNewError(`Unsupported constraint type: ${constraint.className}`);
     }
   }
 

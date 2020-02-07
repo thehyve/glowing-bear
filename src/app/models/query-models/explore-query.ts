@@ -7,7 +7,7 @@
  */
 
 import {Constraint} from '../constraint-models/constraint';
-import {ExploreQueryType} from "./explore-query-type";
+import {ExploreQueryType} from './explore-query-type';
 
 export class ExploreQuery {
 
@@ -17,7 +17,7 @@ export class ExploreQuery {
   // the constraint of the query
   private _constraint: Constraint;
   // the type of the query
-  private _type: ExploreQueryType = ExploreQueryType.COUNT_GLOBAL_OBFUSCATED; // todo: check if that should be the default
+  private _type: ExploreQueryType = ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
 
   constructor(name?: string) {
     this.name = name;

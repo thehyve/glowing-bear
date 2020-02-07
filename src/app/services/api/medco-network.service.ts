@@ -44,8 +44,7 @@ export class MedcoNetworkService {
         resolve();
 
       }, (err) => {
-        ErrorHelper.handleError(err);
-        console.error("Failed to load network metadata");
+        ErrorHelper.handleError('Failed to load network metadata', err);
         reject(err);
       });
     });

@@ -68,8 +68,7 @@ export class QueryService {
    */
   private parseExploreQueryResults(encResults: ApiExploreQueryResult[]): ExploreQueryResult {
     if (encResults.length === 0) {
-      ErrorHelper.handleError('Empty results, no processing done');
-      return undefined;
+      throw ErrorHelper.handleNewError('Empty results, no processing done');
     }
 
     let parsedResults = new ExploreQueryResult();
@@ -89,8 +88,7 @@ export class QueryService {
         break;
 
       default:
-        console.error(`unknown explore query type: ${this.query.type}`);
-        break;
+        throw ErrorHelper.handleNewError(`unknown explore query type: ${this.query.type}`);
     }
 
     if (this.query.type === ExploreQueryType.PATIENT_LIST) {
@@ -102,6 +100,10 @@ export class QueryService {
   }
 
   public execQuery(): void {
+    if (!this.constraintService.hasConstraint()) {
+      return;
+    }
+
     this.isUpdating = true;
 
     // prepare and execute query
@@ -116,7 +118,11 @@ export class QueryService {
         this.isUpdating = false;
         this.isDirty = false;
       },
-      err => console.error(`error during explore query: ${err}`)
+      (err) => {
+        ErrorHelper.handleError(`Error during explore query ${this.query.uniqueId}`, err);
+        this.isUpdating = false;
+        this.isDirty = true;
+      }
     );
   }
 
