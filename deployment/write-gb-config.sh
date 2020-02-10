@@ -21,11 +21,11 @@ cat > /etc/nginx/conf.d/default.conf <<EOL
 server {
     listen       80;
     server_name  localhost;
+    root /usr/share/nginx/html;
+    index index.html index.htm;
 
-    location / {
-        root   /usr/share/nginx/html;
-        index  index.html index.htm;
-        try_files \$uri \$uri/ /index.html;
+    location /glowing-bear/ {
+        try_files \$uri \$uri/ /glowing-bear/index.html;
     }
 
     error_page   500 502 503 504  /50x.html;
