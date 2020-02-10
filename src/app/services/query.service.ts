@@ -14,13 +14,13 @@ import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {ExploreQueryType} from '../models/query-models/explore-query-type';
 import {AuthenticationService} from './authentication.service';
-import {switchMap} from 'rxjs/operators';
+import {map, switchMap} from 'rxjs/operators';
 import {ExploreQueryService} from './api/medco-node/explore-query.service';
 import {ApiExploreQueryResult} from '../models/api-response-models/medco-node/api-explore-query-result';
 import {CryptoService} from './crypto.service';
 import {GenomicAnnotationsService} from './api/genomic-annotations.service';
 import {ExploreQueryResult} from '../models/query-models/explore-query-result';
-import {ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {ErrorHelper} from '../utilities/error-helper';
 
 /**
@@ -193,5 +193,14 @@ export class QueryService {
 
     console.log(`User ${this.authService.username} explore query types: ${this._availableExploreQueryTypes}`);
     return this._availableExploreQueryTypes;
+  }
+
+
+  /**
+   * Whether of not the explore results component should be visible.
+   */
+  get displayExploreResultsComponent(): Observable<boolean> {
+    return this.queryResults.pipe(map((queryResults) =>
+      queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
   }
 }

@@ -31,8 +31,8 @@ export class NavbarService {
     ];
 
     // hook to update explore results tab visibility
-    this.queryService.queryResults.subscribe((queryResults) => {
-      this.items[1].visible = queryResults !== undefined && this.queryService.query.hasPerSiteCounts;
+    this.queryService.displayExploreResultsComponent.subscribe((display) => {
+      this.items[1].visible = display;
     })
   }
 

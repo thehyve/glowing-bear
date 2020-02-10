@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from '@angular/router';
 import {QueryService} from '../../services/query.service';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 
 /**
  * Activation guard for GbExploreResultsModule preventing activation if no results are available for display.
@@ -23,15 +23,11 @@ export class GbExploreResultsGuard implements CanActivate {
   }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.queryService.queryResults.pipe(map((queryResults) => {
-        if (queryResults && this.queryService.query.hasPerSiteCounts) {
-          return true;
-        } else {
-          console.log('No results available for display, redirecting ...');
-          this.router.navigateByUrl('/explore');
-          return false;
-        }
+    return this.queryService.displayExploreResultsComponent.pipe(tap((display) => {
+      if (!display) {
+        console.log('No results available for display, redirecting ...');
+        this.router.navigateByUrl('/explore');
       }
-    ));
+    }));
   }
 }
