@@ -15,6 +15,7 @@ import {ValueConstraint} from '../../models/constraint-models/value-constraint';
 import {NegationConstraint} from '../../models/constraint-models/negation-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {GenomicAnnotationConstraint} from '../../models/constraint-models/genomic-annotation-constraint';
+import {ErrorHelper} from '../error-helper';
 
 export abstract class AbstractConstraintVisitor<T> implements ConstraintVisitor<T> {
 
