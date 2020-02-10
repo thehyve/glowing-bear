@@ -1,14 +1,15 @@
 import {Constraint} from '../models/constraint-models/constraint';
 import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
-import {Injectable} from "@angular/core";
-import {CombinationConstraint} from "../models/constraint-models/combination-constraint";
-import {CombinationState} from "../models/constraint-models/combination-state";
-import {ApiI2b2Item} from "../models/api-request-models/medco-node/api-i2b2-item";
-import {ConceptConstraint} from "../models/constraint-models/concept-constraint";
-import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
-import {ConceptType} from "../models/constraint-models/concept-type";
-import {CryptoService} from "./crypto.service";
+import {Injectable} from '@angular/core';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {ApiI2b2Item} from '../models/api-request-models/medco-node/api-i2b2-item';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
+import {ConceptType} from '../models/constraint-models/concept-type';
+import {CryptoService} from './crypto.service';
 import {ErrorHelper} from '../utilities/error-helper';
+import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 
 @Injectable()
 export class ConstraintMappingService {
@@ -16,29 +17,30 @@ export class ConstraintMappingService {
   constructor(private cryptoService: CryptoService) { }
 
   public mapConstraint(constraint: Constraint): ApiI2b2Panel[] {
-    if (constraint.className === 'TrueConstraint') {
-      console.log('Empty constraint, generated empty panels');
-      return [];
-
-    } else if ( constraint.className === 'CombinationConstraint' &&
-                (constraint as CombinationConstraint).combinationState === CombinationState.And) {
-      let panels = [];
-      this.mapCombinationConstraint(panels, constraint as CombinationConstraint);
-      return panels;
-    } else {
-      throw ErrorHelper.handleNewError('illegal constraints provided');
-    }
+    let panels = [];
+    this.mapCombinationConstraint(panels, constraint as CombinationConstraint, false);
+    return panels;
   }
 
-  private mapCombinationConstraint(panels: ApiI2b2Panel[], constraint: Constraint) {
-    if (constraint.className !== 'CombinationConstraint' ||
-      (constraint as CombinationConstraint).combinationState === CombinationState.Or) {
-      panels.push(this.generateI2b2Panel(constraint));
+  private mapCombinationConstraint(panels: ApiI2b2Panel[], constraint: Constraint, negated: boolean) {
+    switch (constraint.className) {
+    case 'NegationConstraint':
+      ((constraint as NegationConstraint).constraint as CombinationConstraint).children.forEach((childConstraint) =>
+        this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, true));
+      break;
 
-    } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
-      (constraint as CombinationConstraint).children.forEach((childConstraint) =>
-        this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint))
+    case 'CombinationConstraint':
+      if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
+        panels.push(this.generateI2b2Panel(constraint, false));
+      } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
+        (constraint as CombinationConstraint).children.forEach((childConstraint) =>
+          this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, negated))
+      }
+      break;
 
+    default: // should be ConceptConstraint or GenomicAnnotationConstraint
+      panels.push(this.generateI2b2Panel(constraint, negated));
+      break;
     }
   }
 
@@ -47,10 +49,11 @@ export class ConstraintMappingService {
    * when there are more than one.
    *
    * @param constraint
+   * @param negated
    */
-  private generateI2b2Panel(constraint: Constraint): ApiI2b2Panel {
+  private generateI2b2Panel(constraint: Constraint, negated: boolean): ApiI2b2Panel {
     let panel = new ApiI2b2Panel();
-    panel.not = false; // todo: how to get the NOT?
+    panel.not = negated;
 
     switch (constraint.className) {
       case 'ConceptConstraint':

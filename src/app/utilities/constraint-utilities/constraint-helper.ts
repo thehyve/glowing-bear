@@ -10,10 +10,6 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {ConceptType} from '../../models/constraint-models/concept-type';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
-import {CombinationState} from '../../models/constraint-models/combination-state';
-import {TrueConstraint} from '../../models/constraint-models/true-constraint';
-import {ExploreQuery} from '../../models/query-models/explore-query';
-import {MessageHelper} from '../message-helper';
 
 export class ConstraintHelper {
 
@@ -56,31 +52,6 @@ export class ConstraintHelper {
   }
 
   /**
-   * Combine subject-level constraints into a subject-level combination constraint.
-   * If the input is a singleton list, the contained element is returned, for
-   * an empty list, a True constraint is returned.
-   *
-   * @param {Constraint[]} constraints the input subject-level constraints.
-   * @return {Constraint} True, if the list is empty, the contained element if it is singleton,
-   * or a subject-level combination constraint otherwise.
-   */
-  public static combineSubjectLevelConstraints(constraints: Constraint[]): Constraint {
-    if (constraints.length < 1) {
-      // empty list of patient level constraints
-      return new TrueConstraint();
-    } else if (constraints.length === 1) {
-      // singleton constraint
-      return constraints[0];
-    } else {
-      // wrap patient level constraints in a patient-level combination
-      let combination = new CombinationConstraint();
-      combination.combinationState = CombinationState.And;
-      constraints.forEach(child => combination.addChild(child));
-      return combination;
-    }
-  }
-
-  /**
    * Checks if the constraint is a conjunctive combination constraint with one categorical concept constraint
    * as child.
    *
@@ -118,58 +89,4 @@ export class ConstraintHelper {
       return true;
     });
   }
-
-  // /**
-  //  * map a constraint to plain object that can be downloaded in json, and later imported as well
-  //  * @param {Constraint} constraint
-  //  * @returns {object}
-  //  */
-  // static mapConstraintToObject(constraint: Constraint): object {
-  //   let obj: object = TransmartConstraintMapper.mapConstraint(constraint, true);
-  //   return obj;
-  // }
-  //
-  // /**
-  //  * map an object to constraint
-  //  * @param {object} obj
-  //  * @returns {Constraint}
-  //  */
-  // static mapObjectToConstraint(obj: object): Constraint {
-  //   let constraint: Constraint = TransmartConstraintMapper.generateConstraintFromObject(obj);
-  //   return constraint;
-  // }
-  //
-  // static mapQueryToObject(query: ExploreQuery): object {
-  //   let obj = {};
-  //   obj['id'] = query.id;
-  //   obj['name'] = query.name;
-  //   if (query.description) {
-  //     obj['description'] = query.description;
-  //   }
-  //   if (query.createDate) {
-  //     obj['createDate'] = query.createDate;
-  //   }
-  //   if (query.updateDate) {
-  //     obj['updateDate'] = query.updateDate;
-  //   }
-  //   if (query.subjectQuery) {
-  //     obj['subjectQuery'] = ConstraintHelper.mapConstraintToObject(query.subjectQuery);
-  //   }
-  //   return obj;
-  // }
-  //
-  // static mapObjectToQuery(obj: object): ExploreQuery {
-  //   try {
-  //     let query = new ExploreQuery(obj['id'], obj['name']);
-  //     query.createDate = obj['createDate'] ? obj['createDate'] : new Date().toISOString();
-  //     query.updateDate = obj['updateDate'] ? obj['updateDate'] : new Date().toISOString();
-  //     query.subjectQuery = ConstraintHelper.mapObjectToConstraint(obj['subjectQuery']);
-  //     return query;
-  //   } catch (e) {
-  //     const message = 'Failed to convert to query.';
-  //     console.error(message);
-  //     MessageHelper.alert('error', message);
-  //   }
-  //   return null;
-  // }
 }

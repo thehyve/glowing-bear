@@ -10,7 +10,6 @@
 import {Injectable} from '@angular/core';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Constraint} from '../models/constraint-models/constraint';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
@@ -22,6 +21,7 @@ import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-hel
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
+import {ErrorHelper} from '../utilities/error-helper';
 
 /**
  * This service concerns with
@@ -95,20 +95,6 @@ export class ConstraintService {
     return results;
   }
 
-  /*
-   * ------------ constraint generation in the 1st step ------------
-   */
-  /**
-   * In the 1st step,
-   * Generate the constraint for retrieving the patients with only the inclusion criteria
-   * @returns {Constraint}
-   */
-  public generateInclusionConstraint(): Constraint {
-    let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
-    return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
-      inclusionConstraint : new TrueConstraint();
-  }
-
   public hasConstraint(): Boolean {
     return this.hasInclusionConstraint() || this.hasExclusionConstraint();
   }
@@ -122,66 +108,26 @@ export class ConstraintService {
   }
 
   /**
-   * In the 1st step,
-   * Generate the constraint for retrieving the patients with the exclusion criteria,
-   * but also in the inclusion set
-   * @returns {CombinationConstraint}
+   * Generate the constraint corresponding to the query.
    */
-  public generateExclusionConstraint(): Constraint {
-    if (this.hasExclusionConstraint()) {
-      // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.generateInclusionConstraint();
-      let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-
-      let combination = new CombinationConstraint();
-      combination.addChild(inclusionConstraint);
-      combination.addChild(exclusionConstraint);
-      return combination;
-    } else {
-      return undefined;
-    }
-  }
-
-  public constraint(): Constraint {
-    return this.generateSelectionConstraint();
-  }
-
-  /**
-   * In the 1st step,
-   * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
-   * @returns {Constraint}
-   */
-  private generateSelectionConstraint(): Constraint {
+  public generateConstraint(): Constraint {
     let resultConstraint: Constraint;
-    let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
-    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-    let trueInclusion = false;
-    // Inclusion part
-    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint)) {
-      inclusionConstraint = new TrueConstraint();
-      trueInclusion = true;
+
+    if (!this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
+      throw ErrorHelper.handleNewError('Empty constraints');
+
+    } else if (this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
+      resultConstraint = this.rootInclusionConstraint;
+
+    } else if (!this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
+      resultConstraint = new NegationConstraint(this.rootExclusionConstraint);
+
+    } else if (this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
+      resultConstraint = new CombinationConstraint();
+      (resultConstraint as CombinationConstraint).addChild(this.rootInclusionConstraint);
+      (resultConstraint as CombinationConstraint).addChild(new NegationConstraint(this.rootExclusionConstraint));
     }
 
-    // Only use exclusion if there's something there
-    if (ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>exclusionConstraint)) {
-      // Wrap exclusion in negation
-      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
-
-      // If there is some constraint other than a true constraint in the inclusion,
-      // form a proper combination constraint to return
-      if (!trueInclusion) {
-        let combination = new CombinationConstraint();
-        combination.combinationState = CombinationState.And;
-        combination.addChild(inclusionConstraint);
-        combination.addChild(negatedExclusionConstraint);
-        resultConstraint = combination;
-      } else {
-        resultConstraint = negatedExclusionConstraint;
-      }
-    } else {
-      // Otherwise just return the inclusion part
-      resultConstraint = inclusionConstraint;
-    }
     return resultConstraint;
   }
 
@@ -191,31 +137,6 @@ export class ConstraintService {
   public clearConstraint() {
     this.rootInclusionConstraint.children.length = 0;
     this.rootExclusionConstraint.children.length = 0;
-  }
-
-  public restoreConstraint_1(constraint: Constraint) {
-    if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
-      const children = (<CombinationConstraint>constraint).children;
-      let hasNegation = children.length === 2
-        && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');
-      if (hasNegation) {
-        let negationConstraint =
-          <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
-        let remainingConstraint =
-          <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreConstraint_1(remainingConstraint);
-      } else {
-        for (let child of children) {
-          this.rootInclusionConstraint.addChild(child);
-        }
-        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
-      }
-    } else if (constraint.className === 'NegationConstraint') {
-      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
-    } else if (constraint.className !== 'TrueConstraint') {
-      this.rootInclusionConstraint.addChild(constraint);
-    }
   }
 
   // generate the constraint instance based on given node (e.g. tree node)

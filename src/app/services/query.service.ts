@@ -111,7 +111,7 @@ export class QueryService {
 
     // prepare and execute query
     this.query.generateUniqueId();
-    this.query.constraint = this.constraintService.constraint();
+    this.query.constraint = this.constraintService.generateConstraint();
 
     this.genomicAnnotationsService.addVariantIdsToConstraints(this.query.constraint).pipe(
       switchMap( () => this.exploreQueryService.exploreQuery(this.query))

@@ -78,12 +78,6 @@ export class ExploreQueryService {
    * @param query
    */
   exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
-    if (query.constraint.className === 'TrueConstraint') {
-      return of([]);
-    } else if (query.constraint.className !== 'CombinationConstraint') {
-      throw ErrorHelper.handleNewError('Only root constraint accepted.');
-    }
-
     return this.exploreQueryAllNodes(
         query.uniqueId,
         query.type,

@@ -8,7 +8,6 @@
 
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
-import {TrueConstraint} from './true-constraint';
 
 export class CombinationConstraint extends Constraint {
 
@@ -74,22 +73,5 @@ export class CombinationConstraint extends Constraint {
 
   set isRoot(value: boolean) {
     this._isRoot = value;
-  }
-
-  optimize(): Constraint {
-    if (this.children.length > 0) {
-      if (this.children.length > 1) {
-        return this;
-      } else {
-        let child = this.children[0];
-        if (child.className === 'CombinationConstraint') {
-          return (<CombinationConstraint>child).optimize();
-        } else {
-          return child;
-        }
-      }
-    } else {
-      return new TrueConstraint();
-    }
   }
 }
