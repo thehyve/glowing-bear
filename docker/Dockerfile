@@ -17,7 +17,7 @@ COPY config.template.json config.template.json
 
 # download and untar application artifacts
 RUN apk add curl && \
-    curl -L "${GB_SRC_URL}" -o "glowing-bear-${GB_VERSION}.tar" && \
+    curl -f -L "${GB_SRC_URL}" -o "glowing-bear-${GB_VERSION}.tar" && \
     tar -xf "glowing-bear-${GB_VERSION}.tar" --strip 1
 
 # apply env variables to the application config and nginx config, while starting the webserver
