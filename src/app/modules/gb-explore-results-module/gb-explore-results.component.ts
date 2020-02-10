@@ -91,7 +91,7 @@ export class GbExploreResultsComponent implements OnInit {
     ));
   }
 
-  get patientLists(): Observable<string[][]> {
+  get patientLists(): Observable<number[][]> {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? queryResults.patientLists : []
     ));
