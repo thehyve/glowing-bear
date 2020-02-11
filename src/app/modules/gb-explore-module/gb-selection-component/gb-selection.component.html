@@ -1,0 +1,27 @@
+<div>
+  <!-- Inclusion criteria -->
+  <div #inclusionCriteriaBox
+       class="criteria-box">
+    <p><b>Inclusion</b> criteria:</p>
+    <gb-constraint #rootInclusionConstraintComponent
+                [constraint]="constraintService.rootInclusionConstraint"
+                [isRoot]="true"></gb-constraint>
+  </div>
+
+  <!-- Exclusion criteria -->
+  <div #exclusionCriteriaBox
+       class="criteria-box">
+    <p><b>Exclusion</b> criteria:</p>
+    <gb-constraint #rootExclusionConstraintComponent
+                [constraint]="constraintService.rootExclusionConstraint"
+                [isRoot]="true"></gb-constraint>
+  </div>
+
+
+  <!-- Intersection calculation -->
+  <div class="subject-count-box">
+    <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingState == 'loading'"></i>
+    <span [@notifyState]="loadingState">{{globalCount | async}} subjects match your query.</span>
+  </div>
+
+</div>

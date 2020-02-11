@@ -1,0 +1,9 @@
+{
+  "medco-node-url": "http://localhost/local-3nodes/medco-0",
+
+  "keycloak-url": "http://localhost/auth",
+  "keycloak-realm": "master",
+  "keycloak-client-id": "medco",
+
+  "footer-text": ""
+}

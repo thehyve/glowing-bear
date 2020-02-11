@@ -49,8 +49,8 @@
 
 
 /** Evergreen browsers require these. **/
-import 'core-js/es6/reflect';
-import 'core-js/es7/reflect';
+// import 'core-js/es6/reflect';
+import 'core-js/proposals/reflect-metadata';
 
 
 /** ALL Firefox browsers require the following to support `@angular/animation`. **/
@@ -74,3 +74,10 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  * Needed for: All but Chrome, Firefox, Edge, IE11 and Safari 10
  */
 // import 'intl';  // Run `npm install --save intl`.
+
+// hack needed for some libraries that expect node.js
+(window as any).global = window;
+// @ts-ignore
+window.Buffer = window.Buffer || require('buffer').Buffer;
+import * as process from 'process';
+(window as any).process = process;

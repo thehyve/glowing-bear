@@ -7,7 +7,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from './services/authentication/authentication.service';
+import {AuthenticationService} from './services/authentication.service';
 import {MessageHelper} from './utilities/message-helper';
 
 @Component({
@@ -23,8 +23,8 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authenticationService.authorised.subscribe((authenticated) => {
-      if (authenticated) {
+    this.authenticationService.userLoggedIn.subscribe((loggedIn) => {
+      if (loggedIn) {
         console.log(`Authentication completed.`);
         MessageHelper.alert('success', 'Authentication successful!');
         this._authenticationCompleted = true;
@@ -33,10 +33,6 @@ export class AppComponent implements OnInit {
         MessageHelper.alert('error', 'Authentication failed!');
       }
     });
-  }
-
-  logout() {
-    this.authenticationService.logout();
   }
 
   get authenticationCompleted(): boolean {

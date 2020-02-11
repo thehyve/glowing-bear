@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2019 - 2020  LDS EPFL
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,25 +10,18 @@
 import {Injectable} from '@angular/core';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {Constraint} from '../models/constraint-models/constraint';
-import {TrueConstraint} from '../models/constraint-models/true-constraint';
-import {StudyConstraint} from '../models/constraint-models/study-constraint';
-import {Study} from '../models/constraint-models/study';
 import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {CombinationState} from '../models/constraint-models/combination-state';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {DropMode} from '../models/drop-mode';
 import {TreeNodeService} from './tree-node.service';
-import {SubjectSetConstraint} from '../models/constraint-models/subject-set-constraint';
-import {PedigreeConstraint} from '../models/constraint-models/pedigree-constraint';
-import {ResourceService} from './resource.service';
 import {TreeNode} from '../models/tree-models/tree-node';
-import {ConstraintMark} from '../models/constraint-models/constraint-mark';
 import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
-import {Pedigree} from '../models/constraint-models/pedigree';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
-import {GenomicAnnotationConstraint} from "../models/constraint-models/genomic-annotation-constraint";
-import {GenomicAnnotation} from "../models/constraint-models/genomic-annotation";
+import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
+import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
+import {ErrorHelper} from '../utilities/error-helper';
 
 /**
  * This service concerns with
@@ -47,9 +41,6 @@ export class ConstraintService {
    * The constraints should be copied when editing them.
    */
   private _allConstraints: Constraint[] = [];
-  private _studies: Study[] = [];
-  private _studyConstraints: Constraint[] = [];
-  private _validPedigreeTypes: object[] = [];
   private _concepts: Concept[] = [];
   private _conceptLabels: string[] = [];
   private _conceptConstraints: Constraint[] = [];
@@ -69,76 +60,12 @@ export class ConstraintService {
     return depth;
   }
 
-  public constraint_1_2(): Constraint {
-    const c1 = this.constraint_1();
-    const c2 = this.constraint_2();
-    let combo = new CombinationConstraint();
-    combo.addChild(c1);
-    combo.addChild(c2);
-    return combo;
-  }
-
-  constructor(private treeNodeService: TreeNodeService,
-              private resourceService: ResourceService) {
+  constructor(private treeNodeService: TreeNodeService) {
     // Initialize the root inclusion and exclusion constraints in the 1st step
     this.rootInclusionConstraint = new CombinationConstraint();
     this.rootInclusionConstraint.isRoot = true;
-    this.rootInclusionConstraint.mark = ConstraintMark.SUBJECT;
     this.rootExclusionConstraint = new CombinationConstraint();
     this.rootExclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint.mark = ConstraintMark.SUBJECT;
-
-    // Construct constraints
-    this.loadEmptyConstraints();
-    this.loadStudies();
-    // create the pedigree-related constraints
-    this.loadPedigrees();
-    // construct concepts while loading the tree nodes
-    this.treeNodeService.load();
-  }
-
-  private loadEmptyConstraints() {
-    this.allConstraints.push(new CombinationConstraint());
-    this.allConstraints.push(new StudyConstraint());
-    this.allConstraints.push(new ConceptConstraint());
-  }
-
-  private loadStudies() {
-    this.resourceService.getStudies()
-      .subscribe(
-        (studies: Study[]) => {
-          // reset studies and study constraints
-          this.studies = studies;
-          this.studyConstraints = [];
-          studies.forEach(study => {
-            let constraint = new StudyConstraint();
-            constraint.studies.push(study);
-            this.studyConstraints.push(constraint);
-            this.allConstraints.push(constraint);
-          });
-        },
-        err => console.error(err)
-      );
-  }
-
-  private loadPedigrees() {
-    this.resourceService.getPedigrees()
-      .subscribe(
-        (pedigrees: Pedigree[]) => {
-          for (let p of pedigrees) {
-            let pedigreeConstraint: PedigreeConstraint = new PedigreeConstraint(p.label);
-            pedigreeConstraint.description = p.description;
-            pedigreeConstraint.biological = p.biological;
-            pedigreeConstraint.symmetrical = p.symmetrical;
-            this.allConstraints.push(pedigreeConstraint);
-            this.validPedigreeTypes.push({
-              type: pedigreeConstraint.relationType,
-              text: pedigreeConstraint.textRepresentation
-            });
-          }
-        },
-        err => console.error(err)
-      );
   }
 
   /**
@@ -168,18 +95,12 @@ export class ConstraintService {
     return results;
   }
 
-  /*
-   * ------------ constraint generation in the 1st step ------------
-   */
-  /**
-   * In the 1st step,
-   * Generate the constraint for retrieving the patients with only the inclusion criteria
-   * @returns {Constraint}
-   */
-  public generateInclusionConstraint(): Constraint {
-    let inclusionConstraint: Constraint = <Constraint>this.rootInclusionConstraint;
-    return ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint) ?
-      inclusionConstraint : new TrueConstraint();
+  public hasConstraint(): Boolean {
+    return this.hasInclusionConstraint() || this.hasExclusionConstraint();
+  }
+
+  public hasInclusionConstraint(): Boolean {
+    return ConstraintHelper.hasNonEmptyChildren(this.rootInclusionConstraint);
   }
 
   public hasExclusionConstraint(): Boolean {
@@ -187,144 +108,35 @@ export class ConstraintService {
   }
 
   /**
-   * In the 1st step,
-   * Generate the constraint for retrieving the patients with the exclusion criteria,
-   * but also in the inclusion set
-   * @returns {CombinationConstraint}
+   * Generate the constraint corresponding to the query.
    */
-  public generateExclusionConstraint(): Constraint {
-    if (this.hasExclusionConstraint()) {
-      // Inclusion part, which is what the exclusion count is calculated from
-      let inclusionConstraint = this.generateInclusionConstraint();
-      let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-
-      let combination = new CombinationConstraint();
-      combination.addChild(inclusionConstraint);
-      combination.addChild(exclusionConstraint);
-      return combination;
-    } else {
-      return undefined;
-    }
-  }
-
-  public constraint_1(): Constraint {
-    return this.generateSelectionConstraint();
-  }
-
-  /**
-   * In the 1st step,
-   * Get the constraint intersected on 'inclusion' and 'not exclusion' constraints
-   * @returns {Constraint}
-   */
-  private generateSelectionConstraint(): Constraint {
+  public generateConstraint(): Constraint {
     let resultConstraint: Constraint;
-    let inclusionConstraint = <Constraint>this.rootInclusionConstraint;
-    let exclusionConstraint = <Constraint>this.rootExclusionConstraint;
-    let trueInclusion = false;
-    // Inclusion part
-    if (!ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>inclusionConstraint)) {
-      inclusionConstraint = new TrueConstraint();
-      trueInclusion = true;
+
+    if (!this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
+      throw ErrorHelper.handleNewError('Empty constraints');
+
+    } else if (this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
+      resultConstraint = this.rootInclusionConstraint;
+
+    } else if (!this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
+      resultConstraint = new NegationConstraint(this.rootExclusionConstraint);
+
+    } else if (this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
+      resultConstraint = new CombinationConstraint();
+      (resultConstraint as CombinationConstraint).addChild(this.rootInclusionConstraint);
+      (resultConstraint as CombinationConstraint).addChild(new NegationConstraint(this.rootExclusionConstraint));
     }
 
-    // Only use exclusion if there's something there
-    if (ConstraintHelper.hasNonEmptyChildren(<CombinationConstraint>exclusionConstraint)) {
-      // Wrap exclusion in negation
-      let negatedExclusionConstraint = new NegationConstraint(exclusionConstraint);
-
-      // If there is some constraint other than a true constraint in the inclusion,
-      // form a proper combination constraint to return
-      if (!trueInclusion) {
-        let combination = new CombinationConstraint();
-        combination.combinationState = CombinationState.And;
-        combination.addChild(inclusionConstraint);
-        combination.addChild(negatedExclusionConstraint);
-        resultConstraint = combination;
-      } else {
-        resultConstraint = negatedExclusionConstraint;
-      }
-    } else {
-      // Otherwise just return the inclusion part
-      resultConstraint = inclusionConstraint;
-    }
-    resultConstraint.mark = ConstraintMark.SUBJECT;
     return resultConstraint;
   }
 
   /**
    * Clear the patient constraints
    */
-  public clearConstraint_1() {
+  public clearConstraint() {
     this.rootInclusionConstraint.children.length = 0;
     this.rootExclusionConstraint.children.length = 0;
-  }
-
-  public restoreConstraint_1(constraint: Constraint) {
-    if (constraint.className === 'CombinationConstraint') { // If it is a combination constraint
-      const children = (<CombinationConstraint>constraint).children;
-      let hasNegation = children.length === 2
-        && (children[1].className === 'NegationConstraint' || children[0].className === 'NegationConstraint');
-      if (hasNegation) {
-        let negationConstraint =
-          <NegationConstraint>(children[1].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.rootExclusionConstraint.addChild(negationConstraint.constraint);
-        let remainingConstraint =
-          <NegationConstraint>(children[0].className === 'NegationConstraint' ? children[1] : children[0]);
-        this.restoreConstraint_1(remainingConstraint);
-      } else {
-        for (let child of children) {
-          this.rootInclusionConstraint.addChild(child);
-        }
-        this.rootInclusionConstraint.combinationState = (<CombinationConstraint>constraint).combinationState;
-      }
-    } else if (constraint.className === 'NegationConstraint') {
-      this.rootExclusionConstraint.addChild((<NegationConstraint>constraint).constraint);
-    } else if (constraint.className !== 'TrueConstraint') {
-      this.rootInclusionConstraint.addChild(constraint);
-    }
-  }
-
-  /*
-   * ------------ constraint generation in the 2nd step ------------
-   */
-  public constraint_2() {
-    return this.generateProjectionConstraint();
-  }
-
-  public clearConstraint_2() {
-    this.treeNodeService.selectedProjectionTreeData.length = 0;
-  }
-
-  /**
-   * Get the constraint of selected concept variables in the 2nd step
-   * @returns {any}
-   */
-  private generateProjectionConstraint(): Constraint {
-    let constraint = null;
-    let selectedTreeNodes = this.treeNodeService.selectedProjectionTreeData;
-    if (selectedTreeNodes && selectedTreeNodes.length > 0) {
-      let leaves = [];
-      constraint = new CombinationConstraint();
-      constraint.combinationState = CombinationState.Or;
-
-      for (let selectedTreeNode of selectedTreeNodes) {
-        if (selectedTreeNode.leaf) {
-          leaves.push(selectedTreeNode);
-        }
-      }
-      for (let leaf of leaves) {
-        const leafConstraint = this.resourceService.generateConstraintFromObject(leaf.constraint);
-        if (leafConstraint) {
-          constraint.addChild(leafConstraint);
-        } else {
-          console.error('Failed to create constrain from: ', leaf);
-        }
-      }
-    } else {
-      constraint = new NegationConstraint(new TrueConstraint());
-    }
-
-    return constraint;
   }
 
   // generate the constraint instance based on given node (e.g. tree node)
@@ -334,22 +146,11 @@ export class ConstraintService {
     if (dropMode === DropMode.TreeNode) {
       let treeNode = selectedNode;
       switch (treeNode.nodeType) {
-        case TreeNodeType.STUDY:
-          // case where node is a study
-          let study: Study = new Study();
-          study.id = treeNode.constraint['studyId'];
-          constraint = new StudyConstraint();
-          (<StudyConstraint>constraint).studies.push(study);
-          break;
 
         case TreeNodeType.CONCEPT:
-          if (treeNode.constraint) {
-            constraint = this.resourceService.generateConstraintFromObject(treeNode.constraint);
-          } else {
-            let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-            constraint = new ConceptConstraint();
-            (<ConceptConstraint>constraint).concept = concept;
-          }
+          let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
+          constraint = new ConceptConstraint();
+          (<ConceptConstraint>constraint).concept = concept;
           break;
 
         case TreeNodeType.GENOMIC_ANNOTATION:
@@ -362,9 +163,12 @@ export class ConstraintService {
 
         case TreeNodeType.UNKNOWN:
           let descendants = [];
-          this.treeNodeService
-            .getTreeNodeDescendantsWithExcludedTypes(selectedNode,
-              [TreeNodeType.UNKNOWN], descendants);
+          this.treeNodeService.getTreeNodeDescendantsWithExcludedTypes(
+            selectedNode,
+            [TreeNodeType.UNKNOWN],
+            descendants
+          );
+
           if (descendants.length < 6) {
             constraint = new CombinationConstraint();
             (<CombinationConstraint>constraint).combinationState = CombinationState.Or;
@@ -412,30 +216,6 @@ export class ConstraintService {
 
   set allConstraints(value: Constraint[]) {
     this._allConstraints = value;
-  }
-
-  get studies(): Study[] {
-    return this._studies;
-  }
-
-  set studies(value: Study[]) {
-    this._studies = value;
-  }
-
-  get studyConstraints(): Constraint[] {
-    return this._studyConstraints;
-  }
-
-  set studyConstraints(value: Constraint[]) {
-    this._studyConstraints = value;
-  }
-
-  get validPedigreeTypes(): object[] {
-    return this._validPedigreeTypes;
-  }
-
-  set validPedigreeTypes(value: object[]) {
-    this._validPedigreeTypes = value;
   }
 
   get conceptConstraints(): Constraint[] {

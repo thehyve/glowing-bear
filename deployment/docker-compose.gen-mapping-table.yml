@@ -1,0 +1,10 @@
+version: '3.5'
+
+services:
+  gen-mapping-table:
+    image: medco/medco-unlynx:latest
+    user: ${USER_ID}
+    command: ["m", "--outputFile", "/output/point-to-int-mapping.ts", "--outputFormat", "typescript",
+              "--nbMappings", "1000", "--checkNeg", "false"]
+    volumes:
+      - ../src/app/utilities/crypto:/output

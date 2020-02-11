@@ -2,7 +2,7 @@ import {TreeNode as PrimeNgTreeNode} from 'primeng/api';
 import {DropMode} from '../drop-mode';
 import {ConceptType} from '../constraint-models/concept-type';
 import {TreeNodeType} from './tree-node-type';
-import {MedcoEncryptionDescriptor} from "../picsure-models/i2b2-medco/medco-encryption-descriptor";
+import {MedcoEncryptionDescriptor} from "./medco-encryption-descriptor";
 
 export class TreeNode implements PrimeNgTreeNode {
 
@@ -21,10 +21,6 @@ export class TreeNode implements PrimeNgTreeNode {
   metadata: object;
   // depth of the node in the tree
   depth: number;
-  // constraint (possibly undefined) associated with this node
-  constraint: object;
-  // study id (possibly undefined) associated with this node
-  studyId: string;
   // number of subject (possibly undefined) associated with this node
   subjectCount: number;
 
@@ -60,10 +56,6 @@ export class TreeNode implements PrimeNgTreeNode {
       copy.metadata = JSON.parse(JSON.stringify(this.metadata));
     }
     copy.depth = this.depth;
-    if (this.constraint) {
-      copy.constraint = JSON.parse(JSON.stringify(this.constraint));
-    }
-    copy.studyId = this.studyId;
     copy.subjectCount = this.subjectCount;
     copy.childrenAttached = this.childrenAttached;
     // copy.children = this.children.map((child) => child.clone());

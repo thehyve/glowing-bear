@@ -33,9 +33,9 @@ import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
     ])
   ]
 })
-export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChecked {
+export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
-  @ViewChild('treeNodeMetadataPanel') treeNodeMetadataPanel: OverlayPanel;
+  @ViewChild('treeNodeMetadataPanel', { static: true }) treeNodeMetadataPanel: OverlayPanel;
 
   // the observer that monitors the DOM element change on the tree
   observer: MutationObserver;
@@ -67,9 +67,6 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       treeNode: null
     };
     this.delay = 500;
-  }
-
-  ngOnInit() {
   }
 
   ngAfterViewInit() {
@@ -155,7 +152,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       if (treeContainer) {
         let treeNodeElements = treeContainer.children;
         if (treeNodeElements && treeNodeElements.length > 0) {
-          this.updateEventListeners(treeNodeElements, this.treeNodeService.treeNodes);
+          this.updateEventListeners(treeNodeElements, this.treeNodeService.rootTreeNodes);
           this.initUpdated = true;
         }
       }
@@ -188,7 +185,7 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
       this.expansionStatus['expanded'] = true;
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
-      this.treeNodeService.loadChildren(event.node, this.constraintService);
+      this.treeNodeService.loadChildrenNodes(event.node, this.constraintService);
     }
   }
 
@@ -284,15 +281,15 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
     if (filterWord.length > 1) {
       this.hits = 0;
       this.numExpandedNodes = 0;
-      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', filterWord);
-      this.treeNodeService.treeNodes.forEach((topNode: TreeNode) => {
+      this.filterWithHighlightTreeNodes(this.treeNodeService.rootTreeNodes, 'label', filterWord);
+      this.treeNodeService.rootTreeNodes.forEach((topNode: TreeNode) => {
         topNode.expanded = true;
       });
       this.removeFalsePrimeNgClasses(this.delay);
 
       window.setTimeout((function () {
         let treeNodeElements = this.element.nativeElement.querySelector('.ui-tree-container').children;
-        let treeNodes = this.treeNodeService.treeNodes;
+        let treeNodes = this.treeNodeService.rootTreeNodes;
         this.updateEventListeners(treeNodeElements, treeNodes);
       }).bind(this), this.delay);
     }
@@ -303,15 +300,11 @@ export class GbTreeNodesComponent implements OnInit, AfterViewInit, AfterViewChe
    */
   clearFilter() {
     if (this.searchTerm !== '') {
-      this.filterWithHighlightTreeNodes(this.treeNodeService.treeNodes, 'label', '');
+      this.filterWithHighlightTreeNodes(this.treeNodeService.rootTreeNodes, 'label', '');
       this.removeFalsePrimeNgClasses(this.delay);
       const input = this.element.nativeElement.querySelector('.ui-inputtext');
       input.value = '';
     }
-  }
-
-  get isLoading(): boolean {
-    return !this.treeNodeService.isTreeNodeLoadingCompleted;
   }
 
 }

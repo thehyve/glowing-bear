@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020  EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,37 +9,49 @@
 
 import {HttpErrorResponse} from '@angular/common/http';
 import {MessageHelper} from './message-helper';
+import {Observable, throwError} from 'rxjs';
 
 export class ErrorHelper {
 
   /**
-   * Handles error
-   * @param error {HttpErrorResponse | any}
+   * Handles error.
+   * @param errMsg
+   * @param err
    */
-  static handleError(error: HttpErrorResponse | any) {
-    if (error instanceof HttpErrorResponse) {
-      if (error.error instanceof ErrorEvent) {
-        // A client-side or network error occurred. Handle it accordingly.
-        console.error('A client-side or network error occurred:', error.error.message);
-        MessageHelper.alert('error', 'A client-side or network error occurred');
-      } else {
-        // The backend returned an unsuccessful response code.
-        // The response body may contain clues as to what went wrong,
-        const status = error.status;
-        const url = error.url;
-        const message = error.message;
-        const summary = `Status: ${status}\nurl: ${url}\nMessage: ${message}`;
-        console.error(summary);
-        console.error(error.error);
-        if (status === 401) {
-          MessageHelper.alert('error', 'Unauthorised');
-        } else {
-          MessageHelper.alert('error', 'A server-side error occurred');
-        }
-      }
-    } else {
-      console.error(`Error: ${error}`, error);
-    }
+  static handleError(errMsg: string, err: Error) {
+    console.error(`${errMsg}\n${err.stack}`);
+    MessageHelper.alert('error', 'An error occurred, check details in console.');
   }
 
+  /**
+   * Handle and create a new error.
+   * @param errMsg
+   */
+  static handleNewError(errMsg: string): Error  {
+    let err = new Error(errMsg);
+    console.error(`${errMsg}\n${err.stack}`);
+    MessageHelper.alert('error', 'An error occurred, check details in console.');
+    return err;
+  }
+
+  /**
+   * Handles HTTP error and returns error.
+   * @param error {HttpErrorResponse}
+   */
+  static handleHTTPError(error: HttpErrorResponse): Observable<never> {
+    let errMsg, errDetail: string;
+    if (error.error instanceof ErrorEvent) {
+      // client side or network error
+      errMsg = 'A client-side or network error occurred';
+      errDetail = error.error.message;
+    } else {
+      // server side error
+      errMsg = `A server-side ${error.status} error occurred`;
+      errDetail = `Status: ${error.status}; URL: ${error.url}; Message: ${error.message}`;
+    }
+
+    console.error(`${errMsg}\n${errDetail}\n${error.error}`);
+    MessageHelper.alert('error', errMsg);
+    return throwError(error.error);
+  }
 }

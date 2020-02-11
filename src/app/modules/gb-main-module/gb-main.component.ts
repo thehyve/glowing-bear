@@ -7,13 +7,11 @@
  */
 
 import {Component, ViewChild, OnInit} from '@angular/core';
-import {AuthenticationService} from '../../services/authentication/authentication.service';
-import {ResourceService} from '../../services/resource.service';
+import {AuthenticationService} from '../../services/authentication.service';
 import {ConstraintService} from '../../services/constraint.service';
 import {TreeNodeService} from '../../services/tree-node.service';
 import {QueryService} from '../../services/query.service';
-import {TransmartResourceService} from '../../services/transmart-services/transmart-resource.service';
-import {AppConfig} from "../../config/app.config";
+import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-main',
@@ -22,18 +20,16 @@ import {AppConfig} from "../../config/app.config";
 })
 export class GbMainComponent implements OnInit {
 
-  @ViewChild('parentContainer') parentContainer: any;
-  @ViewChild('leftPanel') leftPanel: any;
-  @ViewChild('gutter') gutter: any;
-  @ViewChild('rightPanel') rightPanel: any;
+  @ViewChild('parentContainer', { static: true }) parentContainer: any;
+  @ViewChild('leftPanel', { static: true }) leftPanel: any;
+  @ViewChild('gutter', { static: true }) gutter: any;
+  @ViewChild('rightPanel', { static: true }) rightPanel: any;
 
   isGutterDragged: boolean;
   x_pos: number; // Stores x coordinate of the mouse pointer
   x_gap: number; // Stores x gap (edge) between mouse and gutter
 
-  constructor(private authenticationService: AuthenticationService,
-              private resourceService: ResourceService,
-              private transmartResourceService: TransmartResourceService,
+  constructor(public authenticationService: AuthenticationService,
               private treeNodeService: TreeNodeService,
               private constraintService: ConstraintService,
               private queryService: QueryService,
@@ -41,7 +37,6 @@ export class GbMainComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(`Initialise main component ...`);
     const parentContainerElm = this.parentContainer.nativeElement;
     this.isGutterDragged = false;
     this.x_pos = 0;
@@ -51,6 +46,8 @@ export class GbMainComponent implements OnInit {
     parentContainerElm.addEventListener('mousemove', this.onMouseMove.bind(this));
     parentContainerElm.addEventListener('mouseup', this.onMouseUp.bind(this));
     window.addEventListener('resize', this.onResize.bind(this));
+
+    console.log(`Initialized main component.`);
   }
 
   onMouseDown = function (event) {
@@ -106,10 +103,6 @@ export class GbMainComponent implements OnInit {
       navbar.style.width = (percentage * 100) + '%';
     }
   };
-
-  logout() {
-    this.authenticationService.logout();
-  }
 
   get footerText(): string {
     let footerText = this.config.getConfig('footer-text');

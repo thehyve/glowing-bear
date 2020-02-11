@@ -13,24 +13,16 @@ import {Routes, RouterModule} from '@angular/router';
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: '/data-selection',
+    redirectTo: '/explore',
     pathMatch: 'full'
   },
   {
-    path: 'data-selection',
-    loadChildren: '../gb-data-selection-module/gb-data-selection.module#GbDataSelectionModule'
+    path: 'explore',
+    loadChildren: '../gb-explore-module/gb-explore.module#GbExploreModule'
   },
   {
-    path: 'analysis',
-    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
-  },
-  {
-    path: 'export',
-    loadChildren: '../gb-export-module/gb-export.module#GbExportModule'
-  },
-  {
-    path: 'medco-results',
-    loadChildren: '../gb-medco-results-module/gb-medco-results.module#GbMedcoResultsModule'
+    path: 'explore/results',
+    loadChildren: '../gb-explore-results-module/gb-explore-results.module#GbExploreResultsModule'
   }
 ];
 

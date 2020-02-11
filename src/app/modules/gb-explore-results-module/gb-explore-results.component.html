@@ -1,0 +1,38 @@
+<div class="medco-results-container">
+
+  <div class="medco-results-chart-container">
+    <canvas #perSiteCountsChartElement id="medco-results-chart">{{ perSiteCountsChart }}</canvas>
+  </div>
+
+  <hr />
+
+  <p-table [value]="perSiteCounts | async">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Clinical Site</th>
+        <th>Number of subjects</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-count let-idx="rowIndex">
+      <tr>
+        <td>{{nodesName[idx]}}</td>
+        <td>{{count}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <hr />
+
+  <div *ngIf="queryService.query.hasPatientLists">
+    <p><b>Patient List</b></p>
+    <p *ngFor="let patientList of patientLists | async; index as idx">
+      <span>{{nodesName[idx]}}:</span>
+      <i>
+        <span *ngFor="let patient of patientList">
+          {{patient}}
+        </span>
+      </i>
+    </p>
+  </div>
+</div>
