@@ -139,11 +139,8 @@ describe('AppComponent', () => {
       .and.callFake(() => {
         return observableOf(authenticated);
       });
-    let messageHelperCall = spyOn(MessageHelper, 'alert').and.stub();
     component.ngOnInit();
     expect(authorisedCall).toHaveBeenCalledTimes(1);
-    expect(messageHelperCall).toHaveBeenCalledTimes(1);
-    expect(messageHelperCall).toHaveBeenCalledWith('success', 'Authentication successful!');
     expect(component.authenticationCompleted).toEqual(true);
   });
 
