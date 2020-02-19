@@ -96,41 +96,26 @@ export class AuthenticationService implements OnDestroy {
    * Parse the decoded token, determine the access level
    */
   private readAccessLevelFromToken() {
-    const serviceType = this.config.getConfig('authentication-service-type');
     const denyAccessWithoutRoles = this.config.getConfig('deny-access-to-users-without-role');
-    switch (serviceType) {
-      case 'oidc': {
-        try {
-          const roles = this.readRolesFromToken();
-          if (denyAccessWithoutRoles && roles.length === 0) {
-            this.accessLevel.next(AccessLevel.None);
-            this.accessLevel.complete();
-            console.log(`Access level: ${AccessLevel.None}`);
-            return;
-          }
-          const level = AuthenticationService.getAccessLevelFromRoles(roles);
-          this.accessLevel.next(level);
-          this.accessLevel.complete();
-          console.log(`Access level: ${level}`);
-          return;
-        } catch (e) {
-          console.error(`Error decoding JWT token`, e);
-          this.accessLevel.next(AccessLevel.Restricted);
-          this.accessLevel.complete();
-        }
-        return;
-      }
-      case 'transmart': {
-        this.accessLevel.next(AccessLevel.Full);
+    try {
+      const roles = this.readRolesFromToken();
+      if (denyAccessWithoutRoles && roles.length === 0) {
+        this.accessLevel.next(AccessLevel.None);
         this.accessLevel.complete();
+        console.log(`Access level: ${AccessLevel.None}`);
         return;
       }
-      default: {
-        const message = `Unsupported authentication service type: ${serviceType}`;
-        this.accessLevel.error(message);
-        throw new Error(message);
-      }
+      const level = AuthenticationService.getAccessLevelFromRoles(roles);
+      this.accessLevel.next(level);
+      this.accessLevel.complete();
+      console.log(`Access level: ${level}`);
+      return;
+    } catch (e) {
+      console.error(`Error decoding JWT token`, e);
+      this.accessLevel.next(AccessLevel.Restricted);
+      this.accessLevel.complete();
     }
+    return;
   }
 
   public load(): Promise<AuthorizationResult> {

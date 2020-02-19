@@ -40,8 +40,6 @@ export class Oauth2Authentication implements AuthenticationMethod {
   private appUrl: string;
   private clientId: string;
 
-  private serviceType: 'oidc' | 'transmart';
-
   private _authorised: AsyncSubject<boolean> = new AsyncSubject<boolean>();
   private _token: Oauth2Token = null;
   private _lock: boolean;
@@ -134,21 +132,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
       this.appUrl = location.origin;
       this.apiUrl = this.config.getConfig('api-url');
 
-      let serviceType = this.config.getConfig('authentication-service-type');
-      switch (serviceType) {
-        case 'oidc':
-          this.authUrl = this.config.getConfig('oidc-server-url');
-          this.clientId = this.config.getConfig('oidc-client-id');
-          break;
-        case 'transmart':
-          this.authUrl = this.config.getConfig('api-url') + '/oauth';
-          this.clientId = 'glowingbear-js';
-          break;
-        default:
-          throw new Error(`Unsupported authentication service type: ${serviceType}`);
-      }
-      this.serviceType = serviceType;
-      console.log(`Authentication service type: ${this.serviceType}`);
+      this.authUrl = this.config.getConfig('oidc-server-url');
+      this.clientId = this.config.getConfig('oidc-client-id');
 
       let authorisationCode = Oauth2Authentication.getAuthorisationCode();
       if (authorisationCode) {
@@ -182,8 +167,7 @@ export class Oauth2Authentication implements AuthenticationMethod {
     let clientSecret = '';
     let redirectUri = encodeURI(this.appUrl);
     let params = `client_id=${this.clientId}&client_secret=${clientSecret}&redirect_uri=${redirectUri}`;
-    let endpoint = this.serviceType === 'oidc' ? 'auth' : 'authorize';
-    let target = `${this.authUrl}/${endpoint}?response_type=code&${params}`;
+    let target = `${this.authUrl}/auth?response_type=code&${params}`;
     return observableFrom(new Promise<AuthorizationResult>((resolve) => {
       resolve(AuthorizationResult.Unauthorized);
       RedirectHelper.redirectTo(target);
@@ -235,12 +219,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
   logout(): void {
     localStorage.removeItem('token');
     let target: string;
-    if (this.serviceType === 'oidc') {
-      let redirectUri = encodeURI(this.appUrl);
-      target = `${this.authUrl}/logout?redirect_uri=${redirectUri}`;
-    } else {
-      target = `${this.apiUrl}/logout`;
-    }
+    let redirectUri = encodeURI(this.appUrl);
+    target = `${this.authUrl}/logout?redirect_uri=${redirectUri}`;
     MessageHelper.alert('info', 'Redirect to logout page ...');
     RedirectHelper.redirectTo(target);
   }
