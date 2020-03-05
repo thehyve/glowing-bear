@@ -19,7 +19,10 @@ export class ErrorHelper {
    * @param err
    */
   static handleError(errMsg: string, err: Error) {
-    console.error(`${errMsg}\n${err.stack}`);
+    console.error(`${errMsg}`);
+    if (err && err.stack) {
+      console.error(`${err.stack}`);
+    }
     MessageHelper.alert('error', 'An error occurred, check details in console.');
   }
 

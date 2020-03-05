@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2019  LDS EPFL
+ * Copyright 2019 - 2020 LDS EPFL
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,14 +14,15 @@ import {ConstraintService} from './constraint.service';
 import {AppConfig} from '../config/app.config';
 import {ExploreQueryType} from '../models/query-models/explore-query-type';
 import {AuthenticationService} from './authentication.service';
-import {map, switchMap} from 'rxjs/operators';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {ExploreQueryService} from './api/medco-node/explore-query.service';
 import {ApiExploreQueryResult} from '../models/api-response-models/medco-node/api-explore-query-result';
 import {CryptoService} from './crypto.service';
 import {GenomicAnnotationsService} from './api/genomic-annotations.service';
 import {ExploreQueryResult} from '../models/query-models/explore-query-result';
-import {Observable, ReplaySubject} from 'rxjs';
+import {Observable, ReplaySubject, throwError} from 'rxjs';
 import {ErrorHelper} from '../utilities/error-helper';
+import {MessageHelper} from '../utilities/message-helper';
 
 /**
  * This service concerns with updating subject counts.
@@ -114,6 +115,10 @@ export class QueryService {
     this.query.constraint = this.constraintService.generateConstraint();
 
     this.genomicAnnotationsService.addVariantIdsToConstraints(this.query.constraint).pipe(
+      catchError((err) => {
+        MessageHelper.alert('warn', 'Invalid genomic annotation in query, please correct.');
+        return throwError(err);
+      }),
       switchMap( () => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
       (results: ApiExploreQueryResult[]) => {
