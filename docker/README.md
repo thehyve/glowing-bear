@@ -19,6 +19,10 @@ a proxy for the backend services at the following locations:
 This assumes that these services are reachable by the container at these addresses.
 See [glowing-bear-docker](https://github.com/thehyve/glowing-bear-docker) for an example. 
 
+The `AUTOSAVE_SUBJECT_SETS`, `CHECK_SERVER_STATUS` and `DENY_ACCESS_WITHOUT_ROLE`
+variables can be set to override the default value (`false`) for these properties,
+see the [list of supported properties](../README.md#configuration).
+
 
 ## Run
 

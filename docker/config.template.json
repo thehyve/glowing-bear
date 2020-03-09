@@ -4,7 +4,7 @@
   "gb-backend-url": "${GB_BACKEND_URL}",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": false,
-  "autosave-subject-sets": false,
+  "autosave-subject-sets": ${AUTOSAVE_SUBJECT_SETS},
   "show-observation-counts": false,
   "instant-counts-update": false,
   "include-data-table": true,
