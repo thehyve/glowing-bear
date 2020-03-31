@@ -17,7 +17,7 @@ export class ExploreQuery {
   // the constraint of the query
   private _constraint: Constraint;
   // the type of the query
-  private _type: ExploreQueryType = ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
+  private _type: ExploreQueryType;
 
   constructor(name?: string) {
     this.name = name;
@@ -34,7 +34,7 @@ export class ExploreQuery {
 
     if (this.name) {
       // embed name without whitespaces if defined
-      id = `${id}_${this.name.replace(/\s/g, "_")}`;
+      id = `${id}_${this.name.replace(/\s/g, '_')}`;
     }
 
     this.uniqueId = id;

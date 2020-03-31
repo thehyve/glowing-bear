@@ -105,6 +105,10 @@ export class QueryService {
 
   public execQuery(): void {
     if (!this.constraintService.hasConstraint()) {
+      MessageHelper.alert('warn', 'No constraints specified, please correct.');
+      return;
+    } else if (!this.query.type) {
+      MessageHelper.alert('warn', 'No query type specified, please correct.');
       return;
     }
 
