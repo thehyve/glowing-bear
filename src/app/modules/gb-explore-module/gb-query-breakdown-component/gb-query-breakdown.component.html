@@ -1,0 +1,18 @@
+
+<div>
+    <p-accordion>
+        <div>
+            <p-accordionTab header="Breakdowns">
+                <ul>
+                    <li *ngFor="let breakdown of breakdownSelection">
+                        
+                        <p-checkbox [name]="breakdown.name" [binary]="breakdown.selected" (onChange)="breakdown.change">
+                        </p-checkbox>
+                        {{breakdown.name}}   
+                         
+                    </li>
+                </ul>
+            </p-accordionTab>
+        </div>
+    </p-accordion>
+</div>

@@ -27,6 +27,9 @@
 
       </span>
       <span class="float-right">
+      <app-gb-query-breakdown></app-gb-query-breakdown>
+      </span>
+      <span class="float-right">
         <label>Query Type:
           <select [(ngModel)]="queryType">
             <option *ngFor="let queryType of queryService.availableExploreQueryTypes" [ngValue]="queryType">

@@ -25,6 +25,9 @@ import {InputTextModule} from 'primeng/inputtext';
 import {TooltipModule} from 'primeng/tooltip';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {RadioButtonModule} from 'primeng/radiobutton';
+import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
+
+import {ToggleButtonModule} from 'primeng/togglebutton'
 
 @NgModule({
   imports: [
@@ -38,15 +41,17 @@ import {RadioButtonModule} from 'primeng/radiobutton';
     AutoCompleteModule,
     PanelModule,
     ButtonModule,
+    ToggleButtonModule,
     InputTextModule,
     TooltipModule,
     ConfirmDialogModule,
-    RadioButtonModule
+    RadioButtonModule,
   ],
   declarations: [
     GbSidePanelComponent,
     GbTreeNodesComponent,
-    GbSummaryComponent
+    GbSummaryComponent,
+    GbCohortsComponent
   ],
   providers: [TreeDragDropService, ConfirmationService],
   exports: [GbSidePanelComponent]

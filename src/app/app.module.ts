@@ -36,6 +36,7 @@ import {GbExploreModule} from './modules/gb-explore-module/gb-explore.module';
 import {GbExploreResultsModule} from './modules/gb-explore-results-module/gb-explore-results.module';
 import {ConstraintMappingService} from './services/constraint-mapping.service';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
+import { QueryBreakdownService } from './services/query-breakdown.service';
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
@@ -82,6 +83,7 @@ export function loadServices(config: AppConfig,
     CryptoService,
     ConstraintService,
     QueryService,
+    QueryBreakdownService,
     NavbarService,
     DatePipe,
     AppConfig,

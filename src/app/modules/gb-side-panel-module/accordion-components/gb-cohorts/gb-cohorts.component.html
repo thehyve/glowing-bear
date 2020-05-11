@@ -1,0 +1,182 @@
+<div>
+
+  <!-- counts info -->
+  <div class="counts-info">
+    <span>Todo subject Countext</span>
+    <div class="pull-right">
+      <button class="btn btn-outline-primary import-btn"
+              (click)="importCohort()"
+              type="button">
+        <span>import</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- the search/filter input and sorting buttons -->
+  <div class="top-panel">
+    <p-autoComplete [(ngModel)]="searchTerm"
+                    styleClass="filter-input"
+                    placeholder="filter"
+                    (onClear)="onFiltering($event)"
+                    (completeMethod)="onFiltering($event)"></p-autoComplete>
+    <span>&nbsp;</span>
+    <button class="btn btn-secondary btn-sm clear-btn"
+            (click)="clearFilter()"
+            type="button">clear
+    </button>
+    <input [id]="fileElementId"
+           type="file"
+           style="display: none;"/>
+
+  </div>
+
+  <div *ngIf="1 > 0" class="container sort-btn-container clearfix">
+    <div class="float-right">
+      <button pButton class="ui-button-secondary sort-btn" type="button"
+              pTooltip="Sort by cohort name"
+              tooltipPosition="top" placeholder="Top"
+              (click)="sortByName()"
+              icon="icon-sort-alphabet">
+      </button>
+      <button pButton class="ui-button-secondary sort-btn" type="button"
+              pTooltip="Sort by importance"
+              tooltipPosition="top" placeholder="Top"
+              (click)="sortByBookmark()"
+              icon="icon-sort-star">
+      </button>
+      <button pButton class="ui-button-secondary sort-btn" type="button"
+              pTooltip="Sort by last edit date"
+              tooltipPosition="top" placeholder="Top"
+              (click)="sortByDate()"
+              icon="icon-sort-time">
+      </button>
+      <button *ngIf="isCohortSubscriptionIncluded"
+              pButton class="ui-button-secondary sort-btn" type="button"
+              pTooltip="Sort by active subscriptions"
+              tooltipPosition="top" placeholder="Top"
+              (click)="sortBySubscription()"
+              icon="icon-sort-subscription">
+      </button>
+    </div>
+    <br><br>
+  </div>
+
+  <!-- cohort list -->
+  <p-confirmDialog></p-confirmDialog>
+  <div>
+    <md2-accordion [multiple]="true">
+      <md2-accordion-tab *ngFor="let cohort of cohorts">
+        <!-- accordion header -->
+        <md2-accordion-header>
+          <div *ngIf="cohort.visible">
+            <div class="cohort-header clearfix">
+              <div class="cohort-header-name" [ngClass]="{'current-cohort-header-name': !cohort.controlsEnabled}">
+                <i *ngIf="cohort.controlsEnabled" class="{{getCohortTypeIcon(cohort.type)}} cohort-type-icon">
+                </i>&nbsp;
+                <p-toggleButton [(ngModel)]="cohort.selected"
+                                onLabel="{{cohort.name}}"
+                                offLabel="{{cohort.name}}"
+                                onIcon="pi pi-check"
+                                offIcon="pi"
+                                (click)="onCohortCheckClick($event)"></p-toggleButton>
+              </div>
+              <div *ngIf="cohort.controlsEnabled" class="float-right">
+                <button *ngIf="isCohortSubscriptionIncluded"
+                        pButton class="ui-button-secondary" type="button"
+                        pTooltip="Subscribe to email notifications when new data is available"
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="toggleSubscription($event, cohort)"
+                        icon="{{getSubscriptionButtonIcon(cohort)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        pTooltip="Mark as important"
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="toggleBookmark($event, cohort)"
+                        icon="{{getBookmarkButtonIcon(cohort)}}">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        pTooltip="Download this cohort for sharing/importing"
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="downloadCohort($event, cohort)"
+                        icon="fa fa-download">
+                </button>
+                <button pButton class="ui-button-secondary" type="button"
+                        pTooltip="Restore" tooltipPosition="top" placeholder="Top"
+                        (click)="restoreCohort($event, cohort)"
+                        icon="fa fa-arrow-right">
+                </button>
+                <span>&nbsp;</span>
+                <button pButton class="ui-button-secondary" type="button"
+                        pTooltip="Remove" tooltipPosition="top" placeholder="Top"
+                        (click)="confirmRemoval($event, cohort)"
+                        icon="fa fa-times">
+                </button>
+              </div>
+            </div>
+          </div>
+        </md2-accordion-header>
+        <!-- accordion body -->
+        <div *ngIf="cohort.visible">
+          <div>Name: {{cohort.name}}</div>
+          <div>Type: {{cohort.type}}</div>
+          <div>Created: {{cohort.createDateInfo}}</div>
+          <div>Updated: {{cohort.updateDateInfo}}</div>
+          <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">
+            Subscription:
+            <p-radioButton [(name)]="cohort.id" value="DAILY" label="Daily"
+                           (click)="radioCheckSubscriptionFrequency($event, cohort)"
+                           [(ngModel)]="cohort.subscriptionFreq"></p-radioButton>
+            &nbsp;
+            <p-radioButton [(name)]="cohort.id" value="WEEKLY" label="Weekly"
+                           (click)="radioCheckSubscriptionFrequency($event, cohort)"
+                           [(ngModel)]="cohort.subscriptionFreq"></p-radioButton>
+          </div>
+          <!-- start: if the cohort is subscribed, show the subscription panel -->
+          <div *ngIf="isCohortSubscriptionIncluded && cohort.subscribed">
+            <div class="subscription-panel-header"
+                 (click)="toggleSubscriptionPanel(cohort)">
+              <span>{{cohort.subscriptionCollapsed ? 'Show' : 'Hide'}} subscription records</span>
+            </div>
+            <div *ngIf="!cohort.subscriptionCollapsed"
+                 class="subscription-panel-body">
+              <div *ngIf="cohort.diffRecords && cohort.diffRecords.length > 0">
+                <div *ngFor="let record of cohort.diffRecords">
+                  <hr>
+                  <span>
+                    <b>{{record.createDate}}</b>
+                    <button class="log-download-btn"
+                            (click)="downloadSubscriptionRecord(cohort, record)">
+                      <i class="fa fa-arrow-down"></i>
+                    </button>
+                  </span>
+                  <div class="subscription-panel-body-record"
+                       (click)="toggleSubscriptionRecordPanel(record)">
+                    <div *ngIf="record.showCompleteRepresentation">
+                      <div *ngFor="let diffType of record.diffTypes">
+                        {{record.countRepresentation[diffType]}}
+                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                        {{record.completeRepresentation[diffType]}}
+                      </div>
+                    </div>
+                    <div *ngIf="!record.showCompleteRepresentation">
+                      <div *ngFor="let diffType of record.diffTypes">
+                        {{record.countRepresentation[diffType]}}
+                        {{record.setType.toLowerCase()}}s {{diffType.toLowerCase()}}:
+                        {{record.partialRepresentation[diffType]}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="cohort.diffRecords.length === 0">
+                no record
+              </div>
+            </div>
+          </div>
+        </div>
+      </md2-accordion-tab>
+    </md2-accordion>
+  </div>
+
+</div>
