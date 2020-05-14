@@ -6,13 +6,13 @@ export class QueryBreakdown{
 
     constructor(){
         this.breakdowns= {}
-        var that=this
+        
     
 
         BreakdownType.AVAILABLE.forEach(function(qtype: BreakdownType) : void{
             
-            that.breakdowns[qtype.name]={breakdownType :qtype, selected:false}
-        })
+            this.breakdowns[qtype.name]={breakdownType :qtype, selected:false}
+        }.bind(this))
     }
     change(id : string){
         this.breakdowns[id].selected = ! this.breakdowns[id].selected

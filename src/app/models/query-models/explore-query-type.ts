@@ -1,5 +1,6 @@
 export class ExploreQueryType {
   static readonly PATIENT_LIST = new ExploreQueryType("patient_list", "Patient List");
+  static readonly PATIENT_SET=new ExploreQueryType("patient_set", "Patient Set")
   static readonly COUNT_PER_SITE = new ExploreQueryType("count_per_site", "Count per site");
   static readonly COUNT_PER_SITE_OBFUSCATED =
     new ExploreQueryType("count_per_site_obfuscated", "Count per site (obfuscated)");
@@ -13,6 +14,7 @@ export class ExploreQueryType {
 
   static readonly ALL_TYPES = [
     ExploreQueryType.PATIENT_LIST,
+    ExploreQueryType.PATIENT_SET,
     ExploreQueryType.COUNT_PER_SITE,
     ExploreQueryType.COUNT_PER_SITE_OBFUSCATED,
     ExploreQueryType.COUNT_PER_SITE_SHUFFLED,

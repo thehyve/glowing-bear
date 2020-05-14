@@ -16,6 +16,8 @@ export class ExploreQuery {
   private _description: string;
   // the constraint of the query
   private _constraint: Constraint;
+  //the superset where to restrict the patient set if provided, one per site
+  private _super_set_id: Map<string,number>;
   // the type of the query
   private _type: ExploreQueryType;
 
@@ -51,6 +53,14 @@ export class ExploreQuery {
   get hasPatientLists(): boolean {
     return this.type === ExploreQueryType.PATIENT_LIST;
   }
+  get superSetId(): Map<string,number> {
+    return new Map(this._super_set_id)
+  }
+
+  set superSetId(ids : Map<string,number>){
+    this._super_set_id=new Map(ids)
+  }
+
 
   // --- getters / setters
   get uniqueId(): string {
