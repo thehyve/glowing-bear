@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {GbExploreComponent} from './gb-explore.component';
 import {routing} from './gb-explore.routing';
 import {AccordionModule} from 'primeng/components/accordion/accordion';
+import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {RouterModule} from '@angular/router';
 import {GbCombinationConstraintComponent} from './constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
@@ -30,6 +31,7 @@ import { GbQueryBreakdownComponent } from './gb-query-breakdown-component/gb-que
   imports: [
     CommonModule,
     AccordionModule,
+    OverlayPanelModule,
     routing,
     FormsModule,
     AutoCompleteModule,

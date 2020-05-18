@@ -1,18 +1,21 @@
 
-<div>
-    <p-accordion>
-        <div>
-            <p-accordionTab header="Breakdowns">
-                <ul>
-                    <li *ngFor="let breakdown of breakdownSelection">
-                        
-                        <p-checkbox [name]="breakdown.name" [binary]="breakdown.selected" (onChange)="breakdown.change">
-                        </p-checkbox>
-                        {{breakdown.name}}   
-                         
-                    </li>
-                </ul>
-            </p-accordionTab>
-        </div>
-    </p-accordion>
+
+<div id="breakdown-component">
+    <button type="text" pButton label="Breakdowns" (click)="breakdownOverlay.toggle($event)"></button>
+
+
+    <p-overlayPanel #breakdownOverlay style="top: 0px; left: 0px;">
+        <ul style="list-style: none; padding : 0px;">
+            <li *ngFor="let breakdown of breakdownSelection">
+            <p-checkbox [name]="breakdown.name" [binary]="breakdown.selected" (onChange)="breakdown.change">
+            </p-checkbox>
+            {{breakdown.name}} 
+            </li>
+        </ul>
+        
+    </p-overlayPanel>   
+
+    
 </div>
+
+

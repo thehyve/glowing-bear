@@ -1,5 +1,12 @@
 <div>
   <div class="pull-right">
+    <input [(ngModel)]="name"/>
+    <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
+            type="button"
+            (click)="save()">
+
+      <span>Save</span>
+    </button>
     <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
             (click)="clearAll()"
             type="button">

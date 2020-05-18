@@ -4,6 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { BreakdownType } from 'app/models/breakdown-models/breakdown-type';
 import { QueryBreakdownService } from 'app/services/query-breakdown.service';
 import { QueryBreakdown } from 'app/models/breakdown-models/breakdown';
+import { OverlayPanel } from 'primeng/components/overlaypanel/overlaypanel';
+
 
 
 @Component({
@@ -12,6 +14,7 @@ import { QueryBreakdown } from 'app/models/breakdown-models/breakdown';
   styleUrls: ['./gb-query-breakdown.component.css']
 })
 export class GbQueryBreakdownComponent implements OnInit {
+
   public breakdownSelection :{id:string, name:string, selected: boolean}[]
 
   constructor(private queryBreakdownService : QueryBreakdownService) {

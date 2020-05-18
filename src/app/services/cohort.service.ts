@@ -23,6 +23,8 @@ export class CohortService {
       this.medcoNetworkService.nodes.forEach((apiMetadata=>{
         this._nodeName[apiMetadata.index]=apiMetadata.name
       }).bind(this))
+
+      this._cohorts= new Array<Cohort>()
     }
 
   get cohorts (){

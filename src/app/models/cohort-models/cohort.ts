@@ -12,11 +12,16 @@ export class Cohort{
     _constraint : Constraint
     constructor(name :string, constraint : Constraint){
         this._name=name
-        var cpy= new Constraint()
-        cpy.parentConstraint=constraint.parentConstraint
-        cpy.textRepresentation=cpy.textRepresentation
-
-        this._constraint=cpy
+        
+        if (constraint !=null){
+            var cpy= new Constraint()
+            cpy.parentConstraint=constraint.parentConstraint
+            cpy.textRepresentation=cpy.textRepresentation
+    
+            this._constraint=cpy
+        }
+        
+        
         this._selected=false
     }
 

@@ -16,6 +16,11 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import { CohortServiceMock } from 'app/services/cohort.service';
+import { Cohort } from 'app/models/cohort-models/cohort';
+import { MessageService } from 'primeng/api';
+
+
 
 @Component({
   selector: 'gb-summary',
@@ -23,13 +28,40 @@ import {map} from 'rxjs/operators';
   styleUrls: ['./gb-summary.component.css']
 })
 export class GbSummaryComponent {
+  _name :string
 
-  constructor(private queryService: QueryService) {
+  constructor(private queryService: QueryService,
+    private cohortService: CohortServiceMock) {
+      this._name=""
+  }
+
+  set name(n: string){
+    this._name=n
+  }
+  get name(): string{
+    return this._name
   }
 
   clearAll() {
     this.queryService.clearAll();
     MessageHelper.alert('success', 'All selections are cleared.');
+  }
+  save(){
+    if (this.name == ""){
+      MessageHelper.alert('warn',"You must provide a name for the cohort you want to save.")
+    }else{
+    var existingCohorts=this.cohortService.cohorts
+    if(existingCohorts.findIndex((cohort => cohort.name==this.name).bind(this)) != -1){
+      MessageHelper.alert("warn",`Name ${this.name} already used.`)
+    }else{
+    
+    var cohort =new Cohort(this.name,this.queryService.query.constraint)
+    existingCohorts.push(cohort)
+    this.cohortService.cohorts=existingCohorts
+    
+    MessageHelper.alert("success","Cohort has been sent.")
+    }
+    }
   }
 
   get globalCount(): Observable<string> {

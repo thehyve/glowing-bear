@@ -28,6 +28,8 @@ import {RadioButtonModule} from 'primeng/radiobutton';
 import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
 
 import {ToggleButtonModule} from 'primeng/togglebutton'
+import { CohortServiceMock } from 'app/services/cohort.service';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 
 @NgModule({
   imports: [
@@ -53,7 +55,7 @@ import {ToggleButtonModule} from 'primeng/togglebutton'
     GbSummaryComponent,
     GbCohortsComponent
   ],
-  providers: [TreeDragDropService, ConfirmationService],
+  providers: [TreeDragDropService, ConfirmationService,CohortServiceMock,SurvivalAnalysisServiceMock],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {
