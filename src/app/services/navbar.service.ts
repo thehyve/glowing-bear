@@ -19,6 +19,7 @@ export class NavbarService {
 
   private _isExplore = true;
   private _isExploreResults = false;
+  private _isSurvival=false;
 
   constructor(private queryService: QueryService) {
     this.items = [
@@ -28,6 +29,9 @@ export class NavbarService {
 
       // 1: explore results tab, not visible by default
       {label: 'Explore Results', routerLink: '/explore/results', visible: false},
+
+      // 2: survival analysis tab
+      {label : 'Survival Analysis',routerLink: '/survival'}
     ];
 
     // hook to update explore results tab visibility
@@ -39,6 +43,7 @@ export class NavbarService {
   updateNavbar(routerLink: string) {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
     this.isExploreResults = (routerLink === '/explore/results');
+    this.isSurvival= (routerLink === '/survival')
 
     if (this.isExplore) {
       this.activeItem = this._items[0];
@@ -77,5 +82,13 @@ export class NavbarService {
 
   set isExploreResults(value: boolean) {
     this._isExploreResults = value;
+  }
+
+  get isSurvival(): boolean{
+    return this._isSurvival
+  }
+
+  set isSurvival(value: boolean){
+    this._isSurvival=value
   }
 }

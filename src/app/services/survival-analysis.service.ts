@@ -109,6 +109,7 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
 
       var srva=new SurvivalAnalysisClear()
       srva.results=[{groupId:"0",
+      initialCount:20,
       groupResults:[
         {events:{censoringEvent:2,eventOfInterest:4},
         timepoint:1},
@@ -134,6 +135,7 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
       ]
     },
     {groupId:"1",
+    initialCount:20,
     groupResults:[
       {events:{censoringEvent:2,eventOfInterest:4},
       timepoint:1},
@@ -159,6 +161,7 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
     ]
   },
   {groupId:"2",
+  initialCount:20,
   groupResults:[
     {events:{censoringEvent:2,eventOfInterest:4},
     timepoint:1},
@@ -184,6 +187,7 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
   ]
 },
 {groupId:"3",
+initialCount:20,
       groupResults:[
         {events:{censoringEvent:2,eventOfInterest:4},
         timepoint:1},
