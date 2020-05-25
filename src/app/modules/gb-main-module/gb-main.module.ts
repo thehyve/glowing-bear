@@ -13,13 +13,15 @@ import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 import {routing} from './gb-main.routing';
 import {RouterModule} from '@angular/router';
+import { GbSurvivalModule } from '../gb-survival-module/gb-survival.module';
 
 @NgModule({
   imports: [
     CommonModule,
     routing,
     GbNavBarModule,
-    GbSidePanelModule
+    GbSidePanelModule,
+    GbSurvivalModule
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule]

@@ -27,8 +27,12 @@ export class GbNavbarComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        console.log(event)
         let routerLink = event.urlAfterRedirects.split('#')[0];
+
+        console.log(routerLink)
         this.navbarService.updateNavbar(routerLink);
+
       }
     });
   }

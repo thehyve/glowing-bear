@@ -44,11 +44,14 @@ export class NavbarService {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
     this.isExploreResults = (routerLink === '/explore/results');
     this.isSurvival= (routerLink === '/survival')
+    console.log(routerLink)
 
     if (this.isExplore) {
       this.activeItem = this._items[0];
     } else if (this.isExploreResults) {
       this.activeItem = this._items[1];
+    } else if (this.isSurvival){
+      this.activeItem=this._items[2];
     }
   }
 

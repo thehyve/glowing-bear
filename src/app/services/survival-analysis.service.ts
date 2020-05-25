@@ -18,15 +18,14 @@ export class SurvivalService {
 
   protected _granularity : {name : string, encID? :number}[]
 
-
-
-
   constructor(protected authService : AuthenticationService,
     protected cryptoService : CryptoService,
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
     protected apiSurvivalAnalysisService: SurvivalAnalysisService) {
+      this._patientGroupIds=new Map<string,number[]>()
       medcoNetworkService.nodes.forEach((apiNodeMetadata=>
+        
         {this._patientGroupIds[apiNodeMetadata.name]=new Array<string>()}
         ).bind(this))
 
@@ -51,8 +50,6 @@ export class SurvivalService {
       ))
     )
   }
-
-  
    buildFromCohort(survivalCohort : SurvivalCohort){
     this._id=survivalCohort._name
     this.retrievedEncIDs().subscribe((x=>this._timeCodes=x).bind(this))
@@ -61,12 +58,7 @@ export class SurvivalService {
         this._patientGroupIds[key].push(value)
       }).bind(this))
     }).bind(this))
-
-
   }
-
-
-
 }
 
 
@@ -109,106 +101,106 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
 
       var srva=new SurvivalAnalysisClear()
       srva.results=[{groupId:"0",
-      initialCount:20,
+      initialCount:100,
       groupResults:[
         {events:{censoringEvent:2,eventOfInterest:4},
         timepoint:1},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:2},
+        {events:{censoringEvent:7,eventOfInterest:4},
+        timepoint:3},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:4},
+        {events:{censoringEvent:5,eventOfInterest:4},
+        timepoint:5},
+        {events:{censoringEvent:1,eventOfInterest:4},
+        timepoint:6},
+        {events:{censoringEvent:1,eventOfInterest:4},
+        timepoint:7},
+        {events:{censoringEvent:1,eventOfInterest:4},
+        timepoint:8},
+        {events:{censoringEvent:1,eventOfInterest:4},
+        timepoint:9},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:10},
         
       ]
     },
     {groupId:"1",
-    initialCount:20,
+    initialCount:100,
     groupResults:[
       {events:{censoringEvent:2,eventOfInterest:4},
       timepoint:1},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:2},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:3},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:4},
+      {events:{censoringEvent:2,eventOfInterest:8},
+      timepoint:5},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:6},
+      {events:{censoringEvent:2,eventOfInterest:7},
+      timepoint:7},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:8},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:9},
       {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
-      {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
-      {events:{censoringEvent:2,eventOfInterest:4},
-      timepoint:1},
+      timepoint:10},
       
     ]
   },
   {groupId:"2",
-  initialCount:20,
+  initialCount:100,
   groupResults:[
     {events:{censoringEvent:2,eventOfInterest:4},
     timepoint:1},
+    {events:{censoringEvent:1,eventOfInterest:4},
+    timepoint:2},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:3},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:4},
+    {events:{censoringEvent:2,eventOfInterest:1},
+    timepoint:5},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:6},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:7},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:8},
+    {events:{censoringEvent:1,eventOfInterest:1},
+    timepoint:9},
     {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
-    {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
-    {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
-    {events:{censoringEvent:2,eventOfInterest:4},
-    timepoint:1},
+    timepoint:10},
     
   ]
 },
 {groupId:"3",
-initialCount:20,
+initialCount:100,
       groupResults:[
         {events:{censoringEvent:2,eventOfInterest:4},
         timepoint:1},
+        {events:{censoringEvent:1,eventOfInterest:8},
+        timepoint:2},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:3},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:4},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:5},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:6},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:7},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:8},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:9},
         {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
-        {events:{censoringEvent:2,eventOfInterest:4},
-        timepoint:1},
+        timepoint:10},
         
       ]
     }]

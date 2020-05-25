@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
-import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore} from 'd3'
+import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft} from 'd3'
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 
 @Component({
   selector: 'app-gb-survival',
@@ -15,15 +16,28 @@ export class GbSurvivalComponent implements OnInit {
   _curves:survivalCurve
 
 
-  constructor() { }
+  constructor(private survivalService: SurvivalAnalysisServiceMock) { }
 
   ngOnInit() {
+    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
+      this._curves=clearResultsToArray(this._clearRes)
+    }).bind(this))
+    this.buildLineChart()
   }
 
   buildLineChart(){
-    var svg=select('#gb-survival-component').append("svg").append("g")
-    var xaxis=scaleLinear().domain([0,10]).range([0,10])
-    var yaxis=scaleLinear().domain([0,10]).range([10,0])
+    var width =500
+    var height=500
+    var margins=10
+    var svg=select('#gb-survival-component').append("svg").attr("width",width+2*margins)
+    .attr("height",height +2*margins)
+    .append("g").attr("transform",`translate (${margins},${margins})`)
+    var xaxis=scaleLinear().domain([0,10]).range([0,height])
+    var yaxis=scaleLinear().domain([0,1]).range([width,0])
+
+    svg.append("g").attr("transform",`translate(${2*margins},${height-margins})`).call(axisBottom(xaxis))
+
+    svg.append("g").attr("transform", `translate(${margins},${margins})`).call(axisLeft(yaxis))
 
     var  colorSet=scaleOrdinal<string,string>().domain(retrieveGroupIds(this._clearRes)).range([
       "#ff4f4f",
@@ -38,7 +52,6 @@ export class GbSurvivalComponent implements OnInit {
     .x(d=>xaxis(d.timePoint))
     .y(d=>yaxis(d.prob))
     .curve(curveStepBefore)
-
 
     this._curves.curves.forEach(curve =>{
       svg.append("path").datum(curve.points).attr("fill","none")
@@ -92,7 +105,7 @@ function clearResultsToArray(clearRes:  SurvivalAnalysisClear) :survivalCurve{
 }
 
 
-function survivalPoints(previousProb:number,previousCumul:number,timePoint:number,remainingTotal:number,currentEventOfInterest:number,currentCensoringEvent:number):{
+function survivalPoints(previousProb:number,previousCumul:number,remainingTotal:number,timePoint:number,currentEventOfInterest:number,currentCensoringEvent:number):{
   timePoint:number,
   prob:number,
   cumul:number,
