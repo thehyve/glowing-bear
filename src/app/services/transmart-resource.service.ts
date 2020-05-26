@@ -37,6 +37,7 @@ import {TransmartExportJob} from '../models/transmart-models/transmart-export-jo
 import {TransmartPatient} from '../models/transmart-models/transmart-patient';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 import {ServerStatus} from '../models/server-status';
+import { Concept } from 'app/models/constraint-models/concept';
 
 
 @Injectable({
@@ -310,6 +311,25 @@ export class TransmartResourceService {
    */
   getTrialVisits(constraint: Constraint): Observable<TransmartTrialVisit[]> {
     return this.transmartHttpService.getTrialVisits(constraint);
+  }
+
+  // -------------------------------------- modifier calls --------------------------------------
+  /**
+   * Given a concept, find the modifiers that exist for it
+   * @param concept
+   * @returns {Observable<R|T>}
+   */
+  getModifiers(concept: Concept): Observable<string[]> {
+    return this.transmartHttpService.getModifiers(concept);
+  }
+
+  /**
+   * Get all elements for a modifier
+   * @param modifierName
+   * @returns {Observable<R|T>}
+   */
+  getModifierElements(modifierName: string): Observable<string[]> {
+    return this.transmartHttpService.getModifierElements(modifierName);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------

@@ -25,7 +25,8 @@ import {
   DataListModule,
   TreeTableModule,
   DropdownModule,
-  MessagesModule, PaginatorModule, MultiSelectModule, OverlayPanelModule, InputSwitchModule
+  MessagesModule, PaginatorModule, MultiSelectModule, OverlayPanelModule, InputSwitchModule,
+  ListboxModule
 } from 'primeng/primeng';
 import {GbSubjectSetConstraintComponent} from './constraint-components/gb-subject-set-constraint/gb-subject-set-constraint.component';
 import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree-constraint/gb-pedigree-constraint.component';
@@ -49,6 +50,7 @@ import {GbPedigreeConstraintComponent} from './constraint-components/gb-pedigree
     OverlayPanelModule,
     InputSwitchModule,
     DropdownModule,
+    ListboxModule,
   ],
   exports: [
     RouterModule

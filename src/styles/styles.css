@@ -168,3 +168,19 @@ body .hline {
 .form-control:-ms-input-placeholder {
   color: lightgray;
 }
+
+.modifier-constraint {
+  height: 150px !important;
+  overflow-y: scroll !important;
+}
+
+.modifier-constraint-elements {
+  height: 150px !important;
+  overflow-y: scroll !important;
+}
+
+.modifier-constraint:not(.ui-state-disabled) .ui-listbox-item:hover,
+.modifier-constraint-elements:not(.ui-state-disabled) .ui-listbox-item:hover {
+  background-color: var(--gb-clinical-green) !important;
+  color: #ffffff !important;
+}

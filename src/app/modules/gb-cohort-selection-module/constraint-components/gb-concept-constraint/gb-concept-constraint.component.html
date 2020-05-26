@@ -163,6 +163,38 @@
         </div>
       </div>
 
+      <!-- modifier constraint -->
+      <div class="form-inline" [class.form-group]="applyModifierConstraint">
+        <p-checkbox [(ngModel)]="applyModifierConstraint" binary="true"></p-checkbox>
+        <label *ngIf="!applyModifierConstraint" class="gray-text">apply modifier constraint</label>
+        <div class="row">
+          <div class="col-sm">
+            <div *ngIf="applyModifierConstraint">
+              <p-listbox
+                [options]="allModifiers"
+                [(ngModel)]="selectedModifiers"
+                checkbox="true"
+                multiple="true"
+                styleClass="modifier-constraint"
+                optionLabel="name"
+                filter="true"></p-listbox>
+            </div>
+          </div>
+          <div class="col-sm">
+            <div *ngIf="applyModifierConstraint">
+              <p-listbox
+                [options]="allModifierElements"
+                [(ngModel)]="selectedModifierElements"
+                multiple="true"
+                checkbox="true"
+                filter="true"
+                styleClass="modifier-constraint-elements"
+                (onChange)="onModifierElementClick($event)"></p-listbox>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-inline" style="margin-bottom: -1em">
         <p-checkbox [(ngModel)]="applyStudyConstraint" binary="true"></p-checkbox>
         <label *ngIf="!applyStudyConstraint" class="gray-text">apply study constraint</label>

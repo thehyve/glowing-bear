@@ -39,6 +39,7 @@ import {CohortMapper} from '../utilities/cohort-utilities/cohort-mapper';
 import {Dimension} from '../models/constraint-models/dimension';
 import {TransmartDimension} from '../models/transmart-models/transmart-dimension';
 import {ServerStatus} from '../models/server-status';
+import { Concept } from 'app/models/constraint-models/concept';
 
 @Injectable({
   providedIn: 'root',
@@ -174,6 +175,25 @@ export class ResourceService {
       map((tmTrialVisits: TransmartTrialVisit[]) => {
         return TransmartMapper.mapTransmartTrialVisits(tmTrialVisits);
       }));
+  }
+
+  // -------------------------------------- modifier calls --------------------------------------
+  /**
+   * Given a concept, find the modifiers that exist for it
+   * @param concept
+   * @returns {Observable<R|T>}
+   */
+  getModifiers(concept: Concept): Observable<string[]> {
+    return this.transmartResourceService.getModifiers(concept);
+  }
+
+  /**
+   * Find all elements for a given modifier
+   * @param concept
+   * @returns {Observable<R|T>}
+   */
+  getModifierElements(modifierName: string): Observable<string[]> {
+    return this.transmartResourceService.getModifierElements(modifierName);
   }
 
   // -------------------------------------- pedigree calls --------------------------------------

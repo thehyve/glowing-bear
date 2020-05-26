@@ -13,6 +13,7 @@ import {TimeConstraint} from './time-constraint';
 import {TrialVisitConstraint} from './trial-visit-constraint';
 import {FormatHelper} from '../../utilities/format-helper';
 import {StudyConstraint} from './study-constraint';
+import { ModifierConstraint } from './modifier-constraint';
 
 export class ConceptConstraint extends Constraint {
 
@@ -35,6 +36,10 @@ export class ConceptConstraint extends Constraint {
   private _applyStudyConstraint = false;
   private _studyConstraint: StudyConstraint;
 
+  // modifiers
+  private _applyModifierConstraint = false;
+  private _modifierConstraints: ModifierConstraint[];
+
   constructor() {
     super();
     this.valueConstraints = [];
@@ -45,6 +50,8 @@ export class ConceptConstraint extends Constraint {
     this.trialVisitConstraint = new TrialVisitConstraint();
     this.studyConstraint = new StudyConstraint();
     this.textRepresentation = 'Concept';
+    this.applyModifierConstraint = false;
+    this.modifierConstraints = [];
   }
 
   get concept(): Concept {
@@ -133,6 +140,22 @@ export class ConceptConstraint extends Constraint {
     value.parentConstraint = this;
   }
 
+  get modifierConstraints(): ModifierConstraint[] {
+    return this._modifierConstraints;
+  }
+
+  set modifierConstraints(value: ModifierConstraint[]) {
+    this._modifierConstraints = value;
+  }
+
+  get applyModifierConstraint() {
+    return this._applyModifierConstraint;
+  }
+
+  set applyModifierConstraint(value) {
+    this._applyModifierConstraint = value;
+  }
+
   clone(): ConceptConstraint {
     const clone = new ConceptConstraint();
     clone.concept = this.concept;
@@ -146,6 +169,8 @@ export class ConceptConstraint extends Constraint {
     clone.applyStudyConstraint = this.applyStudyConstraint;
     clone.studyConstraint = this.studyConstraint.clone();
     clone.negated = this.negated;
+    clone.applyModifierConstraint = this.applyModifierConstraint;
+    clone.modifierConstraints = this.modifierConstraints.slice(0)
     return clone;
   }
 

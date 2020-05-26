@@ -21,7 +21,8 @@ import {
   TransmartTemporalConstraint,
   TransmartTimeConstraint,
   TransmartTrueConstraint,
-  TransmartValueConstraint
+  TransmartValueConstraint,
+  TransmartModifierConstraint
 } from '../../models/transmart-models/transmart-constraint';
 
 export abstract class AbstractTransmartConstraintVisitor<T> implements TransmartConstraintVisitor<T> {
@@ -59,6 +60,8 @@ export abstract class AbstractTransmartConstraintVisitor<T> implements Transmart
         return this.visitSubSelectionConstraint(<TransmartSubSelectionConstraint>constraint);
       case 'relation':
         return this.visitRelationConstraint(<TransmartRelationConstraint>constraint);
+      case 'modifier':
+        return this.visitModifierConstraint(<TransmartModifierConstraint>constraint);
       default:
         throw new Error(`Unsupported constraint type: ${constraint.type}`);
     }
@@ -97,5 +100,7 @@ export abstract class AbstractTransmartConstraintVisitor<T> implements Transmart
   abstract visitSubSelectionConstraint(constraint: TransmartSubSelectionConstraint): T;
 
   abstract visitRelationConstraint(constraint: TransmartRelationConstraint): T;
+
+  abstract visitModifierConstraint(constraint: TransmartModifierConstraint): T;
 
 }

@@ -139,3 +139,11 @@ export class TransmartRelationConstraint implements TransmartConstraint {
   biological?: boolean;
   shareHousehold?: boolean;
 }
+
+export class TransmartModifierConstraint implements TransmartConstraint {
+  type = 'modifier';
+  modifierCode?: string;
+  path?: string;
+  dimensionName?: string;
+  values: TransmartValueConstraint;
+}
