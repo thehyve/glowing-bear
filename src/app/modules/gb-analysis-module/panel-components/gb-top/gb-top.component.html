@@ -1,0 +1,6 @@
+<div id="gb-top-component">
+    <p-button *ngFor="let analysisType of available" [label]="analysisType.name"
+              (click)="selected = analysisType"></p-button>
+              <app-gb-cohort-landing-zone [activated]="selectedSurvival"></app-gb-cohort-landing-zone>
+
+</div>

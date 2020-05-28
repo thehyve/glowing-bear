@@ -35,9 +35,12 @@ export class CohortService {
   }
 
   set selectedCohort(cohort : Cohort){
-    this._selectedCohort.selected=false
+    if(this._selectedCohort){
+      this._selectedCohort.selected=false
+    }
     this._selectedCohort=cohort
     this._selectedCohort.selected=true
+    console.log("I have a cohort selected !!!",this.selectedCohort)
   }
 
   set cohorts(cohorts : Array<Cohort>){

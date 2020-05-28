@@ -8,7 +8,7 @@
 
 import {Component, OnInit, ElementRef} from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
-import { CohortServiceMock } from 'app/services/cohort.service';
+import {CohortService, CohortServiceMock } from 'app/services/cohort.service';
 
 @Component({
   selector: 'gb-cohorts',
@@ -26,6 +26,7 @@ export class GbCohortsComponent implements OnInit {
  constructor(private cohortService: CohortServiceMock){}
 
  get cohorts() : Array<Cohort> {
+
    return this.cohortService.cohorts
  }
  get selectedCohort() : Cohort{
@@ -37,6 +38,20 @@ export class GbCohortsComponent implements OnInit {
 
   ngOnInit() {
     
+  }
+
+  dragdebug(event,cohort:Cohort){
+
+    this.cohortService.selectedCohort=cohort
+
+  }
+
+  dropdebug(event){
+
+  }
+
+  draggingmode(event){
+    event.preventDefault()
   }
 
 

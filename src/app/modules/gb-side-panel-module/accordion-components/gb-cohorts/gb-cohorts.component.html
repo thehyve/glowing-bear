@@ -1,6 +1,6 @@
 <div id="cohorts-component">
   <div class="p-grid p-dir-col">
-    <div *ngFor="let cohort of cohorts" class="p-col" (click)="selectedCohort=cohort">
+    <div *ngFor="let cohort of cohorts"  draggable="true" (dragstart)="dragdebug($event,cohort)" class="p-col" (click)="selectedCohort=cohort">
       {{cohort.name}}
 
       <button pButton class="ui-button-secondary" type="button"

@@ -58,9 +58,16 @@ export class GbSummaryComponent {
     var cohort =new Cohort(this.name,this.queryService.query.constraint)
     existingCohorts.push(cohort)
     this.cohortService.cohorts=existingCohorts
+    console.log(this.cohortService.cohorts)
     
     MessageHelper.alert("success","Cohort has been sent.")
     }
+    }
+  }
+
+  saveIfEnter(event){
+    if(event.keyCode == 13){
+      this.save()
     }
   }
 

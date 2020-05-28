@@ -26,7 +26,7 @@ export const routes: Routes = [
   },
   {
     path: 'survival',
-    loadChildren:'../gb-survival-module/gb-survival.module#GbSurvivalModule'
+    loadChildren:'../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
   }
 ];
 

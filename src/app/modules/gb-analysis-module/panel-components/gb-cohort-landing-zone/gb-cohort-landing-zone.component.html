@@ -1,0 +1,23 @@
+<div *ngIf="activated" id="gb-cohort-landing-zone-component">
+    <div *ngIf="!dedicated" >
+        <div (drop)="drop($event);dedicated=true;"  (dragover)="draggingmode($event)">
+            <p-card >
+                <p>Drop cohort here</p>
+            </p-card> 
+
+        </div>
+
+    </div>
+    
+    <div *ngIf="dedicated">
+        <p-card>
+            <span>{{cohort.name}}</span>
+            <button pButton class="ui-button-secondary" type="button"
+                        pTooltip="Mark as important"
+                        tooltipPosition="top" placeholder="Top"
+                        (click)="dedicated=false;"
+                        icon="fa fa-times">
+                </button>
+        </p-card>
+    </div>
+</div>

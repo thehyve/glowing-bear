@@ -1,12 +1,14 @@
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import { GbSurvivalComponent } from './gb-survival.component';
+//import { GbSurvivalComponent } from './panel-components/gb-survival-res/gb-survival.component';
+import { GbAnalysisComponent} from './gb-analysis.component'
+
 
 // Route Configuration
 const routes : Routes =[
     {
         path:'',
-        component: GbSurvivalComponent
+        component: GbAnalysisComponent
     }
 ]
 

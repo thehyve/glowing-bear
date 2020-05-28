@@ -59,7 +59,7 @@ export class Cohort{
     }
 
     set selected(select : boolean){
-        this.selected=select
+        this._selected=select
     }
 
     get selected() : boolean{

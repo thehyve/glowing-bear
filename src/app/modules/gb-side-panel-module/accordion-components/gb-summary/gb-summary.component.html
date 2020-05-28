@@ -1,6 +1,6 @@
 <div>
   <div class="pull-right">
-    <input [(ngModel)]="name"/>
+    <input [(ngModel)]="name"  (keydown)="saveIfEnter($event)"/>
     <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
             type="button"
             (click)="save()">

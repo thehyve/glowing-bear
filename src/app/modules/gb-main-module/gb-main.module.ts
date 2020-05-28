@@ -13,7 +13,7 @@ import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 import {routing} from './gb-main.routing';
 import {RouterModule} from '@angular/router';
-import { GbSurvivalModule } from '../gb-survival-module/gb-survival.module';
+import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
 
 @NgModule({
   imports: [
@@ -21,7 +21,7 @@ import { GbSurvivalModule } from '../gb-survival-module/gb-survival.module';
     routing,
     GbNavBarModule,
     GbSidePanelModule,
-    GbSurvivalModule
+    GbAnalysisModule
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule]
