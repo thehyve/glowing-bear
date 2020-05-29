@@ -40,7 +40,7 @@ export class CohortService {
     }
     this._selectedCohort=cohort
     this._selectedCohort.selected=true
-    console.log("I have a cohort selected !!!",this.selectedCohort)
+    console.log("I have a cohort selected !!!",this)
   }
 
   set cohorts(cohorts : Array<Cohort>){

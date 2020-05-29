@@ -42,7 +42,10 @@ export class GbCohortLandingZoneComponent implements OnInit {
     if (this.cohortService.selectedCohort != null){
       this._cohort=this.cohortService.selectedCohort
       this.dedicated=true
+      console.log("yes")
 
+    }else{
+      console.log("nope")
     }
     
   }

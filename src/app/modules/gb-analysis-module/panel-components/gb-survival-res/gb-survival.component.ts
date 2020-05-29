@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,OnChanges, Input, AfterViewInit, AfterViewChecked } from '@angular/core';
 
 import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft} from 'd3'
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
@@ -6,23 +6,44 @@ import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 
 @Component({
-  selector: 'app-gb-survival',
+  selector: 'app-gb-survival-res',
   templateUrl: './gb-survival.component.html',
   styleUrls: ['./gb-survival.component.css']
 })
-export class GbSurvivalComponent implements OnInit {
+export class GbSurvivalComponent implements OnInit,OnChanges{
   _clearRes :SurvivalAnalysisClear
 
   _curves:survivalCurve
+  _activated=false
 
 
   constructor(private survivalService: SurvivalAnalysisServiceMock) { }
+
+  @Input()
+  set activated(bool:boolean){
+    this._activated=bool
+  }
+
+  get activated() : boolean{
+    return this._activated
+  }
 
   ngOnInit() {
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._curves=clearResultsToArray(this._clearRes)
     }).bind(this))
     this.buildLineChart()
+  }
+
+  ngOnChanges(changes){
+
+    console.log("I've changed",this._activated)
+    console.log("executing")
+    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
+      this._curves=clearResultsToArray(this._clearRes)
+    }).bind(this))
+    this.buildLineChart()
+    console.log("executed")
   }
 
   buildLineChart(){

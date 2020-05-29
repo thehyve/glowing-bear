@@ -1,4 +1,5 @@
 <div *ngIf="activated" id="gb-cohort-landing-zone-component">
+    <p-card header="Cohort">
     <div *ngIf="!dedicated" >
         <div (drop)="drop($event);dedicated=true;"  (dragover)="draggingmode($event)">
             <p-card >
@@ -10,14 +11,27 @@
     </div>
     
     <div *ngIf="dedicated">
-        <p-card>
+        
             <span>{{cohort.name}}</span>
-            <button pButton class="ui-button-secondary" type="button"
+            <div class="padded">
+                <button pButton class="ui-button-secondary" type="button"
                         pTooltip="Mark as important"
                         tooltipPosition="top" placeholder="Top"
                         (click)="dedicated=false;"
-                        icon="fa fa-times">
+                        label="Remove">
                 </button>
-        </p-card>
+            </div>
+            <div class="padded">
+                <button pButton class="ui-button-secondary" type="button"
+                    pTooltip="Mark as important"
+                    tooltipPosition="top" placeholder="Top"
+                    (click)="dedicated=false;"
+                    label="Add sub groups">
+                </button>
+            </div>
+       
+        
     </div>
+</p-card>
 </div>
+<app-gb-survival-settings [activated]="dedicated"></app-gb-survival-settings>

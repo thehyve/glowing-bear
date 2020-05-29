@@ -1,1 +1,29 @@
-<p>gb-survival-settings works!</p>
+<div *ngIf="activated" id="gb-survival-settings-component" >
+    <p-card header="Settings">
+
+    <p-button (click)="run()" label="Run" class="ui-button-secondary"></p-button>
+        
+    <span>Granularity:</span>
+        <select [(ngModel)]="selectedGranularity">
+            <option *ngFor="let granularity of granularities" [ngValue]="granularity" >
+                {{granularity}}
+            </option>
+        </select>
+        <span>Limit:</span>
+        <input type="text" pInputText [(ngModel)]="limit"/>
+        <p-slider [(ngModel)]="limit" [max]="1000"  [style]="{'width':'13em', 'margin-left':'6em', 'background':'#ffffff'}"></p-slider>
+        <span>Start:</span>
+        <select [(ngModel)]="selectedStart">
+            <option *ngFor="let start of starts" [ngValue]="start">{{start}}</option>
+        </select>
+        <span>End:</span>
+        <select [(ngModel)]="selectedEnd">
+            <option *ngFor="let end of ends" [ngValue]="end">{{end}}</option>
+        </select>
+
+        
+
+        
+    </p-card>
+</div>
+<app-gb-survival-res [activated]="ran"></app-gb-survival-res>

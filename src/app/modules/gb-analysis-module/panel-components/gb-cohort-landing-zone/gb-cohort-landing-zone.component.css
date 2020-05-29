@@ -1,6 +1,6 @@
-.ui-button-secondary{
+
+
+.padded{
     float: right;
-    height: 20px;
-    color: #999999;
-    background-color: #ffffff;
-  }
+    padding-right: 0.3em;
+}

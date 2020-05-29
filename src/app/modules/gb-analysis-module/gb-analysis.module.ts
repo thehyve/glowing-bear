@@ -10,6 +10,8 @@ import { GbTopComponent } from './panel-components/gb-top/gb-top.component';
 import { GbSurvivalSettingsComponent } from './panel-components/gb-survival-settings/gb-survival-settings.component';
 import { ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
+import { FormsModule} from '@angular/forms'
+import {SliderModule} from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component'
 import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
 
@@ -24,12 +26,14 @@ import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
     GbAnalysisComponent],
   imports: [
     CardModule,
+    SliderModule,
     CommonModule,
+    FormsModule,
     routing,
     ButtonModule
   ],
 
-  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock,CohortService,CohortServiceMock],
+  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock,CohortServiceMock],
 
   exports:[
     RouterModule

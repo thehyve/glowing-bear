@@ -43,16 +43,12 @@ export class GbCohortsComponent implements OnInit {
   dragdebug(event,cohort:Cohort){
 
     this.cohortService.selectedCohort=cohort
+    
+
 
   }
 
-  dropdebug(event){
-
-  }
-
-  draggingmode(event){
-    event.preventDefault()
-  }
+ 
 
 
 
