@@ -55,7 +55,7 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.serv
     GbSummaryComponent,
     GbCohortsComponent
   ],
-  providers: [TreeDragDropService, ConfirmationService,CohortServiceMock,SurvivalAnalysisServiceMock],
+  providers: [TreeDragDropService, ConfirmationService,SurvivalAnalysisServiceMock],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {

@@ -14,6 +14,7 @@ import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 import {routing} from './gb-main.routing';
 import {RouterModule} from '@angular/router';
 import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
+import { CohortServiceMock } from 'app/services/cohort.service';
 
 @NgModule({
   imports: [
@@ -24,7 +25,8 @@ import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
     GbAnalysisModule
   ],
   declarations: [GbMainComponent],
-  exports: [GbMainComponent, RouterModule]
+  exports: [GbMainComponent, RouterModule],
+  providers:[CohortServiceMock]
 })
 export class GbMainModule {
 }

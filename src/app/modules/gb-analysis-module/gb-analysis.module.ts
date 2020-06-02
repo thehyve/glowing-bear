@@ -12,8 +12,9 @@ import { ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
 import { FormsModule} from '@angular/forms'
 import {SliderModule} from 'primeng/slider'
-import { GbAnalysisComponent } from './gb-analysis.component'
-import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
+import { GbAnalysisComponent } from './gb-analysis.component';
+import { GbChartContainerComponent } from './panel-components/gb-chart-container/gb-chart-container.component'
+import {TableModule} from 'primeng/table'
 
 
 
@@ -23,17 +24,19 @@ import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
     GbCohortLandingZoneComponent,
     GbTopComponent,
     GbSurvivalSettingsComponent,
-    GbAnalysisComponent],
+    GbAnalysisComponent,
+    GbChartContainerComponent],
   imports: [
     CardModule,
     SliderModule,
+    TableModule,
     CommonModule,
     FormsModule,
     routing,
     ButtonModule
   ],
 
-  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock,CohortServiceMock],
+  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock],
 
   exports:[
     RouterModule
