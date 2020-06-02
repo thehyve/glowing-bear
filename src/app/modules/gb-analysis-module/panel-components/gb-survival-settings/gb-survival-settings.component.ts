@@ -8,15 +8,15 @@ import { Component, OnInit, Input } from '@angular/core';
 export class GbSurvivalSettingsComponent implements OnInit {
   _activated: boolean
 
-  _granularities= ["Day","Week","Month","Year"]
+  _granularities= [{label:"Day",value:"Day"},{label:"Week",value:"Week"},{label:"Month",value:"Month"},{label:"Year",value:"Year"}]
   _selectedGranularity:string
 
   _limit:number
 
-  _starts=["Diagnosis","Treatment"]
+  _starts=[{label:"Diagnosis",value:"Diagnosis"},{label:"Treatment",value:"Treatment"}]
   _selectedStart:string
 
-  _ends=["Fatality","Tumor Growth"]
+  _ends=[{label:"Fatality",value:"Fatility"},{label:"Tumor Growth",value:"Tumor Growth"}]
   _selectedEnd:string
 
   _ran=false
@@ -36,7 +36,7 @@ export class GbSurvivalSettingsComponent implements OnInit {
   }
 
 
-  get granularities() :string[]{
+  get granularities(){
     return this._granularities
   }
 
@@ -56,7 +56,7 @@ export class GbSurvivalSettingsComponent implements OnInit {
     this._limit=num
   }
 
-  get starts():string[]{
+  get starts(){
     return this._starts
   }
 
@@ -68,7 +68,7 @@ export class GbSurvivalSettingsComponent implements OnInit {
     return this._selectedStart
   }
 
-  get ends():string[]{
+  get ends(){
     return this._ends
   }
 

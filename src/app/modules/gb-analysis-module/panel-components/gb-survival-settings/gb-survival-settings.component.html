@@ -3,27 +3,14 @@
 
     <p-button (click)="run()" label="Run" class="ui-button-secondary"></p-button>
         
-    <span>Granularity:</span>
-        <select [(ngModel)]="selectedGranularity">
-            <option *ngFor="let granularity of granularities" [ngValue]="granularity" >
-                {{granularity}}
-            </option>
-        </select>
+        <p-dropdown [(ngModel)]="selectedGranularity" optionLabel="label" [options]="granularities" placeholder="Granularity"></p-dropdown>
         <span>Limit:</span>
         <input type="text" pInputText [(ngModel)]="limit"/>
         <p-slider [(ngModel)]="limit" [max]="1000"  [style]="{'width':'13.5em', 'margin-left':'13em', 'background':'#ffffff'}"></p-slider>
-        <span>Start:</span>
-        <select [(ngModel)]="selectedStart">
-            <option *ngFor="let start of starts" [ngValue]="start">{{start}}</option>
-        </select>
-        <span>End:</span>
-        <select [(ngModel)]="selectedEnd">
-            <option *ngFor="let end of ends" [ngValue]="end">{{end}}</option>
-        </select>
-
-        
-
-        
+        <p-dropdown [(ngModel)]="selectedStart" optionLabel="label" [options]="starts" placeholder="Start"></p-dropdown>
+        <p-dropdown [(ngModel)]="selectedEnd" optionLabel="label" [options]="ends" placeholder="End"></p-dropdown>
+            
+       
     </p-card>
 </div>
 <app-gb-survival-res [activated]="ran"></app-gb-survival-res>

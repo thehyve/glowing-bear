@@ -30,6 +30,7 @@ import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import { CohortServiceMock } from 'app/services/cohort.service';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
+import { InputTextModule} from "primeng/inputtext"
 
 @NgModule({
   imports: [

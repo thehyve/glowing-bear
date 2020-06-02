@@ -1,7 +1,15 @@
 
     <p-card *ngIf="activated" id="gb-survival-component" header="Results">
         <div class="df">
-            <p-table></p-table>
+            <table>
+                <tr *ngFor="let value of values">
+                    <td>{{value.name}}</td>
+                    <td>{{value.value}}</td>
+                </tr>
+            </table>
+
+ 
+            <p-dropdown [(ngModel)]="selectedIc" [options]="ic" optionLabel="label" placeholder="confidence interval"></p-dropdown>
         </div>
         
             <div id="svg-container">

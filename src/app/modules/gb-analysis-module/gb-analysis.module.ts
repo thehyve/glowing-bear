@@ -15,6 +15,7 @@ import {SliderModule} from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { GbChartContainerComponent } from './panel-components/gb-chart-container/gb-chart-container.component'
 import {TableModule} from 'primeng/table'
+import {DropdownModule} from 'primeng/dropdown'
 
 
 
@@ -33,7 +34,8 @@ import {TableModule} from 'primeng/table'
     CommonModule,
     FormsModule,
     routing,
-    ButtonModule
+    ButtonModule,
+    DropdownModule
   ],
 
   providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock],

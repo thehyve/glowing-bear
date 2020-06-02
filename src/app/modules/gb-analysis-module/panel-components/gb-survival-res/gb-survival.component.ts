@@ -14,6 +14,12 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.serv
 export class GbSurvivalComponent implements OnInit{
 
   _activated=false
+
+  _cols=["Name","Value"]
+  _values=[{name:"log-rank",value:0.9},{name:"p-val",value:0.85}]
+
+  _ic=[{label:"none",value:"none"},{label:"identity",value:"identity"},{label:"log",value:"log"},{label:"log -log",value:"log -log"}]
+  _selectedIc:string
   
 
 
@@ -51,6 +57,35 @@ export class GbSurvivalComponent implements OnInit{
   }
 */
 
+set cols(columns){
+  this._cols=columns
+
+}
+
+
+get cols(){
+  return this._cols
+}
+
+set values(val){
+  this._values=val
+}
+
+get values(){
+  return this._values
+}
+
+get ic(){
+  return this._ic
+}
+
+set selectedIc(ic){
+  this._selectedIc=ic
+}
+
+get selectedIc(){
+  return this._selectedIc
+}
   
 
 
