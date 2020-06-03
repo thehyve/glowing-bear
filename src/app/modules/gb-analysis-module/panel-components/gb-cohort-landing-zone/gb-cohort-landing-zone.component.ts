@@ -38,14 +38,12 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
 
   drop(event){
-    console.log("dopevent !!",this.cohortService)
+
     if (this.cohortService.selectedCohort != null){
       this._cohort=this.cohortService.selectedCohort
       this.dedicated=true
-      console.log("yes")
 
-    }else{
-      console.log("nope")
+
     }
     
   }

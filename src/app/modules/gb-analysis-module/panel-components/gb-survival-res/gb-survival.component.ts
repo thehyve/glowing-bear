@@ -18,8 +18,13 @@ export class GbSurvivalComponent implements OnInit{
   _cols=["Name","Value"]
   _values=[{name:"log-rank",value:0.9},{name:"p-val",value:0.85}]
 
-  _ic=[{label:"none",value:"none"},{label:"identity",value:"identity"},{label:"log",value:"log"},{label:"log -log",value:"log -log"}]
-  _selectedIc:string
+  _ic=[{label:"none",value:null},{label:"identity",value:identity},{label:"log",value:logarithm},{label:"log -log",value:logarithmMinusLogarithm}]
+  _selectedIc:  {label:string,value:(simga:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) =>{inf:number,sup:number}}
+
+
+  _grid=false
+  _alphas=[{name:"90%",value:1.645},{name:"95%",value:1.960},{name:"99%",value:2.054}]
+  _selectedAlpha:{name:string,value:number}
   
 
 
@@ -81,16 +86,70 @@ get ic(){
 
 set selectedIc(ic){
   this._selectedIc=ic
+  console.log("selectedIc",this._selectedIc)
 }
 
 get selectedIc(){
   return this._selectedIc
+}
+
+
+set grid(val:boolean){
+  this._grid =val
+
+}
+
+get grid():boolean{
+  return this._grid
+}
+
+set selectedAlpha(num){
+  this._selectedAlpha=num
+  console.log("alpha",this._selectedAlpha)
+}
+
+get selectedAlpha(){
+  return this._selectedAlpha
+}
+
+get alphas(){
+  return this._alphas
 }
   
 
 
 
 }
+
+
+
+
+
+// ---- confidence intervals
+
+
+function identity(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) :{inf:number,sup:number}{
+  var limes= point.cumul * point.prob * point.prob
+  console.log("limes",limes)
+  return {inf: point.prob - sigma*limes, sup: point.prob + sigma*limes}
+}
+
+function logarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
+  var limes=point.cumul
+  console.log("limes",limes)
+  return {inf: point.prob*Math.exp( - sigma*limes), sup: point.prob *Math.exp( sigma*limes)}
+
+
+}
+
+function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
+
+  var limes = (point.prob ==0 || point.prob == 1) ? 0:point.cumul/(Math.pow(Math.log(point.prob),2))
+  console.log("limes",limes)
+  return {inf: Math.pow(point.prob , Math.exp(sigma*limes)), sup: Math.pow(point.prob, Math.exp(- sigma*limes))}
+
+
+} 
 
 
 

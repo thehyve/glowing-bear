@@ -31,7 +31,7 @@ export class NavbarService {
       {label: 'Explore Results', routerLink: '/explore/results', visible: false},
 
       // 2: survival analysis tab
-      {label : 'Survival Analysis',routerLink: '/survival'}
+      {label : 'Analysis',routerLink: '/survival'}
     ];
 
     // hook to update explore results tab visibility
