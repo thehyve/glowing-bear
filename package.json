@@ -1,6 +1,6 @@
 {
   "name": "glowing-bear",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "license": "GPL-3.0+",
   "scripts": {
     "ng": "ng",
