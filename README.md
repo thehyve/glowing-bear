@@ -62,7 +62,7 @@ For e2e test we use [Cypress] in combination with the [cypress-cucumber-preproce
 [Cypress] is install as part of the your `npm install` command. 
 To run the tests using the headless browser `npm run e2e` or `npm run cypress` to launch the GUI.
 
-On which envirounment to run the tests can be changed in cypress.json
+On which environment to run the tests can be changed in cypress.json
 Here are settings you would need to modify for that:
 
 | Option | Description |
@@ -70,7 +70,6 @@ Here are settings you would need to modify for that:
 | `baseUrl` | URL of the glowingbear to run tests against |
 | `fixturesFolder` | Folder with environment specific configurations (e.g. test users credentials), so-called fixtures. e.g. `dev`, `test`. |
 | `env.apiUrl` | A transmart backend. It has to be the same that the glowingbear (specified in `baseUrl`) is communicating with. It is used by tests as shortcuts for data preparation and cleaning (e.g. remove export jobs). |
-| `env.authentication-service-type` | When set to `oidc` expects keycloak interface to provide user credentials. Otherwise, the old transmart login page. Please note that for the [transmart-api-server] `oidc` is the only valid option. |
 | `env.oidc-server-url` | URL of the identity provider that is used by the glowingbear and transmart. |
 | `env.oidc-client-id` | The OpenID Connect Client name. |
 
@@ -89,7 +88,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.9.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.9/glowing-bear-2.0.9.tar).
+The latest release is [glowing-bear-2.0.10.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.10/glowing-bear-2.0.10.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -128,7 +127,6 @@ Example `config.dev.json`:
   "gb-backend-url": "https://gb-backend.example.com",
   "tree-node-counts-update": true,
   "autosave-subject-sets": false,
-  "authentication-service-type": "oidc",
   "oidc-server-url": "https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect"
 }
 ```
@@ -143,7 +141,6 @@ Supported properties in the `config.*.json` files:
 | `autosave-subject-sets`   | `false`   | Persist subject selection as subject set automatically. |
 | `show-observation-counts` | `true`    | |
 | `instant-counts-update` | `false`   | |
-| `authentication-service-type` | `oidc`  | Authentication service type (`oidc`, `transmart`) |
 | `oidc-server-url`         |           | E.g., `https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect` |
 | `oidc-client-id`          | `transmart` | |
 | `export-mode`             |           | JSON object. Data export configuration. When using tranSMART directly, use: `export-mode`: { `name`: `transmart`, `data-view`: `export-data-view` }, where `export-data-view` defines a shape of the export (`dataTable`, `surveyTable`). When using external tool called `transmart-packer`, use: `export-mode`: { `name`: `packer`, `data-view`: `packer-job-name`, `export-url`:`http://example.com`, where `packer-job-name` is a name of the job in `transmart-packer` and `export-url` is an URL of `transmart-packer` } |

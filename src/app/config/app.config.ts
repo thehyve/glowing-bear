@@ -25,7 +25,6 @@ export class AppConfig {
   public static DEFAULT_INSTANT_COUNTS_UPDATE = false;
   public static DEFAULT_INCLUDE_DATA_TABLE = true;
   public static DEFAULT_INCLUDE_COHORT_SUBSCRIPTION = false;
-  public static DEFAULT_AUTHENTICATION_SERVICE_TYPE = 'oidc';
   public static DEFAULT_OIDC_SERVER_URL =
     'https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect';
   public static DEFAULT_OIDC_CLIENT_ID = 'transmart-client';
@@ -98,9 +97,6 @@ export class AppConfig {
       }
       case 'include-cohort-subscription': {
         return AppConfig.DEFAULT_INCLUDE_COHORT_SUBSCRIPTION;
-      }
-      case 'authentication-service-type': {
-        return AppConfig.DEFAULT_AUTHENTICATION_SERVICE_TYPE;
       }
       case 'oidc-server-url': {
         return AppConfig.DEFAULT_OIDC_SERVER_URL;

@@ -48,7 +48,6 @@ export class AppComponent implements OnInit {
     }
     this.authenticationService.authorised.subscribe((authenticated) => {
       if (authenticated) {
-        MessageHelper.alert('success', 'Authentication successful!');
         this._authenticationCompleted = true;
         this.authenticationService.accessLevel.subscribe((accessLevel) => {
           this._accessLevel = accessLevel;

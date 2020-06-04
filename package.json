@@ -1,6 +1,6 @@
 {
   "name": "glowing-bear",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "license": "GPL-3.0+",
   "scripts": {
     "ng": "ng",
@@ -39,7 +39,7 @@
     "fractalis": "^1.4.1",
     "jwt-decode": "^2.2.0",
     "material-design-icons": "^3.0.1",
-    "md2": "^0.0.29",
+    "md2": "^0.0.33",
     "moment": "^2.22.2",
     "primeicons": "^1.0.0-beta.10",
     "primeng": "^6.1.2",
@@ -48,7 +48,7 @@
     "rxjs-compat": "^6.4.0",
     "sanitize-filename": "^1.6.1",
     "ua-parser-js": "^0.7.19",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.10.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.13.8",
@@ -59,9 +59,10 @@
     "codecov": "^3.1.0",
     "codelyzer": "~4.5.0",
     "cucumber": "^2.1.0",
-    "cypress": "^3.4.1",
-    "cypress-cucumber-preprocessor": "^1.16.0",
-    "deep-equal": "^1.0.1",
+    "cypress": "^4.0.2",
+    "cypress-cucumber-preprocessor": "^2.0.1",
+    "cypress-file-upload": "^3.5.3",
+    "deep-equal": "^2.0.1",
     "es6-promise": "^4.1.1",
     "jasmine-core": "~2.9.1",
     "jasmine-spec-reporter": "~3.2.0",
