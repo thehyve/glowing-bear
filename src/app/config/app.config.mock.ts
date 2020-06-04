@@ -20,7 +20,8 @@ export class AppConfigMock {
       'fractalis-url': 'https://fractalis.example.com',
       'fractalis-datasource-url': 'https://transmart.example.com',
       'enable-fractalis-analysis': true,
-      'authentication-service-type': 'transmart',
+      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
+      'oidc-client-id': 'transmart-client',
       'export-mode': {
         'name': 'transmart',
         'data-view': 'dataTable'
@@ -51,40 +52,6 @@ export class AppConfigMock {
   load() {}
 }
 
-export class OidcConfigMock {
-  private config: Object = null;
-  private env: Object = {};
-
-  constructor() {
-    this.config = {
-      'api-version': 'v2',
-      'api-url': 'https://transmart.example.com',
-      'fractalis-url': 'https://fractalis.example.com',
-      'authentication-service-type': 'oidc',
-      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
-      'oidc-client-id': 'transmart-client'
-    };
-  }
-
-  get version() {
-    return '0.0.1-test';
-  }
-
-  public getConfig(key: any) {
-    return this.config[key];
-  }
-
-  public getEnv(key: any) {
-    return this.env[key];
-  }
-
-  get isLoaded(): boolean {
-    return true;
-  }
-
-  load() {}
-}
-
 export class AppConfigPackerMock {
   private config: Object = null;
   private env: Object = null;
@@ -95,7 +62,8 @@ export class AppConfigPackerMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
-      'authentication-service-type': 'transmart',
+      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
+      'oidc-client-id': 'transmart-client',
       'export-mode': {
         'name': 'packer',
         'export-url': 'http://foo.bar',
@@ -134,7 +102,8 @@ export class AppConfigSurveyExportMock {
       'api-url': 'https://transmart.example.com',
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
-      'authentication-service-type': 'transmart',
+      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
+      'oidc-client-id': 'transmart-client',
       'export-mode': {
         'name': 'transmart',
         'data-view': 'surveyTable'
@@ -173,7 +142,8 @@ export class AppConfigFractalisDisabledMock {
       'gb-backend-url': 'https://gb-backend.example.com',
       'fractalis-url': 'https://fractalis.example.com',
       'enable-fractalis-analysis': false,
-      'authentication-service-type': 'transmart',
+      'oidc-server-url': 'https://keycloak.example.com/auth/realms/transmart-dev/protocol/openid-connect',
+      'oidc-client-id': 'transmart-client',
       'export-mode': {
         'name': 'transmart',
         'data-view': 'surveyTable'

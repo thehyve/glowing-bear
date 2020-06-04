@@ -7,7 +7,6 @@
   "instant-counts-update": false,
   "include-data-table": true,
   "include-cohort-subscription": false,
-  "authentication-service-type": "oidc",
   "oidc-client-id": "transmart-client",
   "export-mode": {
     "name": "transmart",
