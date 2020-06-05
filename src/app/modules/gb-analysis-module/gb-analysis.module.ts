@@ -15,7 +15,9 @@ import {SliderModule} from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { GbChartContainerComponent } from './panel-components/gb-chart-container/gb-chart-container.component'
 import {TableModule} from 'primeng/table'
-import {DropdownModule} from 'primeng/dropdown'
+import {DropdownModule} from 'primeng/dropdown';
+import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
+
 
 
 
@@ -26,7 +28,8 @@ import {DropdownModule} from 'primeng/dropdown'
     GbTopComponent,
     GbSurvivalSettingsComponent,
     GbAnalysisComponent,
-    GbChartContainerComponent],
+    GbChartContainerComponent,
+    GbSubgroupComponent],
   imports: [
     CardModule,
     SliderModule,

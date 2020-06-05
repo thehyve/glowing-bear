@@ -10,6 +10,7 @@ import { Cohort } from 'app/models/cohort-models/cohort';
 export class GbCohortLandingZoneComponent implements OnInit {
   _activated=false
   _dedicated=false
+  _subgroup=false
   _cohort:Cohort
 
   constructor(private cohortService:CohortServiceMock) { }
@@ -34,6 +35,14 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   get cohort(): Cohort{
     return this._cohort
+  }
+
+  set subgroup(val:boolean){
+    this._subgroup=val
+  }
+
+  get subgroup():boolean{
+    return this._subgroup
   }
 
 

@@ -84,8 +84,8 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
     var  colorSet=scaleOrdinal<string,string>().domain(retrieveGroupIds(this._clearRes)).range([
       "#ff4f4f",
       "#99f0dd",
-      "fa8d2d",
-      "5c67e6"
+      "#fa8d2d",
+      "#5c67e6"
     ])
 
 
@@ -140,6 +140,8 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   }
 
     this._curves.curves.forEach(curve =>{
+      console.log("curve.groupId",curve.groupId)
+      console.log("colorset",colorSet(curve.groupId))
 
 
 

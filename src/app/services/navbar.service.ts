@@ -19,7 +19,7 @@ export class NavbarService {
 
   private _isExplore = true;
   private _isExploreResults = false;
-  private _isSurvival=false;
+  private _isAnalysis=false;
 
   constructor(private queryService: QueryService) {
     this.items = [
@@ -43,14 +43,14 @@ export class NavbarService {
   updateNavbar(routerLink: string) {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
     this.isExploreResults = (routerLink === '/explore/results');
-    this.isSurvival= (routerLink === '/survival')
+    this.isAnalysis= (routerLink === '/survival')
     console.log(routerLink)
 
     if (this.isExplore) {
       this.activeItem = this._items[0];
     } else if (this.isExploreResults) {
       this.activeItem = this._items[1];
-    } else if (this.isSurvival){
+    } else if (this.isAnalysis){
       this.activeItem=this._items[2];
     }
   }
@@ -87,11 +87,11 @@ export class NavbarService {
     this._isExploreResults = value;
   }
 
-  get isSurvival(): boolean{
-    return this._isSurvival
+  get isAnalysis(): boolean{
+    return this._isAnalysis
   }
 
-  set isSurvival(value: boolean){
-    this._isSurvival=value
+  set isAnalysis(value: boolean){
+    this._isAnalysis=value
   }
 }

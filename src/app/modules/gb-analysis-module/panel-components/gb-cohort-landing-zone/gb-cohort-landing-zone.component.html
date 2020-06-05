@@ -25,7 +25,7 @@
                 <button pButton class="ui-button-secondary" type="button"
                     pTooltip="Mark as important"
                     tooltipPosition="top" placeholder="Top"
-                    (click)="dedicated=false;"
+                    (click)="subgroup=true;"
                     label="Add sub groups">
                 </button>
             </div>
@@ -34,4 +34,5 @@
     </div>
 </p-card>
 </div>
+<app-gb-subgroup [(activated)]="subgroup"></app-gb-subgroup>
 <app-gb-survival-settings [activated]="dedicated"></app-gb-survival-settings>
