@@ -3,13 +3,13 @@ import { subscribeOn } from "rxjs/operators"
 import { runInThisContext } from "vm"
 
 export class Cohort{
-    _name :string
-    _patient_set_id : Map<string,number>
+    protected _name :string
+    protected _patient_set_id : Map<string,number>
 
-    _selected : boolean
+    protected _selected : boolean
 
 
-    _constraint : Constraint
+    protected _constraint : Constraint
     constructor(name :string, constraint : Constraint){
         this._name=name
         
@@ -34,17 +34,21 @@ export class Cohort{
     }
 
     get constraint(): Constraint{
-        var cpy = new Constraint
-        cpy.parentConstraint=this._constraint.parentConstraint
-        cpy.textRepresentation=this._constraint.textRepresentation
-        return cpy
+        if(this._constraint){
+            var cpy = new Constraint
+            cpy.parentConstraint=this._constraint.parentConstraint
+            cpy.textRepresentation=this._constraint.textRepresentation
+            return cpy
+        }else{
+            return null
+        }
         
     }
 
     set constraint(constr : Constraint){
         var cpy = new Constraint
-        cpy.parentConstraint=this._constraint.parentConstraint
-        cpy.textRepresentation=this._constraint.textRepresentation
+        cpy.parentConstraint=(constr.parentConstraint)?constr.parentConstraint:null
+        cpy.textRepresentation=constr.textRepresentation
         this._constraint=cpy
 
     }
@@ -74,7 +78,7 @@ export class SurvivalCohort extends Cohort{
     _hasSubGroups:boolean
     _granularity: string
 
-    _subGroups : Array<Cohort>
+    _subGroups = new Array<Cohort>()
     constructor(name:string, constraint: Constraint){
         super(name,constraint)
         this._hasSubGroups=false

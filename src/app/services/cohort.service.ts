@@ -47,6 +47,23 @@ export class CohortService {
     this._cohorts= cohorts.map(x => x)
   }
 
+  addSubgroupToSelected(name:string,constraint:Constraint){
+    var subGroup=new Cohort(name,constraint)
+    if(this._selectedCohort instanceof SurvivalCohort){
+      (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
+      
+      (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
+    }else{
+      var idx= this._cohorts.indexOf(this._selectedCohort)
+      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.constraint)
+      ret.hasSubGroups=true
+      ret.subGroups.push(subGroup)
+      this._cohorts[idx]=ret
+      this._selectedCohort=ret
+
+    }
+  }
+
 
  
 
@@ -61,9 +78,6 @@ export class CohortService {
     this._selectedCohort.constraint= constraint
   }
 
-  changeSelectedCohort(){
-
-  }
 
   // from cached to view
   restoreTerms() : Constraint{
@@ -103,7 +117,7 @@ export class CohortService {
         if (queryResult.status ==="error"){
           err=CohortError.NewError("error during the execution of the queries related to sub groups")
         }else if (queryResult.status =="available"){
-          subGroup._patient_set_id[this._nodeName[nodeIndex]]=queryResult.patientSetId
+          subGroup.patient_set_id[this._nodeName[nodeIndex]]=queryResult.patientSetId
 
         }else{
           err=CohortError.NewError("query status handling not implemented yet")

@@ -67,15 +67,17 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
 
   buildLineChart(){
-    var width =400
+    var width = 800
     var height=400
     var margins=10
     select("svg").remove()
-    var svg=select('#svg-container').append("svg").attr("width",width+2*margins)
-    .attr("height",height +2*margins)
+    var svg=select('#gb-chart-container-component').append("svg").attr("width","100%")
+    .attr("height","100%")
+    .attr("viewBox","-10 -10 850 450")
     .append("g").attr("transform",`translate (${margins},${margins})`)
-    var xaxis=scaleLinear().domain([0,10]).range([0,height])
-    var yaxis=scaleLinear().domain([0,1]).range([width,0])
+
+    var xaxis=scaleLinear().domain([0,10]).range([0,width])
+    var yaxis=scaleLinear().domain([0,1]).range([height,0])
 
     svg.append("g").attr("transform",`translate(${2*margins},${height-margins})`).call(axisBottom(xaxis))
 
@@ -135,6 +137,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
         .attr("stroke",colorSet(curve.groupId))
         .attr("fill",colorSet(curve.groupId))
         .attr("opacity","0.3")
+        .attr("transform",`translate(${2*margins},${-1*margins})`)
         .attr("d",areaGen)
     })
   }
@@ -147,6 +150,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
       svg.append("path").datum(curve.points).attr("fill","none")
       .attr("stroke",colorSet(curve.groupId)).attr("stroke-width",1)
+      .attr("transform",`translate(${2*margins},${-1*margins})`)
       .attr("d",lineGen)
     })
 

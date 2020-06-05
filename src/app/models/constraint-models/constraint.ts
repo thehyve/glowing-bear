@@ -37,4 +37,11 @@ export class Constraint {
   get className(): string {
     return 'Constraint';
   }
+
+  clone(): Constraint{
+    var ret =new Constraint()
+    ret.textRepresentation=this.textRepresentation
+    ret.parentConstraint=(this._parentConstraint) ? this._parentConstraint.clone():null
+    return ret 
+  }
 }

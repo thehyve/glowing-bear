@@ -57,6 +57,7 @@
   padding-top: 0px;
   padding-left: 3px;
   padding-right: 3px;
+  
   margin-top: 0px;
   width: calc(74% - 10px - 6px);
   background-color: white;
@@ -70,6 +71,7 @@
   cursor: col-resize;
   margin-left: 3px;
   margin-right: 3px;
+  margin-bottom: 30px;
 }
 
 .gb-top-panel {

@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CohortServiceMock } from 'app/services/cohort.service';
+import { ConstraintService } from 'app/services/constraint.service';
 
 @Component({
   selector: 'app-gb-subgroup',
@@ -8,8 +10,10 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class GbSubgroupComponent implements OnInit {
 
   _activated=false
+  _subgroupName:string
 
-  constructor() { }
+  constructor(private cohortService: CohortServiceMock,
+    private constraintService: ConstraintService) { }
 
   ngOnInit() {
   }
@@ -26,6 +30,19 @@ export class GbSubgroupComponent implements OnInit {
 
   @Output()
   activatedChange=new EventEmitter<boolean>();
+
+  set subgroupName(val:string){
+    this._subgroupName=val
+  }
+
+  get subgroupName() :string{
+    return this._subgroupName
+  }
+  save(){
+    this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.generateConstraint())
+
+    this._subgroupName=""
+  }
 
   close(){
     this._activated=false

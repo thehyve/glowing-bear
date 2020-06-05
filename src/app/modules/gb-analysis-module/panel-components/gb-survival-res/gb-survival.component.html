@@ -1,28 +1,38 @@
 
-    <p-card *ngIf="activated" id="gb-survival-component" header="Results">
-        <div class="df">
-            <table>
-                <tr *ngFor="let value of values">
-                    <td>{{value.name}}</td>
-                    <td>{{value.value}}</td>
-                </tr>
-            </table>
-
- 
-            <p-dropdown [(ngModel)]="selectedIc" [options]="ic" optionLabel="label" placeholder="confidence interval"></p-dropdown>
-            <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas" optionLabel="name" placeholder="1 - &alpha;" [disabled]="(selectedIc) ? !selectedIc.value:true"></p-dropdown>
-            <p-button label="Grid" (onClick)="grid = !grid"></p-button>
-        </div>
+    <p-card *ngIf="activated" id="gb-survival-component" header="Results" >
+        
         
             <div id="svg-container">
-                <app-gb-chart-container  [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null"  [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"></app-gb-chart-container>
+                <app-gb-chart-container   [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null"  [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"></app-gb-chart-container>
             </div>
+
+
+            <div>
+                <table>
+                    <tr *ngFor="let value of values">
+                        <td>{{value.name}}</td>
+                        <td>{{value.value}}</td>
+                    </tr>
+                </table>
+    
+     
+                <p-dropdown [(ngModel)]="selectedIc" [options]="ic" optionLabel="label" placeholder="confidence interval"></p-dropdown>
+                <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas" optionLabel="name" placeholder="1 - &alpha;" [disabled]="(selectedIc) ? !selectedIc.value:true"></p-dropdown>
+                <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+            </div>
+
+            
         
 
         
 
 
-        <div><p>coucou</p></div>
+        
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p></p>
+        <p></p>
+        <p></p>
 
         
      

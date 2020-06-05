@@ -87,4 +87,24 @@ export class Concept {
   set encryptionDescriptor(value: MedcoEncryptionDescriptor) {
     this._encryptionDescriptor = value;
   }
+
+
+
+  clone() :Concept{
+    var ret = new Concept()
+
+    ret.path=this.path
+    ret.type=this.type
+    ret.label=this.label
+    ret.aggregate=this.aggregate.clone()
+    ret.code=this.code
+    ret.name=this.name
+    ret.fullName=this.fullName
+    if(this.encryptionDescriptor){
+      ret.encryptionDescriptor=this.encryptionDescriptor
+    }
+
+    return ret
+
+  }
 }

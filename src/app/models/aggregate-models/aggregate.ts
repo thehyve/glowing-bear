@@ -18,4 +18,11 @@ export class Aggregate {
   set type(value: AggregateType) {
     this._type = value;
   }
+
+  clone() :Aggregate{
+    var ret = new Aggregate()
+    ret.type=this.type
+    return ret
+
+  }
 }
