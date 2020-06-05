@@ -17,6 +17,7 @@ import { GbChartContainerComponent } from './panel-components/gb-chart-container
 import {TableModule} from 'primeng/table'
 import {DropdownModule} from 'primeng/dropdown';
 import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
+import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
 
 
 
@@ -38,7 +39,9 @@ import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.
     FormsModule,
     routing,
     ButtonModule,
-    DropdownModule
+    DropdownModule,
+    GbSelectionModule
+
   ],
 
   providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock],

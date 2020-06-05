@@ -57,6 +57,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     
   }
   draggingmode(event){
+    event.stopPropagation()
     event.preventDefault()
 
   }

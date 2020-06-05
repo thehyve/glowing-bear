@@ -26,6 +26,7 @@ import {CalendarModule} from 'primeng/calendar';
 import {PanelModule} from 'primeng/panel';
 import {MultiSelectModule} from 'primeng/multiselect';
 import { GbQueryBreakdownComponent } from './gb-query-breakdown-component/gb-query-breakdown.component';
+import { GbSelectionModule } from './gb-selection-component/gb-selection.module';
 
 @NgModule({
   imports: [
@@ -38,18 +39,15 @@ import { GbQueryBreakdownComponent } from './gb-query-breakdown-component/gb-que
     CheckboxModule,
     CalendarModule,
     PanelModule,
-    MultiSelectModule
+    MultiSelectModule,
+    GbSelectionModule
   ],
   exports: [
-    RouterModule
+    RouterModule,
+
   ],
   declarations: [
     GbExploreComponent,
-    GbCombinationConstraintComponent,
-    GbConstraintComponent,
-    GbConceptConstraintComponent,
-    GbGenomicAnnotationConstraintComponent,
-    GbSelectionComponent,
     GbQueryBreakdownComponent
   ],
   entryComponents: [
