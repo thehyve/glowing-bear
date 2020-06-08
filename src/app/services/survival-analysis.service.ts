@@ -51,7 +51,8 @@ export class SurvivalService {
     )
   }
    buildFromCohort(survivalCohort : SurvivalCohort){
-    this._id=survivalCohort._name
+    this._id=survivalCohort.name
+    
     this.retrievedEncIDs().subscribe((x=>this._timeCodes=x).bind(this))
     survivalCohort.subGroups.forEach((subGroup=>{
       subGroup.patient_set_id.forEach(((value,key)=>{
@@ -99,7 +100,7 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
 
     execute(): Observable<SurvivalAnalysisClear>{
 
-      var srva=new SurvivalAnalysisClear()
+      var srva=new SurvivalAnalysisClear()  
       srva.results=[{groupId:"0",
       initialCount:100,
       groupResults:[

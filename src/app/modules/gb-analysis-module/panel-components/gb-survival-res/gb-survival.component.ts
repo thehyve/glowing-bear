@@ -4,6 +4,8 @@ import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
+import { SurvivalCurve, ChiSquaredCdf } from 'app/models/survival-analysis/survival-curves' 
+import { escapeIdentifier } from '@angular/compiler/src/output/abstract_emitter';
 
 
 @Component({
@@ -149,7 +151,57 @@ function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:numbe
   return {inf: Math.pow(point.prob , Math.exp(sigma*limes)), sup: Math.pow(point.prob, Math.exp(- sigma*limes))}
 
 
-} 
+}
+
+
+
+
+
+
+function LogRank(survival:SurvivalCurve):Array<number>{
+  var len=survival.curves.length
+  var res= new Array(len*len)
+
+
+  for (let i = 0; i < len; i++) {
+    for (let j = i+1; j < len; j++) {
+      var ei : number= ChiEstimated(survival,j,i)
+      var oi: number= ChiObserved(survival,i)
+      var ej: number= ChiEstimated(survival,i,j)
+      var oj: number= ChiObserved(survival,j)
+      res[i*len+j]=1-ChiSquaredCdf((ei*ei-oi*oi)/ei + (ej*ej-oj*oj)/ej,1)
+    }
+
+
+    
+  }
+
+  return res
+}
+
+
+function ChiEstimated(survivalCurve:SurvivalCurve,i:number,j:number):number{
+  var ej=0
+  for (let index = 0; index < survivalCurve.curves.length; index++) {
+    var datumi =survivalCurve.curves[i].points[index]
+    var datumj=survivalCurve.curves[j].points[index]
+    ej+=datumi.nofEvents/datumi.remaining *datumj.remaining
+    
+  }
+  return ej
+}
+function ChiObserved(survivalCurve:SurvivalCurve,j:number):number{
+
+  var oj=0
+  for (let index = 0; index < survivalCurve.curves.length; index++) {
+
+    var datumj=survivalCurve.curves[j].points[index]
+    oj+=datumj.nofEvents
+    
+  }
+  return oj
+
+}
 
 
 

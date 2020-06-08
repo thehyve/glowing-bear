@@ -2,6 +2,7 @@ import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft, curveStepAfter,area} from 'd3';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
+import {SurvivalCurve,clearResultsToArray,retrieveGroupIds} from 'app/models/survival-analysis/survival-curves'
 
 @Component({
   selector: 'app-gb-chart-container',
@@ -12,7 +13,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
   _clearRes :SurvivalAnalysisClear
 
-  _curves:survivalCurve
+  _curves:SurvivalCurve
 
   _grid=false
 
@@ -160,89 +161,5 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
 
   }
-
-}
-
-
-
-
-class survivalCurve{
-  
-  curves: Array<{
-    groupId:string
-    points:Array<{
-    timePoint:number,
-    prob:number,
-    cumul:number,
-    remaining:number
-  }>}>
-
-}
-
-
-function clearResultsToArray(clearRes:  SurvivalAnalysisClear) :survivalCurve{
-  var timePoints=clearRes.results[0].groupResults.map(groupRes=>groupRes.timepoint).sort()
-  
-  
-  var curves =clearRes.results.map(result=>{
-    let sortedByTimePoint=result.groupResults.sort((a,b)=>{
-    return a.timepoint < b.timepoint ? -1:1;
-  })
-
-  var survivalState = new SurvivalState(result.initialCount)
-  var points= sortedByTimePoint.map(oneTimePointRes=> survivalState.next(oneTimePointRes.timepoint,oneTimePointRes.events.eventOfInterest,oneTimePointRes.events.censoringEvent))
-  return {groupId:result.groupId,
-  points:points} 
-  })
-
-  var srva=new survivalCurve
-  srva.curves=curves
-  return srva
-
-}
-
-
-function survivalPoints(previousProb:number,previousCumul:number,remainingTotal:number,timePoint:number,currentEventOfInterest:number,currentCensoringEvent:number):{
-  timePoint:number,
-  prob:number,
-  cumul:number,
-  remaining:number
-}{
-  var ponctualProb=(remainingTotal-currentEventOfInterest)/(remainingTotal)
-  var prob= ponctualProb*previousProb
-  var cumul= previousCumul+currentEventOfInterest/(remainingTotal*(remainingTotal-currentEventOfInterest))
- return {
-   timePoint:timePoint,
-   prob:prob,
-   cumul:cumul,
-   remaining:remainingTotal-currentCensoringEvent
- }
-
-}
-
-class SurvivalState{
-  _prob =1
-  _cumul=0
-  _remaining:number
-  constructor(remaining:number){
-    this._remaining=remaining
-  }
-  next(timePoint:number, eventOfInterest:number,censoring:number):{
-    timePoint:number,
-    prob:number,
-    cumul:number,
-    remaining:number
-  }{
-    var res=survivalPoints(this._prob,this._cumul, this._remaining,timePoint,eventOfInterest,censoring)
-    this._prob=res.prob
-    this._cumul=res.cumul
-    this._remaining=res.remaining
-    return res
-  }
-
-}
-
-function retrieveGroupIds(clearRes:SurvivalAnalysisClear): Array<string>{
-  return  clearRes.results.map(res=>res.groupId)
 
 }
