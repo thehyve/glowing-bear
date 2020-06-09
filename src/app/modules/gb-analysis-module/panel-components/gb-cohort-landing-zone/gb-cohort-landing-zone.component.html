@@ -1,7 +1,7 @@
 <div *ngIf="activated" id="gb-cohort-landing-zone-component">
     <p-card header="Cohort">
     <div *ngIf="!dedicated" >
-        <div (drop)="drop($event);dedicated=true;"  (dragover)="draggingmode($event)">
+        <div (drop)="drop($event)"  (dragover)="draggingmode($event)">
             <p-card >
                 <p>Drop cohort here</p>
             </p-card> 

@@ -35,6 +35,14 @@ export class ConceptConstraint extends Constraint {
     this.textRepresentation = 'Concept';
   }
 
+  clone():ConceptConstraint{
+    var res= new ConceptConstraint()
+    res.textRepresentation=this.textRepresentation
+    res.parentConstraint=this.parentConstraint
+    res.concept=this.concept.clone()
+    return res
+  }
+
   get concept(): Concept {
     return this._concept;
   }

@@ -39,7 +39,7 @@ export class GbSubgroupComponent implements OnInit {
     return this._subgroupName
   }
   save(){
-    this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.generateConstraint())
+    this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
 
     this._subgroupName=""
   }

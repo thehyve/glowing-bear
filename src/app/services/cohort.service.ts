@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
 import { Constraint } from 'app/models/constraint-models/constraint';
-import { Observable, of } from 'rxjs';
+import { Observable, of,Subject } from 'rxjs';
 import {map,tap} from 'rxjs/operators'
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { ExploreQuery } from 'app/models/query-models/explore-query';
 import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
 import { MedcoNetworkService } from './api/medco-network.service';
+import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
+import { ConstraintService } from './constraint.service';
 
 @Injectable()
 export class CohortService {
@@ -15,10 +17,13 @@ export class CohortService {
   protected _cohorts: Array<Cohort>
   protected _selectedCohort : Cohort
   protected _nodeName:Array<string>
+  public restoring: Subject<boolean>
   
   constructor(
     protected exploreQueryService: ExploreQueryService,
-    protected medcoNetworkService: MedcoNetworkService) {
+    protected medcoNetworkService: MedcoNetworkService,
+    protected constraintService: ConstraintService) {
+      this.restoring=new Subject<boolean>()
       this._nodeName=new Array<string>(this.medcoNetworkService.nodes.length)
       this.medcoNetworkService.nodes.forEach((apiMetadata=>{
         this._nodeName[apiMetadata.index]=apiMetadata.name
@@ -47,15 +52,15 @@ export class CohortService {
     this._cohorts= cohorts.map(x => x)
   }
 
-  addSubgroupToSelected(name:string,constraint:Constraint){
-    var subGroup=new Cohort(name,constraint)
+  addSubgroupToSelected(name:string,rootInclusionConstraint:CombinationConstraint,rootExclusionConstraint:CombinationConstraint){
+    var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint)
     if(this._selectedCohort instanceof SurvivalCohort){
       (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
       
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     }else{
       var idx= this._cohorts.indexOf(this._selectedCohort)
-      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.constraint)
+      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint)
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
       this._cohorts[idx]=ret
@@ -74,14 +79,16 @@ export class CohortService {
 
   }
 
-  updateCohortTerms(constraint : Constraint){
-    this._selectedCohort.constraint= constraint
+  updateCohortTerms(constraint : CombinationConstraint){
+    this._selectedCohort.rootInclusionConstraint= constraint
   }
 
 
   // from cached to view
-  restoreTerms() : Constraint{
-    return this._selectedCohort.constraint
+  restoreTerms() :void{
+    this.constraintService.rootInclusionConstraint=this.selectedCohort.rootInclusionConstraint
+    this.constraintService.rootExclusionConstraint=this.selectedCohort.rootExclusionConstraint
+    this.restoring.next(true)
   }
 
   
@@ -97,6 +104,8 @@ export class CohortService {
   
 
   executeSubgroupQuery(idx :number) : Observable<CohortError>{
+
+    //TODO : redo the query with the root exclusions constraint
     if (!(this._selectedCohort instanceof SurvivalCohort)){
     return  of(CohortError.NewError("the cohort was not set as survival cohort"))
 
@@ -111,7 +120,7 @@ export class CohortService {
     var query= new ExploreQuery
     query.superSetId=this._selectedCohort.patient_set_id
     query.type=ExploreQueryType.PATIENT_SET
-    query.constraint=subGroup.constraint
+    query.constraint=subGroup.rootInclusionConstraint
     this.exploreQueryService.exploreQuery(query).pipe(map(queryResults=>{ let err=null
       queryResults.forEach(((queryResult,nodeIndex)=>{
         if (queryResult.status ==="error"){
@@ -147,8 +156,8 @@ export class CohortService {
 export class CohortServiceMock extends CohortService {
 
   constructor( protected exploreQueryService: ExploreQueryService,
-    protected medcoNetworkService : MedcoNetworkService){
-    super(exploreQueryService,medcoNetworkService)
+    protected medcoNetworkService : MedcoNetworkService,public constraintService: ConstraintService){
+    super(exploreQueryService,medcoNetworkService,constraintService)
   }
 
   executeSubgroupQuery(idx:number):Observable<CohortError>{

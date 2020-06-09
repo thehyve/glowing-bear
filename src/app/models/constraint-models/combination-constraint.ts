@@ -35,6 +35,16 @@ export class CombinationConstraint extends Constraint {
     this.children.push(constraint);
   }
 
+  clone():CombinationConstraint{
+    var res = new CombinationConstraint
+    res.textRepresentation=this.textRepresentation
+    res.parentConstraint=(this.parentConstraint) ? this.parentConstraint:null
+    res.isRoot=this.isRoot
+    res.combinationState=this.combinationState
+    res.children=this._children.map(constr=>constr.clone())
+    return res
+  }
+
   isAnd() {
     return this.combinationState === CombinationState.And;
   }

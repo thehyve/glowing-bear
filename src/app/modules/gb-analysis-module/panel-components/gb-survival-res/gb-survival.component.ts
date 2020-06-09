@@ -4,8 +4,9 @@ import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
-import { SurvivalCurve, ChiSquaredCdf } from 'app/models/survival-analysis/survival-curves' 
+import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from 'app/models/survival-analysis/survival-curves' 
 import { escapeIdentifier } from '@angular/compiler/src/output/abstract_emitter';
+import { first } from 'rxjs/operators';
 
 
 @Component({
@@ -27,7 +28,13 @@ export class GbSurvivalComponent implements OnInit{
   _grid=false
   _alphas=[{name:"90%",value:1.645},{name:"95%",value:1.960},{name:"99%",value:2.054}]
   _selectedAlpha:{name:string,value:number}
+  _clearRes :SurvivalAnalysisClear
+
+
+  _logRanks:Array<Array<number>>
+  _survivalCurve:SurvivalCurve
   
+  _formattedLogRanks:Array<Array<string>>
 
 
 
@@ -42,7 +49,15 @@ export class GbSurvivalComponent implements OnInit{
   get activated() : boolean{
     return this._activated
   }
-  ngOnInit(){}
+  ngOnInit(){
+    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
+      this._survivalCurve=clearResultsToArray(this._clearRes);
+      this._logRanks=LogRank(this._survivalCurve)
+      this._formattedLogRanks=LabelledLogRanks(this._logRanks,this._survivalCurve)
+    }).bind(this))
+
+
+  }
   /*
 
   ngAfterViewInit() {
@@ -117,6 +132,13 @@ get selectedAlpha(){
 get alphas(){
   return this._alphas
 }
+get formattedLogRanks() : Array<Array<string>>{
+  return this._formattedLogRanks
+}
+
+get survivalCurve():SurvivalCurve{
+  return this._survivalCurve
+}
   
 
 
@@ -158,19 +180,21 @@ function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:numbe
 
 
 
-function LogRank(survival:SurvivalCurve):Array<number>{
+function LogRank(survival:SurvivalCurve):Array<Array<number>>{
   var len=survival.curves.length
-  var res= new Array(len*len)
+  var res= new Array<Array<number>>(len)
 
 
   for (let i = 0; i < len; i++) {
+    var resi = new Array<number>(len)
     for (let j = i+1; j < len; j++) {
       var ei : number= ChiEstimated(survival,j,i)
       var oi: number= ChiObserved(survival,i)
       var ej: number= ChiEstimated(survival,i,j)
       var oj: number= ChiObserved(survival,j)
-      res[i*len+j]=1-ChiSquaredCdf((ei*ei-oi*oi)/ei + (ej*ej-oj*oj)/ej,1)
+      resi[j]=1-ChiSquaredCdf(Math.pow((ei-oi),2)/ei + Math.pow((ej-oj),2)/ej,len-1)
     }
+    res[i]=resi
 
 
     
@@ -201,6 +225,21 @@ function ChiObserved(survivalCurve:SurvivalCurve,j:number):number{
   }
   return oj
 
+}
+
+function LabelledLogRanks(logranks:Array<Array<number>>,survivalCurve:SurvivalCurve):Array<Array<string>>{
+  var len =logranks.length
+  var res= new Array<Array<string>>(len)
+  var firstLine=survivalCurve.curves.map(c=>c.groupId)
+  firstLine.unshift("")
+  res[0]=firstLine
+  for (let i = 1; i < len; i++) {
+    var otherLine=logranks[i-1].map(m=>m.toPrecision(3))
+    otherLine.unshift(survivalCurve.curves[i-1].groupId)
+    res[i]=otherLine
+    
+  }
+  return res
 }
 
 

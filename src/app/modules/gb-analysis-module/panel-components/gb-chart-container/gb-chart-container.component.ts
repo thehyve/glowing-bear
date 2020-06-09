@@ -11,7 +11,7 @@ import {SurvivalCurve,clearResultsToArray,retrieveGroupIds} from 'app/models/sur
 })
 export class GbChartContainerComponent implements OnInit, OnChanges {
 
-  _clearRes :SurvivalAnalysisClear
+
 
   _curves:SurvivalCurve
 
@@ -23,19 +23,20 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   _alpha=1.960
  
 
-  constructor(private survivalService: SurvivalAnalysisServiceMock) { }
+  constructor() { }
 
   ngOnInit() {
+    /*
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._curves=clearResultsToArray(this._clearRes)
     }).bind(this))
     this.buildLineChart()
+    */
   }
   ngOnChanges(anyChange){
-    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
-      this._curves=clearResultsToArray(this._clearRes)
-    }).bind(this))
-    this.buildLineChart()
+    if(this._curves){
+      this.buildLineChart()
+    }
   }
 
   @Input()
@@ -66,11 +67,21 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
     return (this._alpha)
   }
 
+  @Input()
+  set curves(cur:SurvivalCurve){
+    this._curves=cur
+    
+  }
+
 
   buildLineChart(){
     var width = 800
     var height=400
     var margins=10
+
+    var legendxPos= 700
+    var legendyPos=15
+    var legendRadius=5
     select("svg").remove()
     var svg=select('#gb-chart-container-component').append("svg").attr("width","100%")
     .attr("height","100%")
@@ -84,7 +95,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
     svg.append("g").attr("transform", `translate(${2*margins},${-1*margins})`).call(axisLeft(yaxis))
 
-    var  colorSet=scaleOrdinal<string,string>().domain(retrieveGroupIds(this._clearRes)).range([
+    var  colorSet=scaleOrdinal<string,string>().domain(this._curves.curves.map(c=>c.groupId)).range([
       "#ff4f4f",
       "#99f0dd",
       "#fa8d2d",
@@ -153,6 +164,18 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
       .attr("stroke",colorSet(curve.groupId)).attr("stroke-width",1)
       .attr("transform",`translate(${2*margins},${-1*margins})`)
       .attr("d",lineGen)
+
+      svg.append("circle")
+      .attr("cx",legendxPos)
+      .attr("cy",legendyPos)
+      .attr("r",legendRadius)
+      .attr("fill",colorSet(curve.groupId))
+
+      svg.append("text")
+      .attr("x",legendxPos+7)
+      .attr("y",legendyPos + 5)
+      .text(curve.groupId)
+      legendyPos+=15
     })
 
    

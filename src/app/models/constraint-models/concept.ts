@@ -96,7 +96,7 @@ export class Concept {
     ret.path=this.path
     ret.type=this.type
     ret.label=this.label
-    ret.aggregate=this.aggregate.clone()
+    ret.aggregate=(this.aggregate)?this.aggregate.clone():null
     ret.code=this.code
     ret.name=this.name
     ret.fullName=this.fullName

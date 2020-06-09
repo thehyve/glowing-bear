@@ -1,6 +1,9 @@
 import { Constraint } from "../constraint-models/constraint"
 import { subscribeOn } from "rxjs/operators"
 import { runInThisContext } from "vm"
+import { rootCertificates } from "tls"
+import { CombinationConstraint } from "../constraint-models/combination-constraint"
+
 
 export class Cohort{
     protected _name :string
@@ -9,16 +12,20 @@ export class Cohort{
     protected _selected : boolean
 
 
-    protected _constraint : Constraint
-    constructor(name :string, constraint : Constraint){
+    protected _rootInclusionConstraint : CombinationConstraint
+    protected _rootExclusionConstraint : CombinationConstraint
+    constructor(name :string, rootInclusionConstraint : CombinationConstraint, rootExclusionConstraint:CombinationConstraint){
         this._name=name
         
-        if (constraint !=null){
-            var cpy= new Constraint()
-            cpy.parentConstraint=constraint.parentConstraint
-            cpy.textRepresentation=cpy.textRepresentation
+        if (rootInclusionConstraint !=null){
+            
     
-            this._constraint=cpy
+            this._rootInclusionConstraint=rootInclusionConstraint.clone()
+        }
+        if (rootExclusionConstraint !=null){
+
+    
+            this._rootExclusionConstraint=rootExclusionConstraint.clone()
         }
         
         
@@ -33,11 +40,16 @@ export class Cohort{
         return new Map(this._patient_set_id)
     }
 
-    get constraint(): Constraint{
-        if(this._constraint){
-            var cpy = new Constraint
-            cpy.parentConstraint=this._constraint.parentConstraint
-            cpy.textRepresentation=this._constraint.textRepresentation
+    get rootInclusionConstraint(): CombinationConstraint{
+        if(this._rootInclusionConstraint){
+            var cpy = new CombinationConstraint
+            cpy.parentConstraint=this._rootInclusionConstraint.parentConstraint
+            cpy.textRepresentation=this._rootInclusionConstraint.textRepresentation
+            
+            cpy.children=this._rootInclusionConstraint.children
+            cpy.combinationState=this._rootInclusionConstraint.combinationState
+            cpy.isRoot=this._rootInclusionConstraint.isRoot
+
             return cpy
         }else{
             return null
@@ -45,11 +57,59 @@ export class Cohort{
         
     }
 
-    set constraint(constr : Constraint){
-        var cpy = new Constraint
-        cpy.parentConstraint=(constr.parentConstraint)?constr.parentConstraint:null
-        cpy.textRepresentation=constr.textRepresentation
-        this._constraint=cpy
+    set rootInclusionConstraint(constr : CombinationConstraint){
+        if(constr){
+            var cpy = new CombinationConstraint
+            cpy.parentConstraint=constr.parentConstraint
+            cpy.textRepresentation=constr.textRepresentation
+
+            cpy.children=constr.children
+            cpy.combinationState=constr.combinationState
+            cpy.isRoot=constr.isRoot
+
+            this._rootInclusionConstraint=cpy
+
+        }else{
+            this._rootInclusionConstraint=null
+        }
+        
+
+    }
+
+    get rootExclusionConstraint(): CombinationConstraint{
+        if(this._rootExclusionConstraint){
+            var cpy = new CombinationConstraint
+            cpy.parentConstraint=this._rootExclusionConstraint.parentConstraint
+            cpy.textRepresentation=this._rootExclusionConstraint.textRepresentation
+            
+
+            cpy.children=this._rootExclusionConstraint.children
+            cpy.combinationState=this._rootExclusionConstraint.combinationState
+            cpy.isRoot=this._rootExclusionConstraint.isRoot
+            
+            
+            return cpy
+        }else{
+            return null
+        }
+        
+    }
+
+    set rootExclusionConstraint(constr : CombinationConstraint){
+        if(constr){
+            var cpy = new CombinationConstraint
+            cpy.parentConstraint=constr.parentConstraint
+            cpy.textRepresentation=constr.textRepresentation
+
+            cpy.children=constr.children
+            cpy.combinationState=constr.combinationState
+            cpy.isRoot=constr.isRoot
+
+            this._rootExclusionConstraint=cpy
+        }else{
+            this._rootExclusionConstraint=null
+        }
+        
 
     }
 
@@ -79,8 +139,8 @@ export class SurvivalCohort extends Cohort{
     _granularity: string
 
     _subGroups = new Array<Cohort>()
-    constructor(name:string, constraint: Constraint){
-        super(name,constraint)
+    constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint){
+        super(name,rootInclConstraint,rootExclConstraint)
         this._hasSubGroups=false
 
     }
@@ -96,16 +156,17 @@ export class SurvivalCohort extends Cohort{
 
     get subGroups(): Array<Cohort>{
         return this._subGroups.map(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.constraint)
+            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint)
             return cpy
         })
 
     }
 
     set subGroups(subGroups: Array <Cohort>){
-        this._subGroups= subGroups.map(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.constraint)
-            return cpy
+        this._subGroups=new Array<Cohort>()
+        subGroups.forEach(function(subGroup:Cohort){
+            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint)
+            this._subGroups.push(cpy)
         })
     }
 

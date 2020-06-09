@@ -3,15 +3,18 @@
         
         
             <div id="svg-container">
-                <app-gb-chart-container   [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null"  [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"></app-gb-chart-container>
+                <app-gb-chart-container   [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null" 
+                    [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"
+                    [curves]="survivalCurve"></app-gb-chart-container>
             </div>
 
 
             <div>
                 <table>
-                    <tr *ngFor="let value of values">
-                        <td>{{value.name}}</td>
-                        <td>{{value.value}}</td>
+                    <tr *ngFor="let logRankArray of formattedLogRanks">
+                        <td class="stat-cell" *ngFor="let logRank of logRankArray">
+                            {{logRank}}
+                        </td>
                     </tr>
                 </table>
     

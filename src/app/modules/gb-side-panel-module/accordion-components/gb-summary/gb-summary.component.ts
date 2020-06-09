@@ -19,6 +19,7 @@ import {map} from 'rxjs/operators';
 import { CohortServiceMock } from 'app/services/cohort.service';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import { MessageService } from 'primeng/api';
+import { ConstraintService } from 'app/services/constraint.service';
 
 
 
@@ -31,7 +32,8 @@ export class GbSummaryComponent {
   _name :string
 
   constructor(private queryService: QueryService,
-    private cohortService: CohortServiceMock) {
+    private cohortService: CohortServiceMock,
+    private constraintService:ConstraintService) {
       this._name=""
   }
 
@@ -54,11 +56,11 @@ export class GbSummaryComponent {
     if(existingCohorts.findIndex((cohort => cohort.name==this.name).bind(this)) != -1){
       MessageHelper.alert("warn",`Name ${this.name} already used.`)
     }else{
-    
-    var cohort =new Cohort(this.name,this.queryService.query.constraint)
+
+ 
+    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
     existingCohorts.push(cohort)
     this.cohortService.cohorts=existingCohorts
-    console.log(this.cohortService.cohorts)
     
     MessageHelper.alert("success","Cohort has been sent.")
     }

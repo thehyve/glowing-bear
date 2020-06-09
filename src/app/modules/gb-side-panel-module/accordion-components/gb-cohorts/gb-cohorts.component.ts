@@ -9,6 +9,10 @@
 import {Component, OnInit, ElementRef} from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import {CohortService, CohortServiceMock } from 'app/services/cohort.service';
+import { ConstraintService } from 'app/services/constraint.service';
+
+import {map} from 'rxjs/operators'
+import { Constraint } from 'app/models/constraint-models/constraint';
 
 @Component({
   selector: 'gb-cohorts',
@@ -23,7 +27,8 @@ export class GbCohortsComponent implements OnInit {
   file: File; // holds the uploaded cohort file
 
 
- constructor(private cohortService: CohortServiceMock){}
+ constructor(private cohortService: CohortServiceMock,
+             private constraintService: ConstraintService){}
 
  get cohorts() : Array<Cohort> {
 
@@ -40,7 +45,9 @@ export class GbCohortsComponent implements OnInit {
     
   }
 
-  dragdebug(event,cohort:Cohort){
+  dragdebug(event:DragEvent,cohort:Cohort){
+    event.dataTransfer.setData("text","cohort")
+
 
     this.cohortService.selectedCohort=cohort
     
@@ -62,6 +69,8 @@ export class GbCohortsComponent implements OnInit {
 
   restoreCohort(e:Event,cohort : Cohort){
     e.stopPropagation()
+    this.cohortService.selectedCohort=cohort
+    this.cohortService.restoreTerms()
   }
 
 

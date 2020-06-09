@@ -46,9 +46,13 @@ export class GbCohortLandingZoneComponent implements OnInit {
   }
 
 
-  drop(event){
+  drop(event:DragEvent){
+    event.preventDefault()
+    
 
-    if (this.cohortService.selectedCohort != null){
+    if (this.cohortService.selectedCohort != null  && event.dataTransfer.getData("text")=="cohort")
+    {
+      
       this._cohort=this.cohortService.selectedCohort
       this.dedicated=true
 
@@ -56,16 +60,13 @@ export class GbCohortLandingZoneComponent implements OnInit {
     }
     
   }
-  draggingmode(event){
-    event.stopPropagation()
+  draggingmode(event:DragEvent){
     event.preventDefault()
+    event.stopPropagation()
+      
+   
 
   }
 
-  dragenter(event){
-    
-    
-    
-  }
 
 }
