@@ -8,12 +8,14 @@
 
 import {Constraint} from './constraint';
 import {CombinationState} from './combination-state';
+import { SensitiveType } from './sensitive-type';
 
 export class CombinationConstraint extends Constraint {
 
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
+  
 
   constructor() {
     super();
@@ -21,18 +23,30 @@ export class CombinationConstraint extends Constraint {
     this.combinationState = CombinationState.And;
     this.isRoot = false;
     this.textRepresentation = 'Group';
+    this.sensitiveType=SensitiveType.Undetermined
   }
 
   get className(): string {
     return 'CombinationConstraint';
   }
 
-  addChild(constraint: Constraint) {
-    if (!(<CombinationConstraint>constraint).isRoot) {
-      // to enforce polymorphism, otherwise child set method is not called
-      constraint.parentConstraint = this;
-    }
-    this.children.push(constraint);
+  addChild(constraint: Constraint):Error {
+
+    if (this.sensitiveType==SensitiveType.Undetermined || 
+        this.sensitiveType==constraint.sensitiveType){
+          if (!(<CombinationConstraint>constraint).isRoot) {
+            // to enforce polymorphism, otherwise child set method is not called
+            constraint.parentConstraint = this;
+          }
+          this.children.push(constraint);
+          if(this.combinationState==CombinationState.Or){
+            this.sensitiveType=constraint.sensitiveType
+          }
+          return null
+        }else{
+          return new Error("You cannot combine sensitive and non-sensitive concept with OR operator")
+        }
+
   }
 
   clone():CombinationConstraint{

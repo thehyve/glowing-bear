@@ -14,6 +14,7 @@ import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {UIHelper} from '../../../../utilities/ui-helper';
+import { MessageHelper } from 'app/utilities/message-helper';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -72,7 +73,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
       // Add it as a new child
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      combinationConstraint.addChild(newConstraint);
+      let err = combinationConstraint.addChild(newConstraint);
+      if (err){
+        MessageHelper.alert('error',err.message)
+      }
 
       // force combination state if i2b2 style nesting
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
@@ -96,7 +100,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      combinationConstraint.addChild(this.droppedConstraint);
+      let err = combinationConstraint.addChild(this.droppedConstraint);
+      if (err){
+        MessageHelper.alert('warn',err.message)
+      }
 
       // force combination state if free nesting not supported
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
@@ -119,7 +126,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   addChildCombinationConstraint() {
-    (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+    let err =(<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+    if (err){
+      MessageHelper.alert('warn',err.message)
+    }
   }
 
   allowGroupChildren(): boolean {

@@ -11,6 +11,7 @@ import {Concept} from './concept';
 import {ValueConstraint} from './value-constraint';
 import {TimeConstraint} from './time-constraint';
 import {FormatHelper} from '../../utilities/format-helper';
+import { SensitiveType } from './sensitive-type';
 
 export class ConceptConstraint extends Constraint {
 
@@ -50,6 +51,10 @@ export class ConceptConstraint extends Constraint {
   set concept(concept: Concept) {
     this._concept = concept;
     this.textRepresentation = concept ? `Concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
+    this.sensitiveType= concept ?
+      concept.encryptionDescriptor ?
+        SensitiveType.Sensitive : SensitiveType.NonSensitive
+      : SensitiveType.Undetermined
   }
 
   get valueConstraints(): ValueConstraint[] {

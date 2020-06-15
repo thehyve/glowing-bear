@@ -21,7 +21,7 @@ export class GbSurvivalComponent implements OnInit{
   _cols=["Name","Value"]
   _values=[{name:"log-rank",value:0.9},{name:"p-val",value:0.85}]
 
-  _ic=[{label:"none",value:null},{label:"identity",value:identity},{label:"log",value:logarithm},{label:"log -log",value:logarithmMinusLogarithm}]
+  _ic=[{label:"none",value:null},{label:"identity",value:identity},{label:"log",value:logarithm},{label:"log -log",value:logarithmMinusLogarithm},{label :"arcsine squared",value:arcsineSquaredRoot}]
   _selectedIc:  {label:string,value:(simga:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) =>{inf:number,sup:number}}
 
 
@@ -154,12 +154,14 @@ get survivalCurve():SurvivalCurve{
 
 function identity(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) :{inf:number,sup:number}{
   var limes= point.cumul * point.prob * point.prob
+  limes=Math.sqrt(limes)
   console.log("limes",limes)
   return {inf: point.prob - sigma*limes, sup: point.prob + sigma*limes}
 }
 
 function logarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
   var limes=point.cumul
+  limes=Math.sqrt(limes)
   console.log("limes",limes)
   return {inf: point.prob*Math.exp( - sigma*limes), sup: point.prob *Math.exp( sigma*limes)}
 
@@ -169,10 +171,18 @@ function logarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number
 function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
 
   var limes = (point.prob ==0 || point.prob == 1) ? 0:point.cumul/(Math.pow(Math.log(point.prob),2))
+  limes=Math.sqrt(limes)
   console.log("limes",limes)
   return {inf: Math.pow(point.prob , Math.exp(sigma*limes)), sup: Math.pow(point.prob, Math.exp(- sigma*limes))}
 
 
+}
+
+function arcsineSquaredRoot(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}): {inf:number,sup:number}{
+  var limes = (point.prob==1) ? 0: 0.25 * point.prob/(1-point.prob) *point.cumul
+  var transformed=Math.asin(Math.sqrt(point.prob))
+  limes = Math.sqrt(limes)
+  return {inf: Math.pow(Math.sin(transformed - sigma * limes),2.0) , sup:Math.pow(Math.sin(transformed + sigma * limes),2.0)}
 }
 
 
