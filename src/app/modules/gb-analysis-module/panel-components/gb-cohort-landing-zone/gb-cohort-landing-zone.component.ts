@@ -12,6 +12,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   _dedicated=false
   _subgroup=false
   _cohort:Cohort
+  _ran=false
 
   constructor(private cohortService:CohortServiceMock) { }
 
@@ -65,6 +66,17 @@ export class GbCohortLandingZoneComponent implements OnInit {
     event.stopPropagation()
       
    
+
+  }
+
+
+  get ran():boolean{
+    return this._ran
+  }
+
+  run(){
+
+    this._ran=true
 
   }
 

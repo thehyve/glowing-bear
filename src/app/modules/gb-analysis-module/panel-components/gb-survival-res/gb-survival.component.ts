@@ -254,3 +254,10 @@ function LabelledLogRanks(logranks:Array<Array<number>>,survivalCurve:SurvivalCu
 
 
 
+
+function CoxRegression(survivalCurve){
+  
+}
+
+
+

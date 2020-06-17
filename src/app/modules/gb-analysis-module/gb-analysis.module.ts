@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AccordionModule} from 'primeng/accordion'
 import { routing } from './gb-analysis.routing'
 import { RouterModule } from '@angular/router';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
@@ -11,7 +12,7 @@ import { GbSurvivalSettingsComponent } from './panel-components/gb-survival-sett
 import { ButtonModule} from 'primeng/button';
 import {CardModule} from 'primeng/card';
 import { FormsModule} from '@angular/forms'
-import {SliderModule} from 'primeng/slider'
+import { SliderModule } from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { GbChartContainerComponent } from './panel-components/gb-chart-container/gb-chart-container.component'
 import {TableModule} from 'primeng/table'
@@ -33,6 +34,7 @@ import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/g
     GbChartContainerComponent,
     GbSubgroupComponent],
   imports: [
+    AccordionModule,
     CardModule,
     SliderModule,
     TableModule,

@@ -1,25 +1,26 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-gb-survival-settings',
   templateUrl: './gb-survival-settings.component.html',
-  styleUrls: ['./gb-survival-settings.component.css']
+  styleUrls: ['./gb-survival-settings.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GbSurvivalSettingsComponent implements OnInit {
   _activated: boolean
 
   _granularities= [{label:"Day",value:"Day"},{label:"Week",value:"Week"},{label:"Month",value:"Month"},{label:"Year",value:"Year"}]
-  _selectedGranularity:string
+  _selectedGranularity="Day"
 
-  _limit:number
+  _limit=100
 
   _starts=[{label:"Diagnosis",value:"Diagnosis"},{label:"Treatment",value:"Treatment"}]
-  _selectedStart:string
+  _selectedStart="Treatment"
 
   _ends=[{label:"Fatality",value:"Fatility"},{label:"Tumor Growth",value:"Tumor Growth"}]
-  _selectedEnd:string
+  _selectedEnd="Fatality"
 
-  _ran=false
+  
 
   constructor() { }
 
@@ -79,14 +80,6 @@ export class GbSurvivalSettingsComponent implements OnInit {
   get selectedEnd():string{
     return this._selectedEnd
   }
-  get ran():boolean{
-    return this._ran
-  }
 
-  run(){
-
-    this._ran=true
-
-  }
 
 }

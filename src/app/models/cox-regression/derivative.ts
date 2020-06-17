@@ -59,4 +59,64 @@ class Aggrex{
     }
 }
 
+function expMap(x : Mat, beta:Array<number>):Array<number>{
+    var expArray =Array<number>(x[0].length)
+    for (let i = 0; i < x.length; i++) {
+        
+        for (let j = 0; j < x[i].length; j++) {
+            expArray[j]+=x[i][j]*beta[i] 
+        }
+    }
+    return expArray
+}
+
+function derivative(x:Mat, expMap :Array<number>) : Array<number>{
+    var res = Array<number>(x.length)
+    var numerator=Array<number>(x.length)
+
+    var substractor =new Array<Array<number>>(x.length)
+    var denominator=0
+    //better, use a cumulation :)
+    // -----initialization
+    for (let i = 0; i < x.length; i++) {
+        substractor[i]=new Array<number>(x[i].length)
+        for (let j = 0; j < x[i].length; j++) {
+            numerator[i]+=x[i][j]*expMap[j]
+            substractor[i][j]=x[i][j]*expMap[j]
+        }    
+    }
+
+    for (let j = 0; j < x[0].length; j++) {
+        denominator+=expMap[j]
+    }
+
+
+    // ---computing the gradient
+
+    for (let j = 0; j < x[0].length; j++){
+        for (let i = 0; i < x.length; i++) {
+            
+                res[i]+=x[i][j] - ((denominator == 0)?0:numerator[i]/denominator)
+                numerator[i]-=substractor[i][j]
+                
+
+                
+            
+            }
+            denominator-=expMap[j]
+        
+    }
+
+    return res
+}
+
+
+
+export function coxDerivative(data:Mat): (beta:Array<number>)=> Array<number>{
+    return function(beta :Array<number>){
+        return derivative(data,expMap(data,beta))
+    }
+
+}
+
 

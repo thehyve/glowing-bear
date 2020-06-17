@@ -1,16 +1,46 @@
-<div *ngIf="activated" id="gb-survival-settings-component" >
-    <p-card header="Settings">
+<p-accordionTab *ngIf="activated" header="Settings" id="gb-survival-settings-component" >
 
-    <p-button (click)="run()" label="Run" class="ui-button-secondary"></p-button>
-        
+
+    
+
+        <div style="padding-top: 2em;">
+        <span class="description" >
+            Time Granularity:
+        </span>
+        &nbsp;
+  
         <p-dropdown [(ngModel)]="selectedGranularity" optionLabel="label" [options]="granularities" placeholder="Granularity"></p-dropdown>
-        <span>Limit:</span>
-        <input type="text" pInputText [(ngModel)]="limit"/>
-        <p-slider [(ngModel)]="limit" [max]="1000"  [style]="{'width':'13.5em', 'margin-left':'13em', 'background':'#ffffff'}"></p-slider>
-        <p-dropdown [(ngModel)]="selectedStart" optionLabel="label" [options]="starts" placeholder="Start"></p-dropdown>
-        <p-dropdown [(ngModel)]="selectedEnd" optionLabel="label" [options]="ends" placeholder="End"></p-dropdown>
+        &nbsp;
+        <span style="white-space: nowrap;"> 
+            <span class="description">
+                Time Limit:
+            </span>
+            &nbsp;
+            <input type="text" pInputText [(ngModel)]="limit"/>
+            &nbsp;
+        </span>
+        </div>
+
+        <div style="padding-top: 2em;">
+        <span style="white-space: nowrap;">
+            <span class="description">
+                Start Event: 
+            </span>
+            &nbsp;
+            <p-dropdown [(ngModel)]="selectedStart" optionLabel="label" [options]="starts" placeholder="Start"></p-dropdown>
+            &nbsp;
+        </span>
+        <span style="white-space: nowrap;">
+            <span class="description">
+                End Event:&nbsp;
+            </span>
+            &nbsp;
+            
+            <p-dropdown [(ngModel)]="selectedEnd" optionLabel="label" [options]="ends" placeholder="End"></p-dropdown>
+        </span>
+        </div>
             
        
-    </p-card>
-</div>
-<app-gb-survival-res [activated]="ran"></app-gb-survival-res>
+
+</p-accordionTab>
+

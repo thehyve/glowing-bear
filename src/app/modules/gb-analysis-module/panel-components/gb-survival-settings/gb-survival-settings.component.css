@@ -1,7 +1,16 @@
-.ui-slider{
-    background-color: #ff0000;
-}
-
 .ui-button-secondary{
     float:right;
+}
+
+
+
+.ui-card-body {
+    padding: 0.3em !important;
+}
+
+.description{
+    padding :0.3em;
+    background-color:#339C90;
+    color:#ffffff ;
+    white-space: nowrap;
 }

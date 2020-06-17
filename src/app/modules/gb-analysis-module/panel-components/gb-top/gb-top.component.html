@@ -1,6 +1,9 @@
-<div id="gb-top-component">
-    <p-button *ngFor="let analysisType of available" [label]="analysisType.name"
-              (click)="selected = analysisType"></p-button>
-              <app-gb-cohort-landing-zone [activated]="selectedSurvival"></app-gb-cohort-landing-zone>
+<p-accordionTab header="Analyses" id="gb-top-component">
 
-</div>
+    <p-button *ngFor="let analysisType of available"
+            [label]="analysisType.name"
+            (click)="selected = analysisType"
+            [disabled]="!analysisType.implemented"></p-button>
+
+</p-accordionTab>
+<app-gb-cohort-landing-zone [activated]="selectedSurvival"></app-gb-cohort-landing-zone>

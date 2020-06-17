@@ -1,12 +1,12 @@
 
-    <p-card *ngIf="activated" id="gb-survival-component" header="Results" >
+    <p-accordionTab *ngIf="activated" id="gb-survival-component" header="Results" >
         
         
-            <div id="svg-container">
+            <p-card id="svg-container">
                 <app-gb-chart-container   [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null" 
                     [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"
                     [curves]="survivalCurve"></app-gb-chart-container>
-            </div>
+            </p-card>
 
 
             <div>
@@ -40,5 +40,5 @@
         
      
 
-    </p-card>
+    </p-accordionTab>
 

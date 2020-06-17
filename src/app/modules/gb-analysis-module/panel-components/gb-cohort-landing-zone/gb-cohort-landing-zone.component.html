@@ -1,5 +1,6 @@
-<div *ngIf="activated" id="gb-cohort-landing-zone-component">
-    <p-card header="Cohort">
+<p-accordionTab header="Cohort" *ngIf="activated" id="gb-cohort-landing-zone-component">
+
+    
     <div *ngIf="!dedicated" >
         <div (drop)="drop($event)"  (dragover)="draggingmode($event)">
             <p-card >
@@ -11,6 +12,7 @@
     </div>
     
     <div *ngIf="dedicated">
+        <p-button (click)="run()" label="Run" class="ui-button-secondary"></p-button>
         
             <span>{{cohort.name}}</span>
             <div class="padded">
@@ -32,7 +34,8 @@
        
         
     </div>
-</p-card>
-</div>
+
+</p-accordionTab>
 <app-gb-subgroup [(activated)]="subgroup"></app-gb-subgroup>
 <app-gb-survival-settings [activated]="dedicated"></app-gb-survival-settings>
+<app-gb-survival-res [activated]="ran"></app-gb-survival-res>
