@@ -24,6 +24,10 @@
   overflow: hidden;
 }
 
+.gb-data-selection-accordion-sub-header-2 #save-box{
+  padding-left: 2em;
+}
+
 .gb-data-selection-accordion-sub-header-3 {
   color: GrayText;
   margin: 0em;

@@ -53,14 +53,14 @@ export class CohortService {
   }
 
   addSubgroupToSelected(name:string,rootInclusionConstraint:CombinationConstraint,rootExclusionConstraint:CombinationConstraint){
-    var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint)
+    var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint,new Date(Date.now()))
     if(this._selectedCohort instanceof SurvivalCohort){
       (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
       
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     }else{
       var idx= this._cohorts.indexOf(this._selectedCohort)
-      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint)
+      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()))
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
       this._cohorts[idx]=ret

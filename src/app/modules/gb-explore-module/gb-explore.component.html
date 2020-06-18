@@ -1,10 +1,22 @@
 <div>
 
+  
+
   <div class="gb-data-selection-accordion-header">
     <div class="gb-data-selection-accordion-sub-header-1">
       Define your MedCo Explore query
     </div>
     <div class="gb-data-selection-accordion-sub-header-2">
+      <span id="save-box">
+      <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name"/>
+    <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
+            type="button"
+            (click)="save()">
+
+      <span>Save</span>
+    
+    </button>
+        </span>
       <span class="gb-data-selection-accordion-sub-header-3 float-left">
         <span class="gb-data-selection-emphasis-text">{{globalCount | async}} subjects</span>
       </span>

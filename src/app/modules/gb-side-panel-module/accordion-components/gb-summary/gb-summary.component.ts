@@ -48,30 +48,7 @@ export class GbSummaryComponent {
     this.queryService.clearAll();
     MessageHelper.alert('success', 'All selections are cleared.');
   }
-  save(){
-    if (this.name == ""){
-      MessageHelper.alert('warn',"You must provide a name for the cohort you want to save.")
-    }else{
-    var existingCohorts=this.cohortService.cohorts
-    if(existingCohorts.findIndex((cohort => cohort.name==this.name).bind(this)) != -1){
-      MessageHelper.alert("warn",`Name ${this.name} already used.`)
-    }else{
-
- 
-    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
-    existingCohorts.push(cohort)
-    this.cohortService.cohorts=existingCohorts
-    
-    MessageHelper.alert("success","Cohort has been sent.")
-    }
-    }
-  }
-
-  saveIfEnter(event){
-    if(event.keyCode == 13){
-      this.save()
-    }
-  }
+  
 
   get globalCount(): Observable<string> {
     return this.queryService.queryResults.pipe(map((queryResults) =>

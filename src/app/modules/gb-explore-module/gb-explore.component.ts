@@ -14,6 +14,9 @@ import {ExploreQueryType} from '../../models/query-models/explore-query-type';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ConstraintService} from '../../services/constraint.service';
+import { CohortServiceMock } from 'app/services/cohort.service';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { Cohort } from 'app/models/cohort-models/cohort';
 
 @Component({
   selector: 'gb-explore',
@@ -21,8 +24,10 @@ import {ConstraintService} from '../../services/constraint.service';
   styleUrls: ['./gb-explore.component.css']
 })
 export class GbExploreComponent {
+  public name:string
 
   constructor(public queryService: QueryService,
+              private cohortService: CohortServiceMock,
               public constraintService: ConstraintService) {
   }
 
@@ -45,4 +50,31 @@ export class GbExploreComponent {
     this.queryService.query.type = val;
     this.queryService.isDirty = true;
   }
+
+  save(){
+    if (this.name == ""){
+      MessageHelper.alert('warn',"You must provide a name for the cohort you want to save.")
+    }else{
+    var existingCohorts=this.cohortService.cohorts
+    if(existingCohorts.findIndex((cohort => cohort.name==this.name).bind(this)) != -1){
+      MessageHelper.alert("warn",`Name ${this.name} already used.`)
+    }else{
+
+ 
+    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint,new Date(Date.now()))
+    existingCohorts.push(cohort)
+    this.cohortService.cohorts=existingCohorts
+    
+    MessageHelper.alert("success","Cohort has been sent.")
+    }
+    }
+  }
+
+  saveIfEnter(event){
+    if(event.keyCode == 13){
+      this.save()
+    }
+  }
+
+
 }

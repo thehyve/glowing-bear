@@ -9,12 +9,16 @@ export class Cohort{
     protected _name :string
     protected _patient_set_id : Map<string,number>
 
-    protected _selected : boolean
+    public selected : boolean
+    protected _creationDate : Date
+
+    public bookmarked : boolean
+    public visible : boolean
 
 
     protected _rootInclusionConstraint : CombinationConstraint
     protected _rootExclusionConstraint : CombinationConstraint
-    constructor(name :string, rootInclusionConstraint : CombinationConstraint, rootExclusionConstraint:CombinationConstraint){
+    constructor(name :string, rootInclusionConstraint : CombinationConstraint, rootExclusionConstraint:CombinationConstraint,date :Date){
         this._name=name
         
         if (rootInclusionConstraint !=null){
@@ -27,9 +31,14 @@ export class Cohort{
     
             this._rootExclusionConstraint=rootExclusionConstraint.clone()
         }
+
+        if (date){
+            this._creationDate=date
+        }
         
         
-        this._selected=false
+        this.selected=false
+        this.visible=true
     }
 
     get name() : string{
@@ -122,13 +131,13 @@ export class Cohort{
 
     }
 
-    set selected(select : boolean){
-        this._selected=select
+
+
+    get creationDate():  Date{
+        return (this._creationDate) ? new Date(this._creationDate) : null
     }
 
-    get selected() : boolean{
-        return this.selected
-    }
+
 
 }
 
@@ -139,8 +148,8 @@ export class SurvivalCohort extends Cohort{
     _granularity: string
 
     _subGroups = new Array<Cohort>()
-    constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint){
-        super(name,rootInclConstraint,rootExclConstraint)
+    constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint,date:Date){
+        super(name,rootInclConstraint,rootExclConstraint,date)
         this._hasSubGroups=false
 
     }
@@ -156,7 +165,7 @@ export class SurvivalCohort extends Cohort{
 
     get subGroups(): Array<Cohort>{
         return this._subGroups.map(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint)
+            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate)
             return cpy
         })
 
@@ -165,7 +174,7 @@ export class SurvivalCohort extends Cohort{
     set subGroups(subGroups: Array <Cohort>){
         this._subGroups=new Array<Cohort>()
         subGroups.forEach(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint)
+            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate)
             this._subGroups.push(cpy)
         })
     }

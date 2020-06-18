@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit, ElementRef, ViewEncapsulation} from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import {CohortService, CohortServiceMock } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
@@ -17,12 +17,13 @@ import { Constraint } from 'app/models/constraint-models/constraint';
 @Component({
   selector: 'gb-cohorts',
   templateUrl: './gb-cohorts.component.html',
-  styleUrls: ['./gb-cohorts.component.css']
+  styleUrls: ['./gb-cohorts.component.css'],
+  encapsulation:ViewEncapsulation.None,
 })
 export class GbCohortsComponent implements OnInit {
 
   public readonly fileElementId: string = 'cohortFileUpload';
-  searchTerm = '';
+  searchName = '';
   
   file: File; // holds the uploaded cohort file
 
@@ -71,6 +72,45 @@ export class GbCohortsComponent implements OnInit {
     e.stopPropagation()
     this.cohortService.selectedCohort=cohort
     this.cohortService.restoreTerms()
+  }
+
+  bookmarkCohort(e:Event,cohort:Cohort){
+    e.stopPropagation()
+    cohort.bookmarked = !cohort.bookmarked
+  }
+
+  sortByName(){
+    var sorted = this.cohortService.cohorts.sort((a,b)=> (a.name>b.name)?1:-1)
+    this.cohortService.cohorts=sorted
+  }
+
+  sortByBookmark(){
+    var sorted=this.cohortService.cohorts.sort((a,b)=>(!b.bookmarked || a.bookmarked)? -1:1)
+    this.cohortService.cohorts=sorted
+  }
+  sortByDate(){
+    var sorted = this.cohortService.cohorts.sort((a,b) => (!b.creationDate ||
+      a.creationDate && a.creationDate.getTime()>b.creationDate.getTime()
+      ) ? -1:1)
+
+      this.cohortService.cohorts=sorted
+  }
+
+
+  onFiltering(event :Event){
+    var filterWord = this.searchName.trim().toLowerCase()
+    this.cohortService.cohorts.forEach(cohort =>{
+      cohort.visible =(cohort.name.toLowerCase().indexOf(filterWord) === -1) ? false:true
+    })
+  }
+
+  visibles() : Array<Cohort>{
+    return this.cohorts.filter(cohort=>cohort.visible)
+  }
+
+  changeSelect(event :Event,cohort :Cohort){
+    event.stopPropagation()
+    this.cohortService.selectedCohort=cohort
   }
 
 
