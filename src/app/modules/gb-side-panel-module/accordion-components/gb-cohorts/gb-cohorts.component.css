@@ -53,3 +53,8 @@
 #cohorts-component a:focus,#cohorts-component a:hover {
   text-decoration: none;
 }
+
+
+#cohorts-component .pi-spin{
+  color: transparent;
+}

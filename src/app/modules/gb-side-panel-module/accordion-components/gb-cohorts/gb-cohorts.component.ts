@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ElementRef, ViewEncapsulation} from '@angular/core';
+import {Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit} from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import {CohortService, CohortServiceMock } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
@@ -20,16 +20,18 @@ import { Constraint } from 'app/models/constraint-models/constraint';
   styleUrls: ['./gb-cohorts.component.css'],
   encapsulation:ViewEncapsulation.None,
 })
-export class GbCohortsComponent implements OnInit {
+export class GbCohortsComponent implements AfterViewInit {
 
   public readonly fileElementId: string = 'cohortFileUpload';
   searchName = '';
+  _changes:MutationObserver;
   
   file: File; // holds the uploaded cohort file
 
 
  constructor(private cohortService: CohortServiceMock,
-             private constraintService: ConstraintService){}
+             private constraintService: ConstraintService,
+             private  element: ElementRef){}
 
  get cohorts() : Array<Cohort> {
 
@@ -42,7 +44,17 @@ export class GbCohortsComponent implements OnInit {
    this.cohortService.selectedCohort=cohort
  }
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    
+    this._changes= new MutationObserver(mutation=>console.log("mutation",mutation))
+    console.log(this.element.nativeElement.querySelector("input"))
+    this._changes.observe(this.element.nativeElement,{
+      attributes: true,
+      childList: true,
+      subtree: false,
+      characterData: true
+    })
+    
     
   }
 
@@ -102,6 +114,7 @@ export class GbCohortsComponent implements OnInit {
     this.cohortService.cohorts.forEach(cohort =>{
       cohort.visible =(cohort.name.toLowerCase().indexOf(filterWord) === -1) ? false:true
     })
+
   }
 
   visibles() : Array<Cohort>{

@@ -39,8 +39,9 @@ export class GbSubgroupComponent implements OnInit {
     return this._subgroupName
   }
   save(){
+    console.log("before saving subgroup",this.cohortService.selectedCohort)
     this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
-
+    console.log("after saving subgroup",this.cohortService.selectedCohort)
     this._subgroupName=""
   }
 

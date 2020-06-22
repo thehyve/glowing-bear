@@ -36,7 +36,7 @@
 
 
   <p-accordion  [multiple]="true" class="ui-cohorts">
-    <p-accordionTab *ngFor="let cohort of visibles()"  draggable="true" (dragstart)="dragdebug($event,cohort)" class="ui-cohorts" (click)="selectedCohort=cohort">
+    <p-accordionTab *ngFor="let cohort of visibles()"  draggable="true" (dragstart)="dragdebug($event,cohort)" class="ui-cohorts">
       <p-header  class="ui-cohorts">
                 <p-toggleButton [(ngModel)]="cohort.selected" onIcon="fa fa-check" (click)="changeSelect($event,cohort)" offIcon="fa" onLabel="{{cohort.name}}" offLabel="{{cohort.name}}">
 
@@ -66,7 +66,12 @@
                 icon="{{cohort.bookmarked ? 'fa fa-star':'fa fa-star-o'}}">
                 </button>
         </p-header>
-        Creation :{{cohort.creationDate.toDateString()}}
+        <span style="font-size: 0.8em;">
+                Creation :{{cohort.creationDate.toLocaleString()}}
+                <br>
+                Update :{{cohort.updateDate.toLocaleString()}}
+        </span>
+        
 
     </p-accordionTab>
 

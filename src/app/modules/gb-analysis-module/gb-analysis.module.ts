@@ -10,6 +10,8 @@ import { GbCohortLandingZoneComponent } from './panel-components/gb-cohort-landi
 import { GbTopComponent } from './panel-components/gb-top/gb-top.component';
 import { GbSurvivalSettingsComponent } from './panel-components/gb-survival-settings/gb-survival-settings.component';
 import { ButtonModule} from 'primeng/button';
+import {SelectButton, SelectButtonModule} from 'primeng/selectbutton'
+import {ToggleButtonModule} from 'primeng/togglebutton'
 import {CardModule} from 'primeng/card';
 import { FormsModule} from '@angular/forms'
 import { SliderModule } from 'primeng/slider'
@@ -35,11 +37,13 @@ import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/g
     GbSubgroupComponent],
   imports: [
     AccordionModule,
+    ToggleButtonModule,
     CardModule,
     SliderModule,
     TableModule,
     CommonModule,
     FormsModule,
+    SelectButtonModule,
     routing,
     ButtonModule,
     DropdownModule,

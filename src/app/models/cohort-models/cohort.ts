@@ -11,6 +11,7 @@ export class Cohort{
 
     public selected : boolean
     protected _creationDate : Date
+    protected _updateDate: Date
 
     public bookmarked : boolean
     public visible : boolean
@@ -34,6 +35,7 @@ export class Cohort{
 
         if (date){
             this._creationDate=date
+            this._updateDate=date
         }
         
         
@@ -137,6 +139,17 @@ export class Cohort{
         return (this._creationDate) ? new Date(this._creationDate) : null
     }
 
+    get updateDate() : Date{
+        return this._updateDate
+    }
+
+    set updateDate(date :Date){
+        if (this._creationDate !=null && this._creationDate > date){
+            throw new Error("Update date cannot be set earlier than the creation date")
+        }
+        this._updateDate=date
+    }
+
 
 
 }
@@ -164,10 +177,7 @@ export class SurvivalCohort extends Cohort{
     }
 
     get subGroups(): Array<Cohort>{
-        return this._subGroups.map(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate)
-            return cpy
-        })
+        return this._subGroups
 
     }
 

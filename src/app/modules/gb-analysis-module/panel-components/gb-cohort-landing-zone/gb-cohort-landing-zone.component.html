@@ -4,7 +4,7 @@
     <div *ngIf="!dedicated" >
         <div (drop)="drop($event)"  (dragover)="draggingmode($event)">
             <p-card >
-                <p>Drop cohort here</p>
+                <p>Select a cohort</p>
             </p-card> 
 
         </div>
@@ -23,14 +23,22 @@
                         label="Remove">
                 </button>
             </div>
-            <div class="padded">
-                <button pButton class="ui-button-secondary" type="button"
+
+
+            <br>  
+
+
+                <p-toggleButton *ngFor="let subGroup of cohort.subGroups"
+                [onLabel]="subGroup.name"
+                [offLabel]="subGroup.name"></p-toggleButton>
+
+                <button pButton style="padding-left: 1.1em; padding-right: 1.1em;"
                     pTooltip="Mark as important"
                     tooltipPosition="top" placeholder="Top"
                     (click)="subgroup=true;"
-                    label="Add sub groups">
+                    icon="fa fa-plus">
                 </button>
-            </div>
+
        
         
     </div>

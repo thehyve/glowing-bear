@@ -155,14 +155,12 @@ get survivalCurve():SurvivalCurve{
 function identity(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) :{inf:number,sup:number}{
   var limes= point.cumul * point.prob * point.prob
   limes=Math.sqrt(limes)
-  console.log("limes",limes)
   return {inf: point.prob - sigma*limes, sup: point.prob + sigma*limes}
 }
 
 function logarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
   var limes=point.cumul
   limes=Math.sqrt(limes)
-  console.log("limes",limes)
   return {inf: point.prob*Math.exp( - sigma*limes), sup: point.prob *Math.exp( sigma*limes)}
 
 
@@ -172,7 +170,6 @@ function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:numbe
 
   var limes = (point.prob ==0 || point.prob == 1) ? 0:point.cumul/(Math.pow(Math.log(point.prob),2))
   limes=Math.sqrt(limes)
-  console.log("limes",limes)
   return {inf: Math.pow(point.prob , Math.exp(sigma*limes)), sup: Math.pow(point.prob, Math.exp(- sigma*limes))}
 
 

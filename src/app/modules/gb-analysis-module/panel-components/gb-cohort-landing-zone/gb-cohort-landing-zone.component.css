@@ -2,3 +2,22 @@
     float: right;
     padding-right: 0.3em;
 }
+
+
+.subgroup-selection{
+    margin-left:0.2em;
+}
+
+
+
+
+.selectbutton:hover{
+    background-color: var(--gb-clinical-green) !important;
+    color:white !important;
+}
+
+.selectbutton:not(hover){
+    background-color: white !important;
+    color:var(--gb-clinical-green)!important;
+    border-color: var(--gb-clinical-green) !important;
+}

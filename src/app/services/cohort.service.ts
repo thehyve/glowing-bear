@@ -16,6 +16,7 @@ export class CohortService {
 
   protected _cohorts: Array<Cohort>
   protected _selectedCohort : Cohort
+  protected _selectingCohort : Subject<Cohort>
   protected _nodeName:Array<string>
   public restoring: Subject<boolean>
   
@@ -24,6 +25,7 @@ export class CohortService {
     protected medcoNetworkService: MedcoNetworkService,
     protected constraintService: ConstraintService) {
       this.restoring=new Subject<boolean>()
+      this._selectingCohort= new Subject<Cohort> ()
       this._nodeName=new Array<string>(this.medcoNetworkService.nodes.length)
       this.medcoNetworkService.nodes.forEach((apiMetadata=>{
         this._nodeName[apiMetadata.index]=apiMetadata.name
@@ -36,15 +38,19 @@ export class CohortService {
     return this._cohorts
   }
   get selectedCohort(){
-    return this._selectedCohort
+    return this._selectedCohort 
   }
-
+  get selectingCohort() : Observable<Cohort>
+  {
+    return this._selectingCohort as Observable<Cohort>
+  }
   set selectedCohort(cohort : Cohort){
     if(this._selectedCohort){
       this._selectedCohort.selected=false
     }
     this._selectedCohort=cohort
     this._selectedCohort.selected=true
+    this._selectingCohort.next(cohort)
     console.log("I have a cohort selected !!!",this)
   }
 
@@ -54,17 +60,22 @@ export class CohortService {
 
   addSubgroupToSelected(name:string,rootInclusionConstraint:CombinationConstraint,rootExclusionConstraint:CombinationConstraint){
     var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint,new Date(Date.now()))
+    console.log("subgroup",subGroup)
     if(this._selectedCohort instanceof SurvivalCohort){
+      console.log("subgroup if",subGroup);
       (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
       
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     }else{
+      console.log("subgroup else",subGroup);
       var idx= this._cohorts.indexOf(this._selectedCohort)
       var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()))
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
       this._cohorts[idx]=ret
-      this._selectedCohort=ret
+      console.log("ret",ret)
+      this.selectedCohort=ret
+      console.log("ret2",ret)
 
     }
   }

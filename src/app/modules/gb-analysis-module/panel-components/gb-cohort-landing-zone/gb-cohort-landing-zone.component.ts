@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
-import { Cohort } from 'app/models/cohort-models/cohort';
+import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
+import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 
 @Component({
   selector: 'app-gb-cohort-landing-zone',
@@ -13,11 +14,22 @@ export class GbCohortLandingZoneComponent implements OnInit {
   _subgroup=false
   _cohort:Cohort
   _ran=false
+  _selectedSubgroup : Cohort
 
-  constructor(private cohortService:CohortServiceMock) { }
+  constructor(private cohortService:CohortServiceMock) {
+    if (this.cohortService.selectedCohort){
+      this._cohort=this.cohortService.selectedCohort
+      this.dedicated=true
+    }
+    cohortService.selectingCohort.subscribe((cohort =>{
+      this._cohort=cohort;
+      this._dedicated = (this._cohort !=null)
+    }).bind(this))
+  }
 
   ngOnInit() {
   }
+
 
   @Input()
   set activated(bool:boolean){
@@ -78,6 +90,20 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
     this._ran=true
 
+  }
+  get subGroups(){
+    return (this.cohort as SurvivalCohort).subGroups.map(group=>{return {label:group.name,value:group}})
+  }
+  get isSurv(){
+    return this.cohort instanceof SurvivalCohort
+  }
+  set selectedSubGroup(cohort: Cohort) {
+    this._selectedSubgroup=cohort
+
+  }
+
+  get selectedSubGroup(): Cohort{
+    return this._selectedSubgroup
   }
 
 
