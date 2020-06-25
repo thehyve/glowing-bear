@@ -1,9 +1,14 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { Injectable } from '@angular/core';
 import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
-import { Constraint } from 'app/models/constraint-models/constraint';
 import { Observable, of,Subject } from 'rxjs';
 import {map,tap} from 'rxjs/operators'
-import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { ExploreQuery } from 'app/models/query-models/explore-query';
 import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
@@ -51,7 +56,6 @@ export class CohortService {
     this._selectedCohort=cohort
     this._selectedCohort.selected=true
     this._selectingCohort.next(cohort)
-    console.log("I have a cohort selected !!!",this)
   }
 
   set cohorts(cohorts : Array<Cohort>){
@@ -60,22 +64,17 @@ export class CohortService {
 
   addSubgroupToSelected(name:string,rootInclusionConstraint:CombinationConstraint,rootExclusionConstraint:CombinationConstraint){
     var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint,new Date(Date.now()))
-    console.log("subgroup",subGroup)
     if(this._selectedCohort instanceof SurvivalCohort){
-      console.log("subgroup if",subGroup);
       (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
       
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     }else{
-      console.log("subgroup else",subGroup);
       var idx= this._cohorts.indexOf(this._selectedCohort)
       var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()))
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
       this._cohorts[idx]=ret
-      console.log("ret",ret)
       this.selectedCohort=ret
-      console.log("ret2",ret)
 
     }
   }

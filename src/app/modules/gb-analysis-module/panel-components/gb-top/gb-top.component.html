@@ -1,9 +1,13 @@
 <p-accordionTab header="Analyses" id="gb-top-component" [selected]="true">
 
-    <p-button *ngFor="let analysisType of available"
+    <button pButton *ngFor="let analysisType of available"
             [label]="analysisType.name"
             (click)="selected = analysisType"
-            [disabled]="!analysisType.implemented"></p-button>
+            [ngClass]="{'selected': selected==analysisType}"
+            [disabled]="!analysisType.implemented"></button>
+    <button pButton label="Run" style="float: right;" [disabled]="!(ready && selected)" (click)="ran = true"></button>
 
 </p-accordionTab>
-<app-gb-cohort-landing-zone [activated]="selectedSurvival"></app-gb-cohort-landing-zone>
+<app-gb-survival-settings [activated]="selectedSurvival"></app-gb-survival-settings>
+<app-gb-cohort-landing-zone [activated]="selectedSurvival" (dedication)="isReady($event)"></app-gb-cohort-landing-zone>
+<app-gb-survival-res [activated]="ran"></app-gb-survival-res>

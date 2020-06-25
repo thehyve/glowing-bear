@@ -1,8 +1,14 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { Component, OnInit, Input, OnChanges } from '@angular/core';
 import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft, curveStepAfter,area} from 'd3';
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
-import {SurvivalCurve,clearResultsToArray,retrieveGroupIds} from 'app/models/survival-analysis/survival-curves'
+import {SurvivalCurve} from 'app/models/survival-analysis/survival-curves'
+import { colorRange } from '../gb-survival-res/gb-survival.component';
 
 @Component({
   selector: 'app-gb-chart-container',
@@ -13,7 +19,9 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
 
 
+
   _curves:SurvivalCurve
+
 
   _grid=false
 
@@ -26,6 +34,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   constructor() { }
 
   ngOnInit() {
+
     /*
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._curves=clearResultsToArray(this._clearRes)
@@ -41,7 +50,6 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
   @Input()
   set grid(val:boolean){
-    console.log("grid",this._grid)
     this._grid=val
   }
 
@@ -74,33 +82,39 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   }
 
 
+
+
   buildLineChart(){
-    var width = 800
+    var width = 600
     var height=400
     var margins=10
 
-    var legendxPos= 700
-    var legendyPos=15
+    var legendxPos= (width-this._curves.curves.length)/2.0 - 30
+    var legendyPos= -20
     var legendRadius=5
+    var legendInterval=60
     select("svg").remove()
     var svg=select('#gb-chart-container-component').append("svg").attr("width","100%")
     .attr("height","100%")
-    .attr("viewBox","-10 -10 850 450")
+    .attr("font-size","20px")
+    .attr("viewBox","-10 -20 650 440")
     .append("g").attr("transform",`translate (${margins},${margins})`)
 
-    var xaxis=scaleLinear().domain([0,10]).range([0,width])
+    var xaxis=scaleLinear().domain([0,this.findMaxDomain()]).range([0,width])
     var yaxis=scaleLinear().domain([0,1]).range([height,0])
 
-    svg.append("g").attr("transform",`translate(${2*margins},${height-margins})`).call(axisBottom(xaxis))
+    svg.append("g")
+    .attr("transform",`translate(${2*margins},${height-margins})`)
+    .call(axisBottom(xaxis))
+    .attr("font-size","15px")
 
-    svg.append("g").attr("transform", `translate(${2*margins},${-1*margins})`).call(axisLeft(yaxis))
+    svg.append("g")
+    .attr("transform", `translate(${2*margins},${-1*margins})`)
+    .call(axisLeft(yaxis))
+    .attr("font-size","15px")
 
-    var  colorSet=scaleOrdinal<string,string>().domain(this._curves.curves.map(c=>c.groupId)).range([
-      "#ff4f4f",
-      "#99f0dd",
-      "#fa8d2d",
-      "#5c67e6"
-    ])
+
+    var  colorSet=scaleOrdinal<string,string>().domain(this._curves.curves.map(c=>c.groupId)).range(colorRange)
 
 
     if(this._grid){
@@ -175,14 +189,21 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
       .attr("x",legendxPos+7)
       .attr("y",legendyPos + 5)
       .text(curve.groupId)
-      legendyPos+=15
+      legendxPos+=legendInterval
     })
+
+    
 
    
 
 
 
 
+  }
+
+  findMaxDomain():number{
+    var timePoints= this._curves.curves.map(curve =>Math.max(... curve.points.map(point=>point.timePoint)))
+    return Math.max( ...timePoints)
   }
 
 }

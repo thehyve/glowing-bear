@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,15 +46,16 @@ export class GbCohortsComponent implements AfterViewInit {
  }
 
   ngAfterViewInit() {
+    /*
     
     this._changes= new MutationObserver(mutation=>console.log("mutation",mutation))
-    console.log(this.element.nativeElement.querySelector("input"))
     this._changes.observe(this.element.nativeElement,{
       attributes: true,
       childList: true,
       subtree: false,
       characterData: true
     })
+    */
     
     
   }

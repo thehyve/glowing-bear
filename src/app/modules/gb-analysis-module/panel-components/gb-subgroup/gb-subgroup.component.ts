@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CohortServiceMock } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
@@ -43,6 +50,8 @@ export class GbSubgroupComponent implements OnInit {
     this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
     console.log("after saving subgroup",this.cohortService.selectedCohort)
     this._subgroupName=""
+    this._activated=false
+    this.activatedChange.emit(false)
   }
 
   close(){

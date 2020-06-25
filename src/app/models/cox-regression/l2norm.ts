@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 function lnorm(x:Array<number>,y:Array<number>,n:number):number{
     var res=0.0
     for (let i = 0; i < x.length; i++) {

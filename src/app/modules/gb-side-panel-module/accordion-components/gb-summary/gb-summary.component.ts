@@ -17,7 +17,6 @@ import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import { CohortServiceMock } from 'app/services/cohort.service';
-import { Cohort } from 'app/models/cohort-models/cohort';
 import { MessageService } from 'primeng/api';
 import { ConstraintService } from 'app/services/constraint.service';
 
@@ -31,9 +30,7 @@ import { ConstraintService } from 'app/services/constraint.service';
 export class GbSummaryComponent {
   _name :string
 
-  constructor(private queryService: QueryService,
-    private cohortService: CohortServiceMock,
-    private constraintService:ConstraintService) {
+  constructor(private queryService: QueryService) {
       this._name=""
   }
 

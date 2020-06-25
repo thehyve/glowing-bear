@@ -1,8 +1,17 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { Constraint } from "../constraint-models/constraint"
 import { subscribeOn } from "rxjs/operators"
 import { runInThisContext } from "vm"
 import { rootCertificates } from "tls"
 import { CombinationConstraint } from "../constraint-models/combination-constraint"
+
+import { SelectItem} from "primeng/api"
 
 
 export class Cohort{
@@ -161,6 +170,7 @@ export class SurvivalCohort extends Cohort{
     _granularity: string
 
     _subGroups = new Array<Cohort>()
+    _subGroupSelection : SelectItem[]
     constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint,date:Date){
         super(name,rootInclConstraint,rootExclConstraint,date)
         this._hasSubGroups=false
@@ -186,8 +196,12 @@ export class SurvivalCohort extends Cohort{
         subGroups.forEach(function(subGroup:Cohort){
             var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate)
             this._subGroups.push(cpy)
-        })
+            this._subGroupSelection.push({label:cpy.name,value:cpy})
+        }.bind(this))
     }
 
+    get subGroupSelection():SelectItem[]{
+        return this._subGroupSelection
+    }
 
 }

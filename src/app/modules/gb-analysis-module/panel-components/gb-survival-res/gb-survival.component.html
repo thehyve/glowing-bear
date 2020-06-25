@@ -1,44 +1,54 @@
 
-    <p-accordionTab *ngIf="activated" id="gb-survival-component" header="Results" >
+<div id="gb-survival-component">
+    <p-accordionTab *ngIf="activated"  header="Results" [selected]="true">
         
         
-            <p-card id="svg-container">
-                <app-gb-chart-container   [grid]="grid" [selectedInterval]="(selectedIc) ? selectedIc.value:null" 
-                    [alpha]="(selectedAlpha) ? selectedAlpha.value:1.960"
+            <div id="svg-container" class="column" style="height: 400px;">
+                <app-gb-chart-container   [grid]="grid"
+                [selectedInterval]="selectedIc" 
+                    [alpha]="(selectedAlpha) ? selectedAlpha:1.960"
                     [curves]="survivalCurve"></app-gb-chart-container>
-            </p-card>
-
-
-            <div>
-                <table>
-                    <tr *ngFor="let logRankArray of formattedLogRanks">
-                        <td class="stat-cell" *ngFor="let logRank of logRankArray">
-                            {{logRank}}
-                        </td>
-                    </tr>
-                </table>
-    
-     
-                <p-dropdown [(ngModel)]="selectedIc" [options]="ic" optionLabel="label" placeholder="confidence interval"></p-dropdown>
-                <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas" optionLabel="name" placeholder="1 - &alpha;" [disabled]="(selectedIc) ? !selectedIc.value:true"></p-dropdown>
-                <p-button label="Grid" (onClick)="grid = !grid"></p-button>
             </div>
 
-            
-        
 
-        
+            <div class="column">
+                
+ 
+                <p-dropdown [options]="groupComparisons" [(ngModel)]="selectedGroupComparison">
+                    <ng-template let-item pTemplate="selectedItem">
+                        <i class="fa fa-users" aria-hidden="true" [style.color]="item.value.color1"> </i>
+                                {{item.value.name1}}&nbsp;-&nbsp;
+                                <i class="fa fa-users" aria-hidden="true" [style.color]="item.value.color2">  </i>
+                                &nbsp;{{item.value.name2}}
+
+                    </ng-template>
+                    <ng-template let-comparison pTemplate="item">
+                        <i class="fa fa-users" aria-hidden="true" [style.color]="comparison.value.color1"> </i>
+                                &nbsp;{{comparison.value.name1}}&nbsp;-&nbsp;
+                                <i class="fa fa-users" aria-hidden="true" [style.color]="comparison.value.color2">  </i>
+                                &nbsp;{{comparison.value.name2}}
+                    </ng-template>
+                </p-dropdown>
+                <button id="cogbutton" pButton type="icon" icon="fa fa-cog" (click)="advancedSettings = !advancedSettings"></button>
 
 
-        
-        <p>&nbsp;</p>
-        <p>&nbsp;</p>
-        <p></p>
-        <p></p>
-        <p></p>
+                <div>
+                    <br>
+                    <p *ngIf="selectedGroupComparison">Kaplan-Meier log-rank p-value: {{selectedGroupComparison.val}}</p>
+                    <p>Cox regresion proportional hazard ratio: </p>
+                    
+                    <p-card *ngIf="advancedSettings">
 
-        
-     
+                        <p-dropdown [(ngModel)]="selectedIc" [options]="ic"  placeholder="confidence interval"></p-dropdown>
+                        <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas"  placeholder="1 - &alpha;" [disabled]="(selectedIc) ? false:true"></p-dropdown>
+                        <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+
+                    
+                    </p-card >
+
+                </div>
+            </div>
 
     </p-accordionTab>
+</div>
 

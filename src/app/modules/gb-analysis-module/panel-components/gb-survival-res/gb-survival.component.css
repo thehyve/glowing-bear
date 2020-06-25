@@ -6,3 +6,27 @@
 .stat-cell{
     text-align: center;
 }
+
+.column {
+    float: left;
+    width: 30%;
+  }
+  
+
+#svg-container{
+    margin: 1em;
+    width:30em;
+    height:20em;
+}
+
+#gb-survival-component .ui-accordion-content{
+    height: 400px;
+}
+
+#cogbutton{
+    background-color: white;
+    color: var(--gb-clinical-green-light);
+    border-color:none;
+
+}
+

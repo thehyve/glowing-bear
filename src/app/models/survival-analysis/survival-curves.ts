@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { SurvivalAnalysisClear } from "./survival-analysis-clear";
 
 import * as jstat from 'jstat'
@@ -35,7 +42,7 @@ export function clearResultsToArray(clearRes:  SurvivalAnalysisClear) :SurvivalC
     return {groupId:result.groupId,
     points:points} 
     })
-  
+
     var srva=new SurvivalCurve
     srva.curves=curves
     return srva
@@ -50,7 +57,7 @@ export function survivalPoints(previousProb:number,previousCumul:number,remainin
      timePoint:timePoint,
      prob:prob,
      cumul:cumul,
-     remaining:remainingTotal-currentCensoringEvent,
+     remaining:remainingTotal-currentCensoringEvent-currentEventOfInterest,
      nofEvents:currentEventOfInterest,
      nofCensorings:currentCensoringEvent
 

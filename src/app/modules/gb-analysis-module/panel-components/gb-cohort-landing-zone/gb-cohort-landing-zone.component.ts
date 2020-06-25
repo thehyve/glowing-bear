@@ -1,33 +1,50 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { Component, OnInit, Input, EventEmitter, ViewEncapsulation, Output } from '@angular/core';
 import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
 import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
 import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 
+
 @Component({
   selector: 'app-gb-cohort-landing-zone',
   templateUrl: './gb-cohort-landing-zone.component.html',
-  styleUrls: ['./gb-cohort-landing-zone.component.css']
+  styleUrls: ['./gb-cohort-landing-zone.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GbCohortLandingZoneComponent implements OnInit {
   _activated=false
   _dedicated=false
   _subgroup=false
-  _cohort:Cohort
+  _cohort:SurvivalCohort
   _ran=false
   _selectedSubgroup : Cohort
 
+  @Output()
+  dedication:EventEmitter<boolean>=new EventEmitter()
+
   constructor(private cohortService:CohortServiceMock) {
-    if (this.cohortService.selectedCohort){
-      this._cohort=this.cohortService.selectedCohort
+    var cohort =this.cohortService.selectedCohort
+    if (cohort){
+      this._cohort=new SurvivalCohort(cohort.name, cohort.rootInclusionConstraint.clone(), cohort.rootExclusionConstraint.clone(), cohort.creationDate)
       this.dedicated=true
     }
+    
     cohortService.selectingCohort.subscribe((cohort =>{
       this._cohort=cohort;
       this._dedicated = (this._cohort !=null)
+      this.dedication.emit(this.dedicated)
     }).bind(this))
   }
 
   ngOnInit() {
+    this.dedication.emit(this.dedicated)
   }
 
 
@@ -46,6 +63,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     return this._dedicated
   }
 
+
   get cohort(): Cohort{
     return this._cohort
   }
@@ -63,14 +81,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     event.preventDefault()
     
 
-    if (this.cohortService.selectedCohort != null  && event.dataTransfer.getData("text")=="cohort")
-    {
-      
-      this._cohort=this.cohortService.selectedCohort
-      this.dedicated=true
-
-
-    }
+ 
     
   }
   draggingmode(event:DragEvent){
@@ -92,8 +103,14 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   }
   get subGroups(){
+    if(this.cohort instanceof SurvivalCohort)
+    {
     return (this.cohort as SurvivalCohort).subGroups.map(group=>{return {label:group.name,value:group}})
+    }
+    else return []
   }
+
+
   get isSurv(){
     return this.cohort instanceof SurvivalCohort
   }
@@ -104,6 +121,16 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   get selectedSubGroup(): Cohort{
     return this._selectedSubgroup
+  }
+
+  changeSelectedSubGroup(event: Event, subGroup : Cohort){
+    event.stopPropagation()
+    if (this.selectedSubGroup){
+      this.selectedSubGroup.selected=false
+    }
+    
+    this.selectedSubGroup=subGroup
+    this.selectedSubGroup.selected=true
   }
 
 

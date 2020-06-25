@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import { Component, OnInit } from '@angular/core';
 import { AnalysisType } from 'app/models/analyses/analysis-type';
 
@@ -7,6 +14,7 @@ import { AnalysisType } from 'app/models/analyses/analysis-type';
   styleUrls: ['./gb-top.component.css']
 })
 export class GbTopComponent implements OnInit {
+  ran=false
 
   _selectedSurvival:boolean
   //_selectedLinearRegression:boolean
@@ -15,6 +23,7 @@ export class GbTopComponent implements OnInit {
   _selected:AnalysisType
 
   _available=AnalysisType.ALL_TYPES
+  ready=false
 
   constructor() { }
 
@@ -23,6 +32,10 @@ export class GbTopComponent implements OnInit {
      this._selectedSurvival=true
    }
    this._selected=sel
+ }
+
+ get selected():AnalysisType{
+   return this._selected
  }
 
 
@@ -34,7 +47,9 @@ export class GbTopComponent implements OnInit {
     return this._available
   }
 
-  
+  isReady(event:boolean){
+    this.ready=event
+  }
 
   
 
