@@ -5,15 +5,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
-import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft, curveStepAfter,area} from 'd3';
-import {SurvivalCurve} from 'app/models/survival-analysis/survival-curves'
+import { Component, OnInit, Input, OnChanges, ViewEncapsulation } from '@angular/core';
+import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft, curveStepAfter,area,event} from 'd3';
+import {SurvivalCurve, SurvivalPoint} from 'app/models/survival-analysis/survival-curves'
 import { colorRange } from '../gb-survival-res/gb-survival.component';
 
 @Component({
   selector: 'app-gb-chart-container',
   templateUrl: './gb-chart-container.component.html',
-  styleUrls: ['./gb-chart-container.component.css']
+  styleUrls: ['./gb-chart-container.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GbChartContainerComponent implements OnInit, OnChanges {
 
@@ -21,6 +22,7 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
 
 
   _curves:SurvivalCurve
+  _hidden = new Map<{groupId:string,points:SurvivalPoint[]},boolean>()
 
 
   _grid=false
@@ -78,7 +80,14 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   @Input()
   set curves(cur:SurvivalCurve){
     this._curves=cur
+    this._curves.curves.forEach(curve=>{
+      this._hidden.set(curve,false)
+    })
     
+  }
+
+  mouseDebug(){
+    console.log("on entend plus chanter les Grueriens")
   }
 
 
@@ -93,12 +102,22 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
     var legendyPos= -20
     var legendRadius=5
     var legendInterval=60
+    var rectHeight=6
+    var rectWidth=2
     select("svg").remove()
     var svg=select('#gb-chart-container-component').append("svg").attr("width","100%")
     .attr("height","100%")
     .attr("font-size","20px")
     .attr("viewBox","-10 -20 650 440")
     .append("g").attr("transform",`translate (${margins},${margins})`)
+
+    var div =select("#gb-chart-container-component").append("div")
+    .style("position","absolute")
+    .style("opacity",0.0)
+    .style("z-index",10)
+    .attr("class","tooltip")
+    .html("Hello")
+
 
     var xaxis=scaleLinear().domain([0,this.findMaxDomain()]).range([0,width])
     var yaxis=scaleLinear().domain([0,1]).range([height,0])
@@ -169,8 +188,17 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
   }
 
     this._curves.curves.forEach(curve =>{
-      console.log("curve.groupId",curve.groupId)
-      console.log("colorset",colorSet(curve.groupId))
+      svg.append("g").selectAll("dot")
+      .data(curve.points)
+      .enter()
+      .filter(d=>d.nofCensorings>0)
+      .append("rect")
+      .attr("x",d=>xaxis(d.timePoint) -rectWidth/2)
+      .attr("y",d=>yaxis(d.prob)-rectHeight/2)
+      .attr("transform",`translate(${2*margins},${-1*margins})`)
+      .attr("width",rectWidth)
+      .attr("height",rectHeight)
+      .style("fill",colorSet(curve.groupId))
 
 
 
@@ -179,11 +207,32 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
       .attr("transform",`translate(${2*margins},${-1*margins})`)
       .attr("d",lineGen)
 
+      svg.append("g").selectAll("dot")
+      .data(curve.points)
+      .enter()
+      .append("circle")
+      .attr("cx",d=>xaxis(d.timePoint))
+      .attr("cy",d=>yaxis(d.prob))
+      .attr("transform",`translate(${2*margins},${-1*margins})`)
+      .attr("r","3px")
+      .attr("opacity",0.0)
+      .attr("fill","black").on("mouseover",(d)=>{div.transition().duration(100).style("opacity",1.0)
+      .style("top",(event.layerY+20) +"px")
+      .style("left",event.layerX +"px");
+      div.html(generateTooltipHtml(d));
+      console.log("hello",legendxPos,legendyPos,d,event)})
+      .on("mouseout",()=>{div.transition().duration(100).style("opacity",0.0);
+      console.log("bye")})
+      
+      
+
       svg.append("circle")
+
       .attr("cx",legendxPos)
       .attr("cy",legendyPos)
       .attr("r",legendRadius)
       .attr("fill",colorSet(curve.groupId))
+      
 
       svg.append("text")
       .attr("x",legendxPos+7)
@@ -206,4 +255,15 @@ export class GbChartContainerComponent implements OnInit, OnChanges {
     return Math.max( ...timePoints)
   }
 
+}
+
+
+function generateTooltipHtml(point : SurvivalPoint):string{
+  var res=""
+  res +="<p>Time point " +point.timePoint.toString()+"<br>\n"
+  res +="At risk "+point.atRisk.toString()+"<br>\n"
+  res +="Events "+point.nofEvents.toString()+"<br>\n"
+  res+="Censoring "+point.nofCensorings.toString()+"</p>\n"
+
+  return res
 }
