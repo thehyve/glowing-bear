@@ -19,7 +19,7 @@ export class GbSurvivalSettingsComponent implements OnInit {
   _granularities= [{label:"Day",value:"Day"},{label:"Week",value:"Week"},{label:"Month",value:"Month"},{label:"Year",value:"Year"}]
   _selectedGranularity="Day"
 
-  _limit=100
+  _limit=2000
 
   _starts=[{label:"Diagnosis",value:"Diagnosis"},{label:"Treatment",value:"Treatment"}]
   _selectedStart="Treatment"

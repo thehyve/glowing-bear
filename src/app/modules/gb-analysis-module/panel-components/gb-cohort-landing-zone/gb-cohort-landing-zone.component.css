@@ -64,4 +64,7 @@ p-togglebutton:not(hover){
     background-color:var(--gb-clinical-green-dark) !important;
 }
 
+.subgroup{
+    height:500px;
+}
 

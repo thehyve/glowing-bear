@@ -11,6 +11,10 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.serv
 import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from 'app/models/survival-analysis/survival-curves' 
 
 import {SelectItem} from 'primeng/api'
+import {  logranktest, logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
+import { newtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-regression/newtonRaphson';
+import { dichotomicAugmented, testIt } from 'app/models/cox-regression/coxModel';
+import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 
 
 @Component({
@@ -46,7 +50,24 @@ export class GbSurvivalComponent implements OnInit{
   _formattedLogRanks:Array<Array<string>>
 
   _groupComparisons: SelectItem[]
-  _selectedGroupComparison: {name1:string,name2:string, color1:string,color2:string,val:string}
+  _selectedGroupComparison: {
+    name1:string,
+    name2:string,
+    color1:string,
+    color2:string,
+    logrank:string,
+    initialCount1: string,
+    initialCount2:string,
+    cumulatEvent1:string,
+    cumulatEvent2: string,
+    cumulatCensoring1 : string,
+    cumumlatCensoring2: string,
+  }
+  nofTicks=5
+
+  _groupLogrankTable:Array<Array<string>>
+  _groupCoxRegTable:Array<Array<string>>
+  _groupCoxWaldTable:Array<Array<string>>
 
 
 
@@ -64,32 +85,18 @@ export class GbSurvivalComponent implements OnInit{
   ngOnInit(){
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._survivalCurve=clearResultsToArray(this._clearRes);
-      //var km= new KaplanMeierEstimator(this._survivalCurve)
-      this._logRanks=LogRank(this._survivalCurve)
-      this._formattedLogRanks=LabelledLogRanks(this._logRanks,this._survivalCurve)
+
       this.setGroupComparisons()
+      var arrays=this.survivalCurve.curves.map(curve=>curve.points)
+      
+      
+
+
     }).bind(this))
 
 
   }
-  /*
 
-  ngAfterViewInit() {
-    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
-      this._curves=clearResultsToArray(this._clearRes)
-    }).bind(this))
-    this.buildLineChart()
-  }
-
-  ngOnChanges(changes){
-
-    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
-      this._curves=clearResultsToArray(this._clearRes)
-    }).bind(this))
-    this.buildLineChart()
-    console.log("executed")
-  }
-*/
 
 set cols(columns){
   this._cols=columns
@@ -151,23 +158,61 @@ get survivalCurve():SurvivalCurve{
   return this._survivalCurve
 }
 
+get groupLogrankTable(): Array<Array<string>>{
+  return this._groupLogrankTable
+}
+
+get groupCoxRegTable(): Array<Array<string>>{
+  return this._groupCoxRegTable
+}
+get groupCoxWaldTable():Array<Array<string>>{
+  return this._groupCoxWaldTable
+}
 
 setGroupComparisons(){
+  this._groupLogrankTable= new Array<Array<string>>()
+  this._groupCoxRegTable= new Array<Array<string>>()
+  this._groupCoxWaldTable= new Array<Array<string>>()
   var len=this.survivalCurve.curves.length
   var curveName=this.survivalCurve.curves.map(curve=>curve.groupId)
   this._groupComparisons=new Array<SelectItem>()
   for (let i = 0; i < len; i++) {
-    for (let j =i+1; j < len; j++) {
+    var logrankRow=new Array<string>()
+    var coxRegRow= new  Array<string>()
+    var waldCoxRow=new Array<string>()
+    for (let j =/*i+1*/ 0; j < len; j++) {
+      var logrank =logRank2Groups(this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points).toPrecision(3)
+      logrankRow.push(logrank)
+      var cox=newtonRaphson(100,1e-14,[this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
+      var beta=cox.finalBeta[0]
+      var variance= -cox.finalCovarianceMatrixEstimate[0][0]
+      var coxReg=coxToString(beta,variance)
+      var  waldStat=Math.pow(beta,2)/(variance+ 1e-14)
+      var waldTest=(1.0-ChiSquaredCdf(waldStat,1)).toPrecision(3)
+
+      coxRegRow.push(coxReg)
+      waldCoxRow.push(waldTest)
       this._groupComparisons.push({label:curveName[i]+curveName[j],value:{
         name1:curveName[i],
         name2:curveName[j],
         color1:colorRange[i],
         color2:colorRange[j],
-        val: /*this._logRanks[i][j]*/(0.0013).toPrecision(3),
+        logrank: logrank,
+        coxReg: coxReg,
+        initialCount1: this.survivalCurve.curves[i].points[0].atRisk.toString(),
+        initialCount2: this.survivalCurve.curves[j].points[0].atRisk.toString(),
+        //TODO this is redundant
+        cumulatEvent1: this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString(),
+        cumulatEvent2: this.survivalCurve.curves[j].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString(),
+        cumulatCensoring1: this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString(),
+        cumulatCensoring2: this.survivalCurve.curves[j].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString(),
       }
     })
       
     }
+    this._groupLogrankTable.push(logrankRow)
+    this._groupCoxRegTable.push(coxRegRow)
+    this._groupCoxWaldTable.push(waldCoxRow)
     
   }
 
@@ -195,174 +240,9 @@ set selectedGroupComparison(selGroup){
 }
 
 
-
-
-
-// ---- confidence intervals
-
-
-function identity(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}) :{inf:number,sup:number}{
-  var limes= point.cumul * point.prob * point.prob
-  limes=Math.sqrt(limes)
-  return {inf: point.prob - sigma*limes, sup: point.prob + sigma*limes}
-}
-
-function logarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
-  var limes=point.cumul
-  limes=Math.sqrt(limes)
-  return {inf: point.prob*Math.exp( - sigma*limes), sup: point.prob *Math.exp( sigma*limes)}
-
-
-}
-
-function logarithmMinusLogarithm(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}):{inf:number,sup:number}{
-
-  var limes = (point.prob ==0 || point.prob == 1) ? 0:point.cumul/(Math.pow(Math.log(point.prob),2))
-  limes=Math.sqrt(limes)
-  return {inf: Math.pow(point.prob , Math.exp(sigma*limes)), sup: Math.pow(point.prob, Math.exp(- sigma*limes))}
-
-
-}
-
-function arcsineSquaredRoot(sigma:number,point:{timePoint:number,prob:number,cumul:number,remaining:number}): {inf:number,sup:number}{
-  var limes = (point.prob==1) ? 0: 0.25 * point.prob/(1-point.prob) *point.cumul
-  var transformed=Math.asin(Math.sqrt(point.prob))
-  limes = Math.sqrt(limes)
-  return {inf: Math.pow(Math.sin(transformed - sigma * limes),2.0) , sup:Math.pow(Math.sin(transformed + sigma * limes),2.0)}
-}
-
-
-
-
-
-
-function LogRank(survival:SurvivalCurve):Array<Array<number>>{
-  var len=survival.curves.length
-  var res= new Array<Array<number>>(len)
-
-
-  for (let i = 0; i < len; i++) {
-    var resi = new Array<number>(len)
-    for (let j = i+1; j < len; j++) {
-      var ei : number= ChiEstimated(survival,j,i)
-      var oi: number= ChiObserved(survival,i)
-      var ej: number= ChiEstimated(survival,i,j)
-      var oj: number= ChiObserved(survival,j)
-      resi[j]=1-ChiSquaredCdf(Math.pow((ei-oi),2)/ei + Math.pow((ej-oj),2)/ej,len-1)
-
-
-
-    }
-    res[i]=resi
-
-
-    
-  }
-
-  return res
-}
-
-
-class KaplanMeierEstimator{
-  _real:SurvivalCurve
-  _estimated = new Array<Map<number,number>>()
-  constructor(surv:SurvivalCurve){
-    
-
-    var nofCurves=surv.curves.length
-    var curves=surv.curves.map(curve=>curve.points)
-    var curvesFinished = Array<boolean>()
-    this._real=surv
-    curves.forEach((()=>{
-      this._estimated.push(new Map<number,number>())
-      curvesFinished.push(false)
-    }).bind(this))
-
-    var indices=  Array<number>(nofCurves)
-    while(curvesFinished.reduce((a,b)=> !(a &&b))){
-      var argmin=-1
-      var min=1000000
-      for (let i = 0; i < nofCurves; i++) {
-        if (curves[i][indices[i]].timePoint<min && !curvesFinished[i]){
-          argmin=i
-          min=curves[i][indices[i]].timePoint
-        }
-      for(let i = 0; i < nofCurves; i++){
-        if (!curvesFinished[i]){
-          this._estimated[i][min]=curves[i][indices[i]].prob
-        }
-
-      }
-
-      indices[argmin]++
-      curvesFinished[argmin]=(indices[argmin] >=curves[argmin].length)
-        
-        
-      }
-
-
-    }
-  }
-
-  get estimated(){
-    return this.estimated
-  }
-  
-}
-
-
-function ChiEstimated(survivalCurve:SurvivalCurve,i:number,j:number):number{
-  var ej=0
-  for (let index = 0; index < survivalCurve.curves.length; index++) {
-    var datumi =survivalCurve.curves[i].points[index]
-    var datumj=survivalCurve.curves[j].points[index]
-    ej+=datumi.nofEvents/datumi.remaining *datumj.remaining
-    
-  }
-  return ej
-}
-function ChiObserved(survivalCurve:SurvivalCurve,j:number):number{
-
-  var oj=0
-  for (let index = 0; index < survivalCurve.curves.length; index++) {
-
-    var datumj=survivalCurve.curves[j].points[index]
-    oj+=datumj.nofEvents
-    
-  }
-  return oj
-
-}
-
-function LabelledLogRanks(logranks:Array<Array<number>>,survivalCurve:SurvivalCurve):Array<Array<string>>{
-  var len =logranks.length
-  var res= new Array<Array<string>>(len)
-  var firstLine=survivalCurve.curves.map(c=>c.groupId)
-  firstLine.unshift("")
-  res[0]=firstLine
-  for (let i = 1; i < len; i++) {
-    var otherLine=logranks[i-1].map(m=>m.toPrecision(3))
-    otherLine.unshift(survivalCurve.curves[i-1].groupId)
-    res[i]=otherLine
-    
-  }
-  return res
-}
-
-
-
-
-function CoxRegression(survivalCurve){
-  
-}
-
-
 export const colorRange=[
   "#ff4f4f",
   "#99f0dd",
   "#fa8d2d",
   "#5c67e6"
 ]
-
-
-

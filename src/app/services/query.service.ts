@@ -180,7 +180,10 @@ export class QueryService {
 
         case ExploreQueryType.COUNT_PER_SITE.id:
           return ExploreQueryType.COUNT_PER_SITE;
-
+        
+        case ExploreQueryType.COUNT_GLOBAL.id:
+          return ExploreQueryType.COUNT_GLOBAL;
+/*
         case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
           return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
 
@@ -190,11 +193,11 @@ export class QueryService {
         case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
           return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
 
-        case ExploreQueryType.COUNT_GLOBAL.id:
-          return ExploreQueryType.COUNT_GLOBAL;
+
 
         case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
           return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
+          */
 
         default:
           return null;

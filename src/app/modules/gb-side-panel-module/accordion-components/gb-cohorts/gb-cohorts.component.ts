@@ -12,8 +12,6 @@ import { Cohort } from 'app/models/cohort-models/cohort';
 import {CohortService, CohortServiceMock } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
 
-import {map} from 'rxjs/operators'
-import { Constraint } from 'app/models/constraint-models/constraint';
 
 @Component({
   selector: 'gb-cohorts',
@@ -126,6 +124,14 @@ export class GbCohortsComponent implements AfterViewInit {
   changeSelect(event :Event,cohort :Cohort){
     event.stopPropagation()
     this.cohortService.selectedCohort=cohort
+  }
+
+  remove(event:Event, cohort:Cohort){
+    event.stopPropagation()
+    if(this.cohortService.selectedCohort && this.cohortService.selectedCohort ==cohort){
+      this.cohortService.selectedCohort==null
+    }
+    this.cohortService.cohorts=this.cohortService.cohorts.filter(c=>cohort !=c)
   }
 
 

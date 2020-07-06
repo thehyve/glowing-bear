@@ -115,6 +115,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     return this.cohort instanceof SurvivalCohort
   }
   set selectedSubGroup(cohort: Cohort) {
+    this.subgroup= cohort != null
     this._selectedSubgroup=cohort
 
   }

@@ -1,4 +1,5 @@
-<p-card *ngIf="activated" header="Subgroup">
+<div *ngIf="activated">
+    <br>
     
     <p-button class="padded" label="close" (onClick)="close()"></p-button>
     <p-button class="padded" label="save" (onClick)="save()"></p-button>
@@ -7,4 +8,4 @@
     <gb-selection></gb-selection>
 
     
-</p-card>
+</div>

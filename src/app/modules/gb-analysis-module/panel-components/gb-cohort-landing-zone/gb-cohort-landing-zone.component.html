@@ -1,4 +1,4 @@
-<p-accordionTab header="Cohort" *ngIf="activated" id="gb-cohort-landing-zone-component">
+<p-accordionTab header="Subgroups" *ngIf="activated" id="gb-cohort-landing-zone-component" [ngClass]="{'subgroup': activated}">
 
     
     <div *ngIf="!dedicated" >
@@ -12,7 +12,7 @@
     </div>
     
     <div *ngIf="dedicated">
-        <p-button (click)="run()" label="Run" class="ui-button-secondary"></p-button>
+
         
             <span>{{cohort.name}}</span>
             <div class="padded">
@@ -46,7 +46,7 @@
        
         
     </div>
-
-</p-accordionTab>
 <app-gb-subgroup [(activated)]="subgroup"></app-gb-subgroup>
+</p-accordionTab>
+
 

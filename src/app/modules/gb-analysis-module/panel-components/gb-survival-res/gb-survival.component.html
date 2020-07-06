@@ -3,50 +3,113 @@
     <p-accordionTab *ngIf="activated"  header="Results" [selected]="true">
         
         
-            <div id="svg-container" class="column" style="height: 400px;">
-                <app-gb-chart-container   [grid]="grid"
-                [selectedInterval]="selectedIc" 
-                    [alpha]="(selectedAlpha) ? selectedAlpha:1.960"
-                    [curves]="survivalCurve"></app-gb-chart-container>
+            <div class="column">
+                <div id="svg-container" class="column" style="height: 500px;">
+                    <app-gb-chart-container   [grid]="grid"
+                    [selectedInterval]="selectedIc" 
+                        [alpha]="(selectedAlpha) ? selectedAlpha:1.960"
+                        [curves]="survivalCurve"
+                        [nofTicks]="nofTicks">
+                    </app-gb-chart-container>
+                    
+                </div>
+                <button id="cogbutton" pButton type="icon" icon="fa fa-cog" (click)="advancedSettings = !advancedSettings"></button>
+                <p-card *ngIf="advancedSettings">
+                    Confidence interval:
+                    <br>
+                    <p-dropdown [(ngModel)]="selectedIc" [options]="ic"  placeholder="confidence interval"></p-dropdown>
+                    <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas"  placeholder="1 - &alpha;" [disabled]="(selectedIc) ? false:true"></p-dropdown>
+                    <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+                    <br>
+                    Number of ticks (rendering can modify this number to keep nice intervals):
+                    <br>
+                    <p-spinner [(ngModel)]="nofTicks" min="1" max="10" ></p-spinner>
+                </p-card >
+                
             </div>
+            
 
 
             <div class="column">
                 
- 
-                <p-dropdown [options]="groupComparisons" [(ngModel)]="selectedGroupComparison">
-                    <ng-template let-item pTemplate="selectedItem">
-                        <i class="fa fa-users" aria-hidden="true" [style.color]="item.value.color1"> </i>
-                                {{item.value.name1}}&nbsp;-&nbsp;
-                                <i class="fa fa-users" aria-hidden="true" [style.color]="item.value.color2">  </i>
-                                &nbsp;{{item.value.name2}}
 
-                    </ng-template>
-                    <ng-template let-comparison pTemplate="item">
-                        <i class="fa fa-users" aria-hidden="true" [style.color]="comparison.value.color1"> </i>
-                                &nbsp;{{comparison.value.name1}}&nbsp;-&nbsp;
-                                <i class="fa fa-users" aria-hidden="true" [style.color]="comparison.value.color2">  </i>
-                                &nbsp;{{comparison.value.name2}}
-                    </ng-template>
-                </p-dropdown>
-                <button id="cogbutton" pButton type="icon" icon="fa fa-cog" (click)="advancedSettings = !advancedSettings"></button>
+                
+                
 
 
                 <div>
                     <br>
-                    <p *ngIf="selectedGroupComparison">Kaplan-Meier log-rank p-value: {{selectedGroupComparison.val}}</p>
-                    <p>Cox regresion proportional hazard ratio: </p>
-                    
-                    <p-card *ngIf="advancedSettings">
 
-                        <p-dropdown [(ngModel)]="selectedIc" [options]="ic"  placeholder="confidence interval"></p-dropdown>
-                        <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas"  placeholder="1 - &alpha;" [disabled]="(selectedIc) ? false:true"></p-dropdown>
-                        <p-button label="Grid" (onClick)="grid = !grid"></p-button>
-
-                    
-                    </p-card >
 
                 </div>
+            </div>
+            
+            
+
+            
+
+            <div class="column">
+                <table>
+                    <tr>
+                        <th>Mantel-Haenszel Logrank p-value</th>
+                        <th *ngFor="let curve of survivalCurve.curves;let i = index">
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                    </tr>
+                    <tr *ngFor="let curve of survivalCurve.curves;let i = index">
+                        <th>
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
+                            {{groupLogrankTable[i][j]}}
+                        </td>
+                    </tr>
+                </table>
+                <br>
+
+                <table>
+                    <tr>
+                        <th>Cox hazard ratio</th>
+                        <th *ngFor="let curve of survivalCurve.curves;let i = index">
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                    </tr>
+                    <tr *ngFor="let curve of survivalCurve.curves;let i = index">
+                        <th>
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
+                            {{groupCoxRegTable[i][j]}}
+                        </td>
+                    </tr>
+                </table>
+
+                <br>
+
+                <table>
+                    <tr>
+                        <th>Wald Test p-value</th>
+                        <th *ngFor="let curve of survivalCurve.curves;let i = index">
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                    </tr>
+                    <tr *ngFor="let curve of survivalCurve.curves;let i = index">
+                        <th>
+                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+                            {{curve.groupId}}
+                        </th>
+                        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
+                            {{groupCoxWaldTable[i][j]}}
+                        </td>
+                    </tr>
+                </table>
+
+                
             </div>
 
     </p-accordionTab>

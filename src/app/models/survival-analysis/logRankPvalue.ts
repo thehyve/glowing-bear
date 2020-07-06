@@ -1,11 +1,12 @@
 /**
- * 
- * 
- * 
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import { SurvivalPoint, ChiSquaredCdf } from "./survival-curves";
-import { time } from "console";
 
 
  /**
@@ -35,7 +36,6 @@ import { time } from "console";
             var point =group1[j]
             
             if (point.nofEvents >0){
-                console.log("point",point)
                 events.set(point.timePoint,events.has(point.timePoint) ? events.get(point.timePoint)+point.nofEvents:point.nofEvents)
                 atRiskGroup1.set(point.timePoint,atRiskGroup1.has(point.timePoint) ? atRiskGroup1.get(point.timePoint)+point.atRisk:point.atRisk)
                 eventsGroup1.set(point.timePoint,eventsGroup1.has(point.timePoint) ? eventsGroup1.get(point.timePoint)+point.nofEvents:point.nofEvents)
@@ -54,35 +54,24 @@ import { time } from "console";
             }
         } 
         
-    
-
-      console.log("fed variable",atRisk,events,atRiskGroup1,eventsGroup1,atRiskGroup2,eventsGroup2)
-
 
       // process
-      console.log(events)
 
       events.forEach((nofEvents,timePoint)=>{
 
-        console.log("all timepoints should be here",timePoint)
           
           
           var risks=atRisk.get(timePoint)
           var estimate=nofEvents/risks
-          console.log("risks",risks,"estimate",estimate)
+
 
           var risk1=atRiskGroup1.has(timePoint) ? atRiskGroup1.get(timePoint) : risks-atRiskGroup2.get(timePoint)
           var event1=eventsGroup1.has(timePoint) ? eventsGroup1.get(timePoint):0
 
               
         diffsGroup+= event1 - risk1* estimate
-        console.log("timepoint",timePoint,"group",1,"diff",event1 - risk1* estimate,"currentstate",diffsGroup)
-        console.log("asdfsaf",risks,risk1)
-        varianceGroup += (risks==risk1 || risks<=1) ? 0: risk1 *estimate*(risks-nofEvents)*(risks-risk1) / (risks * (risks-1))
-        console.log("timepoint",timePoint,"group",1,"variance",estimate*(risks-nofEvents)*(risks-risk1) / (risks * (risks-1)),"currentState",varianceGroup)
-        console.log("timepoint",timePoint,"group",1,"atrisk",risks,"atrisk in group",risk1)
-                
-              
+
+        varianceGroup += (risks==risk1 || risks<=1) ? 0: risk1 *estimate*(risks-nofEvents)*(risks-risk1) / (risks * (risks-1))              
           
       })
 
@@ -132,21 +121,25 @@ import { time } from "console";
       
   }
 
-//answier sshould be  for xi2 should be2.88
+//answer should be  for xi2 should be2.88
 export const logranktest:Array<Array<SurvivalPoint>>=[
     [
         {
-            timePoint:2,
+            timePoint:1,
             prob:0,
             cumul:0,
+            cumulCensorings:0,
+            cumulEvents:0,
             remaining:1,
             atRisk: 2, //at risk at instant t, it is equivalent to remaining +censorings +events
             nofEvents:1,
           nofCensorings:0,
           },{
-            timePoint:4,
+            timePoint:2,
             prob:0,
             cumul:0,
+            cumulCensorings:0,
+            cumulEvents:0,
             remaining:0,
             atRisk: 1, //at risk at instant t, it is equivalent to remaining +censorings +events
             nofEvents:1,
@@ -154,17 +147,21 @@ export const logranktest:Array<Array<SurvivalPoint>>=[
           }
 
     ],[{
-        timePoint:1,
+        timePoint:3,
         prob:0,
         cumul:0,
+        cumulCensorings:0,
+        cumulEvents:0,
         remaining:1,
         atRisk: 2, //at risk at instant t, it is equivalent to remaining +censorings +events
         nofEvents:1,
       nofCensorings:0,
       },{
-        timePoint:3,
+        timePoint:4,
         prob:0,
         cumul:0,
+        cumulCensorings:0,
+        cumulEvents:0,
         remaining:0,
         atRisk: 1, //at risk at instant t, it is equivalent to remaining +censorings +events
         nofEvents:1,

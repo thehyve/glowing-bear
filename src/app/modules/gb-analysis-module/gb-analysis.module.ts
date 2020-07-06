@@ -19,6 +19,7 @@ import { SliderModule } from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { GbChartContainerComponent } from './panel-components/gb-chart-container/gb-chart-container.component'
 import { TableModule } from 'primeng/table'
+import { SpinnerModule, Spinner } from 'primeng/spinner'
 import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
 import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
@@ -52,6 +53,7 @@ import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/g
     TableModule,
     CommonModule,
     FormsModule,
+    SpinnerModule,
     SelectButtonModule,
     routing,
     ButtonModule,

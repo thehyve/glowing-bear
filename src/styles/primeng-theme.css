@@ -536,14 +536,15 @@ body .ui-rating .ui-rating-star-on a:before {
   content: "";
 }
 body .ui-spinner .ui-spinner-button {
+  background-color: var(--gb-clinical-green);
   z-index: auto;
   box-sizing: border-box;
 }
 body .ui-spinner:not(.ui-state-disabled) .ui-spinner-button:hover {
-  background-color: var(--gb-clinical-green);
+  background-color: var(--gb-clinical-green-dark);
   color: #ffffff;
 }
-body .ui-spinner:not(.ui-state-disabled) .ui-spinner-button:active {
+body .ui-spinner:not(.ui-state-disabled) .ui-state-active {
   background-color: #025aa5;
   color: #ffffff;
 }
