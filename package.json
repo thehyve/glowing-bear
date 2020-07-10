@@ -78,6 +78,10 @@
     "tslint": "^5.14.0",
     "typescript": "3.2.4"
   },
+  "resolutions": {
+    "axios": "0.19.2",
+    "lodash": "4.17.19"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/thehyve/glowing-bear.git"
