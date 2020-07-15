@@ -10,7 +10,8 @@ import {
   TransmartTemporalConstraint,
   TransmartTimeConstraint,
   TransmartTrueConstraint,
-  TransmartValueConstraint
+  TransmartValueConstraint,
+  TransmartModifierConstraint
 } from '../../models/transmart-models/transmart-constraint';
 
 /**
@@ -127,6 +128,10 @@ export class TransmartConstraintRewriter extends AbstractTransmartConstraintVisi
   }
 
   visitValueConstraint(constraint: TransmartValueConstraint): TransmartConstraint {
+    return Object.assign({}, constraint);
+  }
+
+  visitModifierConstraint(constraint: TransmartModifierConstraint): TransmartConstraint {
     return Object.assign({}, constraint);
   }
 

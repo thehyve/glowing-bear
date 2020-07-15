@@ -38,6 +38,7 @@ import {TransmartConstraintRewriter} from './transmart-constraint-rewriter';
 import {Operator, OperatorValues} from '../../models/constraint-models/operator';
 import {ValueType} from '../../models/constraint-models/value-type';
 import {ConceptType} from '../../models/constraint-models/concept-type';
+import { ModifierConstraint } from 'app/models/constraint-models/modifier-constraint';
 
 /**
  * Serialisation class for serialising constraint objects for use in the TranSMART API.
@@ -117,7 +118,7 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
       type: 'value',
       valueType: constraint.valueType,
       operator: TransmartConstraintSerialiser.convertOperator(constraint.operator),
-      value: constraint.value
+      value: constraint.value,
     }
   }
 
@@ -298,6 +299,11 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
     if (constraint.applyStudyConstraint && constraint.studyConstraint.studies.length > 0) {
       args.push(this.visit(constraint.studyConstraint));
     }
+    if (constraint.applyModifierConstraint && constraint.modifierConstraints.length > 0) {
+      constraint.modifierConstraints.forEach(modifierConstraint => {
+        args.push(this.visit(modifierConstraint));
+      })
+    }
     if (args.length === 1) {
       result = args[0];
     } else {
@@ -405,6 +411,34 @@ export class TransmartConstraintSerialiser extends AbstractConstraintVisitor<Tra
       args: children
     } as TransmartCombinationConstraint;
     return new TransmartConstraintRewriter().visit(result);
+  }
+
+  visitModifierConstraint(constraint: ModifierConstraint): TransmartConstraint {
+    let result = null;
+    if (constraint.values.length !== 0) {
+      // Construct query objects for all studies
+      let children = [];
+      for (let value of constraint.values) {
+        children.push({
+          type: 'modifier',
+          modifierCode: constraint.modifierCode,
+          path: constraint.path,
+          dimensionName: constraint.dimensionName,
+          values: this.visitValueConstraint(value),
+        });
+      }
+      if (children.length === 1) {
+        // Don't wrap in 'or' if we only have one modifier constraint value
+        result = children[0];
+      } else {
+        // Wrap modifier values in 'or' constraint
+        result = {
+          type: 'or',
+          args: children,
+        };
+      }
+    }
+    return result;
   }
 
 }

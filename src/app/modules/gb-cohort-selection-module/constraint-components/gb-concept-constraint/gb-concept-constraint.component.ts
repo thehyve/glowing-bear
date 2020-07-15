@@ -30,6 +30,10 @@ import {Operator} from '../../../../models/constraint-models/operator';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {Study} from '../../../../models/constraint-models/study';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
+import { Modifier } from 'app/models/constraint-models/modifier';
+import { Observable, Subject } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
+import { ModifierConstraint } from 'app/models/constraint-models/modifier-constraint';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -101,6 +105,17 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _allTrialVisits: TrialVisit[];
   private _selectedTrialVisits: TrialVisit[];
   private _suggestedTrialVisits: TrialVisit[];
+
+  // modifier
+  private _applyModifierConstraint = false;
+  private _allModifiers: Modifier[];
+  private _selectedModifiers: Modifier[];
+
+  // modifier elements
+  private _allModifierElements: SelectItem[];
+  private _selectedModifierElements: string[];
+  private selectedModifierSubject;
+
 
   private _applyStudyConstraint = false;
 
@@ -188,10 +203,51 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           }
         });
 
-        this.applyStudyConstraint = (<ConceptConstraint>this.constraint).applyStudyConstraint;
+        // Initialize available modifiers for the given concept
+        this.applyModifierConstraint = constraint.applyModifierConstraint;
+        this.allModifiers = [];
+        this.allModifierElements = [];
+        this.resourceService.getModifiers(constraint.concept)
+          .pipe(
+              flatMap((modifierNames: string[]) => {
+                return Observable.from(modifierNames)
+              }),
+              map((modifierName: string) => {
+                const mod = new Modifier(modifierName);
+                this.allModifiers = [...this.allModifiers, mod];
+                return mod;
+              }),
+              flatMap((modifier: Modifier) => {
+                return this.resourceService.getModifierElements(modifier.name)
+                  .map((elements: string[]) => {
+                    modifier.elements = elements;
+                    return modifier;
+                  });
+              })
+          ).subscribe();
+
+        this.selectedModifierSubject = new Subject();
+        this._selectedModifiers = [];
+        this.selectedModifierSubject.subscribe(x => {
+          if (x.modifier.elements === undefined) {
+            return;
+          }
+          switch(x.type) {
+            case 'set':
+              const newElements = x.modifier.elements.map(element => { return { label: element, value: element }; })
+              this.allModifierElements = [...this.allModifierElements, ...newElements];
+              break;
+            case 'delete':
+              this.allModifierElements = this.allModifierElements.filter(element => !x.modifier.elements.includes(element.label));
+              // remove all children from selectedModifierElements and update the constraint
+              this.selectedModifierElements = this.selectedModifierElements.filter(element => !x.modifier.elements.includes(element))
+              this.onModifierElementClick();
+              break;
+          }
+        })
 
         // Initialize flags
-        this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint || this.applyStudyConstraint;
+        this.showMoreOptions = this.applyObsDateConstraint || this.applyTrialVisitConstraint || this.applyStudyConstraint || this.applyModifierConstraint;
       }
     });
   }
@@ -411,6 +467,66 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this._valDateOperatorState = value;
   }
 
+  get applyModifierConstraint() {
+    return this._applyModifierConstraint;
+  }
+
+  set applyModifierConstraint(value) {
+    this._applyModifierConstraint = value;
+    let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
+    conceptConstraint.applyModifierConstraint = this._applyModifierConstraint;
+    if (!conceptConstraint.applyModifierConstraint) {
+      (<ConceptConstraint>this.constraint).modifierConstraints.length = 0;
+    }
+    this.update();
+  }
+
+  get allModifiers(): Modifier[] {
+    return this._allModifiers;
+  }
+
+  set allModifiers(value: Modifier[]) {
+    this._allModifiers = value;
+  }
+
+  get selectedModifiers(): Modifier[] {
+    return this._selectedModifiers;
+  }
+
+  // This operation is O(N)
+  set selectedModifiers(value: Modifier[]) {
+    if (value.length > 0 &&
+        this._selectedModifiers.find(modifier => modifier.name === value[value.length-1].name) === undefined) {
+      // modifier has been added
+      this.selectedModifierSubject.next({type: 'set', modifier: value[value.length-1]});
+    } else {
+      // modifier has been removed
+      const currentModifierNames = new Set(value.map(v => v.name))
+      const removedElement = this._selectedModifiers.filter(selectedModifier => !currentModifierNames.has(selectedModifier.name))
+      if (removedElement.length == 1) {
+        this.selectedModifierSubject.next({type: 'delete', modifier: removedElement[0]});
+      }
+    }
+    this._selectedModifiers = value;
+  }
+
+  get allModifierElements(): SelectItem[] {
+    return this._allModifierElements;
+  }
+
+  set allModifierElements(value: SelectItem[]) {
+    this._allModifierElements = value;
+  }
+
+  get selectedModifierElements(): string[] {
+    return this._selectedModifierElements;
+  }
+
+  set selectedModifierElements(value: string[]) {
+    this._selectedModifierElements = value;
+  }
+
+
   /*
    * -------------------- event handlers: concept autocomplete --------------------
    */
@@ -568,6 +684,38 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     conceptConstraint.obsDateConstraint.date2 = correctedDate2;
     this.update();
   }
+
+  /*
+   * -------------------- event handlers: modifier-elements --------------------
+   */
+
+   onModifierElementClick() {
+     // O(|SelectedModifiers| * |Children| * |SelectedE|)
+     // Unfortunately, PrimeNG 6.x doesn't emit an event with the value of the
+     // item clicked so the only way is to iterate over all of them to figure
+     // out the modifications
+     let modifierConstraints: ModifierConstraint[] = (<ConceptConstraint>this.constraint).modifierConstraints;
+
+     // Empty the array without changing the reference
+     modifierConstraints.length = 0;
+     this.selectedModifiers.forEach((modifier) => {
+       let modifierConstraint = new ModifierConstraint();
+       modifierConstraint.dimensionName = modifier.name;
+       modifier.elements.forEach((element) => {
+         if (this.selectedModifierElements.find(el => el === element) !== undefined) {
+           const valueConstraint = new ValueConstraint();
+           valueConstraint.value = element;
+           valueConstraint.operator = Operator.eq;
+           valueConstraint.valueType = ValueType.string;
+           modifierConstraint.values.push(valueConstraint);
+         }
+       });
+       if (modifierConstraint.values.length > 0) {
+         modifierConstraints.push(modifierConstraint);
+       }
+     });
+     this.update();
+   }
 
   /*
    * -------------------- state checkers --------------------

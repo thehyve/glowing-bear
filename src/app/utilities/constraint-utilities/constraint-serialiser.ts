@@ -11,6 +11,7 @@ import {ConceptConstraint} from '../../models/constraint-models/concept-constrai
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 import {Concept} from '../../models/constraint-models/concept';
 import {Constraint} from '../../models/constraint-models/constraint';
+import { ModifierConstraint } from 'app/models/constraint-models/modifier-constraint';
 
 /**
  * A simple constraint serialisation class for debugging purposes.
@@ -72,6 +73,9 @@ export class ConstraintSerialiser extends AbstractConstraintVisitor<object> {
     }
     if (constraint.applyStudyConstraint) {
       result['studyConstraint'] = this.visit(constraint.studyConstraint);
+    }
+    if (constraint.applyModifierConstraint) {
+      result['modifierConstraint'] = constraint.modifierConstraints.map(constraint => this.visit(constraint));
     }
     return result;
   }
@@ -139,8 +143,15 @@ export class ConstraintSerialiser extends AbstractConstraintVisitor<object> {
     return {
       studies: constraint.operator,
       valueType: constraint.valueType,
-      value: constraint.value
+      value: constraint.value,
     };
+  }
+
+  visitModifierConstraint(constraint: ModifierConstraint): object {
+    return {
+      dimensionName: constraint.dimensionName,
+      values: constraint.values,
+    }
   }
 
   visit(constraint: Constraint): object {

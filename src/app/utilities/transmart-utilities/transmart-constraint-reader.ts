@@ -15,7 +15,8 @@ import {
   TransmartTemporalConstraint,
   TransmartTimeConstraint,
   TransmartTrueConstraint,
-  TransmartValueConstraint
+  TransmartValueConstraint,
+  TransmartModifierConstraint
 } from '../../models/transmart-models/transmart-constraint';
 import {Concept} from '../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
@@ -337,6 +338,10 @@ export class TransmartConstraintReader extends AbstractTransmartConstraintVisito
 
   visitTrueConstraint(constraintObject: TransmartTrueConstraint): Constraint {
     return new TrueConstraint();
+  }
+
+  visitModifierConstraint(constraintObject: TransmartModifierConstraint): Constraint {
+    throw new Error(`Constraint type not supported: ${constraintObject.type}`)
   }
 
 }

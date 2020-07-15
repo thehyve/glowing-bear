@@ -21,13 +21,15 @@ import {TransmartConstraintMapper} from '../../utilities/transmart-utilities/tra
 import {ErrorHelper} from '../../utilities/error-helper';
 import {TransmartCountItem} from '../../models/transmart-models/transmart-count-item';
 import {TransmartStudy} from '../../models/transmart-models/transmart-study';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, flatMap} from 'rxjs/operators';
 import {TransmartTrialVisit} from '../../models/transmart-models/transmart-trial-visit';
 import {HttpHelper} from '../../utilities/http-helper';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {TransmartExportJob} from '../../models/transmart-models/transmart-export-job';
 import {TransmartPatient} from '../../models/transmart-models/transmart-patient';
 import {TransmartDimension} from '../../models/transmart-models/transmart-dimension';
+import { Concept } from 'app/models/constraint-models/concept';
+import { Modifier } from 'app/models/constraint-models/modifier';
 
 
 @Injectable({
@@ -236,6 +238,18 @@ export class TransmartHttpService {
     return this.httpHelper.postCall(urlPart, body, responseField);
   }
 
+  // -------------------------------------- modifier calls --------------------------------------
+  /**
+   * Given a concept, find all modifiers that exist ofr it
+   * @param concept
+   * @returns {Observable<R|T>}
+   */
+  getModifiers(concept: Concept): Observable<string[]> {
+    const urlPart = `concepts/${concept.code}/modifiers`;
+    const responseField = 'modifiers';
+    return this.httpHelper.getCall(urlPart, responseField);
+  }
+
   // -------------------------------------- pedigree calls --------------------------------------
   /**
    * Get the available pedigree relation types such as parent, child, spouse, sibling and various twin types
@@ -441,6 +455,12 @@ export class TransmartHttpService {
     const urlPart = 'dimensions';
     const responseField = 'dimensions';
     return this.httpHelper.getCall(urlPart, responseField);
+  }
+
+  getModifierElements(modifierName: string): Observable<string[]> {
+    const urlPart = `dimensions/${modifierName}/elements`;
+    const responseField = 'elements';
+    return this.httpHelper.postCall(urlPart, null, responseField);
   }
 
 }
