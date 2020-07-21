@@ -17,9 +17,6 @@ export class MessageHelper {
       MessageHelper.messageService.add({severity: severity, summary: summary, detail: _detail, life: 3000});
     }
     switch (severity) {
-      case 'info':
-      case 'success':
-        console.info(summary); break;
       case 'warn':
         console.warn(summary); break;
       case 'error':
