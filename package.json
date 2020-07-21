@@ -58,7 +58,7 @@
     "@types/deep-equal": "^1.0.1",
     "@types/jasmine": "2.5.47",
     "@types/node": "^11.11.3",
-    "codecov": "^3.1.0",
+    "codecov": "^3.7.1",
     "codelyzer": "^6.0.0",
     "cucumber": "^2.1.0",
     "cypress": "^4.0.2",
