@@ -45,6 +45,7 @@ deploy:
     script: "cp .travis/settings.xml $HOME/.m2/settings.xml && gradle publish"
     on:
       all_branches: true
+      node_js: '12'
       condition: $TRAVIS_BRANCH =~ ^(dev|master)$
 
 # For deployment to Docker Hub, configure the `DOCKER_USERNAME` and `DOCKER_PASSWORD` variables:
