@@ -11,17 +11,17 @@ import {CommonModule} from '@angular/common';
 import {GbExportComponent} from './gb-export.component';
 import {FormsModule} from '@angular/forms';
 import {
-  CheckboxModule, DataTableModule, MessagesModule, OverlayPanelModule, PickListModule,
+  CheckboxModule, MessagesModule, OverlayPanelModule, PickListModule,
   TooltipModule
-} from 'primeng/primeng';
+} from 'primeng';
 import {routing} from './gb-export.routing';
 import {GbValidatorsModule} from '../../validators/gb-validators.module';
 import {GbDataTableComponent} from './data-table-components/gb-data-table/gb-data-table.component';
 import {GbDataTableDimensionsComponent} from './data-table-components/gb-data-table-dimensions/gb-data-table-dimensions.component';
 import {GbDataTableGridComponent} from './data-table-components/gb-data-table-grid/gb-data-table-grid.component';
 import {TableModule} from 'primeng/table';
-import {MatExpansionModule} from '@angular/material';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   imports: [
@@ -29,7 +29,6 @@ import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
     routing,
     FormsModule,
     CheckboxModule,
-    DataTableModule,
     MessagesModule,
     GbValidatorsModule,
     PickListModule,

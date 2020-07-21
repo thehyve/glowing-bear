@@ -8,7 +8,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {SelectItem} from 'primeng/primeng';
+import {SelectItem} from 'primeng';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 

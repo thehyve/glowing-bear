@@ -15,7 +15,7 @@ import {ConceptConstraint} from '../../../../models/constraint-models/concept-co
 import {Concept} from '../../../../models/constraint-models/concept';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ConceptType} from '../../../../models/constraint-models/concept-type';
-import {DragDropModule} from 'primeng/primeng';
+import {DragDropModule} from 'primeng';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 

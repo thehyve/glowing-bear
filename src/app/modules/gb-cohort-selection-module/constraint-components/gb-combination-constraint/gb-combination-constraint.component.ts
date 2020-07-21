@@ -10,13 +10,13 @@ import {Component, DoCheck, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {Constraint} from '../../../../models/constraint-models/constraint';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {CombinationState} from '../../../../models/constraint-models/combination-state';
 import {PedigreeConstraint} from '../../../../models/constraint-models/pedigree-constraint';
 import {SelectItem, TreeNode} from 'primeng/api';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {IconHelper} from '../../../../utilities/icon-helper';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
+import {AutoComplete} from 'primeng';
 
 @Component({
   selector: 'gb-combination-constraint',

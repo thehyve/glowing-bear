@@ -28,13 +28,13 @@ export class NavbarService {
               private fractalisService: FractalisService,
               private exportService: ExportService) {
     this.items = [
-      {label: 'Cohort Selection', routerLink: '/cohort-selection'},
+      {label: 'Cohort selection', routerLink: '/cohort-selection'},
       {label: 'Analysis', routerLink: '/analysis'}
     ];
     this.exportService.exportEnabled.asObservable()
       .subscribe((exportEnabled) => {
         if (exportEnabled) {
-          this.items.push({label: 'Data Export', routerLink: '/export'});
+          this.items.push({label: 'Data export', routerLink: '/export'});
         }
       });
   }

@@ -7,11 +7,11 @@
  */
 
 import {AfterViewChecked, AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {OverlayPanel} from 'primeng/components/overlaypanel/overlaypanel';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
 import {TreeNodeHelper} from '../../../../utilities/tree-node-helper';
+import {OverlayPanel} from 'primeng';
 
 @Component({
   selector: 'gb-tree-nodes',

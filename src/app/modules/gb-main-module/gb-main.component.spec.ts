@@ -19,7 +19,6 @@ import {GbMainComponent} from './gb-main.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {GbSidePanelModule} from '../gb-side-panel-module/gb-side-panel.module';
 import {HttpClientModule} from '@angular/common/http';
-import {GrowlModule} from 'primeng/growl';
 import {GbAnalysisModule} from '../gb-analysis-module/gb-analysis.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {GbNavBarModule} from '../gb-navbar-module/gb-navbar.module';
@@ -55,6 +54,7 @@ import {VariableService} from '../../services/variable.service';
 import {VariableServiceMock} from '../../services/mocks/variable.service.mock';
 import {CountService} from '../../services/count.service';
 import {CountServiceMock} from '../../services/mocks/count.service.mock';
+import {ToastModule} from 'primeng';
 
 describe('GbMainComponent', () => {
   let component: GbMainComponent;
@@ -71,7 +71,7 @@ describe('GbMainComponent', () => {
         HttpClientModule,
         BrowserAnimationsModule,
         AngularSplitModule,
-        GrowlModule,
+        ToastModule,
         GbNavBarModule,
         GbSidePanelModule,
         GbCohortSelectionModule,

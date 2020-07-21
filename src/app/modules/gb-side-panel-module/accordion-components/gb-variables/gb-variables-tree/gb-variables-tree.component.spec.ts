@@ -2,8 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GbVariablesTreeComponent } from './gb-variables-tree.component';
 import {FormsModule} from '@angular/forms';
-import {MatExpansionModule} from '@angular/material';
-import {AutoCompleteModule, CheckboxModule, DragDropModule} from 'primeng/primeng';
+import {AutoCompleteModule, CheckboxModule, DragDropModule} from 'primeng';
 import {TreeNodeServiceMock} from '../../../../../services/mocks/tree-node.service.mock';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
 import {NavbarService} from '../../../../../services/navbar.service';
@@ -17,6 +16,7 @@ import {GbGenericModule} from '../../../../gb-generic-module/gb-generic.module';
 import {VariableService} from '../../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../../services/mocks/variable.service.mock';
 import {GbTreeSearchComponent} from '../../gb-tree-search/gb-tree-search.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 describe('GbVariablesTreeComponent', () => {
   let component: GbVariablesTreeComponent;

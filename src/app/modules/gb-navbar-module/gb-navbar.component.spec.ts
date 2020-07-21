@@ -9,8 +9,8 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbNavbarComponent} from './gb-navbar.component';
-import {MessagesModule, TabMenuModule} from 'primeng/primeng';
-import {Router, RouterModule} from '@angular/router';
+import {MessagesModule, TabMenuModule} from 'primeng';
+import {RouterModule} from '@angular/router';
 import {APP_BASE_HREF, CommonModule} from '@angular/common';
 import {routing} from '../../app.routing';
 import {FormsModule} from '@angular/forms';

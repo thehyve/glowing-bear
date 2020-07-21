@@ -34,26 +34,26 @@
     <div class="float-right">
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by cohort name"
-              tooltipPosition="top" placeholder="Top"
+              tooltipPosition="top"
               (click)="sortByName()"
               icon="icon-sort-alphabet">
       </button>
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by importance"
-              tooltipPosition="top" placeholder="Top"
+              tooltipPosition="top"
               (click)="sortByBookmark()"
               icon="icon-sort-star">
       </button>
       <button pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by last edit date"
-              tooltipPosition="top" placeholder="Top"
+              tooltipPosition="top"
               (click)="sortByDate()"
               icon="icon-sort-time">
       </button>
       <button *ngIf="isCohortSubscriptionIncluded"
               pButton class="ui-button-secondary sort-btn" type="button"
               pTooltip="Sort by active subscriptions"
-              tooltipPosition="top" placeholder="Top"
+              tooltipPosition="top"
               (click)="sortBySubscription()"
               icon="icon-sort-subscription">
       </button>
@@ -64,12 +64,11 @@
   <!-- cohort list -->
   <p-confirmDialog></p-confirmDialog>
   <div>
-    <md2-accordion [multiple]="true">
-      <md2-accordion-tab *ngFor="let cohort of cohorts">
+    <mat-accordion multi>
+      <mat-expansion-panel *ngFor="let cohort of cohorts">
         <!-- accordion header -->
-        <md2-accordion-header>
-          <div *ngIf="cohort.visible">
-            <div class="cohort-header clearfix">
+        <mat-expansion-panel-header >
+            <div *ngIf="cohort.visible" class="cohort-header clearfix">
               <div class="cohort-header-name" [ngClass]="{'current-cohort-header-name': !cohort.controlsEnabled}">
                 <i *ngIf="cohort.controlsEnabled" class="{{getCohortTypeIcon(cohort.type)}} cohort-type-icon">
                 </i>&nbsp;
@@ -84,13 +83,13 @@
                 <button *ngIf="isCohortSubscriptionIncluded"
                         pButton class="ui-button-secondary" type="button"
                         pTooltip="Subscribe to email notifications when new data is available"
-                        tooltipPosition="top" placeholder="Top"
+                        tooltipPosition="top"
                         (click)="toggleSubscription($event, cohort)"
                         icon="{{getSubscriptionButtonIcon(cohort)}}">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
                         pTooltip="Mark as important"
-                        tooltipPosition="top" placeholder="Top"
+                        tooltipPosition="top"
                         (click)="toggleBookmark($event, cohort)"
                         icon="{{getBookmarkButtonIcon(cohort)}}">
                 </button>
@@ -101,20 +100,19 @@
                         icon="fa fa-download">
                 </button>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Restore" tooltipPosition="top" placeholder="Top"
+                        pTooltip="Restore" tooltipPosition="top"
                         (click)="restoreCohort($event, cohort)"
                         icon="fa fa-arrow-right">
                 </button>
                 <span>&nbsp;</span>
                 <button pButton class="ui-button-secondary" type="button"
-                        pTooltip="Remove" tooltipPosition="top" placeholder="Top"
+                        pTooltip="Remove" tooltipPosition="top"
                         (click)="confirmRemoval($event, cohort)"
                         icon="fa fa-times">
                 </button>
               </div>
-            </div>
           </div>
-        </md2-accordion-header>
+        </mat-expansion-panel-header>
         <!-- accordion body -->
         <div *ngIf="cohort.visible">
           <div>Name: {{cohort.name}}</div>
@@ -175,8 +173,8 @@
             </div>
           </div>
         </div>
-      </md2-accordion-tab>
-    </md2-accordion>
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
 
 </div>

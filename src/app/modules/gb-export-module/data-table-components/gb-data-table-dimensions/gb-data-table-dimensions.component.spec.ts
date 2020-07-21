@@ -10,7 +10,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbDataTableDimensionsComponent} from './gb-data-table-dimensions.component';
 import {DataTableService} from '../../../../services/data-table.service';
-import {CheckboxModule, PickListModule} from 'primeng/primeng';
+import {CheckboxModule, PickListModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
 import {DataTableServiceMock} from '../../../../services/mocks/data-table.service.mock';

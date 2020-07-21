@@ -9,31 +9,24 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GbSidePanelComponent} from './gb-side-panel.component';
-import {AccordionModule} from 'primeng/components/accordion/accordion';
-import {TreeModule} from 'primeng/components/tree/tree';
-import {DataListModule} from 'primeng/components/datalist/datalist';
 import {GbTreeNodesComponent} from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
-import {TreeDragDropService} from 'primeng/components/common/api';
-import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {GbCohortsComponent} from './accordion-components/gb-cohorts/gb-cohorts.component';
-import {DragDropModule} from 'primeng/components/dragdrop/dragdrop';
 import {
+  AccordionModule,
   AutoCompleteModule,
   ButtonModule,
   CheckboxModule,
   ConfirmationService,
-  ConfirmDialogModule,
-  InputTextModule,
+  ConfirmDialogModule, DataViewModule, DragDropModule,
+  InputTextModule, OverlayPanelModule,
   PanelModule,
   RadioButtonModule,
   SelectButtonModule,
   ToggleButtonModule,
-  TooltipModule
-} from 'primeng/primeng';
+  TooltipModule, TreeDragDropService, TreeModule
+} from 'primeng';
 import {FormsModule} from '@angular/forms';
-import {Md2AccordionModule} from 'md2';
 import {GbVariablesComponent} from './accordion-components/gb-variables/gb-variables.component';
-import {MatExpansionModule} from '@angular/material';
 import {
   GbCategorizedVariablesComponent
 } from './accordion-components/gb-variables/gb-categorized-variables/gb-categorized-variables.component';
@@ -41,6 +34,7 @@ import {GbVariablesTreeComponent} from './accordion-components/gb-variables/gb-v
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
 import {RouterModule} from '@angular/router';
 import {GbTreeSearchComponent} from './accordion-components/gb-tree-search/gb-tree-search.component';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   imports: [
@@ -48,7 +42,7 @@ import {GbTreeSearchComponent} from './accordion-components/gb-tree-search/gb-tr
     AccordionModule,
     TreeModule,
     OverlayPanelModule,
-    DataListModule,
+    DataViewModule,
     DragDropModule,
     FormsModule,
     AutoCompleteModule,
@@ -57,7 +51,6 @@ import {GbTreeSearchComponent} from './accordion-components/gb-tree-search/gb-tr
     InputTextModule,
     TooltipModule,
     ConfirmDialogModule,
-    Md2AccordionModule,
     RadioButtonModule,
     RouterModule,
     ToggleButtonModule,

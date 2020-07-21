@@ -42,11 +42,12 @@
 /*
  * Change the primeng data table border to lightgrey
  */
-.ui-datatable .ui-datatable-thead > tr > th,
-.ui-datatable .ui-datatable-tfoot > tr > td,
-.ui-datatable .ui-datatable-data > tr > td {
+/*thead.ui-table-thead tr th,
+tfoot.ui-table-tfoot tr td,
+tbody.ui-table-tbody tr td {
   border-color: lightgrey;
 }
+*/
 
 /*
  * Change the primeng tooltip for data table cells
