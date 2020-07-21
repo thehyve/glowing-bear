@@ -3719,9 +3719,9 @@ cypress-file-upload@^3.5.3:
   integrity sha512-S/czzqAj1BYz6Xxnfpx2aSc6hXsj76fd8/iuycJ2RxoxCcQMliw8eQV0ugzVlkzr1GD5dKGviNFGYqv3nRJ+Tg==
 
 cypress@^4.0.2:
-  version "4.10.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-4.10.0.tgz#6b507f4637af6a65ea285953f899951d65e82416"
-  integrity sha512-eFv1WPp4zFrAgZ6mwherBGVsTpHvay/hEF5F7U7yfAkTxsUQn/ZG/LdX67fIi3bKDTQXYzFv/CvywlQSeug8Bg==
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-4.11.0.tgz#054b0b85fd3aea793f186249ee1216126d5f0a7e"
+  integrity sha512-6Yd598+KPATM+dU1Ig0g2hbA+R/o1MAKt0xIejw4nZBVLSplCouBzqeKve6XsxGU6n4HMSt/+QYsWfFcoQeSEw==
   dependencies:
     "@cypress/listr-verbose-renderer" "0.4.1"
     "@cypress/request" "2.88.5"
@@ -3747,7 +3747,7 @@ cypress@^4.0.2:
     is-installed-globally "0.3.2"
     lazy-ass "1.6.0"
     listr "0.14.3"
-    lodash "4.17.15"
+    lodash "4.17.19"
     log-symbols "3.0.0"
     minimist "1.2.5"
     moment "2.26.0"
@@ -6878,7 +6878,7 @@ lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash@4.17.15, lodash@4.17.19, lodash@4.17.5, lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4:
+lodash@4.17.19, lodash@4.17.5, lodash@^4.0.0, lodash@^4.17.11, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.4:
   version "4.17.19"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.19.tgz#e48ddedbe30b3321783c5b4301fbd353bc1e4a4b"
   integrity sha512-JNvd8XER9GQX0v2qJgsaN/mzFCNA5BRe/j8JN9d+tWyGLSodKQHKFicdwNYzWwI3wjRnaKPsGj1XkBjx/F96DQ==
@@ -10767,10 +10767,10 @@ vue-async-computed@3.3.1:
   resolved "https://registry.yarnpkg.com/vue-async-computed/-/vue-async-computed-3.3.1.tgz#9d754e649ccabef97e7e3932f1bc097a66a23db7"
   integrity sha512-k04X7FsyAu+Tmc40KDUFT22LRZNfgHqpsuCWNUnU2FubeyBlVFLuJkxEdvRZEPVOEWIQuazFzYR1N/whfVkqvQ==
 
-vue@2.5.13:
-  version "2.5.13"
-  resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.13.tgz#95bd31e20efcf7a7f39239c9aa6787ce8cf578e1"
-  integrity sha512-3D+lY7HTkKbtswDM4BBHgqyq+qo8IAEE8lz8va1dz3LLmttjgo0FxairO4r1iN2OBqk8o1FyL4hvzzTFEdQSEw==
+vue@2.5.13, vue@2.5.22:
+  version "2.5.22"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.22.tgz#3bf88041af08b8539c37b268b70ca79245e9cc30"
+  integrity sha512-pxY3ZHlXNJMFQbkjEgGVMaMMkSV1ONpz+4qB55kZuJzyJOhn6MSy/YZdzhdnumegNzVTL/Dn3Pp4UrVBYt1j/g==
 
 vuex@3.0.1:
   version "3.0.1"
