@@ -25,10 +25,12 @@ import { Cohort } from 'app/models/cohort-models/cohort';
 })
 export class GbExploreComponent {
   public name:string
+  private _lastSuccessfulSet:number[]
 
   constructor(public queryService: QueryService,
               private cohortService: CohortServiceMock,
               public constraintService: ConstraintService) {
+              this.queryService.lastSuccesfulSet.subscribe(resIDs=>{this._lastSuccessfulSet=resIDs})
   }
 
   get globalCount(): Observable<string> {
@@ -49,6 +51,10 @@ export class GbExploreComponent {
   set queryType(val: ExploreQueryType) {
     this.queryService.query.type = val;
     this.queryService.isDirty = true;
+  }
+
+  get lastSuccessfulSet(): number[]{
+    return this._lastSuccessfulSet
   }
 
   save(){

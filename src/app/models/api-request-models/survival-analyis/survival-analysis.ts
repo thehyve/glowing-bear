@@ -1,6 +1,14 @@
-export class SurvivalAnalysis {
-    ID : string
-    patientGroupID : string[] //tod strings can be differente fro different nodes !
-    timePoints : string[]
+import { ApiI2b2Panel } from "../medco-node/api-i2b2-panel"
 
+export class ApiSurvivalAnalysis {
+    ID : string
+    patientGroupID:  number
+    panels : Array<ApiI2b2Panel>
+    timeLimit: number
+    granularity: string
+    startConceptCode: string
+    endConceptString: string
+    startColumn: string
+    endColumn: string
+    
 }

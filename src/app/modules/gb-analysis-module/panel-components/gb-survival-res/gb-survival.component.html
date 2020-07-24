@@ -1,5 +1,6 @@
 
 <div id="gb-survival-component">
+    
     <p-accordionTab *ngIf="activated"  header="Results" [selected]="true">
         
         
@@ -12,87 +13,54 @@
                         [nofTicks]="nofTicks">
                     </app-gb-chart-container>
                     
-                </div>
-                <button id="cogbutton" pButton type="icon" icon="fa fa-cog" (click)="advancedSettings = !advancedSettings"></button>
-                <p-card *ngIf="advancedSettings">
-                    Confidence interval:
-                    <br>
-                    <p-dropdown [(ngModel)]="selectedIc" [options]="ic"  placeholder="confidence interval"></p-dropdown>
-                    <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas"  placeholder="1 - &alpha;" [disabled]="(selectedIc) ? false:true"></p-dropdown>
-                    <p-button label="Grid" (onClick)="grid = !grid"></p-button>
-                    <br>
-                    Number of ticks (rendering can modify this number to keep nice intervals):
-                    <br>
-                    <p-spinner [(ngModel)]="nofTicks" min="1" max="10" ></p-spinner>
-                </p-card >
-                
+                </div>                
             </div>
-            
-
-
             <div class="column">
-                
-
-                
-                
-
-
                 <div>
                     <br>
-
-
                 </div>
             </div>
-            
-            
-
-            
-
             <div class="column">
-                <table>
+
+                <p-accordion id="settingTab">
+                    <p-accordionTab  header="settings">
+                        Confidence interval:
+                        <br>
+                        <p-dropdown [(ngModel)]="selectedIc" [options]="ic"  placeholder="confidence interval"></p-dropdown>
+                        <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas"  placeholder="1 - &alpha;" [disabled]="(selectedIc) ? false:true"></p-dropdown>
+                        <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+                        <br>
+                        Number of ticks (rendering can modify this number to keep nice intervals):
+                        <br>
+                        <p-spinner [(ngModel)]="nofTicks" min="1" max="10" ></p-spinner>
+                    </p-accordionTab>
+                </p-accordion>
+                <br>
+                <table id="summary">
                     <tr>
-                        <th>Mantel-Haenszel Logrank p-value</th>
-                        <th *ngFor="let curve of survivalCurve.curves;let i = index">
-                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
-                        </th>
+                        <th>Group</th>
+                        <th>Initial count</th>
+                        <th>Total # of events</th>
+                        <th>Total # of censoring events</th>
                     </tr>
                     <tr *ngFor="let curve of survivalCurve.curves;let i = index">
-                        <th>
+                        <td>
                             <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
                             {{curve.groupId}}
-                        </th>
-                        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
-                            {{groupLogrankTable[i][j]}}
                         </td>
+                        <td>{{groupTotalAtRisk[i]}}</td>
+                        <td>{{groupTotalEvent[i]}}</td>
+                        <td>{{groupTotalCensoring[i]}}</td>
+
                     </tr>
                 </table>
                 <br>
-
-                <table>
-                    <tr>
-                        <th>Cox hazard ratio</th>
-                        <th *ngFor="let curve of survivalCurve.curves;let i = index">
-                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
-                        </th>
-                    </tr>
-                    <tr *ngFor="let curve of survivalCurve.curves;let i = index">
-                        <th>
-                            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
-                        </th>
-                        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
-                            {{groupCoxRegTable[i][j]}}
-                        </td>
-                    </tr>
-                </table>
-
+                <p-dropdown [options]="groupTables" [(ngModel)]="selectedGroupTable"></p-dropdown>
                 <br>
-
+                <br>
                 <table>
                     <tr>
-                        <th>Wald Test p-value</th>
+                        <th>{{selectedGroupTable.legend}}</th>
                         <th *ngFor="let curve of survivalCurve.curves;let i = index">
                             <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
                             {{curve.groupId}}
@@ -104,14 +72,14 @@
                             {{curve.groupId}}
                         </th>
                         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
-                            {{groupCoxWaldTable[i][j]}}
+                            {{selectedGroupTable.table[i][j]}}
                         </td>
                     </tr>
                 </table>
-
-                
+                <br>                
             </div>
 
     </p-accordionTab>
+    
 </div>
 

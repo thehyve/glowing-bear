@@ -9,7 +9,7 @@ import  {Matrix, matrix, inv,det, transpose,multiply, add,zeros,clone,subtract} 
 import { SurvivalPoint } from '../survival-analysis/survival-curves'
 
 /**
- * Breslow
+ * Efron
  */
 
 export function buildXtAugmented(groups: SurvivalPoint[][]): number[][]{

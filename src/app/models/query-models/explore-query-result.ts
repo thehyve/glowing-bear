@@ -2,6 +2,7 @@ export class ExploreQueryResult {
   private _globalCount: number;
   private _perSiteCounts?: number[];
   patientLists?: number[][];
+  private _resultInstanceID?: number[];
 
   get globalCount(): number {
     return this._globalCount < 0 ? 0 : this._globalCount;
@@ -19,5 +20,13 @@ export class ExploreQueryResult {
 
   set perSiteCounts(value: number[]) {
     this._perSiteCounts = value;
+  }
+
+  set resultInstanceID(value: number[]){
+    this._resultInstanceID=value
+  }
+
+  get resultInstanceID():number[]{
+    return this._resultInstanceID
   }
 }

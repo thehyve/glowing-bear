@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, OnChanges } from '@angular/core';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from 'app/models/survival-analysis/survival-curves' 
@@ -15,6 +15,7 @@ import {  logranktest, logRank2Groups } from 'app/models/survival-analysis/logRa
 import { newtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-regression/newtonRaphson';
 import { dichotomicAugmented, testIt } from 'app/models/cox-regression/coxModel';
 import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
+import { svg } from 'd3';
 
 
 @Component({
@@ -23,7 +24,8 @@ import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from
   styleUrls: ['./gb-survival.component.css'],
   encapsulation:ViewEncapsulation.None
 })
-export class GbSurvivalComponent implements OnInit{
+export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnChanges{
+  _svgSettings: ElementRef
   colorRange=colorRange
   advancedSettings=false
 
@@ -68,6 +70,14 @@ export class GbSurvivalComponent implements OnInit{
   _groupLogrankTable:Array<Array<string>>
   _groupCoxRegTable:Array<Array<string>>
   _groupCoxWaldTable:Array<Array<string>>
+  _groupTotalAtRisk:Array<string>
+  _groupTotalEvent:Array<string>
+  _groupTotalCensoring:Array<string>
+
+  _groupTables: SelectItem[]
+  selectedGroupTable: {legend:string,table:Array<Array<string>>}
+
+
 
 
 
@@ -82,7 +92,7 @@ export class GbSurvivalComponent implements OnInit{
   get activated() : boolean{
     return this._activated
   }
-  ngOnInit(){
+  ngAfterViewInit(){
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._survivalCurve=clearResultsToArray(this._clearRes);
 
@@ -93,10 +103,24 @@ export class GbSurvivalComponent implements OnInit{
 
 
     }).bind(this))
+    console.log("after view init",this._svgSettings)
 
 
   }
+  ngAfterViewChecked(){
+    console.log("after view checked",this._svgSettings)
 
+  }
+  ngOnChanges(event){
+    console.log("after view checked",this._svgSettings)
+
+  }
+
+
+@ViewChild('svgSettings',{static:false}) set svgSettings(elm: ElementRef){
+  console.log("mouaa",elm)
+  this._svgSettings=elm
+}
 
 set cols(columns){
   this._cols=columns
@@ -169,17 +193,51 @@ get groupCoxWaldTable():Array<Array<string>>{
   return this._groupCoxWaldTable
 }
 
+get groupTables():SelectItem[]{
+  return this._groupTables
+}
+
+get groupTotalAtRisk(): Array<string>{
+  return this._groupTotalAtRisk
+}
+
+get groupTotalEvent(): Array<string>{
+  return this._groupTotalEvent
+}
+
+get groupTotalCensoring(): Array<string>{
+  return this._groupTotalCensoring
+}
+
+advancedSettingsClick(event : MouseEvent){
+  this.advancedSettings = !this.advancedSettings
+  var left=document.getElementById('svg-container').clientLeft
+  var top=document.getElementById('svg-container').clientTop
+  var svgSettings = document.getElementById('svgSettings')
+  if (svgSettings){
+    svgSettings.setAttribute("style","top:0px;left:0px")
+  }
+}
+
 setGroupComparisons(){
   this._groupLogrankTable= new Array<Array<string>>()
   this._groupCoxRegTable= new Array<Array<string>>()
   this._groupCoxWaldTable= new Array<Array<string>>()
+  this._groupTables= new Array<SelectItem>()
+  this._groupTotalAtRisk= new Array<string>()
+  this._groupTotalCensoring= new Array<string>()
+  this._groupTotalEvent= new Array<string>()
   var len=this.survivalCurve.curves.length
   var curveName=this.survivalCurve.curves.map(curve=>curve.groupId)
   this._groupComparisons=new Array<SelectItem>()
+  
   for (let i = 0; i < len; i++) {
     var logrankRow=new Array<string>()
     var coxRegRow= new  Array<string>()
     var waldCoxRow=new Array<string>()
+    var totalAtRisk :string
+    var totalEvent :string
+    var totalCensoring: string
     for (let j =/*i+1*/ 0; j < len; j++) {
       var logrank =logRank2Groups(this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points).toPrecision(3)
       logrankRow.push(logrank)
@@ -192,6 +250,9 @@ setGroupComparisons(){
 
       coxRegRow.push(coxReg)
       waldCoxRow.push(waldTest)
+      totalAtRisk=this.survivalCurve.curves[i].points[0].atRisk.toString()
+      totalEvent=this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString()
+      totalCensoring=this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString()
       this._groupComparisons.push({label:curveName[i]+curveName[j],value:{
         name1:curveName[i],
         name2:curveName[j],
@@ -199,12 +260,12 @@ setGroupComparisons(){
         color2:colorRange[j],
         logrank: logrank,
         coxReg: coxReg,
-        initialCount1: this.survivalCurve.curves[i].points[0].atRisk.toString(),
+        initialCount1: totalAtRisk,
         initialCount2: this.survivalCurve.curves[j].points[0].atRisk.toString(),
         //TODO this is redundant
-        cumulatEvent1: this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString(),
+        cumulatEvent1: totalEvent,
         cumulatEvent2: this.survivalCurve.curves[j].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString(),
-        cumulatCensoring1: this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString(),
+        cumulatCensoring1: totalCensoring,
         cumulatCensoring2: this.survivalCurve.curves[j].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString(),
       }
     })
@@ -213,8 +274,16 @@ setGroupComparisons(){
     this._groupLogrankTable.push(logrankRow)
     this._groupCoxRegTable.push(coxRegRow)
     this._groupCoxWaldTable.push(waldCoxRow)
+    this._groupTotalEvent.push(totalEvent)
+    this._groupTotalCensoring.push(totalCensoring)
+    this._groupTotalAtRisk.push(totalAtRisk)
     
   }
+  this._groupTables.push(
+    {label:"Haenszel-Mantel LogRank p-value",value:{legend:"KM p-value",table:this._groupLogrankTable}},
+    {label:"Cox regression proportional hazard ratio",value:{legend:"Cox PH, [95% CI]",table:this._groupCoxRegTable}},
+    {label:"Cox regression Wald test p-value",value:{legend:"Wald p-value",table:this._groupCoxWaldTable}})
+  this.selectedGroupTable={legend:"KM p-value",table:this._groupLogrankTable}
 
   if (len){
     this._selectedGroupComparison=this._groupComparisons[0].value

@@ -16,7 +16,7 @@
     width: 70%;
 }
 
-#gb-survival-component th,td{
+#gb-survival-component th,#gb-survival-component td{
     background-color: #e2eeeb;
     width: 5em;
     height: 5em;
@@ -25,6 +25,15 @@
     font-size: "15px";
     border-bottom: white 1px solid;
     border-right:  white 1px solid;
+}
+
+#gb-survival-component #summary th, #gb-survival-component #summary td{
+    background-color:white;
+    border-bottom: #949494 1px solid;
+    border-right-style:none;
+    padding:0em;
+    height:1em;
+    text-align:left;
 }
   
 
@@ -36,6 +45,10 @@
 
 #gb-survival-component .ui-accordion-content{
     height: 1000px;
+}
+#settingTab .ui-accordion-content{
+    height: 200px;
+    font-size: 12px;
 }
 
 #cogbutton{

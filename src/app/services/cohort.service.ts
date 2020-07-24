@@ -103,16 +103,6 @@ export class CohortService {
 
   
 
-  //from cached to backend (patient set id are always saved in backend)
-
-  saveTerms(): void{
-
-    //todo observable from a apiservice !
-
-  }
-
-  
-
   executeSubgroupQuery(idx :number) : Observable<CohortError>{
 
     //TODO : redo the query with the root exclusions constraint
@@ -147,15 +137,6 @@ export class CohortService {
     }))
   }
   
-
-
-  //from backend to cached
-
-
-  restoreCohorts(withQueryTerm: boolean){
-    //call http get /cohort functions
-  }
-
 }
 
 

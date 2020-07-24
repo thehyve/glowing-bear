@@ -20,7 +20,7 @@ import {ApiExploreQueryResult} from '../models/api-response-models/medco-node/ap
 import {CryptoService} from './crypto.service';
 import {GenomicAnnotationsService} from './api/genomic-annotations.service';
 import {ExploreQueryResult} from '../models/query-models/explore-query-result';
-import {Observable, ReplaySubject, throwError} from 'rxjs';
+import {Observable, ReplaySubject, throwError, Subject} from 'rxjs';
 import {ErrorHelper} from '../utilities/error-helper';
 import {MessageHelper} from '../utilities/message-helper';
 
@@ -44,6 +44,8 @@ export class QueryService {
 
   // flag indicating if the query has been changed
   private _isDirty;
+
+  private _lastSuccessfulSet: Subject<number []>
 
   constructor(private appConfig: AppConfig,
               private treeNodeService: TreeNodeService,
@@ -93,6 +95,7 @@ export class QueryService {
     }
 
     if (this.query.type === ExploreQueryType.PATIENT_LIST) {
+      parsedResults.resultInstanceID=encResults.map(result => result.resultInstanceID)
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
@@ -127,7 +130,11 @@ export class QueryService {
       switchMap( () => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
       (results: ApiExploreQueryResult[]) => {
-        this.queryResults.next(this.parseExploreQueryResults(results));
+        var parsedResults =this.parseExploreQueryResults(results);
+        if (parsedResults.resultInstanceID){
+          this._lastSuccessfulSet.next(parsedResults.resultInstanceID)
+        }
+        this.queryResults.next(parsedResults);
         this.isUpdating = false;
         this.isDirty = false;
       },
@@ -215,5 +222,9 @@ export class QueryService {
   get displayExploreResultsComponent(): Observable<boolean> {
     return this.queryResults.pipe(map((queryResults) =>
       queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
+  }
+
+  get lastSuccesfulSet(): Observable<number[]>{
+    return this._lastSuccessfulSet.asObservable()
   }
 }

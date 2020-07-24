@@ -5,12 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, OnChanges, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, ViewEncapsulation, ViewChild, ElementRef } from '@angular/core';
 import {select,scaleLinear, scaleOrdinal, scaleBand, line, nest, curveStepBefore, axisBottom,axisLeft, curveStepAfter,area,event,Selection,ScaleOrdinal,ScaleLinear,Line,Area,range, BaseType} from 'd3';
 import {SurvivalCurve, SurvivalPoint} from 'app/models/survival-analysis/survival-curves'
 import { colorRange } from '../gb-survival-res/gb-survival.component';
 import { summaryTable } from 'app/models/survival-analysis/summaryTable';
-import { i } from 'mathjs';
+
 
 @Component({
   selector: 'app-gb-chart-container',
@@ -246,6 +246,8 @@ _areaGen :Area<{
     .attr("font-size","20px")
     .attr("viewBox","-10 -20 650 650")
     .append("g").attr("transform",`translate (${this._margins},${this._margins})`)
+
+    this._svg.append("text").attr("text","+")
 
     this._div =select("#gb-chart-container-component").append("div")
     .style("position","absolute")

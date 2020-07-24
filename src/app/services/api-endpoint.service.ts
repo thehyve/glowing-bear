@@ -42,8 +42,8 @@ export class ApiEndpointService {
    * @param additionalParam
    * @returns {Observable<any | any>}
    */
-  getCall(urlPart, additionalParam?): Observable<any> {
-    const url = `${this.endpointUrl}/${urlPart}`;
+  getCall(urlPart, additionalParam?,apiUrl?): Observable<any> {
+    const url = apiUrl? `${apiUrl}/${urlPart}`:`${this.endpointUrl}/${urlPart}`;
     return this.http.get(url, additionalParam).pipe(
       catchError(ErrorHelper.handleHTTPError)
     );
