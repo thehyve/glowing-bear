@@ -16,6 +16,7 @@ import { newtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-re
 import { dichotomicAugmented, testIt } from 'app/models/cox-regression/coxModel';
 import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 import { svg } from 'd3';
+import { TestEfron } from 'app/models/cox-regression/efron_test';
 
 
 @Component({
@@ -95,6 +96,7 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
   ngAfterViewInit(){
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._survivalCurve=clearResultsToArray(this._clearRes);
+      TestEfron()
 
       this.setGroupComparisons()
       var arrays=this.survivalCurve.curves.map(curve=>curve.points)

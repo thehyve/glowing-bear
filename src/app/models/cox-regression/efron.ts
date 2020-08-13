@@ -19,7 +19,7 @@ function validate(timePoints :timePoint[]): number{
 }
 
 function scalarProduct(x:number[],y:number[]):number{
-    var res = x[0]+y[0]
+    var res = x[0]*y[0]
     for (let i =1; i < x.length; i++) {
         res +=x[i]*y[i];
         
@@ -48,7 +48,7 @@ function reset(x: number[]){
     }
 }
 
-function addTo(x:number[],y:number []){
+export function addTo(x:number[],y:number []){
     for (let i =0; i < x.length; i++) {
         x[i]+=y[i]
         
@@ -78,6 +78,20 @@ export function inMatrix(target : number[][], flatVector : number []){
     }
 
 }
+export function multiplyMatrixVector(matrix: number[][],vector : number[]): number[]{
+    var res=new Array<number>(matrix.length)
+
+    for (let i = 0; i < matrix.length; i++) {
+        res[i]=0
+        for (let j = 0; j < vector.length; j++) {
+            res[i] += matrix[i][j] * vector[j]
+            
+        }
+        
+    }
+
+    return res
+}
 
 //after validation
 export function logLikelihood(timePoints:timePoint[],beta: number[]):number{
@@ -89,6 +103,7 @@ export function logLikelihood(timePoints:timePoint[],beta: number[]):number{
     var d=0
     var currentTime =0
     var scal =0
+    console.log("BBEETTAA",beta)
     for (let i = 0; i < timePoints.length; i++) {
         k=0
         a=0
@@ -102,9 +117,14 @@ export function logLikelihood(timePoints:timePoint[],beta: number[]):number{
             }
             
             if (timePoints[j].event){
+                console.log("time points x",timePoints[j].x)
+                console.log("beta",beta)
                 scal=scalarProduct(timePoints[j].x,beta)
+                console.log("scalar product", scal)
                 a+=scal
+                console.log("a",a)
                 c+=exp(scal)
+                console.log("c",c)
             }
             k+=1
         }
@@ -118,6 +138,7 @@ export function logLikelihood(timePoints:timePoint[],beta: number[]):number{
         for (let n = 0; n < k; n++) {
             d+=log(b- n/k * c)
         }
+        console.log("d",d)
         res+=a-d
     }
 
@@ -156,14 +177,12 @@ export function derivative(timePoints:timePoint[],beta: number[]):number[]{
             if (timePoints[j].event){
                 expo=exp(scalarProduct(timePoints[j].x,beta))
                 c+=expo
-                console.log("x-value",timePoints[j].x)
                 addTo(h,timePoints[j].x)
                 addTo(f,multiplyByScalar(expo,timePoints[j].x))
             }
             k+=1
         }
 
-        console.log("first loop",expo,c,h,f)
 
 
 
@@ -253,10 +272,26 @@ export function secondDerivative(timePoints:timePoint[],beta: number[]):number[]
 
             addTo(res,multiplyByScalar(1.0/r,addVec(p,multiplyByScalar(-n/k,q))))
             addTo(res,multiplyByScalar(-1.0/(r*r),uut))
-
         }
     }
 return res
+}
 
+export function prepareEfron(survivalPointsClass0 : SurvivalPoint[], survivalPointsClass1 : SurvivalPoint [] ): timePoint[]{
 
+    var tmpArray = survivalPointsClass0.map(spoint => {return {time : spoint.timePoint,class:0,events:spoint.nofEvents,censorings:spoint.nofCensorings}}).concat(
+    survivalPointsClass1.map(spoint => {return {time : spoint.timePoint,class:1,events:spoint.nofEvents,censorings:spoint.nofCensorings}}) )
+    tmpArray = tmpArray.sort(spoint =>spoint.time)
+
+    return tmpArray.map(spoint=>{
+        var res = new Array<timePoint>()
+        for (let i = 0; i < spoint.events; i++) {
+            res.push({time:spoint.time,x : [spoint.class],event:true})   
+        }
+        for (let i = 0; i < spoint.censorings; i++) {
+            res.push({time:spoint.time,x : [spoint.class],event:false})   
+        }
+
+        return res
+    }).reduce((a,b)=> a.concat(b))
 }

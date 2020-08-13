@@ -30,7 +30,7 @@ export class GbExploreComponent {
   constructor(public queryService: QueryService,
               private cohortService: CohortServiceMock,
               public constraintService: ConstraintService) {
-              this.queryService.lastSuccesfulSet.subscribe(resIDs=>{this._lastSuccessfulSet=resIDs})
+              this.queryService.lastSuccessfulSet.subscribe(resIDs=>{this._lastSuccessfulSet=resIDs})
   }
 
   get globalCount(): Observable<string> {

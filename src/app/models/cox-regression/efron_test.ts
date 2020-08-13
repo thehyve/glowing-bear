@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { logLikelihood,derivative,secondDerivative,inMatrix} from "./efron"
-import {matrix,inv} from 'mathjs'
+import { logLikelihood,derivative,secondDerivative,inMatrix,addTo,multiplyMatrixVector} from "./efron"
+import {matrix,inv,multiply,squeeze} from 'mathjs'
 
 
 
@@ -15,21 +15,37 @@ import {matrix,inv} from 'mathjs'
 const EfronTestContext ={
     initialBeta:[0.0],
     initialTimePoints:[
-        {time:1,x:[1],event:true},
-        {time:1,x:[1],event:false},
         {time:2,x:[1],event:true},
-        {time:2,x:[0],event:false},
-        {time:3,x:[0],event:true},
+        {time:2,x:[1],event:false},
+        {time:3,x:[1],event:true},
         {time:3,x:[0],event:false},
+        {time:1,x:[0],event:true},
+        {time:1,x:[0],event:false},
     ]
 }
 
 export function TestEfron():void{
-var res= new Array<Array<number>>(1)
-res[0]= [0]
+var hessian= new Array<Array<number>>(1)
+hessian[0]= [0]
  var initLikelihood=logLikelihood(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
  var initGradient=derivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
  var initHessian=secondDerivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
- inMatrix(res,initHessian)
- console.log(initLikelihood,initGradient,inv(matrix(res)))
+ inMatrix(hessian,initHessian)
+ console.log("init",initLikelihood,EfronTestContext.initialBeta,initGradient,hessian)
+
+ var likelihood=initLikelihood
+ var gradient= initGradient
+ var beta=EfronTestContext.initialBeta
+ for (let i = 0; i < 10; i++) {
+    var delta=multiplyMatrixVector(inv(hessian),gradient)
+    addTo(beta,delta)
+
+    likelihood=logLikelihood(EfronTestContext.initialTimePoints,beta)
+    gradient=derivative(EfronTestContext.initialTimePoints,beta)
+    inMatrix(hessian,secondDerivative(EfronTestContext.initialTimePoints,beta))
+
+    console.log(`step ${i}`,likelihood,beta,gradient,hessian)
+
+
+ }
 }

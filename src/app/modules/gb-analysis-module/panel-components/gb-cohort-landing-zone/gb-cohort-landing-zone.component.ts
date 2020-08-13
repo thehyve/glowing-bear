@@ -9,7 +9,7 @@
 import { Component, OnInit, Input, EventEmitter, ViewEncapsulation, Output } from '@angular/core';
 import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
 import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
-import { SurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
+import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 
 
 @Component({

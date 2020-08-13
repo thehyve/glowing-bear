@@ -45,7 +45,7 @@ export class QueryService {
   // flag indicating if the query has been changed
   private _isDirty;
 
-  private _lastSuccessfulSet: Subject<number []>
+  private _lastSuccessfulSet = new Subject<number []>()
 
   constructor(private appConfig: AppConfig,
               private treeNodeService: TreeNodeService,
@@ -224,7 +224,7 @@ export class QueryService {
       queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
   }
 
-  get lastSuccesfulSet(): Observable<number[]>{
+  get lastSuccessfulSet(): Observable<number[]>{
     return this._lastSuccessfulSet.asObservable()
   }
 }

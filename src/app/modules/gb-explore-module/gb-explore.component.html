@@ -11,7 +11,7 @@
       <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name"/>
     <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn"
             type="button"
-            [disabled]="!lastSuccesfulSet"
+            [disabled]="!lastSuccessfulSet"
             (click)="save()">
 
       <span>Save</span>
