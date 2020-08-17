@@ -49,6 +49,10 @@
   font-weight: bolder;
 }
 
+.gb-explore-waiting-cohort{
+  border : 1px dashed;
+}
+
 .fa-circle-o-notch {
   opacity: .5;
 }

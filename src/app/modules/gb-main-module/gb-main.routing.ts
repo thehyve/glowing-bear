@@ -25,7 +25,7 @@ export const routes: Routes = [
     loadChildren: '../gb-explore-results-module/gb-explore-results.module#GbExploreResultsModule'
   },
   {
-    path: 'survival',
+    path: 'analysis',
     loadChildren:'../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
   }
 ];

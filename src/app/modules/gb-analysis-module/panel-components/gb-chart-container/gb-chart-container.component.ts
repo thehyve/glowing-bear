@@ -373,11 +373,14 @@ _areaGen :Area<{
       .attr("transform",`translate(${2*this._margins},${-1*this._margins})`)
       .attr("r","3px")
       .attr("opacity",0.0)
-      .attr("fill","black").on("mouseover",(d)=>{this._div.transition().duration(100).style("opacity",1.0)
+      .attr("fill","black").on("mouseover",(d)=>{
+                    this._div.transition().style("display","block")
+                    this._div.transition().duration(100).style("opacity",1.0)
       .style("top",(event.layerY+20) +"px")
       .style("left",event.layerX +"px");
       this._div.html(generateTooltipHtml(d))})
-      .on("mouseout",(()=>{this._div.transition().duration(100).style("opacity",0.0)}).bind(this))
+      .on("mouseout",(()=>{this._div.transition().duration(100).style("opacity",0.0)
+                           this._div.transition().delay(100).style("display","none")}).bind(this))
       
       
 

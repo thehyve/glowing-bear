@@ -31,7 +31,7 @@ export class NavbarService {
       {label: 'Explore Results', routerLink: '/explore/results', visible: false},
 
       // 2: survival analysis tab
-      {label : 'Analysis',routerLink: '/survival'}
+      {label : 'Analysis',routerLink: '/analysis'}
     ];
 
     // hook to update explore results tab visibility
@@ -43,7 +43,7 @@ export class NavbarService {
   updateNavbar(routerLink: string) {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
     this.isExploreResults = (routerLink === '/explore/results');
-    this.isAnalysis= (routerLink === '/survival')
+    this.isAnalysis= (routerLink === '/analysis')
     console.log(routerLink)
 
     if (this.isExplore) {

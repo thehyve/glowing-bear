@@ -13,7 +13,7 @@ import { MedcoNetworkService } from './api/medco-network.service';
 import { Observable,of } from 'rxjs';
 import {map} from 'rxjs/operators';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
-import { SurvivalAnalysisService } from './api/survival-analysis.service';
+import { SurvivalAnalysisService } from './api/medco-node/survival-analysis.service';
 import {SurvivalAnalysisClear} from 'app/models/survival-analysis/survival-analysis-clear'
 
 

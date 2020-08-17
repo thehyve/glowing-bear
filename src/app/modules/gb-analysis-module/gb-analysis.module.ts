@@ -4,7 +4,7 @@ import { AccordionModule} from 'primeng/accordion'
 import { routing } from './gb-analysis.routing'
 import { RouterModule } from '@angular/router';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
-import { SurvivalAnalysisService } from 'app/services/api/survival-analysis.service';
+import { SurvivalAnalysisService } from 'app/services/api/medco-node/survival-analysis.service';
 import { GbSurvivalComponent } from './panel-components/gb-survival-res/gb-survival.component';
 import { GbCohortLandingZoneComponent } from './panel-components/gb-cohort-landing-zone/gb-cohort-landing-zone.component';
 import { GbTopComponent } from './panel-components/gb-top/gb-top.component';
