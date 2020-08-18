@@ -71,6 +71,7 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
   _groupLogrankTable:Array<Array<string>>
   _groupCoxRegTable:Array<Array<string>>
   _groupCoxWaldTable:Array<Array<string>>
+  _groupCoxLogtestTable:Array<Array<string>>
   _groupTotalAtRisk:Array<string>
   _groupTotalEvent:Array<string>
   _groupTotalCensoring:Array<string>
@@ -229,6 +230,7 @@ setGroupComparisons(){
   this._groupTotalAtRisk= new Array<string>()
   this._groupTotalCensoring= new Array<string>()
   this._groupTotalEvent= new Array<string>()
+  this._groupCoxLogtestTable = new Array<Array<string>>()
   var len=this.survivalCurve.curves.length
   var curveName=this.survivalCurve.curves.map(curve=>curve.groupId)
   this._groupComparisons=new Array<SelectItem>()
@@ -237,6 +239,7 @@ setGroupComparisons(){
     var logrankRow=new Array<string>()
     var coxRegRow= new  Array<string>()
     var waldCoxRow=new Array<string>()
+    var coxLogtestRow = new Array<string>()
     var totalAtRisk :string
     var totalEvent :string
     var totalCensoring: string
@@ -249,9 +252,12 @@ setGroupComparisons(){
       var coxReg=coxToString(beta,variance)
       var  waldStat=Math.pow(beta,2)/(variance+ 1e-14)
       var waldTest=(1.0-ChiSquaredCdf(waldStat,1)).toPrecision(3)
-
+      var likelihoodRatio= 2.0*(cox.finalLogLikelihood -cox.initialLogLikelihood)
+      var coxLogtest=(1.0 -ChiSquaredCdf(likelihoodRatio,1)).toPrecision(3)
+      console.log("loglikelihoodRatio",likelihoodRatio,"logtest pvalue",coxLogtest)
       coxRegRow.push(coxReg)
       waldCoxRow.push(waldTest)
+      coxLogtestRow.push(coxLogtest)
       totalAtRisk=this.survivalCurve.curves[i].points[0].atRisk.toString()
       totalEvent=this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a,b)=>a+b).toString()
       totalCensoring=this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a,b)=>a+b).toString()
@@ -279,12 +285,14 @@ setGroupComparisons(){
     this._groupTotalEvent.push(totalEvent)
     this._groupTotalCensoring.push(totalCensoring)
     this._groupTotalAtRisk.push(totalAtRisk)
+    this._groupCoxLogtestTable.push(coxLogtestRow)
     
   }
   this._groupTables.push(
     {label:"Haenszel-Mantel LogRank p-value",value:{legend:"KM p-value",table:this._groupLogrankTable}},
     {label:"Cox regression proportional hazard ratio",value:{legend:"Cox PH, [95% CI]",table:this._groupCoxRegTable}},
-    {label:"Cox regression Wald test p-value",value:{legend:"Wald p-value",table:this._groupCoxWaldTable}})
+    {label:"Cox regression Wald test p-value",value:{legend:"Wald p-value",table:this._groupCoxWaldTable}},
+    {label:"Cox likelihood ratio p-value",value : {legend:"Logtest p-vale",table:this._groupCoxLogtestTable}})
   this.selectedGroupTable={legend:"KM p-value",table:this._groupLogrankTable}
 
   if (len){

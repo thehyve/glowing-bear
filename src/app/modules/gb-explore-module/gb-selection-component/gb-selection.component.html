@@ -21,7 +21,7 @@
   <!-- Intersection calculation -->
   <div class="subject-count-box">
     <i class="fa fa-spin fa-refresh fa-fw gb-spinner" [class.loading]="loadingState == 'loading'"></i>
-    <span [@notifyState]="loadingState">238 subjects match your query.</span>
+    <span [@notifyState]="loadingState">{{globalCount | async}} subjects match your query.</span>
   </div>
 
 </div>
