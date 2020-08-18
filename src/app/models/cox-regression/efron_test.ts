@@ -7,7 +7,7 @@
  */
 
 import { logLikelihood,derivative,secondDerivative,inMatrix,addTo,multiplyMatrixVector} from "./efron"
-import {matrix,inv,multiply,squeeze} from 'mathjs'
+import {inv} from 'mathjs'
 
 
 
@@ -15,12 +15,10 @@ import {matrix,inv,multiply,squeeze} from 'mathjs'
 const EfronTestContext ={
     initialBeta:[0.0],
     initialTimePoints:[
-        {time:2,x:[1],event:true},
-        {time:2,x:[1],event:false},
-        {time:3,x:[1],event:true},
-        {time:3,x:[0],event:false},
-        {time:1,x:[0],event:true},
-        {time:1,x:[0],event:false},
+        {time:1,events:[{x:[1],event:true},{x:[0],event:true},{x:[1],event:false},{x:[0],event:false}]},
+        {time:2,events:[{x:[1],event:true},{x:[0],event:true}]},
+ 
+
     ]
 }
 
@@ -31,7 +29,6 @@ hessian[0]= [0]
  var initGradient=derivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
  var initHessian=secondDerivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
  inMatrix(hessian,initHessian)
- console.log("init",initLikelihood,EfronTestContext.initialBeta,initGradient,hessian)
 
  var likelihood=initLikelihood
  var gradient= initGradient
@@ -44,7 +41,6 @@ hessian[0]= [0]
     gradient=derivative(EfronTestContext.initialTimePoints,beta)
     inMatrix(hessian,secondDerivative(EfronTestContext.initialTimePoints,beta))
 
-    console.log(`step ${i}`,likelihood,beta,gradient,hessian)
 
 
  }

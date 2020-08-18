@@ -12,11 +12,12 @@ import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from
 
 import {SelectItem} from 'primeng/api'
 import {  logranktest, logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
-import { newtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-regression/newtonRaphson';
+import { breslowNewtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-regression/breslowNewtonRaphson';
 import { dichotomicAugmented, testIt } from 'app/models/cox-regression/coxModel';
 import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 import { svg } from 'd3';
 import { TestEfron } from 'app/models/cox-regression/efron_test';
+import { efronNewtonRaphson } from 'app/models/cox-regression/efronNewtonRaphson';
 
 
 @Component({
@@ -121,7 +122,6 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
 
 
 @ViewChild('svgSettings',{static:false}) set svgSettings(elm: ElementRef){
-  console.log("mouaa",elm)
   this._svgSettings=elm
 }
 
@@ -246,13 +246,14 @@ setGroupComparisons(){
     for (let j =/*i+1*/ 0; j < len; j++) {
       var logrank =logRank2Groups(this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points).toPrecision(3)
       logrankRow.push(logrank)
-      var cox=newtonRaphson(100,1e-14,[this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
-      var beta=cox.finalBeta[0]
-      var variance= -cox.finalCovarianceMatrixEstimate[0][0]
+      var cox=breslowNewtonRaphson(1000,1e-14,[this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
+      var cox2=efronNewtonRaphson(1000,1e-14, [this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
+      var beta=cox2.finalBeta[0]
+      var variance= cox2.finalCovarianceMatrixEstimate[0][0]
       var coxReg=coxToString(beta,variance)
       var  waldStat=Math.pow(beta,2)/(variance+ 1e-14)
       var waldTest=(1.0-ChiSquaredCdf(waldStat,1)).toPrecision(3)
-      var likelihoodRatio= 2.0*(cox.finalLogLikelihood -cox.initialLogLikelihood)
+      var likelihoodRatio= 2.0*(cox2.finalLogLikelihood -cox2.initialLogLikelihood)
       var coxLogtest=(1.0 -ChiSquaredCdf(likelihoodRatio,1)).toPrecision(3)
       console.log("loglikelihoodRatio",likelihoodRatio,"logtest pvalue",coxLogtest)
       coxRegRow.push(coxReg)

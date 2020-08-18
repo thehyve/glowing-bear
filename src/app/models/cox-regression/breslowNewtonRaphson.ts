@@ -6,11 +6,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint, survivalPoints } from "../survival-analysis/survival-curves";
-import { buildXtAugmented, buildThetas, gradientLogLikelihood,hessianLogLikelihood,logLikelihood, dichotomicAugmented } from "./coxModel";
-import  {Matrix, matrix, inv,det, transpose,multiply, add,zeros,clone,subtract,squeeze} from 'mathjs'
+import { SurvivalPoint, } from "../survival-analysis/survival-curves";
+import { buildThetas, gradientLogLikelihood,hessianLogLikelihood,logLikelihood, dichotomicAugmented } from "./coxModel";
+import  {Matrix, matrix, inv, transpose,multiply, subtract,squeeze} from 'mathjs'
 
-export function newtonRaphson(maxIter: number, convergenceCriterion:number, survivalCurves: SurvivalPoint[][], initialBeta : Array<number>):{
+export function breslowNewtonRaphson(maxIter: number, convergenceCriterion:number, survivalCurves: SurvivalPoint[][], initialBeta : Array<number>):{
     initialLogLikelihood:number,
     finalLogLikelihood:number,
     finalBeta:number [],

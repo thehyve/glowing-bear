@@ -5,17 +5,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import  {Matrix, matrix, inv,det, transpose,multiply, add,zeros,clone,subtract, reshape, exp, log} from 'mathjs'
+import  { exp, log} from 'mathjs'
 import { SurvivalPoint } from '../survival-analysis/survival-curves'
 
+
 /**
- * Efron
+ * Efron can be optimized !
  */
-export type timePoint = {time: number, x: number[],event: boolean}
+export type eventType = {x: number[],event: boolean}
+export type timePoint = {time: number, events :eventType[]}
 
 // validate checks whether the the timepoints have the same dimension and returns this dimension, -1 otherwise
 function validate(timePoints :timePoint[]): number{
-    return timePoints.map( tp => tp.x.length).reduce((a,b)=>(a ==b)?a:-1)
+    return timePoints.map( tp => tp[0].x.length).reduce((a,b)=>(a ==b)?a:-1)
 }
 
 function scalarProduct(x:number[],y:number[]):number{
@@ -103,42 +105,36 @@ export function logLikelihood(timePoints:timePoint[],beta: number[]):number{
     var d=0
     var currentTime =0
     var scal =0
-    console.log("BBEETTAA",beta)
+
     for (let i = 0; i < timePoints.length; i++) {
         k=0
         a=0
         b=0
         c=0
         d=0
-        currentTime=timePoints[i].time
-        for (let j = i;   j <timePoints.length; j++) {
-            if(timePoints[j].time!=currentTime){
-                break
-            }
-            
-            if (timePoints[j].event){
-                console.log("time points x",timePoints[j].x)
-                console.log("beta",beta)
-                scal=scalarProduct(timePoints[j].x,beta)
-                console.log("scalar product", scal)
+        timePoints[i].events.forEach(evnt =>{
+            scal=scalarProduct(evnt.x,beta)
+            if (evnt.event){
+                k+=1
+                
                 a+=scal
-                console.log("a",a)
                 c+=exp(scal)
-                console.log("c",c)
             }
-            k+=1
-        }
-
-
-        for (let j = i; j < timePoints.length; j++) {
-            b+=exp(scalarProduct(timePoints[j].x,beta))
             
+        })
+        for (let j = i; j < timePoints.length; j++){
+            timePoints[j].events.forEach(evnt =>{
+                scal=scalarProduct(evnt.x,beta)
+                b+=exp(scal)
+                
+            })
         }
+
+
 
         for (let n = 0; n < k; n++) {
             d+=log(b- n/k * c)
         }
-        console.log("d",d)
         res+=a-d
     }
 
@@ -167,29 +163,24 @@ export function derivative(timePoints:timePoint[],beta: number[]):number[]{
         c=0.0
         k=0
 
-
-        currentTime=timePoints[i].time
-        for (let j = i;j <timePoints.length; j++) {
-            if(timePoints[j].time!=currentTime){
-                break
-            }
-            
-            if (timePoints[j].event){
-                expo=exp(scalarProduct(timePoints[j].x,beta))
+        timePoints[i].events.forEach(evnt=>{
+            if(evnt.event){
+                expo=exp(scalarProduct(evnt.x,beta))
                 c+=expo
-                addTo(h,timePoints[j].x)
-                addTo(f,multiplyByScalar(expo,timePoints[j].x))
+                addTo(h,evnt.x)
+                addTo(f,multiplyByScalar(expo,evnt.x))
+                k +=1 
             }
-            k+=1
-        }
+        })
+        
+        for (let j = i;j <timePoints.length; j++) {
+            timePoints[j].events.forEach(evnt=>{
 
+                    expo=exp(scalarProduct(evnt.x,beta))
+                    b+=expo
+                    addTo(e,multiplyByScalar(expo,evnt.x))
 
-
-
-        for(let j = i; j <timePoints.length; j++){
-            expo=exp(scalarProduct(timePoints[j].x,beta))
-            addTo(e,multiplyByScalar(expo,timePoints[j].x))
-            b+=expo
+            })
         }
 
         for (let n = 0; n < k; n++) {
@@ -236,28 +227,27 @@ export function secondDerivative(timePoints:timePoint[],beta: number[]):number[]
         b=0.0
         c=0.0
         k=0
-        currentTime=timePoints[i].time
-        for (let j = i; j <timePoints.length; j++) {
-            if(timePoints[j].time!=currentTime){
-                break
-            }
-            
-            if (timePoints[j].event){
-                expo=exp(scalarProduct(timePoints[j].x,beta))
-                externalProduct(xxt,timePoints[j].x,multiplyByScalar(expo,timePoints[j].x))
+        timePoints[i].events.forEach(evnt=>{
+            if(evnt.event){
+                expo=exp(scalarProduct(evnt.x,beta))
+                externalProduct(xxt,evnt.x,multiplyByScalar(expo,evnt.x))
                 addTo(q,xxt)
                 c+=expo
-                addTo(f,multiplyByScalar(expo,timePoints[j].x))
+                addTo(f,multiplyByScalar(expo,evnt.x))
+                k +=1 
             }
-            k+=1
-        }
+        })
 
         for(let j = i; j <timePoints.length; j++){
-            expo=exp(scalarProduct(timePoints[j].x,beta))
-            externalProduct(xxt,timePoints[j].x,multiplyByScalar(expo,timePoints[j].x))
-            addTo(p,xxt)
-            addTo(e,multiplyByScalar(expo,timePoints[j].x))
-            b+=expo
+            timePoints[j].events.forEach(evnt=>{
+
+                    expo=exp(scalarProduct(evnt.x,beta))
+                    externalProduct(xxt,evnt.x,multiplyByScalar(expo,evnt.x))
+                    addTo(p,xxt)
+                    b+=expo
+                    addTo(e,multiplyByScalar(expo,evnt.x))
+
+            })
         }
         for (let n = 0; n < k; n++){
             r=b- n/k *c
@@ -281,17 +271,31 @@ export function prepareEfron(survivalPointsClass0 : SurvivalPoint[], survivalPoi
 
     var tmpArray = survivalPointsClass0.map(spoint => {return {time : spoint.timePoint,class:0,events:spoint.nofEvents,censorings:spoint.nofCensorings}}).concat(
     survivalPointsClass1.map(spoint => {return {time : spoint.timePoint,class:1,events:spoint.nofEvents,censorings:spoint.nofCensorings}}) )
-    tmpArray = tmpArray.sort(spoint =>spoint.time)
+    
 
-    return tmpArray.map(spoint=>{
-        var res = new Array<timePoint>()
-        for (let i = 0; i < spoint.events; i++) {
-            res.push({time:spoint.time,x : [spoint.class],event:true})   
-        }
-        for (let i = 0; i < spoint.censorings; i++) {
-            res.push({time:spoint.time,x : [spoint.class],event:false})   
-        }
+    var tmpMap = new Map<number,eventType[]>()
+    tmpArray.forEach(spoint =>{
+            var events = new Array<eventType>()
+        
+            for (let i = 0; i < spoint.events; i++) {
+                events.push({x:[spoint.class], event: true})
 
-        return res
-    }).reduce((a,b)=> a.concat(b))
+            }
+            for (let i = 0; i < spoint.censorings; i++) {
+                events.push({x:[spoint.class], event: false})
+            
+            }
+            if(tmpMap.has(spoint.time)){
+                tmpMap.set(spoint.time,tmpMap.get(spoint.time).concat(events))
+                
+            }else{
+                tmpMap.set(spoint.time,events)
+            }
+        })
+        var groupedTmpArray = new Array<timePoint>()
+        tmpMap.forEach((value,key)=>{
+            groupedTmpArray.push({time: key, events:value})
+        })
+
+        return groupedTmpArray.sort((a,b)=>a.time - b.time)
 }
