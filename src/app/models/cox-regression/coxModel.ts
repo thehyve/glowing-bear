@@ -5,205 +5,64 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import  {Matrix, matrix, inv,det, transpose,multiply, add,zeros,clone,subtract} from 'mathjs'
-import { SurvivalPoint } from '../survival-analysis/survival-curves'
 
-/**
- * Breslow
- */
-
-export function buildXtAugmented(groups: SurvivalPoint[][]): number[][]{
+import { CoxRegression, timePoint, eventType } from "./coxRegression"
+import { breslowCoxRegression } from "./breslow"
+import { efronCoxRegression } from "./efron"
+import { SurvivalPoint } from "../survival-analysis/survival-curves"
+export function NewCoxRegression(pointGroups:SurvivalPoint[][],maxIter: number, tolerance : number,method:string) : CoxRegression{
     
-    var Xt = Array<Array<number>>()
-    const nofGroups= groups.length
-    groups.forEach(
-        (group,i)=>{
-            group.forEach((point=>{
-                for(var e =0; e<point.nofEvents;e++){
-                    
-                    var event= new Array<number>(nofGroups+2)
-                    
-                    for(var j=0;j<event.length;j++){
-                        event[j]=0.0
-                    }
-                    
-                    event[i]=1.0
-                    event[nofGroups]=point.timePoint
-                    event[nofGroups +1]=1
-                    Xt.push(event)
-                }
-                for(var e =0; e<point.nofCensorings;e++){
-                    
-                    var event= new Array<number>(nofGroups+2)
-                    
-                    for(var j=0;j<event.length;j++){
-                        event[j]=0.0
-                    }
-                    
-                    event[i]=1.0
-                    event[nofGroups]=point.timePoint
-                    event[nofGroups +1]=0
-                    Xt.push(event)
-                }
+    if (pointGroups.length !=2){
+        throw new Error(`For the moment, only two-group comparisons are implemented. Got ${pointGroups.length}`);
+    }
+    const data=prepare(pointGroups[0],pointGroups[1])
+    if (method.toUpperCase()=="BRESLOW"){
+        return new breslowCoxRegression(data,maxIter,tolerance)
+    }else if (method.toUpperCase()=="EFRON"){
+        return new efronCoxRegression(data,maxIter,tolerance)
+    }else{
+        throw new Error(`Unknown method ${method}. Only Breslow's and Efron's methods are implemented. Expected: one of "breslow" "efron"`);
+    }
+} 
+
+function prepare(survivalPointsClass0 : SurvivalPoint[], survivalPointsClass1 : SurvivalPoint [] ): timePoint[]{
+
+    var tmpArray = survivalPointsClass0.map(spoint => {return {time : spoint.timePoint,class:0,events:spoint.nofEvents,censorings:spoint.nofCensorings}}).concat(
+    survivalPointsClass1.map(spoint => {return {time : spoint.timePoint,class:1,events:spoint.nofEvents,censorings:spoint.nofCensorings}}) )
+    
+
+    var tmpMap = new Map<number,eventType[]>()
+    tmpArray.forEach(spoint =>{
+            var events = new Array<eventType>()
+        
+            for (let i = 0; i < spoint.events; i++) {
+                events.push({x:[spoint.class], event: true})
+
+            }
+            for (let i = 0; i < spoint.censorings; i++) {
+                events.push({x:[spoint.class], event: false})
+            
+            }
+            if(tmpMap.has(spoint.time)){
+                tmpMap.set(spoint.time,tmpMap.get(spoint.time).concat(events))
                 
-            }))
-        }
-    )
-    Xt=Xt.sort((a,b)=>a[nofGroups] - b[nofGroups])
-    return Xt
-}
-
-export function dichotomicAugmented(groups:SurvivalPoint[][]):number[][]{
-    if (groups.length !=2){
-        throw new Error(`this specific case needs exactly two groups. Provided ${groups.length}`)
-    }
-
-    var Xt=buildXtAugmented(groups)
-
-    return Xt.map(x=>[x[0],x[2],x[3]])
-
-}
-
-
-export function buildThetas(Xt:number[][],beta:Array<number>):{
-    negativeCumulTheta:Array<number>,
-    negativeCumulThetaXt:Array<Array<number>>,
-    negativeCumulThetXtXt:Array<Matrix>,
-}{
-    if(!beta.length){
-        throw new Error("betas array is empty")
-    }
-    if(!Xt.length || Xt[0].length==0){
-        throw new Error("X event matrix has 0 dimension ")
-    }
-    if(Xt[0].length-2 !=beta.length){
-        throw new Error("the number of rows in X is not the number of betas")
-    }
-    const nofGroups= Xt[0].length -2
-    const timePoints= Xt.map(x=>x[nofGroups])
-
-    var theta =Xt.map(eventArray=>{
-        var res=0.0
-        for (let index = 0; index < beta.length; index++) {
-            res+= beta[index] * eventArray[index]
-        }
-        return Math.exp(res)
-    })
-
-
-    var thetaMultiplyXt= new Array<Array<number>>()
-    theta.forEach((theta,index)=>{
-        var xNoTime=Xt[index].slice(0,nofGroups)
-        
-        var thetaX= xNoTime.map(x=>x*theta)
-        thetaMultiplyXt.push(thetaX)
-    })
-
-    
-
-    var thetaMultiplyXtXt = new Array<Matrix>()
-    for(var t=0; t<timePoints.length;t++){
-        var thetaXMatrix=transpose(matrix([thetaMultiplyXt[t]]))
-        var xt =Xt[t].map(x=>x).splice(0,nofGroups)
-        
-        thetaMultiplyXtXt.push(multiply(thetaXMatrix,matrix([xt])))
-    }
-
-
-    var currentTheta=0.0
-    var currentThetaXt=new Array<number>(nofGroups).fill(0.0)
-    var currentThetaXtXt = zeros(nofGroups,nofGroups)
-    var currentTimePoint=timePoints[timePoints.length-1]
-    var lastPosition=timePoints.length
-    var negativeCumulTheta= new Array<number>(timePoints.length)
-    var negativeCumulThetaXt= new Array<Array<number>>(timePoints.length)
-    var negativeCumulThetXtXt=new Array<Matrix>(timePoints.length)
-
-    for(var i= timePoints.length-1;i>=0;i--){
-        if(i==0 || timePoints[i] != currentTimePoint ){
-            for(var j=i+1; j<lastPosition;j++){
-                negativeCumulTheta[j]=currentTheta
-                negativeCumulThetaXt[j]=currentThetaXt.map(x=>x)
-                negativeCumulThetXtXt[j]=clone(currentThetaXtXt)
+            }else{
+                tmpMap.set(spoint.time,events)
             }
-            lastPosition=i+1
-        }
-        currentTheta+=theta[i]
-        currentThetaXt=add(currentThetaXt,thetaMultiplyXt[i]) as number[]
-        currentThetaXtXt=add(currentThetaXtXt,thetaMultiplyXtXt[i]) as Matrix
-    }
-    //last round
-    for(var j=0; j<lastPosition;j++){
-        negativeCumulTheta[j]=currentTheta
-        negativeCumulThetaXt[j]=currentThetaXt.map(x=>x)
-        negativeCumulThetXtXt[j]=clone(currentThetaXtXt)
-    }
-    
+        })
+        var groupedTmpArray = new Array<timePoint>()
+        tmpMap.forEach((value,key)=>{
+            groupedTmpArray.push({time: key, events:value})
+        })
 
-    return {
-        negativeCumulTheta:negativeCumulTheta,
-        negativeCumulThetaXt:negativeCumulThetaXt,
-        negativeCumulThetXtXt:negativeCumulThetXtXt,
-    }
+        return groupedTmpArray.sort((a,b)=>a.time - b.time)
 }
 
-export function logLikelihood(Xt: Array<Array<number>>,negativeCumulTheta: Array<number>,beta:Array<number>):number{
-    var ll=0.0
-    for(var t = 0; t<Xt.length;t++){
-        if (Xt[t][beta.length+1] ==1){
-            for(var i=0; i< beta.length;i++){
-                ll+=beta[i]*Xt[t][i]
-            }
-            ll-=Math.log(negativeCumulTheta[t])
-        }
-    }
-    return ll
-}
-
-export function gradientLogLikelihood(Xt: Array<Array<number>>,negativeCumulTheta: Array<number>,negativeCumulThetaXt: Array<Array<number>>,nofGroups:number): Array<number>{
-    var gradient= new Array<number>(nofGroups).fill(0.0)
-    for(var i =0 ; i <Xt.length;i++){
-        if (Xt[i][nofGroups +1] ==1){
-            var XtNoTime=Xt[i].map(x=>x).splice(0,nofGroups)
-            gradient = add(gradient,XtNoTime) as number[]
-            gradient =subtract(gradient,negativeCumulThetaXt[i].map(x=>x/negativeCumulTheta[i])) as number[]
-        }
-    }
-
-    return gradient
-}
-
-export function hessianLogLikelihood(Xt: Array<Array<number>>,negativeCumulTheta: Array<number>, negativeCumulThetaXt : Array<Array<number>>,negativeCumulThetXtXt : Array<Matrix>,nofGroups: number):Matrix{
-    //zeros not working else
-    var hessian= new Array<Array<number>>(nofGroups)
-    for(i=0;i<nofGroups;i++){
-        hessian[i]=new Array<number>(nofGroups)
-        for(j=0;j<nofGroups;j++){
-            hessian[i][j]=0
-
-        }
-    }
-
-    for(var t=0; t<negativeCumulTheta.length;t++){
-        if(Xt[t][nofGroups +1]){
-            for(var i=0; i<nofGroups;i++){
-                for(var j=0; j<nofGroups;j++){
-                    
-                    var tmp=negativeCumulThetXtXt[t].toArray()  as number[][]
-                    hessian[i][j] -= tmp[i][j]/negativeCumulTheta[t]
-                    hessian[i][j] += negativeCumulThetaXt[t][i]*negativeCumulThetaXt[t][j] / Math.pow(negativeCumulTheta[t],2)
-
-
-                }
-            }
-        }
-    }
-
-
-    return matrix(hessian)
-}
-
-export function testIt(){
-    var variable=[[1,1],[1,-1]]
-    var variable2=matrix(variable)
+export function coxToString(coefficient:number,variance:number):string{
+    const bilat95=1.96
+    var sd= Math.sqrt(variance)
+    var res= Math.exp(coefficient).toPrecision(3) + " ["
+    res+=Math.exp(coefficient - bilat95*sd).toPrecision(3) +","
+    res+=Math.exp(coefficient + bilat95 * sd).toPrecision(2) +"]"
+    return res
 }

@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { logLikelihood,derivative,secondDerivative,inMatrix,addTo,multiplyMatrixVector} from "./efron"
+import { logLikelihood,derivative,secondDerivative} from "./efron"
 import {inv} from 'mathjs'
-
+import {  addTo,  inMatrix, multiplyMatrixVector } from './coxRegression'
 
 
 

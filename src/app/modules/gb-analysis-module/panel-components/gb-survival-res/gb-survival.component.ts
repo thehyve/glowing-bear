@@ -5,19 +5,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, OnChanges } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, OnChanges } from '@angular/core';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from 'app/models/survival-analysis/survival-curves' 
 
 import {SelectItem} from 'primeng/api'
-import {  logranktest, logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
-import { breslowNewtonRaphson, newtonRaphsonTest, coxToString } from 'app/models/cox-regression/breslowNewtonRaphson';
-import { dichotomicAugmented, testIt } from 'app/models/cox-regression/coxModel';
+import { logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
+
 import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
-import { svg } from 'd3';
 import { TestEfron } from 'app/models/cox-regression/efron_test';
-import { efronNewtonRaphson } from 'app/models/cox-regression/efronNewtonRaphson';
+
+import { TestBreslow } from 'app/models/cox-regression/breslow_test';
+import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
 
 
 @Component({
@@ -99,6 +99,7 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
     this.survivalService.execute().subscribe((results=>{this._clearRes=results;
       this._survivalCurve=clearResultsToArray(this._clearRes);
       TestEfron()
+      TestBreslow()
 
       this.setGroupComparisons()
       var arrays=this.survivalCurve.curves.map(curve=>curve.points)
@@ -246,14 +247,13 @@ setGroupComparisons(){
     for (let j =/*i+1*/ 0; j < len; j++) {
       var logrank =logRank2Groups(this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points).toPrecision(3)
       logrankRow.push(logrank)
-      var cox=breslowNewtonRaphson(1000,1e-14,[this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
-      var cox2=efronNewtonRaphson(1000,1e-14, [this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],[0.0])
-      var beta=cox2.finalBeta[0]
-      var variance= cox2.finalCovarianceMatrixEstimate[0][0]
+      var cox=NewCoxRegression([this.survivalCurve.curves[i].points,this.survivalCurve.curves[j].points],1000,1e-14,"breslow").run()
+      var beta=cox.finalBeta[0]
+      var variance= cox.finalCovarianceMatrixEstimate[0][0]
       var coxReg=coxToString(beta,variance)
       var  waldStat=Math.pow(beta,2)/(variance+ 1e-14)
       var waldTest=(1.0-ChiSquaredCdf(waldStat,1)).toPrecision(3)
-      var likelihoodRatio= 2.0*(cox2.finalLogLikelihood -cox2.initialLogLikelihood)
+      var likelihoodRatio= 2.0*(cox.finalLogLikelihood -cox.initialLogLikelihood)
       var coxLogtest=(1.0 -ChiSquaredCdf(likelihoodRatio,1)).toPrecision(3)
       console.log("loglikelihoodRatio",likelihoodRatio,"logtest pvalue",coxLogtest)
       coxRegRow.push(coxReg)
