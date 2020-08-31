@@ -15,6 +15,9 @@ import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
 import { MedcoNetworkService } from './api/medco-network.service';
 import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 import { ConstraintService } from './constraint.service';
+import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
 
 @Injectable()
 export class CohortService {
@@ -23,9 +26,12 @@ export class CohortService {
   protected _selectedCohort : Cohort
   protected _selectingCohort : Subject<Cohort>
   protected _nodeName:Array<string>
+
+  protected _isRefreshing:boolean
   public restoring: Subject<boolean>
   
   constructor(
+    protected exploreCohortsService: ExploreCohortsService,
     protected exploreQueryService: ExploreQueryService,
     protected medcoNetworkService: MedcoNetworkService,
     protected constraintService: ConstraintService) {
@@ -61,16 +67,19 @@ export class CohortService {
   set cohorts(cohorts : Array<Cohort>){
     this._cohorts= cohorts.map(x => x)
   }
+  get isRefreshing():boolean{
+    return this._isRefreshing
+  }
 
   addSubgroupToSelected(name:string,rootInclusionConstraint:CombinationConstraint,rootExclusionConstraint:CombinationConstraint){
-    var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint,new Date(Date.now()))
+    var subGroup=new Cohort(name,rootInclusionConstraint,rootExclusionConstraint,new Date(Date.now()),new Date(Date.now()))
     if(this._selectedCohort instanceof SurvivalCohort){
       (this._selectedCohort as SurvivalCohort).hasSubGroups=true;
       
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     }else{
       var idx= this._cohorts.indexOf(this._selectedCohort)
-      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()))
+      var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()),new Date(Date.now()))
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
       this._cohorts[idx]=ret
@@ -78,7 +87,41 @@ export class CohortService {
 
     }
   }
+  getCohorts(){
+    this._isRefreshing=true
+    this.exploreCohortsService.getCohortAllNodes().subscribe(
+      (apiCohorts => {
+        this.upsertCohorts(apiCohortsToCohort(apiCohorts))
+        this._isRefreshing=false
+      }).bind(this),
+      (err=>{
+        console.log("An error occured while retrieving saved cohorts: ", err)
+        MessageHelper.alert('error',"An error occured while retrieving saved cohorts",err)
+        this._isRefreshing=false
+        
+      }).bind(this),
+      (()=> {
+        MessageHelper.alert('',"Saved cohorts successfully retrieved")
+      this._isRefreshing=false}).bind(this)
+    )
+  }
 
+  upsertCohorts(cohorts : Cohort[]){
+    var tmp= new Map<string,Date>()
+    this._cohorts.forEach(cohort=>{tmp.set(cohort.name,cohort.updateDate)})
+    cohorts.forEach(cohort=>{
+      if (tmp.has(cohort.name)){
+        if( cohort.updateDate > tmp.get(cohort.name)){
+          var i =this._cohorts.findIndex(c => c.name ==cohort.name)
+          this._cohorts[i]=cohort
+        }
+      }else{
+        this._cohorts.push(cohort)
+        tmp.set(cohort.name,cohort.updateDate)
+      }
+    })
+
+  }
 
  
 
@@ -103,11 +146,11 @@ export class CohortService {
 
   
 
-  executeSubgroupQuery(idx :number) : Observable<CohortError>{
+  executeSubgroupQuery(idx :number) : Observable<Error>{
 
     //TODO : redo the query with the root exclusions constraint
     if (!(this._selectedCohort instanceof SurvivalCohort)){
-    return  of(CohortError.NewError("the cohort was not set as survival cohort"))
+    return  of(Error("the cohort was not set as survival cohort"))
 
     }
 
@@ -124,12 +167,12 @@ export class CohortService {
     this.exploreQueryService.exploreQuery(query).pipe(map(queryResults=>{ let err=null
       queryResults.forEach(((queryResult,nodeIndex)=>{
         if (queryResult.status ==="error"){
-          err=CohortError.NewError("error during the execution of the queries related to sub groups")
+          err=Error("error during the execution of the queries related to sub groups")
         }else if (queryResult.status =="available"){
           subGroup.patient_set_id[this._nodeName[nodeIndex]]=queryResult.patientSetId
 
         }else{
-          err=CohortError.NewError("query status handling not implemented yet")
+          err=Error("query status handling not implemented yet")
 
         }
       }).bind(this))
@@ -146,12 +189,12 @@ export class CohortService {
 @Injectable()
 export class CohortServiceMock extends CohortService {
 
-  constructor( protected exploreQueryService: ExploreQueryService,
+  constructor(protected exploreCohortsService:ExploreCohortsService, protected exploreQueryService: ExploreQueryService,
     protected medcoNetworkService : MedcoNetworkService,public constraintService: ConstraintService){
-    super(exploreQueryService,medcoNetworkService,constraintService)
+    super(exploreCohortsService,exploreQueryService,medcoNetworkService,constraintService)
   }
 
-  executeSubgroupQuery(idx:number):Observable<CohortError>{
+  executeSubgroupQuery(idx:number):Observable<Error>{
     this._nodeName.forEach((nodeName=>{
       (this._selectedCohort as SurvivalCohort)._subGroups[idx].patient_set_id[nodeName]=1
     }).bind(this))
@@ -161,23 +204,25 @@ export class CohortServiceMock extends CohortService {
 
 }
 
+function apiCohortsToCohort(apiCohorts: ApiCohort[][]) : Cohort[]{
 
-export class CohortError implements Error{
-  name: string;
-  message: string;
-  stack?: string;
-  private constructor(name: string, message: string, stack?: string){
-    this.name=name;
-    this.message=message;
-    this.stack=stack;
+  const  cohortNumber= apiCohorts[0].length
+  apiCohorts.forEach(apiCohort =>{if (apiCohort.length != cohortNumber) throw(Error("cohort numbers are not the same across nodes"))})
+
+  var cohortName, creationDate,updateDate: string
+  var res = new Array<Cohort>()
+  for (let i = 0; i < cohortNumber; i++) {
+    cohortName=apiCohorts[0][i].cohortName
+    apiCohorts.forEach(apiCohort =>{if (apiCohort[i].cohortName!= cohortName) throw(Error("cohort names are not the same across nodes"))})
+    creationDate=apiCohorts[0][i].creationDate
+    apiCohorts.forEach(apiCohort =>{if (apiCohort[i].creationDate != creationDate) throw(Error("cohort creation dates are not the same across nodes"))})
+    updateDate=apiCohorts[0][i].updateDate
+    apiCohorts.forEach(apiCohort =>{if (apiCohort[i].updateDate != updateDate) throw(Error("cohort update dates are not the same across nodes"))})
+    var cohort=new Cohort(cohortName,null,null,new Date(creationDate),new Date(updateDate))
+    cohort.patient_set_id=apiCohorts.map(apiCohort=>apiCohort[i].queryID)
+    res.push(cohort)
+
   }
-
-  static NewError(message : string) : CohortError{
-    return new CohortError("cohort service error",message)
-
-  }
-
-  static FromPrevious(E: Error) : CohortError{
-    return new CohortError(E.name,E.message,E.stack)
-  }
+  return res
+    
 }

@@ -30,6 +30,7 @@ import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts
 import {ToggleButtonModule} from 'primeng/togglebutton'
 import { CohortServiceMock } from 'app/services/cohort.service';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
+import { ExploreCohortsService } from 'app/services/api/medco-node/explore-cohorts.service';
 
 
 @NgModule({
@@ -56,7 +57,7 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.serv
     GbSummaryComponent,
     GbCohortsComponent
   ],
-  providers: [TreeDragDropService, ConfirmationService,SurvivalAnalysisServiceMock],
+  providers: [TreeDragDropService, ConfirmationService,SurvivalAnalysisServiceMock,ExploreCohortsService],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {

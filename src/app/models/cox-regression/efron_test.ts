@@ -17,8 +17,6 @@ const EfronTestContext ={
     initialTimePoints:[
         {time:1,events:[{x:[1],event:true},{x:[0],event:true},{x:[1],event:false},{x:[0],event:false}]},
         {time:2,events:[{x:[1],event:true},{x:[0],event:true}]},
- 
-
     ]
 }
 

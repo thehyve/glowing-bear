@@ -28,7 +28,7 @@ export class GbCohortsComponent implements AfterViewInit {
   file: File; // holds the uploaded cohort file
 
 
- constructor(private cohortService: CohortServiceMock,
+ constructor(public cohortService: CohortServiceMock,
              private constraintService: ConstraintService,
              private  element: ElementRef){}
 
@@ -66,6 +66,10 @@ export class GbCohortsComponent implements AfterViewInit {
     
 
 
+  }
+
+  refreshCohorts(){
+    this.cohortService.getCohorts()
   }
 
  

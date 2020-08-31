@@ -67,7 +67,7 @@ export class GbExploreComponent {
     }else{
 
  
-    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint,new Date(Date.now()))
+    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint,new Date(Date.now()),new Date(Date.now()))
     existingCohorts.push(cohort)
     this.cohortService.cohorts=existingCohorts
     

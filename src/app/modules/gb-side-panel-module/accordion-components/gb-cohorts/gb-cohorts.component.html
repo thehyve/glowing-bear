@@ -1,4 +1,12 @@
 <div id="cohorts-component">
+        <button pButton class="ui-button-secondary"
+                [disabled]="cohortService.isRefreshing"
+                [ngStyle]="{'color': cohortService.isRefreshing ? 'var(--gb-light-light-clinical-green)':'var(--gb-clinical-green)'}" type="button"
+                pTooltip="Refresh cohorts"
+                tooltipPosition="top"
+                (click)="refreshCohorts()"
+                icon="fa fa-refresh">
+        </button>
 
         
 

@@ -16,7 +16,7 @@ import { SelectItem} from "primeng/api"
 
 export class Cohort{
     protected _name :string
-    protected _patient_set_id : Map<string,number>
+    protected _patient_set_id : Array<number>
 
     public selected : boolean
     protected _creationDate : Date
@@ -28,7 +28,7 @@ export class Cohort{
 
     protected _rootInclusionConstraint : CombinationConstraint
     protected _rootExclusionConstraint : CombinationConstraint
-    constructor(name :string, rootInclusionConstraint : CombinationConstraint, rootExclusionConstraint:CombinationConstraint,date :Date){
+    constructor(name :string, rootInclusionConstraint : CombinationConstraint, rootExclusionConstraint:CombinationConstraint,createDate :Date,updateDate:Date){
         this._name=name
         
         if (rootInclusionConstraint !=null){
@@ -42,10 +42,14 @@ export class Cohort{
             this._rootExclusionConstraint=rootExclusionConstraint.clone()
         }
 
-        if (date){
-            this._creationDate=date
-            this._updateDate=date
+        if (createDate){
+            this._creationDate=createDate
         }
+
+        if(updateDate){
+            this._updateDate=createDate
+        }
+        
         
         
         this.selected=false
@@ -56,8 +60,8 @@ export class Cohort{
         return this._name
     }
 
-    get patient_set_id():Map<string,number>{
-        return new Map(this._patient_set_id)
+    get patient_set_id():Array<number>{
+        return new Array(...this._patient_set_id)
     }
 
     get rootInclusionConstraint(): CombinationConstraint{
@@ -137,8 +141,8 @@ export class Cohort{
         this._name =n
     }
 
-    set patient_set_id(psid : Map<string,number>){
-        this._patient_set_id=new Map(psid)
+    set patient_set_id(psid : Array<number>){
+        this._patient_set_id=new Array(...psid)
 
     }
 
@@ -171,8 +175,8 @@ export class SurvivalCohort extends Cohort{
 
     _subGroups = new Array<Cohort>()
     _subGroupSelection : SelectItem[]
-    constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint,date:Date){
-        super(name,rootInclConstraint,rootExclConstraint,date)
+    constructor(name:string, rootInclConstraint: CombinationConstraint,rootExclConstraint:CombinationConstraint,createDate:Date,updateDate: Date){
+        super(name,rootInclConstraint,rootExclConstraint,createDate,updateDate)
         this._hasSubGroups=false
 
     }
@@ -194,7 +198,7 @@ export class SurvivalCohort extends Cohort{
     set subGroups(subGroups: Array <Cohort>){
         this._subGroups=new Array<Cohort>()
         subGroups.forEach(function(subGroup:Cohort){
-            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate)
+            var cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint,subGroup.rootExclusionConstraint,subGroup.creationDate,subGroup.updateDate)
             this._subGroups.push(cpy)
             this._subGroupSelection.push({label:cpy.name,value:cpy})
         }.bind(this))
