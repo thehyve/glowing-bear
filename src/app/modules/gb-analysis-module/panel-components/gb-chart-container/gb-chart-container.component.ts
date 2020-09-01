@@ -296,7 +296,7 @@ _areaGen :Area<{
 
 
   // view title
-    this._curves.curves.forEach((curve =>{
+    this._curves.curves.forEach(((curve,index) =>{
       this._groupButton.set(curve.groupId,this.toggleStyle(curve.groupId,
         this._svg.append("circle")
 
@@ -315,7 +315,7 @@ _areaGen :Area<{
       this._svg.append("text")
       .attr("x",this._legendxPos+7)
       .attr("y",this._legendyPos + 5)
-      .text(curve.groupId)
+      .text(index.toString())
       this._legendxPos+=this._legendInterval
 
     }).bind(this))

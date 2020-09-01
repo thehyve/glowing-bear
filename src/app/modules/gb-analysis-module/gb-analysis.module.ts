@@ -22,8 +22,10 @@ import { TableModule } from 'primeng/table'
 import { SpinnerModule, Spinner } from 'primeng/spinner'
 import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
+import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
+import { ConstraintService } from 'app/services/constraint.service';
 
 
 
@@ -43,9 +45,10 @@ import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/g
     GbSurvivalSettingsComponent,
     GbAnalysisComponent,
     GbChartContainerComponent,
-    GbSubgroupComponent],
+    GbSubgroupComponent,],
   imports: [
     AccordionModule,
+    AutoCompleteModule,
     ToggleButtonModule,
     OverlayPanelModule,
     CardModule,
@@ -63,7 +66,7 @@ import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/g
 
   ],
 
-  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock],
+  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock,ConstraintService],
 
   exports:[
     RouterModule

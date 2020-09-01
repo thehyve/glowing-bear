@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, OnChanges } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ViewChild, ElementRef, AfterViewInit, AfterViewChecked, OnChanges, Output, EventEmitter } from '@angular/core';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { SurvivalCurve, ChiSquaredCdf, SurvivalPoint, clearResultsToArray } from 'app/models/survival-analysis/survival-curves' 
@@ -18,6 +18,7 @@ import { TestEfron } from 'app/models/cox-regression/efron_test';
 
 import { TestBreslow } from 'app/models/cox-regression/breslow_test';
 import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -26,7 +27,7 @@ import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxMode
   styleUrls: ['./gb-survival.component.css'],
   encapsulation:ViewEncapsulation.None
 })
-export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnChanges{
+export class GbSurvivalComponent implements AfterViewInit{
   _svgSettings: ElementRef
   colorRange=colorRange
   advancedSettings=false
@@ -45,7 +46,7 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
   _grid=false
   _alphas=[{label:"90%",value:1.645},{label:"95%",value:1.960},{label:"99%",value:2.054}]
   _selectedAlpha:number
-  _clearRes :SurvivalAnalysisClear
+  _clearRes :Observable<SurvivalAnalysisClear>
 
 
   _logRanks:Array<Array<number>>
@@ -80,6 +81,8 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
   _groupTables: SelectItem[]
   selectedGroupTable: {legend:string,table:Array<Array<string>>}
 
+  @Output() analysisCompleted:EventEmitter<boolean>= new EventEmitter()
+
 
 
 
@@ -96,30 +99,20 @@ export class GbSurvivalComponent implements AfterViewInit,AfterViewChecked,OnCha
     return this._activated
   }
   ngAfterViewInit(){
-    this.survivalService.execute().subscribe((results=>{this._clearRes=results;
-      this._survivalCurve=clearResultsToArray(this._clearRes);
+
+    this._clearRes.subscribe(clearRes=>{
+      this._survivalCurve=clearResultsToArray(clearRes);
       TestEfron()
       TestBreslow()
-
       this.setGroupComparisons()
-      var arrays=this.survivalCurve.curves.map(curve=>curve.points)
-      
-      
-
-
-    }).bind(this))
+      this.analysisCompleted.emit(true)
+    })
+    
     console.log("after view init",this._svgSettings)
 
 
   }
-  ngAfterViewChecked(){
-    console.log("after view checked",this._svgSettings)
 
-  }
-  ngOnChanges(event){
-    console.log("after view checked",this._svgSettings)
-
-  }
 
 
 @ViewChild('svgSettings',{static:false}) set svgSettings(elm: ElementRef){
@@ -171,6 +164,14 @@ set selectedAlpha(num){
   this._selectedAlpha=num
 }
 
+@Input()
+set clearRes (res : Observable<SurvivalAnalysisClear>){
+  this._clearRes=res
+}
+
+get clearRes():Observable<SurvivalAnalysisClear>{
+  return this._clearRes
+}
 get selectedAlpha(){
   return this._selectedAlpha
 }

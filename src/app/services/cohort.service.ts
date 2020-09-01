@@ -219,7 +219,8 @@ function apiCohortsToCohort(apiCohorts: ApiCohort[][]) : Cohort[]{
     updateDate=apiCohorts[0][i].updateDate
     apiCohorts.forEach(apiCohort =>{if (apiCohort[i].updateDate != updateDate) throw(Error("cohort update dates are not the same across nodes"))})
     var cohort=new Cohort(cohortName,null,null,new Date(creationDate),new Date(updateDate))
-    cohort.patient_set_id=apiCohorts.map(apiCohort=>apiCohort[i].queryID)
+    
+    cohort.patient_set_id=apiCohorts.map(apiCohort=>apiCohort[i].queryId)
     res.push(cohort)
 
   }

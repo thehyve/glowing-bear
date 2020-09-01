@@ -117,6 +117,7 @@ export class ConstraintMappingService {
       default:
         throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
     }
+    console.log("constraint",constraint,"path",item.queryTerm)
     return item;
   }
 

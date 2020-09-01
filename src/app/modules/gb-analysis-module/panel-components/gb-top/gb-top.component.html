@@ -5,9 +5,9 @@
             (click)="selected = analysisType"
             [ngClass]="{'selected': selected==analysisType}"
             [disabled]="!analysisType.implemented"></button>
-    <button pButton label="Run" style="float: right;" [disabled]="!(ready && selected)" (click)="ran = true"></button>
+    <button pButton label="Run" style="float: right;" [disabled]="!(ready && selected)" (click)="runAnalysis()"></button>
 
 </p-accordionTab>
 <app-gb-survival-settings [activated]="selectedSurvival"></app-gb-survival-settings>
 <app-gb-cohort-landing-zone [activated]="selectedSurvival" (dedication)="isReady($event)"></app-gb-cohort-landing-zone>
-<app-gb-survival-res [activated]="ran"></app-gb-survival-res>
+<app-gb-survival-res [activated]="ran" [clearRes]="clearRes" (analysisCompleted)="isCompleted($event)"></app-gb-survival-res>

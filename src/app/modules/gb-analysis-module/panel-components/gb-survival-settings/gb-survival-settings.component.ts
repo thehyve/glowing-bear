@@ -6,6 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import { Concept } from 'app/models/constraint-models/concept';
+import { ConstraintService } from 'app/services/constraint.service';
 
 @Component({
   selector: 'app-gb-survival-settings',
@@ -27,11 +29,35 @@ export class GbSurvivalSettingsComponent implements OnInit {
   _ends=[{label:"Fatality",value:"Fatility"},{label:"Tumor Growth",value:"Tumor Growth"}]
   _selectedEnd="Fatality"
 
+  _startConcept: Concept
+  _suggestedStartConcepts: Concept[]
+  _endConcept : Concept
+  _suggestedEndConcepts: Concept[]
+
   
 
-  constructor() { }
+  constructor(private constraintService : ConstraintService) { }
 
   ngOnInit() {
+  }
+
+  search(event){
+
+      var q = event.query.toLowerCase();
+
+      var concepts = this.constraintService.concepts;
+      console.log("q",q,"concepts",concepts)
+      if (q) {
+        this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
+      } else {
+        this.suggestedStartConcepts = concepts;
+      }
+    
+  }
+
+  list(event){
+    this.suggestedStartConcepts = this.constraintService.concepts;
+
   }
 
   @Input()
@@ -86,6 +112,30 @@ export class GbSurvivalSettingsComponent implements OnInit {
 
   get selectedEnd():string{
     return this._selectedEnd
+  }
+  set startConcept(concept: Concept){
+    this._startConcept=concept
+  }
+  get startConcept(): Concept{
+    return this._startConcept
+  }
+  set endConcept(concept: Concept){
+    this._startConcept=concept
+  }
+  get endConcept(): Concept{
+    return this._startConcept
+  }
+  set suggestedStartConcepts(concepts: Concept[]){
+    this._suggestedStartConcepts=concepts
+  }
+  get suggestedStartConcepts(): Concept[]{
+    return this._suggestedStartConcepts
+  }
+  set suggestedEndConcepts(concepts: Concept[]){
+    this._suggestedEndConcepts=concepts
+  }
+  get suggestedEndConcepts(): Concept[]{
+    return this._suggestedEndConcepts
   }
 
 

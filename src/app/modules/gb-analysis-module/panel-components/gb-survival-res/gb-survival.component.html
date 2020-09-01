@@ -46,7 +46,7 @@
                     <tr *ngFor="let curve of survivalCurve.curves;let i = index">
                         <td>
                             <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
+                            {{i}}
                         </td>
                         <td>{{groupTotalAtRisk[i]}}</td>
                         <td>{{groupTotalEvent[i]}}</td>
@@ -63,13 +63,13 @@
                         <th>{{selectedGroupTable.legend}}</th>
                         <th *ngFor="let curve of survivalCurve.curves;let i = index">
                             <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
+                            {{i}}
                         </th>
                     </tr>
                     <tr *ngFor="let curve of survivalCurve.curves;let i = index">
                         <th>
                             <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-                            {{curve.groupId}}
+                            {{i}}
                         </th>
                         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
                             {{selectedGroupTable.table[i][j]}}

@@ -32,7 +32,9 @@ export class GbCohortLandingZoneComponent implements OnInit {
   constructor(private cohortService:CohortServiceMock) {
     var cohort =this.cohortService.selectedCohort
     if (cohort){
-      this._cohort=new SurvivalCohort(cohort.name, cohort.rootInclusionConstraint.clone(), cohort.rootExclusionConstraint.clone(), cohort.creationDate,cohort.updateDate)
+      var ric=cohort.rootInclusionConstraint
+      var rec=cohort.rootExclusionConstraint
+      this._cohort=new SurvivalCohort(cohort.name, ric ? ric.clone():null, rec? rec.clone(): null, cohort.creationDate,cohort.updateDate)
       this.dedicated=true
     }
     

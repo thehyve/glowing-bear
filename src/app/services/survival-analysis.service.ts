@@ -15,6 +15,11 @@ import {map} from 'rxjs/operators';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { SurvivalAnalysisService } from './api/medco-node/survival-analysis.service';
 import {SurvivalAnalysisClear} from 'app/models/survival-analysis/survival-analysis-clear'
+import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
+import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
+import { CohortServiceMock } from './cohort.service';
+import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
+
 
 
 @Injectable()
@@ -29,7 +34,8 @@ export class SurvivalService {
     protected cryptoService : CryptoService,
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
-    protected apiSurvivalAnalysisService: SurvivalAnalysisService) {
+    protected apiSurvivalAnalysisService: SurvivalAnalysisService,
+    protected cohortService: CohortServiceMock) {
       this._patientGroupIds=new Map<string,number[]>()
       medcoNetworkService.nodes.forEach((apiNodeMetadata=>
         
@@ -40,36 +46,94 @@ export class SurvivalService {
     }
 
   //get the granularity names and, if those are encrypted-deterministcally-tagged, 
-   retrievedEncIDs() :Observable<{name : string, encID? :number}[]>{
-    return this.exploreSearchService.exploreSearch(`/SurvialAnalysis/Time/${this._granularity}`).pipe(
-      map(x=>x.map(
-        y=>{
-          var name =y.displayName
-          if (y.encryptionDescriptor.encrypted){
-            return { name:name,
-              encID: y.encryptionDescriptor.id
-            }
-          }
-          else{
-            return {name:name}
-          }
-        }
-      ))
-    )
-  }
-   buildFromCohort(survivalCohort : SurvivalCohort){
-    this._id=survivalCohort.name
+   
+
+  runSurvivalAnalysis(startConceptCode :string, startConceptModifier :string, endConceptCode : string,endConceptModifier : string,timeLimit:number,panels: Array<{cohortName:string,panels:Array<ApiI2b2Panel>}>){
+    var apiSurvivalAnalysis = new ApiSurvivalAnalysis()
+    var d= new Date()
+    apiSurvivalAnalysis.ID=`MedCo_Explore_Query_${d.getUTCFullYear()}${d.getUTCMonth()}${d.getUTCDate()}${d.getUTCHours()}` +
+    `${d.getUTCMinutes()}${d.getUTCSeconds()}${d.getUTCMilliseconds()}`
+    apiSurvivalAnalysis.startConcept=startConceptCode
+    apiSurvivalAnalysis.startModifier=startConceptModifier
+    apiSurvivalAnalysis.startColumn="start_date"
+
+    apiSurvivalAnalysis.endConcept=endConceptCode
+    apiSurvivalAnalysis.endModifier=endConceptModifier
+    apiSurvivalAnalysis.endColumn="start_date"
+
+    apiSurvivalAnalysis.timeLimit=timeLimit
+    apiSurvivalAnalysis.granularity="day"
+
+    apiSurvivalAnalysis.setID=-1
+    apiSurvivalAnalysis.subGroupDefinitions= panels
     
-    this.retrievedEncIDs().subscribe((x=>this._timeCodes=x).bind(this))
-    survivalCohort.subGroups.forEach((subGroup=>{
-      subGroup.patient_set_id.forEach(((value,key)=>{
-        this._patientGroupIds[key].push(value)
-      }).bind(this))
-    }).bind(this))
+
+
+    console.log("cohortService",this.cohortService.selectedCohort)
+    return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis,this.cohortService.selectedCohort.patient_set_id)
+  }
+
+  survivalAnalysisDecrypt(survivalAnalysisResponse: ApiSurvivalAnalysisResponse): SurvivalAnalysisClear{
+    var start =performance.now()
+    var res= new SurvivalAnalysisClear()
+    var nofDecryptions=0
+    res.results=survivalAnalysisResponse.results.map(group=>{
+      var newGroup= new ClearGroup()
+
+    newGroup.groupId=group.groupID
+
+    newGroup.initialCount=this.cryptoService.decryptIntegerWithEphemeralKey(group.initialCount)
+    nofDecryptions++
+
+    newGroup.groupResults=group.groupResults.map(groupResult =>{
+      var newGroupResult =new ClearGroupResult()
+    newGroupResult.timepoint=groupResult.timepoint
+      newGroupResult.events={
+        eventOfInterest:this.cryptoService.decryptIntegerWithEphemeralKey(groupResult.events.eventofinterest),
+        censoringEvent:this.cryptoService.decryptIntegerWithEphemeralKey(groupResult.events.censoringevent)
+      }
+
+      nofDecryptions +=2
+
+      return newGroupResult
+
+    }
+    
+    )
+
+    return newGroup
+      
+    })
+
+    var end =performance.now()
+
+    console.log(`${nofDecryptions} ElGamal points decrypted in ${end-start} milliseconds`)
+
+    return res
+
+
   }
 }
 
+class ClearGroup{
+  groupId: string;
+  initialCount: number;
+  groupResults: {
+      events: {
+          censoringEvent: number;
+          eventOfInterest: number;
+      };
+      timepoint: number;
+  }[];
+}
 
+class ClearGroupResult{
+  timepoint: number;
+  events: {
+      eventOfInterest: number;
+      censoringEvent: number;
+  }
+}
 
 @Injectable()
 export class SurvivalAnalysisServiceMock extends SurvivalService{
@@ -78,8 +142,9 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
     protected cryptoService : CryptoService,
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
-    protected apiSurvivalAnalysisService: SurvivalAnalysisService){
-      super(authService,cryptoService, medcoNetworkService, exploreSearchService,apiSurvivalAnalysisService)
+    protected apiSurvivalAnalysisService: SurvivalAnalysisService,
+    protected cohortService: CohortServiceMock){
+      super(authService,cryptoService, medcoNetworkService, exploreSearchService,apiSurvivalAnalysisService,cohortService)
     }
 
     retrievedEncIDs() :Observable<{name : string, encID? :number}[]>{
