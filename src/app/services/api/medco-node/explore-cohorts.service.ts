@@ -39,7 +39,7 @@ export class ExploreCohortsService{
             nodeUrl 
         ).pipe(map(x=>x))
     }
-    postCohortSingleNode(nodeUrl:string,cohort:ApiCohort):Observable<any>{
+    postCohortSingleNode(nodeUrl:string,cohort:ApiCohort):Observable<string>{
         return this.apiEndpointService.postCall(
             'node/explore/cohorts',
             cohort,
@@ -52,8 +52,8 @@ export class ExploreCohortsService{
         .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
     }
 
-    postCohortAllNodes(cohort: ApiCohort): Observable<any>{
-        return forkJoin(...this.medcoNetworkService.nodesUrl.map(url=>this.postCohortSingleNode(url,cohort)))
+    postCohortAllNodes(cohort: ApiCohort[]): Observable<string[]>{
+        return forkJoin(...this.medcoNetworkService.nodesUrl.map((url,index)=>this.postCohortSingleNode(url,cohort[index])))
         .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
     }
 }

@@ -68,8 +68,11 @@ export class GbExploreComponent {
 
  
     var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint,new Date(Date.now()),new Date(Date.now()))
+    //TODO parametrize this
+    cohort.patient_set_id=[-1,-1,-1]
     existingCohorts.push(cohort)
     this.cohortService.cohorts=existingCohorts
+    this.cohortService.postCohort(cohort)
     
     MessageHelper.alert("success","Cohort has been sent.")
     }

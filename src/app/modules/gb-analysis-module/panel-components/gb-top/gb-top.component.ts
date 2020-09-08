@@ -10,9 +10,11 @@ import { AnalysisType } from 'app/models/analyses/analysis-type';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
-import { Subject, Observable } from 'rxjs';
+import { Subject, Observable, throwError } from 'rxjs';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-gb-top',
@@ -67,15 +69,20 @@ export class GbTopComponent implements OnInit {
   runAnalysis(){
     fillTestPanels()
     this.ready=false
-    
-    this.survivalAnalysisService.runSurvivalAnalysis('/SPHN/SPHNv2020.1/FophDiagnosis/','@','A125','126:1',1000,testPanels)
+    try{
+    this.survivalAnalysisService.runSurvivalAnalysis()
       .subscribe(res=>{
         console.log(res)
         this._survivalAnalysisResponses=res
         var finalResult =this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
         this._clearRes.next(finalResult)
         this.ran=true
-      },err=>console.log("error",err))
+      })
+    } catch(exception){
+      console.log(exception as Error)
+      MessageHelper.alert('error',(exception as Error).message)
+      this.ready=true
+    }
 
     
   }

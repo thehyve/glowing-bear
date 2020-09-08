@@ -411,6 +411,7 @@ _areaGen :Area<{
     .attr("transform", `translate(${6*this._margins},${-2*this._margins})`)
     .call(axisLeft(yaxis))
     .attr("font-size","15px")
+    console.log("curves",this._curves.curves)
 
  
     
@@ -431,7 +432,8 @@ _areaGen :Area<{
       .attr("y",yaxis(curve.groupId))
       .text(d=> d.atRisk.toString() +"("+ d.event.toString() +")")
       .attr("font-size","15px")
-      .attr("transform", `translate(${4*this._margins},${1*this._margins})`)
+      //quick fix
+      .attr("transform", `translate(${4*this._margins},${(4-this._curves.curves.length)*1.0*this._margins})`)
       .style("text-anchor","middle")
 
     })

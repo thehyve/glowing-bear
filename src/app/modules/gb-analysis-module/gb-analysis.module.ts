@@ -25,7 +25,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
-import { ConstraintService } from 'app/services/constraint.service';
+
 
 
 
@@ -66,7 +66,7 @@ import { ConstraintService } from 'app/services/constraint.service';
 
   ],
 
-  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock,ConstraintService],
+  providers:[SurvivalAnalysisService,SurvivalAnalysisServiceMock],
 
   exports:[
     RouterModule

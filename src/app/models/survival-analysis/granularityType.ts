@@ -1,5 +1,4 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -7,12 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export class ApiCohort{
-    queryId?: number;
-    patientSetID: number;
-    cohortName: string;
-    creationDate: string;
-    updateDate: string;
-}
 
-
+ export enum Granularity{
+     day = "day",
+     week = "week",
+     month = "month",
+     year="year",
+ }

@@ -8,10 +8,8 @@
 import { Injectable } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 import { CryptoService } from './crypto.service';
-import { SurvivalCohort } from 'app/models/cohort-models/cohort';
 import { MedcoNetworkService } from './api/medco-network.service';
 import { Observable,of } from 'rxjs';
-import {map} from 'rxjs/operators';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { SurvivalAnalysisService } from './api/medco-node/survival-analysis.service';
 import {SurvivalAnalysisClear} from 'app/models/survival-analysis/survival-analysis-clear'
@@ -19,6 +17,13 @@ import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-anal
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { CohortServiceMock } from './cohort.service';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
+import { Granularity } from 'app/models/survival-analysis/granularityType';
+import { Concept } from 'app/models/constraint-models/concept';
+import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
+import { Constraint } from 'app/models/constraint-models/constraint';
+import { NegationConstraint } from 'app/models/constraint-models/negation-constraint';
+import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
+import { ConstraintMappingService } from './constraint-mapping.service';
 
 
 
@@ -26,16 +31,67 @@ import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survi
 export class SurvivalService {
   protected _id :string
   protected _patientGroupIds :Map<string, number[]> //one string[] per node
-  protected _timeCodes : {name : string, encID? :number}[] //clear encID of timepoints
+  protected _granularity = Granularity.day
+  protected _limit =2000
+  protected _startConcept : Concept
+  protected _endConcept : Concept
+  protected _startModifier = "@"
+  protected _endModifier = "@"
+  protected _subGroups
 
-  protected _granularity : {name : string, encID? :number}[]
+  set granularity(gran: Granularity){
+    this._granularity=gran
+  }
+
+  get granularity() : Granularity{
+    return this._granularity
+  }
+
+  set limit (lim : number){
+    this._limit=lim
+  }
+
+  get limit():number{
+    return this._limit
+  }
+
+  set startConcept(c : Concept){
+    this._startConcept=c
+  }
+  get startConcept(): Concept{
+    return this._startConcept
+  }
+  set endConcept(c : Concept){
+    this._endConcept=c
+  }
+  get endConcept(): Concept{
+    return this._endConcept
+  }
+
+  set startModifier(mod : string){
+    this._startModifier=mod
+  }
+
+  get startModifier() : string{
+    return this._startModifier
+  }
+
+  set endModifier(mod : string){
+    this._endModifier=mod
+  }
+
+  get endModifier() : string{
+    return this._endModifier
+  }
+
 
   constructor(protected authService : AuthenticationService,
     protected cryptoService : CryptoService,
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
     protected apiSurvivalAnalysisService: SurvivalAnalysisService,
-    protected cohortService: CohortServiceMock) {
+    protected cohortService: CohortServiceMock,
+    protected constraintMappingService: ConstraintMappingService) {
       this._patientGroupIds=new Map<string,number[]>()
       medcoNetworkService.nodes.forEach((apiNodeMetadata=>
         
@@ -47,25 +103,55 @@ export class SurvivalService {
 
   //get the granularity names and, if those are encrypted-deterministcally-tagged, 
    
+ cohortToPanels(cohort :Cohort) : ApiI2b2Panel[]{
+    var constraint: Constraint 
+    if (!cohort.rootInclusionConstraint && !cohort.rootExclusionConstraint){
+         return null
+     }
+     if (cohort.rootInclusionConstraint && !cohort.rootExclusionConstraint){
+         constraint=cohort.rootInclusionConstraint
+     }
+     if (!cohort.rootInclusionConstraint && cohort.rootExclusionConstraint){
+        constraint=new NegationConstraint(cohort.rootExclusionConstraint)
+    }else{
+        constraint = new CombinationConstraint();
+        (constraint as CombinationConstraint).addChild(cohort.rootInclusionConstraint);
+        (constraint as CombinationConstraint).addChild(new NegationConstraint(cohort.rootExclusionConstraint))
+    }
 
-  runSurvivalAnalysis(startConceptCode :string, startConceptModifier :string, endConceptCode : string,endConceptModifier : string,timeLimit:number,panels: Array<{cohortName:string,panels:Array<ApiI2b2Panel>}>){
+    return this.constraintMappingService.mapConstraint(constraint)
+ }
+
+  runSurvivalAnalysis(): Observable<ApiSurvivalAnalysisResponse[]>{
     var apiSurvivalAnalysis = new ApiSurvivalAnalysis()
     var d= new Date()
     apiSurvivalAnalysis.ID=`MedCo_Explore_Query_${d.getUTCFullYear()}${d.getUTCMonth()}${d.getUTCDate()}${d.getUTCHours()}` +
     `${d.getUTCMinutes()}${d.getUTCSeconds()}${d.getUTCMilliseconds()}`
-    apiSurvivalAnalysis.startConcept=startConceptCode
-    apiSurvivalAnalysis.startModifier=startConceptModifier
+    if (!this.startConcept){
+      throw new Error("Start event is undefined")
+      
+    }
+    apiSurvivalAnalysis.startConcept=this.startConcept.path
+    apiSurvivalAnalysis.startModifier=this.startModifier
     apiSurvivalAnalysis.startColumn="start_date"
 
-    apiSurvivalAnalysis.endConcept=endConceptCode
-    apiSurvivalAnalysis.endModifier=endConceptModifier
+    if (!this.endConcept){
+      throw new Error("End event is undefined")
+    }
+    apiSurvivalAnalysis.endConcept=this.endConcept.code
+    apiSurvivalAnalysis.endModifier=this.endModifier
     apiSurvivalAnalysis.endColumn="start_date"
 
-    apiSurvivalAnalysis.timeLimit=timeLimit
-    apiSurvivalAnalysis.granularity="day"
-
+    apiSurvivalAnalysis.timeLimit=this.limit
+    apiSurvivalAnalysis.granularity=this.granularity
     apiSurvivalAnalysis.setID=-1
-    apiSurvivalAnalysis.subGroupDefinitions= panels
+    apiSurvivalAnalysis.subGroupDefinitions= new Array<{cohortName:string, panels: ApiI2b2Panel[]}>()
+    if (this.cohortService.selectedCohort instanceof SurvivalCohort){
+      var survCohort = this.cohortService.selectedCohort as SurvivalCohort
+      if (survCohort.hasSubGroups){
+        apiSurvivalAnalysis.subGroupDefinitions =survCohort.subGroups.map(cohort =>  {return {cohortName:cohort.name, panels: this.cohortToPanels(cohort)}} )
+      }
+    }
     
 
 
@@ -81,31 +167,42 @@ export class SurvivalService {
       var newGroup= new ClearGroup()
 
     newGroup.groupId=group.groupID
+    newGroup.groupResults= new Array<{
+      events: {
+          censoringEvent: number;
+          eventOfInterest: number;
+      };
+      timepoint: number;
+  }>()
 
     newGroup.initialCount=this.cryptoService.decryptIntegerWithEphemeralKey(group.initialCount)
     nofDecryptions++
 
-    newGroup.groupResults=group.groupResults.map(groupResult =>{
-      var newGroupResult =new ClearGroupResult()
-    newGroupResult.timepoint=groupResult.timepoint
-      newGroupResult.events={
-        eventOfInterest:this.cryptoService.decryptIntegerWithEphemeralKey(groupResult.events.eventofinterest),
-        censoringEvent:this.cryptoService.decryptIntegerWithEphemeralKey(groupResult.events.censoringevent)
-      }
-
+    for (let i = 0; i < group.groupResults.length; i++) {
+      var eventOfInterest = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.eventofinterest)
+      var censoringEvent = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.censoringevent)
       nofDecryptions +=2
-
-      return newGroupResult
-
+      if (eventOfInterest == 0 && censoringEvent == 0){
+        continue
+      }
+      newGroup.groupResults.push({
+        timepoint: group.groupResults[i].timepoint,
+        events:{
+          eventOfInterest:eventOfInterest,
+          censoringEvent: censoringEvent
+        }
+      })
+      
     }
-    
-    )
+
+
 
     return newGroup
       
     })
 
     var end =performance.now()
+    console.log("survival result",res.results)
 
     console.log(`${nofDecryptions} ElGamal points decrypted in ${end-start} milliseconds`)
 
@@ -143,8 +240,9 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
     protected apiSurvivalAnalysisService: SurvivalAnalysisService,
-    protected cohortService: CohortServiceMock){
-      super(authService,cryptoService, medcoNetworkService, exploreSearchService,apiSurvivalAnalysisService,cohortService)
+    protected cohortService: CohortServiceMock,
+    protected constraintMappingService: ConstraintMappingService){
+      super(authService,cryptoService, medcoNetworkService, exploreSearchService,apiSurvivalAnalysisService,cohortService,constraintMappingService)
     }
 
     retrievedEncIDs() :Observable<{name : string, encID? :number}[]>{
@@ -159,16 +257,6 @@ export class SurvivalAnalysisServiceMock extends SurvivalService{
       {name:"9",encId:9}])
     }
 
-    buildFromCohort(survivalCohortNotToBeUsed : SurvivalCohort){
-        this._id="mocksurvival"
-        this.retrievedEncIDs().subscribe((x=>this._timeCodes=x).bind(this))
-        this._patientGroupIds= new Map<string,number[]>()
-        this._patientGroupIds["0"]=[0,1,2,3]
-        this._patientGroupIds["1"]=[0,1,2,3]
-        this._patientGroupIds["2"]=[0,1,2,3]
-
-
-    }
 
     execute(): Observable<SurvivalAnalysisClear>{
 

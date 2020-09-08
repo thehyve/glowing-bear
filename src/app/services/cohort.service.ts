@@ -82,6 +82,7 @@ export class CohortService {
       var ret = new SurvivalCohort(this._selectedCohort.name,this.selectedCohort.rootInclusionConstraint,this.selectedCohort.rootExclusionConstraint, new Date(Date.now()),new Date(Date.now()))
       ret.hasSubGroups=true
       ret.subGroups.push(subGroup)
+      ret.patient_set_id=this.selectedCohort.patient_set_id
       this._cohorts[idx]=ret
       this.selectedCohort=ret
 
@@ -104,6 +105,32 @@ export class CohortService {
         MessageHelper.alert('',"Saved cohorts successfully retrieved")
       this._isRefreshing=false}).bind(this)
     )
+  }
+
+  postCohort(cohort: Cohort){
+    var apiCohorts= new Array<ApiCohort>()
+    this._isRefreshing=true
+
+    this.medcoNetworkService.nodesUrl.forEach((_,index)=>{
+      var apiCohort = new ApiCohort()
+      apiCohort.patientSetID=cohort.patient_set_id[index]
+      apiCohort.cohortName=cohort.name
+      apiCohort.creationDate=cohort.updateDate.toISOString()
+      apiCohort.updateDate=cohort.updateDate.toISOString()
+      apiCohorts.push(apiCohort)
+    })
+    
+    this.exploreCohortsService.postCohortAllNodes(apiCohorts).subscribe(messages=>{
+    messages.forEach(message=>console.log(message)),
+    this.upsertCohorts([cohort])
+    this._isRefreshing=false
+    },
+    error=>{
+      console.log("An error occured while saving a cohort: ", error)
+      MessageHelper.alert('error',"An error occured while saving cohort",error)
+      this._isRefreshing=false
+    })
+
   }
 
   upsertCohorts(cohorts : Cohort[]){

@@ -1,8 +1,5 @@
 <p-accordionTab *ngIf="activated" header="Settings" id="gb-survival-settings-component" >
 
-
-    
-
         <div style="padding-top: 2em;">
         <span class="description" >
             Time Granularity:
@@ -27,8 +24,28 @@
                 Start Event: 
             </span>
             &nbsp;
-            <p-dropdown [(ngModel)]="selectedStart" optionLabel="label" [options]="starts" ></p-dropdown>
             &nbsp;
+            <div 
+                style="padding: 1em;"
+                [ngStyle]="{'background-color' : startEventHovering ? 'var(--gb-clinical-green-light-light)' : 'white'}"
+                (dragover)="onStartDragOver($event)"
+                (dragleave)="onStartDragLeave($event)"
+                (drop)="onStartDrop($event)">
+                    <p-autoComplete #autoComplete [(ngModel)]="startConcept"
+                    [suggestions]="suggestedStartConcepts"
+                    (completeMethod)="search($event)"
+                    field="path"
+                    (onDropDownClick)="onDropdown($event)"
+                    placeholder="Select clear concept"
+                    dropdown="true">
+
+                        <ng-template let-concept pTemplate="item">
+                            <span>{{concept.label}}</span>
+                        </ng-template>
+            </p-autoComplete>
+            <input type="text" [(ngModel)]="startModifier" pInputText placeHolder="@" />
+            
+        </div>
         </span>
         <span style="white-space: nowrap;">
             <span class="description">
@@ -36,16 +53,32 @@
             </span>
             &nbsp;
             
-            <p-dropdown [(ngModel)]="selectedEnd" optionLabel="label" [options]="ends"></p-dropdown>
+            <div 
+            #autoCompleteContainer 
+            style="padding: 1em;"
+            [ngStyle]="{'background-color' : endEventHovering ?  'var(--gb-clinical-green-light-light)' : 'white'}"
+            (dragover)="onEndDragOver($event)"
+            (dragleave)="onEndDragLeave($event)"
+            (drop)="onEndDrop($event)">
+                <p-autoComplete #autoComplete [(ngModel)]="endConcept"
+                [suggestions]="suggestedEndConcepts"
+                (completeMethod)="search($event)"
+                field="path"
+                (onDropDownClick)="onDropdown($event)"
+                placeholder="Select clear concept"
+                dropdown="true">
+
+                    <ng-template let-concept pTemplate="item">
+                        <span>{{concept.label}}</span>
+                    </ng-template>
+                </p-autoComplete>
+                <input type="text" [(ngModel)]="endModifier" pInputText placeHolder="@" />
+                
+            </div>
         </span>
-        <!--
-        <p-autoComplete [(ngModel)]="startConcept"
-        [suggestions]="suggestedStartConcepts"
-        (completeMethod)="search($event)"
-        field="path"
-        (onDropDownClick)="list($event)"
-        dropdown="true"></p-autoComplete>
-        -->
+        
+        
+        
         </div>
             
         
