@@ -1,13 +1,17 @@
 <p-accordionTab header="Analyses" id="gb-top-component" [selected]="true">
 
-    <button pButton *ngFor="let analysisType of available"
-            [label]="analysisType.name"
-            (click)="selected = analysisType"
-            [ngClass]="{'selected': selected==analysisType}"
-            [disabled]="!analysisType.implemented"></button>
-    <button pButton label="Run" style="float: right;" [disabled]="!(ready && selected)" (click)="runAnalysis()"></button>
+
+
+
+
+    <button pButton *ngFor="let analysisType of available" [label]="analysisType.name" (click)="selected = analysisType"
+        [ngClass]="{'selected': selected==analysisType}" [disabled]="!analysisType.implemented"></button>
+
+    <button pButton label="Run" style="float: right;" [disabled]="!(ready && selected)"
+        (click)="runAnalysis()"></button>
+    <span *ngIf="launched" style="font-size: 1em; float: right;" class="loading-blink"> Waiting on response from
+        servers, do not refresh <span>•</span><span>•</span><span>•</span></span>
 
 </p-accordionTab>
 <app-gb-survival-settings [activated]="selectedSurvival"></app-gb-survival-settings>
 <app-gb-cohort-landing-zone [activated]="selectedSurvival" (dedication)="isReady($event)"></app-gb-cohort-landing-zone>
-<app-gb-survival-res [activated]="ran" [clearRes]="clearRes" (analysisCompleted)="isCompleted($event)"></app-gb-survival-res>

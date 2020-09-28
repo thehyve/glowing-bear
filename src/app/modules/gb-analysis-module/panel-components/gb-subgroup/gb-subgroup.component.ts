@@ -18,9 +18,9 @@ import { Observable } from 'rxjs';
 })
 export class GbSubgroupComponent implements OnInit {
 
-  _activated=false
-  _subgroupName:string
-  _selectedSubGroup : Cohort
+  _activated = false
+  _subgroupName: string
+  _selectedSubGroup: Cohort
 
   constructor(private cohortService: CohortServiceMock,
     private constraintService: ConstraintService) { }
@@ -29,65 +29,65 @@ export class GbSubgroupComponent implements OnInit {
   }
 
   @Input()
-  set activated(val:boolean){
-    this._activated=val
+  set activated(val: boolean) {
+    this._activated = val
   }
 
-  
-  get activated():boolean{
+
+  get activated(): boolean {
     return this._activated
   }
 
   @Output()
-  activatedChange=new EventEmitter<boolean>();
+  activatedChange = new EventEmitter<boolean>();
 
-  set subgroupName(val:string){
-    this._subgroupName=val
+  set subgroupName(val: string) {
+    this._subgroupName = val
   }
 
-  get subgroupName() :string{
+  get subgroupName(): string {
     return this._subgroupName
   }
-  save(){
-    console.log("before saving subgroup",this.cohortService.selectedCohort)
-    this.cohortService.addSubgroupToSelected(this.subgroupName,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint)
-    console.log("after saving subgroup",this.cohortService.selectedCohort)
-    this._subgroupName=""
-    this._activated=false
+  save() {
+    console.log("before saving subgroup", this.cohortService.selectedCohort)
+    this.cohortService.addSubgroupToSelected(this.subgroupName, this.constraintService.rootInclusionConstraint, this.constraintService.rootExclusionConstraint)
+    console.log("after saving subgroup", this.cohortService.selectedCohort)
+    this._subgroupName = ""
+    this._activated = false
     this.activatedChange.emit(false)
   }
 
-  changeSubgroupDisplay(subGroupName :string){
-     if (this.cohortService.selectedCohort instanceof SurvivalCohort){
-      var subGroups=(this.cohortService.selectedCohort as SurvivalCohort).subGroups
-      var selected =subGroups.find(c=>c.name==subGroupName)
-      if(selected){
-        this.constraintService.rootInclusionConstraint=selected.rootInclusionConstraint
-        this.constraintService.rootExclusionConstraint=selected.rootExclusionConstraint
-        console.log("constaintService",this.constraintService)
-      }else{
+  changeSubgroupDisplay(subGroupName: string) {
+    if (this.cohortService.selectedCohort instanceof SurvivalCohort) {
+      var subGroups = (this.cohortService.selectedCohort as SurvivalCohort).subGroups
+      var selected = subGroups.find(c => c.name == subGroupName)
+      if (selected) {
+        this.constraintService.rootInclusionConstraint = selected.rootInclusionConstraint
+        this.constraintService.rootExclusionConstraint = selected.rootExclusionConstraint
+        console.log("constaintService", this.constraintService)
+      } else {
         console.error(`Group ${subGroupName} not found`)
       }
 
-     }else{
-       console.error("no survival cohort is selected")
-     }
+    } else {
+      console.error("no survival cohort is selected")
+    }
   }
   @Input()
-  set selectedSubGroup(sg:Cohort){
-    console.log("sg",sg)
-    this._selectedSubGroup=sg
-    if (this._selectedSubGroup){
+  set selectedSubGroup(sg: Cohort) {
+    console.log("sg", sg)
+    this._selectedSubGroup = sg
+    if (this._selectedSubGroup) {
       this.changeSubgroupDisplay(sg.name)
     }
   }
 
-  get selectedSubGroup():Cohort{
+  get selectedSubGroup(): Cohort {
     return this._selectedSubGroup
   }
 
-  close(){
-    this._activated=false
+  close() {
+    this._activated = false
     this.activatedChange.emit(false)
   }
 }

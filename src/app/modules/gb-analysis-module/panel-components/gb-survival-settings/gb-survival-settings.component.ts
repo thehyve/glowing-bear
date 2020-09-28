@@ -22,193 +22,193 @@ import { Granularity } from 'app/models/survival-analysis/granularityType';
   styleUrls: ['./gb-survival-settings.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class GbSurvivalSettingsComponent implements OnInit,OnChanges{
+export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
 
-  _granularities= [{label:"Day",value:Granularity.day},{label:"Week",value:Granularity.week},{label:"Month",value:Granularity.month},{label:"Year",value:Granularity.month}]
+  _granularities = [{ label: "Day", value: Granularity.day }, { label: "Week", value: Granularity.week }, { label: "Month", value: Granularity.month }, { label: "Year", value: Granularity.month }]
 
 
   _suggestedStartConcepts: Concept[]
 
-  startEventHovering=false
-  endEventHovering=false
+  startEventHovering = false
+  endEventHovering = false
   _suggestedEndConcepts: Concept[]
 
   @ViewChild('autoComplete', { static: false }) autoComplete: AutoComplete;
-  @ViewChild('autoCompleteContainer', { static:false }) autoCompleteContainer: HTMLElement;
-  
+  @ViewChild('autoCompleteContainer', { static: false }) autoCompleteContainer: HTMLElement;
 
-  constructor(private constraintService : ConstraintService,
+
+  constructor(private constraintService: ConstraintService,
     private survivalService: SurvivalAnalysisServiceMock,
     private element: ElementRef,
-    private treeNodeService : TreeNodeService) { }
+    private treeNodeService: TreeNodeService) { }
 
   ngOnInit() {
-    
+
   }
-  ngOnChanges(){
-    var autoCompleteContainer2=document.querySelector('#autoCompleteContainer')
-    console.log("containers",this.autoCompleteContainer,autoCompleteContainer2)
-    if (this.autoCompleteContainer){
-      this.autoCompleteContainer.addEventListener('dragenter',()=>{console.log("dragenter")})
+  ngOnChanges() {
+    var autoCompleteContainer2 = document.querySelector('#autoCompleteContainer')
+    console.log("containers", this.autoCompleteContainer, autoCompleteContainer2)
+    if (this.autoCompleteContainer) {
+      this.autoCompleteContainer.addEventListener('dragenter', () => { console.log("dragenter") })
     }
-    
+
   }
 
-  search(event){
+  search(event) {
 
-      var q = event.query.toLowerCase();
+    var q = event.query.toLowerCase();
 
-      var concepts = this.constraintService.concepts;
-      console.log("q",q,"concepts",concepts)
-      if (q) {
-        this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
-      } else {
-        this.suggestedStartConcepts = concepts;
-      }
-      console.log("element",this.element)
-      UIHelper.removePrimeNgLoaderIcon(this.element, 200)
-    
+    var concepts = this.constraintService.concepts;
+    console.log("q", q, "concepts", concepts)
+    if (q) {
+      this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
+    } else {
+      this.suggestedStartConcepts = concepts;
+    }
+    console.log("element", this.element)
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200)
+
   }
-  onStartDragOver(event: DragEvent){
-  event.preventDefault()
-  this.startEventHovering=true
-  }
-  onEndDragOver(event:DragEvent){
+  onStartDragOver(event: DragEvent) {
     event.preventDefault()
-    this.endEventHovering=true
+    this.startEventHovering = true
   }
-  onEndDragLeave(event: DragEvent){
-    this.endEventHovering=false
+  onEndDragOver(event: DragEvent) {
+    event.preventDefault()
+    this.endEventHovering = true
   }
-  onStartDragLeave(event:DragEvent){
-    this.startEventHovering=false
+  onEndDragLeave(event: DragEvent) {
+    this.endEventHovering = false
+  }
+  onStartDragLeave(event: DragEvent) {
+    this.startEventHovering = false
 
   }
 
 
-  onStartDrop(event:DragEvent){
+  onStartDrop(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
-    this.startEventHovering=false
-    var node=this.treeNodeService.selectedTreeNode
-    if (node){
-      if(node.encryptionDescriptor.encrypted){
-        MessageHelper.alert('warn','Cannot select this concept as it is encrypted')
+    this.startEventHovering = false
+    var node = this.treeNodeService.selectedTreeNode
+    if (node) {
+      if (node.encryptionDescriptor.encrypted) {
+        MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
         return
       }
-      
 
-      var constraint=this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      var concept =(<ConceptConstraint>constraint).clone().concept
-      if (!concept.code ||  concept.code == ""){
+
+      var constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
+      var concept = (<ConceptConstraint>constraint).clone().concept
+      if (!concept.code || concept.code == "") {
         MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
         return
       }
-      this.startConcept=concept
+      this.startConcept = concept
     }
 
-    console.log(this.startConcept,this.endConcept)
+    console.log(this.startConcept, this.endConcept)
 
   }
-  onEndDrop(event:DragEvent){
+  onEndDrop(event: DragEvent) {
     event.preventDefault()
     event.stopPropagation()
-    this.endEventHovering=false
-    var node=this.treeNodeService.selectedTreeNode
-    if (node){
-      if(node.encryptionDescriptor.encrypted){
-        MessageHelper.alert('warn','Cannot select this concept as it is encrypted')
+    this.endEventHovering = false
+    var node = this.treeNodeService.selectedTreeNode
+    if (node) {
+      if (node.encryptionDescriptor.encrypted) {
+        MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
         return
       }
 
-      var constraint=this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      var concept =(<ConceptConstraint>constraint).clone().concept
-      if (!concept.code || concept.code == ""){
+      var constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
+      var concept = (<ConceptConstraint>constraint).clone().concept
+      if (!concept.code || concept.code == "") {
         MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
         return
       }
-      this.endConcept=concept
+      this.endConcept = concept
     }
-    console.log(this.startConcept,this.endConcept)
+    console.log(this.startConcept, this.endConcept)
 
   }
 
-  onDropdown(event){
+  onDropdown(event) {
 
-   
-      console.log("element",this.element)
-      UIHelper.removePrimeNgLoaderIcon(this.element, 200);
+
+    console.log("element", this.element)
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200);
 
 
   }
 
   @Input()
-  set activated(bool : boolean){
-    this._activated=bool
+  set activated(bool: boolean) {
+    this._activated = bool
   }
 
-  get activated():boolean{
+  get activated(): boolean {
     return this._activated
   }
 
 
-  get granularities(){
+  get granularities() {
     return this._granularities
   }
 
-  get selectedGranularity():Granularity{
+  get selectedGranularity(): Granularity {
     return this.survivalService.granularity
   }
 
-  set selectedGranularity(gran:Granularity){
-    this.survivalService.granularity=gran
+  set selectedGranularity(gran: Granularity) {
+    this.survivalService.granularity = gran
   }
 
-  get limit() : number{
+  get limit(): number {
     return this.survivalService.limit
   }
 
-  set limit(num:number){
-    this.survivalService.limit=num
+  set limit(num: number) {
+    this.survivalService.limit = num
   }
-  set startConcept(concept: Concept){
-    this.survivalService.startConcept=concept
+  set startConcept(concept: Concept) {
+    this.survivalService.startConcept = concept
   }
-  get startConcept(): Concept{
+  get startConcept(): Concept {
     return this.survivalService.startConcept
   }
-  set endConcept(concept: Concept){
-    this.survivalService.endConcept=concept
+  set endConcept(concept: Concept) {
+    this.survivalService.endConcept = concept
   }
-  get endConcept(): Concept{
+  get endConcept(): Concept {
     return this.survivalService.endConcept
   }
-  set suggestedStartConcepts(concepts: Concept[]){
-    this._suggestedStartConcepts=concepts
+  set suggestedStartConcepts(concepts: Concept[]) {
+    this._suggestedStartConcepts = concepts
   }
-  get suggestedStartConcepts(): Concept[]{
+  get suggestedStartConcepts(): Concept[] {
     return this._suggestedStartConcepts
   }
-  set suggestedEndConcepts(concepts: Concept[]){
-    this._suggestedEndConcepts=concepts
+  set suggestedEndConcepts(concepts: Concept[]) {
+    this._suggestedEndConcepts = concepts
   }
-  get suggestedEndConcepts(): Concept[]{
+  get suggestedEndConcepts(): Concept[] {
     return this._suggestedEndConcepts
   }
 
-  set endModifier(mod :string){
-    this.survivalService.endModifier=mod
+  set endModifier(mod: string) {
+    this.survivalService.endModifier = mod
   }
-  set startModifier(mod :string){
-    this.survivalService.startModifier=mod
+  set startModifier(mod: string) {
+    this.survivalService.startModifier = mod
   }
 
-  get startModifier(): string{
+  get startModifier(): string {
     return this.survivalService.startModifier
   }
 
-  get endModifier(): string{
+  get endModifier(): string {
     return this.survivalService.endModifier
   }
 

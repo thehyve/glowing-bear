@@ -13,13 +13,11 @@ export class ApiSurvivalAnalysis {
     setID:  number
     subGroupDefinitions : Array<{cohortName:string,panels:Array<ApiI2b2Panel>}>
     timeLimit: number
-    granularity: string
+    timeGranularity: string
     startConcept: string
     endConcept: string
     startModifier: string
     endModifier: string
-    startColumn: string
-    endColumn: string
     userPublicKey:string
     
 }

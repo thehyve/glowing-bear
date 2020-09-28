@@ -15,6 +15,8 @@ import {routing} from './gb-main.routing';
 import {RouterModule} from '@angular/router';
 import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
 import { CohortServiceMock } from 'app/services/cohort.service';
+import { SurvivalResultsService } from 'app/services/survival-results.service';
+import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-survival-results.module';
 
 @NgModule({
   imports: [
@@ -22,11 +24,12 @@ import { CohortServiceMock } from 'app/services/cohort.service';
     routing,
     GbNavBarModule,
     GbSidePanelModule,
-    GbAnalysisModule
+    GbAnalysisModule,
+    GbSurvivalResultsModule
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule],
-  providers:[CohortServiceMock]
+  providers:[CohortServiceMock,SurvivalResultsService]
 })
 export class GbMainModule {
 }

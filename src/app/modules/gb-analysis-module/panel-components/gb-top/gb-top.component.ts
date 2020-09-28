@@ -15,6 +15,7 @@ import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { catchError } from 'rxjs/operators';
+import { SurvivalResultsService } from 'app/services/survival-results.service';
 
 @Component({
   selector: 'app-gb-top',
@@ -22,108 +23,116 @@ import { catchError } from 'rxjs/operators';
   styleUrls: ['./gb-top.component.css']
 })
 export class GbTopComponent implements OnInit {
-  ran=false
+  ran = false
+  launched = false
 
-  _selectedSurvival:boolean
+  _selectedSurvival: boolean
   //_selectedLinearRegression:boolean
   //_selectedLogisticRegression:boolean
 
-  _selected:AnalysisType
+  _selected: AnalysisType
   _clearRes: Subject<SurvivalAnalysisClear>
-  _available=AnalysisType.ALL_TYPES
-  _survivalAnalysisResponses : ApiSurvivalAnalysisResponse[]
-  ready=false
+  _available = AnalysisType.ALL_TYPES
+  _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
+  ready = false
 
-  constructor(private survivalAnalysisService: SurvivalAnalysisServiceMock) { 
+  constructor(private survivalAnalysisService: SurvivalAnalysisServiceMock, private survivalResultsService: SurvivalResultsService) {
     this._clearRes = new Subject<SurvivalAnalysisClear>()
   }
 
- set selected(sel:AnalysisType){
-   if (sel == AnalysisType.SURVIVAL){
-     this._selectedSurvival=true
-   }
-   this._selected=sel
- }
+  set selected(sel: AnalysisType) {
+    if (sel == AnalysisType.SURVIVAL) {
+      this._selectedSurvival = true
+    }
+    this._selected = sel
+  }
 
- get selected():AnalysisType{
-   return this._selected
- }
+  get selected(): AnalysisType {
+    return this._selected
+  }
 
 
-  get selectedSurvival() :boolean{
+  get selectedSurvival(): boolean {
     return this._selectedSurvival
   }
 
-  get available():AnalysisType[]{
+  get available(): AnalysisType[] {
     return this._available
   }
 
-  isReady(event:boolean){
-    this.ready=event
+  isReady(event: boolean) {
+    this.ready = event
   }
 
-  isCompleted(event:boolean){
-    this.ready=event
+  isCompleted(event: boolean) {
+    this.ready = event
   }
 
-  runAnalysis(){
+  runAnalysis() {
     fillTestPanels()
-    this.ready=false
-    try{
-    this.survivalAnalysisService.runSurvivalAnalysis()
-      .subscribe(res=>{
-        console.log(res)
-        this._survivalAnalysisResponses=res
-        var finalResult =this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
-        this._clearRes.next(finalResult)
-        this.ran=true
-      })
-    } catch(exception){
+    this.ready = false
+    this.launched = true
+    try {
+      this.survivalAnalysisService.runSurvivalAnalysis()
+        .subscribe(res => {
+          this.launched = false
+          setTimeout(() => { }, 500)
+          console.log(res)
+          this._survivalAnalysisResponses = res
+          var finalResult = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
+          this._clearRes.next(finalResult)
+          this.survivalResultsService.pushCopy(finalResult)
+          this.ran = true
+          this.ready = true
+
+        })
+    } catch (exception) {
       console.log(exception as Error)
-      MessageHelper.alert('error',(exception as Error).message)
-      this.ready=true
+      MessageHelper.alert('error', (exception as Error).message)
+      this.ready = true
+      this.launched = false
     }
 
-    
+
   }
 
-  get clearRes() :Observable<SurvivalAnalysisClear>{
+  get clearRes(): Observable<SurvivalAnalysisClear> {
     return this._clearRes.asObservable()
   }
-  
+
 
   ngOnInit() {
-    
+
   }
 
 }
 
 
-var testPanels=[ {
+var testPanels = [{
   cohortName: "group1",
   panels: new Array<ApiI2b2Panel>()
-},{
+}, {
   cohortName: "group2",
   panels: new Array<ApiI2b2Panel>()
 }]
 
-function fillTestPanels(){
+function fillTestPanels() {
   var firstPanel = new ApiI2b2Panel()
-  firstPanel.not=false
-  var firstItem=new ApiI2b2Item()
-  firstItem.encrypted=false
-  firstItem.queryTerm="/I2B2/I2B2/Demographics/Gender/Female/"
-  firstItem.operator="equals"
+  firstPanel.not = false
+  var firstItem = new ApiI2b2Item()
+  firstItem.encrypted = false
+  firstItem.queryTerm = "/I2B2/I2B2/Demographics/Gender/Female/"
+  firstItem.operator = "equals"
   firstPanel.items.push(firstItem)
 
   testPanels[0].panels.push(firstPanel)
 
   var secondPanel = new ApiI2b2Panel()
-  secondPanel.not=false
-  var secondItem=new ApiI2b2Item()
-  secondItem.encrypted=false
-  secondItem.queryTerm="/I2B2/I2B2/Demographics/Gender/Male/"
-  secondItem.operator="equals"
+  secondPanel.not = false
+  var secondItem = new ApiI2b2Item()
+  secondItem.encrypted = false
+  secondItem.queryTerm = "/I2B2/I2B2/Demographics/Gender/Male/"
+  secondItem.operator = "equals"
   secondPanel.items.push(secondItem)
 
   testPanels[1].panels.push(secondPanel)

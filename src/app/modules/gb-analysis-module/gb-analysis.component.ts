@@ -16,7 +16,7 @@ export class GbAnalysisComponent implements OnInit {
 
   constructor() { }
 
-  draggingmode(event){
+  draggingmode(event) {
     event.preventDefault()
   }
 
