@@ -30,13 +30,13 @@ import { ConstraintMappingService } from './constraint-mapping.service';
 @Injectable()
 export class SurvivalService {
   protected _id: string
-  protected _patientGroupIds: Map<string, number[]> //one string[] per node
+  protected _patientGroupIds: Map<string, number[]> // one string[] per node
   protected _granularity = Granularity.day
   protected _limit = 2000
   protected _startConcept: Concept
   protected _endConcept: Concept
-  protected _startModifier = "@"
-  protected _endModifier = "@"
+  protected _startModifier = '@'
+  protected _endModifier = '@'
   protected _subGroups
 
   set granularity(gran: Granularity) {
@@ -86,12 +86,12 @@ export class SurvivalService {
 
 
   constructor(protected authService: AuthenticationService,
-    protected cryptoService: CryptoService,
-    protected medcoNetworkService: MedcoNetworkService,
-    protected exploreSearchService: ExploreSearchService,
-    protected apiSurvivalAnalysisService: SurvivalAnalysisService,
-    protected cohortService: CohortServiceMock,
-    protected constraintMappingService: ConstraintMappingService) {
+              protected cryptoService: CryptoService,
+              protected medcoNetworkService: MedcoNetworkService,
+              protected exploreSearchService: ExploreSearchService,
+              protected apiSurvivalAnalysisService: SurvivalAnalysisService,
+              protected cohortService: CohortServiceMock,
+              protected constraintMappingService: ConstraintMappingService) {
     this._patientGroupIds = new Map<string, number[]>()
     medcoNetworkService.nodes.forEach((apiNodeMetadata => { this._patientGroupIds[apiNodeMetadata.name] = new Array<string>() }
     ).bind(this))
@@ -99,10 +99,10 @@ export class SurvivalService {
 
   }
 
-  //get the granularity names and, if those are encrypted-deterministcally-tagged, 
+  // get the granularity names and, if those are encrypted-deterministcally-tagged,
 
   cohortToPanels(cohort: Cohort): ApiI2b2Panel[] {
-    var constraint: Constraint
+    let constraint: Constraint
     if (!cohort.rootInclusionConstraint && !cohort.rootExclusionConstraint) {
       return null
     }
@@ -121,19 +121,19 @@ export class SurvivalService {
   }
 
   runSurvivalAnalysis(): Observable<ApiSurvivalAnalysisResponse[]> {
-    var apiSurvivalAnalysis = new ApiSurvivalAnalysis()
-    var d = new Date()
+    let apiSurvivalAnalysis = new ApiSurvivalAnalysis()
+    let d = new Date()
     apiSurvivalAnalysis.ID = `MedCo_Explore_Query_${d.getUTCFullYear()}${d.getUTCMonth()}${d.getUTCDate()}${d.getUTCHours()}` +
       `${d.getUTCMinutes()}${d.getUTCSeconds()}${d.getUTCMilliseconds()}`
     if (!this.startConcept) {
-      throw new Error("Start event is undefined")
+      throw new Error('Start event is undefined')
 
     }
     apiSurvivalAnalysis.startConcept = this.startConcept.path
     apiSurvivalAnalysis.startModifier = this.startModifier
 
     if (!this.endConcept) {
-      throw new Error("End event is undefined")
+      throw new Error('End event is undefined')
     }
     apiSurvivalAnalysis.endConcept = this.endConcept.path
     apiSurvivalAnalysis.endModifier = this.endModifier
@@ -141,29 +141,31 @@ export class SurvivalService {
     apiSurvivalAnalysis.timeLimit = this.limit
     apiSurvivalAnalysis.timeGranularity = this.granularity
     if (!this.granularity) {
-      throw new Error("Granularity is undefined")
+      throw new Error('Granularity is undefined')
     }
     apiSurvivalAnalysis.setID = -1
     apiSurvivalAnalysis.subGroupDefinitions = new Array<{ cohortName: string, panels: ApiI2b2Panel[] }>()
     if (this.cohortService.selectedCohort instanceof SurvivalCohort) {
-      var survCohort = this.cohortService.selectedCohort as SurvivalCohort
+      let survCohort = this.cohortService.selectedCohort as SurvivalCohort
       if (survCohort.hasSubGroups) {
-        apiSurvivalAnalysis.subGroupDefinitions = survCohort.subGroups.map(cohort => { return { cohortName: cohort.name, panels: this.cohortToPanels(cohort) } })
+        apiSurvivalAnalysis.subGroupDefinitions = survCohort.subGroups.map(cohort => {
+          return { cohortName: cohort.name, panels: this.cohortToPanels(cohort) }
+        })
       }
     }
 
 
 
-    console.log("cohortService", this.cohortService.selectedCohort)
+    console.log('cohortService', this.cohortService.selectedCohort)
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis, this.cohortService.selectedCohort.patient_set_id)
   }
 
   survivalAnalysisDecrypt(survivalAnalysisResponse: ApiSurvivalAnalysisResponse): SurvivalAnalysisClear {
-    var start = performance.now()
-    var res = new SurvivalAnalysisClear()
-    var nofDecryptions = 0
+    let start = performance.now()
+    let res = new SurvivalAnalysisClear()
+    let nofDecryptions = 0
     res.results = survivalAnalysisResponse.results.map(group => {
-      var newGroup = new ClearGroup()
+      let newGroup = new ClearGroup()
 
       newGroup.groupId = group.groupID
       newGroup.groupResults = new Array<{
@@ -178,10 +180,10 @@ export class SurvivalService {
       nofDecryptions++
 
       for (let i = 0; i < group.groupResults.length; i++) {
-        var eventOfInterest = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.eventofinterest)
-        var censoringEvent = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.censoringevent)
+        let eventOfInterest = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.eventofinterest)
+        let censoringEvent = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.censoringevent)
         nofDecryptions += 2
-        if (eventOfInterest == 0 && censoringEvent == 0) {
+        if (eventOfInterest === 0 && censoringEvent === 0) {
           continue
         }
         newGroup.groupResults.push({
@@ -200,8 +202,8 @@ export class SurvivalService {
 
     })
 
-    var end = performance.now()
-    console.log("survival result", res.results)
+    let end = performance.now()
+    console.log('survival result', res.results)
 
     console.log(`${nofDecryptions} ElGamal points decrypted in ${end - start} milliseconds`)
 
@@ -241,27 +243,35 @@ export class SurvivalAnalysisServiceMock extends SurvivalService {
     protected apiSurvivalAnalysisService: SurvivalAnalysisService,
     protected cohortService: CohortServiceMock,
     protected constraintMappingService: ConstraintMappingService) {
-    super(authService, cryptoService, medcoNetworkService, exploreSearchService, apiSurvivalAnalysisService, cohortService, constraintMappingService)
+    super(
+      authService,
+      cryptoService,
+      medcoNetworkService,
+      exploreSearchService,
+      apiSurvivalAnalysisService,
+      cohortService,
+      constraintMappingService
+    )
   }
 
   retrievedEncIDs(): Observable<{ name: string, encID?: number }[]> {
-    return of([{ name: "1", encId: 1 },
-    { name: "2", encId: 2 },
-    { name: "3", encId: 3 },
-    { name: "4", encId: 4 },
-    { name: "5", encId: 5 },
-    { name: "6", encId: 6 },
-    { name: "7", encId: 7 },
-    { name: "8", encId: 8 },
-    { name: "9", encId: 9 }])
+    return of([{ name: '1', encId: 1 },
+    { name: '2', encId: 2 },
+    { name: '3', encId: 3 },
+    { name: '4', encId: 4 },
+    { name: '5', encId: 5 },
+    { name: '6', encId: 6 },
+    { name: '7', encId: 7 },
+    { name: '8', encId: 8 },
+    { name: '9', encId: 9 }])
   }
 
 
   execute(): Observable<SurvivalAnalysisClear> {
 
-    var srva = new SurvivalAnalysisClear()
-    /*  
-    srva.results=[{groupId:"0",
+    let srva = new SurvivalAnalysisClear()
+    /*
+    srva.results=[{groupId:'0',
     initialCount:100,
     groupResults:[
       {events:{censoringEvent:2,eventOfInterest:4},
@@ -284,10 +294,10 @@ export class SurvivalAnalysisServiceMock extends SurvivalService {
       timepoint:9},
       {events:{censoringEvent:2,eventOfInterest:4},
       timepoint:10},
-      
+
     ]
   },
-  {groupId:"1",
+  {groupId:'1',
   initialCount:100,
   groupResults:[
     {events:{censoringEvent:2,eventOfInterest:4},
@@ -310,10 +320,10 @@ export class SurvivalAnalysisServiceMock extends SurvivalService {
     timepoint:9},
     {events:{censoringEvent:2,eventOfInterest:4},
     timepoint:10},
-    
+
   ]
 },
-{groupId:"2",
+{groupId:'2',
 initialCount:100,
 groupResults:[
   {events:{censoringEvent:2,eventOfInterest:4},
@@ -336,10 +346,10 @@ groupResults:[
   timepoint:9},
   {events:{censoringEvent:2,eventOfInterest:4},
   timepoint:10},
-  
+
 ]
 },
-{groupId:"3",
+{groupId:'3',
 initialCount:100,
     groupResults:[
       {events:{censoringEvent:2,eventOfInterest:4},
@@ -362,17 +372,17 @@ initialCount:100,
       timepoint:9},
       {events:{censoringEvent:2,eventOfInterest:4},
       timepoint:10},
-      
+
     ]
   }]
   */
     srva.results = [
       {
-        groupId: "1",
+        groupId: '1',
         initialCount: 138,
         groupResults: lungGroup1,
       }, {
-        groupId: "2",
+        groupId: '2',
         initialCount: 90,
         groupResults: lungGroup2,
       }
@@ -383,8 +393,8 @@ initialCount:100,
 
 }
 
-//lungTest
-var lungGroup2 = [
+// lungTest
+let lungGroup2 = [
   { events: { censoringEvent: 0, eventOfInterest: 1 }, timepoint: 5 },
   { events: { censoringEvent: 0, eventOfInterest: 1 }, timepoint: 60 },
   { events: { censoringEvent: 0, eventOfInterest: 1 }, timepoint: 61 },
@@ -474,7 +484,7 @@ var lungGroup2 = [
   { events: { censoringEvent: 1, eventOfInterest: 0 }, timepoint: 965 },
 ]
 
-var lungGroup1 = [
+let lungGroup1 = [
   { events: { censoringEvent: 0, eventOfInterest: 3 }, timepoint: 11 },
   { events: { censoringEvent: 0, eventOfInterest: 1 }, timepoint: 12 },
   { events: { censoringEvent: 0, eventOfInterest: 2 }, timepoint: 13 },

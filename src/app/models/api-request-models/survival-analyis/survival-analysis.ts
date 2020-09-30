@@ -6,18 +6,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ApiI2b2Panel } from "../medco-node/api-i2b2-panel"
+import { ApiI2b2Panel } from '../medco-node/api-i2b2-panel'
 
 export class ApiSurvivalAnalysis {
-    ID : string
-    setID:  number
-    subGroupDefinitions : Array<{cohortName:string,panels:Array<ApiI2b2Panel>}>
-    timeLimit: number
-    timeGranularity: string
-    startConcept: string
-    endConcept: string
-    startModifier: string
-    endModifier: string
-    userPublicKey:string
-    
+  ID: string
+  setID: number
+  subGroupDefinitions: Array<{ cohortName: string, panels: Array<ApiI2b2Panel> }>
+  timeLimit: number
+  timeGranularity: string
+  startConcept: string
+  endConcept: string
+  startModifier: string
+  endModifier: string
+  userPublicKey: string
+
 }

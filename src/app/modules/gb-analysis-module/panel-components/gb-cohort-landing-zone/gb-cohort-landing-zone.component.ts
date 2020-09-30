@@ -30,17 +30,17 @@ export class GbCohortLandingZoneComponent implements OnInit {
   dedication: EventEmitter<boolean> = new EventEmitter()
 
   constructor(private cohortService: CohortServiceMock) {
-    var cohort = this.cohortService.selectedCohort
+    let cohort = this.cohortService.selectedCohort
     if (cohort) {
-      var ric = cohort.rootInclusionConstraint
-      var rec = cohort.rootExclusionConstraint
+      let ric = cohort.rootInclusionConstraint
+      let rec = cohort.rootExclusionConstraint
       this._cohort = new SurvivalCohort(cohort.name, ric ? ric.clone() : null, rec ? rec.clone() : null, cohort.creationDate, cohort.updateDate)
       this.dedicated = true
     }
 
     cohortService.selectingCohort.subscribe((cohort => {
       this._cohort = cohort;
-      this._dedicated = (this._cohort != null)
+      this._dedicated = (this._cohort !== null)
       this.dedication.emit(this.dedicated)
     }).bind(this))
   }
@@ -107,8 +107,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   get subGroups() {
     if (this.cohort instanceof SurvivalCohort) {
       return (this.cohort as SurvivalCohort).subGroups.map(group => { return { label: group.name, value: group } })
-    }
-    else return []
+    } else { return [] }
   }
 
 
@@ -116,7 +115,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     return this.cohort instanceof SurvivalCohort
   }
   set selectedSubGroup(cohort: Cohort) {
-    this.subgroup = cohort != null
+    this.subgroup = cohort !== null
     this._selectedSubgroup = cohort
 
   }

@@ -71,14 +71,20 @@ export class CohortService {
   }
 
   addSubgroupToSelected(name: string, rootInclusionConstraint: CombinationConstraint, rootExclusionConstraint: CombinationConstraint) {
-    var subGroup = new Cohort(name, rootInclusionConstraint, rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
+    let subGroup = new Cohort(name, rootInclusionConstraint, rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
     if (this._selectedCohort instanceof SurvivalCohort) {
       (this._selectedCohort as SurvivalCohort).hasSubGroups = true;
 
       (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
     } else {
-      var idx = this._cohorts.indexOf(this._selectedCohort)
-      var ret = new SurvivalCohort(this._selectedCohort.name, this.selectedCohort.rootInclusionConstraint, this.selectedCohort.rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
+      let idx = this._cohorts.indexOf(this._selectedCohort)
+      let ret = new SurvivalCohort(
+        this._selectedCohort.name,
+        this.selectedCohort.rootInclusionConstraint,
+        this.selectedCohort.rootExclusionConstraint,
+        new Date(Date.now()),
+        new Date(Date.now())
+      )
       ret.hasSubGroups = true
       ret.subGroups.push(subGroup)
       ret.patient_set_id = this.selectedCohort.patient_set_id
@@ -94,29 +100,29 @@ export class CohortService {
         try {
           this.upsertCohorts(apiCohortsToCohort(apiCohorts))
         } catch (err) {
-          MessageHelper.alert('error', "An error occured with received saved cohorts", err)
+          MessageHelper.alert('error', 'An error occured with received saved cohorts', err)
         }
         this._isRefreshing = false
       }).bind(this),
       (err => {
-        console.log("An error occured while retrieving saved cohorts: ", err)
-        MessageHelper.alert('error', "An error occured while retrieving saved cohorts", err)
+        console.log('An error occured while retrieving saved cohorts: ', err)
+        MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', err)
         this._isRefreshing = false
 
       }).bind(this),
       (() => {
-        MessageHelper.alert('', "Saved cohorts successfully retrieved")
+        MessageHelper.alert('', 'Saved cohorts successfully retrieved')
         this._isRefreshing = false
       }).bind(this)
     )
   }
 
   postCohort(cohort: Cohort) {
-    var apiCohorts = new Array<ApiCohort>()
+    let apiCohorts = new Array<ApiCohort>()
     this._isRefreshing = true
 
     this.medcoNetworkService.nodesUrl.forEach((_, index) => {
-      var apiCohort = new ApiCohort()
+      let apiCohort = new ApiCohort()
       apiCohort.patientSetID = cohort.patient_set_id[index]
       apiCohort.cohortName = cohort.name
       apiCohort.creationDate = cohort.updateDate.toISOString()
@@ -130,20 +136,20 @@ export class CohortService {
       this._isRefreshing = false
     },
       error => {
-        console.log("An error occured while saving a cohort: ", error)
-        MessageHelper.alert('error', "An error occured while saving cohort", error)
+        console.log('An error occured while saving a cohort: ', error)
+        MessageHelper.alert('error', 'An error occured while saving cohort', error)
         this._isRefreshing = false
       })
 
   }
 
   upsertCohorts(cohorts: Cohort[]) {
-    var tmp = new Map<string, Date>()
+    let tmp = new Map<string, Date>()
     this._cohorts.forEach(cohort => { tmp.set(cohort.name, cohort.updateDate) })
     cohorts.forEach(cohort => {
       if (tmp.has(cohort.name)) {
         if (cohort.updateDate > tmp.get(cohort.name)) {
-          var i = this._cohorts.findIndex(c => c.name == cohort.name)
+          let i = this._cohorts.findIndex(c => c.name === cohort.name)
           this._cohorts[i] = cohort
         }
       } else {
@@ -157,7 +163,7 @@ export class CohortService {
 
 
 
-  //from view to cached
+  // from view to cached
 
   addCohort(name: string) {
 
@@ -179,9 +185,9 @@ export class CohortService {
 
   executeSubgroupQuery(idx: number): Observable<Error> {
 
-    //TODO : redo the query with the root exclusions constraint
+    // TODO : redo the query with the root exclusions constraint
     if (!(this._selectedCohort instanceof SurvivalCohort)) {
-      return of(Error("the cohort was not set as survival cohort"))
+      return of(Error('the cohort was not set as survival cohort'))
 
     }
 
@@ -189,22 +195,22 @@ export class CohortService {
       return of(null)
     }
 
-    var subGroup = this._selectedCohort._subGroups[idx]
+    let subGroup = this._selectedCohort._subGroups[idx]
 
-    var query = new ExploreQuery
+    let query = new ExploreQuery
     query.superSetId = this._selectedCohort.patient_set_id
     query.type = ExploreQueryType.PATIENT_SET
     query.constraint = subGroup.rootInclusionConstraint
     this.exploreQueryService.exploreQuery(query).pipe(map(queryResults => {
       let err = null
       queryResults.forEach(((queryResult, nodeIndex) => {
-        if (queryResult.status === "error") {
-          err = Error("error during the execution of the queries related to sub groups")
-        } else if (queryResult.status == "available") {
+        if (queryResult.status === 'error') {
+          err = Error('error during the execution of the queries related to sub groups')
+        } else if (queryResult.status === 'available') {
           subGroup.patient_set_id[this._nodeName[nodeIndex]] = queryResult.patientSetId
 
         } else {
-          err = Error("query status handling not implemented yet")
+          err = Error('query status handling not implemented yet')
 
         }
       }).bind(this))
@@ -239,18 +245,23 @@ export class CohortServiceMock extends CohortService {
 function apiCohortsToCohort(apiCohorts: ApiCohort[][]): Cohort[] {
 
   const cohortNumber = apiCohorts[0].length
-  apiCohorts.forEach(apiCohort => { if (apiCohort.length != cohortNumber) throw (Error("cohort numbers are not the same across nodes")) })
+  apiCohorts
+    .forEach(apiCohort => {
+      if (apiCohort.length !== cohortNumber) {
+        throw (Error('cohort numbers are not the same across nodes'))
+      }
+    })
 
-  var cohortName, creationDate, updateDate: string
-  var res = new Array<Cohort>()
+  let cohortName, creationDate, updateDate: string
+  let res = new Array<Cohort>()
   for (let i = 0; i < cohortNumber; i++) {
     cohortName = apiCohorts[0][i].cohortName
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].cohortName != cohortName) throw (Error("cohort names are not the same across nodes")) })
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].cohortName !== cohortName) { throw (Error('cohort names are not the same across nodes')) } })
     creationDate = apiCohorts[0][i].creationDate
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].creationDate != creationDate) throw (Error("cohort creation dates are not the same across nodes")) })
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].creationDate !== creationDate) { throw (Error('cohort creation dates are not the same across nodes')) } })
     updateDate = apiCohorts[0][i].updateDate
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].updateDate != updateDate) throw (Error("cohort update dates are not the same across nodes")) })
-    var cohort = new Cohort(cohortName, null, null, new Date(creationDate), new Date(updateDate))
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].updateDate !== updateDate) { throw (Error('cohort update dates are not the same across nodes')) } })
+    let cohort = new Cohort(cohortName, null, null, new Date(creationDate), new Date(updateDate))
 
     cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryId)
     res.push(cohort)

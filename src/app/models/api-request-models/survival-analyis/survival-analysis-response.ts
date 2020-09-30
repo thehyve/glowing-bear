@@ -7,12 +7,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 export class ApiSurvivalAnalysisResponse {
-    results:{groupID: string
-             initialCount : string
-             groupResults: {timepoint:number
-                            events:{eventofinterest:string
-                                    censoringevent:string
-                                    
-                            }}[]}[]
-    
+  results: {
+    groupID: string
+    initialCount: string
+    groupResults: {
+      timepoint: number
+      events: {
+        eventofinterest: string
+        censoringevent: string
+
+      }
+    }[]
+  }[]
+
 }

@@ -27,8 +27,8 @@ export class GbTopComponent implements OnInit {
   launched = false
 
   _selectedSurvival: boolean
-  //_selectedLinearRegression:boolean
-  //_selectedLogisticRegression:boolean
+  // _selectedLinearRegression:boolean
+  // _selectedLogisticRegression:boolean
 
   _selected: AnalysisType
   _clearRes: Subject<SurvivalAnalysisClear>
@@ -41,7 +41,7 @@ export class GbTopComponent implements OnInit {
   }
 
   set selected(sel: AnalysisType) {
-    if (sel == AnalysisType.SURVIVAL) {
+    if (sel === AnalysisType.SURVIVAL) {
       this._selectedSurvival = true
     }
     this._selected = sel
@@ -79,7 +79,7 @@ export class GbTopComponent implements OnInit {
           setTimeout(() => { }, 500)
           console.log(res)
           this._survivalAnalysisResponses = res
-          var finalResult = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
+          let finalResult = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
           this._clearRes.next(finalResult)
           this.survivalResultsService.pushCopy(finalResult)
           this.ran = true
@@ -108,31 +108,31 @@ export class GbTopComponent implements OnInit {
 }
 
 
-var testPanels = [{
-  cohortName: "group1",
+let testPanels = [{
+  cohortName: 'group1',
   panels: new Array<ApiI2b2Panel>()
 }, {
-  cohortName: "group2",
+  cohortName: 'group2',
   panels: new Array<ApiI2b2Panel>()
 }]
 
 function fillTestPanels() {
-  var firstPanel = new ApiI2b2Panel()
+  let firstPanel = new ApiI2b2Panel()
   firstPanel.not = false
-  var firstItem = new ApiI2b2Item()
+  let firstItem = new ApiI2b2Item()
   firstItem.encrypted = false
-  firstItem.queryTerm = "/I2B2/I2B2/Demographics/Gender/Female/"
-  firstItem.operator = "equals"
+  firstItem.queryTerm = '/I2B2/I2B2/Demographics/Gender/Female/'
+  firstItem.operator = 'equals'
   firstPanel.items.push(firstItem)
 
   testPanels[0].panels.push(firstPanel)
 
-  var secondPanel = new ApiI2b2Panel()
+  let secondPanel = new ApiI2b2Panel()
   secondPanel.not = false
-  var secondItem = new ApiI2b2Item()
+  let secondItem = new ApiI2b2Item()
   secondItem.encrypted = false
-  secondItem.queryTerm = "/I2B2/I2B2/Demographics/Gender/Male/"
-  secondItem.operator = "equals"
+  secondItem.queryTerm = '/I2B2/I2B2/Demographics/Gender/Male/'
+  secondItem.operator = 'equals'
   secondPanel.items.push(secondItem)
 
   testPanels[1].panels.push(secondPanel)

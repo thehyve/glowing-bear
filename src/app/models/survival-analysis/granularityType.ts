@@ -7,9 +7,9 @@
  */
 
 
- export enum Granularity{
-     day = "day",
-     week = "week",
-     month = "month",
-     year="year",
- }
+export enum Granularity {
+  day = 'day',
+  week = 'week',
+  month = 'month',
+  year = 'year',
+}

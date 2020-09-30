@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SensitiveType } from "./sensitive-type";
+import { SensitiveType } from './sensitive-type';
 
 export class Constraint {
 
@@ -16,8 +16,8 @@ export class Constraint {
   // The parent constraint
   protected _parentConstraint: Constraint;
 
-  protected _sensitiveType :SensitiveType;
-  
+  protected _sensitiveType: SensitiveType;
+
 
   constructor() {
     this.textRepresentation = '';
@@ -44,19 +44,19 @@ export class Constraint {
     return 'Constraint';
   }
 
-  set sensitiveType(st :SensitiveType){
-    this._sensitiveType=st
+  set sensitiveType(st: SensitiveType) {
+    this._sensitiveType = st
   }
 
-  get sensitiveType():SensitiveType {
+  get sensitiveType(): SensitiveType {
     return this._sensitiveType
   }
 
-  clone(): Constraint{
-    var ret =new Constraint()
-    ret.textRepresentation=this.textRepresentation
-    ret.sensitiveType=this.sensitiveType
-    ret.parentConstraint=(this._parentConstraint) ? this._parentConstraint:null
-    return ret 
+  clone(): Constraint {
+    let ret = new Constraint()
+    ret.textRepresentation = this.textRepresentation
+    ret.sensitiveType = this.sensitiveType
+    ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
+    return ret
   }
 }

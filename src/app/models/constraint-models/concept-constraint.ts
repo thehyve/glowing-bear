@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * 
+ *
  * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,11 +8,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
-import {Concept} from './concept';
-import {ValueConstraint} from './value-constraint';
-import {TimeConstraint} from './time-constraint';
-import {FormatHelper} from '../../utilities/format-helper';
+import { Constraint } from './constraint';
+import { Concept } from './concept';
+import { ValueConstraint } from './value-constraint';
+import { TimeConstraint } from './time-constraint';
+import { FormatHelper } from '../../utilities/format-helper';
 import { SensitiveType } from './sensitive-type';
 
 export class ConceptConstraint extends Constraint {
@@ -38,11 +38,11 @@ export class ConceptConstraint extends Constraint {
     this.textRepresentation = 'Concept';
   }
 
-  clone():ConceptConstraint{
-    var res= new ConceptConstraint()
-    res.textRepresentation=this.textRepresentation
-    res.parentConstraint=this.parentConstraint
-    res.concept=this.concept.clone()
+  clone(): ConceptConstraint {
+    let res = new ConceptConstraint()
+    res.textRepresentation = this.textRepresentation
+    res.parentConstraint = this.parentConstraint
+    res.concept = this.concept.clone()
     return res
   }
 
@@ -53,7 +53,7 @@ export class ConceptConstraint extends Constraint {
   set concept(concept: Concept) {
     this._concept = concept;
     this.textRepresentation = concept ? `Concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
-    this.sensitiveType= concept ?
+    this.sensitiveType = concept ?
       concept.encryptionDescriptor ?
         SensitiveType.Sensitive : SensitiveType.NonSensitive
       : SensitiveType.Undetermined

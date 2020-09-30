@@ -1,43 +1,43 @@
 <p-accordionTab header="Subgroups" *ngIf="activated" id="gb-cohort-landing-zone-component"
-    [ngClass]="{'subgroup': activated}">
+  [ngClass]="{'subgroup': activated}">
 
 
-    <div *ngIf="!dedicated">
-        <div (drop)="drop($event)" (dragover)="draggingmode($event)">
-            <p-card>
-                <p>Select a cohort</p>
-            </p-card>
-
-        </div>
+  <div *ngIf="!dedicated">
+    <div (drop)="drop($event)" (dragover)="draggingmode($event)">
+      <p-card>
+        <p>Select a cohort</p>
+      </p-card>
 
     </div>
 
-    <div *ngIf="dedicated">
+  </div>
+
+  <div *ngIf="dedicated">
 
 
-        <span>{{cohort.name}}</span>
-        <div class="padded">
-            <button pButton class="ui-button-secondary" type="button" pTooltip="Mark as important" tooltipPosition="top"
-                placeholder="Top" (click)="dedicated=false;" label="Remove">
-            </button>
-        </div>
-
-
-        <br>
-
-        <!-- For obscure reason, it is impossible to work with p-selectButton properly, this work around with p-toggLe is necessary -->
-
-
-        <p-toggleButton *ngFor="let subGroup of cohort.subGroups" [(ngModel)]="subGroup.selected"
-            (click)="changeSelectedSubGroup($event,subGroup)" [onLabel]="subGroup.name" [offLabel]="subGroup.name">
-        </p-toggleButton>
-
-        <button pButton id="plus" pTooltip="Mark as important" tooltipPosition="top" placeholder="Top"
-            (click)="subgroup=true;" icon="fa fa-plus">
-        </button>
-
-
-
+    <span>{{cohort.name}}</span>
+    <div class="padded">
+      <button pButton class="ui-button-secondary" type="button" pTooltip="Mark as important" tooltipPosition="top"
+        placeholder="Top" (click)="dedicated=false;" label="Remove">
+      </button>
     </div>
-    <app-gb-subgroup [(activated)]="subgroup" [selectedSubGroup]=selectedSubGroup></app-gb-subgroup>
+
+
+    <br>
+
+    <!-- For obscure reason, it is impossible to work with p-selectButton properly, this work around with p-toggLe is necessary -->
+
+
+    <p-toggleButton *ngFor="let subGroup of cohort.subGroups" [(ngModel)]="subGroup.selected"
+      (click)="changeSelectedSubGroup($event,subGroup)" [onLabel]="subGroup.name" [offLabel]="subGroup.name">
+    </p-toggleButton>
+
+    <button pButton id="plus" pTooltip="Mark as important" tooltipPosition="top" placeholder="Top"
+      (click)="subgroup=true;" icon="fa fa-plus">
+    </button>
+
+
+
+  </div>
+  <app-gb-subgroup [(activated)]="subgroup" [selectedSubGroup]=selectedSubGroup></app-gb-subgroup>
 </p-accordionTab>

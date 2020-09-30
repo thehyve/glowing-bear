@@ -20,35 +20,34 @@ import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survi
 @Injectable()
 export class SurvivalAnalysisService {
 
-   /**
-   * Query timeout: 10 minutes.
-   */
+  /**
+  * Query timeout: 10 minutes.
+  */
   private static TIMEOUT_MS = 1000 * 60 * 10;
 
-  constructor(
-              private apiEndpointService: ApiEndpointService,
+  constructor(private apiEndpointService: ApiEndpointService,
               private medcoNetworkService: MedcoNetworkService,
-              private cryptoService: CryptoService) {}
+              private cryptoService: CryptoService) { }
 
-    survivalAnalysisSingleNode(nodeUrl:string,apiSurvivalAnalysis:ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse>{
-      console.log(apiSurvivalAnalysis)
-      return this.apiEndpointService.postCall(
-            '/node/analysis/survival/query',
-            apiSurvivalAnalysis,
-            nodeUrl 
-        ).pipe(map(x=>x))
-    }
+  survivalAnalysisSingleNode(nodeUrl: string, apiSurvivalAnalysis: ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse> {
+    console.log(apiSurvivalAnalysis)
+    return this.apiEndpointService.postCall(
+      '/node/analysis/survival/query',
+      apiSurvivalAnalysis,
+      nodeUrl
+    ).pipe(map(x => x))
+  }
 
 
-    survivalAnalysisAllNodes(apiSurvivalAnalysis:ApiSurvivalAnalysis,patientSetIDs:Array<number>):Observable<ApiSurvivalAnalysisResponse[]>{  
-      apiSurvivalAnalysis.userPublicKey=this.cryptoService.ephemeralPublicKey
-      return forkJoin(...this.medcoNetworkService.nodesUrl.map(
-          (url,index)=>{
-            console.log("patientSet",patientSetIDs)
-            apiSurvivalAnalysis.setID=patientSetIDs[index]
-            return this.survivalAnalysisSingleNode(url,apiSurvivalAnalysis)
-          }
-          ))
-        .pipe(timeout(SurvivalAnalysisService.TIMEOUT_MS))
-    }
+  survivalAnalysisAllNodes(apiSurvivalAnalysis: ApiSurvivalAnalysis, patientSetIDs: Array<number>): Observable<ApiSurvivalAnalysisResponse[]> {
+    apiSurvivalAnalysis.userPublicKey = this.cryptoService.ephemeralPublicKey
+    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
+      (url, index) => {
+        console.log('patientSet', patientSetIDs)
+        apiSurvivalAnalysis.setID = patientSetIDs[index]
+        return this.survivalAnalysisSingleNode(url, apiSurvivalAnalysis)
+      }
+    ))
+      .pipe(timeout(SurvivalAnalysisService.TIMEOUT_MS))
+  }
 }

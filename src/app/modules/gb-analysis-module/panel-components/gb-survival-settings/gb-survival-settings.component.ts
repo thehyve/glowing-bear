@@ -25,7 +25,7 @@ import { Granularity } from 'app/models/survival-analysis/granularityType';
 export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
 
-  _granularities = [{ label: "Day", value: Granularity.day }, { label: "Week", value: Granularity.week }, { label: "Month", value: Granularity.month }, { label: "Year", value: Granularity.month }]
+  _granularities = [{ label: 'Day', value: Granularity.day }, { label: 'Week', value: Granularity.week }, { label: 'Month', value: Granularity.month }, { label: 'Year', value: Granularity.month }]
 
 
   _suggestedStartConcepts: Concept[]
@@ -47,26 +47,26 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   }
   ngOnChanges() {
-    var autoCompleteContainer2 = document.querySelector('#autoCompleteContainer')
-    console.log("containers", this.autoCompleteContainer, autoCompleteContainer2)
+    let autoCompleteContainer2 = document.querySelector('#autoCompleteContainer')
+    console.log('containers', this.autoCompleteContainer, autoCompleteContainer2)
     if (this.autoCompleteContainer) {
-      this.autoCompleteContainer.addEventListener('dragenter', () => { console.log("dragenter") })
+      this.autoCompleteContainer.addEventListener('dragenter', () => { console.log('dragenter') })
     }
 
   }
 
   search(event) {
 
-    var q = event.query.toLowerCase();
+    let q = event.query.toLowerCase();
 
-    var concepts = this.constraintService.concepts;
-    console.log("q", q, "concepts", concepts)
+    let concepts = this.constraintService.concepts;
+    console.log('q', q, 'concepts', concepts)
     if (q) {
       this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
     } else {
       this.suggestedStartConcepts = concepts;
     }
-    console.log("element", this.element)
+    console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200)
 
   }
@@ -91,7 +91,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     event.preventDefault()
     event.stopPropagation()
     this.startEventHovering = false
-    var node = this.treeNodeService.selectedTreeNode
+    let node = this.treeNodeService.selectedTreeNode
     if (node) {
       if (node.encryptionDescriptor.encrypted) {
         MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
@@ -99,9 +99,9 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
       }
 
 
-      var constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      var concept = (<ConceptConstraint>constraint).clone().concept
-      if (!concept.code || concept.code == "") {
+      let constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
+      let concept = (<ConceptConstraint>constraint).clone().concept
+      if (!concept.code || concept.code === '') {
         MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
         return
       }
@@ -115,16 +115,16 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     event.preventDefault()
     event.stopPropagation()
     this.endEventHovering = false
-    var node = this.treeNodeService.selectedTreeNode
+    let node = this.treeNodeService.selectedTreeNode
     if (node) {
       if (node.encryptionDescriptor.encrypted) {
         MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
         return
       }
 
-      var constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      var concept = (<ConceptConstraint>constraint).clone().concept
-      if (!concept.code || concept.code == "") {
+      let constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
+      let concept = (<ConceptConstraint>constraint).clone().concept
+      if (!concept.code || concept.code === '') {
         MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
         return
       }
@@ -137,7 +137,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   onDropdown(event) {
 
 
-    console.log("element", this.element)
+    console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
 
 

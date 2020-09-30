@@ -7,13 +7,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {FormatHelper} from '../../utilities/format-helper';
-import {QueryService} from '../../services/query.service';
-import {ExploreQueryType} from '../../models/query-models/explore-query-type';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {ConstraintService} from '../../services/constraint.service';
+import { Component, OnInit } from '@angular/core';
+import { FormatHelper } from '../../utilities/format-helper';
+import { QueryService } from '../../services/query.service';
+import { ExploreQueryType } from '../../models/query-models/explore-query-type';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ConstraintService } from '../../services/constraint.service';
 import { CohortServiceMock } from 'app/services/cohort.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Cohort } from 'app/models/cohort-models/cohort';
@@ -24,13 +24,13 @@ import { Cohort } from 'app/models/cohort-models/cohort';
   styleUrls: ['./gb-explore.component.css']
 })
 export class GbExploreComponent {
-  public name:string
-  private _lastSuccessfulSet:number[]
+  public name: string
+  private _lastSuccessfulSet: number[]
 
   constructor(public queryService: QueryService,
-              private cohortService: CohortServiceMock,
-              public constraintService: ConstraintService) {
-              this.queryService.lastSuccessfulSet.subscribe(resIDs=>{this._lastSuccessfulSet=resIDs})
+    private cohortService: CohortServiceMock,
+    public constraintService: ConstraintService) {
+    this.queryService.lastSuccessfulSet.subscribe(resIDs => { this._lastSuccessfulSet = resIDs })
   }
 
   get globalCount(): Observable<string> {
@@ -53,34 +53,34 @@ export class GbExploreComponent {
     this.queryService.isDirty = true;
   }
 
-  get lastSuccessfulSet(): number[]{
+  get lastSuccessfulSet(): number[] {
     return this._lastSuccessfulSet
   }
 
-  save(){
-    if (this.name == ""){
-      MessageHelper.alert('warn',"You must provide a name for the cohort you want to save.")
-    }else{
-    var existingCohorts=this.cohortService.cohorts
-    if(existingCohorts.findIndex((cohort => cohort.name==this.name).bind(this)) != -1){
-      MessageHelper.alert("warn",`Name ${this.name} already used.`)
-    }else{
+  save() {
+    if (this.name === '') {
+      MessageHelper.alert('warn', 'You must provide a name for the cohort you want to save.')
+    } else {
+      let existingCohorts = this.cohortService.cohorts
+      if (existingCohorts.findIndex((cohort => cohort.name === this.name).bind(this)) !== -1) {
+        MessageHelper.alert('warn', `Name ${this.name} already used.`)
+      } else {
 
- 
-    var cohort =new Cohort(this.name,this.constraintService.rootInclusionConstraint,this.constraintService.rootExclusionConstraint,new Date(Date.now()),new Date(Date.now()))
-    //TODO parametrize this
-    cohort.patient_set_id=[-1,-1,-1]
-    existingCohorts.push(cohort)
-    this.cohortService.cohorts=existingCohorts
-    this.cohortService.postCohort(cohort)
-    
-    MessageHelper.alert("success","Cohort has been sent.")
-    }
+
+        let cohort = new Cohort(this.name, this.constraintService.rootInclusionConstraint, this.constraintService.rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
+        // TODO parametrize this
+        cohort.patient_set_id = [-1, -1, -1]
+        existingCohorts.push(cohort)
+        this.cohortService.cohorts = existingCohorts
+        this.cohortService.postCohort(cohort)
+
+        MessageHelper.alert('success', 'Cohort has been sent.')
+      }
     }
   }
 
-  saveIfEnter(event){
-    if(event.keyCode == 13){
+  saveIfEnter(event) {
+    if (event.keyCode === 13) {
       this.save()
     }
   }

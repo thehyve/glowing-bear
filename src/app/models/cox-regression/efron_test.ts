@@ -6,40 +6,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { logLikelihood,derivative,secondDerivative} from "./efron"
-import {inv} from 'mathjs'
-import {  addTo,  inMatrix, multiplyMatrixVector } from './coxRegression'
+import { logLikelihood, derivative, secondDerivative } from './efron'
+import { inv } from 'mathjs'
+import { addTo, inMatrix, multiplyMatrixVector } from './coxRegression'
 
 
 
-const EfronTestContext ={
-    initialBeta:[0.0],
-    initialTimePoints:[
-        {time:1,events:[{x:[1],event:true},{x:[0],event:true},{x:[1],event:false},{x:[0],event:false}]},
-        {time:2,events:[{x:[1],event:true},{x:[0],event:true}]},
-    ]
+const EfronTestContext = {
+  initialBeta: [0.0],
+  initialTimePoints: [
+    { time: 1, events: [{ x: [1], event: true }, { x: [0], event: true }, { x: [1], event: false }, { x: [0], event: false }] },
+    { time: 2, events: [{ x: [1], event: true }, { x: [0], event: true }] },
+  ]
 }
 
-export function TestEfron():void{
-var hessian= new Array<Array<number>>(1)
-hessian[0]= [0]
- var initLikelihood=logLikelihood(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
- var initGradient=derivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
- var initHessian=secondDerivative(EfronTestContext.initialTimePoints,EfronTestContext.initialBeta)
- inMatrix(hessian,initHessian)
+export function TestEfron(): void {
+  let hessian = new Array<Array<number>>(1)
+  hessian[0] = [0]
+  let initLikelihood = logLikelihood(EfronTestContext.initialTimePoints, EfronTestContext.initialBeta)
+  let initGradient = derivative(EfronTestContext.initialTimePoints, EfronTestContext.initialBeta)
+  let initHessian = secondDerivative(EfronTestContext.initialTimePoints, EfronTestContext.initialBeta)
+  inMatrix(hessian, initHessian)
 
- var likelihood=initLikelihood
- var gradient= initGradient
- var beta=EfronTestContext.initialBeta
- for (let i = 0; i < 10; i++) {
-    var delta=multiplyMatrixVector(inv(hessian),gradient)
-    addTo(beta,delta)
+  let likelihood = initLikelihood
+  let gradient = initGradient
+  let beta = EfronTestContext.initialBeta
+  for (let i = 0; i < 10; i++) {
+    let delta = multiplyMatrixVector(inv(hessian), gradient)
+    addTo(beta, delta)
 
-    likelihood=logLikelihood(EfronTestContext.initialTimePoints,beta)
-    gradient=derivative(EfronTestContext.initialTimePoints,beta)
-    inMatrix(hessian,secondDerivative(EfronTestContext.initialTimePoints,beta))
+    likelihood = logLikelihood(EfronTestContext.initialTimePoints, beta)
+    gradient = derivative(EfronTestContext.initialTimePoints, beta)
+    inMatrix(hessian, secondDerivative(EfronTestContext.initialTimePoints, beta))
 
 
 
- }
+  }
 }

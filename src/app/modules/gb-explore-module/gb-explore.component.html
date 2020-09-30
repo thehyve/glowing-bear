@@ -1,6 +1,6 @@
 <div>
 
-  
+
 
   <div class="gb-data-selection-accordion-header">
     <div class="gb-data-selection-accordion-sub-header-1">
@@ -8,17 +8,16 @@
     </div>
     <div class="gb-data-selection-accordion-sub-header-2">
       <span id="save-box">
-      <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name"/>
-      <span>&nbsp;</span>
-      <button class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn {{lastSuccessfulSet ?  '' : 'gb-explore-waiting-cohort'}}"
-            type="button"
-            [disabled]="!lastSuccessfulSet"
-            (click)="save()">
+        <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name" />
+        <span>&nbsp;</span>
+        <button
+          class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn {{lastSuccessfulSet ?  '' : 'gb-explore-waiting-cohort'}}"
+          type="button" [disabled]="!lastSuccessfulSet" (click)="save()">
 
-      <span>Save</span>
-    
-    </button>
-        </span>
+          <span>Save</span>
+
+        </button>
+      </span>
       <span class="gb-data-selection-accordion-sub-header-3 float-left">
         <span class="gb-data-selection-emphasis-text">{{globalCount | async}} subjects</span>
       </span>
@@ -26,17 +25,15 @@
         <i *ngIf="queryService.isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
 
         <!-- disabled button during query -->
-        <button *ngIf="!queryService.isUpdating && constraintService.hasConstraint(); else disabledButton"
-          type="button"
-          (click)="execQuery($event)"
-          class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+        <button *ngIf="!queryService.isUpdating && constraintService.hasConstraint(); else disabledButton" type="button"
+          (click)="execQuery($event)" class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
           {{queryService.isDirty? 'gb-explore-query-btn-dirty' : ''}}">
           Run
         </button>
         <ng-template #disabledButton>
-        <button type="button" disabled class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">
-          Run
-        </button>
+          <button type="button" disabled class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">
+            Run
+          </button>
         </ng-template>
 
       </span>

@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.2
- * 
+ *
  * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,8 +8,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
-import {CombinationState} from './combination-state';
+import { Constraint } from './constraint';
+import { CombinationState } from './combination-state';
 import { SensitiveType } from './sensitive-type';
 
 export class CombinationConstraint extends Constraint {
@@ -17,7 +17,7 @@ export class CombinationConstraint extends Constraint {
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
-  
+
 
   constructor() {
     super();
@@ -25,39 +25,39 @@ export class CombinationConstraint extends Constraint {
     this.combinationState = CombinationState.And;
     this.isRoot = false;
     this.textRepresentation = 'Group';
-    this.sensitiveType=SensitiveType.Undetermined
+    this.sensitiveType = SensitiveType.Undetermined
   }
 
   get className(): string {
     return 'CombinationConstraint';
   }
 
-  addChild(constraint: Constraint):Error {
+  addChild(constraint: Constraint): Error {
 
-    if (this.sensitiveType==SensitiveType.Undetermined || 
-        this.sensitiveType==constraint.sensitiveType){
-          if (!(<CombinationConstraint>constraint).isRoot) {
-            // to enforce polymorphism, otherwise child set method is not called
-            constraint.parentConstraint = this;
-          }
-          this.children.push(constraint);
-          if(this.combinationState==CombinationState.Or){
-            this.sensitiveType=constraint.sensitiveType
-          }
-          return null
-        }else{
-          return new Error("You cannot combine sensitive and non-sensitive concept with OR operator")
-        }
+    if (this.sensitiveType === SensitiveType.Undetermined ||
+      this.sensitiveType === constraint.sensitiveType) {
+      if (!(<CombinationConstraint>constraint).isRoot) {
+        // to enforce polymorphism, otherwise child set method is not called
+        constraint.parentConstraint = this;
+      }
+      this.children.push(constraint);
+      if (this.combinationState === CombinationState.Or) {
+        this.sensitiveType = constraint.sensitiveType
+      }
+      return null
+    } else {
+      return new Error('You cannot combine sensitive and non-sensitive concept with OR operator')
+    }
 
   }
 
-  clone():CombinationConstraint{
-    var res = new CombinationConstraint
-    res.textRepresentation=this.textRepresentation
-    res.parentConstraint=(this.parentConstraint) ? this.parentConstraint:null
-    res.isRoot=this.isRoot
-    res.combinationState=this.combinationState
-    res.children=this._children.map(constr=>constr.clone())
+  clone(): CombinationConstraint {
+    let res = new CombinationConstraint
+    res.textRepresentation = this.textRepresentation
+    res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null
+    res.isRoot = this.isRoot
+    res.combinationState = this.combinationState
+    res.children = this._children.map(constr => constr.clone())
     return res
   }
 
