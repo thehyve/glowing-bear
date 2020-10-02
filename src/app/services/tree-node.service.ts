@@ -14,11 +14,10 @@ import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintService} from './constraint.service';
 import {ConceptType} from '../models/constraint-models/concept-type';
 import {ErrorHelper} from '../utilities/error-helper';
-import {HttpErrorResponse} from '@angular/common/http';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
-import {GenomicAnnotation} from "../models/constraint-models/genomic-annotation";
-import {ExploreSearchService} from "./api/medco-node/explore-search.service";
+import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
+import {ExploreSearchService} from './api/medco-node/explore-search.service';
 
 @Injectable()
 export class TreeNodeService {

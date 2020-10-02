@@ -10,9 +10,9 @@ import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
 import {Observable} from 'rxjs';
 import {ApiEndpointService} from '../api-endpoint.service';
-import {ApiNetworkMetadata} from "../../models/api-response-models/medco-network/api-network-metadata";
-import {ApiNodeMetadata} from "../../models/api-response-models/medco-network/api-node-metadata";
-import {ErrorHelper} from "../../utilities/error-helper";
+import {ApiNetworkMetadata} from '../../models/api-response-models/medco-network/api-network-metadata';
+import {ApiNodeMetadata} from '../../models/api-response-models/medco-network/api-node-metadata';
+import {ErrorHelper} from '../../utilities/error-helper';
 
 @Injectable()
 export class MedcoNetworkService {

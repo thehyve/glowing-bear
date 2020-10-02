@@ -2,7 +2,7 @@ import {TreeNode as PrimeNgTreeNode} from 'primeng/api';
 import {DropMode} from '../drop-mode';
 import {ConceptType} from '../constraint-models/concept-type';
 import {TreeNodeType} from './tree-node-type';
-import {MedcoEncryptionDescriptor} from "./medco-encryption-descriptor";
+import {MedcoEncryptionDescriptor} from './medco-encryption-descriptor';
 
 export class TreeNode implements PrimeNgTreeNode {
 

@@ -15,9 +15,9 @@ import {
   DeserializePoint,
   GenerateKeyPair,
   SerializePoint
-} from "../utilities/crypto/crypto";
-import {Point, Scalar} from "@dedis/kyber";
-import {MedcoNetworkService} from "./api/medco-network.service";
+} from '../utilities/crypto/crypto';
+import {Point, Scalar} from '@dedis/kyber';
+import {MedcoNetworkService} from './api/medco-network.service';
 
 @Injectable()
 export class CryptoService {
