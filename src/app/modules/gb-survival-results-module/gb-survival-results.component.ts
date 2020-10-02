@@ -1,23 +1,29 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+import { Component, OnInit, ElementRef, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 import { SelectItem } from 'primeng/api';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { select, Selection } from 'd3';
 import { alphas, CIs, confidenceInterval, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
 import { ChiSquaredCdf, clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
-import { PDF } from 'app/models/file-models/pdf';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
-import { logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
+import { logRank2Groups } from 'app/models/survival-analysis/log-rank-p-value';
+import { summaryTable } from 'app/models/survival-analysis/summary-table';
 
 @Component({
   selector: 'app-gb-survival-results',
   templateUrl: './gb-survival-results.component.html',
   styleUrls: ['./gb-survival-results.component.css']
 })
-export class GbSurvivalResultsComponent implements OnInit {
+export class GbSurvivalResultsComponent implements OnInit{
   _id: number
   colorRange = colorRange
   advancedSettings = false
@@ -67,6 +73,9 @@ export class GbSurvivalResultsComponent implements OnInit {
   _groupTables: SelectItem[]
   selectedGroupTable: { legend: string, table: Array<Array<string>> }
 
+  _summaryTableMileStones: number[]
+  _summaryTable: { atRisk: number, event: number }[][]
+
 
   constructor(private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
@@ -74,18 +83,36 @@ export class GbSurvivalResultsComponent implements OnInit {
       let resAndSettings = this.survivalResultsService.selectedSurvivalResult
       this.results = resAndSettings.survivalAnalysisClear
       this.inputParameters = resAndSettings.settings
+      this.display()
     })
+
+    this._summaryTable = new Array<Array<{ atRisk: number, event: number }>>()
+    this._summaryTableMileStones = new Array<number>()
   }
 
   ngOnInit() {
 
+    this.display()
+
+  }
+
+
+
+  display(){
     // -- get the results
     this._survivalCurve = clearResultsToArray(this._results)
+    
+    // -- remove previous svg
+    let previous=select('#survivalSvgContainer svg')
+    if (previous){
+      previous.remove()
+    }
+
     // -- draw svg
     this._svg = select('#survivalSvgContainer').append("svg").attr("width", "100%")
       .attr("height", "100%")
-      .attr("viewBox", "-10 -20 450 450")
-      .attr("font-size", "15px")
+      .attr("viewBox", "-40 -40 450 300")
+      .attr("font-size", "8px")
       .attr("stroke-width", "1px")
       .append("g").attr("transform", `translate (${this._margins},${this._margins})`)
     this._drawing = new SurvivalCurvesDrawing(this._svg, this.survivalCurve, 300, this._margins, 160, 300)
@@ -101,6 +128,8 @@ export class GbSurvivalResultsComponent implements OnInit {
     // -- build tables
     this.setGroupComparisons()
 
+    //-- build summary table
+    this.updateSummaryTable()
   }
 
   setGroupComparisons() {
@@ -182,6 +211,13 @@ export class GbSurvivalResultsComponent implements OnInit {
     }
   }
 
+  updateSummaryTable() {
+    this._summaryTableMileStones = this._drawing.ticks
+    this._survivalCurve.curves.forEach(({ points }, index) => {
+      this._summaryTable[index] = summaryTable(points, this._summaryTableMileStones)
+    })
+  }
+
   set id(i: number) {
     this._id = i
   }
@@ -251,11 +287,11 @@ export class GbSurvivalResultsComponent implements OnInit {
     return this._survivalCurve
   }
 
-  get groupTables():SelectItem[]{
+  get groupTables(): SelectItem[] {
     return this._groupTables
   }
 
-  
+
 
   set ic(ic) {
     this._ic = ic
@@ -301,6 +337,7 @@ export class GbSurvivalResultsComponent implements OnInit {
     if (this._drawing) {
       this._drawing.nofTicks = ticks
       this._drawing.changeGrid()
+      this.updateSummaryTable()
     }
   }
 
@@ -313,6 +350,17 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   get grid(): boolean {
     return (this._drawing) ? this._drawing.grid : null
+  }
+
+  get summaryTableMileStones(): number[] {
+    return this._summaryTableMileStones
+  }
+
+  get summaryTable(): {
+    atRisk: number;
+    event: number;
+  }[][] {
+    return this._summaryTable
   }
 
 }

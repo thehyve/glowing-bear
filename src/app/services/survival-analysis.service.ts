@@ -17,16 +17,15 @@ import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-anal
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { CohortServiceMock } from './cohort.service';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
-import { Granularity } from 'app/models/survival-analysis/granularityType';
+import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { Concept } from 'app/models/constraint-models/concept';
-import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
 import { Constraint } from 'app/models/constraint-models/constraint';
 import { NegationConstraint } from 'app/models/constraint-models/negation-constraint';
 import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 import { ConstraintMappingService } from './constraint-mapping.service';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 
-
+export type SubGroup = { name: string, rootInclusionConstraint: CombinationConstraint, rootExclusionConstraint: CombinationConstraint }
 
 @Injectable()
 export class SurvivalService {
@@ -38,7 +37,7 @@ export class SurvivalService {
   protected _endConcept: Concept
   protected _startModifier = '@'
   protected _endModifier = '@'
-  protected _subGroups
+  protected _subGroups = new Array<SubGroup>()
 
   set granularity(gran: Granularity) {
     this._granularity = gran
@@ -85,14 +84,22 @@ export class SurvivalService {
     return this._endModifier
   }
 
+  set subGroups(sg: SubGroup[]) {
+    this._subGroups = sg
+  }
+
+  get subGroups(): SubGroup[] {
+    return this._subGroups
+  }
+
 
   constructor(protected authService: AuthenticationService,
-              protected cryptoService: CryptoService,
-              protected medcoNetworkService: MedcoNetworkService,
-              protected exploreSearchService: ExploreSearchService,
-              protected apiSurvivalAnalysisService: SurvivalAnalysisService,
-              protected cohortService: CohortServiceMock,
-              protected constraintMappingService: ConstraintMappingService) {
+    protected cryptoService: CryptoService,
+    protected medcoNetworkService: MedcoNetworkService,
+    protected exploreSearchService: ExploreSearchService,
+    protected apiSurvivalAnalysisService: SurvivalAnalysisService,
+    protected cohortService: CohortServiceMock,
+    protected constraintMappingService: ConstraintMappingService) {
     this._patientGroupIds = new Map<string, number[]>()
     medcoNetworkService.nodes.forEach((apiNodeMetadata => { this._patientGroupIds[apiNodeMetadata.name] = new Array<string>() }
     ).bind(this))
@@ -100,22 +107,21 @@ export class SurvivalService {
 
   }
 
-  // get the granularity names and, if those are encrypted-deterministcally-tagged,
 
-  cohortToPanels(cohort: Cohort): ApiI2b2Panel[] {
+  generatePanels(subGroup: SubGroup): ApiI2b2Panel[] {
     let constraint: Constraint
-    if (!cohort.rootInclusionConstraint && !cohort.rootExclusionConstraint) {
+    if (!subGroup.rootInclusionConstraint && !subGroup.rootExclusionConstraint) {
       return null
     }
-    if (cohort.rootInclusionConstraint && !cohort.rootExclusionConstraint) {
-      constraint = cohort.rootInclusionConstraint
+    if (subGroup.rootInclusionConstraint && !subGroup.rootExclusionConstraint) {
+      constraint = subGroup.rootInclusionConstraint
     }
-    if (!cohort.rootInclusionConstraint && cohort.rootExclusionConstraint) {
-      constraint = new NegationConstraint(cohort.rootExclusionConstraint)
+    if (!subGroup.rootInclusionConstraint && subGroup.rootExclusionConstraint) {
+      constraint = new NegationConstraint(subGroup.rootExclusionConstraint)
     } else {
       constraint = new CombinationConstraint();
-      (constraint as CombinationConstraint).addChild(cohort.rootInclusionConstraint);
-      (constraint as CombinationConstraint).addChild(new NegationConstraint(cohort.rootExclusionConstraint))
+      (constraint as CombinationConstraint).addChild(subGroup.rootInclusionConstraint);
+      (constraint as CombinationConstraint).addChild(new NegationConstraint(subGroup.rootExclusionConstraint))
     }
 
     return this.constraintMappingService.mapConstraint(constraint)
@@ -145,15 +151,7 @@ export class SurvivalService {
       throw new Error('Granularity is undefined')
     }
     apiSurvivalAnalysis.setID = -1
-    apiSurvivalAnalysis.subGroupDefinitions = new Array<{ cohortName: string, panels: ApiI2b2Panel[] }>()
-    if (this.cohortService.selectedCohort instanceof SurvivalCohort) {
-      let survCohort = this.cohortService.selectedCohort as SurvivalCohort
-      if (survCohort.hasSubGroups) {
-        apiSurvivalAnalysis.subGroupDefinitions = survCohort.subGroups.map(cohort => {
-          return { cohortName: cohort.name, panels: this.cohortToPanels(cohort) }
-        })
-      }
-    }
+    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { cohortName: sg.name, panels: this.generatePanels(sg) } })
 
 
 
@@ -213,8 +211,24 @@ export class SurvivalService {
 
   }
 
-  settings():SurvivalSettings{
-    return new SurvivalSettings(this._granularity,this._limit,this._startConcept.name,this._startModifier,this._endConcept.name,this._endModifier)
+  settings(): SurvivalSettings {
+
+    let subGroupsTextualRepresentations = this._subGroups.map(sg => {
+      return {
+        groupId: sg.name,
+        rootInclusionConstraint: sg.rootInclusionConstraint ? sg.rootInclusionConstraint.textRepresentation : null,
+        rootExclusionConstraint: sg.rootExclusionConstraint ? sg.rootExclusionConstraint.textRepresentation : null
+      }
+    })
+    return new SurvivalSettings(
+      this._granularity,
+      this._limit,
+      this._startConcept.name,
+      this._startModifier,
+      this._endConcept.name,
+      this._endModifier,
+      subGroupsTextualRepresentations,
+    )
   }
 }
 

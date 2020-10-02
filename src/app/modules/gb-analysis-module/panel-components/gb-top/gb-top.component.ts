@@ -14,8 +14,9 @@ import { Subject, Observable, throwError } from 'rxjs';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
 import { MessageHelper } from 'app/utilities/message-helper';
-import { catchError } from 'rxjs/operators';
+
 import { SurvivalResultsService } from 'app/services/survival-results.service';
+import { CohortServiceMock } from 'app/services/cohort.service';
 
 @Component({
   selector: 'app-gb-top',
@@ -34,9 +35,11 @@ export class GbTopComponent implements OnInit {
   _clearRes: Subject<SurvivalAnalysisClear>
   _available = AnalysisType.ALL_TYPES
   _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
-  ready = false
+  _ready = false
 
-  constructor(private survivalAnalysisService: SurvivalAnalysisServiceMock, private survivalResultsService: SurvivalResultsService) {
+  constructor(private survivalAnalysisService: SurvivalAnalysisServiceMock,
+    private survivalResultsService: SurvivalResultsService,
+    private cohortService: CohortServiceMock) {
     this._clearRes = new Subject<SurvivalAnalysisClear>()
   }
 
@@ -61,36 +64,35 @@ export class GbTopComponent implements OnInit {
   }
 
   isReady(event: boolean) {
-    this.ready = event
+    this._ready = event
   }
 
   isCompleted(event: boolean) {
-    this.ready = event
+    this._ready = event
   }
 
   runAnalysis() {
     fillTestPanels()
-    this.ready = false
+    this._ready = false
     this.launched = true
-    let settings=this.survivalAnalysisService.settings()
+    let settings = this.survivalAnalysisService.settings()
     try {
       this.survivalAnalysisService.runSurvivalAnalysis()
         .subscribe(res => {
           this.launched = false
-          setTimeout(() => { }, 500)
           console.log(res)
           this._survivalAnalysisResponses = res
           let survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
           this._clearRes.next(survivalAnalysisClear)
-          this.survivalResultsService.pushCopy(survivalAnalysisClear,settings)
+          this.survivalResultsService.pushCopy(survivalAnalysisClear, settings)
           this.ran = true
-          this.ready = true
+          this._ready = true
 
         })
     } catch (exception) {
       console.log(exception as Error)
       MessageHelper.alert('error', (exception as Error).message)
-      this.ready = true
+      this._ready = true
       this.launched = false
     }
 
@@ -99,6 +101,12 @@ export class GbTopComponent implements OnInit {
 
   get clearRes(): Observable<SurvivalAnalysisClear> {
     return this._clearRes.asObservable()
+  }
+
+  get ready(): boolean {
+    return this._ready &&
+      this.selected !== undefined &&
+      this.cohortService.selectedCohort !== undefined
   }
 
 

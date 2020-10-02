@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2020  EPFL LDS
- * Copyright 2020 CHUV
+ * Copyright 2020  CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -65,7 +65,7 @@ export class NavbarService {
     } else {
       for (let i = 0; i < this.isSurvivalRes.length; i++) {
         if (this.isSurvivalRes[i]) {
-          this.activeItem = this._items[i + 2]
+          this.activeItem = this._items[i + 3]
           this._selectedSurvivalId.next(i)
           break
         }

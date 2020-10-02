@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { SurvivalPoint, ChiSquaredCdf } from './survival-curves'
-import { logRank2Groups } from './logRankPvalue'
+import { logRank2Groups } from './log-rank-p-value'
 import { NewCoxRegression, coxToString } from '../cox-regression/coxModel'
 
 export function numericalTables(curves: SurvivalPoint[][], maxIter: number = 1000, tolerance: number = 1e-14, stringPrecision: number = 3): NumericalTablesType {

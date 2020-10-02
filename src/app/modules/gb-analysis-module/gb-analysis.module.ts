@@ -1,3 +1,11 @@
+/**
+ * Copyright 2020 CHUV
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion'
@@ -17,32 +25,19 @@ import { FormsModule } from '@angular/forms'
 import { SliderModule } from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { TableModule } from 'primeng/table'
-import { SpinnerModule, Spinner } from 'primeng/spinner'
+import { SpinnerModule} from 'primeng/spinner'
 import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
-import { GbSubgroupComponent } from './panel-components/gb-subgroup/gb-subgroup.component';
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
 
 
-
-
-
-
-/**
- * Copyright 2020 CHUV
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 @NgModule({
   declarations: [
     GbCohortLandingZoneComponent,
     GbTopComponent,
     GbSurvivalSettingsComponent,
-    GbAnalysisComponent,
-    GbSubgroupComponent,],
+    GbAnalysisComponent,],
   imports: [
     AccordionModule,
     AutoCompleteModule,

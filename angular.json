@@ -44,7 +44,8 @@
               "src/assets/icons/icons.style.css",
               "src/styles/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "tsconfig.worker.json"
           },
           "configurations": {
             "production": {
@@ -125,7 +126,8 @@
             "tsConfig": [
               "src/tsconfig.app.json",
               "src/tsconfig.spec.json",
-              "tsconfig.json"
+              "tsconfig.json",
+              "tsconfig.worker.json"
             ],
             "exclude": []
           }

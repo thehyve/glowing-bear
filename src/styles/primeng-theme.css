@@ -580,16 +580,11 @@ body .ui-slider .ui-slider-handle:hover {
 body .ui-slider .ui-slider-range {
   background: #43a7fd;
 }
-body .ui-buttonset.ui-selectbutton .ui-button:first-child {
-  border-right: none;
-}
-body .ui-buttonset.ui-selectbutton .ui-button:last-child {
-  border-left: none;
-}
 body .ui-buttonset .ui-button {
   background-color: #e6e6e6;
   color: #373a3c;
-  border: 1px solid transparent;
+  border-left: 1px solid;
+  border-right: none;
   -moz-border-radius: 0px;
   -webkit-border-radius: 0px;
   border-radius: 0px;
@@ -625,6 +620,8 @@ body .ui-buttonset .ui-button:first-child {
   border-bottom-left-radius: 0.25em;
 }
 body .ui-buttonset .ui-button:last-child {
+  border-right: 1px solid;
+  border-right-color: #cccccc;
   -moz-border-radius-topright: 0.25em;
   -webkit-border-top-right-radius: 0.25em;
   border-top-right-radius: 0.25em;

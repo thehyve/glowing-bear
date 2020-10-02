@@ -1,72 +1,66 @@
 <div id="cohorts-component">
-        <button pButton class="ui-button-secondary" [disabled]="cohortService.isRefreshing"
-                [ngStyle]="{'color': cohortService.isRefreshing ? 'var(--gb-light-light-clinical-green)':'var(--gb-clinical-green)'}"
-                type="button" pTooltip="Refresh cohorts" tooltipPosition="top" (click)="refreshCohorts()"
-                icon="fa fa-refresh">
+  <button pButton class="ui-button-secondary" [disabled]="cohortService.isRefreshing"
+    [ngStyle]="{'color': cohortService.isRefreshing ? 'var(--gb-light-light-clinical-green)':'var(--gb-clinical-green)'}"
+    type="button" pTooltip="Refresh cohorts" tooltipPosition="top" (click)="refreshCohorts()" icon="fa fa-refresh">
+  </button>
+
+
+
+
+  <div *ngIf="cohorts.length > 0">
+    <p-autoComplete [(ngModel)]="searchName" styleClass="filter-input" placeholder="cohort name"
+      (onClear)="onFiltering($event)" (completeMethod)="onFiltering($event)">
+    </p-autoComplete>
+    <br>
+    <button pButton class="ui-button-secondary" pTooltip="Sort by cohort name" tooltipPosition="top"
+      (click)="sortByName()" icon="icon-sort-alphabet        ">
+    </button>
+    <button pButton class="ui-button-secondary" pTooltip="Sort by date" tooltipPosition="top" (click)="sortByDate()"
+      icon="icon-sort-time">
+    </button>
+    <button pButton class="ui-button-secondary" pTooltip="Sort by importance" tooltipPosition="top"
+      (click)="sortByBookmark()" icon="icon-sort-star">
+
+    </button>
+  </div>
+  <br>
+
+
+
+  <p-accordion [multiple]="true" class="ui-cohorts">
+    <p-accordionTab *ngFor="let cohort of visibles()" draggable="true" (dragstart)="dragdebug($event,cohort)"
+      class="ui-cohorts">
+      <p-header class="ui-cohorts">
+        <p-toggleButton [(ngModel)]="cohort.selected" onIcon="fa fa-check" (click)="changeSelect($event,cohort)"
+          offIcon="fa" onLabel="{{cohort.name}}" offLabel="{{cohort.name}}">
+
+        </p-toggleButton>
+
+
+        <button pButton class="ui-button-secondary" type="button" pTooltip="Download this cohort for sharing/importing"
+          tooltipPosition="top" placeholder="Top" (click)="downloadCohort($event, cohort)" icon="fa fa-download">
         </button>
-
-
-
-
-        <div *ngIf="cohorts.length > 0">
-                <p-autoComplete [(ngModel)]="searchName" styleClass="filter-input" placeholder="cohort name"
-                        (onClear)="onFiltering($event)" (completeMethod)="onFiltering($event)">
-                </p-autoComplete>
-                <br>
-                <button pButton class="ui-button-secondary" pTooltip="Sort by cohort name" tooltipPosition="top"
-                        (click)="sortByName()" icon="icon-sort-alphabet        ">
-                </button>
-                <button pButton class="ui-button-secondary" pTooltip="Sort by date" tooltipPosition="top"
-                        (click)="sortByDate()" icon="icon-sort-time">
-                </button>
-                <button pButton class="ui-button-secondary" pTooltip="Sort by importance" tooltipPosition="top"
-                        (click)="sortByBookmark()" icon="icon-sort-star">
-
-                </button>
-        </div>
+        <button pButton class="ui-button-secondary" type="button" pTooltip="Restore" tooltipPosition="top"
+          placeholder="Top" (click)="restoreCohort($event, cohort)" icon="fa fa-arrow-right">
+        </button>
+        <span>&nbsp;</span>
+        <button pButton class="ui-button-secondary" type="button" pTooltip="Remove" tooltipPosition="top"
+          placeholder="Top" (click)="remove($event, cohort)" icon="fa fa-times">
+        </button>
+        <button pButton class="ui-button-secondary" type="button" pTooltip="Mark as important" tooltipPosition="top"
+          placeholder="Top" (click)="bookmarkCohort($event,cohort)"
+          icon="{{cohort.bookmarked ? 'fa fa-star':'fa fa-star-o'}}">
+        </button>
+      </p-header>
+      <span style="font-size: 0.8em;">
+        Creation :{{cohort.creationDate.toLocaleString()}}
         <br>
+        Update :{{cohort.updateDate.toLocaleString()}}
+      </span>
 
 
+    </p-accordionTab>
 
-        <p-accordion [multiple]="true" class="ui-cohorts">
-                <p-accordionTab *ngFor="let cohort of visibles()" draggable="true"
-                        (dragstart)="dragdebug($event,cohort)" class="ui-cohorts">
-                        <p-header class="ui-cohorts">
-                                <p-toggleButton [(ngModel)]="cohort.selected" onIcon="fa fa-check"
-                                        (click)="changeSelect($event,cohort)" offIcon="fa" onLabel="{{cohort.name}}"
-                                        offLabel="{{cohort.name}}">
-
-                                </p-toggleButton>
-
-
-                                <button pButton class="ui-button-secondary" type="button"
-                                        pTooltip="Download this cohort for sharing/importing" tooltipPosition="top"
-                                        placeholder="Top" (click)="downloadCohort($event, cohort)"
-                                        icon="fa fa-download">
-                                </button>
-                                <button pButton class="ui-button-secondary" type="button" pTooltip="Restore"
-                                        tooltipPosition="top" placeholder="Top" (click)="restoreCohort($event, cohort)"
-                                        icon="fa fa-arrow-right">
-                                </button>
-                                <span>&nbsp;</span>
-                                <button pButton class="ui-button-secondary" type="button" pTooltip="Remove"
-                                        tooltipPosition="top" placeholder="Top" (click)="remove($event, cohort)"
-                                        icon="fa fa-times">
-                                </button>
-                                <button pButton class="ui-button-secondary" type="button" pTooltip="Mark as important"
-                                        tooltipPosition="top" placeholder="Top" (click)="bookmarkCohort($event,cohort)"
-                                        icon="{{cohort.bookmarked ? 'fa fa-star':'fa fa-star-o'}}">
-                                </button>
-                        </p-header>
-                        <span style="font-size: 0.8em;">
-                                Creation :{{cohort.creationDate.toLocaleString()}}
-                                <br>
-                                Update :{{cohort.updateDate.toLocaleString()}}
-                        </span>
-
-
-                </p-accordionTab>
-
-        </p-accordion>
+  </p-accordion>
 
 </div>

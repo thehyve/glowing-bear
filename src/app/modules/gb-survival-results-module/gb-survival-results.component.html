@@ -1,54 +1,42 @@
 <p-accordion [multiple]="true">
-  <p-accordionTab header="Current selection" [selected]=false>
-    <div style="padding-top: 2em;">
-      <span class="description">
-        Time Granularity:
-      </span>
-      &nbsp;
-      {{inputParameters.timeGranularity}}
+  <p-accordionTab header="Input parameters" [selected]=false>
+    <div class="row">
+      <div class="column">
+        <p class="description">
+          Event parameters:
+        </p>
+        Time Granularity: {{inputParameters.timeGranularity}}
+        <br>
+        Time Limit: {{inputParameters.timeLimit}}
+        <br>
+        Start Event: {{inputParameters.startEvent}}
+        <br>
+        End Event: {{inputParameters.endEvent}}
+        <br>
+        Start Modifier: {{inputParameters.startModifier}}
+        <br>
+        End Modifier: {{inputParameters.endModifier}}
+      </div>
+      <div class="column">
+        <p class="description">
+          Subgroup definitions:
+        </p>
+        <p-scrollPanel [style]="{width: '100%', height: '150px'}">
+          <div *ngFor="let subgroup of inputParameters.subGroupTextRepresentations">
+            <p>
+              <strong>{{subgroup.groupId}}</strong>
+            </p>
+            <p *ngIf="subgroup.rootInclusionConstraint" class="indented">
+              <strong>Root inclusion constraint: </strong>{{subgroup.rootInclusionConstraint}}
+            </p>
+            <p *ngIf="subgroup.rootExclusionConstraint" class="indented">
+              <strong>Root exclusion constraint: </strong>{{subgroup.rootExclusionConstraint}}
+            </p>
+            <br>
 
-      &nbsp;
-      <span style="white-space: nowrap;">
-        <span class="description">
-          Time Limit:
-        </span>
-        &nbsp;
-        {{inputParameters.timeLimit}}
-        &nbsp;
-      </span>
-      <span style="white-space: nowrap;">
-        <span class="description">
-          Start Event:
-        </span>
-        &nbsp;
-        {{inputParameters.startEvent}}
-        &nbsp;
-
-      </span>
-      <span style="white-space: nowrap;">
-        <span class="description">
-          End Event:
-        </span>
-        &nbsp;
-        {{inputParameters.endEvent}}
-      </span>
-      <span style="white-space: nowrap;">
-        <span class="description">
-          Start Modifier:
-        </span>
-        &nbsp;
-        {{inputParameters.startModifier}}
-        &nbsp;
-
-      </span>
-      <span style="white-space: nowrap;">
-        <span class="description">
-          End Modifier:
-        </span>
-        &nbsp;
-        {{inputParameters.endModifier}}
-      </span>
-
+          </div>
+        </p-scrollPanel>
+      </div>
     </div>
 
   </p-accordionTab>
@@ -68,15 +56,15 @@
   <p-spinner [(ngModel)]="nofTicks" min="1" max="10"></p-spinner>
 
 </p-overlayPanel>
-
+<br>
 <button class="smallbutton" (click)="op.toggle($event)"><i class="fa fa-cog"></i></button>
 <button class="smallbutton" click="console.error('Export not implemented')"><i class="fa fa-download"></i></button>
 
 <div class="row">
-  <div class="column">
+  <div class="column-2">
     <div id="survivalSvgContainer"></div>
   </div>
-  <div class="column">
+  <div class="column-3">
     <table id="summary">
       <tr>
         <th>Group</th>
@@ -95,6 +83,7 @@
 
       </tr>
     </table>
+    <br>
     <p-dropdown [options]="groupTables" [(ngModel)]="selectedGroupTable"></p-dropdown>
     <br>
     <br>
@@ -109,7 +98,6 @@
       <tr *ngFor="let curve of survivalCurve.curves;let i = index">
         <th>
           <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-          {{i}}
         </th>
         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
           {{selectedGroupTable.table[i][j]}}
@@ -117,4 +105,19 @@
       </tr>
     </table>
   </div>
+
+  <table id="milestoned">
+    <tr>
+      <th>
+        sums of at risk(events)
+      </th>
+      <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
+    </tr>
+    <tr *ngFor="let summaries of summaryTable; let i = index"> 
+      <td>
+        <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+      </td>
+      <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
+    </tr>
+  </table>
 </div>

@@ -73,11 +73,11 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
       // Add it as a new child
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      let err = combinationConstraint.addChild(newConstraint);
-      if (err){
-        MessageHelper.alert('error',err.message)
+      try {
+        combinationConstraint.addChild(newConstraint);
+      } catch (error) {
+        MessageHelper.alert('error',error.message)
       }
-
       // force combination state if i2b2 style nesting
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
       if (parentConstraint && parentConstraint.isRoot) {
@@ -100,11 +100,14 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.treeNodeService.selectedTreeNode = null;
     if (this.droppedConstraint) {
       let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      let err = combinationConstraint.addChild(this.droppedConstraint);
-      if (err){
-        MessageHelper.alert('warn',err.message)
-      }
+      try {
+        combinationConstraint.addChild(this.droppedConstraint);
 
+      } catch (error) {
+        MessageHelper.alert('error',error.message)
+        
+      }
+      
       // force combination state if free nesting not supported
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
       if (parentConstraint && parentConstraint.isRoot) {
@@ -126,9 +129,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   addChildCombinationConstraint() {
-    let err =(<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
-    if (err){
-      MessageHelper.alert('warn',err.message)
+    try {
+      (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
+    } catch (error) {
+      MessageHelper.alert('warn',error.message)
     }
   }
 

@@ -8,11 +8,10 @@
 import {
   Selection, scaleLinear, ScaleLinear, axisBottom,
   event, axisLeft, scaleOrdinal, ScaleOrdinal, scaleBand,
-  select, area, curveStepAfter, Line, Area, line, curveStepBefore, BaseType
+  select, area, curveStepAfter, Line, Area, line, BaseType
 } from 'd3'
 import { SurvivalCurve, SurvivalPoint } from 'app/models/survival-analysis/survival-curves'
 import { colorRange } from 'app/modules/gb-survival-results-module/gb-survival-results.component'
-import { summaryTable } from 'app/models/survival-analysis/summaryTable'
 import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 import { Observable } from 'rxjs';
 
@@ -39,9 +38,6 @@ export class SurvivalCurvesDrawing {
   _ticks: number[]
 
   _colorSet: ScaleOrdinal<string, string>
-  _tableHGrid: any
-  _summaryDisplay: Selection<SVGGElement, unknown, HTMLElement, any>
-  _summaryData = new Array<Selection<BaseType, unknown, SVGGElement, unknown>>()
   _lineGen: Line<{
     timePoint: number;
     prob: number;
@@ -67,6 +63,8 @@ export class SurvivalCurvesDrawing {
   _legendyPos: number
   _legendRadius: number
 
+  // utility for selection
+  _labelClasses = new Map<string, string>()
   // svg element for censoring ticks and tooltips per group
   _singlePoints = new Map<string, Selection<BaseType, unknown, SVGGElement, unknown>>()
   // svg element for confidence interval per group
@@ -89,8 +87,8 @@ export class SurvivalCurvesDrawing {
   ) {
 
     this._legendxPos = (this.width - this.curves.curves.length) / 2.0 - 30
-    this._legendyPos = -20
-    this._legendRadius = 5
+    this._legendyPos = -25
+    this._legendRadius = 4
     this._legendInterval = 60
     this._xaxis = scaleLinear().domain([0, this.findMaxDomain()]).range([0, this.width - this.margins])
     this._yaxis = scaleLinear().domain([0, 1]).range([this.survivalTable, 0])
@@ -105,7 +103,7 @@ export class SurvivalCurvesDrawing {
       prob: number;
       cumul: number;
       remaining: number;
-    }>().x(d => this._xaxis(d.timePoint)).y(d => this._yaxis(d.prob)).curve(curveStepBefore);
+    }>().x(d => this._xaxis(d.timePoint)).y(d => this._yaxis(d.prob)).curve(curveStepAfter);
     this._div = select('app-gb-survival-results').append('div')
       .style('position', 'absolute')
       .style('opacity', 0.0)
@@ -145,14 +143,15 @@ export class SurvivalCurvesDrawing {
       .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
       .call(axisLeft(this._yaxis))
       .attr('font-size', '8px')
-    this.curves.curves.forEach(c => {
-      this._hiding.set(c.groupId, false)
+    this.curves.curves.forEach(({ groupId }, index) => {
+      this._hiding.set(groupId, false)
+      this._labelClasses.set(groupId, labelClasses[index])
     })
 
 
     this._colorSet = scaleOrdinal<string, string>().domain(this.curves.curves.map(c => c.groupId)).range(colorRange)
     // interactive title
-    this.curves.curves.forEach(((curve, index) => {
+    this.curves.curves.forEach((curve => {
       this._groupButton.set(curve.groupId, this.toggleStyle(curve.groupId,
         this._svgRef.append('circle')
 
@@ -162,23 +161,20 @@ export class SurvivalCurvesDrawing {
           .on('mousedown', (() => {
             let hidden = !this._hiding.get(curve.groupId)
             this._hiding.set(curve.groupId, hidden);
+
             if (hidden) {
-              this._curves.get(curve.groupId).transition().duration(50).attr('opacity', '0.0')
-              this._curves.get(curve.groupId).transition().delay(50).attr('visibility', 'hidden')
-              this._CIs.get(curve.groupId).transition().duration(50).attr('opacity', '0.0')
-              this._CIs.get(curve.groupId).transition().delay(50).attr('visibility', 'hidden')
-              this._svgRef.selectAll('#resultDrawing rect').transition().duration(50).attr('opacity', '0.0')
-              this._svgRef.selectAll('#resultDrawing rect').transition().delay(50).attr('visibility', 'hidden')
-              this._svgRef.selectAll('#resultDrawing circle').transition().delay(50).attr('visibility', 'hidden')
+              let selectedGroup = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId))
+              selectedGroup.transition().duration(50).attr('opacity', '0.0')
+              selectedGroup.transition().delay(50).attr('visibility', 'hidden')
 
             } else {
-              this._curves.get(curve.groupId).attr('visibility', 'visible')
-              this._curves.get(curve.groupId).transition().duration(50).attr('opacity', '1.0')
-              this._CIs.get(curve.groupId).attr('visibility', 'visible')
-              this._CIs.get(curve.groupId).transition().duration(50).attr('opacity', '0.3')
-              this._svgRef.selectAll('#resultDrawing rect').attr('visibility', 'visible')
-              this._svgRef.selectAll('#resultDrawing rect').transition().duration(50).attr('opacity', '1.0')
-              this._svgRef.selectAll('#resultDrawing circle').transition().attr('visibility', 'visible')
+              let selectedGroup = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId) + ':not(.ci)')
+              selectedGroup.transition().attr('visibility', 'visible')
+              selectedGroup.transition().duration(50).attr('opacity', '1.0')
+              let selectedGroupCI = this._svgRef.selectAll('.ci.' + this._labelClasses.get(curve.groupId))
+              selectedGroupCI.transition().attr('visibility', 'visible')
+              selectedGroupCI.transition().duration(50).attr('opacity', confidenceIntervalOpacity)
+
             }
 
             this.toggleStyle(curve.groupId, this._groupButton.get(curve.groupId));
@@ -190,61 +186,22 @@ export class SurvivalCurvesDrawing {
       this._svgRef.append('text')
         .attr('x', this._legendxPos + 7)
         .attr('y', this._legendyPos + 5)
-        .text(index.toString())
+        .text(curve.groupId)
       this._legendxPos += this._legendInterval
 
     }).bind(this))
 
     // curve references
     let curvePerSe = this._svgRef.append('g').attr('id', 'resultDrawing')
-    this.curves.curves.forEach(c => {
-      this._singlePoints.set(c.groupId, curvePerSe.append('g').selectAll('dot'))
-      this._CIs.set(c.groupId, curvePerSe.append('path'))
-      this._curves.set(c.groupId, curvePerSe.append('path'))
+    this.curves.curves.forEach(({ groupId }) => {
+
+      this._CIs.set(groupId, curvePerSe.append('path'))
+      this._curves.set(groupId, curvePerSe.append('path'))
+      this._singlePoints.set(groupId, curvePerSe.append('g').attr('class', this._labelClasses.get(groupId)).selectAll('dot'))
     });
 
-    this.buildTable()
   }
 
-
-
-  buildTable() {
-    let domainPadding = this.findMaxDomain() / (2 * this._ticks.length)
-    let xaxis = scaleLinear()
-      .domain([-domainPadding, this.findMaxDomain() + domainPadding])
-      .range([2 * this.margins, this.width])
-    let abscissa = axisBottom(xaxis).tickValues(this._ticks)
-    //group name can be too long
-    let yaxis = scaleBand().domain(this.curves.curves.map(curve => curve.groupId)).range([this.height, this.survivalTable + 100])
-    this._svgRef.append('g')
-      .attr('transform', `translate(${2 * this.margins},${-2 * this.margins})`)
-      .call(axisLeft(yaxis))
-      .attr('font-size', '8px')
-    console.log('curves', this.curves.curves)
-
-
-
-    this._tableHGrid = this._svgRef.append('g')
-      .attr('transform', `translate(${0 * this.margins},${this.height - 2 * this.margins})`)
-      .call(abscissa)
-      .attr('font-size', '8px')
-    this._summaryDisplay = this._svgRef.append('g')
-
-    this.curves.curves.forEach((curve, i) => {
-      let summary = summaryTable(curve.points, this._ticks)
-      this._summaryData.push(this._summaryDisplay.append('g').selectAll('text'))
-      this._summaryData[i]
-        .data(summary)
-        .enter()
-        .append('text')
-        .attr('x', (_, j) => xaxis(this._ticks[j]))
-        .attr('y', yaxis(curve.groupId))
-        .text(d => d.atRisk.toString() + '(' + d.event.toString() + ')')
-        .attr('font-size', '7px')
-        .style('text-anchor', 'middle')
-
-    })
-  }
   toggleStyle(
     id: string,
     button: Selection<SVGCircleElement, unknown, HTMLElement, any>
@@ -273,10 +230,19 @@ export class SurvivalCurvesDrawing {
     console.log('data to be plot', this.curves.curves)
     this.curves.curves.filter(curve => !this._hiding.get(curve.groupId)).forEach(curve => {
       // --- add data and show data
-      let singlePointsEnterSelection = this._singlePoints.get(curve.groupId)
+      console.log('points to show', curve.points, this._lineGen(curve.points))
+      this._curves.get(curve.groupId)
+        .datum(curve.points)
+        .attr('fill', 'none')
+        .attr('class', this._labelClasses.get(curve.groupId))
+        .attr('stroke', this._colorSet(curve.groupId)).attr('stroke-width', 1)
+        .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
+        .attr('d', this._lineGen)
+
+
+      this._singlePoints.get(curve.groupId)
         .data(curve.points)
         .enter()
-      singlePointsEnterSelection
         .filter(d => d.nofCensorings > 0)
         .append('rect')
         .attr('x', d => this._xaxis(d.timePoint) - this.rectWidth / 2)
@@ -289,22 +255,20 @@ export class SurvivalCurvesDrawing {
       if (this.selectedInterval) {
         this._CIs.get(curve.groupId)
           .datum(curve.points)
+          .attr('class', this._labelClasses.get(curve.groupId)+' ci')
           .attr('stroke', this._colorSet(curve.groupId))
           .attr('fill', this._colorSet(curve.groupId))
-          .attr('opacity', '0.3')
+          .attr('opacity', confidenceIntervalOpacity)
           .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
           .attr('d', this._areaGen)
       }
 
 
-      console.log('points to show', curve.points, this._lineGen(curve.points))
-      this._curves.get(curve.groupId)
-        .datum(curve.points).attr('fill', 'none')
-        .attr('stroke', this._colorSet(curve.groupId)).attr('stroke-width', 1)
-        .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
-        .attr('d', this._lineGen)
 
-      singlePointsEnterSelection
+
+      this._singlePoints.get(curve.groupId)
+        .data(curve.points)
+        .enter()
         .append('circle')
         .attr('cx', d => this._xaxis(d.timePoint))
         .attr('cy', d => this._yaxis(d.prob))
@@ -355,44 +319,6 @@ export class SurvivalCurvesDrawing {
       this._hGrid.selectAll('.tick').each(d => ticks.push(d as number))
       this._ticks = ticks
     }
-    let xaxis
-    let yaxis
-    if (this._tableHGrid) {
-      let rightDomainPadding = Math.floor(this.findMaxDomain() / (2 * this._ticks.length))
-      let lefttDomainPadding = Math.floor(this.findMaxDomain() / (2 * this._ticks.length))
-      xaxis = scaleLinear()
-        .domain([-lefttDomainPadding, this.findMaxDomain() + rightDomainPadding])
-        .range([2 * this.margins, this.width - 2 * this.margins])
-      yaxis = scaleBand()
-        .domain(this.curves.curves.map(curve => curve.groupId))
-        .range([this.height, this.survivalTable + 100])
-      let abscissa = axisBottom(xaxis).tickValues(this._ticks)
-      this._tableHGrid.call(abscissa)
-    }
-
-    if (this._summaryDisplay) {
-      this._summaryDisplay.remove()
-      this._summaryDisplay = this._svgRef.append('g')
-
-      this.curves.curves.forEach((curve, i) => {
-        if (this._summaryData.length !== 0) {
-          this._summaryData[i] = this._summaryDisplay.append('g').selectAll('text')
-          let summary = summaryTable(curve.points, this._ticks)
-          this._summaryData[i]
-            .data(summary)
-            .enter()
-            .append('text')
-            .attr('x', (_, j) => xaxis(this._ticks[j]))
-            .attr('y', yaxis(curve.groupId))
-            .text(d => d.atRisk.toString() + '(' + d.event.toString() + ')')
-            .attr('font-size', '8px')
-            .attr('transform', `translate(${4 * this.margins},${1 * this.margins})`)
-            .style('text-anchor', 'middle')
-        }
-
-
-      })
-    }
     this.toggleGrid()
 
   }
@@ -430,12 +356,6 @@ export class SurvivalCurvesDrawing {
       let xaxis = scaleLinear().domain([-domainPadding, this.findMaxDomain() + domainPadding])
         .range([2 * this.margins, this.width - 2 * this.margins])
 
-      this._svgRef.append('g').attr('transform', `translate(${4 * this.margins},${this.height - 2 * this.margins})`)
-        .attr('id', 'summHGrid')
-        .attr('style', 'opacity:0.2')
-        .call(axisBottom(xaxis).tickValues(this._ticks)
-          .tickSize(-(this.height - this.survivalTable - 100))
-          .tickFormat(() => ''))
 
     }
   }
@@ -444,5 +364,12 @@ export class SurvivalCurvesDrawing {
     this.curves.curves[idx]
 
   }
+  get ticks(): number[] {
+    return this._ticks
+  }
 
 }
+
+const confidenceIntervalOpacity='0.3'
+
+const labelClasses = ['group0', 'group1', 'group2', 'group3']

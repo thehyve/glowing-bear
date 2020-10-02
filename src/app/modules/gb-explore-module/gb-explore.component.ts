@@ -30,7 +30,10 @@ export class GbExploreComponent {
   constructor(public queryService: QueryService,
     private cohortService: CohortServiceMock,
     public constraintService: ConstraintService) {
-    this.queryService.lastSuccessfulSet.subscribe(resIDs => { this._lastSuccessfulSet = resIDs })
+    this.queryService.lastSuccessfulSet.subscribe(resIDs => {
+      console.log('last_successful_set',resIDs)
+      this._lastSuccessfulSet = resIDs
+    })
   }
 
   get globalCount(): Observable<string> {
@@ -69,7 +72,7 @@ export class GbExploreComponent {
 
         let cohort = new Cohort(this.name, this.constraintService.rootInclusionConstraint, this.constraintService.rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
         // TODO parametrize this
-        cohort.patient_set_id = [-1, -1, -1]
+        cohort.patient_set_id = this.lastSuccessfulSet
         existingCohorts.push(cohort)
         this.cohortService.cohorts = existingCohorts
         this.cohortService.postCohort(cohort)
@@ -83,6 +86,10 @@ export class GbExploreComponent {
     if (event.keyCode === 13) {
       this.save()
     }
+  }
+  // otherwise writes data in input filed
+  preventDefault(event: Event){
+    event.preventDefault()
   }
 
 

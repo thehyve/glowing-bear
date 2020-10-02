@@ -3,9 +3,39 @@
   display: flex;
 }
 
+
 .column {
   flex: 50%;
+  padding: 1em;
 }
+
+.column-2 {
+  flex: 60%;
+}
+
+.description{
+  padding :0.3em;
+  background-color:#339C90;
+  color:#ffffff ;
+  border-radius: 0.2em;
+  white-space: nowrap;
+}
+
+p-scrollpanel p{
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+p-scrollpanel p.indented{
+  margin-left:1.5em;
+}
+
+
+.column-3 {
+  flex: 40%;
+}
+
+
 
 .smallbutton{
   color: var(--gb-clinical-green-light);
@@ -40,4 +70,30 @@
   padding:0.5em;
   height:1em;
   text-align:left;
+}
+
+#milestoned{
+  margin-left: 2em;
+}
+
+#milestoned tr th, #milestoned tr td{
+  background-color:white;
+  border-bottom: #cccccc 1px solid;
+  border-right: #cccccc 1px solid;
+  text-align: center;
+  padding:0.5em;
+  height:1em;
+
+}
+
+#milestoned tr th:last-child, #milestoned tr td:last-child{
+
+  border-right: none;
+
+}
+
+#milestoned tr:last-child td{
+
+  border-bottom: none;
+
 }

@@ -6,12 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Injectable } from '@angular/core';
-import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
+import { Cohort } from 'app/models/cohort-models/cohort';
 import { Observable, of, Subject } from 'rxjs';
-import { map, tap } from 'rxjs/operators'
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
-import { ExploreQuery } from 'app/models/query-models/explore-query';
-import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
 import { MedcoNetworkService } from './api/medco-network.service';
 import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 import { ConstraintService } from './constraint.service';
@@ -70,29 +67,6 @@ export class CohortService {
     return this._isRefreshing
   }
 
-  addSubgroupToSelected(name: string, rootInclusionConstraint: CombinationConstraint, rootExclusionConstraint: CombinationConstraint) {
-    let subGroup = new Cohort(name, rootInclusionConstraint, rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
-    if (this._selectedCohort instanceof SurvivalCohort) {
-      (this._selectedCohort as SurvivalCohort).hasSubGroups = true;
-
-      (this._selectedCohort as SurvivalCohort).subGroups.push(subGroup);
-    } else {
-      let idx = this._cohorts.indexOf(this._selectedCohort)
-      let ret = new SurvivalCohort(
-        this._selectedCohort.name,
-        this.selectedCohort.rootInclusionConstraint,
-        this.selectedCohort.rootExclusionConstraint,
-        new Date(Date.now()),
-        new Date(Date.now())
-      )
-      ret.hasSubGroups = true
-      ret.subGroups.push(subGroup)
-      ret.patient_set_id = this.selectedCohort.patient_set_id
-      this._cohorts[idx] = ret
-      this.selectedCohort = ret
-
-    }
-  }
   getCohorts() {
     this._isRefreshing = true
     this.exploreCohortsService.getCohortAllNodes().subscribe(
@@ -180,49 +154,7 @@ export class CohortService {
     this.constraintService.rootExclusionConstraint = this.selectedCohort.rootExclusionConstraint
     this.restoring.next(true)
   }
-
-
-
-  executeSubgroupQuery(idx: number): Observable<Error> {
-
-    // TODO : redo the query with the root exclusions constraint
-    if (!(this._selectedCohort instanceof SurvivalCohort)) {
-      return of(Error('the cohort was not set as survival cohort'))
-
-    }
-
-    if (!this._selectedCohort._hasSubGroups) {
-      return of(null)
-    }
-
-    let subGroup = this._selectedCohort._subGroups[idx]
-
-    let query = new ExploreQuery
-    query.superSetId = this._selectedCohort.patient_set_id
-    query.type = ExploreQueryType.PATIENT_SET
-    query.constraint = subGroup.rootInclusionConstraint
-    this.exploreQueryService.exploreQuery(query).pipe(map(queryResults => {
-      let err = null
-      queryResults.forEach(((queryResult, nodeIndex) => {
-        if (queryResult.status === 'error') {
-          err = Error('error during the execution of the queries related to sub groups')
-        } else if (queryResult.status === 'available') {
-          subGroup.patient_set_id[this._nodeName[nodeIndex]] = queryResult.patientSetId
-
-        } else {
-          err = Error('query status handling not implemented yet')
-
-        }
-      }).bind(this))
-      return err
-    }))
-  }
-
 }
-
-
-
-
 
 @Injectable()
 export class CohortServiceMock extends CohortService {
@@ -232,13 +164,7 @@ export class CohortServiceMock extends CohortService {
     super(exploreCohortsService, exploreQueryService, medcoNetworkService, constraintService)
   }
 
-  executeSubgroupQuery(idx: number): Observable<Error> {
-    this._nodeName.forEach((nodeName => {
-      (this._selectedCohort as SurvivalCohort)._subGroups[idx].patient_set_id[nodeName] = 1
-    }).bind(this))
 
-    return of(null)
-  }
 
 }
 

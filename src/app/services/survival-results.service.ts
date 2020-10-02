@@ -11,7 +11,7 @@ import { Injectable } from '@angular/core';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 
 import { NavbarService } from './navbar.service';
-import { numericalTables, NumericalTablesType } from 'app/models/survival-analysis/numericalTables';
+import { numericalTables, NumericalTablesType } from 'app/models/survival-analysis/numerical-tables';
 import { clearResultsToArray } from 'app/models/survival-analysis/survival-curves';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';

@@ -168,7 +168,7 @@ export class Cohort {
 }
 
 
-export class SurvivalCohort extends Cohort {
+/* export class SurvivalCohort extends Cohort {
 
   _hasSubGroups: boolean
   _granularity: string
@@ -208,4 +208,4 @@ export class SurvivalCohort extends Cohort {
     return this._subGroupSelection
   }
 
-}
+} */

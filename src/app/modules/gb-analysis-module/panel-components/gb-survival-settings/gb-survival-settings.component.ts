@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, ViewEncapsulation, ElementRef, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild, OnChanges } from '@angular/core';
 import { Concept } from 'app/models/constraint-models/concept';
 import { ConstraintService } from 'app/services/constraint.service';
 import { UIHelper } from 'app/utilities/ui-helper';
@@ -14,13 +14,12 @@ import { TreeNodeService } from 'app/services/tree-node.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
-import { Granularity } from 'app/models/survival-analysis/granularityType';
+import { Granularity } from 'app/models/survival-analysis/granularity-type';
 
 @Component({
   selector: 'app-gb-survival-settings',
   templateUrl: './gb-survival-settings.component.html',
   styleUrls: ['./gb-survival-settings.component.css'],
-  encapsulation: ViewEncapsulation.None
 })
 export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
@@ -44,6 +43,9 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     private treeNodeService: TreeNodeService) { }
 
   ngOnInit() {
+    this.changedEventConcepts.emit(
+      this.survivalService.startConcept !== undefined && this.survivalService.endConcept !== undefined
+    )
 
   }
   ngOnChanges() {
@@ -55,7 +57,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   }
 
-  search(event) {
+  searchStart(event) {
 
     let q = event.query.toLowerCase();
 
@@ -65,6 +67,21 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
       this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
     } else {
       this.suggestedStartConcepts = concepts;
+    }
+    console.log('element', this.element)
+    UIHelper.removePrimeNgLoaderIcon(this.element, 200)
+
+  }
+  searchEnd(event) {
+
+    let q = event.query.toLowerCase();
+
+    let concepts = this.constraintService.concepts;
+    console.log('q', q, 'concepts', concepts)
+    if (q) {
+      this.suggestedEndConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
+    } else {
+      this.suggestedEndConcepts = concepts;
     }
     console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200)
@@ -148,6 +165,8 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     this._activated = bool
   }
 
+  @Output() changedEventConcepts = new EventEmitter<boolean>()
+
   get activated(): boolean {
     return this._activated
   }
@@ -174,12 +193,18 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
   set startConcept(concept: Concept) {
     this.survivalService.startConcept = concept
+    this.changedEventConcepts.emit(
+      this.survivalService.startConcept !== undefined && this.survivalService.endConcept !== undefined
+    )
   }
   get startConcept(): Concept {
     return this.survivalService.startConcept
   }
   set endConcept(concept: Concept) {
     this.survivalService.endConcept = concept
+    this.changedEventConcepts.emit(
+      this.survivalService.startConcept !== undefined && this.survivalService.endConcept !== undefined
+    )
   }
   get endConcept(): Concept {
     return this.survivalService.endConcept

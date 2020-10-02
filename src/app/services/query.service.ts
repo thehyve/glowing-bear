@@ -7,22 +7,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
-import {TreeNodeService} from './tree-node.service';
-import {ExploreQuery} from '../models/query-models/explore-query';
-import {ConstraintService} from './constraint.service';
-import {AppConfig} from '../config/app.config';
-import {ExploreQueryType} from '../models/query-models/explore-query-type';
-import {AuthenticationService} from './authentication.service';
-import {catchError, map, switchMap} from 'rxjs/operators';
-import {ExploreQueryService} from './api/medco-node/explore-query.service';
-import {ApiExploreQueryResult} from '../models/api-response-models/medco-node/api-explore-query-result';
-import {CryptoService} from './crypto.service';
-import {GenomicAnnotationsService} from './api/genomic-annotations.service';
-import {ExploreQueryResult} from '../models/query-models/explore-query-result';
-import {Observable, ReplaySubject, throwError, Subject} from 'rxjs';
-import {ErrorHelper} from '../utilities/error-helper';
-import {MessageHelper} from '../utilities/message-helper';
+import { Injectable } from '@angular/core';
+import { TreeNodeService } from './tree-node.service';
+import { ExploreQuery } from '../models/query-models/explore-query';
+import { ConstraintService } from './constraint.service';
+import { AppConfig } from '../config/app.config';
+import { ExploreQueryType } from '../models/query-models/explore-query-type';
+import { AuthenticationService } from './authentication.service';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { ExploreQueryService } from './api/medco-node/explore-query.service';
+import { ApiExploreQueryResult } from '../models/api-response-models/medco-node/api-explore-query-result';
+import { CryptoService } from './crypto.service';
+import { GenomicAnnotationsService } from './api/genomic-annotations.service';
+import { ExploreQueryResult } from '../models/query-models/explore-query-result';
+import { Observable, ReplaySubject, throwError, Subject } from 'rxjs';
+import { ErrorHelper } from '../utilities/error-helper';
+import { MessageHelper } from '../utilities/message-helper';
 
 /**
  * This service concerns with updating subject counts.
@@ -45,15 +45,15 @@ export class QueryService {
   // flag indicating if the query has been changed
   private _isDirty;
 
-  private _lastSuccessfulSet = new Subject<number []>()
+  private _lastSuccessfulSet = new Subject<number[]>()
 
   constructor(private appConfig: AppConfig,
-              private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private exploreQueryService: ExploreQueryService,
-              private authService: AuthenticationService,
-              private cryptoService: CryptoService,
-              private genomicAnnotationsService: GenomicAnnotationsService) {
+    private treeNodeService: TreeNodeService,
+    private constraintService: ConstraintService,
+    private exploreQueryService: ExploreQueryService,
+    private authService: AuthenticationService,
+    private cryptoService: CryptoService,
+    private genomicAnnotationsService: GenomicAnnotationsService) {
     this._queryResults = new ReplaySubject<ExploreQueryResult>(1);
     this.clearAll();
   }
@@ -95,11 +95,11 @@ export class QueryService {
     }
 
     if (this.query.type === ExploreQueryType.PATIENT_LIST) {
-      parsedResults.resultInstanceID=encResults.map(result => result.resultInstanceID)
+      parsedResults.resultInstanceID = encResults.map(({ patientSetID }) => patientSetID)
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
-      ));
+        ));
     }
 
     console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
@@ -107,7 +107,7 @@ export class QueryService {
   }
 
   public execQuery(): void {
-    
+
     if (!this.constraintService.hasConstraint()) {
       MessageHelper.alert('warn', 'No constraints specified, please correct.');
       return;
@@ -127,11 +127,11 @@ export class QueryService {
         MessageHelper.alert('warn', 'Invalid genomic annotation in query, please correct.');
         return throwError(err);
       }),
-      switchMap( () => this.exploreQueryService.exploreQuery(this.query))
+      switchMap(() => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
       (results: ApiExploreQueryResult[]) => {
-        var parsedResults =this.parseExploreQueryResults(results);
-        if (parsedResults.resultInstanceID){
+        var parsedResults = this.parseExploreQueryResults(results);
+        if (parsedResults.resultInstanceID) {
           this._lastSuccessfulSet.next(parsedResults.resultInstanceID)
         }
         this.queryResults.next(parsedResults);
@@ -187,24 +187,24 @@ export class QueryService {
 
         case ExploreQueryType.COUNT_PER_SITE.id:
           return ExploreQueryType.COUNT_PER_SITE;
-        
+
         case ExploreQueryType.COUNT_GLOBAL.id:
           return ExploreQueryType.COUNT_GLOBAL;
-/*
-        case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
-          return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
-
-        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
-          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED;
-
-        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
-          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
-
-
-
-        case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
-          return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
-          */
+        /*
+                case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
+                  return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
+        
+                case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
+                  return ExploreQueryType.COUNT_PER_SITE_SHUFFLED;
+        
+                case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
+                  return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
+        
+        
+        
+                case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
+                  return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
+                  */
 
         default:
           return null;
@@ -224,7 +224,7 @@ export class QueryService {
       queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
   }
 
-  get lastSuccessfulSet(): Observable<number[]>{
+  get lastSuccessfulSet(): Observable<number[]> {
     return this._lastSuccessfulSet.asObservable()
   }
 }

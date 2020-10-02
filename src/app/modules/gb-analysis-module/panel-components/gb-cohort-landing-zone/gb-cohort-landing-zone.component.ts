@@ -5,12 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
+import { SelectItem } from 'primeng/api';
+import { ConstraintService } from 'app/services/constraint.service';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { SubGroup, SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 
-import { Component, OnInit, Input, EventEmitter, ViewEncapsulation, Output } from '@angular/core';
-import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
-import { Cohort, SurvivalCohort } from 'app/models/cohort-models/cohort';
-import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 
+
+const nameMaxLength = 12
 
 @Component({
   selector: 'app-gb-cohort-landing-zone',
@@ -19,120 +22,117 @@ import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-anal
   encapsulation: ViewEncapsulation.None
 })
 export class GbCohortLandingZoneComponent implements OnInit {
-  _activated = false
-  _dedicated = false
-  _subgroup = false
-  _cohort: SurvivalCohort
-  _ran = false
-  _selectedSubgroup: Cohort
 
-  @Output()
-  dedication: EventEmitter<boolean> = new EventEmitter()
+  _activated: boolean
+  _subGroups: SelectItem[]
+  _name: string = ""
+  _selectedSubGroup: SubGroup
+  _usedNames: Set<string>
 
-  constructor(private cohortService: CohortServiceMock) {
-    let cohort = this.cohortService.selectedCohort
-    if (cohort) {
-      let ric = cohort.rootInclusionConstraint
-      let rec = cohort.rootExclusionConstraint
-      this._cohort = new SurvivalCohort(cohort.name, ric ? ric.clone() : null, rec ? rec.clone() : null, cohort.creationDate, cohort.updateDate)
-      this.dedicated = true
-    }
 
-    cohortService.selectingCohort.subscribe((cohort => {
-      this._cohort = cohort;
-      this._dedicated = (this._cohort !== null)
-      this.dedication.emit(this.dedicated)
-    }).bind(this))
+  constructor(private constraintService: ConstraintService, private survivalService: SurvivalAnalysisServiceMock) {
+    this._subGroups = new Array()
+    this._usedNames = new Set()
+
   }
+
 
   ngOnInit() {
-    this.dedication.emit(this.dedicated)
-  }
 
+    // clear constraint selection form previous operations
+    this.constraintService.clearConstraint()
+
+    // reload existing subgroups from previous analysis
+    this._subGroups = this.survivalService.subGroups.map(sg => { return { label: sg.name, value: sg } })
+  }
 
   @Input()
-  set activated(bool: boolean) {
-    this._activated = bool
+  set activated(a: boolean) {
+    this._activated = a
   }
+
   get activated(): boolean {
     return this._activated
   }
 
-  set dedicated(bool: boolean) {
-    this._dedicated = bool
-  }
-  get dedicated(): boolean {
-    return this._dedicated
+  get subGroups(): SelectItem[] {
+    return this._subGroups
   }
 
-
-  get cohort(): Cohort {
-    return this._cohort
+  set selectedSubGroup(rootConstraints: SubGroup) {
+    this._selectedSubGroup = rootConstraints
   }
 
-  set subgroup(val: boolean) {
-    this._subgroup = val
+  get selectedSubGroup(): SubGroup {
+    return this._selectedSubGroup
   }
 
-  get subgroup(): boolean {
-    return this._subgroup
+  set name(n: string) {
+    this._name = n
   }
 
-
-  drop(event: DragEvent) {
-    event.preventDefault()
-
-
-
-
-  }
-  draggingmode(event: DragEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-
-
-
+  get name(): string {
+    return this._name
   }
 
+  addSubGroup(event: Event) {
 
-  get ran(): boolean {
-    return this._ran
-  }
-
-  run() {
-
-    this._ran = true
-
-  }
-  get subGroups() {
-    if (this.cohort instanceof SurvivalCohort) {
-      return (this.cohort as SurvivalCohort).subGroups.map(group => { return { label: group.name, value: group } })
-    } else { return [] }
-  }
-
-
-  get isSurv() {
-    return this.cohort instanceof SurvivalCohort
-  }
-  set selectedSubGroup(cohort: Cohort) {
-    this.subgroup = cohort !== null
-    this._selectedSubgroup = cohort
-
-  }
-
-  get selectedSubGroup(): Cohort {
-    return this._selectedSubgroup
-  }
-
-  changeSelectedSubGroup(event: Event, subGroup: Cohort) {
-    event.stopPropagation()
-    if (this.selectedSubGroup) {
-      this.selectedSubGroup.selected = false
+    if (this.name === "") {
+      MessageHelper.alert('error', 'Subgroup name cannot be empty')
+      return
+    }
+    if (this._usedNames.has(this.name)) {
+      MessageHelper.alert('error', `Subgroup name ${this.name} already used`)
+      return
+    }
+    if (this.name.includes(' ') || this.name.includes('"')) {
+      MessageHelper.alert('error', 'Subgroup name cannot contain white space nor "')
+      return
+    }
+    if (this.name.length === nameMaxLength) {
+      MessageHelper.alert('error', `Subgroup name length cannot exceed ${nameMaxLength}`)
+      return
+    }
+    if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
+      MessageHelper.alert('error', "Both inclusion and exclusion constraints are empty, nothing to add")
+      return
     }
 
-    this.selectedSubGroup = subGroup
-    this.selectedSubGroup.selected = true
+    let newSubGroup: SubGroup = {
+      name: this.name,
+      rootInclusionConstraint: this.constraintService.rootInclusionConstraint.clone(),
+      rootExclusionConstraint: this.constraintService.rootExclusionConstraint.clone()
+    }
+    this.subGroups.push({ label: this.name, value: newSubGroup })
+    this._usedNames.add(this.name)
+    this.clearName()
+    this.constraintService.clearConstraint()
+
+    this.survivalService.subGroups = this.subGroups.map(({ value }) => value as SubGroup)
+    this.selectedSubGroup = null
+
   }
 
+  removeSubGroup(event: Event) {
+    let nameToRemove = this.selectedSubGroup.name
+    this._usedNames.delete(this._selectedSubGroup.name)
+    this.selectedSubGroup = null
+    this._subGroups = this.subGroups.filter(({ label }) => label !== nameToRemove)
+    this.survivalService.subGroups = this.subGroups.map(({ value }) => value as SubGroup)
+  }
 
+  loadSubGroup(event: Event) {
+    this.name = this.selectedSubGroup.name
+    this.constraintService.rootInclusionConstraint = this.selectedSubGroup.rootInclusionConstraint.clone()
+    this.constraintService.rootExclusionConstraint = this.selectedSubGroup.rootExclusionConstraint.clone()
+  }
+
+  clearName() {
+    this._name = ""
+  }
+
+  // otherwise it writes data in input field
+  preventDefault(event: Event) {
+    event.preventDefault()
+  }
 }

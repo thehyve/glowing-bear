@@ -8,7 +8,7 @@
     </div>
     <div class="gb-data-selection-accordion-sub-header-2">
       <span id="save-box">
-        <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name" />
+        <input [(ngModel)]="name" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name" (drop)="preventDefault($event)"/>
         <span>&nbsp;</span>
         <button
           class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn {{lastSuccessfulSet ?  '' : 'gb-explore-waiting-cohort'}}"

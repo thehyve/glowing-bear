@@ -27,6 +27,11 @@ export class GenomicAnnotationConstraint extends Constraint {
     this.textRepresentation = 'Genomic Annotation';
     this.annotation = new GenomicAnnotation();
   }
+  toString(): string{
+    return this.annotationValue + " homozygous " + (this.zygosityHomozygous ? 'yes ': 'no ') +
+      "heterozygous " + (this.zygosityHeterozygous ? 'yes ': 'no ') +
+      "variant IDs (" + this.variantIds.join(', ')+")"
+  }
 
   get className(): string {
     return 'GenomicAnnotationConstraint';
