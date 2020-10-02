@@ -212,11 +212,12 @@ export class SurvivalCurvesDrawing {
     let domainPadding = this.findMaxDomain() / (2 * this._ticks.length)
     let xaxis = scaleLinear()
       .domain([-domainPadding, this.findMaxDomain() + domainPadding])
-      .range([2 * this.margins, this.width - 2 * this.margins])
+      .range([2 * this.margins, this.width])
     let abscissa = axisBottom(xaxis).tickValues(this._ticks)
+    //group name can be too long
     let yaxis = scaleBand().domain(this.curves.curves.map(curve => curve.groupId)).range([this.height, this.survivalTable + 100])
     this._svgRef.append('g')
-      .attr('transform', `translate(${6 * this.margins},${-2 * this.margins})`)
+      .attr('transform', `translate(${2 * this.margins},${-2 * this.margins})`)
       .call(axisLeft(yaxis))
       .attr('font-size', '8px')
     console.log('curves', this.curves.curves)
@@ -224,7 +225,7 @@ export class SurvivalCurvesDrawing {
 
 
     this._tableHGrid = this._svgRef.append('g')
-      .attr('transform', `translate(${4 * this.margins},${this.height - 2 * this.margins})`)
+      .attr('transform', `translate(${0 * this.margins},${this.height - 2 * this.margins})`)
       .call(abscissa)
       .attr('font-size', '8px')
     this._summaryDisplay = this._svgRef.append('g')
@@ -239,8 +240,7 @@ export class SurvivalCurvesDrawing {
         .attr('x', (_, j) => xaxis(this._ticks[j]))
         .attr('y', yaxis(curve.groupId))
         .text(d => d.atRisk.toString() + '(' + d.event.toString() + ')')
-        .attr('font-size', '8px')
-        .attr('transform', `translate(${4 * this.margins},0)`)
+        .attr('font-size', '7px')
         .style('text-anchor', 'middle')
 
     })

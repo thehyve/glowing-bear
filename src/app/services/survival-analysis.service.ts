@@ -24,6 +24,7 @@ import { Constraint } from 'app/models/constraint-models/constraint';
 import { NegationConstraint } from 'app/models/constraint-models/negation-constraint';
 import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 import { ConstraintMappingService } from './constraint-mapping.service';
+import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 
 
 
@@ -210,6 +211,10 @@ export class SurvivalService {
     return res
 
 
+  }
+
+  settings():SurvivalSettings{
+    return new SurvivalSettings(this._granularity,this._limit,this._startConcept.name,this._startModifier,this._endConcept.name,this._endModifier)
   }
 }
 

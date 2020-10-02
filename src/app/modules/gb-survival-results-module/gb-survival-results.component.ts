@@ -6,8 +6,11 @@ import { SelectItem } from 'primeng/api';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { select, Selection } from 'd3';
 import { alphas, CIs, confidenceInterval, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
-import { clearResultsToArray } from 'app/models/survival-analysis/survival-curves';
+import { ChiSquaredCdf, clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
 import { PDF } from 'app/models/file-models/pdf';
+import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
+import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
+import { logRank2Groups } from 'app/models/survival-analysis/logRankPvalue';
 
 @Component({
   selector: 'app-gb-survival-results',
@@ -16,11 +19,25 @@ import { PDF } from 'app/models/file-models/pdf';
 })
 export class GbSurvivalResultsComponent implements OnInit {
   _id: number
-
-  _svgSettings: ElementRef
   colorRange = colorRange
   advancedSettings = false
   _results: SurvivalAnalysisClear
+  _inputParameters: SurvivalSettings
+  _survivalCurve: SurvivalCurve
+  _groupComparisons: SelectItem[]
+  _selectedGroupComparison: {
+    name1: string,
+    name2: string,
+    color1: string,
+    color2: string,
+    logrank: string,
+    initialCount1: string,
+    initialCount2: string,
+    cumulatEvent1: string,
+    cumulatEvent2: string,
+    cumulatCensoring1: string,
+    cumumlatCensoring2: string,
+  }
 
 
 
@@ -54,18 +71,24 @@ export class GbSurvivalResultsComponent implements OnInit {
   constructor(private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
       console.log("survService", this.survivalResultsService)
-      this.results = this.survivalResultsService.selectedSurvivalResult
+      let resAndSettings = this.survivalResultsService.selectedSurvivalResult
+      this.results = resAndSettings.survivalAnalysisClear
+      this.inputParameters = resAndSettings.settings
     })
   }
 
   ngOnInit() {
+
+    // -- get the results
+    this._survivalCurve = clearResultsToArray(this._results)
+    // -- draw svg
     this._svg = select('#survivalSvgContainer').append("svg").attr("width", "100%")
       .attr("height", "100%")
-      .attr("viewBox", "-10 -20 650 650")
+      .attr("viewBox", "-10 -20 450 450")
       .attr("font-size", "15px")
       .attr("stroke-width", "1px")
       .append("g").attr("transform", `translate (${this._margins},${this._margins})`)
-    this._drawing = new SurvivalCurvesDrawing(this._svg, clearResultsToArray(this._results), 300, this._margins, 160, 300)
+    this._drawing = new SurvivalCurvesDrawing(this._svg, this.survivalCurve, 300, this._margins, 160, 300)
 
 
     this._drawing._rectHeight = 6
@@ -75,8 +98,88 @@ export class GbSurvivalResultsComponent implements OnInit {
     this._drawing.buildLines()
     this._drawing.drawCurves()
 
+    // -- build tables
+    this.setGroupComparisons()
 
+  }
 
+  setGroupComparisons() {
+    this._groupLogrankTable = new Array<Array<string>>()
+    this._groupCoxRegTable = new Array<Array<string>>()
+    this._groupCoxWaldTable = new Array<Array<string>>()
+    this._groupTables = new Array<SelectItem>()
+    this._groupTotalAtRisk = new Array<string>()
+    this._groupTotalCensoring = new Array<string>()
+    this._groupTotalEvent = new Array<string>()
+    this._groupCoxLogtestTable = new Array<Array<string>>()
+    var len = this.survivalCurve.curves.length
+    var curveName = this.survivalCurve.curves.map(curve => curve.groupId)
+    this._groupComparisons = new Array<SelectItem>()
+
+    for (let i = 0; i < len; i++) {
+      var logrankRow = new Array<string>()
+      var coxRegRow = new Array<string>()
+      var waldCoxRow = new Array<string>()
+      var coxLogtestRow = new Array<string>()
+      var totalAtRisk: string
+      var totalEvent: string
+      var totalCensoring: string
+      for (let j =/*i+1*/ 0; j < len; j++) {
+        var logrank = logRank2Groups(this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points).toPrecision(3)
+        logrankRow.push(logrank)
+        var cox = NewCoxRegression([this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points], 1000, 1e-14, "breslow").run()
+        var beta = cox.finalBeta[0]
+        var variance = cox.finalCovarianceMatrixEstimate[0][0]
+        var coxReg = coxToString(beta, variance)
+        var waldStat = Math.pow(beta, 2) / (variance + 1e-14)
+        var waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
+        var likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
+        var coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
+        console.log("loglikelihoodRatio", likelihoodRatio, "logtest pvalue", coxLogtest)
+        coxRegRow.push(coxReg)
+        waldCoxRow.push(waldTest)
+        coxLogtestRow.push(coxLogtest)
+        totalAtRisk = this.survivalCurve.curves[i].points[0].atRisk.toString()
+        totalEvent = this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString()
+        totalCensoring = this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a, b) => a + b).toString()
+        this._groupComparisons.push({
+          label: curveName[i] + curveName[j], value: {
+            name1: curveName[i],
+            name2: curveName[j],
+            color1: colorRange[i],
+            color2: colorRange[j],
+            logrank: logrank,
+            coxReg: coxReg,
+            initialCount1: totalAtRisk,
+            initialCount2: this.survivalCurve.curves[j].points[0].atRisk.toString(),
+            //TODO this is redundant
+            cumulatEvent1: totalEvent,
+            cumulatEvent2: this.survivalCurve.curves[j].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString(),
+            cumulatCensoring1: totalCensoring,
+            cumulatCensoring2: this.survivalCurve.curves[j].points.map(p => p.nofCensorings).reduce((a, b) => a + b).toString(),
+          }
+        })
+
+      }
+      this._groupLogrankTable.push(logrankRow)
+      this._groupCoxRegTable.push(coxRegRow)
+      this._groupCoxWaldTable.push(waldCoxRow)
+      this._groupTotalEvent.push(totalEvent)
+      this._groupTotalCensoring.push(totalCensoring)
+      this._groupTotalAtRisk.push(totalAtRisk)
+      this._groupCoxLogtestTable.push(coxLogtestRow)
+
+    }
+    this._groupTables.push(
+      { label: "Haenszel-Mantel LogRank p-value", value: { legend: "KM p-value", table: this._groupLogrankTable } },
+      { label: "Cox regression proportional hazard ratio", value: { legend: "Cox PH, [95% CI]", table: this._groupCoxRegTable } },
+      { label: "Cox regression Wald test p-value", value: { legend: "Wald p-value", table: this._groupCoxWaldTable } },
+      { label: "Cox likelihood ratio p-value", value: { legend: "Logtest p-vale", table: this._groupCoxLogtestTable } })
+    this.selectedGroupTable = { legend: "KM p-value", table: this._groupLogrankTable }
+
+    if (len) {
+      this._selectedGroupComparison = this._groupComparisons[0].value
+    }
   }
 
   set id(i: number) {
@@ -119,10 +222,40 @@ export class GbSurvivalResultsComponent implements OnInit {
   get groupTotalAtRisk(): string[] {
     return this._groupTotalAtRisk
   }
+  set groupTotalEvent(events: string[]) {
+    this._groupTotalEvent = events
+  }
+  get groupTotalEvent(): string[] {
+    return this._groupTotalEvent
+  }
+  set groupTotalCensoring(censoring: string[]) {
+    this._groupTotalCensoring = censoring
+  }
+  get groupTotalCensoring(): string[] {
+    return this._groupTotalCensoring
+  }
 
   set results(res: SurvivalAnalysisClear) {
     this._results = res
   }
+
+  set inputParameters(parameters: SurvivalSettings) {
+    this._inputParameters = parameters
+  }
+
+  get inputParameters(): SurvivalSettings {
+    return this._inputParameters
+  }
+
+  get survivalCurve(): SurvivalCurve {
+    return this._survivalCurve
+  }
+
+  get groupTables():SelectItem[]{
+    return this._groupTables
+  }
+
+  
 
   set ic(ic) {
     this._ic = ic

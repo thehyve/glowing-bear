@@ -72,6 +72,7 @@ export class GbTopComponent implements OnInit {
     fillTestPanels()
     this.ready = false
     this.launched = true
+    let settings=this.survivalAnalysisService.settings()
     try {
       this.survivalAnalysisService.runSurvivalAnalysis()
         .subscribe(res => {
@@ -79,9 +80,9 @@ export class GbTopComponent implements OnInit {
           setTimeout(() => { }, 500)
           console.log(res)
           this._survivalAnalysisResponses = res
-          let finalResult = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
-          this._clearRes.next(finalResult)
-          this.survivalResultsService.pushCopy(finalResult)
+          let survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
+          this._clearRes.next(survivalAnalysisClear)
+          this.survivalResultsService.pushCopy(survivalAnalysisClear,settings)
           this.ran = true
           this.ready = true
 
