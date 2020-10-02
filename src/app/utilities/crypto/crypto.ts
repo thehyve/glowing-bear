@@ -77,7 +77,7 @@ export function EncryptInt(pk: Point, x: number): CipherText {
  * @returns {Point}
  * @param x
  */
-function IntToPoint(x: number): Point {
+export function IntToPoint(x: number): Point {
   let B = curve25519.point().base();
   let i = curve25519.scalar().setBytes(toBytesInt32(x));
   return curve25519.point().mul(i, B)
