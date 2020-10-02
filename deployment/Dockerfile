@@ -2,12 +2,11 @@ FROM node:12 as dev
 
 # build time env
 ENV GB_SRC="/glowing-bear-src"
-ENV NG_BIN="$GB_SRC/node_modules/@angular/cli/bin/ng"
 
 VOLUME $GB_SRC
 EXPOSE 4200
 WORKDIR $GB_SRC
-ENTRYPOINT npm install && exec $NG_BIN serve --aot --port 4200 --host 0.0.0.0
+ENTRYPOINT npm install && exec npm start --port 4200 --host 0.0.0.0
 
 
 # -------------------------------------------
@@ -16,12 +15,11 @@ FROM node:12 as build
 # build time env
 ENV GB_SRC="/glowing-bear-src" \
     GB_DIST="/glowing-bear-dist"
-ENV NG_BIN="$GB_SRC/node_modules/@angular/cli/bin/ng"
 
 COPY . $GB_SRC
 RUN cd $GB_SRC && \
     npm install && \
-    $NG_BIN build --prod && \
+    npm package && \
     mv $GB_SRC/dist $GB_DIST
 
 
