@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - '10'
+  - '12'
 
 addons:
   apt:
@@ -18,7 +18,7 @@ install:
 
 script:
   - npm run lint
-  - npm run test --no-watch --no-progress --browsers=ChromeHeadlessCI
+  - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
 
 notifications:
   email: false
