@@ -44,7 +44,7 @@ export class ExploreSearchService {
    */
   exploreSearch(root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
-      'node/explore/search',
+      'node/explore/search/concept',
       { type: 'children', path: root }
     ).pipe(
       map((searchResp: object) => {
