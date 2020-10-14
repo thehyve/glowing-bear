@@ -97,3 +97,8 @@ p-scrollpanel p.indented{
   border-bottom: none;
 
 }
+
+canvas{
+  height: 500px;
+  width: 750px;
+}

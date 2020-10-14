@@ -134,6 +134,18 @@ export class CohortService {
 
   }
 
+  removeCohorts(cohort:Cohort){
+    this.exploreCohortsService.removeCohortAllNodes(cohort.name).subscribe(
+      message =>{
+        console.log(message)
+      },
+      err=>{
+        console.log('An error occured while removing saved cohorts: ', err)
+        MessageHelper.alert('error', 'An error occured while removingsaved cohorts', err)
+      }
+    )
+  }
+
 
 
 

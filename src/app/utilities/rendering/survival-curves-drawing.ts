@@ -133,6 +133,7 @@ export class SurvivalCurvesDrawing {
       .attr('transform', `translate(${2 * this.margins},${this.survivalTable - this.margins})`)
       .call(axisBottom(this._xaxis).ticks(this.nofTicks))
       .attr('font-size', '8px')
+      .style('color','black')
 
     // this is tricky, but it works
     let ticks = new Array<number>()
@@ -143,6 +144,7 @@ export class SurvivalCurvesDrawing {
       .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
       .call(axisLeft(this._yaxis))
       .attr('font-size', '8px')
+      .style('color','black')
     this.curves.curves.forEach(({ groupId }, index) => {
       this._hiding.set(groupId, false)
       this._labelClasses.set(groupId, labelClasses[index])
@@ -327,7 +329,6 @@ export class SurvivalCurvesDrawing {
     if (this._svgRef) {
       this._svgRef.select('#hGrid').remove()
       this._svgRef.select('#vGrid').remove()
-      this._svgRef.select('#summHGrid').remove()
     }
 
     if (this.grid) {
@@ -335,7 +336,7 @@ export class SurvivalCurvesDrawing {
 
       this._svgRef.append('g').attr('transform', `translate(${2 * this.margins},${this.survivalTable - this.margins})`)
         .attr('id', 'hGrid')
-        .attr('style', 'opacity:0.2')
+        .style('color','#b8b8b8')
         .call(axisBottom(this._xaxis)
           .tickValues(this._ticks)
           .tickSize(-(this.survivalTable))
@@ -351,11 +352,6 @@ export class SurvivalCurvesDrawing {
           .ticks(10)
           .tickSize(-this.width)
           .tickFormat(() => ''))
-      let domainPadding = this.findMaxDomain() / (2 * this._ticks.length)
-
-      let xaxis = scaleLinear().domain([-domainPadding, this.findMaxDomain() + domainPadding])
-        .range([2 * this.margins, this.width - 2 * this.margins])
-
 
     }
   }

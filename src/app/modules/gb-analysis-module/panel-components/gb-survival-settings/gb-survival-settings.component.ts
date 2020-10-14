@@ -15,6 +15,7 @@ import { MessageHelper } from 'app/utilities/message-helper';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
+import { SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-gb-survival-settings',
@@ -24,7 +25,7 @@ import { Granularity } from 'app/models/survival-analysis/granularity-type';
 export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
 
-  _granularities = [{ label: 'Day', value: Granularity.day }, { label: 'Week', value: Granularity.week }, { label: 'Month', value: Granularity.month }, { label: 'Year', value: Granularity.month }]
+  _granularities: SelectItem[] = [{ label: 'Day', value: Granularity.day }, { label: 'Week', value: Granularity.week }, { label: 'Month', value: Granularity.month }, { label: 'Year', value: Granularity.month }]
 
 
   _suggestedStartConcepts: Concept[]
@@ -181,6 +182,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
 
   set selectedGranularity(gran: Granularity) {
+    console.log(gran)
     this.survivalService.granularity = gran
   }
 

@@ -40,6 +40,7 @@ export class ApiEndpointService {
    * Make a get http request
    * @param urlPart - the part used in baseUrl/urlPart
    * @param additionalParam
+   * @param apiUrl
    * @returns {Observable<any | any>}
    */
   getCall(urlPart, additionalParam?,apiUrl?): Observable<any> {
@@ -65,11 +66,13 @@ export class ApiEndpointService {
   /**
    * Make a delete http request
    * @param urlPart
+   * @param options
+   * @param apiUrl
    * @returns {Observable<any | any>}
    */
-  deleteCall(urlPart) {
-    let url = `${this.endpointUrl}/${urlPart}`;
-    return this.http.delete(url).pipe(
+  deleteCall(urlPart,options?,apiUrl?) {
+    const url = apiUrl? `${apiUrl}/${urlPart}`:`${this.endpointUrl}/${urlPart}`;;
+    return this.http.delete(url,options).pipe(
       catchError(ErrorHelper.handleHTTPError)
     );
   }

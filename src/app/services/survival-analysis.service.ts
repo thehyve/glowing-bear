@@ -207,8 +207,6 @@ export class SurvivalService {
     console.log(`${nofDecryptions} ElGamal points decrypted in ${end - start} milliseconds`)
 
     return res
-
-
   }
 
   settings(): SurvivalSettings {

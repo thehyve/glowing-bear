@@ -132,6 +132,7 @@ export class GbCohortsComponent implements AfterViewInit {
 
   remove(event:Event, cohort:Cohort){
     event.stopPropagation()
+    this.cohortService.removeCohorts(cohort)
     if(this.cohortService.selectedCohort && this.cohortService.selectedCohort ==cohort){
       this.cohortService.selectedCohort==null
     }

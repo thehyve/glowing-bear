@@ -58,7 +58,7 @@
 </p-overlayPanel>
 <br>
 <button class="smallbutton" (click)="op.toggle($event)"><i class="fa fa-cog"></i></button>
-<button class="smallbutton" click="console.error('Export not implemented')"><i class="fa fa-download"></i></button>
+<button class="smallbutton" (click)="exportSVG($event)"><i class="fa fa-download"></i></button>
 
 <div class="row">
   <div class="column-2">
@@ -120,4 +120,6 @@
       <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
     </tr>
   </table>
+
+  <canvas id="drawingconv" hidden></canvas>
 </div>

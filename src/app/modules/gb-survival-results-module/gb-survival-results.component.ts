@@ -5,7 +5,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, ElementRef, OnChanges } from '@angular/core';
+import { Component, OnInit, ElementRef, OnChanges, AfterViewInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { SelectItem } from 'primeng/api';
@@ -17,13 +17,15 @@ import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings
 import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
 import { logRank2Groups } from 'app/models/survival-analysis/log-rank-p-value';
 import { summaryTable } from 'app/models/survival-analysis/summary-table';
+import { jsPDF } from 'jspdf';
+import canvg from 'canvg';
 
 @Component({
   selector: 'app-gb-survival-results',
   templateUrl: './gb-survival-results.component.html',
   styleUrls: ['./gb-survival-results.component.css']
 })
-export class GbSurvivalResultsComponent implements OnInit{
+export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
   _id: number
   colorRange = colorRange
   advancedSettings = false
@@ -77,7 +79,10 @@ export class GbSurvivalResultsComponent implements OnInit{
   _summaryTable: { atRisk: number, event: number }[][]
 
 
-  constructor(private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
+
+
+
+  constructor(private elmRef: ElementRef, private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
       console.log("survService", this.survivalResultsService)
       let resAndSettings = this.survivalResultsService.selectedSurvivalResult
@@ -96,15 +101,20 @@ export class GbSurvivalResultsComponent implements OnInit{
 
   }
 
+  ngAfterViewInit() {
 
 
-  display(){
+  }
+
+
+
+  display() {
     // -- get the results
     this._survivalCurve = clearResultsToArray(this._results)
-    
+
     // -- remove previous svg
-    let previous=select('#survivalSvgContainer svg')
-    if (previous){
+    let previous = select('#survivalSvgContainer svg')
+    if (previous) {
       previous.remove()
     }
 
@@ -216,6 +226,32 @@ export class GbSurvivalResultsComponent implements OnInit{
     this._survivalCurve.curves.forEach(({ points }, index) => {
       this._summaryTable[index] = summaryTable(points, this._summaryTableMileStones)
     })
+  }
+
+  exportSVG(event: Event) {
+
+    console.log('getting elements')
+
+    let svg = this.elmRef.nativeElement.querySelector('#survivalSvgContainer svg')
+    let can = this.elmRef.nativeElement.querySelector('#drawingconv')
+
+    console.log('parsing svg')
+    var serializer = new XMLSerializer();
+    var svgSerialized = serializer.serializeToString(svg);
+
+
+    console.log('running canvg')
+    canvg(can, svgSerialized, { useCORS: true })
+    console.log('getting image data')
+    let imData = can.toDataURL('img/png', 'high')
+    console.log('creating pdf document')
+    var doc = new jsPDF()
+    console.log('adding image')
+    doc.addImage(imData, 'png', 0, 0, 190, 120)
+
+    console.log('exporting pdf document')
+    let exportDate = new Date(Date.now())
+    doc.save(`medco_survival_analysis_${exportDate.toISOString()}.pdf`)
   }
 
   set id(i: number) {
