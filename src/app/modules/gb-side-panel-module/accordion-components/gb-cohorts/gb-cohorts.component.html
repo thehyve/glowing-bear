@@ -1,11 +1,9 @@
 <div id="cohorts-component">
+  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
   <button pButton class="ui-button-secondary" [disabled]="cohortService.isRefreshing"
     [ngStyle]="{'color': cohortService.isRefreshing ? 'var(--gb-light-light-clinical-green)':'var(--gb-clinical-green)'}"
     type="button" pTooltip="Refresh cohorts" tooltipPosition="top" (click)="refreshCohorts()" icon="fa fa-refresh">
   </button>
-
-
-
 
   <div *ngIf="cohorts.length > 0">
     <p-autoComplete [(ngModel)]="searchName" styleClass="filter-input" placeholder="cohort name"

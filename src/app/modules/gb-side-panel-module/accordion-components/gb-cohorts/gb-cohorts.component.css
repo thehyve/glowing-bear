@@ -54,6 +54,24 @@
   text-decoration: none;
 }
 
+#cohorts-component .ui-dialog-footer button{
+  height: auto;
+  color: #8b8b8b;
+}
+
+#cohorts-component .ui-dialog-footer button:hover{
+  background-color: var(--gb-clinical-green);
+  color:white;
+}
+
+#cohorts-component .ui-dialog-footer button:first-of-type{
+  background-color: red;
+  color:white;
+}
+
+#cohorts-component .ui-dialog-footer button:first-of-type:hover{
+  background-color: #b60000;
+}
 
 #cohorts-component .pi-spin{
   color: transparent;
