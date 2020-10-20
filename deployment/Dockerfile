@@ -19,7 +19,7 @@ ENV GB_SRC="/glowing-bear-src" \
 COPY . $GB_SRC
 RUN cd $GB_SRC && \
     npm install && \
-    npm package && \
+    npm run package && \
     mv $GB_SRC/dist $GB_DIST
 
 
