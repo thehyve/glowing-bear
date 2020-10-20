@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/ldsec/medco.svg?branch=master)](https://travis-ci.org/ldsec/medco) 
-
 # Glowing Bear MedCo
 *glowing-bear-medco* is the web user interface of MedCo.
 You can find more information about the MedCo project [here](https://medco.epfl.ch/).
