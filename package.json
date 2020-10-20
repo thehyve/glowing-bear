@@ -1,6 +1,6 @@
 {
   "name": "glowing-bear-medco",
-  "version": "1.0.0",
+  "version": "0.0.0-dev",
   "license": "MPL-2.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,8 @@
     "build": "ng build",
     "package": "ng build --prod",
     "test": "ng test",
-    "lint": "ng lint --type-check"
+    "lint": "ng lint --type-check",
+    "version": "git describe --tags --always"
   },
   "private": true,
   "dependencies": {

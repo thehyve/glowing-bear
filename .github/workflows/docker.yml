@@ -1,0 +1,53 @@
+name: Docker
+on:
+  push:
+    branches:
+      - 'dev'
+    tags:
+      - '*'
+  pull_request:
+
+jobs:
+  build-push:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.LDS_PKG_PAT_USERNAME }}
+          password: ${{ secrets.LDS_PKG_PAT }}
+
+      - name: Get glowing-bear-medco version
+        id: get_version
+        run: |
+          VERSION=$(npm run --silent version)
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo ::set-output name=version::${VERSION}
+
+      - name: Build and push glowing-bear-medco
+        uses: docker/build-push-action@v2
+        with:
+          file: ./deployment/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ghcr.io/ldsec/glowing-bear-medco:${{ steps.get_version.outputs.version }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
