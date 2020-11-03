@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CoxRegression, timePoint, eventType } from './coxRegression'
+import { CoxRegression, timePoint, eventType } from './cox-regression'
 import { breslowCoxRegression } from './breslow'
 import { efronCoxRegression } from './efron'
-import { SurvivalPoint } from '../survival-analysis/survival-curves'
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
 
   if (pointGroups.length !== 2) {

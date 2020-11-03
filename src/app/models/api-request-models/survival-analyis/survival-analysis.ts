@@ -10,7 +10,7 @@ import { ApiI2b2Panel } from '../medco-node/api-i2b2-panel'
 
 export class ApiSurvivalAnalysis {
   ID: string
-  setID: number
+  cohortName: string
   subGroupDefinitions: Array<{ cohortName: string, panels: Array<ApiI2b2Panel> }>
   timeLimit: number
   timeGranularity: string

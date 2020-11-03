@@ -8,7 +8,7 @@
 
 import { logLikelihood, derivative, secondDerivative } from './breslow'
 import { inv } from 'mathjs'
-import { inMatrix, multiplyMatrixVector, addTo } from './coxRegression'
+import { inMatrix, multiplyMatrixVector, addTo } from './cox-regression'
 
 
 

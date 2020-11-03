@@ -54,7 +54,7 @@ export class NavbarService {
     for (let i = 0; i < this.isSurvivalRes.length; i++) {
       this.isSurvivalRes[i] = (routerLink === `/survival/${i}`)
     }
-    console.log(routerLink)
+    console.log("Updated router link: ",routerLink)
 
     if (this.isExplore) {
       this.activeItem = this._items[0];
@@ -74,7 +74,7 @@ export class NavbarService {
   }
   insertNewSurvResults() {
     let index = this.isSurvivalRes.push(false) - 1;
-    this.items.push({ label: `Survival Result ${index}`, routerLink: `/survival/${index}` });
+    this.items.push({ label: `Survival Result ${index + 1}`, routerLink: `/survival/${index}` });
 
   }
 

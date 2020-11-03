@@ -11,6 +11,7 @@
 import { Constraint } from './constraint';
 import { CombinationState } from './combination-state';
 import { SensitiveType } from './sensitive-type';
+import { ErrorHelper } from 'app/utilities/error-helper';
 
 export class CombinationConstraint extends Constraint {
 
@@ -47,7 +48,7 @@ export class CombinationConstraint extends Constraint {
       this.updateTextRepresentation()
       return 
     } else {
-      throw new Error('You cannot combine sensitive and non-sensitive concept with OR operator')
+      throw ErrorHelper.handleNewError('You cannot combine sensitive and non-sensitive concept with OR operator')
     }
 
   }

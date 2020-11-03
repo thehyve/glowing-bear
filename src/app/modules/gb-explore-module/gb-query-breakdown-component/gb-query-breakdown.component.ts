@@ -39,7 +39,7 @@ class BreakdownSelection {
     return this.selected
   }
 
-  change() {
+  changeBreakdownType() {
     this.queryBreakdownService.change(this.id)
     this.selected = this.selected
   }

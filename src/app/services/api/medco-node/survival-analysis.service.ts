@@ -41,10 +41,8 @@ export class SurvivalAnalysisService {
 
   survivalAnalysisAllNodes(apiSurvivalAnalysis: ApiSurvivalAnalysis, patientSetIDs: Array<number>): Observable<ApiSurvivalAnalysisResponse[]> {
     apiSurvivalAnalysis.userPublicKey = this.cryptoService.ephemeralPublicKey
-    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
-      (url, index) => {
-        console.log('patientSet', patientSetIDs)
-        apiSurvivalAnalysis.setID = patientSetIDs[index]
+    return forkJoin(this.medcoNetworkService.nodesUrl.map(
+      url => {
         return this.survivalAnalysisSingleNode(url, apiSurvivalAnalysis)
       }
     ))

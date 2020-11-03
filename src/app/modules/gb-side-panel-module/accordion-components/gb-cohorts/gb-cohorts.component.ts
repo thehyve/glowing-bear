@@ -143,11 +143,11 @@ export class GbCohortsComponent implements AfterViewInit {
 
 
     this.confirmationService.confirm({
-      message: `Are you sure that you want to permanently remove ${this.deletionCandidate.name} ?`,
+      message: `Do you want to permanently remove ${this.deletionCandidate.name} ?`,
       header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
+      icon:null,
       accept: () => {
-        this.cohortService.removeCohorts(this.deletionCandidate)
+        this.cohortService.removeCohorts(cohort)
         if (this.cohortService.selectedCohort && this.cohortService.selectedCohort == cohort) {
           this.cohortService.selectedCohort == null
         }

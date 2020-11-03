@@ -49,6 +49,7 @@ export class ExploreSearchService {
     ).pipe(
       map((searchResp: object) => {
         return (searchResp["results"] as object[]).map( (treeNodeObj: object) => {
+          console.warn("search results",treeNodeObj)
 
           let treeNode = new TreeNode();
           treeNode.path = treeNodeObj['path'];
@@ -84,6 +85,11 @@ export class ExploreSearchService {
             case 'genomic_annotation':
               treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
               treeNode.conceptType = undefined;
+              break;
+
+            case 'modifier':
+            case 'modifier_folder':
+              treeNode.nodeType = TreeNodeType.MODIFIER;
               break;
 
             default:

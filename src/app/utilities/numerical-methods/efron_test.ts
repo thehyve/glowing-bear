@@ -8,7 +8,7 @@
 
 import { logLikelihood, derivative, secondDerivative } from './efron'
 import { inv } from 'mathjs'
-import { addTo, inMatrix, multiplyMatrixVector } from './coxRegression'
+import { addTo, inMatrix, multiplyMatrixVector } from './cox-regression'
 
 
 

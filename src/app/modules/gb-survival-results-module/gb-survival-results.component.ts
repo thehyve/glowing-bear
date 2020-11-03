@@ -12,13 +12,14 @@ import { SelectItem } from 'primeng/api';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { select, Selection } from 'd3';
 import { alphas, CIs, confidenceInterval, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
-import { ChiSquaredCdf, clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
+import { clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
-import { NewCoxRegression, coxToString } from 'app/models/cox-regression/coxModel';
-import { logRank2Groups } from 'app/models/survival-analysis/log-rank-p-value';
-import { summaryTable } from 'app/models/survival-analysis/summary-table';
+import { NewCoxRegression, coxToString } from 'app/utilities/numerical-methods/cox-model';
+import { logRank2Groups } from 'app/utilities/survival-analysis/log-rank-p-value';
 import { jsPDF } from 'jspdf';
 import canvg from 'canvg';
+import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
+import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
 
 @Component({
   selector: 'app-gb-survival-results',
@@ -125,7 +126,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
       .attr("font-size", "8px")
       .attr("stroke-width", "1px")
       .append("g").attr("transform", `translate (${this._margins},${this._margins})`)
-    this._drawing = new SurvivalCurvesDrawing(this._svg, this.survivalCurve, 300, this._margins, 160, 300)
+    this._drawing = new SurvivalCurvesDrawing(this._svg, this.survivalCurve, 300, this._margins, 160, 300,this.inputParameters.timeGranularity)
 
 
     this._drawing._rectHeight = 6

@@ -6,8 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { exp, log } from 'mathjs'
-import { SurvivalPoint } from '../survival-analysis/survival-curves'
-import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, timePoint, eventType } from './coxRegression'
+import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, timePoint, eventType } from './cox-regression'
 
 
 /**

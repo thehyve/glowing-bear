@@ -1,6 +1,4 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.
- * 
  * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -8,11 +6,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum ConceptType {
-  CATEGORICAL = 'CATEGORICAL',
-  CATEGORICAL_OPTION = 'CATEGORICAL_OPTION',
-  NUMERICAL = 'NUMERIC',
-  DATE = 'DATE',
-  TEXT = 'TEXT',
-  SIMPLE = 'SIMPLE'
+export class ClearGroup {
+  groupId: string;
+  initialCount: number;
+  groupResults: {
+    events: {
+      censoringEvent: number;
+      eventOfInterest: number;
+    };
+    timepoint: number;
+  }[];
 }

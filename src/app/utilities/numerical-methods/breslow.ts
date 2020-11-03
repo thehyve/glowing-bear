@@ -5,9 +5,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { exp, log } from 'mathjs'
-import { SurvivalPoint } from '../survival-analysis/survival-curves'
-import { timePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, eventType, CoxRegression } from './coxRegression'
+import { timePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, eventType, CoxRegression } from './cox-regression'
 
 
 /**

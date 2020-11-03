@@ -83,6 +83,7 @@ export class TreeNodeService {
     this._isLoading = true;
     this.exploreSearchService.exploreSearch(parentNode.path).subscribe(
       (treeNodes: TreeNode[]) => {
+        console.warn("search results",treeNodes)
         parentNode.attachChildTree(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
@@ -106,6 +107,7 @@ export class TreeNodeService {
       return;
     }
     for (let node of treeNodes) {
+      console.warn("nodes",node)
       this.processTreeNode(node, constraintService);
       if (node.hasChildren()) {
         this.processTreeNodes(node.children, constraintService);
@@ -168,8 +170,17 @@ export class TreeNodeService {
           node.icon = 'fa fa-folder-o';
       }
 
+      // overwrite icon
+      if (node.nodeType === TreeNodeType.MODIFIER){
+        node.icon = 'fa fa-eye';
+      }
+
     } else {
       node.icon = '';
+      if (node.nodeType === TreeNodeType.MODIFIER){
+        node.expandedIcon = 'fa fa-eye';
+        node.collapsedIcon = 'fa fa-eye';
+      }
       node.expandedIcon = 'fa fa-folder-open';
       node.collapsedIcon = 'fa fa-folder';
     }

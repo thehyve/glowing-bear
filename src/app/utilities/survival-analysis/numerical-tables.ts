@@ -5,9 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SurvivalPoint, ChiSquaredCdf } from './survival-curves'
 import { logRank2Groups } from './log-rank-p-value'
-import { NewCoxRegression, coxToString } from '../cox-regression/coxModel'
+import { NewCoxRegression, coxToString } from '../numerical-methods/cox-model'
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
+import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
 
 export function numericalTables(curves: SurvivalPoint[][], maxIter: number = 1000, tolerance: number = 1e-14, stringPrecision: number = 3): NumericalTablesType {
   const len = curves.length

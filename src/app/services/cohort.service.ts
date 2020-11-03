@@ -15,6 +15,7 @@ import { ConstraintService } from './constraint.service';
 import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
+import { ErrorHelper } from 'app/utilities/error-helper';
 
 @Injectable()
 export class CohortService {
@@ -72,14 +73,13 @@ export class CohortService {
     this.exploreCohortsService.getCohortAllNodes().subscribe(
       (apiCohorts => {
         try {
-          this.upsertCohorts(apiCohortsToCohort(apiCohorts))
+          this.updateCohorts(apiCohortsToCohort(apiCohorts))
         } catch (err) {
           MessageHelper.alert('error', 'An error occured with received saved cohorts', err)
         }
         this._isRefreshing = false
       }).bind(this),
       (err => {
-        console.log('An error occured while retrieving saved cohorts: ', err)
         MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', err)
         this._isRefreshing = false
 
@@ -105,19 +105,18 @@ export class CohortService {
     })
 
     this.exploreCohortsService.postCohortAllNodes(apiCohorts).subscribe(messages => {
-      messages.forEach(message => console.log(message)),
-        this.upsertCohorts([cohort])
+      messages.forEach(message => console.log("on post cohort, message: ",message)),
+        this.updateCohorts([cohort])
       this._isRefreshing = false
     },
       error => {
-        console.log('An error occured while saving a cohort: ', error)
         MessageHelper.alert('error', 'An error occured while saving cohort', error)
         this._isRefreshing = false
       })
 
   }
 
-  upsertCohorts(cohorts: Cohort[]) {
+  updateCohorts(cohorts: Cohort[]) {
     let tmp = new Map<string, Date>()
     this._cohorts.forEach(cohort => { tmp.set(cohort.name, cohort.updateDate) })
     cohorts.forEach(cohort => {
@@ -137,11 +136,10 @@ export class CohortService {
   removeCohorts(cohort:Cohort){
     this.exploreCohortsService.removeCohortAllNodes(cohort.name).subscribe(
       message =>{
-        console.log(message)
+        console.log("on remove cohort, message: ",message)
       },
       err=>{
-        console.log('An error occured while removing saved cohorts: ', err)
-        MessageHelper.alert('error', 'An error occured while removingsaved cohorts', err)
+        MessageHelper.alert('error', 'An error occured while removing saved cohorts', err)
       }
     )
   }
@@ -186,7 +184,7 @@ function apiCohortsToCohort(apiCohorts: ApiCohort[][]): Cohort[] {
   apiCohorts
     .forEach(apiCohort => {
       if (apiCohort.length !== cohortNumber) {
-        throw (Error('cohort numbers are not the same across nodes'))
+        throw ErrorHelper.handleNewError('cohort numbers are not the same across nodes')
       }
     })
 
@@ -194,11 +192,11 @@ function apiCohortsToCohort(apiCohorts: ApiCohort[][]): Cohort[] {
   let res = new Array<Cohort>()
   for (let i = 0; i < cohortNumber; i++) {
     cohortName = apiCohorts[0][i].cohortName
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].cohortName !== cohortName) { throw (Error('cohort names are not the same across nodes')) } })
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].cohortName !== cohortName) { throw ErrorHelper.handleNewError('cohort names are not the same across nodes') } })
     creationDate = apiCohorts[0][i].creationDate
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].creationDate !== creationDate) { throw (Error('cohort creation dates are not the same across nodes')) } })
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].creationDate !== creationDate) { throw ErrorHelper.handleNewError('cohort creation dates are not the same across nodes') } })
     updateDate = apiCohorts[0][i].updateDate
-    apiCohorts.forEach(apiCohort => { if (apiCohort[i].updateDate !== updateDate) { throw (Error('cohort update dates are not the same across nodes')) } })
+    apiCohorts.forEach(apiCohort => { if (apiCohort[i].updateDate !== updateDate) { throw ErrorHelper.handleNewError('cohort update dates are not the same across nodes') } })
     let cohort = new Cohort(cohortName, null, null, new Date(creationDate), new Date(updateDate))
 
     cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryId)

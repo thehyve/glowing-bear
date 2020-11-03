@@ -261,7 +261,7 @@ export class ConstraintService {
 }
 
 
-class constraintStorage{
+class ConstraintStorage{
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
 

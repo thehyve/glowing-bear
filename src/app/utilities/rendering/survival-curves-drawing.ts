@@ -72,6 +72,8 @@ export class SurvivalCurvesDrawing {
   // svg element for curve per group
   _curves = new Map<string, Selection<SVGPathElement, unknown, HTMLElement, any>>()
 
+  _grids: Selection<SVGGElement, unknown, HTMLElement, any>
+
   constructor(
     svgRef: Selection<SVGGElement, unknown, HTMLElement, any>,
     private curves: SurvivalCurve,
@@ -79,6 +81,7 @@ export class SurvivalCurvesDrawing {
     private margins: number,
     private survivalTable: number,
     private height: number,
+    private granularity: string,
     private notifier: Observable<any> = null,
     public selectedInterval: confidenceInterval = logarithm,
     public alpha: number = 1.960,
@@ -127,13 +130,14 @@ export class SurvivalCurvesDrawing {
     return res
   }
   buildLines() {
+    this._grids = this._svgRef.append('g')
 
 
     this._hGrid = this._svgRef.append('g')
       .attr('transform', `translate(${2 * this.margins},${this.survivalTable - this.margins})`)
       .call(axisBottom(this._xaxis).ticks(this.nofTicks))
       .attr('font-size', '8px')
-      .style('color','black')
+      .style('color', 'black')
 
     // this is tricky, but it works
     let ticks = new Array<number>()
@@ -144,14 +148,20 @@ export class SurvivalCurvesDrawing {
       .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
       .call(axisLeft(this._yaxis))
       .attr('font-size', '8px')
-      .style('color','black')
+      .style('color', 'black')
     this.curves.curves.forEach(({ groupId }, index) => {
       this._hiding.set(groupId, false)
       this._labelClasses.set(groupId, labelClasses[index])
     })
 
+    //time granularity
+    this._svgRef.append('text')
+      .attr('x', this.width / 2)
+      .attr('y', this.survivalTable + 2 * this.margins)
+      .text(this.granularity)
 
     this._colorSet = scaleOrdinal<string, string>().domain(this.curves.curves.map(c => c.groupId)).range(colorRange)
+    
     // interactive title
     this.curves.curves.forEach((curve => {
       this._groupButton.set(curve.groupId, this.toggleStyle(curve.groupId,
@@ -257,7 +267,7 @@ export class SurvivalCurvesDrawing {
       if (this.selectedInterval) {
         this._CIs.get(curve.groupId)
           .datum(curve.points)
-          .attr('class', this._labelClasses.get(curve.groupId)+' ci')
+          .attr('class', this._labelClasses.get(curve.groupId) + ' ci')
           .attr('stroke', this._colorSet(curve.groupId))
           .attr('fill', this._colorSet(curve.groupId))
           .attr('opacity', confidenceIntervalOpacity)
@@ -326,17 +336,17 @@ export class SurvivalCurvesDrawing {
   }
 
   toggleGrid() {
-    if (this._svgRef) {
-      this._svgRef.select('#hGrid').remove()
-      this._svgRef.select('#vGrid').remove()
+    if (this._grids) {
+      this._grids.select('#hGrid').remove()
+      this._grids.select('#vGrid').remove()
     }
 
     if (this.grid) {
 
 
-      this._svgRef.append('g').attr('transform', `translate(${2 * this.margins},${this.survivalTable - this.margins})`)
+      this._grids.append('g').attr('transform', `translate(${2 * this.margins},${this.survivalTable - this.margins})`)
         .attr('id', 'hGrid')
-        .style('color','#b8b8b8')
+        .style('color', '#b8b8b8')
         .call(axisBottom(this._xaxis)
           .tickValues(this._ticks)
           .tickSize(-(this.survivalTable))
@@ -345,9 +355,9 @@ export class SurvivalCurvesDrawing {
 
 
 
-      this._svgRef.append('g').attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
+      this._grids.append('g').attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
         .attr('id', 'vGrid')
-        .attr('style', 'opacity:0.2')
+        .style('color', '#b8b8b8')
         .call(axisLeft(this._yaxis)
           .ticks(10)
           .tickSize(-this.width)
@@ -366,6 +376,6 @@ export class SurvivalCurvesDrawing {
 
 }
 
-const confidenceIntervalOpacity='0.3'
+const confidenceIntervalOpacity = '0.3'
 
 const labelClasses = ['group0', 'group1', 'group2', 'group3']
