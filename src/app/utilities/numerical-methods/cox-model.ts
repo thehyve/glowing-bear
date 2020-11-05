@@ -10,10 +10,11 @@ import { CoxRegression, timePoint, eventType } from './cox-regression'
 import { breslowCoxRegression } from './breslow'
 import { efronCoxRegression } from './efron'
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
+import { ErrorHelper } from '../error-helper';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
 
   if (pointGroups.length !== 2) {
-    throw new Error(`For the moment, only two-group comparisons are implemented. Got ${pointGroups.length}`);
+    throw ErrorHelper.handleNewError(`For the moment, only two-group comparisons are implemented. Got ${pointGroups.length}`);
   }
   const data = prepare(pointGroups[0], pointGroups[1])
   if (method.toUpperCase() === 'BRESLOW') {
@@ -21,7 +22,7 @@ export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number
   } else if (method.toUpperCase() === 'EFRON') {
     return new efronCoxRegression(data, maxIter, tolerance)
   } else {
-    throw new Error(`Unknown method ${method}. Only Breslow's and Efron's methods are implemented. Expected: one of 'breslow' 'efron'`);
+    throw ErrorHelper.handleNewError(`Unknown method ${method}. Only Breslow's and Efron's methods are implemented. Expected: one of 'breslow' 'efron'`);
   }
 }
 

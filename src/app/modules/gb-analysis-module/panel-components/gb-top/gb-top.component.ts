@@ -7,8 +7,7 @@
  */
 import { Component, OnInit } from '@angular/core';
 import { AnalysisType } from 'app/models/analyses/analysis-type';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
+import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { Subject, Observable, throwError } from 'rxjs';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
@@ -17,6 +16,7 @@ import { MessageHelper } from 'app/utilities/message-helper';
 
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { CohortServiceMock } from 'app/services/cohort.service';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 @Component({
   selector: 'app-gb-top',

@@ -10,10 +10,11 @@ import {
   event, axisLeft, scaleOrdinal, ScaleOrdinal, scaleBand,
   select, area, curveStepAfter, Line, Area, line, BaseType
 } from 'd3'
-import { SurvivalCurve, SurvivalPoint } from 'app/models/survival-analysis/survival-curves'
 import { colorRange } from 'app/modules/gb-survival-results-module/gb-survival-results.component'
-import { identity, logarithm, logarithmMinusLogarithm, arcsineSquaredRoot } from 'app/models/survival-analysis/confidence-intervals';
 import { Observable } from 'rxjs';
+import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
+import { SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 
 
 export type confidenceInterval = (
@@ -21,10 +22,10 @@ export type confidenceInterval = (
 ) => { inf: number, sup: number };
 
 export const CIs: Array<{ label: string, value: confidenceInterval }> = [
-  { label: 'identity', value: identity },
-  { label: 'log', value: logarithm },
-  { label: 'log -log', value: logarithmMinusLogarithm },
-  { label: 'arcsine squared', value: arcsineSquaredRoot }
+  { label: 'identity', value: ConfidenceInterval.identity},
+  { label: 'log', value: ConfidenceInterval.logarithm },
+  { label: 'log -log', value: ConfidenceInterval.logarithmMinusLogarithm },
+  { label: 'arcsine squared', value: ConfidenceInterval.arcsineSquaredRoot }
 ]
 export const alphas: Array<{ label: string, value: number }> = [{ label: '90%', value: 1.645 }, { label: '95%', value: 1.960 }, { label: '99%', value: 2.054 }]
 export class SurvivalCurvesDrawing {
@@ -83,7 +84,7 @@ export class SurvivalCurvesDrawing {
     private height: number,
     private granularity: string,
     private notifier: Observable<any> = null,
-    public selectedInterval: confidenceInterval = logarithm,
+    public selectedInterval: confidenceInterval = ConfidenceInterval.logarithm,
     public alpha: number = 1.960,
     public nofTicks: number = 10,
     public grid: boolean = false

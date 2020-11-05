@@ -11,11 +11,11 @@ import { Injectable } from '@angular/core';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 
 import { NavbarService } from './navbar.service';
-import { numericalTables, NumericalTablesType } from 'app/models/survival-analysis/numerical-tables';
 import { clearResultsToArray } from 'app/models/survival-analysis/survival-curves';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
+import { NumericalTablesType, numericalTables } from 'app/utilities/survival-analysis/numerical-tables';
 
 @Injectable()
 export class SurvivalResultsService {

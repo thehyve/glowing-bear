@@ -12,10 +12,9 @@ import { MedcoNetworkService } from '../medco-network.service';
 
 import { CryptoService } from '../../crypto.service';
 import { Observable, forkJoin } from 'rxjs';
-import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
-import { map, timeout } from 'rxjs/operators';
+import { timeout } from 'rxjs/operators';
 import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
+import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 
 @Injectable()
 export class SurvivalAnalysisService {
@@ -26,8 +25,8 @@ export class SurvivalAnalysisService {
   private static TIMEOUT_MS = 1000 * 60 * 10;
 
   constructor(private apiEndpointService: ApiEndpointService,
-              private medcoNetworkService: MedcoNetworkService,
-              private cryptoService: CryptoService) { }
+    private medcoNetworkService: MedcoNetworkService,
+    private cryptoService: CryptoService) { }
 
   survivalAnalysisSingleNode(nodeUrl: string, apiSurvivalAnalysis: ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse> {
     console.log(apiSurvivalAnalysis)
@@ -35,11 +34,11 @@ export class SurvivalAnalysisService {
       '/node/analysis/survival/query',
       apiSurvivalAnalysis,
       nodeUrl
-    ).pipe(map(x => x))
+    )
   }
 
 
-  survivalAnalysisAllNodes(apiSurvivalAnalysis: ApiSurvivalAnalysis, patientSetIDs: Array<number>): Observable<ApiSurvivalAnalysisResponse[]> {
+  survivalAnalysisAllNodes(apiSurvivalAnalysis: ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse[]> {
     apiSurvivalAnalysis.userPublicKey = this.cryptoService.ephemeralPublicKey
     return forkJoin(this.medcoNetworkService.nodesUrl.map(
       url => {

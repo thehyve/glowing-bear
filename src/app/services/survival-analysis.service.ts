@@ -16,7 +16,7 @@ import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-ana
 import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { CohortServiceMock } from './cohort.service';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-request-models/survival-analyis/survival-analysis-response';
+import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { Concept } from 'app/models/constraint-models/concept';
 import { Constraint } from 'app/models/constraint-models/constraint';
@@ -153,12 +153,12 @@ export class SurvivalService {
       throw ErrorHelper.handleNewError('Granularity is undefined')
     }
     apiSurvivalAnalysis.cohortName = this.cohortService.selectedCohort.name
-    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { cohortName: sg.name, panels: this.generatePanels(sg) } })
+    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name, panels: this.generatePanels(sg) } })
 
 
 
     console.log('selected cohort from cohort service', this.cohortService.selectedCohort)
-    return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis, this.cohortService.selectedCohort.patient_set_id)
+    return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)
   }
 
   survivalAnalysisDecrypt(survivalAnalysisResponse: ApiSurvivalAnalysisResponse): SurvivalAnalysisClear {

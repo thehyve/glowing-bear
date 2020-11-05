@@ -1,3 +1,8 @@
+import { CombinationConstraint } from "./combination-constraint";
+import { Concept } from "./concept";
+import { Constraint } from "./constraint";
+import { GenomicAnnotation } from "./genomic-annotation";
+
 class ConstraintStorage{
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;

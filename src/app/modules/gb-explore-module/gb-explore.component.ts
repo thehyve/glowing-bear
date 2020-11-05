@@ -53,7 +53,6 @@ export class GbExploreComponent {
 
 
         let cohort = new Cohort(this.cohortName, this.constraintService.rootInclusionConstraint, this.constraintService.rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
-        // TODO parametrize this
         cohort.patient_set_id = this.lastSuccessfulSet
         existingCohorts.push(cohort)
         this.cohortService.cohorts = existingCohorts

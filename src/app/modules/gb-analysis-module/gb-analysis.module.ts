@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion'
 import { routing } from './gb-analysis.routing'
 import { RouterModule } from '@angular/router';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { SurvivalAnalysisService } from 'app/services/api/medco-node/survival-analysis.service';
 import { GbCohortLandingZoneComponent } from './panel-components/gb-cohort-landing-zone/gb-cohort-landing-zone.component';
 import { GbTopComponent } from './panel-components/gb-top/gb-top.component';
@@ -30,6 +29,7 @@ import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 
 @NgModule({

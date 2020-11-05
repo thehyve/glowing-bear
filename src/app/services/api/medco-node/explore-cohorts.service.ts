@@ -17,6 +17,7 @@ import { ApiCohort } from "app/models/api-request-models/medco-node/api-cohort";
 import { Observable, forkJoin } from "rxjs";
 import { map, timeout } from "rxjs/operators";
 import { HttpHeaders } from "@angular/common/http";
+import { ApiCohortResponse } from "app/models/api-response-models/medco-node/api-cohort-response";
 
 
 @Injectable()
@@ -33,44 +34,36 @@ export class ExploreCohortsService {
     private constraintMappingService: ConstraintMappingService,
     private cryptoService: CryptoService) { }
 
-  getCohortSingleNode(nodeUrl: string): Observable<ApiCohort[]> {
+  getCohortSingleNode(nodeUrl: string): Observable<ApiCohortResponse[]> {
     return this.apiEndpointService.getCall(
       'node/explore/cohorts',
       false,
       nodeUrl
-    ).pipe(map(x => x))
+    )
   }
-  postCohortSingleNode(nodeUrl: string, cohort: ApiCohort): Observable<string> {
+  postCohortSingleNode(nodeUrl: string, cohortName: string,cohort: ApiCohort): Observable<string> {
     return this.apiEndpointService.postCall(
-      'node/explore/cohorts',
+      `node/explore/cohorts/${cohortName}`,
       cohort,
       nodeUrl
     )
   }
 
   removeCohortSingleNode(nodeUrl: string, cohortName: string) {
-    
-    let options = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json'
-      }),
-      body: `"${cohortName}"\n`
-    }
 
     return this.apiEndpointService.deleteCall(
-      'node/explore/cohorts',
-      options,
+      `node/explore/cohorts/${cohortName}`,
       nodeUrl
     )
   }
 
-  getCohortAllNodes(): Observable<ApiCohort[][]> {
+  getCohortAllNodes(): Observable<ApiCohortResponse[][]> {
     return forkJoin(this.medcoNetworkService.nodesUrl.map(url => this.getCohortSingleNode(url)))
       .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
   }
 
-  postCohortAllNodes(cohort: ApiCohort[]): Observable<string[]> {
-    return forkJoin(this.medcoNetworkService.nodesUrl.map((url, index) => this.postCohortSingleNode(url, cohort[index])))
+  postCohortAllNodes(cohortName : string,cohort: ApiCohort[]): Observable<string[]> {
+    return forkJoin(this.medcoNetworkService.nodesUrl.map((url, index) => this.postCohortSingleNode(url,cohortName,cohort[index])))
       .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
   }
 

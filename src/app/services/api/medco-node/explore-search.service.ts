@@ -10,13 +10,13 @@
 import {Injectable, Injector} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from "rxjs";
+import {Observable} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators'
-import {TreeNode} from "../../../models/tree-models/tree-node";
-import {TreeNodeType} from "../../../models/tree-models/tree-node-type";
-import {ConceptType} from "../../../models/constraint-models/concept-type";
-import {MedcoNetworkService} from "../medco-network.service";
-import {ApiEndpointService} from "../../api-endpoint.service";
+import {TreeNode} from '../../../models/tree-models/tree-node';
+import {TreeNodeType} from '../../../models/tree-models/tree-node-type';
+import {ConceptType} from '../../../models/constraint-models/concept-type';
+import {MedcoNetworkService} from '../medco-network.service';
+import {ApiEndpointService} from '../../api-endpoint.service';
 
 @Injectable()
 export class ExploreSearchService {
@@ -44,13 +44,11 @@ export class ExploreSearchService {
    */
   exploreSearch(root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
-      "node/explore/search/concept",
-      { type: "children", path: root }
+      'node/explore/search/concept',
+      { type: 'children', path: root }
     ).pipe(
       map((searchResp: object) => {
-        return (searchResp["results"] as object[]).map( (treeNodeObj: object) => {
-          console.warn("search results",treeNodeObj)
-
+        return (searchResp['results'] as object[]).map( (treeNodeObj: object) => {
           let treeNode = new TreeNode();
           treeNode.path = treeNodeObj['path'];
           treeNode.name = treeNodeObj['name'];
@@ -58,7 +56,7 @@ export class ExploreSearchService {
           treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
           treeNode.conceptCode = treeNodeObj['code'];
           treeNode.metadata = treeNodeObj['metadata'];
-          treeNode.leaf = treeNodeObj["leaf"];
+          treeNode.leaf = treeNodeObj['leaf'];
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
 
           switch ((treeNodeObj['type'] as string).toLowerCase()) {

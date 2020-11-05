@@ -16,6 +16,7 @@ import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service'
 import { MessageHelper } from 'app/utilities/message-helper';
 import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
 import { ErrorHelper } from 'app/utilities/error-helper';
+import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api-cohort-response';
 
 @Injectable()
 export class CohortService {
@@ -94,18 +95,18 @@ export class CohortService {
   postCohort(cohort: Cohort) {
     let apiCohorts = new Array<ApiCohort>()
     this._isRefreshing = true
-
+    let cohortName = cohort.name
     this.medcoNetworkService.nodesUrl.forEach((_, index) => {
       let apiCohort = new ApiCohort()
       apiCohort.patientSetID = cohort.patient_set_id[index]
-      apiCohort.cohortName = cohort.name
+
       apiCohort.creationDate = cohort.updateDate.toISOString()
       apiCohort.updateDate = cohort.updateDate.toISOString()
       apiCohorts.push(apiCohort)
     })
 
-    this.exploreCohortsService.postCohortAllNodes(apiCohorts).subscribe(messages => {
-      messages.forEach(message => console.log("on post cohort, message: ",message)),
+    this.exploreCohortsService.postCohortAllNodes(cohortName, apiCohorts).subscribe(messages => {
+      messages.forEach(message => console.log("on post cohort, message: ", message)),
         this.updateCohorts([cohort])
       this._isRefreshing = false
     },
@@ -133,12 +134,12 @@ export class CohortService {
 
   }
 
-  removeCohorts(cohort:Cohort){
+  removeCohorts(cohort: Cohort) {
     this.exploreCohortsService.removeCohortAllNodes(cohort.name).subscribe(
-      message =>{
-        console.log("on remove cohort, message: ",message)
+      message => {
+        console.log("on remove cohort, message: ", message)
       },
-      err=>{
+      err => {
         MessageHelper.alert('error', 'An error occured while removing saved cohorts', err)
       }
     )
@@ -178,7 +179,7 @@ export class CohortServiceMock extends CohortService {
 
 }
 
-function apiCohortsToCohort(apiCohorts: ApiCohort[][]): Cohort[] {
+function apiCohortsToCohort(apiCohorts: ApiCohortResponse[][]): Cohort[] {
 
   const cohortNumber = apiCohorts[0].length
   apiCohorts

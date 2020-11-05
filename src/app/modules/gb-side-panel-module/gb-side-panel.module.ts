@@ -28,9 +28,8 @@ import {RadioButtonModule} from 'primeng/radiobutton';
 import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
 
 import {ToggleButtonModule} from 'primeng/togglebutton'
-import { CohortServiceMock } from 'app/services/cohort.service';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { ExploreCohortsService } from 'app/services/api/medco-node/explore-cohorts.service';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 
 @NgModule({

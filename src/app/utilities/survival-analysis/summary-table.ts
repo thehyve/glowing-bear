@@ -6,7 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint } from './survival-curves';
+import { SurvivalPoint } from "app/models/survival-analysis/survival-point"
+
 
 export function summaryTable(points: Array<SurvivalPoint>, milestones: Array<number>): Array<{ atRisk: number, event: number }> {
   let milestoneIndex = 0

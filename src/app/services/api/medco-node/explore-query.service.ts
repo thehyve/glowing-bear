@@ -68,7 +68,7 @@ export class ExploreQueryService {
    */
   private exploreQueryAllNodes(queryId: string, queryType: ExploreQueryType, userPublicKey: string,
                                panels: ApiI2b2Panel[]): Observable<ApiExploreQueryResult[]> {
-    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
+    return forkJoin(this.medcoNetworkService.nodesUrl.map(
         (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, url)
       )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }

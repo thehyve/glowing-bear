@@ -8,9 +8,8 @@
  */
 
 export class ApiCohort {
-  queryId?: number;
+  queryId: number;
   patientSetID: number;
-  cohortName: string;
   creationDate: string;
   updateDate: string;
 }

@@ -16,12 +16,6 @@ module.exports = function (config) {
     client: {
       clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
-    files: [
-      {pattern: './src/test.ts', watched: false}
-    ],
-    preprocessors: {
-      './src/test.ts': ['@angular-devkit/build-angular']
-    },
     mime: {
       'text/x-typescript': ['ts', 'tsx']
     },
@@ -41,6 +35,12 @@ module.exports = function (config) {
     logLevel: config.LOG_ERROR,
     autoWatch: true,
     browsers: ['Chrome'],
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
     browserDisconnectTolerance: 2,
     browserNoActivityTimeout: 100000,
     singleRun: false

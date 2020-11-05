@@ -9,7 +9,7 @@
 
 import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
-import {MedcoEncryptionDescriptor} from "../tree-models/medco-encryption-descriptor";
+import {MedcoEncryptionDescriptor} from '../tree-models/medco-encryption-descriptor';
 
 export class Concept {
   private _path: string;

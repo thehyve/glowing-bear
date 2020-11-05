@@ -13,9 +13,9 @@ import { AutoComplete } from 'primeng/autocomplete';
 import { TreeNodeService } from 'app/services/tree-node.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { SelectItem } from 'primeng/api';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 @Component({
   selector: 'app-gb-survival-settings',

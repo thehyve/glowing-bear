@@ -21,7 +21,7 @@ import { OverlayPanel } from 'primeng/overlaypanel'
   styleUrls: ['./gb-cohorts.component.css'],
   encapsulation: ViewEncapsulation.None,
 })
-export class GbCohortsComponent implements AfterViewInit {
+export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   public readonly fileElementId: string = 'cohortFileUpload';
   searchName = '';
@@ -48,10 +48,13 @@ export class GbCohortsComponent implements AfterViewInit {
   set selectedCohort(cohort: Cohort) {
     this.cohortService.selectedCohort = cohort
   }
+  ngOnInit() {
+    this.refreshCohorts()
+  }
 
   ngAfterViewInit() {
     /*
-    
+
     this._changes= new MutationObserver(mutation=>console.log("mutation",mutation))
     this._changes.observe(this.element.nativeElement,{
       attributes: true,
@@ -145,7 +148,7 @@ export class GbCohortsComponent implements AfterViewInit {
     this.confirmationService.confirm({
       message: `Do you want to permanently remove ${this.deletionCandidate.name} ?`,
       header: 'Confirmation',
-      icon:null,
+      icon: null,
       accept: () => {
         this.cohortService.removeCohorts(cohort)
         if (this.cohortService.selectedCohort && this.cohortService.selectedCohort == cohort) {
@@ -161,7 +164,7 @@ export class GbCohortsComponent implements AfterViewInit {
 
     this.deletionCandidate = undefined
 
-    
+
   }
 
 

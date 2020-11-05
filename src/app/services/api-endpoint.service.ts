@@ -70,9 +70,9 @@ export class ApiEndpointService {
    * @param apiUrl
    * @returns {Observable<any | any>}
    */
-  deleteCall(urlPart,options?,apiUrl?) {
+  deleteCall(urlPart,apiUrl?) {
     const url = apiUrl? `${apiUrl}/${urlPart}`:`${this.endpointUrl}/${urlPart}`;;
-    return this.http.delete(url,options).pipe(
+    return this.http.delete(url).pipe(
       catchError(ErrorHelper.handleHTTPError)
     );
   }

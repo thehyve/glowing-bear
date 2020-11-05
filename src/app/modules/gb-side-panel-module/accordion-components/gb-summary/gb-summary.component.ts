@@ -28,22 +28,8 @@ import { ConstraintService } from 'app/services/constraint.service';
   styleUrls: ['./gb-summary.component.css']
 })
 export class GbSummaryComponent {
-  _name: string
 
   constructor(private queryService: QueryService) {
-    this._name = ""
-  }
-
-  set name(n: string) {
-    this._name = n
-  }
-  get name(): string {
-    return this._name
-  }
-
-  clearAll() {
-    this.queryService.clearAll();
-    MessageHelper.alert('success', 'All selections are cleared.');
   }
 
 

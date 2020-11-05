@@ -9,7 +9,8 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { ConstraintService } from 'app/services/constraint.service';
 import { MessageHelper } from 'app/utilities/message-helper';
-import { SubGroup, SurvivalAnalysisServiceMock } from 'app/services/survival-analysis.service';
+import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
+import { SubGroup } from 'app/services/survival-analysis.service';
 
 
 

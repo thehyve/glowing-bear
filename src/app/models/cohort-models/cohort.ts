@@ -12,6 +12,8 @@ import { rootCertificates } from 'tls'
 import { CombinationConstraint } from '../constraint-models/combination-constraint'
 
 import { SelectItem } from 'primeng/api'
+import { ErrorHandler } from '@angular/core'
+import { ErrorHelper } from 'app/utilities/error-helper'
 
 
 export class Cohort {
@@ -158,7 +160,7 @@ export class Cohort {
 
   set updateDate(date: Date) {
     if (this._creationDate !== null && this._creationDate > date) {
-      throw new Error('Update date cannot be set earlier than the creation date')
+      throw ErrorHelper.handleNewError('Update date cannot be set earlier than the creation date')
     }
     this._updateDate = date
   }

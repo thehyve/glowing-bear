@@ -129,29 +129,10 @@
               "tsconfig.json",
               "tsconfig.worker.json"
             ],
-            "exclude": []
-          }
-        }
-      }
-    },
-    "glowing-bear-e2e": {
-      "root": "",
-      "projectType": "application",
-      "cli": {},
-      "schematics": {},
-      "architect": {
-        "e2e": {
-          "builder": "@angular-devkit/build-angular:protractor",
-          "options": {
-            "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "glowing-bear:serve"
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [],
-            "exclude": []
+            "exclude": [
+              "**/node_modules/**",
+              "src/app/utilities/crypto/point-to-int-mapping.ts"
+            ]
           }
         }
       }
