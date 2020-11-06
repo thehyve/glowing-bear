@@ -6,9 +6,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint } from "app/models/survival-analysis/survival-point"
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 
-export function survivalPoints(previousProb: number, previousCumul: number, remainingTotal: number, timePoint: number, previousCumulEvents: number, previousCumulCensoringEvents: number, currentEventOfInterest: number, currentCensoringEvent: number): SurvivalPoint {
+export function survivalPoints(
+  previousProb: number,
+  previousCumul: number,
+  remainingTotal: number,
+  timePoint: number,
+  previousCumulEvents: number,
+  previousCumulCensoringEvents: number,
+  currentEventOfInterest: number,
+  currentCensoringEvent: number
+): SurvivalPoint {
   let ponctualProb = (remainingTotal - currentEventOfInterest) / (remainingTotal)
   let prob = ponctualProb * previousProb
   let cumul = previousCumul + currentEventOfInterest / (remainingTotal * (remainingTotal - currentEventOfInterest))

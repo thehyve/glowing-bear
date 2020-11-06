@@ -258,11 +258,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
-  set sensitive(val:boolean){
-    this._sensitive=val
+  set sensitive(val: boolean) {
+    this._sensitive = val
   }
 
-  get sensitive():boolean{
+  get sensitive(): boolean {
     return this._sensitive
   }
 

@@ -108,7 +108,7 @@ export class SurvivalCurvesDrawing {
       cumul: number;
       remaining: number;
     }>().x(d => this._xaxis(d.timePoint)).y(d => this._yaxis(d.prob)).curve(curveStepAfter);
-    this._div = select('app-gb-survival-results').append('div')
+    this._div = select('gb-survival-results').append('div')
       .style('position', 'absolute')
       .style('opacity', 0.0)
       .style('z-index', 10)
@@ -155,14 +155,14 @@ export class SurvivalCurvesDrawing {
       this._labelClasses.set(groupId, labelClasses[index])
     })
 
-    //time granularity
+    // time granularity
     this._svgRef.append('text')
       .attr('x', this.width / 2)
       .attr('y', this.survivalTable + 2 * this.margins)
       .text(this.granularity)
 
     this._colorSet = scaleOrdinal<string, string>().domain(this.curves.curves.map(c => c.groupId)).range(colorRange)
-    
+
     // interactive title
     this.curves.curves.forEach((curve => {
       this._groupButton.set(curve.groupId, this.toggleStyle(curve.groupId,
@@ -367,10 +367,6 @@ export class SurvivalCurvesDrawing {
     }
   }
 
-  updatePoints(idx: number) {
-    this.curves.curves[idx]
-
-  }
   get ticks(): number[] {
     return this._ticks
   }

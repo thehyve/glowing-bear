@@ -6,17 +6,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Injectable } from "@angular/core"
-import { SurvivalAnalysisClear } from "app/models/survival-analysis/survival-analysis-clear"
-import { Observable, of } from "rxjs"
-import { MedcoNetworkService } from "./api/medco-network.service"
-import { ExploreSearchService } from "./api/medco-node/explore-search.service"
-import { SurvivalAnalysisService } from "./api/medco-node/survival-analysis.service"
-import { AuthenticationService } from "./authentication.service"
-import { CohortServiceMock } from "./cohort.service"
-import { ConstraintMappingService } from "./constraint-mapping.service"
-import { CryptoService } from "./crypto.service"
-import { SurvivalService } from "./survival-analysis.service"
+import { Injectable } from '@angular/core'
+import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear'
+import { Observable, of } from 'rxjs'
+import { MedcoNetworkService } from './api/medco-network.service'
+import { ExploreSearchService } from './api/medco-node/explore-search.service'
+import { SurvivalAnalysisService } from './api/medco-node/survival-analysis.service'
+import { AuthenticationService } from './authentication.service'
+import { CohortServiceMock } from './cohort.service'
+import { ConstraintMappingService } from './constraint-mapping.service'
+import { CryptoService } from './crypto.service'
+import { SurvivalService } from './survival-analysis.service'
 
 @Injectable()
 export class SurvivalAnalysisServiceMock extends SurvivalService {

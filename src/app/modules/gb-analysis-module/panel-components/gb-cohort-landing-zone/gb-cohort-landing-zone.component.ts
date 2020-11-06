@@ -17,7 +17,7 @@ import { SubGroup } from 'app/services/survival-analysis.service';
 const nameMaxLength = 12
 
 @Component({
-  selector: 'app-gb-cohort-landing-zone',
+  selector: 'gb-cohort-landing-zone',
   templateUrl: './gb-cohort-landing-zone.component.html',
   styleUrls: ['./gb-cohort-landing-zone.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -26,7 +26,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   _activated: boolean
   _subGroups: SelectItem[]
-  _name: string = ""
+  _name = ''
   _selectedSubGroup: SubGroup
   _usedNames: Set<string>
 
@@ -78,7 +78,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   addSubGroup(event: Event) {
 
-    if (this.name === "") {
+    if (this.name === '') {
       MessageHelper.alert('error', 'Subgroup name cannot be empty')
       return
     }
@@ -95,7 +95,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
       return
     }
     if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
-      MessageHelper.alert('error', "Both inclusion and exclusion constraints are empty, nothing to add")
+      MessageHelper.alert('error', 'Both inclusion and exclusion constraints are empty, nothing to add')
       return
     }
 
@@ -129,7 +129,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   }
 
   clearName() {
-    this._name = ""
+    this._name = ''
   }
 
   // otherwise it writes data in input field

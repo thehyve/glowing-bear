@@ -1,9 +1,9 @@
-import { CombinationConstraint } from "./combination-constraint";
-import { Concept } from "./concept";
-import { Constraint } from "./constraint";
-import { GenomicAnnotation } from "./genomic-annotation";
+import { CombinationConstraint } from './combination-constraint';
+import { Concept } from './concept';
+import { Constraint } from './constraint';
+import { GenomicAnnotation } from './genomic-annotation';
 
-class ConstraintStorage{
+class ConstraintStorage {
   private _rootInclusionConstraint: CombinationConstraint;
   private _rootExclusionConstraint: CombinationConstraint;
 
@@ -25,16 +25,16 @@ class ConstraintStorage{
   private _maxNumSearchResults = 100;
 
   private constructor(
-    rootInclusionConstraint : CombinationConstraint,
-    rootExclusionConstraint :CombinationConstraint,
-    allConstraints : Constraint[],
-    concepts : Concept[],
-    conceptLabels:string[],
-    conceptConstraints:Constraint[],
-    genomicAnnotations :GenomicAnnotation[]
-    ){
-      this._allConstraints=allConstraints.map(constraint => constraint.clone())
-      this._conceptLabels=conceptLabels.map(x=>x)
-      
-    }
+    rootInclusionConstraint: CombinationConstraint,
+    rootExclusionConstraint: CombinationConstraint,
+    allConstraints: Constraint[],
+    concepts: Concept[],
+    conceptLabels: string[],
+    conceptConstraints: Constraint[],
+    genomicAnnotations: GenomicAnnotation[]
+  ) {
+    this._allConstraints = allConstraints.map(constraint => constraint.clone())
+    this._conceptLabels = conceptLabels.map(x => x)
+
+  }
 }

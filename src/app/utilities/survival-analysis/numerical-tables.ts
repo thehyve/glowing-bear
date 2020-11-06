@@ -10,7 +10,12 @@ import { NewCoxRegression, coxToString } from '../numerical-methods/cox-model'
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
 
-export function numericalTables(curves: SurvivalPoint[][], maxIter: number = 1000, tolerance: number = 1e-14, stringPrecision: number = 3): NumericalTablesType {
+export function numericalTables(
+  curves: SurvivalPoint[][],
+  maxIter: number = 1000,
+  tolerance: number = 1e-14,
+  stringPrecision: number = 3
+): NumericalTablesType {
   const len = curves.length
 
   let groupLogrankTable = new Array<Array<string>>()

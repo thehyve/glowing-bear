@@ -24,7 +24,7 @@ import { FormsModule } from '@angular/forms'
 import { SliderModule } from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { TableModule } from 'primeng/table'
-import { SpinnerModule} from 'primeng/spinner'
+import { SpinnerModule } from 'primeng/spinner'
 import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
@@ -37,7 +37,8 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock
     GbCohortLandingZoneComponent,
     GbTopComponent,
     GbSurvivalSettingsComponent,
-    GbAnalysisComponent,],
+    GbAnalysisComponent
+  ],
   imports: [
     AccordionModule,
     AutoCompleteModule,
@@ -55,7 +56,6 @@ import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock
     DropdownModule,
     TabViewModule,
     GbSelectionModule
-
   ],
 
   providers: [SurvivalAnalysisService, SurvivalAnalysisServiceMock],

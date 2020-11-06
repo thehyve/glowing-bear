@@ -33,7 +33,7 @@ export class CombinationConstraint extends Constraint {
     return 'CombinationConstraint';
   }
 
-  addChild(constraint: Constraint){
+  addChild(constraint: Constraint) {
 
     if (this.sensitiveType === SensitiveType.Undetermined ||
       this.sensitiveType === constraint.sensitiveType) {
@@ -46,9 +46,9 @@ export class CombinationConstraint extends Constraint {
         this.sensitiveType = constraint.sensitiveType
       }
       this.updateTextRepresentation()
-      return 
+      return
     } else {
-      throw ErrorHelper.handleNewError('You cannot combine sensitive and non-sensitive concept with OR operator')
+      throw ErrorHelper.handleNewError('You cannot combi  ne sensitive and non-sensitive concept with OR operator')
     }
 
   }
@@ -106,12 +106,12 @@ export class CombinationConstraint extends Constraint {
     this._isRoot = value;
   }
 
-  private updateTextRepresentation(){
-    if (this.children.length >=0) {
-      this.textRepresentation= "("+this.children.map(({textRepresentation})=>textRepresentation)
-        .join(this.combinationState === CombinationState.And ? ' and ':' or ')+")"
-    }else{
-      this.textRepresentation=""
+  private updateTextRepresentation() {
+    if (this.children.length >= 0) {
+      this.textRepresentation = '(' + this.children.map(({ textRepresentation }) => textRepresentation)
+        .join(this.combinationState === CombinationState.And ? ' and ' : ' or ') + ')'
+    } else {
+      this.textRepresentation = ''
     }
   }
 }

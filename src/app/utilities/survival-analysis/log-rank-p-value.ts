@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint } from "app/models/survival-analysis/survival-point"
-import { ChiSquaredCdf } from "../numerical-methods/chi-squared-cdf"
+import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
+import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
 
 
 /**
@@ -37,9 +37,18 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
     let point = group1[j]
 
     if (point.nofEvents > 0) {
-      events.set(point.timePoint, events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents)
-      atRiskGroup1.set(point.timePoint, atRiskGroup1.has(point.timePoint) ? atRiskGroup1.get(point.timePoint) + point.atRisk : point.atRisk)
-      eventsGroup1.set(point.timePoint, eventsGroup1.has(point.timePoint) ? eventsGroup1.get(point.timePoint) + point.nofEvents : point.nofEvents)
+      events.set(
+        point.timePoint,
+        events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents
+      )
+      atRiskGroup1.set(
+        point.timePoint,
+        atRiskGroup1.has(point.timePoint) ? atRiskGroup1.get(point.timePoint) + point.atRisk : point.atRisk
+      )
+      eventsGroup1.set(
+        point.timePoint,
+        eventsGroup1.has(point.timePoint) ? eventsGroup1.get(point.timePoint) + point.nofEvents : point.nofEvents
+      )
 
     }
   }
@@ -48,9 +57,18 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
 
     if (point.nofEvents > 0) {
 
-      events.set(point.timePoint, events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents)
-      atRiskGroup2.set(point.timePoint, atRiskGroup2.has(point.timePoint) ? atRiskGroup2.get(point.timePoint) + point.atRisk : point.atRisk)
-      eventsGroup2.set(point.timePoint, eventsGroup2.has(point.timePoint) ? eventsGroup2.get(point.timePoint) + point.nofEvents : point.nofEvents)
+      events.set(
+        point.timePoint,
+        events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents
+      )
+      atRiskGroup2.set(
+        point.timePoint,
+        atRiskGroup2.has(point.timePoint) ? atRiskGroup2.get(point.timePoint) + point.atRisk : point.atRisk
+      )
+      eventsGroup2.set(
+        point.timePoint,
+        eventsGroup2.has(point.timePoint) ? eventsGroup2.get(point.timePoint) + point.nofEvents : point.nofEvents
+      )
 
     }
   }

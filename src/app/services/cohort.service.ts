@@ -106,7 +106,7 @@ export class CohortService {
     })
 
     this.exploreCohortsService.postCohortAllNodes(cohortName, apiCohorts).subscribe(messages => {
-      messages.forEach(message => console.log("on post cohort, message: ", message)),
+      messages.forEach(message => console.log('on post cohort, message: ', message)),
         this.updateCohorts([cohort])
       this._isRefreshing = false
     },
@@ -137,7 +137,7 @@ export class CohortService {
   removeCohorts(cohort: Cohort) {
     this.exploreCohortsService.removeCohortAllNodes(cohort.name).subscribe(
       message => {
-        console.log("on remove cohort, message: ", message)
+        console.log('on remove cohort, message: ', message)
       },
       err => {
         MessageHelper.alert('error', 'An error occured while removing saved cohorts', err)

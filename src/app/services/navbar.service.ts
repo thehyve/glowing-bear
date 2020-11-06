@@ -54,7 +54,7 @@ export class NavbarService {
     for (let i = 0; i < this.isSurvivalRes.length; i++) {
       this.isSurvivalRes[i] = (routerLink === `/survival/${i}`)
     }
-    console.log("Updated router link: ",routerLink)
+    console.log('Updated router link: ', routerLink)
 
     if (this.isExplore) {
       this.activeItem = this._items[0];

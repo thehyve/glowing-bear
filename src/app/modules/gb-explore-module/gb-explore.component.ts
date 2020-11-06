@@ -52,7 +52,13 @@ export class GbExploreComponent {
       } else {
 
 
-        let cohort = new Cohort(this.cohortName, this.constraintService.rootInclusionConstraint, this.constraintService.rootExclusionConstraint, new Date(Date.now()), new Date(Date.now()))
+        let cohort = new Cohort(
+          this.cohortName,
+          this.constraintService.rootInclusionConstraint,
+          this.constraintService.rootExclusionConstraint,
+          new Date(Date.now()),
+          new Date(Date.now())
+        )
         cohort.patient_set_id = this.lastSuccessfulSet
         existingCohorts.push(cohort)
         this.cohortService.cohorts = existingCohorts
@@ -90,10 +96,10 @@ export class GbExploreComponent {
       queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
     ));
   }
-  set cohortName(name: string){
-    this._cohortName=name
+  set cohortName(name: string) {
+    this._cohortName = name
   }
-  get cohortName():string{
+  get cohortName(): string {
     return this._cohortName
   }
 

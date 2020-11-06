@@ -8,7 +8,7 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-gb-analysis',
+  selector: 'gb-analysis',
   templateUrl: './gb-analysis.component.html',
   styleUrls: ['./gb-analysis.component.css']
 })

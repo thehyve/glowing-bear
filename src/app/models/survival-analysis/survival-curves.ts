@@ -31,7 +31,9 @@ export function clearResultsToArray(clearRes: SurvivalAnalysisClear): SurvivalCu
     })
 
     let survivalState = new SurvivalState(result.initialCount)
-    let points = sortedByTimePoint.map(oneTimePointRes => survivalState.next(oneTimePointRes.timepoint, oneTimePointRes.events.eventOfInterest, oneTimePointRes.events.censoringEvent))
+    let points = sortedByTimePoint.map(oneTimePointRes => survivalState
+      .next(oneTimePointRes.timepoint, oneTimePointRes.events.eventOfInterest, oneTimePointRes.events.censoringEvent)
+    )
     return {
       groupId: result.groupId,
       points: points
@@ -46,8 +48,4 @@ export function clearResultsToArray(clearRes: SurvivalAnalysisClear): SurvivalCu
 
 export function retrieveGroupIds(clearRes: SurvivalAnalysisClear): Array<string> {
   return clearRes.results.map(res => res.groupId)
-
 }
-
-
-

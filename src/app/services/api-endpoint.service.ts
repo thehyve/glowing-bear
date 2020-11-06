@@ -15,7 +15,7 @@ export class ApiEndpointService {
   }
 
   constructor(private http: HttpClient,
-              private appConfig: AppConfig) {
+    private appConfig: AppConfig) {
     this._endpointUrl = this.appConfig.getConfig('medco-node-url');
   }
 
@@ -43,8 +43,8 @@ export class ApiEndpointService {
    * @param apiUrl
    * @returns {Observable<any | any>}
    */
-  getCall(urlPart, additionalParam?,apiUrl?): Observable<any> {
-    const url = apiUrl? `${apiUrl}/${urlPart}`:`${this.endpointUrl}/${urlPart}`;
+  getCall(urlPart, additionalParam?, apiUrl?): Observable<any> {
+    const url = apiUrl ? `${apiUrl}/${urlPart}` : `${this.endpointUrl}/${urlPart}`;
     return this.http.get(url, additionalParam).pipe(
       catchError(ErrorHelper.handleHTTPError)
     );
@@ -70,8 +70,8 @@ export class ApiEndpointService {
    * @param apiUrl
    * @returns {Observable<any | any>}
    */
-  deleteCall(urlPart,apiUrl?) {
-    const url = apiUrl? `${apiUrl}/${urlPart}`:`${this.endpointUrl}/${urlPart}`;;
+  deleteCall(urlPart, apiUrl?) {
+    const url = apiUrl ? `${apiUrl}/${urlPart}` : `${this.endpointUrl}/${urlPart}`;
     return this.http.delete(url).pipe(
       catchError(ErrorHelper.handleHTTPError)
     );

@@ -27,7 +27,11 @@ import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { ClearGroup } from 'app/models/survival-analysis/clear-group';
 
-export type SubGroup = { name: string, rootInclusionConstraint: CombinationConstraint, rootExclusionConstraint: CombinationConstraint }
+export class SubGroup {
+  name: string
+  rootInclusionConstraint: CombinationConstraint
+  rootExclusionConstraint: CombinationConstraint
+}
 
 @Injectable()
 export class SurvivalService {

@@ -130,7 +130,7 @@ export class QueryService {
       switchMap(() => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
       (results: ApiExploreQueryResult[]) => {
-        var parsedResults = this.parseExploreQueryResults(results);
+        let parsedResults = this.parseExploreQueryResults(results);
         if (parsedResults.resultInstanceID) {
           this._lastSuccessfulSet.next(parsedResults.resultInstanceID)
         }
@@ -190,21 +190,6 @@ export class QueryService {
 
         case ExploreQueryType.COUNT_GLOBAL.id:
           return ExploreQueryType.COUNT_GLOBAL;
-        /*
-                case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
-                  return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
-        
-                case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
-                  return ExploreQueryType.COUNT_PER_SITE_SHUFFLED;
-        
-                case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
-                  return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
-        
-        
-        
-                case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
-                  return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
-                  */
 
         default:
           return null;

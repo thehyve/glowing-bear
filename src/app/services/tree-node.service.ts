@@ -7,17 +7,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, Injector} from '@angular/core';
-import {Concept} from '../models/constraint-models/concept';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {TreeNode} from '../models/tree-models/tree-node';
-import {ConstraintService} from './constraint.service';
-import {ConceptType} from '../models/constraint-models/concept-type';
-import {ErrorHelper} from '../utilities/error-helper';
-import {TreeNodeType} from '../models/tree-models/tree-node-type';
-import {AppConfig} from '../config/app.config';
-import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
-import {ExploreSearchService} from './api/medco-node/explore-search.service';
+import { Injectable, Injector } from '@angular/core';
+import { Concept } from '../models/constraint-models/concept';
+import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
+import { TreeNode } from '../models/tree-models/tree-node';
+import { ConstraintService } from './constraint.service';
+import { ConceptType } from '../models/constraint-models/concept-type';
+import { ErrorHelper } from '../utilities/error-helper';
+import { TreeNodeType } from '../models/tree-models/tree-node-type';
+import { AppConfig } from '../config/app.config';
+import { GenomicAnnotation } from '../models/constraint-models/genomic-annotation';
+import { ExploreSearchService } from './api/medco-node/explore-search.service';
 
 @Injectable()
 export class TreeNodeService {
@@ -64,7 +64,7 @@ export class TreeNodeService {
           ErrorHelper.handleError('Error during initial tree loading', err);
           this._isLoading = false;
           reject(err);
-      });
+        });
     });
   }
 
@@ -82,7 +82,7 @@ export class TreeNodeService {
     this._isLoading = true;
     this.exploreSearchService.exploreSearch(parentNode.path).subscribe(
       (treeNodes: TreeNode[]) => {
-        console.warn("search results",treeNodes)
+        console.warn('search results', treeNodes)
         parentNode.attachChildTree(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
@@ -106,7 +106,7 @@ export class TreeNodeService {
       return;
     }
     for (let node of treeNodes) {
-      console.warn("nodes",node)
+      console.warn('nodes', node)
       this.processTreeNode(node, constraintService);
       if (node.hasChildren()) {
         this.processTreeNodes(node.children, constraintService);
@@ -170,13 +170,13 @@ export class TreeNodeService {
       }
 
       // overwrite icon
-      if (node.nodeType === TreeNodeType.MODIFIER){
+      if (node.nodeType === TreeNodeType.MODIFIER) {
         node.icon = 'fa fa-eye';
       }
 
     } else {
       node.icon = '';
-      if (node.nodeType === TreeNodeType.MODIFIER){
+      if (node.nodeType === TreeNodeType.MODIFIER) {
         node.expandedIcon = 'fa fa-eye';
         node.collapsedIcon = 'fa fa-eye';
       }
@@ -209,8 +209,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithDepth(treeNode: TreeNode,
-                                         depth: number,
-                                         descendants: TreeNode[]) {
+    depth: number,
+    descendants: TreeNode[]) {
     if (treeNode) {
       if (depth === 2 && treeNode.hasChildren()) {
         for (let child of treeNode.children) {
@@ -233,8 +233,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithExcludedTypes(treeNode: TreeNode,
-                                                 excludedTypes: TreeNodeType[],
-                                                 descendants: TreeNode[]) {
+    excludedTypes: TreeNodeType[],
+    descendants: TreeNode[]) {
     if (treeNode) {
       // If the tree node has children
       if (treeNode.children) {

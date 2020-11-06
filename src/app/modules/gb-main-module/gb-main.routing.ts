@@ -26,11 +26,11 @@ export const routes: Routes = [
   },
   {
     path: 'analysis',
-    loadChildren:'../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
   },
   {
     path: 'survival/:id',
-    loadChildren:'../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
+    loadChildren: '../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
   }
 ];
 

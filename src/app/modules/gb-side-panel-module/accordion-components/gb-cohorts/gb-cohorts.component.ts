@@ -55,7 +55,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     /*
 
-    this._changes= new MutationObserver(mutation=>console.log("mutation",mutation))
+    this._changes= new MutationObserver(mutation=>console.log('mutation',mutation))
     this._changes.observe(this.element.nativeElement,{
       attributes: true,
       childList: true,
@@ -68,7 +68,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   }
 
   dragdebug(event: DragEvent, cohort: Cohort) {
-    event.dataTransfer.setData("text", "cohort")
+    event.dataTransfer.setData('text', 'cohort')
 
 
     this.cohortService.selectedCohort = cohort
@@ -105,16 +105,16 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   }
 
   sortByName() {
-    var sorted = this.cohortService.cohorts.sort((a, b) => (a.name > b.name) ? 1 : -1)
+    let sorted = this.cohortService.cohorts.sort((a, b) => (a.name > b.name) ? 1 : -1)
     this.cohortService.cohorts = sorted
   }
 
   sortByBookmark() {
-    var sorted = this.cohortService.cohorts.sort((a, b) => (!b.bookmarked || a.bookmarked) ? -1 : 1)
+    let sorted = this.cohortService.cohorts.sort((a, b) => (!b.bookmarked || a.bookmarked) ? -1 : 1)
     this.cohortService.cohorts = sorted
   }
   sortByDate() {
-    var sorted = this.cohortService.cohorts.sort((a, b) => (!b.creationDate ||
+    let sorted = this.cohortService.cohorts.sort((a, b) => (!b.creationDate ||
       a.creationDate && a.creationDate.getTime() > b.creationDate.getTime()
     ) ? -1 : 1)
 
@@ -123,7 +123,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
 
   onFiltering(event: Event) {
-    var filterWord = this.searchName.trim().toLowerCase()
+    let filterWord = this.searchName.trim().toLowerCase()
     this.cohortService.cohorts.forEach(cohort => {
       cohort.visible = (cohort.name.toLowerCase().indexOf(filterWord) === -1) ? false : true
     })
@@ -151,10 +151,10 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       icon: null,
       accept: () => {
         this.cohortService.removeCohorts(cohort)
-        if (this.cohortService.selectedCohort && this.cohortService.selectedCohort == cohort) {
-          this.cohortService.selectedCohort == null
+        if (this.cohortService.selectedCohort && this.cohortService.selectedCohort === cohort) {
+          this.cohortService.selectedCohort = null
         }
-        this.cohortService.cohorts = this.cohortService.cohorts.filter(c => cohort != c)
+        this.cohortService.cohorts = this.cohortService.cohorts.filter(c => cohort !== c)
 
       },
       reject: () => {

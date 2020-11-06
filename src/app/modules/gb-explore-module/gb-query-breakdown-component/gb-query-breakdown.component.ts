@@ -9,7 +9,7 @@ import { OverlayPanel } from 'primeng/components/overlaypanel/overlaypanel';
 
 
 @Component({
-  selector: 'app-gb-query-breakdown',
+  selector: 'gb-query-breakdown',
   templateUrl: './gb-query-breakdown.component.html',
   styleUrls: ['./gb-query-breakdown.component.css']
 })
@@ -18,7 +18,9 @@ export class GbQueryBreakdownComponent implements OnInit {
   public breakdownSelection: { id: string, name: string, selected: boolean }[]
 
   constructor(private queryBreakdownService: QueryBreakdownService) {
-    this.breakdownSelection = BreakdownType.AVAILABLE.map(btype => { return { id: btype.id, name: btype.name, selected: queryBreakdownService.retrieve[btype.id] } })
+    this.breakdownSelection = BreakdownType.AVAILABLE.map(btype => {
+      return { id: btype.id, name: btype.name, selected: queryBreakdownService.retrieve[btype.id] }
+    })
   }
 
   ngOnInit() {
@@ -31,8 +33,11 @@ export class GbQueryBreakdownComponent implements OnInit {
 
 
 class BreakdownSelection {
-  constructor(private queryBreakdownService: QueryBreakdownService, public readonly id: string, public readonly name: string, private selected: boolean) {
-
+  constructor(
+    private queryBreakdownService: QueryBreakdownService,
+    public readonly id: string,
+    public readonly name: string,
+    private selected: boolean) {
   }
 
   get status(): boolean {

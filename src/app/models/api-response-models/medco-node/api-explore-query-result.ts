@@ -1,8 +1,8 @@
 export class ApiExploreQueryResult {
-  status: 'queued'|'pending'|'error'|'available';
+  status: 'queued' | 'pending' | 'error' | 'available';
   encryptedCount: string;
   encryptedPatientList: string[];
-  patientSetID : number;
+  patientSetID: number;
   timers: {
     name: string;
     milliseconds: number;

@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Aggregate} from '../aggregate-models/aggregate';
-import {ConceptType} from './concept-type';
-import {MedcoEncryptionDescriptor} from '../tree-models/medco-encryption-descriptor';
+import { Aggregate } from '../aggregate-models/aggregate';
+import { ConceptType } from './concept-type';
+import { MedcoEncryptionDescriptor } from '../tree-models/medco-encryption-descriptor';
 
 export class Concept {
   private _path: string;
@@ -91,18 +91,18 @@ export class Concept {
 
 
 
-  clone() :Concept{
-    var ret = new Concept()
+  clone(): Concept {
+    let ret = new Concept()
 
-    ret.path=this.path
-    ret.type=this.type
-    ret.label=this.label
-    ret.aggregate=(this.aggregate)?this.aggregate.clone():null
-    ret.code=this.code
-    ret.name=this.name
-    ret.fullName=this.fullName
-    if(this.encryptionDescriptor){
-      ret.encryptionDescriptor=this.encryptionDescriptor
+    ret.path = this.path
+    ret.type = this.type
+    ret.label = this.label
+    ret.aggregate = (this.aggregate) ? this.aggregate.clone() : null
+    ret.code = this.code
+    ret.name = this.name
+    ret.fullName = this.fullName
+    if (this.encryptionDescriptor) {
+      ret.encryptionDescriptor = this.encryptionDescriptor
     }
 
     return ret

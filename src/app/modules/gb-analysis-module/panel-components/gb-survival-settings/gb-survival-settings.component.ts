@@ -18,14 +18,19 @@ import { SelectItem } from 'primeng/api';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 @Component({
-  selector: 'app-gb-survival-settings',
+  selector: 'gb-survival-settings',
   templateUrl: './gb-survival-settings.component.html',
   styleUrls: ['./gb-survival-settings.component.css'],
 })
 export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
 
-  _granularities: SelectItem[] = [{ label: 'Day', value: Granularity.day }, { label: 'Week', value: Granularity.week }, { label: 'Month', value: Granularity.month }, { label: 'Year', value: Granularity.month }]
+  _granularities: SelectItem[] = [
+    { label: 'Day', value: Granularity.day },
+    { label: 'Week', value: Granularity.week },
+    { label: 'Month', value: Granularity.month },
+    { label: 'Year', value: Granularity.month }
+  ]
 
 
   _suggestedStartConcepts: Concept[]
@@ -37,6 +42,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   @ViewChild('autoComplete', { static: false }) autoComplete: AutoComplete;
   @ViewChild('autoCompleteContainer', { static: false }) autoCompleteContainer: HTMLElement;
 
+  @Output() changedEventConcepts: EventEmitter<boolean> = new EventEmitter()
 
   constructor(private constraintService: ConstraintService,
     private survivalService: SurvivalAnalysisServiceMock,
@@ -166,7 +172,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     this._activated = bool
   }
 
-  @Output() changedEventConcepts = new EventEmitter<boolean>()
 
   get activated(): boolean {
     return this._activated

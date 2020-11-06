@@ -7,7 +7,7 @@
  */
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { exp, log } from 'mathjs'
-import { timePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, eventType, CoxRegression } from './cox-regression'
+import { TimePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, EventType, CoxRegression } from './cox-regression'
 
 
 /**
@@ -15,18 +15,18 @@ import { timePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, exter
  */
 
 // validate checks whether the the timepoints have the same dimension and returns this dimension, -1 otherwise
-function validate(timePoints: timePoint[]): number {
+function validate(timePoints: TimePoint[]): number {
   return timePoints.map(tp => tp[0].x.length).reduce((a, b) => (a === b) ? a : -1)
 }
 
-export class breslowCoxRegression extends CoxRegression {
-  protected logLikelihood(data: timePoint[], parameter: number[]): number {
+export class BreslowCoxRegression extends CoxRegression {
+  protected logLikelihood(data: TimePoint[], parameter: number[]): number {
     return logLikelihood(data, parameter)
   }
-  protected gradient(data: timePoint[], parameter: number[]): number[] {
+  protected gradient(data: TimePoint[], parameter: number[]): number[] {
     return derivative(data, parameter)
   }
-  protected hessian(data: timePoint[], parameter: number[]): number[] {
+  protected hessian(data: TimePoint[], parameter: number[]): number[] {
     return secondDerivative(data, parameter)
   }
 
@@ -34,7 +34,7 @@ export class breslowCoxRegression extends CoxRegression {
 
 
 // after validation
-export function logLikelihood(timePoints: timePoint[], beta: number[]): number {
+export function logLikelihood(timePoints: TimePoint[], beta: number[]): number {
   let res = 0
   let k = 0
   let a = 0
@@ -78,7 +78,7 @@ export function logLikelihood(timePoints: timePoint[], beta: number[]): number {
   return res
 }
 
-export function derivative(timePoints: timePoint[], beta: number[]): number[] {
+export function derivative(timePoints: TimePoint[], beta: number[]): number[] {
   let e = beta.map(x => 0.0)
   let g = beta.map(x => 0.0)
   let h = beta.map(x => 0.0)
@@ -129,7 +129,7 @@ export function derivative(timePoints: timePoint[], beta: number[]): number[] {
   return res
 }
 
-export function secondDerivative(timePoints: timePoint[], beta: number[]): number[] {
+export function secondDerivative(timePoints: TimePoint[], beta: number[]): number[] {
   let p = new Array<number>(beta.length * beta.length)
   let e = new Array<number>(beta.length)
   let u = new Array<number>(beta.length)
@@ -184,15 +184,20 @@ export function secondDerivative(timePoints: timePoint[], beta: number[]): numbe
   return res
 }
 
-export function prepareEfron(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): timePoint[] {
+export function prepareEfron(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): TimePoint[] {
 
-  let tmpArray = survivalPointsClass0.map(spoint => { return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings } }).concat(
-    survivalPointsClass1.map(spoint => { return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings } }))
+  let tmpArray = survivalPointsClass0.map(spoint => {
+    return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+  })
+    .concat(
+      survivalPointsClass1.map(spoint => {
+        return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+      }))
 
 
-  let tmpMap = new Map<number, eventType[]>()
+  let tmpMap = new Map<number, EventType[]>()
   tmpArray.forEach(spoint => {
-    let events = new Array<eventType>()
+    let events = new Array<EventType>()
 
     for (let i = 0; i < spoint.events; i++) {
       events.push({ x: [spoint.class], event: true })
@@ -209,7 +214,7 @@ export function prepareEfron(survivalPointsClass0: SurvivalPoint[], survivalPoin
       tmpMap.set(spoint.time, events)
     }
   })
-  let groupedTmpArray = new Array<timePoint>()
+  let groupedTmpArray = new Array<TimePoint>()
   tmpMap.forEach((value, key) => {
     groupedTmpArray.push({ time: key, events: value })
   })

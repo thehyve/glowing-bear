@@ -27,21 +27,21 @@ export class SurvivalResultsService {
     return this._id
   }
 
-  set survivalResults(res: {survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}[]) {
+  set survivalResults(res: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }[]) {
     this._survivalResults = res
   }
-  get survivalResults(): {survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}[] {
+  get survivalResults(): { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }[] {
     return this._survivalResults
   }
-  set selectedSurvivalResult(res: {survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}) {
+  set selectedSurvivalResult(res: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }) {
     this._selectedSurvivalResult = res
   }
-  get selectedSurvivalResult(): {survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}{
+  get selectedSurvivalResult(): { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings } {
     return this._selectedSurvivalResult
   }
   _id: Observable<number>
-  _survivalResults = new Array<{survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}>()
-  _selectedSurvivalResult: {survivalAnalysisClear:SurvivalAnalysisClear,settings:SurvivalSettings}
+  _survivalResults = new Array<{ survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }>()
+  _selectedSurvivalResult: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }
   _numericalTables = new Array<NumericalTablesType>()
   _selectedNumericalTables: NumericalTablesType
 
@@ -52,8 +52,8 @@ export class SurvivalResultsService {
 
   }
 
-  pushCopy(surv: SurvivalAnalysisClear,settings:SurvivalSettings) {
-    let survivalAnalysisClear= new SurvivalAnalysisClear()
+  pushCopy(surv: SurvivalAnalysisClear, settings: SurvivalSettings) {
+    let survivalAnalysisClear = new SurvivalAnalysisClear()
     survivalAnalysisClear.results = surv.results.map(x => {
       x.groupResults = x.groupResults.map(y => {
         let newEvents = {
@@ -65,7 +65,7 @@ export class SurvivalResultsService {
       })
       return x
     })
-    this.survivalResults.push({survivalAnalysisClear,settings})
+    this.survivalResults.push({ survivalAnalysisClear, settings })
     let points = clearResultsToArray(survivalAnalysisClear).curves.map(x => x.points)
     this._numericalTables.push(numericalTables(points))
     this.navBarService.insertNewSurvResults()

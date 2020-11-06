@@ -22,11 +22,11 @@ export class ExploreQueryResult {
     this._perSiteCounts = value;
   }
 
-  set resultInstanceID(value: number[]){
-    this._resultInstanceID=value
+  set resultInstanceID(value: number[]) {
+    this._resultInstanceID = value
   }
 
-  get resultInstanceID():number[]{
+  get resultInstanceID(): number[] {
     return this._resultInstanceID
   }
 }

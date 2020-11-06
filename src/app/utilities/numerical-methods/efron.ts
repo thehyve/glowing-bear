@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { exp, log } from 'mathjs'
-import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, timePoint, eventType } from './cox-regression'
+import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, TimePoint, EventType } from './cox-regression'
 
 
 /**
@@ -14,25 +14,25 @@ import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct,
  */
 
 // validate checks whether the the timepoints have the same dimension and returns this dimension, -1 otherwise
-function validate(timePoints: timePoint[]): number {
+function validate(timePoints: TimePoint[]): number {
   return timePoints.map(tp => tp[0].x.length).reduce((a, b) => (a === b) ? a : -1)
 }
 
-export class efronCoxRegression extends CoxRegression {
+export class EfronCoxRegression extends CoxRegression {
 
-  protected logLikelihood(data: timePoint[], parameter: number[]): number {
+  protected logLikelihood(data: TimePoint[], parameter: number[]): number {
     return logLikelihood(data, parameter)
   }
-  protected gradient(data: timePoint[], parameter: number[]): number[] {
+  protected gradient(data: TimePoint[], parameter: number[]): number[] {
     return derivative(data, parameter)
   }
-  protected hessian(data: timePoint[], parameter: number[]): number[] {
+  protected hessian(data: TimePoint[], parameter: number[]): number[] {
     return secondDerivative(data, parameter)
   }
 
 }
 // after validation
-export function logLikelihood(timePoints: timePoint[], beta: number[]): number {
+export function logLikelihood(timePoints: TimePoint[], beta: number[]): number {
   let res = 0
   let k = 0
   let a = 0
@@ -77,7 +77,7 @@ export function logLikelihood(timePoints: timePoint[], beta: number[]): number {
   return res
 }
 
-export function derivative(timePoints: timePoint[], beta: number[]): number[] {
+export function derivative(timePoints: TimePoint[], beta: number[]): number[] {
   let e = beta.map(x => 0.0)
   let f = beta.map(x => 0.0)
   let g = beta.map(x => 0.0)
@@ -134,7 +134,7 @@ export function derivative(timePoints: timePoint[], beta: number[]): number[] {
   return res
 }
 
-export function secondDerivative(timePoints: timePoint[], beta: number[]): number[] {
+export function secondDerivative(timePoints: TimePoint[], beta: number[]): number[] {
   let p = new Array<number>(beta.length * beta.length)
   let q = new Array<number>(beta.length * beta.length)
   let e = new Array<number>(beta.length)

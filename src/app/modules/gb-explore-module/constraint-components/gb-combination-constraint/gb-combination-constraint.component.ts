@@ -6,14 +6,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
-import {Constraint} from '../../../../models/constraint-models/constraint';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
-import {CombinationState} from '../../../../models/constraint-models/combination-state';
-import {TreeNode} from '../../../../models/tree-models/tree-node';
-import {UIHelper} from '../../../../utilities/ui-helper';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { GbConstraintComponent } from '../gb-constraint/gb-constraint.component';
+import { CombinationConstraint } from '../../../../models/constraint-models/combination-constraint';
+import { Constraint } from '../../../../models/constraint-models/constraint';
+import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
+import { CombinationState } from '../../../../models/constraint-models/combination-state';
+import { TreeNode } from '../../../../models/tree-models/tree-node';
+import { UIHelper } from '../../../../utilities/ui-helper';
 import { MessageHelper } from 'app/utilities/message-helper';
 
 @Component({
@@ -76,7 +76,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       try {
         combinationConstraint.addChild(newConstraint);
       } catch (error) {
-        MessageHelper.alert('error',error.message)
+        MessageHelper.alert('error', error.message)
       }
       // force combination state if i2b2 style nesting
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
@@ -104,10 +104,10 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
         combinationConstraint.addChild(this.droppedConstraint);
 
       } catch (error) {
-        MessageHelper.alert('error',error.message)
-        
+        MessageHelper.alert('error', error.message)
+
       }
-      
+
       // force combination state if free nesting not supported
       let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
       if (parentConstraint && parentConstraint.isRoot) {
@@ -132,7 +132,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     try {
       (<CombinationConstraint>this.constraint).addChild(new CombinationConstraint());
     } catch (error) {
-      MessageHelper.alert('warn',error.message)
+      MessageHelper.alert('warn', error.message)
     }
   }
 

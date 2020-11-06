@@ -11,8 +11,6 @@ import { runInThisContext } from 'vm'
 import { rootCertificates } from 'tls'
 import { CombinationConstraint } from '../constraint-models/combination-constraint'
 
-import { SelectItem } from 'primeng/api'
-import { ErrorHandler } from '@angular/core'
 import { ErrorHelper } from 'app/utilities/error-helper'
 
 
@@ -30,7 +28,11 @@ export class Cohort {
 
   protected _rootInclusionConstraint: CombinationConstraint
   protected _rootExclusionConstraint: CombinationConstraint
-  constructor(name: string, rootInclusionConstraint: CombinationConstraint, rootExclusionConstraint: CombinationConstraint, createDate: Date, updateDate: Date) {
+  constructor(
+    name: string, rootInclusionConstraint: CombinationConstraint,
+    rootExclusionConstraint: CombinationConstraint, createDate: Date,
+    updateDate: Date
+  ) {
     this._name = name
 
     if (rootInclusionConstraint !== null) {
@@ -164,50 +166,4 @@ export class Cohort {
     }
     this._updateDate = date
   }
-
-
-
 }
-
-
-/* export class SurvivalCohort extends Cohort {
-
-  _hasSubGroups: boolean
-  _granularity: string
-
-  _subGroups = new Array<Cohort>()
-  _subGroupSelection: SelectItem[]
-  constructor(name: string, rootInclConstraint: CombinationConstraint, rootExclConstraint: CombinationConstraint, createDate: Date, updateDate: Date) {
-    super(name, rootInclConstraint, rootExclConstraint, createDate, updateDate)
-    this._hasSubGroups = false
-
-  }
-
-
-  set hasSubGroups(val: boolean) {
-    this._hasSubGroups = val
-  }
-
-  get hasSubGroups(): boolean {
-    return this._hasSubGroups
-  }
-
-  get subGroups(): Array<Cohort> {
-    return this._subGroups
-
-  }
-
-  set subGroups(subGroups: Array<Cohort>) {
-    this._subGroups = new Array<Cohort>()
-    subGroups.forEach(function (subGroup: Cohort) {
-      let cpy = new Cohort(subGroup.name, subGroup.rootInclusionConstraint, subGroup.rootExclusionConstraint, subGroup.creationDate, subGroup.updateDate)
-      this._subGroups.push(cpy)
-      this._subGroupSelection.push({ label: cpy.name, value: cpy })
-    }.bind(this))
-  }
-
-  get subGroupSelection(): SelectItem[] {
-    return this._subGroupSelection
-  }
-
-} */

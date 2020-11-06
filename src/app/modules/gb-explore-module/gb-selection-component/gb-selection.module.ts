@@ -33,7 +33,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     PanelModule,
     MultiSelectModule,
   ],
-  exports:[
+  exports: [
     GbCombinationConstraintComponent,
     GbConstraintComponent,
     GbConceptConstraintComponent,

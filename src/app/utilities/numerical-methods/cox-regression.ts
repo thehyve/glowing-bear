@@ -10,13 +10,13 @@ import { inv } from 'mathjs';
 
 
 
-export interface eventType { x: number[], event: boolean }
-export interface timePoint { time: number, events: eventType[] }
+export interface EventType { x: number[], event: boolean }
+export interface TimePoint { time: number, events: EventType[] }
 export abstract class CoxRegression {
   protected maxIter: number;
   protected initialParameter: number[];
   protected tolerance: number;
-  protected data: timePoint[];
+  protected data: TimePoint[];
   public constructor(data, maxIter, tolerance) {
     this.data = data
     this.maxIter = maxIter
@@ -28,9 +28,9 @@ export abstract class CoxRegression {
     }
 
   }
-  protected abstract logLikelihood(data: timePoint[], parameter: number[]): number;
-  protected abstract gradient(data: timePoint[], parameter: number[]): number[];
-  protected abstract hessian(data: timePoint[], parameter: number[]): number[];
+  protected abstract logLikelihood(data: TimePoint[], parameter: number[]): number;
+  protected abstract gradient(data: TimePoint[], parameter: number[]): number[];
+  protected abstract hessian(data: TimePoint[], parameter: number[]): number[];
   public run(): {
     initialLogLikelihood: number,
     finalLogLikelihood: number,

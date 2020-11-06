@@ -22,7 +22,7 @@ import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
 import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
 
 @Component({
-  selector: 'app-gb-survival-results',
+  selector: 'gb-survival-results',
   templateUrl: './gb-survival-results.component.html',
   styleUrls: ['./gb-survival-results.component.css']
 })
@@ -52,8 +52,8 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
 
   _activated = false
 
-  _cols = ["Name", "Value"]
-  _values = [{ name: "log-rank", value: 0.9 }, { name: "p-val", value: 0.85 }]
+  _cols = ['Name', 'Value']
+  _values = [{ name: 'log-rank', value: 0.9 }, { name: 'p-val', value: 0.85 }]
 
   _ic = CIs
 
@@ -85,7 +85,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
 
   constructor(private elmRef: ElementRef, private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
-      console.log("survService", this.survivalResultsService)
+      console.log('survService', this.survivalResultsService)
       let resAndSettings = this.survivalResultsService.selectedSurvivalResult
       this.results = resAndSettings.survivalAnalysisClear
       this.inputParameters = resAndSettings.settings
@@ -120,18 +120,26 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     }
 
     // -- draw svg
-    this._svg = select('#survivalSvgContainer').append("svg").attr("width", "100%")
-      .attr("height", "100%")
-      .attr("viewBox", "-40 -40 450 300")
-      .attr("font-size", "8px")
-      .attr("stroke-width", "1px")
-      .append("g").attr("transform", `translate (${this._margins},${this._margins})`)
-    this._drawing = new SurvivalCurvesDrawing(this._svg, this.survivalCurve, 300, this._margins, 160, 300,this.inputParameters.timeGranularity)
+    this._svg = select('#survivalSvgContainer').append('svg').attr('width', '100%')
+      .attr('height', '100%')
+      .attr('viewBox', '-40 -40 450 300')
+      .attr('font-size', '8px')
+      .attr('stroke-width', '1px')
+      .append('g').attr('transform', `translate (${this._margins},${this._margins})`)
+    this._drawing = new SurvivalCurvesDrawing(
+      this._svg,
+      this.survivalCurve,
+      300,
+      this._margins,
+      160,
+      300,
+      this.inputParameters.timeGranularity
+    )
 
 
     this._drawing._rectHeight = 6
     this._drawing.rectWidth = 1
-    console.log("res", this._results)
+    console.log('res', this._results)
 
     this._drawing.buildLines()
     this._drawing.drawCurves()
@@ -139,7 +147,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     // -- build tables
     this.setGroupComparisons()
 
-    //-- build summary table
+    // -- build summary table
     this.updateSummaryTable()
   }
 
@@ -152,30 +160,30 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     this._groupTotalCensoring = new Array<string>()
     this._groupTotalEvent = new Array<string>()
     this._groupCoxLogtestTable = new Array<Array<string>>()
-    var len = this.survivalCurve.curves.length
-    var curveName = this.survivalCurve.curves.map(curve => curve.groupId)
+    let len = this.survivalCurve.curves.length
+    let curveName = this.survivalCurve.curves.map(curve => curve.groupId)
     this._groupComparisons = new Array<SelectItem>()
 
     for (let i = 0; i < len; i++) {
-      var logrankRow = new Array<string>()
-      var coxRegRow = new Array<string>()
-      var waldCoxRow = new Array<string>()
-      var coxLogtestRow = new Array<string>()
-      var totalAtRisk: string
-      var totalEvent: string
-      var totalCensoring: string
-      for (let j =/*i+1*/ 0; j < len; j++) {
-        var logrank = logRank2Groups(this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points).toPrecision(3)
+      let logrankRow = new Array<string>()
+      let coxRegRow = new Array<string>()
+      let waldCoxRow = new Array<string>()
+      let coxLogtestRow = new Array<string>()
+      let totalAtRisk: string
+      let totalEvent: string
+      let totalCensoring: string
+      for (let j = /*i+1*/ 0; j < len; j++) {
+        let logrank = logRank2Groups(this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points).toPrecision(3)
         logrankRow.push(logrank)
-        var cox = NewCoxRegression([this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points], 1000, 1e-14, "breslow").run()
-        var beta = cox.finalBeta[0]
-        var variance = cox.finalCovarianceMatrixEstimate[0][0]
-        var coxReg = coxToString(beta, variance)
-        var waldStat = Math.pow(beta, 2) / (variance + 1e-14)
-        var waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
-        var likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
-        var coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-        console.log("loglikelihoodRatio", likelihoodRatio, "logtest pvalue", coxLogtest)
+        let cox = NewCoxRegression([this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points], 1000, 1e-14, 'breslow').run()
+        let beta = cox.finalBeta[0]
+        let variance = cox.finalCovarianceMatrixEstimate[0][0]
+        let coxReg = coxToString(beta, variance)
+        let waldStat = Math.pow(beta, 2) / (variance + 1e-14)
+        let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
+        let likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
+        let coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
+        console.log('loglikelihoodRatio', likelihoodRatio, 'logtest pvalue', coxLogtest)
         coxRegRow.push(coxReg)
         waldCoxRow.push(waldTest)
         coxLogtestRow.push(coxLogtest)
@@ -192,7 +200,6 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
             coxReg: coxReg,
             initialCount1: totalAtRisk,
             initialCount2: this.survivalCurve.curves[j].points[0].atRisk.toString(),
-            //TODO this is redundant
             cumulatEvent1: totalEvent,
             cumulatEvent2: this.survivalCurve.curves[j].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString(),
             cumulatCensoring1: totalCensoring,
@@ -211,11 +218,11 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
 
     }
     this._groupTables.push(
-      { label: "Haenszel-Mantel LogRank p-value", value: { legend: "KM p-value", table: this._groupLogrankTable } },
-      { label: "Cox regression proportional hazard ratio", value: { legend: "Cox PH, [95% CI]", table: this._groupCoxRegTable } },
-      { label: "Cox regression Wald test p-value", value: { legend: "Wald p-value", table: this._groupCoxWaldTable } },
-      { label: "Cox likelihood ratio p-value", value: { legend: "Logtest p-vale", table: this._groupCoxLogtestTable } })
-    this.selectedGroupTable = { legend: "KM p-value", table: this._groupLogrankTable }
+      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'KM p-value', table: this._groupLogrankTable } },
+      { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this._groupCoxRegTable } },
+      { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this._groupCoxWaldTable } },
+      { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this._groupCoxLogtestTable } })
+    this.selectedGroupTable = { legend: 'KM p-value', table: this._groupLogrankTable }
 
     if (len) {
       this._selectedGroupComparison = this._groupComparisons[0].value
@@ -237,8 +244,8 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     let can = this.elmRef.nativeElement.querySelector('#drawingconv')
 
     console.log('parsing svg')
-    var serializer = new XMLSerializer();
-    var svgSerialized = serializer.serializeToString(svg);
+    let serializer = new XMLSerializer();
+    let svgSerialized = serializer.serializeToString(svg);
 
 
     console.log('running canvg')
@@ -246,7 +253,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     console.log('getting image data')
     let imData = can.toDataURL('img/png', 'high')
     console.log('creating pdf document')
-    var doc = new jsPDF()
+    let doc = new jsPDF()
     console.log('adding image')
     doc.addImage(imData, 'png', 0, 0, 190, 120)
 
@@ -336,8 +343,8 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
   get ic() {
     return this._ic
   }
-  set alphas(alphas) {
-    this._alphas = alphas
+  set alphas(alp) {
+    this._alphas = alp
   }
   get alphas() {
     return this._alphas
@@ -402,8 +409,8 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
 
 }
 export const colorRange = [
-  "#ff4f4f",
-  "#99f0dd",
-  "#fa8d2d",
-  "#5c67e6"
+  '#ff4f4f',
+  '#99f0dd',
+  '#fa8d2d',
+  '#5c67e6'
 ]

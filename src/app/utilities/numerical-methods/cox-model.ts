@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CoxRegression, timePoint, eventType } from './cox-regression'
-import { breslowCoxRegression } from './breslow'
-import { efronCoxRegression } from './efron'
+import { CoxRegression, TimePoint, EventType } from './cox-regression'
+import { BreslowCoxRegression } from './breslow'
+import { EfronCoxRegression } from './efron'
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 import { ErrorHelper } from '../error-helper';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
@@ -18,23 +18,30 @@ export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number
   }
   const data = prepare(pointGroups[0], pointGroups[1])
   if (method.toUpperCase() === 'BRESLOW') {
-    return new breslowCoxRegression(data, maxIter, tolerance)
+    return new BreslowCoxRegression(data, maxIter, tolerance)
   } else if (method.toUpperCase() === 'EFRON') {
-    return new efronCoxRegression(data, maxIter, tolerance)
+    return new EfronCoxRegression(data, maxIter, tolerance)
   } else {
-    throw ErrorHelper.handleNewError(`Unknown method ${method}. Only Breslow's and Efron's methods are implemented. Expected: one of 'breslow' 'efron'`);
+    throw ErrorHelper.handleNewError(
+      `Unknown method ${method}. Only Breslow's and Efron's methods are implemented. Expected: one of 'breslow' 'efron'`
+    );
   }
 }
 
-function prepare(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): timePoint[] {
+function prepare(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): TimePoint[] {
 
-  let tmpArray = survivalPointsClass0.map(spoint => { return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings } }).concat(
-    survivalPointsClass1.map(spoint => { return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings } }))
+  let tmpArray = survivalPointsClass0.map(spoint => {
+    return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+  })
+    .concat(
+      survivalPointsClass1.map(spoint => {
+        return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+      }))
 
 
-  let tmpMap = new Map<number, eventType[]>()
+  let tmpMap = new Map<number, EventType[]>()
   tmpArray.forEach(spoint => {
-    let events = new Array<eventType>()
+    let events = new Array<EventType>()
 
     for (let i = 0; i < spoint.events; i++) {
       events.push({ x: [spoint.class], event: true })
@@ -51,7 +58,7 @@ function prepare(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: Su
       tmpMap.set(spoint.time, events)
     }
   })
-  let groupedTmpArray = new Array<timePoint>()
+  let groupedTmpArray = new Array<TimePoint>()
   tmpMap.forEach((value, key) => {
     groupedTmpArray.push({ time: key, events: value })
   })

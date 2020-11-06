@@ -19,7 +19,7 @@ import { CohortServiceMock } from 'app/services/cohort.service';
 import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
 
 @Component({
-  selector: 'app-gb-top',
+  selector: 'gb-top',
   templateUrl: './gb-top.component.html',
   styleUrls: ['./gb-top.component.css']
 })
