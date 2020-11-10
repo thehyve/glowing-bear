@@ -4,16 +4,21 @@ import 'jspdf-autotable'
 import canvg from 'canvg'
 import { ErrorHelper } from 'app/utilities/error-helper'
 
+const gbClinicalGreen = [51, 156, 144]
 
 export class PDF {
   _jsPDF: jsPDF.jsPDF
   _lastElementY: number
   _fontSize: number
 
-  constructor(private verticalMargin: number = 5, private horizontalMargin: number = 20) {
+
+  constructor(private verticalMargin: number = 5, private horizontalMargin: number = 14, private topMargin: number = 10) {
     this._jsPDF = new jsPDF.jsPDF()
     this._fontSize = this._jsPDF.getFontSize()
-    this._lastElementY = 0
+    this._lastElementY = topMargin
+    console.warn('debug, available fonts', this._jsPDF.getFontList())
+    this._jsPDF.setFont('Helvetica')
+    this._jsPDF.setFontSize(14)
   }
 
   addImage(sourceSVGRef: any, targetCanvasRef: any, x0: number, y0: number, x1: number, y1: number) {
@@ -58,6 +63,9 @@ export class PDF {
       (this._jsPDF as any).autoTable({
         head: headers,
         body: data,
+        headStyles: {
+          fillColor: gbClinicalGreen,
+        },
         startY: this._lastElementY,
       })
     } catch (err) {
@@ -71,6 +79,9 @@ export class PDF {
       (this._jsPDF as any).autoTable({
         html: htmlRef,
         startY: this._lastElementY,
+        headStyles: {
+          fillColor: gbClinicalGreen,
+        },
       })
     } catch (err) {
       throw ErrorHelper.handleError('while adding table to PDF document from HTML reference', err)

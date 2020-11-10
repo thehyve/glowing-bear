@@ -9,7 +9,7 @@ export function summaryToTable(
   let data = new Array<string[]>(nofGroups)
 
   for (let i = 0; i < nofGroups; i++) {
-    data[i] = [groupTotalAtRisk[i], groupTotalEvent[i], groupTotalCensoring[i]]
+    data[i] = [groupNames[i], groupTotalAtRisk[i], groupTotalEvent[i], groupTotalCensoring[i]]
   }
   return { headers: headers, data: data }
 }

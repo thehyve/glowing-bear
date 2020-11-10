@@ -90,8 +90,6 @@ export class TreeNode implements PrimeNgTreeNode {
       node.path.length > this.path.length;
   }
 
-  // isModifier
-
   /**
    * Generate the tree structure based on the path of the children treeNodes and attach it to the current node.
    * Note: this will consume the treeNodes array.

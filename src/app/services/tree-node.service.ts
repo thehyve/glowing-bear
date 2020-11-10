@@ -167,17 +167,9 @@ export class TreeNodeService {
           node.icon = 'fa fa-folder-o';
       }
 
-      // overwrite icon
-      if (node.nodeType === TreeNodeType.MODIFIER) {
-        node.icon = 'fa fa-eye';
-      }
 
     } else {
       node.icon = '';
-      if (node.nodeType === TreeNodeType.MODIFIER) {
-        node.expandedIcon = 'fa fa-eye';
-        node.collapsedIcon = 'fa fa-eye';
-      }
       node.expandedIcon = 'fa fa-folder-open';
       node.collapsedIcon = 'fa fa-folder';
     }

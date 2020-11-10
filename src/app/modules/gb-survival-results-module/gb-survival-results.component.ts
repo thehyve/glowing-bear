@@ -26,7 +26,7 @@ import { statTestToTable, summaryToTable } from 'app/utilities/rendering/table-f
   templateUrl: './gb-survival-results.component.html',
   styleUrls: ['./gb-survival-results.component.css']
 })
-export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
+export class GbSurvivalResultsComponent implements OnInit {
   _id: number
   colorRange = colorRange
   advancedSettings = false
@@ -101,13 +101,6 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     this.display()
 
   }
-
-  ngAfterViewInit() {
-
-
-  }
-
-
 
   display() {
     // -- get the results
@@ -246,7 +239,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
 
     let pdfDoc = new PDF()
 
-    pdfDoc.addImage(svg, can, 0, 0, 190, 120)
+    pdfDoc.addImage(svg, can, 0, 0, 220, 120)
     pdfDoc.addOneLineText('Settings')
     tables = this.inputParameters.mainSettingsToTable()
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
@@ -257,11 +250,10 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     }
     let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
     pdfDoc.addOneLineText('Summary')
+    tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
+    pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
     if (curveNames.length > 1) {
-      tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
-
       pdfDoc.addOneLineText('Logrank')
       console.log(`Debug: curveNames length: ${curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
       tables = statTestToTable(curveNames, this.groupLogrankTable)
