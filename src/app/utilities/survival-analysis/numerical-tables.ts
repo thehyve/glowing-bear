@@ -46,7 +46,6 @@ export function numericalTables(
       let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
       let likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
       let coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-      console.log('loglikelihoodRatio', likelihoodRatio, 'logtest pvalue', coxLogtest)
       coxRegRow.push(coxReg)
       waldCoxRow.push(waldTest)
       coxLogtestRow.push(coxLogtest)

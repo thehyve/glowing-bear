@@ -82,7 +82,6 @@ export class TreeNodeService {
     this._isLoading = true;
     this.exploreSearchService.exploreSearch(parentNode.path).subscribe(
       (treeNodes: TreeNode[]) => {
-        console.warn('search results', treeNodes)
         parentNode.attachChildTree(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
@@ -106,7 +105,6 @@ export class TreeNodeService {
       return;
     }
     for (let node of treeNodes) {
-      console.warn('nodes', node)
       this.processTreeNode(node, constraintService);
       if (node.hasChildren()) {
         this.processTreeNodes(node.children, constraintService);

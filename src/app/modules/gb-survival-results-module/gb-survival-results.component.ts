@@ -16,10 +16,10 @@ import { clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 import { NewCoxRegression, coxToString } from 'app/utilities/numerical-methods/cox-model';
 import { logRank2Groups } from 'app/utilities/survival-analysis/log-rank-p-value';
-import { jsPDF } from 'jspdf';
-import canvg from 'canvg';
 import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
 import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
+import { PDF } from 'app/models/file-models/pdf';
+import { statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
 
 @Component({
   selector: 'gb-survival-results',
@@ -237,29 +237,51 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
   }
 
   exportSVG(event: Event) {
+    let tables: { headers: string[][], data: string[][] }
 
     console.log('getting elements')
 
     let svg = this.elmRef.nativeElement.querySelector('#survivalSvgContainer svg')
     let can = this.elmRef.nativeElement.querySelector('#drawingconv')
 
-    console.log('parsing svg')
-    let serializer = new XMLSerializer();
-    let svgSerialized = serializer.serializeToString(svg);
+    let pdfDoc = new PDF()
 
+    pdfDoc.addImage(svg, can, 0, 0, 190, 120)
+    pdfDoc.addOneLineText('Settings')
+    tables = this.inputParameters.mainSettingsToTable()
+    pdfDoc.addTableFromObjects(tables.headers, tables.data)
+    if (this.inputParameters.subGroupTextRepresentations && this.inputParameters.subGroupTextRepresentations.length > 0) {
+      pdfDoc.addOneLineText('Definitions of sub groups')
+      tables = this.inputParameters.subGroupsToTable()
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+    }
+    let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
+    pdfDoc.addOneLineText('Summary')
 
-    console.log('running canvg')
-    canvg(can, svgSerialized, { useCORS: true })
-    console.log('getting image data')
-    let imData = can.toDataURL('img/png', 'high')
-    console.log('creating pdf document')
-    let doc = new jsPDF()
-    console.log('adding image')
-    doc.addImage(imData, 'png', 0, 0, 190, 120)
+    if (curveNames.length > 1) {
+      tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
-    console.log('exporting pdf document')
+      pdfDoc.addOneLineText('Logrank')
+      console.log(`Debug: curveNames length: ${curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
+      tables = statTestToTable(curveNames, this.groupLogrankTable)
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+
+      pdfDoc.addOneLineText('Cox regression coefficient')
+      tables = statTestToTable(curveNames, this.groupCoxRegTable)
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+
+      pdfDoc.addOneLineText('Cox regression wald test')
+      tables = statTestToTable(curveNames, this.groupCoxWaldTable)
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+
+      pdfDoc.addOneLineText('Logtest')
+      tables = statTestToTable(curveNames, this.groupCoxLogtestTable)
+      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+    }
+
     let exportDate = new Date(Date.now())
-    doc.save(`medco_survival_analysis_${exportDate.toISOString()}.pdf`)
+    pdfDoc.export(`medco_survival_analysis_${exportDate.toISOString()}.pdf`)
   }
 
   set id(i: number) {
@@ -272,7 +294,7 @@ export class GbSurvivalResultsComponent implements OnInit, AfterViewInit {
     this._groupLogrankTable = table
   }
 
-  get groupLogRankTable(): string[][] {
+  get groupLogrankTable(): string[][] {
     return this._groupLogrankTable
   }
   set groupCoxRegTable(table: string[][]) {

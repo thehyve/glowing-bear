@@ -240,10 +240,8 @@ export class SurvivalCurvesDrawing {
         .y1(d => this._yaxis(this.selectedInterval(this.alpha, d).sup))
         .curve(curveStepAfter)
     }
-    console.log('data to be plot', this.curves.curves)
     this.curves.curves.filter(curve => !this._hiding.get(curve.groupId)).forEach(curve => {
       // --- add data and show data
-      console.log('points to show', curve.points, this._lineGen(curve.points))
       this._curves.get(curve.groupId)
         .datum(curve.points)
         .attr('fill', 'none')

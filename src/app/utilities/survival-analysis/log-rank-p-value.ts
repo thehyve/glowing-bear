@@ -100,8 +100,6 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
 
   let res = (diffsGroup === 0) ? 0 : Math.pow(diffsGroup, 2) / varianceGroup
 
-
-  console.log('results', diffsGroup, varianceGroup, res)
   return 1 - ChiSquaredCdf(res, 1)
 
 

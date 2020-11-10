@@ -34,7 +34,6 @@ export function TestBreslow(): void {
   let likelihood = initLikelihood
   let gradient = initGradient
   let beta = BreslowTestContext.initialBeta
-  console.log('breslow test', likelihood, gradient, hessian)
   for (let i = 0; i < 10; i++) {
     let delta = multiplyMatrixVector(inv(hessian), gradient)
     addTo(beta, delta)

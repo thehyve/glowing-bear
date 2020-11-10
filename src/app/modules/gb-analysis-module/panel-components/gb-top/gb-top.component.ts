@@ -72,7 +72,6 @@ export class GbTopComponent implements OnInit {
   }
 
   runAnalysis() {
-    fillTestPanels()
     this._ready = false
     this.launched = true
     let settings = this.survivalAnalysisService.settings()

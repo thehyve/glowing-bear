@@ -29,7 +29,6 @@ export class SurvivalAnalysisService {
     private cryptoService: CryptoService) { }
 
   survivalAnalysisSingleNode(nodeUrl: string, apiSurvivalAnalysis: ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse> {
-    console.log(apiSurvivalAnalysis)
     return this.apiEndpointService.postCall(
       '/node/analysis/survival/query',
       apiSurvivalAnalysis,
