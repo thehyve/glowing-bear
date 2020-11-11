@@ -23,7 +23,8 @@
     "@angular/platform-browser-dynamic": "^8.2.14",
     "@angular/platform-server": "^8.2.14",
     "@angular/router": "^8.2.14",
-    "@babel/preset-env": "^7.8.7",
+    "@babel/core": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
     "@dedis/kyber": "^3.4.2",
     "@types/chart.js": "^2.9.13",
     "@types/elliptic": "^6.4.12",
@@ -66,7 +67,7 @@
     "codecov": "^3.6.5",
     "codelyzer": "^5.2.1",
     "es6-promise": "^4.2.8",
-    "jsdom": "^16.4.0",
+    "jsdom": "^13.2.0",
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage-istanbul-reporter": "^2.1.1",
@@ -76,7 +77,7 @@
     "ts-node": "^8.6.2",
     "tslint": "^5.20.1",
     "typescript": "^3.5.3",
-    "xmldom": "^0.4.0"
+    "xmldom": "^0.1.31"
   },
   "repository": {
     "type": "git",

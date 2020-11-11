@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
 import { OverlayPanelModule } from 'primeng/overlaypanel'
-import { ConfirmDialogModule } from 'primeng/confirmdialog'
 import { DropdownModule } from 'primeng/dropdown';
 import { ScrollPanelModule } from 'primeng/scrollpanel'
 import { ButtonModule } from 'primeng/button';

@@ -12,11 +12,15 @@ export class PDF {
   _fontSize: number
 
 
-  constructor(private verticalMargin: number = 5, private horizontalMargin: number = 14, private topMargin: number = 10) {
+  constructor(
+    private verticalMarginTable: number = 7,
+    private verticalMarginImage: number = 7,
+    private verticalMarginText: number = -6,
+    private horizontalMargin: number = 14,
+    private topMargin: number = 10) {
     this._jsPDF = new jsPDF.jsPDF()
     this._fontSize = this._jsPDF.getFontSize()
-    this._lastElementY = topMargin
-    console.warn('debug, available fonts', this._jsPDF.getFontList())
+    this._lastElementY = this.topMargin
     this._jsPDF.setFont('Helvetica')
     this._jsPDF.setFontSize(14)
   }
@@ -55,7 +59,7 @@ export class PDF {
     }
 
     console.log('Exported to PDF.')
-    this._lastElementY += y1 + this.verticalMargin
+    this._lastElementY += y1 + this.verticalMarginImage
   }
 
   addTableFromObjects(headers: string[][], data: string[][]) {
@@ -71,7 +75,7 @@ export class PDF {
     } catch (err) {
       throw ErrorHelper.handleError('while adding table to PDF document', err)
     }
-    this._lastElementY = (this._jsPDF as any).lastAutoTable.finalY + this.verticalMargin
+    this._lastElementY = (this._jsPDF as any).lastAutoTable.finalY + this.verticalMarginTable
   }
 
   addTableFromHTMLRef(htmlRef: string) {
@@ -86,12 +90,12 @@ export class PDF {
     } catch (err) {
       throw ErrorHelper.handleError('while adding table to PDF document from HTML reference', err)
     }
-    this._lastElementY = (this._jsPDF as any).lastAutoTable.finalY + this.verticalMargin
+    this._lastElementY = (this._jsPDF as any).lastAutoTable.finalY + this.verticalMarginTable
   }
 
   addOneLineText(txt: string) {
     this._jsPDF.text(txt, this.horizontalMargin, this._lastElementY)
-    this._lastElementY += this._fontSize + this.verticalMargin
+    this._lastElementY += this._fontSize + this.verticalMarginText
   }
 
   export(fileName: string) {

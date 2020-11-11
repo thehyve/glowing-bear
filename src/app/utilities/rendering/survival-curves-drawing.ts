@@ -17,17 +17,22 @@ import { SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 
 
-export type confidenceInterval = (
-  simga: number, point: { timePoint: number, prob: number, cumul: number, remaining: number }
-) => { inf: number, sup: number };
 
-export const CIs: Array<{ label: string, value: confidenceInterval }> = [
-  { label: 'identity', value: ConfidenceInterval.identity},
-  { label: 'log', value: ConfidenceInterval.logarithm },
-  { label: 'log -log', value: ConfidenceInterval.logarithmMinusLogarithm },
-  { label: 'arcsine squared', value: ConfidenceInterval.arcsineSquaredRoot }
+export const CIs: Array<{ label: string, value: ConfidenceInterval }> = [
+  { label: 'identity', value: ConfidenceInterval.identity() },
+  { label: 'log', value: ConfidenceInterval.logarithm() },
+  { label: 'log -log', value: ConfidenceInterval.logarithmMinusLogarithm() },
+  { label: 'arcsine squared', value: ConfidenceInterval.arcsineSquaredRoot() }
 ]
-export const alphas: Array<{ label: string, value: number }> = [{ label: '90%', value: 1.645 }, { label: '95%', value: 1.960 }, { label: '99%', value: 2.054 }]
+export const alphas: Array<{ label: string, value: number }> = [
+  { label: '90%', value: 1.645 },
+  { label: '95%', value: 1.960 },
+  { label: '99%', value: 2.054 },
+]
+
+// this is not elegant, but what works for CIs does not work for alphas: browser freezes
+export const alphasReverseMap = new Map<number, string>([[1.645, '90%'], [1.960, '95%'], [2.054, '99%']])
+
 export class SurvivalCurvesDrawing {
   _svgRef: Selection<SVGGElement, unknown, HTMLElement, any>
 
@@ -84,7 +89,7 @@ export class SurvivalCurvesDrawing {
     private height: number,
     private granularity: string,
     private notifier: Observable<any> = null,
-    public selectedInterval: confidenceInterval = ConfidenceInterval.logarithm,
+    public selectedInterval: ConfidenceInterval = ConfidenceInterval.logarithm(),
     public alpha: number = 1.960,
     public nofTicks: number = 10,
     public grid: boolean = false
@@ -236,8 +241,8 @@ export class SurvivalCurvesDrawing {
     if (this.selectedInterval) {
       this._areaGen = area<{ timePoint: number, prob: number, cumul: number, remaining: number }>()
         .x(d => this._xaxis(d.timePoint))
-        .y0(d => this._yaxis(this.selectedInterval(this.alpha, d).inf))
-        .y1(d => this._yaxis(this.selectedInterval(this.alpha, d).sup))
+        .y0(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).inf))
+        .y1(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).sup))
         .curve(curveStepAfter)
     }
     this.curves.curves.filter(curve => !this._hiding.get(curve.groupId)).forEach(curve => {
@@ -305,8 +310,8 @@ export class SurvivalCurvesDrawing {
   changeIntervals() {
     this._areaGen = area<{ timePoint: number, prob: number, cumul: number, remaining: number }>()
       .x(d => this._xaxis(d.timePoint))
-      .y0(d => this._yaxis(this.selectedInterval(this.alpha, d).inf))
-      .y1(d => this._yaxis(this.selectedInterval(this.alpha, d).sup))
+      .y0(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).inf))
+      .y1(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).sup))
       .curve(curveStepAfter)
 
     this.curves.curves.forEach(c => {
@@ -316,6 +321,7 @@ export class SurvivalCurvesDrawing {
         .duration(50)
         .attr('stroke', this._colorSet(c.groupId))
         .attr('fill', this._colorSet(c.groupId))
+        .attr('stroke-opacity', '0.3')
         .attr('opacity', '0.3')
         .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
         .attr('d', this._areaGen)

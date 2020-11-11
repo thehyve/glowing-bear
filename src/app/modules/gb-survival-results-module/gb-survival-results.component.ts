@@ -11,7 +11,7 @@ import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { SelectItem } from 'primeng/api';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { select, Selection } from 'd3';
-import { alphas, CIs, confidenceInterval, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
+import { alphas, alphasReverseMap, CIs, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
 import { clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 import { NewCoxRegression, coxToString } from 'app/utilities/numerical-methods/cox-model';
@@ -20,6 +20,9 @@ import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
 import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
 import { PDF } from 'app/models/file-models/pdf';
 import { statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
+import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
+import { ErrorHelper } from 'app/utilities/error-helper';
+
 
 @Component({
   selector: 'gb-survival-results',
@@ -34,6 +37,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _inputParameters: SurvivalSettings
   _survivalCurve: SurvivalCurve
   _groupComparisons: SelectItem[]
+
   _selectedGroupComparison: {
     name1: string,
     name2: string,
@@ -89,6 +93,7 @@ export class GbSurvivalResultsComponent implements OnInit {
       let resAndSettings = this.survivalResultsService.selectedSurvivalResult
       this.results = resAndSettings.survivalAnalysisClear
       this.inputParameters = resAndSettings.settings
+
       this.display()
     })
 
@@ -239,7 +244,7 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     let pdfDoc = new PDF()
 
-    pdfDoc.addImage(svg, can, 0, 0, 220, 120)
+    pdfDoc.addImage(svg, can, 0, 0, 240, 120)
     pdfDoc.addOneLineText('Settings')
     tables = this.inputParameters.mainSettingsToTable()
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
@@ -247,6 +252,21 @@ export class GbSurvivalResultsComponent implements OnInit {
       pdfDoc.addOneLineText('Definitions of sub groups')
       tables = this.inputParameters.subGroupsToTable()
       pdfDoc.addTableFromObjects(tables.headers, tables.data)
+    }
+    if (this.selectedIc) {
+      if (!this.selectedAlpha) {
+        ErrorHelper.handleNewError('Unexpected error, alpha is not defined when confidence interval is.')
+      }
+      if (!alphasReverseMap.has(this.selectedAlpha)) {
+        ErrorHelper.handleNewError('Unexpected error, the phi inverse function value has no alpha corresponding value. (phi refers to normal CDF)')
+      }
+      console.warn('debug, select aplha reverse map', alphasReverseMap)
+      pdfDoc.addOneLineText('Curves confidence intervals')
+      pdfDoc.addTableFromObjects(
+        [['Transformation', 'Size (1 - alpha)']],
+        [[this.selectedIc.description, `${alphasReverseMap.get(this.selectedAlpha)}`]],
+      )
+
     }
     let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
     pdfDoc.addOneLineText('Summary')
@@ -364,13 +384,13 @@ export class GbSurvivalResultsComponent implements OnInit {
     return this._alphas
   }
 
-  set selectedIc(ci: confidenceInterval) {
+  set selectedIc(ci: ConfidenceInterval) {
     if (this._drawing) {
       this._drawing.selectedInterval = ci
       this._drawing.changeIntervals()
     }
   }
-  get selectedIc(): confidenceInterval {
+  get selectedIc(): ConfidenceInterval {
 
     return (this._drawing) ? this._drawing.selectedInterval : null
 
@@ -379,6 +399,9 @@ export class GbSurvivalResultsComponent implements OnInit {
   set selectedAlpha(alpha: number) {
     if (this._drawing) {
       this._drawing.alpha = alpha
+      if (!alphasReverseMap.has(this.selectedAlpha)) {
+        ErrorHelper.handleNewError('Unexpected error, the phi inverse function value has no alpha corresponding value. (phi refers to normal CDF)')
+      }
       this._drawing.changeIntervals()
     }
 

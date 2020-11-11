@@ -14,13 +14,16 @@ class PointData {
 }
 
 export class ConfidenceInterval {
-  static identity(sigma: number, point: PointData): { inf: number, sup: number } {
+
+
+
+  private static _identity(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = point.cumul * point.prob * point.prob
     limes = Math.sqrt(limes)
     return { inf: point.prob - sigma * limes, sup: point.prob + sigma * limes }
   }
 
-  static logarithm(sigma: number, point: PointData): { inf: number, sup: number } {
+  private static _logarithm(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = point.cumul
     limes = Math.sqrt(limes)
     return { inf: point.prob * Math.exp(- sigma * limes), sup: point.prob * Math.exp(sigma * limes) }
@@ -28,7 +31,7 @@ export class ConfidenceInterval {
 
   }
 
-  static logarithmMinusLogarithm(sigma: number, point: PointData): { inf: number, sup: number } {
+  private static _logarithmMinusLogarithm(sigma: number, point: PointData): { inf: number, sup: number } {
 
     let limes = (point.prob === 0 || point.prob === 1) ? 0 : point.cumul / (Math.pow(Math.log(point.prob), 2))
     limes = Math.sqrt(limes)
@@ -37,12 +40,30 @@ export class ConfidenceInterval {
 
   }
 
-  static arcsineSquaredRoot(sigma: number, point: PointData): { inf: number, sup: number } {
+  private static _arcsineSquaredRoot(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = (point.prob === 1) ? 0 : 0.25 * point.prob / (1 - point.prob) * point.cumul
     let transformed = Math.asin(Math.sqrt(point.prob))
     limes = Math.sqrt(limes)
     return { inf: Math.pow(Math.sin(transformed - sigma * limes), 2.0), sup: Math.pow(Math.sin(transformed + sigma * limes), 2.0) }
   }
+
+  static identity(): ConfidenceInterval {
+    return new ConfidenceInterval('identity', ConfidenceInterval._identity)
+  }
+  static logarithm(): ConfidenceInterval {
+    return new ConfidenceInterval('log', ConfidenceInterval._logarithm)
+  }
+  static logarithmMinusLogarithm(): ConfidenceInterval {
+    return new ConfidenceInterval('log minus log', ConfidenceInterval._logarithmMinusLogarithm)
+  }
+  static arcsineSquaredRoot(): ConfidenceInterval {
+    return new ConfidenceInterval('arcsine squared root', ConfidenceInterval._arcsineSquaredRoot)
+  }
+  private constructor(
+    readonly description: string,
+    readonly callback: (sigma: number, point: PointData) => { inf: number, sup: number }
+  ) { }
+
 
 
 }

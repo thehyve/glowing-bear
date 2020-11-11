@@ -132,8 +132,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
       this.startConcept = concept
     }
 
-    console.log(this.startConcept, this.endConcept)
-
   }
   onEndDrop(event: DragEvent) {
     event.preventDefault()
@@ -154,16 +152,11 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
       }
       this.endConcept = concept
     }
-    console.log(this.startConcept, this.endConcept)
-
   }
 
   onDropdown(event) {
 
-
-    console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200);
-
 
   }
 
