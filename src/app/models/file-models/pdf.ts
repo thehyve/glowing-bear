@@ -1,5 +1,4 @@
 import * as jsPDF from 'jspdf'
-import { Selection } from 'd3'
 import 'jspdf-autotable'
 import canvg from 'canvg'
 import { ErrorHelper } from 'app/utilities/error-helper'
