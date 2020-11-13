@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from './services/authentication.service';
-import {MessageHelper} from './utilities/message-helper';
+import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from './services/authentication.service';
+import { MessageHelper } from './utilities/message-helper';
 
 @Component({
   selector: 'gb-app-root',
@@ -47,16 +47,4 @@ export class AppComponent implements OnInit {
     MessageHelper.messages = value;
   }
 
-}
-
-if (typeof Worker !== 'undefined') {
-  // Create a new
-  const worker = new Worker('./app.worker', { type: 'module' });
-  worker.onmessage = ({ data }) => {
-    console.log(`page got message: ${data}`);
-  };
-  worker.postMessage('hello');
-} else {
-  // Web Workers are not supported in this environment.
-  // You should add a fallback so that your program still executes correctly.
 }
