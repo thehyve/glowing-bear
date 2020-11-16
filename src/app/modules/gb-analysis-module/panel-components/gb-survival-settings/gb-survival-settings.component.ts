@@ -15,7 +15,7 @@ import { MessageHelper } from 'app/utilities/message-helper';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { SelectItem } from 'primeng/api';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
+import { SurvivalService } from 'app/services/survival-analysis.service';
 
 @Component({
   selector: 'gb-survival-settings',
@@ -45,7 +45,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   @Output() changedEventConcepts: EventEmitter<boolean> = new EventEmitter()
 
   constructor(private constraintService: ConstraintService,
-    private survivalService: SurvivalAnalysisServiceMock,
+    private survivalService: SurvivalService,
     private element: ElementRef,
     private treeNodeService: TreeNodeService) { }
 

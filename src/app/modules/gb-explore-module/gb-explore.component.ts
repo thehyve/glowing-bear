@@ -14,7 +14,7 @@ import { ExploreQueryType } from '../../models/query-models/explore-query-type';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConstraintService } from '../../services/constraint.service';
-import { CohortServiceMock } from 'app/services/cohort.service';
+import { CohortService } from 'app/services/cohort.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Cohort } from 'app/models/cohort-models/cohort';
 
@@ -28,7 +28,7 @@ export class GbExploreComponent {
   _lastSuccessfulSet: number[]
 
   constructor(public queryService: QueryService,
-    private cohortService: CohortServiceMock,
+    private cohortService: CohortService,
     public constraintService: ConstraintService) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
       console.log('last_successful_set', resIDs)

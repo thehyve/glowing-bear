@@ -17,7 +17,7 @@ import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-anal
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 
 @Injectable()
-export class SurvivalAnalysisService {
+export class ApiSurvivalAnalysisService {
 
   /**
   * Query timeout: 10 minutes.
@@ -44,6 +44,6 @@ export class SurvivalAnalysisService {
         return this.survivalAnalysisSingleNode(url, apiSurvivalAnalysis)
       }
     ))
-      .pipe(timeout(SurvivalAnalysisService.TIMEOUT_MS))
+      .pipe(timeout(ApiSurvivalAnalysisService.TIMEOUT_MS))
   }
 }

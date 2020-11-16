@@ -16,7 +16,7 @@ import { MessageHelper } from '../../../../utilities/message-helper';
 import { TreeNodeType } from '../../../../models/tree-models/tree-node-type';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CohortServiceMock } from 'app/services/cohort.service';
+import { CohortService } from 'app/services/cohort.service';
 import { MessageService } from 'primeng/api';
 import { ConstraintService } from 'app/services/constraint.service';
 

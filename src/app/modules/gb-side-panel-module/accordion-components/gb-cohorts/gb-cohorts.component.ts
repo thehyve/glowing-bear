@@ -9,7 +9,7 @@
 
 import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewChild } from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
-import { CohortService, CohortServiceMock } from 'app/services/cohort.service';
+import { CohortService } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
 import { ConfirmationService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel'
@@ -33,7 +33,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   @ViewChild('op', { static: false }) deletionRequest: OverlayPanel;
 
-  constructor(public cohortService: CohortServiceMock,
+  constructor(public cohortService: CohortService,
     private constraintService: ConstraintService,
     private confirmationService: ConfirmationService,
     private element: ElementRef) { }

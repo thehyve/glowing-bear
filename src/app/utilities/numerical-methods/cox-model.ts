@@ -13,6 +13,12 @@ import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 import { ErrorHelper } from '../error-helper';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
 
+  if (maxIter <= 0) {
+    throw ErrorHelper.handleNewError('Iteration number must be strictly superior to 0')
+  }
+  if (tolerance <= 0) {
+    throw ErrorHelper.handleNewError('Iteration number must be strictly superior to 0')
+  }
   if (pointGroups.length !== 2) {
     throw ErrorHelper.handleNewError(`For the moment, only two-group comparisons are implemented. Got ${pointGroups.length}`);
   }

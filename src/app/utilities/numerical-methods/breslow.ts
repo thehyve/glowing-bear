@@ -14,10 +14,6 @@ import { TimePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, exter
  * Breslow
  */
 
-// validate checks whether the the timepoints have the same dimension and returns this dimension, -1 otherwise
-function validate(timePoints: TimePoint[]): number {
-  return timePoints.map(tp => tp[0].x.length).reduce((a, b) => (a === b) ? a : -1)
-}
 
 export class BreslowCoxRegression extends CoxRegression {
   protected logLikelihood(data: TimePoint[], parameter: number[]): number {

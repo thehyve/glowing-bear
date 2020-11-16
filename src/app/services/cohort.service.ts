@@ -167,18 +167,6 @@ export class CohortService {
   }
 }
 
-@Injectable()
-export class CohortServiceMock extends CohortService {
-
-  constructor(protected exploreCohortsService: ExploreCohortsService, protected exploreQueryService: ExploreQueryService,
-    protected medcoNetworkService: MedcoNetworkService, public constraintService: ConstraintService) {
-    super(exploreCohortsService, exploreQueryService, medcoNetworkService, constraintService)
-  }
-
-
-
-}
-
 function apiCohortsToCohort(apiCohorts: ApiCohortResponse[][]): Cohort[] {
 
   const cohortNumber = apiCohorts[0].length

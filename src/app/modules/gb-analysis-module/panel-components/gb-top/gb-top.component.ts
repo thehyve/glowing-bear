@@ -15,8 +15,8 @@ import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-i
 import { MessageHelper } from 'app/utilities/message-helper';
 
 import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { CohortServiceMock } from 'app/services/cohort.service';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
+import { CohortService } from 'app/services/cohort.service';
+import { SurvivalService } from 'app/services/survival-analysis.service';
 
 @Component({
   selector: 'gb-top',
@@ -37,9 +37,9 @@ export class GbTopComponent implements OnInit {
   _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
   _ready = false
 
-  constructor(private survivalAnalysisService: SurvivalAnalysisServiceMock,
+  constructor(private survivalAnalysisService: SurvivalService,
     private survivalResultsService: SurvivalResultsService,
-    private cohortService: CohortServiceMock) {
+    private cohortService: CohortService) {
     this._clearRes = new Subject<SurvivalAnalysisClear>()
   }
 
@@ -110,7 +110,6 @@ export class GbTopComponent implements OnInit {
 
 
   ngOnInit() {
-
   }
 
 }

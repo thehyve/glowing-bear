@@ -9,7 +9,7 @@ import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { SelectItem } from 'primeng/api';
 import { ConstraintService } from 'app/services/constraint.service';
 import { MessageHelper } from 'app/utilities/message-helper';
-import { SurvivalAnalysisServiceMock } from 'app/services/survival-analysis-mock.service';
+import { SurvivalService } from 'app/services/survival-analysis.service';
 import { SubGroup } from 'app/services/survival-analysis.service';
 
 
@@ -31,7 +31,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   _usedNames: Set<string>
 
 
-  constructor(private constraintService: ConstraintService, private survivalService: SurvivalAnalysisServiceMock) {
+  constructor(private constraintService: ConstraintService, private survivalService: SurvivalService) {
     this._subGroups = new Array()
     this._usedNames = new Set()
 

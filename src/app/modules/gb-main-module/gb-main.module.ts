@@ -14,7 +14,7 @@ import { GbSidePanelModule } from '../gb-side-panel-module/gb-side-panel.module'
 import { routing } from './gb-main.routing';
 import { RouterModule } from '@angular/router';
 import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
-import { CohortServiceMock } from 'app/services/cohort.service';
+import { CohortService } from 'app/services/cohort.service';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-survival-results.module';
 
@@ -29,7 +29,7 @@ import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-surviv
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule],
-  providers: [CohortServiceMock, SurvivalResultsService]
+  providers: [CohortService, SurvivalResultsService]
 })
 export class GbMainModule {
 }

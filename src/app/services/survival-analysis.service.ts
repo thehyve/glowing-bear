@@ -11,11 +11,11 @@ import { CryptoService } from './crypto.service';
 import { MedcoNetworkService } from './api/medco-network.service';
 import { Observable, of } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
-import { SurvivalAnalysisService } from './api/medco-node/survival-analysis.service';
+import { ApiSurvivalAnalysisService } from './api/medco-node/api-survival-analysis.service';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear'
 import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
-import { CohortServiceMock } from './cohort.service';
+import { CohortService } from './cohort.service';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { Concept } from 'app/models/constraint-models/concept';
@@ -103,8 +103,8 @@ export class SurvivalService {
     protected cryptoService: CryptoService,
     protected medcoNetworkService: MedcoNetworkService,
     protected exploreSearchService: ExploreSearchService,
-    protected apiSurvivalAnalysisService: SurvivalAnalysisService,
-    protected cohortService: CohortServiceMock,
+    protected apiSurvivalAnalysisService: ApiSurvivalAnalysisService,
+    protected cohortService: CohortService,
     protected constraintMappingService: ConstraintMappingService) {
     this._patientGroupIds = new Map<string, number[]>()
     medcoNetworkService.nodes.forEach((apiNodeMetadata => { this._patientGroupIds[apiNodeMetadata.name] = new Array<string>() }
