@@ -12,6 +12,12 @@ import { TimePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, exter
 
 /**
  * Breslow
+ *
+ * A description of the function implemented here can be found at
+ *
+ * BRESLOW, Norman E. Analysis of survival data under the proportional hazards model.
+ * International Statistical Review/Revue Internationale de Statistique, 1975, p. 45-57
+ *
  */
 
 

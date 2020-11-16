@@ -10,7 +10,15 @@ import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct,
 
 
 /**
- * Efron can be optimized !
+ * Efron's can be optimized !
+ *
+ *
+ * A description of the function implemented here can be found at
+ *
+ *
+ * EFRON Bradley. The Efficiency of Cox's Likelihood Function for Censored Data.
+ * Journal of the AmericanStatistical Association, 1977, 72:359, p. 557-565
+ *
  */
 
 // validate checks whether the the timepoints have the same dimension and returns this dimension, -1 otherwise

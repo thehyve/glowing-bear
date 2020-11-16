@@ -150,6 +150,16 @@ export class GbSurvivalResultsComponent implements OnInit {
   }
 
   setGroupComparisons() {
+
+    /**
+     *
+     * Descriptions of wald test and loglikelihood tests used further in this function can be found at
+     *
+     * BUSE, A. The Likelihood Ratio, Wald, and Lagrange Multiplier Tests: An Expository Note.
+     * The American Statistician, 1982, 36(3 Part 1), 153-157
+     *
+     */
+
     this._groupLogrankTable = new Array<Array<string>>()
     this._groupCoxRegTable = new Array<Array<string>>()
     this._groupCoxWaldTable = new Array<Array<string>>()
@@ -177,11 +187,15 @@ export class GbSurvivalResultsComponent implements OnInit {
         let beta = cox.finalBeta[0]
         let variance = cox.finalCovarianceMatrixEstimate[0][0]
         let coxReg = coxToString(beta, variance)
+
+        // wald
         let waldStat = Math.pow(beta, 2) / (variance + 1e-14)
         let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
+
+        // loglikelihood
         let likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
         let coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-        console.log('loglikelihoodRatio', likelihoodRatio, 'logtest pvalue', coxLogtest)
+
         coxRegRow.push(coxReg)
         waldCoxRow.push(waldTest)
         coxLogtestRow.push(coxLogtest)
@@ -216,7 +230,7 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     }
     this._groupTables.push(
-      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'KM p-value', table: this._groupLogrankTable } },
+      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'Logrank p-value', table: this._groupLogrankTable } },
       { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this._groupCoxRegTable } },
       { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this._groupCoxWaldTable } },
       { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this._groupCoxLogtestTable } })
@@ -260,7 +274,6 @@ export class GbSurvivalResultsComponent implements OnInit {
       if (!alphasReverseMap.has(this.selectedAlpha)) {
         ErrorHelper.handleNewError('Unexpected error, the phi inverse function value has no alpha corresponding value. (phi refers to normal CDF)')
       }
-      console.warn('debug, select aplha reverse map', alphasReverseMap)
       pdfDoc.addOneLineText('Curves confidence intervals')
       pdfDoc.addTableFromObjects(
         [['Transformation', 'Size (1 - alpha)']],

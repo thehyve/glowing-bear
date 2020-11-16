@@ -12,6 +12,12 @@ import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
 
 /**
  * This implement the Mantel - Haenszel test (logrank test)
+ *
+ * A description of the function implemented here can be found at
+ *
+ * PETO, Richard et PETO, Julian. Asymptotically efficient rank invariant test procedures.
+ * Journal of the Royal Statistical Society: Series A (General), 1972, vol. 135, no 2, p. 185-198.
+ *
  */
 
 
@@ -90,6 +96,7 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
 
     diffsGroup += event1 - risk1 * estimate
 
+    // under null hypothesis, variance follows the hypergeometric law
     varianceGroup += (risks === risk1 || risks <= 1) ? 0 : risk1 * estimate * (risks - nofEvents) * (risks - risk1) / (risks * (risks - 1))
 
   })
@@ -137,54 +144,3 @@ function computeTotalRisks(groups: Array<Array<SurvivalPoint>>): Map<number, num
 
 
 }
-
-// answer should be  for xi2 should be2.88
-export const logranktest: Array<Array<SurvivalPoint>> = [
-  [
-    {
-      timePoint: 1,
-      prob: 0,
-      cumul: 0,
-      cumulCensorings: 0,
-      cumulEvents: 0,
-      remaining: 1,
-      atRisk: 2, // at risk at instant t, it is equivalent to remaining +censorings +events
-      nofEvents: 1,
-      nofCensorings: 0,
-    }, {
-      timePoint: 2,
-      prob: 0,
-      cumul: 0,
-      cumulCensorings: 0,
-      cumulEvents: 0,
-      remaining: 0,
-      atRisk: 1, // at risk at instant t, it is equivalent to remaining +censorings +events
-      nofEvents: 1,
-      nofCensorings: 0,
-    }
-
-  ], [{
-    timePoint: 3,
-    prob: 0,
-    cumul: 0,
-    cumulCensorings: 0,
-    cumulEvents: 0,
-    remaining: 1,
-    atRisk: 2, // at risk at instant t, it is equivalent to remaining +censorings +events
-    nofEvents: 1,
-    nofCensorings: 0,
-  }, {
-    timePoint: 4,
-    prob: 0,
-    cumul: 0,
-    cumulCensorings: 0,
-    cumulEvents: 0,
-    remaining: 0,
-    atRisk: 1, // at risk at instant t, it is equivalent to remaining +censorings +events
-    nofEvents: 1,
-    nofCensorings: 0,
-  }
-
-  ]
-
-]
