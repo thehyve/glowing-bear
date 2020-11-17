@@ -25,8 +25,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {CalendarModule} from 'primeng/calendar';
 import {PanelModule} from 'primeng/panel';
 import {MultiSelectModule} from 'primeng/multiselect';
-import { GbQueryBreakdownComponent } from './gb-query-breakdown-component/gb-query-breakdown.component';
-import { GbSelectionModule } from './gb-selection-component/gb-selection.module';
+import {GbSelectionModule} from './gb-selection-component/gb-selection.module';
 
 @NgModule({
   imports: [
@@ -47,8 +46,7 @@ import { GbSelectionModule } from './gb-selection-component/gb-selection.module'
 
   ],
   declarations: [
-    GbExploreComponent,
-    GbQueryBreakdownComponent
+    GbExploreComponent
   ],
   entryComponents: [
     GbConstraintComponent,

@@ -89,7 +89,6 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   constructor(private elmRef: ElementRef, private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
-      console.log('survService', this.survivalResultsService)
       let resAndSettings = this.survivalResultsService.selectedSurvivalResult
       this.results = resAndSettings.survivalAnalysisClear
       this.inputParameters = resAndSettings.settings
@@ -137,7 +136,6 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     this._drawing._rectHeight = 6
     this._drawing.rectWidth = 1
-    console.log('res', this._results)
 
     this._drawing.buildLines()
     this._drawing.drawCurves()
