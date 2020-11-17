@@ -98,42 +98,11 @@ export class TreeNode implements PrimeNgTreeNode {
    */
   attachChildTree(treeNodes: TreeNode[]) {
 
-    // generate tree structure inside the array
-    for (let i = 0 ; i < treeNodes.length ; i++) {
+    for (let i = 0; i < treeNodes.length; i++) {
       if (treeNodes[i] === undefined) {
         continue;
       }
-
-      for (let j = i + 1 ; j < treeNodes.length ; j++) {
-        if (treeNodes[i] === undefined) {
-          break;
-        }
-        if (treeNodes[j] === undefined) {
-          continue;
-        }
-
-        if (treeNodes[i].isParentOf(treeNodes[j])) {
-          treeNodes[i].children.push(treeNodes[j]);
-          treeNodes[j] = undefined;
-
-        } else if (treeNodes[j].isParentOf(treeNodes[i])) {
-          treeNodes[j].children.push(treeNodes[i]);
-          treeNodes[i] = undefined;
-        }
-      }
-    }
-
-    // attach it to the parent
-    for (let treeNode of treeNodes) {
-      if (treeNode !== undefined) {
-        if (this.isParentOf(treeNode)) {
-          this.children.push(treeNode);
-        } else if (this.path === treeNode.path) {
-          this.children = treeNode.children;
-        } else {
-          console.warn(`Isolated tree node, possible error, this: ${this.path}, treeNode: ${treeNode.path}`);
-        }
-      }
+      this.children.push(treeNodes[i])
     }
 
     this.childrenAttached = true;

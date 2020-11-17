@@ -48,7 +48,7 @@ export class TreeNodeService {
 
       // retrieve root tree nodes and extract the concepts
       this._isLoading = true;
-      this.exploreSearchService.exploreSearch('/').subscribe(
+      this.exploreSearchService.exploreSearchConcept('/').subscribe(
         (treeNodes: TreeNode[]) => {
 
           // reset concepts and concept constraints
@@ -64,7 +64,7 @@ export class TreeNodeService {
           ErrorHelper.handleError('Error during initial tree loading', err);
           this._isLoading = false;
           reject(err);
-      });
+        });
     });
   }
 
@@ -80,7 +80,7 @@ export class TreeNodeService {
     }
 
     this._isLoading = true;
-    this.exploreSearchService.exploreSearch(parentNode.path).subscribe(
+    this.exploreSearchService.exploreSearchConcept(parentNode.path).subscribe(
       (treeNodes: TreeNode[]) => {
         parentNode.attachChildTree(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
@@ -130,47 +130,60 @@ export class TreeNodeService {
       node.label = node.label + ` ⓘ`;
     }
 
+
+    node.icon = '';
+    node.expandedIcon = 'fa fa-folder-open';
+    node.collapsedIcon = 'fa fa-folder';
+
     // extract concept
-    if (node.nodeType === TreeNodeType.CONCEPT) {
-      let concept = this.getConceptFromTreeNode(node);
-      if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
-        constraintService.concepts.push(concept);
-        constraintService.conceptLabels.push(concept.label);
-        let constraint = new ConceptConstraint();
-        constraint.concept = concept;
-        constraintService.conceptConstraints.push(constraint);
-        constraintService.allConstraints.push(constraint);
-      }
-    } else if (node.nodeType === TreeNodeType.GENOMIC_ANNOTATION) {
-      if (constraintService.genomicAnnotations.filter(
-        (annotation: GenomicAnnotation) => annotation.name === node.name).length === 0) {
-        constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
-      }
-    }
-
-    if (node.leaf) {
-      switch (node.conceptType) {
-        case ConceptType.NUMERICAL:
-          node.icon = 'icon-123';
-          break;
-        case ConceptType.CATEGORICAL:
-          node.icon = 'icon-abc';
-          break;
-        case ConceptType.DATE:
-          node.icon = 'fa fa-calendar';
-          break;
-        case ConceptType.TEXT:
-          node.icon = 'fa fa-newspaper-o';
-          break;
-        case ConceptType.SIMPLE:
-        default:
-          node.icon = 'fa fa-folder-o';
-      }
-
-    } else {
-      node.icon = '';
-      node.expandedIcon = 'fa fa-folder-open';
-      node.collapsedIcon = 'fa fa-folder';
+    switch (node.nodeType) {
+      case TreeNodeType.CONCEPT:
+        let concept = this.getConceptFromTreeNode(node);
+        if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
+          constraintService.concepts.push(concept);
+          constraintService.conceptLabels.push(concept.label);
+          let constraint = new ConceptConstraint();
+          constraint.concept = concept;
+          constraintService.conceptConstraints.push(constraint);
+          constraintService.allConstraints.push(constraint);
+        }
+        switch (node.conceptType) {
+          case ConceptType.NUMERICAL:
+            node.icon = 'icon-123';
+            break;
+          case ConceptType.CATEGORICAL:
+            node.icon = 'icon-abc';
+            break;
+          case ConceptType.DATE:
+            node.icon = 'fa fa-calendar';
+            break;
+          case ConceptType.TEXT:
+            node.icon = 'fa fa-newspaper-o';
+            break;
+          case ConceptType.SIMPLE:
+          default:
+            node.icon = '';
+            node.expandedIcon = 'fa fa-folder-open-o';
+            node.collapsedIcon = 'fa fa-folder-o';
+        }
+        break;
+      case TreeNodeType.GENOMIC_ANNOTATION:
+        if (constraintService.genomicAnnotations.filter(
+          (annotation: GenomicAnnotation) => annotation.name === node.name).length === 0) {
+          constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
+        }
+        break;
+      case TreeNodeType.MODIFIER:
+        node.icon = 'fa fa-dot-circle-o';
+        break;
+      case TreeNodeType.MODIFIER_FOLDER:
+        node.icon = '';
+        node.expandedIcon = 'fa fa-eye';
+        node.collapsedIcon = 'fa fa-eye-slash';
+        break;
+      case TreeNodeType.UNKNOWN:
+      default:
+        break;
     }
   }
 
@@ -198,8 +211,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithDepth(treeNode: TreeNode,
-                                         depth: number,
-                                         descendants: TreeNode[]) {
+    depth: number,
+    descendants: TreeNode[]) {
     if (treeNode) {
       if (depth === 2 && treeNode.hasChildren()) {
         for (let child of treeNode.children) {
@@ -222,8 +235,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithExcludedTypes(treeNode: TreeNode,
-                                                 excludedTypes: TreeNodeType[],
-                                                 descendants: TreeNode[]) {
+    excludedTypes: TreeNodeType[],
+    descendants: TreeNode[]) {
     if (treeNode) {
       // If the tree node has children
       if (treeNode.children) {
