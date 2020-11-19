@@ -1,22 +1,23 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019 EPFL LDS (LCA1) EPFL
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Injectable, Injector } from '@angular/core';
-import { AppConfig } from '../../../config/app.config';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators'
-import { TreeNode } from '../../../models/tree-models/tree-node';
-import { TreeNodeType } from '../../../models/tree-models/tree-node-type';
-import { ConceptType } from '../../../models/constraint-models/concept-type';
-import { MedcoNetworkService } from '../medco-network.service';
-import { ApiEndpointService } from '../../api-endpoint.service';
+import {Injectable, Injector} from '@angular/core';
+import {AppConfig} from '../../../config/app.config';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators'
+import {TreeNode} from '../../../models/tree-models/tree-node';
+import {TreeNodeType} from '../../../models/tree-models/tree-node-type';
+import {ConceptType} from '../../../models/constraint-models/concept-type';
+import {MedcoNetworkService} from '../medco-network.service';
+import {ApiEndpointService} from '../../api-endpoint.service';
 
 @Injectable()
 export class ExploreSearchService {
@@ -52,6 +53,7 @@ export class ExploreSearchService {
 
           let treeNode = new TreeNode();
           treeNode.path = treeNodeObj['path'];
+          treeNode.appliedPath = treeNodeObj['appliedPath'];
           treeNode.name = treeNodeObj['name'];
           treeNode.displayName = treeNodeObj['displayName'];
           treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
@@ -115,6 +117,9 @@ export class ExploreSearchService {
           treeNode.depth = treeNode.path.split('/').length - 2;
           treeNode.children = [];
           treeNode.childrenAttached = false;
+          // if the child is a modifier, its applied concept is the root concept it comes from
+          // else this field is undefined
+          treeNode.appliedConceptPath = (treeNode.isModifier()) ? root : undefined
 
           return treeNode;
         })
@@ -132,6 +137,7 @@ export class ExploreSearchService {
         return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
           let treeNode = new TreeNode()
           treeNode.path = treeNodeObj['path']
+          treeNode.appliedPath = treeNodeObj['appliedPath'];
           treeNode.name = treeNodeObj['name']
           treeNode.displayName = treeNodeObj['displayName']
           treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`
@@ -139,6 +145,7 @@ export class ExploreSearchService {
           treeNode.metadata = treeNodeObj['metadata']
           treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
+          treeNode.appliedConceptPath = appliedConcept
 
           switch ((treeNodeObj['type'] as string).toLowerCase()) {
             case 'modifier':
@@ -162,6 +169,10 @@ export class ExploreSearchService {
               break;
 
           }
+
+          treeNode.depth = treeNode.path.split('/').length - 2;
+          treeNode.children = [];
+          treeNode.childrenAttached = false;
           return treeNode
         }
         )

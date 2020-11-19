@@ -1,6 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019  LDS EPFL
+ * Copyright 2020  CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,6 +19,7 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class TreeNodeService {
@@ -80,7 +82,11 @@ export class TreeNodeService {
     }
 
     this._isLoading = true;
-    this.exploreSearchService.exploreSearchConcept(parentNode.path).subscribe(
+    let resultObservable: Observable<TreeNode[]> = parentNode.isModifier() ?
+      this.exploreSearchService.exploreSearchModifier(parentNode.path, parentNode.appliedPath, parentNode.appliedConceptPath) :
+      this.exploreSearchService.exploreSearchConcept(parentNode.path)
+
+    resultObservable.subscribe(
       (treeNodes: TreeNode[]) => {
         parentNode.attachChildTree(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
@@ -91,6 +97,7 @@ export class TreeNodeService {
         this._isLoading = false;
       }
     );
+
   }
 
   /**

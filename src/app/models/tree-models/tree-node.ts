@@ -12,6 +12,10 @@ export class TreeNode implements PrimeNgTreeNode {
   displayName: string;
   description: string;
 
+  // idiosyncratic to I2B2
+  appliedPath: string;
+  appliedConceptPath: string;
+
   // type of node (concept, study, ...)
   nodeType: TreeNodeType;
   // type of concept if node is a concept
@@ -45,6 +49,7 @@ export class TreeNode implements PrimeNgTreeNode {
   clone(): TreeNode {
     let copy: TreeNode = new TreeNode();
     copy.path = this.path;
+    copy.appliedPath = this.appliedPath;
     copy.name = this.name;
     copy.displayName = this.displayName;
     copy.description = this.description;
@@ -88,6 +93,18 @@ export class TreeNode implements PrimeNgTreeNode {
   isParentOf(node: TreeNode): boolean {
     return node.path.startsWith(this.path) &&
       node.path.length > this.path.length;
+  }
+
+
+  /**
+   * Returns true if 'this' is a parent if it is a modifier, modifier container or modifier folder.
+   *
+   * @returns {boolean}
+   */
+  isModifier() {
+    return ((this.nodeType === TreeNodeType.MODIFIER)
+      || (this.nodeType === TreeNodeType.MODIFIER_CONTAINER)
+      || (this.nodeType === TreeNodeType.MODIFIER_FOLDER))
   }
 
   /**
