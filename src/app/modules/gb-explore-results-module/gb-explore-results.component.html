@@ -25,14 +25,28 @@
   <hr />
 
   <div *ngIf="queryService.query.hasPatientLists">
-    <p><b>Patient List</b></p>
-    <p *ngFor="let patientList of patientLists | async; index as idx">
-      <span>{{nodesName[idx]}}:</span>
-      <i>
-        <span *ngFor="let patient of patientList">
-          {{patient}}
-        </span>
-      </i>
-    </p>
+    <p-table [value]="patientLists | async">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Patient List</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-count let-idx="rowIndex">
+        <tr>
+          <td><span>{{nodesName[idx]}}: </span>
+            <i>
+              <span>{{count}}</span>
+            </i>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p></p>
+    &nbsp;  <button type="button"
+            (click)="savePatientListToCSVFile()"
+            class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn">
+      <span>Download</span>
+    </button>
   </div>
 </div>
