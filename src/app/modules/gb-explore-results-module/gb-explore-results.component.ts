@@ -15,7 +15,6 @@ import {Observable} from 'rxjs';
 import {query} from '@angular/animations';
 import {map} from 'rxjs/operators';
 import {FormatHelper} from '../../utilities/format-helper';
-import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
 
 @Component({
   selector: 'gb-medco-results',
@@ -96,9 +95,5 @@ export class GbExploreResultsComponent implements OnInit {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? queryResults.patientLists : []
     ));
-  }
-
-  savePatientListToCSVFile() {
-    console.log(`I'm the boss.`);
   }
 }
