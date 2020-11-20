@@ -12,8 +12,14 @@
                     size="60"
                     dropdown="true"
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
+    
+  </div>
+
+  <div *ngIf="selectedConcept.modifier !== undefined">
+    <br>
     <label *ngIf="selectedConcept.modifier !== undefined">
-      Modifier: {{selectedConcept.modifier.path}} </label>
+      Modifier: {{selectedConcept.modifier.path}}
+    </label>
   </div>
 
   <!-- if the concept is NUMERIC -->
