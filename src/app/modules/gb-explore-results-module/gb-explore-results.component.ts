@@ -8,14 +8,10 @@
 
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Chart} from 'chart.js';
-import {ExploreQueryType} from '../../models/query-models/explore-query-type';
 import {QueryService} from '../../services/query.service';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
 import {Observable} from 'rxjs';
-import {query} from '@angular/animations';
 import {map} from 'rxjs/operators';
-import {FormatHelper} from '../../utilities/format-helper';
-import {CombinationConstraint} from "../../models/constraint-models/combination-constraint";
 
 @Component({
   selector: 'gb-medco-results',
