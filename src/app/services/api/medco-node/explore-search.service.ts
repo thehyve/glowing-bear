@@ -117,9 +117,6 @@ export class ExploreSearchService {
           treeNode.depth = treeNode.path.split('/').length - 2;
           treeNode.children = [];
           treeNode.childrenAttached = false;
-          // if the child is a modifier, its applied concept is the root concept it comes from
-          // else this field is undefined
-          treeNode.appliedConceptPath = (treeNode.isModifier()) ? root : undefined
 
           return treeNode;
         })
@@ -145,7 +142,6 @@ export class ExploreSearchService {
           treeNode.metadata = treeNodeObj['metadata']
           treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
-          treeNode.appliedConceptPath = appliedConcept
 
           switch ((treeNodeObj['type'] as string).toLowerCase()) {
             case 'modifier':

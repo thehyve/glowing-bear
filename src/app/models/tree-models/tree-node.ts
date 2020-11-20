@@ -1,8 +1,8 @@
-import {TreeNode as PrimeNgTreeNode} from 'primeng/api';
-import {DropMode} from '../drop-mode';
-import {ConceptType} from '../constraint-models/concept-type';
-import {TreeNodeType} from './tree-node-type';
-import {MedcoEncryptionDescriptor} from './medco-encryption-descriptor';
+import { TreeNode as PrimeNgTreeNode } from 'primeng/api';
+import { DropMode } from '../drop-mode';
+import { ConceptType } from '../constraint-models/concept-type';
+import { TreeNodeType } from './tree-node-type';
+import { MedcoEncryptionDescriptor } from './medco-encryption-descriptor';
 
 export class TreeNode implements PrimeNgTreeNode {
 
@@ -14,7 +14,7 @@ export class TreeNode implements PrimeNgTreeNode {
 
   // idiosyncratic to I2B2
   appliedPath: string;
-  appliedConceptPath: string;
+  appliedConcept: TreeNode;
 
   // type of node (concept, study, ...)
   nodeType: TreeNodeType;
@@ -123,5 +123,25 @@ export class TreeNode implements PrimeNgTreeNode {
     }
 
     this.childrenAttached = true;
+  }
+
+
+  /**
+   * Set the applied concept to modifiers in the children, if any.
+   *
+   * @param {TreeNode[]} treeNodes
+   *
+   */
+  attachModifierData(treeNodes: TreeNode[]) {
+    for (let i = 0; i < treeNodes.length; i++) {
+      if (treeNodes[i] === undefined || !(treeNodes[i].isModifier())) {
+        continue;
+      }
+      if (this.isModifier()) {
+        treeNodes[i].appliedConcept = this.appliedConcept
+      } else {
+        treeNodes[i].appliedConcept = this
+      }
+    }
   }
 }

@@ -19,7 +19,8 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
-import { Observable } from 'rxjs';
+import {Observable} from 'rxjs';
+import {Modifier} from 'app/models/constraint-models/modifier';
 
 @Injectable()
 export class TreeNodeService {
@@ -83,12 +84,13 @@ export class TreeNodeService {
 
     this._isLoading = true;
     let resultObservable: Observable<TreeNode[]> = parentNode.isModifier() ?
-      this.exploreSearchService.exploreSearchModifier(parentNode.path, parentNode.appliedPath, parentNode.appliedConceptPath) :
+      this.exploreSearchService.exploreSearchModifier(parentNode.path, parentNode.appliedPath, parentNode.appliedConcept.path) :
       this.exploreSearchService.exploreSearchConcept(parentNode.path)
 
     resultObservable.subscribe(
       (treeNodes: TreeNode[]) => {
         parentNode.attachChildTree(treeNodes);
+        parentNode.attachModifierData(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
       },
@@ -209,6 +211,25 @@ export class TreeNodeService {
     concept.name = treeNode.name;
     concept.encryptionDescriptor = treeNode.encryptionDescriptor;
     return concept;
+  }
+
+  /**
+   * Parse a tree node and create the corresponding concept with a modifier.
+   * In left panel selection tree, a modifier is a child of a concept.
+   * In the selection panel for explore/analysis function, the tree is processed back
+   * until the concept. The concept has the the modifier in its fields.
+   * @param {TreeNode} treeNode
+   * @returns {Concept}
+   */
+  public getConceptFromModifierTreeNode(treeNode: TreeNode): Concept {
+    if (treeNode.nodeType !== TreeNodeType.MODIFIER) {
+      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed' +
+        'to getConceptModifierTreeNode')
+    }
+    let concept = this.getConceptFromTreeNode(treeNode.appliedConcept)
+    let modifier = new Modifier(treeNode.path, treeNode.appliedPath)
+    concept.modifier = modifier
+    return concept
   }
 
   /**
