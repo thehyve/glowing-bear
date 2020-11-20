@@ -98,7 +98,29 @@ export class GbExploreResultsComponent implements OnInit {
     ));
   }
 
+  private numberMatrixToCSV(data: number[][]) {
+    let replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
+    const csv = data.map((row) =>
+      row
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(',')
+    );
+    return csv.join('\r\n');
+  }
+
   savePatientListToCSVFile() {
-    console.log(`I'm the boss.`);
+    this.patientLists.pipe(map((patientLists) => this.numberMatrixToCSV(patientLists)))
+      .subscribe((csvArray) => {
+          let exportFileEL = document.createElement('a');
+          let blob = new Blob([csvArray], {type: 'text/csv'});
+          let url = window.URL.createObjectURL(blob);
+
+          exportFileEL.href = url;
+          exportFileEL.download = 'patientList.csv';
+          exportFileEL.click();
+          window.URL.revokeObjectURL(url);
+          exportFileEL.remove();
+        }
+      )
   }
 }
