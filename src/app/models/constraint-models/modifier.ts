@@ -6,6 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 export class Modifier {
-  constructor(public readonly path: string, public readonly appliedPath: string) {
+  constructor(public readonly path: string, public readonly appliedPath: string, public readonly appliedConceptPath: string) {
   }
 }

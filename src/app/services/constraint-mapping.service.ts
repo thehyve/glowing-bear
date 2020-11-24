@@ -118,6 +118,7 @@ export class ConstraintMappingService {
           item.queryTerm = constraint.concept.path;
           if (constraint.concept.modifier !== undefined) {
             item.modifier = new ApiI2B2Modifier()
+            item.queryTerm = constraint.concept.modifier.appliedConceptPath;
             item.modifier.modifierKey = constraint.concept.modifier.path
             item.modifier.appliedPath = constraint.concept.modifier.appliedPath
           }

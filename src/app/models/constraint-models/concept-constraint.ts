@@ -41,7 +41,7 @@ export class ConceptConstraint extends Constraint {
 
   set concept(concept: Concept) {
     this._concept = concept;
-    this.textRepresentation = concept ? `Concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
+    this.textRepresentation = concept ? `Ontology oncept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
   }
 
   get valueConstraints(): ValueConstraint[] {

@@ -171,9 +171,7 @@ export class TreeNodeService {
             break;
           case ConceptType.SIMPLE:
           default:
-            node.icon = '';
-            node.expandedIcon = 'fa fa-folder-open-o';
-            node.collapsedIcon = 'fa fa-folder-o';
+            node.icon = 'fa fa-file';
         }
         break;
       case TreeNodeType.GENOMIC_ANNOTATION:
@@ -183,12 +181,18 @@ export class TreeNodeService {
         }
         break;
       case TreeNodeType.MODIFIER:
-        node.icon = 'fa fa-dot-circle-o';
+        let sourceConcept = this.getConceptFromModifierTreeNode(node);
+        constraintService.concepts.push(sourceConcept);
+        let constraintFromModifier = new ConceptConstraint();
+        constraintFromModifier.concept = sourceConcept;
+        constraintService.conceptConstraints.push(constraintFromModifier);
+        constraintService.allConstraints.push(constraintFromModifier);
+        node.icon = 'fa fa-file-o';
         break;
       case TreeNodeType.MODIFIER_FOLDER:
         node.icon = '';
-        node.expandedIcon = 'fa fa-eye';
-        node.collapsedIcon = 'fa fa-eye-slash';
+        node.expandedIcon = 'fa fa-folder-open-o';
+        node.collapsedIcon = 'fa fa-folder-o';
         break;
       case TreeNodeType.UNKNOWN:
       default:
@@ -213,6 +217,8 @@ export class TreeNodeService {
     return concept;
   }
 
+
+
   /**
    * Parse a tree node and create the corresponding concept with a modifier.
    * In left panel selection tree, a modifier is a child of a concept.
@@ -226,8 +232,17 @@ export class TreeNodeService {
       throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed' +
         'to getConceptModifierTreeNode')
     }
+    // this is not the same object of the node if it happens to be here, so it is safe
+    // to modify its fields
     let concept = this.getConceptFromTreeNode(treeNode.appliedConcept)
-    let modifier = new Modifier(treeNode.path, treeNode.appliedPath)
+
+    let modifier = new Modifier(treeNode.path, treeNode.appliedPath, treeNode.appliedConcept.path)
+    let modifierPath = (modifier.path.length > 0 && modifier.path.startsWith('/')) ? modifier.path.substring(1) : modifier.path
+
+    // override the fields
+
+    concept.path = `${concept.path}${modifierPath}`
+    concept.label = `${treeNode.displayName} (${concept.path})`
     concept.modifier = modifier
     return concept
   }
