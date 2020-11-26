@@ -1,6 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019  LDS EPFL
+ * Copyright 2020  CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,6 +19,8 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
+import {Observable} from 'rxjs';
+import {Modifier} from 'app/models/constraint-models/modifier';
 
 @Injectable()
 export class TreeNodeService {
@@ -48,7 +51,7 @@ export class TreeNodeService {
 
       // retrieve root tree nodes and extract the concepts
       this._isLoading = true;
-      this.exploreSearchService.exploreSearch('/').subscribe(
+      this.exploreSearchService.exploreSearchConcept('/').subscribe(
         (treeNodes: TreeNode[]) => {
 
           // reset concepts and concept constraints
@@ -64,7 +67,7 @@ export class TreeNodeService {
           ErrorHelper.handleError('Error during initial tree loading', err);
           this._isLoading = false;
           reject(err);
-      });
+        });
     });
   }
 
@@ -80,9 +83,14 @@ export class TreeNodeService {
     }
 
     this._isLoading = true;
-    this.exploreSearchService.exploreSearch(parentNode.path).subscribe(
+    let resultObservable: Observable<TreeNode[]> = parentNode.isModifier() ?
+      this.exploreSearchService.exploreSearchModifier(parentNode.path, parentNode.appliedPath, parentNode.appliedConcept.path) :
+      this.exploreSearchService.exploreSearchConcept(parentNode.path)
+
+    resultObservable.subscribe(
       (treeNodes: TreeNode[]) => {
         parentNode.attachChildTree(treeNodes);
+        parentNode.attachModifierData(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
       },
@@ -91,6 +99,7 @@ export class TreeNodeService {
         this._isLoading = false;
       }
     );
+
   }
 
   /**
@@ -130,47 +139,64 @@ export class TreeNodeService {
       node.label = node.label + ` ⓘ`;
     }
 
+
+    node.icon = '';
+    node.expandedIcon = 'fa fa-folder-open';
+    node.collapsedIcon = 'fa fa-folder';
+
     // extract concept
-    if (node.nodeType === TreeNodeType.CONCEPT) {
-      let concept = this.getConceptFromTreeNode(node);
-      if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
-        constraintService.concepts.push(concept);
-        constraintService.conceptLabels.push(concept.label);
-        let constraint = new ConceptConstraint();
-        constraint.concept = concept;
-        constraintService.conceptConstraints.push(constraint);
-        constraintService.allConstraints.push(constraint);
-      }
-    } else if (node.nodeType === TreeNodeType.GENOMIC_ANNOTATION) {
-      if (constraintService.genomicAnnotations.filter(
-        (annotation: GenomicAnnotation) => annotation.name === node.name).length === 0) {
-        constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
-      }
-    }
-
-    if (node.leaf) {
-      switch (node.conceptType) {
-        case ConceptType.NUMERICAL:
-          node.icon = 'icon-123';
-          break;
-        case ConceptType.CATEGORICAL:
-          node.icon = 'icon-abc';
-          break;
-        case ConceptType.DATE:
-          node.icon = 'fa fa-calendar';
-          break;
-        case ConceptType.TEXT:
-          node.icon = 'fa fa-newspaper-o';
-          break;
-        case ConceptType.SIMPLE:
-        default:
-          node.icon = 'fa fa-folder-o';
-      }
-
-    } else {
-      node.icon = '';
-      node.expandedIcon = 'fa fa-folder-open';
-      node.collapsedIcon = 'fa fa-folder';
+    switch (node.nodeType) {
+      case TreeNodeType.CONCEPT:
+        let concept = this.getConceptFromTreeNode(node);
+        if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
+          constraintService.concepts.push(concept);
+          constraintService.conceptLabels.push(concept.label);
+          let constraint = new ConceptConstraint();
+          constraint.concept = concept;
+          constraintService.conceptConstraints.push(constraint);
+          constraintService.allConstraints.push(constraint);
+        }
+        switch (node.conceptType) {
+          case ConceptType.NUMERICAL:
+            node.icon = 'icon-123';
+            break;
+          case ConceptType.CATEGORICAL:
+            node.icon = 'icon-abc';
+            break;
+          case ConceptType.DATE:
+            node.icon = 'fa fa-calendar';
+            break;
+          case ConceptType.TEXT:
+            node.icon = 'fa fa-newspaper-o';
+            break;
+          case ConceptType.SIMPLE:
+          default:
+            node.icon = 'fa fa-file';
+        }
+        break;
+      case TreeNodeType.GENOMIC_ANNOTATION:
+        if (constraintService.genomicAnnotations.filter(
+          (annotation: GenomicAnnotation) => annotation.name === node.name).length === 0) {
+          constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
+        }
+        break;
+      case TreeNodeType.MODIFIER:
+        let sourceConcept = this.getConceptFromModifierTreeNode(node);
+        constraintService.concepts.push(sourceConcept);
+        let constraintFromModifier = new ConceptConstraint();
+        constraintFromModifier.concept = sourceConcept;
+        constraintService.conceptConstraints.push(constraintFromModifier);
+        constraintService.allConstraints.push(constraintFromModifier);
+        node.icon = 'fa fa-file-o';
+        break;
+      case TreeNodeType.MODIFIER_FOLDER:
+        node.icon = '';
+        node.expandedIcon = 'fa fa-folder-open-o';
+        node.collapsedIcon = 'fa fa-folder-o';
+        break;
+      case TreeNodeType.UNKNOWN:
+      default:
+        break;
     }
   }
 
@@ -191,6 +217,36 @@ export class TreeNodeService {
     return concept;
   }
 
+
+
+  /**
+   * Parse a tree node and create the corresponding concept with a modifier.
+   * In left panel selection tree, a modifier is a child of a concept.
+   * In the selection panel for explore/analysis function, the tree is processed back
+   * until the concept. The concept has the the modifier in its fields.
+   * @param {TreeNode} treeNode
+   * @returns {Concept}
+   */
+  public getConceptFromModifierTreeNode(treeNode: TreeNode): Concept {
+    if (treeNode.nodeType !== TreeNodeType.MODIFIER) {
+      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed' +
+        'to getConceptModifierTreeNode')
+    }
+    // this is not the same object of the node if it happens to be here, so it is safe
+    // to modify its fields
+    let concept = this.getConceptFromTreeNode(treeNode.appliedConcept)
+
+    let modifier = new Modifier(treeNode.path, treeNode.appliedPath, treeNode.appliedConcept.path)
+    let modifierPath = (modifier.path.length > 0 && modifier.path.startsWith('/')) ? modifier.path.substring(1) : modifier.path
+
+    // override the fields
+
+    concept.path = `${concept.path}${modifierPath}`
+    concept.label = `${treeNode.displayName} (${concept.path})`
+    concept.modifier = modifier
+    return concept
+  }
+
   /**
    * Get the descendants of a tree node up to a predefined depth
    * @param {TreeNode} treeNode
@@ -198,8 +254,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithDepth(treeNode: TreeNode,
-                                         depth: number,
-                                         descendants: TreeNode[]) {
+    depth: number,
+    descendants: TreeNode[]) {
     if (treeNode) {
       if (depth === 2 && treeNode.hasChildren()) {
         for (let child of treeNode.children) {
@@ -222,8 +278,8 @@ export class TreeNodeService {
    * @param {TreeNode[]} descendants
    */
   public getTreeNodeDescendantsWithExcludedTypes(treeNode: TreeNode,
-                                                 excludedTypes: TreeNodeType[],
-                                                 descendants: TreeNode[]) {
+    excludedTypes: TreeNodeType[],
+    descendants: TreeNode[]) {
     if (treeNode) {
       // If the tree node has children
       if (treeNode.children) {

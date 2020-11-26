@@ -1,6 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019 EPFL LDS (LCA1) EPFL
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,34 +31,37 @@ export class ExploreSearchService {
    * @param injector
    */
   constructor(private config: AppConfig,
-              private http: HttpClient,
-              private medcoNetworkService: MedcoNetworkService,
-              private apiEndpointService: ApiEndpointService,
-              private injector: Injector) { }
+    private http: HttpClient,
+    private medcoNetworkService: MedcoNetworkService,
+    private apiEndpointService: ApiEndpointService,
+    private injector: Injector) { }
 
   /**
-   * Perform search in ontology.
+   * Perform search concept in ontology.
    *
    * @param {string} root - the path to the specific tree node, must include the first slash
    *
    * @returns {Observable<Object>}
    */
-  exploreSearch(root: string): Observable<TreeNode[]> {
+  exploreSearchConcept(root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
       'node/explore/search/concept',
-      { type: 'children', path: root }
+      { path: root }
     ).pipe(
       map((searchResp: object) => {
-        return (searchResp['results'] as object[]).map( (treeNodeObj: object) => {
+        return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
 
           let treeNode = new TreeNode();
           treeNode.path = treeNodeObj['path'];
+          treeNode.appliedPath = treeNodeObj['appliedPath'];
           treeNode.name = treeNodeObj['name'];
           treeNode.displayName = treeNodeObj['displayName'];
           treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
           treeNode.conceptCode = treeNodeObj['code'];
           treeNode.metadata = treeNodeObj['metadata'];
-          treeNode.leaf = treeNodeObj['leaf'];
+          // leaf in the database is not a leaf in the tree, as modifiers
+          // are displayed as children
+          treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
 
           switch ((treeNodeObj['type'] as string).toLowerCase()) {
@@ -84,6 +88,23 @@ export class ExploreSearchService {
             case 'genomic_annotation':
               treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
               treeNode.conceptType = undefined;
+              treeNode.leaf = true;
+              break;
+
+            case 'modifier':
+              treeNode.nodeType = TreeNodeType.MODIFIER;
+              treeNode.conceptType = undefined;
+              treeNode.leaf = true;
+              break;
+
+            case 'modifier_folder':
+              treeNode.nodeType = TreeNodeType.MODIFIER_FOLDER;
+              treeNode.conceptType = undefined;
+              break;
+
+            case 'modifier_container':
+              treeNode.nodeType = TreeNodeType.MODIFIER_CONTAINER;
+              treeNode.conceptType = undefined;
               break;
 
             default:
@@ -101,5 +122,56 @@ export class ExploreSearchService {
         })
       })
     );
+  }
+
+
+  exploreSearchModifier(root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
+    return this.apiEndpointService.postCall(
+      'node/explore/search/modifier',
+      { path: root, appliedPath: appliedPath, appliedConcept: appliedConcept }
+    ).pipe(
+      map((searchResp: object) => {
+        return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
+          let treeNode = new TreeNode()
+          treeNode.path = treeNodeObj['path']
+          treeNode.appliedPath = treeNodeObj['appliedPath'];
+          treeNode.name = treeNodeObj['name']
+          treeNode.displayName = treeNodeObj['displayName']
+          treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`
+          treeNode.conceptCode = treeNodeObj['code']
+          treeNode.metadata = treeNodeObj['metadata']
+          treeNode.leaf = false;
+          treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
+
+          switch ((treeNodeObj['type'] as string).toLowerCase()) {
+            case 'modifier':
+              treeNode.nodeType = TreeNodeType.MODIFIER;
+              treeNode.conceptType = undefined;
+              treeNode.leaf = true;
+              break;
+
+            case 'modifier_folder':
+              treeNode.nodeType = TreeNodeType.MODIFIER_FOLDER;
+              treeNode.conceptType = undefined;
+              break;
+
+            case 'modifier_container':
+              treeNode.nodeType = TreeNodeType.MODIFIER_CONTAINER;
+              treeNode.conceptType = undefined;
+              break;
+            default:
+              treeNode.nodeType = TreeNodeType.UNKNOWN;
+              treeNode.conceptType = undefined;
+              break;
+
+          }
+
+          treeNode.depth = treeNode.path.split('/').length - 2;
+          treeNode.children = [];
+          treeNode.childrenAttached = false;
+          return treeNode
+        }
+        )
+      }))
   }
 }

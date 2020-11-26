@@ -161,6 +161,12 @@ export class ConstraintService {
           (<GenomicAnnotationConstraint>constraint).annotation.path = treeNode.path;
           break;
 
+        case TreeNodeType.MODIFIER:
+          let sourceConcept = this.treeNodeService.getConceptFromModifierTreeNode(treeNode);
+          constraint = new ConceptConstraint();
+          (<ConceptConstraint>constraint).concept = sourceConcept;
+          break;
+
         case TreeNodeType.UNKNOWN:
           let descendants = [];
           this.treeNodeService.getTreeNodeDescendantsWithExcludedTypes(
