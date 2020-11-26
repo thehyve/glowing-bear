@@ -31,7 +31,7 @@
     "base64url": "^3.0.1",
     "chart.js": "^2.9.3",
     "core-js": "^3.6.4",
-    "file-saver": "^2.0.2",
+    "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
     "keycloak-angular": "^7.1.0",
     "keycloak-js": "^6.0.1",
