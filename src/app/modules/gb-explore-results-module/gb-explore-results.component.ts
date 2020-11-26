@@ -62,7 +62,7 @@ export class GbExploreResultsComponent implements OnInit {
     });
 
     this.queryService.queryResults.subscribe((queryResults) => {
-      if (queryResults && this.queryService.query.hasPerSiteCounts) {
+      if (queryResults && this.queryService.queryType.hasPerSiteCounts) {
         this.perSiteCountsChart.data.labels = this.nodesName;
         this.perSiteCountsChart.data.datasets[0].data = queryResults.perSiteCounts;
       } else {

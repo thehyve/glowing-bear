@@ -24,7 +24,7 @@
 
   <hr />
 
-  <div *ngIf="queryService.query.hasPatientLists">
+  <div *ngIf="queryService.queryType.hasPatientLists">
     <p-table [value]="patientLists | async">
       <ng-template pTemplate="header">
         <tr>
