@@ -1,8 +1,8 @@
-import {TreeNode as PrimeNgTreeNode} from 'primeng/api';
-import {DropMode} from '../drop-mode';
-import {ConceptType} from '../constraint-models/concept-type';
-import {TreeNodeType} from './tree-node-type';
-import {MedcoEncryptionDescriptor} from './medco-encryption-descriptor';
+import { TreeNode as PrimeNgTreeNode } from 'primeng/api';
+import { DropMode } from '../drop-mode';
+import { ConceptType } from '../constraint-models/concept-type';
+import { TreeNodeType } from './tree-node-type';
+import { MedcoEncryptionDescriptor } from './medco-encryption-descriptor';
 
 export class TreeNode implements PrimeNgTreeNode {
 
@@ -11,6 +11,10 @@ export class TreeNode implements PrimeNgTreeNode {
   name: string;
   displayName: string;
   description: string;
+
+  // idiosyncratic to I2B2
+  appliedPath: string;
+  appliedConcept: TreeNode;
 
   // type of node (concept, study, ...)
   nodeType: TreeNodeType;
@@ -45,6 +49,7 @@ export class TreeNode implements PrimeNgTreeNode {
   clone(): TreeNode {
     let copy: TreeNode = new TreeNode();
     copy.path = this.path;
+    copy.appliedPath = this.appliedPath;
     copy.name = this.name;
     copy.displayName = this.displayName;
     copy.description = this.description;
@@ -90,6 +95,18 @@ export class TreeNode implements PrimeNgTreeNode {
       node.path.length > this.path.length;
   }
 
+
+  /**
+   * Returns true if 'this' is a parent if it is a modifier, modifier container or modifier folder.
+   *
+   * @returns {boolean}
+   */
+  isModifier() {
+    return ((this.nodeType === TreeNodeType.MODIFIER)
+      || (this.nodeType === TreeNodeType.MODIFIER_CONTAINER)
+      || (this.nodeType === TreeNodeType.MODIFIER_FOLDER))
+  }
+
   /**
    * Generate the tree structure based on the path of the children treeNodes and attach it to the current node.
    * Note: this will consume the treeNodes array.
@@ -98,44 +115,33 @@ export class TreeNode implements PrimeNgTreeNode {
    */
   attachChildTree(treeNodes: TreeNode[]) {
 
-    // generate tree structure inside the array
-    for (let i = 0 ; i < treeNodes.length ; i++) {
+    for (let i = 0; i < treeNodes.length; i++) {
       if (treeNodes[i] === undefined) {
         continue;
       }
-
-      for (let j = i + 1 ; j < treeNodes.length ; j++) {
-        if (treeNodes[i] === undefined) {
-          break;
-        }
-        if (treeNodes[j] === undefined) {
-          continue;
-        }
-
-        if (treeNodes[i].isParentOf(treeNodes[j])) {
-          treeNodes[i].children.push(treeNodes[j]);
-          treeNodes[j] = undefined;
-
-        } else if (treeNodes[j].isParentOf(treeNodes[i])) {
-          treeNodes[j].children.push(treeNodes[i]);
-          treeNodes[i] = undefined;
-        }
-      }
-    }
-
-    // attach it to the parent
-    for (let treeNode of treeNodes) {
-      if (treeNode !== undefined) {
-        if (this.isParentOf(treeNode)) {
-          this.children.push(treeNode);
-        } else if (this.path === treeNode.path) {
-          this.children = treeNode.children;
-        } else {
-          console.warn(`Isolated tree node, possible error, this: ${this.path}, treeNode: ${treeNode.path}`);
-        }
-      }
+      this.children.push(treeNodes[i])
     }
 
     this.childrenAttached = true;
+  }
+
+
+  /**
+   * Set the applied concept to modifiers in the children, if any.
+   *
+   * @param {TreeNode[]} treeNodes
+   *
+   */
+  attachModifierData(treeNodes: TreeNode[]) {
+    for (let i = 0; i < treeNodes.length; i++) {
+      if (treeNodes[i] === undefined || !(treeNodes[i].isModifier())) {
+        continue;
+      }
+      if (this.isModifier()) {
+        treeNodes[i].appliedConcept = this.appliedConcept
+      } else {
+        treeNodes[i].appliedConcept = this
+      }
+    }
   }
 }

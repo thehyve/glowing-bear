@@ -9,6 +9,7 @@
 import {Aggregate} from '../aggregate-models/aggregate';
 import {ConceptType} from './concept-type';
 import {MedcoEncryptionDescriptor} from '../tree-models/medco-encryption-descriptor';
+import {Modifier} from './modifier';
 
 export class Concept {
   private _path: string;
@@ -20,6 +21,7 @@ export class Concept {
   private _name: string;
   private _fullName: string;
   private _encryptionDescriptor?: MedcoEncryptionDescriptor;
+  private _modifier?: Modifier;
 
   constructor() {
   }
@@ -86,5 +88,13 @@ export class Concept {
 
   set encryptionDescriptor(value: MedcoEncryptionDescriptor) {
     this._encryptionDescriptor = value;
+  }
+
+  get modifier(): Modifier {
+    return this._modifier;
+  }
+
+  set modifier(mod: Modifier) {
+    this._modifier = mod
   }
 }

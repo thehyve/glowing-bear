@@ -11,6 +11,8 @@ import {CryptoService} from './crypto.service';
 import {ErrorHelper} from '../utilities/error-helper';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import {ApiI2B2Modifier} from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
+
 
 @Injectable()
 export class ConstraintMappingService {
@@ -99,6 +101,9 @@ export class ConstraintMappingService {
   private generateI2b2ItemFromConcept(constraint: ConceptConstraint): ApiI2b2Item {
     let item = new ApiI2b2Item();
 
+
+
+
     switch (constraint.concept.type) {
       // todo: missing types
 
@@ -113,6 +118,13 @@ export class ConstraintMappingService {
           item.encrypted = false;
           item.operator = 'exists';
           item.queryTerm = constraint.concept.path;
+          if (constraint.concept.modifier !== undefined) {
+            item.modifier = new ApiI2B2Modifier()
+            item.queryTerm = constraint.concept.modifier.appliedConceptPath;
+            item.modifier.modifierKey = constraint.concept.modifier.path
+            item.modifier.appliedPath = constraint.concept.modifier.appliedPath
+          }
+
         }
         break;
 

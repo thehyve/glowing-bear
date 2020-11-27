@@ -1,7 +1,6 @@
 <div (drop)="onDrop($event)">
   <div class="form-inline gb-constraint-child-container">
-    
-    <label>Concept: </label>
+    <label>Ontology concept: </label>
     <p-autoComplete #autoComplete
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
