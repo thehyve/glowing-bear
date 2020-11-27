@@ -31,8 +31,6 @@ export class CombinationConstraint extends Constraint {
   }
 
   addChild(constraint: Constraint) {
-    console.warn('this constraint before', this, 'that constraint', constraint)
-
 
     if (!(<CombinationConstraint>constraint).isRoot) {
       // to enforce polymorphism, otherwise child set method is not called
@@ -40,7 +38,6 @@ export class CombinationConstraint extends Constraint {
     }
     this.children.push(constraint);
     if (this.combinationState === CombinationState.Or) {
-      this.sensitiveType = constraint.sensitiveType
     }
     this.updateTextRepresentation()
     return

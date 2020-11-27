@@ -120,7 +120,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   get combinationState() {
-    console.warn('ave maria',(<CombinationConstraint>this.constraint).combinationState)
     return (<CombinationConstraint>this.constraint).combinationState;
   }
 
