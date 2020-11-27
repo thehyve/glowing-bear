@@ -12,6 +12,7 @@ import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
 import {ErrorHelper} from '../../../utilities/error-helper';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 @Injectable()
 export class ExploreQueryService {
@@ -22,11 +23,11 @@ export class ExploreQueryService {
   private static QUERY_TIMEOUT_MS = 1000 * 60 * 10;
 
   constructor(private config: AppConfig,
-              private apiEndpointService: ApiEndpointService,
-              private medcoNetworkService: MedcoNetworkService,
-              private genomicAnnotationsService: GenomicAnnotationsService,
-              private constraintMappingService: ConstraintMappingService,
-              private cryptoService: CryptoService) { }
+    private apiEndpointService: ApiEndpointService,
+    private medcoNetworkService: MedcoNetworkService,
+    private genomicAnnotationsService: GenomicAnnotationsService,
+    private constraintMappingService: ConstraintMappingService,
+    private cryptoService: CryptoService) { }
 
   //  ------------------- api calls ----------------------
 
@@ -40,13 +41,14 @@ export class ExploreQueryService {
    * @param sync
    */
   private exploreQuerySingleNode(queryId: string, queryType: ExploreQueryType, userPublicKey: string, panels: ApiI2b2Panel[],
-                                 nodeUrl: string, sync: boolean = true): Observable<ApiExploreQueryResult> {
+    queryTiming: ApiI2b2Timing, nodeUrl: string, sync: boolean = true): Observable<ApiExploreQueryResult> {
     return this.apiEndpointService.postCall(
       'node/explore/query?sync=' + sync,
       {
         id: queryId,
         query: {
           type: queryType.id,
+          queryTiming: queryTiming,
           userPublicKey: userPublicKey,
           panels: panels
         }
@@ -67,10 +69,10 @@ export class ExploreQueryService {
    * @param panels
    */
   private exploreQueryAllNodes(queryId: string, queryType: ExploreQueryType, userPublicKey: string,
-                               panels: ApiI2b2Panel[]): Observable<ApiExploreQueryResult[]> {
-    return forkJoin(this.medcoNetworkService.nodesUrl.map(
-        (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, url)
-      )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
+    panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): Observable<ApiExploreQueryResult[]> {
+    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
+      (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, queryTiming, url)
+    )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }
 
   /**
@@ -79,10 +81,11 @@ export class ExploreQueryService {
    */
   exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
     return this.exploreQueryAllNodes(
-        query.uniqueId,
-        query.type,
-        this.cryptoService.ephemeralPublicKey,
-        this.constraintMappingService.mapConstraint(query.constraint)
+      query.uniqueId,
+      query.type,
+      this.cryptoService.ephemeralPublicKey,
+      this.constraintMappingService.mapConstraint(query.constraint),
+      query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
     );
   }
 }

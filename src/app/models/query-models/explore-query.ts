@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from '../constraint-models/constraint';
-import {ExploreQueryType} from './explore-query-type';
+import { Constraint } from '../constraint-models/constraint';
+import { ExploreQueryType } from './explore-query-type';
 
 export class ExploreQuery {
 
@@ -18,6 +18,8 @@ export class ExploreQuery {
   private _constraint: Constraint;
   // the type of the query
   private _type: ExploreQueryType;
+  // the query-level i2b2 timing policy
+  private _queryTimingSameInstanceNum: boolean;
 
   constructor(name?: string) {
     this.name = name;
@@ -91,5 +93,13 @@ export class ExploreQuery {
 
   set type(value: ExploreQueryType) {
     this._type = value;
+  }
+
+  set queryTimingSameInstanceNum(val: boolean) {
+    this._queryTimingSameInstanceNum = val
+  }
+
+  get queryTimingSameInstanceNum(): boolean {
+    return this._queryTimingSameInstanceNum
   }
 }

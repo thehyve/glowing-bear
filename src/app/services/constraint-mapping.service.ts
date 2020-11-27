@@ -10,6 +10,7 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {CryptoService} from './crypto.service';
 import {ErrorHelper} from '../utilities/error-helper';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
+import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import {ApiI2B2Modifier} from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
 
 
@@ -55,6 +56,7 @@ export class ConstraintMappingService {
    */
   private generateI2b2Panel(constraint: Constraint, negated: boolean): ApiI2b2Panel {
     let panel = new ApiI2b2Panel();
+    panel.panelTiming = constraint.panelTimingSameInstance ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
     panel.not = negated;
 
     switch (constraint.className) {

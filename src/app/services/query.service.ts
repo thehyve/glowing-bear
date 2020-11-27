@@ -45,13 +45,17 @@ export class QueryService {
   // flag indicating if the query has been changed
   private _isDirty;
 
+  // i2b2 query-level timing policy
+  private _queryTimingSameInstance = false;
+
+
   constructor(private appConfig: AppConfig,
-              private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private exploreQueryService: ExploreQueryService,
-              private authService: AuthenticationService,
-              private cryptoService: CryptoService,
-              private genomicAnnotationsService: GenomicAnnotationsService) {
+    private treeNodeService: TreeNodeService,
+    private constraintService: ConstraintService,
+    private exploreQueryService: ExploreQueryService,
+    private authService: AuthenticationService,
+    private cryptoService: CryptoService,
+    private genomicAnnotationsService: GenomicAnnotationsService) {
     this._queryResults = new ReplaySubject<ExploreQueryResult>(1);
     this.clearAll();
   }
@@ -96,7 +100,7 @@ export class QueryService {
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
-      ));
+        ));
     }
 
     console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
@@ -117,13 +121,14 @@ export class QueryService {
     // prepare and execute query
     this.query.generateUniqueId();
     this.query.constraint = this.constraintService.generateConstraint();
+    this.query.queryTimingSameInstanceNum = this.queryTimingSameInstance
 
     this.genomicAnnotationsService.addVariantIdsToConstraints(this.query.constraint).pipe(
       catchError((err) => {
         MessageHelper.alert('warn', 'Invalid genomic annotation in query, please correct.');
         return throwError(err);
       }),
-      switchMap( () => this.exploreQueryService.exploreQuery(this.query))
+      switchMap(() => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
       (results: ApiExploreQueryResult[]) => {
         this.queryResults.next(this.parseExploreQueryResults(results));
@@ -211,5 +216,13 @@ export class QueryService {
   get displayExploreResultsComponent(): Observable<boolean> {
     return this.queryResults.pipe(map((queryResults) =>
       queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
+  }
+
+  get queryTimingSameInstance(): boolean {
+    return this._queryTimingSameInstance
+  }
+
+  set queryTimingSameInstance(val: boolean) {
+    this._queryTimingSameInstance = val
   }
 }
