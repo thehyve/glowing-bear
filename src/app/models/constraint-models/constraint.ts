@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,10 +13,13 @@ export class Constraint {
   protected _textRepresentation: string;
   // The parent constraint
   protected _parentConstraint: Constraint;
+  // i2b2 timing policiy
+  protected _panelTimingSameInstance: boolean;
 
   constructor() {
     this.textRepresentation = '';
     this.parentConstraint = null;
+    this._panelTimingSameInstance = false;
   }
 
   get textRepresentation(): string {
@@ -36,5 +40,13 @@ export class Constraint {
 
   get className(): string {
     return 'Constraint';
+  }
+
+  set panelTimingSameInstance(val: boolean) {
+    this._panelTimingSameInstance = val
+  }
+
+  get panelTimingSameInstance(): boolean {
+    return this._panelTimingSameInstance
   }
 }

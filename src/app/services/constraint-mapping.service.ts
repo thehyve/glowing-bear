@@ -10,6 +10,7 @@ import {ConceptType} from '../models/constraint-models/concept-type';
 import {CryptoService} from './crypto.service';
 import {ErrorHelper} from '../utilities/error-helper';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
+import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 @Injectable()
 export class ConstraintMappingService {
@@ -24,23 +25,23 @@ export class ConstraintMappingService {
 
   private mapCombinationConstraint(panels: ApiI2b2Panel[], constraint: Constraint, negated: boolean) {
     switch (constraint.className) {
-    case 'NegationConstraint':
-      ((constraint as NegationConstraint).constraint as CombinationConstraint).children.forEach((childConstraint) =>
-        this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, true));
-      break;
+      case 'NegationConstraint':
+        ((constraint as NegationConstraint).constraint as CombinationConstraint).children.forEach((childConstraint) =>
+          this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, true));
+        break;
 
-    case 'CombinationConstraint':
-      if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
-        panels.push(this.generateI2b2Panel(constraint, false));
-      } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
-        (constraint as CombinationConstraint).children.forEach((childConstraint) =>
-          this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, negated))
-      }
-      break;
+      case 'CombinationConstraint':
+        if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
+          panels.push(this.generateI2b2Panel(constraint, false));
+        } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
+          (constraint as CombinationConstraint).children.forEach((childConstraint) =>
+            this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, negated))
+        }
+        break;
 
-    default: // should be ConceptConstraint or GenomicAnnotationConstraint
-      panels.push(this.generateI2b2Panel(constraint, negated));
-      break;
+      default: // should be ConceptConstraint or GenomicAnnotationConstraint
+        panels.push(this.generateI2b2Panel(constraint, negated));
+        break;
     }
   }
 
@@ -53,6 +54,7 @@ export class ConstraintMappingService {
    */
   private generateI2b2Panel(constraint: Constraint, negated: boolean): ApiI2b2Panel {
     let panel = new ApiI2b2Panel();
+    panel.panelTiming = constraint.panelTimingSameInstance ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
     panel.not = negated;
 
     switch (constraint.className) {
@@ -128,5 +130,5 @@ export class ConstraintMappingService {
       item.queryTerm = variantId; // todo: variant IDs are pre-encrypted
       return item;
     });
-      }
+  }
 }
