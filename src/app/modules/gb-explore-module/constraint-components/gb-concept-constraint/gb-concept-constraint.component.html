@@ -13,11 +13,10 @@
                     size="60"
                     dropdown="true"
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
-                    <div style="float: right;">
-                      <p-checkbox *ngIf="depth === 1" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
-                    </div>
-  </div>
-  
+
+    <label *ngIf="depth === 1">Same instance number:</label>                
+    <p-checkbox *ngIf="depth === 1" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
+                    
   
 
   <!-- if the concept is NUMERIC -->
