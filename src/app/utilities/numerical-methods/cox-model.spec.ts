@@ -131,7 +131,7 @@ describe('Cox regression test', () => {
   })
 
   // check Efron's method with tied events
-  it(`Breslow's method`, () => {
+  it(`Efron's method`, () => {
     let breslow = NewCoxRegression([coxInput1.curves[0].points, coxInput1.curves[1].points], 1000, 1e-14, 'EFRON')
     expect(breslow.run().finalBeta[0]).toBeCloseTo(-0.05612, precision)
   })

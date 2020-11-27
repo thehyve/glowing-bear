@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit } from '@angular/core';
-import { AnalysisType } from 'app/models/analyses/analysis-type';
+import { AnalysisType } from 'app/models/analysis-models/analysis-type';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { Subject, Observable, throwError } from 'rxjs';

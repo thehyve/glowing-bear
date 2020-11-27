@@ -10,5 +10,3 @@ export enum CombinationState {
   And,
   Or
 }
-
-export const CombinationStateString: string[] = ['and', 'or']

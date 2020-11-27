@@ -8,13 +8,10 @@
 
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Chart} from 'chart.js';
-import {ExploreQueryType} from '../../models/query-models/explore-query-type';
 import {QueryService} from '../../services/query.service';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
 import {Observable} from 'rxjs';
-import {query} from '@angular/animations';
 import {map} from 'rxjs/operators';
-import {FormatHelper} from '../../utilities/format-helper';
 
 @Component({
   selector: 'gb-medco-results',
@@ -95,5 +92,31 @@ export class GbExploreResultsComponent implements OnInit {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? queryResults.patientLists : []
     ));
+  }
+
+  private numberMatrixToCSV(data: number[][]) {
+    let replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
+    const csv = data.map((row) =>
+      row
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(',')
+    );
+    return csv.join('\r\n');
+  }
+
+  savePatientListToCSVFile() {
+    this.patientLists.pipe(map((patientLists) => this.numberMatrixToCSV(patientLists)))
+      .subscribe((csvArray) => {
+          let exportFileEL = document.createElement('a');
+          let blob = new Blob([csvArray], {type: 'text/csv'});
+          let url = window.URL.createObjectURL(blob);
+
+          exportFileEL.href = url;
+          exportFileEL.download = 'patientList.csv';
+          exportFileEL.click();
+          window.URL.revokeObjectURL(url);
+          exportFileEL.remove();
+        }
+      )
   }
 }

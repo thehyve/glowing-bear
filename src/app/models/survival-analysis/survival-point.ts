@@ -26,4 +26,27 @@ export class SurvivalPoint {
   nofCensorings: number
   cumulEvents: number
   cumulCensorings: number
+  constructor(previousProb: number,
+    previousCumul: number,
+    remainingTotal: number,
+    timePoint: number,
+    previousCumulEvents: number,
+    previousCumulCensoringEvents: number,
+    currentEventOfInterest: number,
+    currentCensoringEvent: number) {
+    let ponctualProb = (remainingTotal - currentEventOfInterest) / (remainingTotal)
+    let prob = ponctualProb * previousProb
+    let cumul = previousCumul + currentEventOfInterest / (remainingTotal * (remainingTotal - currentEventOfInterest))
+
+    this.timePoint = timePoint
+    this.prob = prob
+    this.cumul = cumul
+    this.remaining = remainingTotal - currentCensoringEvent - currentEventOfInterest
+    this.atRisk = remainingTotal
+    this.nofEvents = currentEventOfInterest
+    this.nofCensorings = currentCensoringEvent
+    this.cumulEvents = previousCumulEvents + currentEventOfInterest
+    this.cumulCensorings = previousCumulCensoringEvents + currentCensoringEvent
+
+  }
 }

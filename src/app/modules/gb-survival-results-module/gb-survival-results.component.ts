@@ -18,7 +18,7 @@ import { NewCoxRegression, coxToString } from 'app/utilities/numerical-methods/c
 import { logRank2Groups } from 'app/utilities/survival-analysis/log-rank-p-value';
 import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
 import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
-import { PDF } from 'app/models/file-models/pdf';
+import { PDF } from 'app/utilities/files/pdf';
 import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
 import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
 import { ErrorHelper } from 'app/utilities/error-helper';
@@ -286,7 +286,6 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     pdfDoc.addOneLineText('Summary at time point')
     tables = milestonedSummaryToTable(curveNames, this.summaryTableMileStones, this._summaryTable)
-    console.warn('debug tables', tables)
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
     if (curveNames.length > 1) {

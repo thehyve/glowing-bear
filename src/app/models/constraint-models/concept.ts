@@ -7,9 +7,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Aggregate } from '../aggregate-models/aggregate';
-import { ConceptType } from './concept-type';
-import { MedcoEncryptionDescriptor } from '../tree-models/medco-encryption-descriptor';
+import {Aggregate} from '../aggregate-models/aggregate';
+import {ConceptType} from './concept-type';
+import {MedcoEncryptionDescriptor} from '../tree-models/medco-encryption-descriptor';
+import {Modifier} from './modifier';
 
 export class Concept {
   private _path: string;
@@ -21,6 +22,7 @@ export class Concept {
   private _name: string;
   private _fullName: string;
   private _encryptionDescriptor?: MedcoEncryptionDescriptor;
+  private _modifier?: Modifier;
 
   constructor() {
   }
@@ -106,6 +108,13 @@ export class Concept {
     }
 
     return ret
+  }
 
+  get modifier(): Modifier {
+    return this._modifier;
+  }
+
+  set modifier(mod: Modifier) {
+    this._modifier = mod
   }
 }

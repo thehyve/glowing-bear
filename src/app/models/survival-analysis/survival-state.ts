@@ -6,7 +6,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { survivalPoints } from 'app/utilities/numerical-methods/survival-point'
 import { SurvivalPoint } from './survival-point'
 
 export class SurvivalState {
@@ -19,7 +18,7 @@ export class SurvivalState {
     this._remaining = remaining
   }
   next(timePoint: number, eventOfInterest: number, censoring: number): SurvivalPoint {
-    let res = survivalPoints(
+    let res = new SurvivalPoint(
       this._prob,
       this._cumul,
       this._remaining,

@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 - 2018  The Hyve B.V.2
+ * Copyright 2017 - 2018  The Hyve B.V.
  *
  * Copyright 2020 CHUV
  *
@@ -10,8 +10,6 @@
 
 import { Constraint } from './constraint';
 import { CombinationState } from './combination-state';
-import { SensitiveType } from './sensitive-type';
-import { ErrorHelper } from 'app/utilities/error-helper';
 
 export class CombinationConstraint extends Constraint {
 
@@ -26,7 +24,6 @@ export class CombinationConstraint extends Constraint {
     this.combinationState = CombinationState.And;
     this.isRoot = false;
     this.textRepresentation = 'Group';
-    this.sensitiveType = SensitiveType.Undetermined
   }
 
   get className(): string {
@@ -34,23 +31,19 @@ export class CombinationConstraint extends Constraint {
   }
 
   addChild(constraint: Constraint) {
+    console.warn('this constraint before', this, 'that constraint', constraint)
 
-    if (this.sensitiveType === SensitiveType.Undetermined ||
-      this.sensitiveType === constraint.sensitiveType) {
-      if (!(<CombinationConstraint>constraint).isRoot) {
-        // to enforce polymorphism, otherwise child set method is not called
-        constraint.parentConstraint = this;
-      }
-      this.children.push(constraint);
-      if (this.combinationState === CombinationState.Or) {
-        this.sensitiveType = constraint.sensitiveType
-      }
-      this.updateTextRepresentation()
-      return
-    } else {
-      throw ErrorHelper.handleNewError('You cannot combi  ne sensitive and non-sensitive concept with OR operator')
+
+    if (!(<CombinationConstraint>constraint).isRoot) {
+      // to enforce polymorphism, otherwise child set method is not called
+      constraint.parentConstraint = this;
     }
-
+    this.children.push(constraint);
+    if (this.combinationState === CombinationState.Or) {
+      this.sensitiveType = constraint.sensitiveType
+    }
+    this.updateTextRepresentation()
+    return
   }
 
   clone(): CombinationConstraint {
