@@ -14,11 +14,14 @@ export class Constraint {
   protected _textRepresentation: string;
   // The parent constraint
   protected _parentConstraint: Constraint;
+  // i2b2 timing policiy
+  protected _panelTimingSameInstance: boolean;
 
 
   constructor() {
     this.textRepresentation = '';
     this.parentConstraint = null;
+    this._panelTimingSameInstance = false;
   }
 
   get textRepresentation(): string {
@@ -48,5 +51,12 @@ export class Constraint {
 
     ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
     return ret
+  }
+  set panelTimingSameInstance(val: boolean) {
+    this._panelTimingSameInstance = val
+  }
+
+  get panelTimingSameInstance(): boolean {
+    return this._panelTimingSameInstance
   }
 }

@@ -59,4 +59,12 @@ export class GbSelectionComponent {
   get loadingState(): LoadingState {
     return this.queryService.isUpdating ? 'loading' : 'complete';
   }
+
+  get queryTimingSameInstance(): boolean {
+    return (this.queryService.queryTimingSameInstance) ? this.queryService.queryTimingSameInstance : false
+  }
+
+  set queryTimingSameInstance(val: boolean) {
+    this.queryService.queryTimingSameInstance = val
+  }
 }

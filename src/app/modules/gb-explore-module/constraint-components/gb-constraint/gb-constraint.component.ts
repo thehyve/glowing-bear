@@ -25,13 +25,15 @@ export class GbConstraintComponent implements OnInit {
   @Input() isRoot: boolean;
   @Output() constraintRemoved: EventEmitter<any> = new EventEmitter();
   droppedConstraint: Constraint = null;
+  // i2b2 panel timing policy
+  _panelTimingSameInstance: boolean
 
   constructor(protected treeNodeService: TreeNodeService,
-              protected constraintService: ConstraintService,
-              protected queryService: QueryService,
-              protected genomicAnnotationsService: GenomicAnnotationsService,
-              protected element: ElementRef,
-              protected config: AppConfig) {
+    protected constraintService: ConstraintService,
+    protected queryService: QueryService,
+    protected genomicAnnotationsService: GenomicAnnotationsService,
+    protected element: ElementRef,
+    protected config: AppConfig) {
   }
 
   ngOnInit() {
@@ -89,7 +91,7 @@ export class GbConstraintComponent implements OnInit {
 
       let borderClassName = '';
       if (containerClassName === 'gb-constraint-container') {
-        const depth = ConstraintService.depthOfConstraint(this.constraint);
+        const depth = this.depth;
         if (depth === 1) {
           borderClassName = 'gb-constraint-container-border-left-1';
         } else if (depth === 2) {
@@ -104,6 +106,20 @@ export class GbConstraintComponent implements OnInit {
     } else {
       return this.element.nativeElement.children[0].classList.value;
     }
+  }
+
+  get depth(): number {
+    return ConstraintService.depthOfConstraint(this.constraint);
+  }
+
+  set panelTimingSameInstance(val: boolean) {
+    if (this.constraint) {
+      this.constraint.panelTimingSameInstance = val
+    }
+  }
+
+  get panelTimingSameInstance(): boolean {
+    return (this.constraint) ? this.constraint.panelTimingSameInstance : false
   }
 
 }

@@ -46,6 +46,9 @@ export class QueryService {
   private _isDirty;
 
   private _lastSuccessfulSet = new Subject<number[]>()
+  // i2b2 query-level timing policy
+  private _queryTimingSameInstance = false;
+
 
   constructor(private appConfig: AppConfig,
     private treeNodeService: TreeNodeService,
@@ -121,6 +124,7 @@ export class QueryService {
     // prepare and execute query
     this.query.generateUniqueId();
     this.query.constraint = this.constraintService.generateConstraint();
+    this.query.queryTimingSameInstanceNum = this.queryTimingSameInstance
 
     this.genomicAnnotationsService.addVariantIdsToConstraints(this.query.constraint).pipe(
       catchError((err) => {
@@ -211,5 +215,12 @@ export class QueryService {
 
   get lastSuccessfulSet(): Observable<number[]> {
     return this._lastSuccessfulSet.asObservable()
+  }
+  get queryTimingSameInstance(): boolean {
+    return this._queryTimingSameInstance
+  }
+
+  set queryTimingSameInstance(val: boolean) {
+    this._queryTimingSameInstance = val
   }
 }
