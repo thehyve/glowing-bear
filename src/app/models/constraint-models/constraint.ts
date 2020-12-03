@@ -7,6 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+
 export class Constraint {
 
   // The textual representation of this constraint
@@ -15,6 +16,7 @@ export class Constraint {
   protected _parentConstraint: Constraint;
   // i2b2 timing policiy
   protected _panelTimingSameInstance: boolean;
+
 
   constructor() {
     this.textRepresentation = '';
@@ -42,6 +44,14 @@ export class Constraint {
     return 'Constraint';
   }
 
+
+  clone(): Constraint {
+    let ret = new Constraint()
+    ret.textRepresentation = this.textRepresentation
+
+    ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
+    return ret
+  }
   set panelTimingSameInstance(val: boolean) {
     this._panelTimingSameInstance = val
   }

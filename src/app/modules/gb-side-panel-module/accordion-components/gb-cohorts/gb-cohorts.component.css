@@ -1,0 +1,78 @@
+#cohorts-component button{
+  float: right;
+  height: 20px;
+  color: #999999;
+  background-color: #ffffff;
+}
+
+
+#cohorts-component .ui-accordion .ui-accordion-header  {
+  padding: 0em;
+  padding-bottom: 1px;
+  color: #8d8d8d;
+  background-color: #ffffff;
+  border:none;
+  border-radius: 0em;
+  border-bottom-color : #bebebe;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+
+}
+
+#cohorts-component .ui-accordion .ui-accordion-header a {
+  padding: 0em;
+  color: #404040;
+  background-color: #ffffff;
+  border:none;
+  border-radius: 0em;
+
+}
+
+#cohorts-component .ui-accordion .ui-accordion-content {
+  border:none;
+}
+#cohorts-component .ui-togglebutton{
+  background-color: var(--gb-clinical-green);
+  padding: 0em;
+}
+
+#cohorts-component .ui-togglebutton:not(.ui-state-disabled).ui-state-active {
+  background-color: var(--gb-clinical-green);
+}
+
+#cohorts-component .ui-togglebutton:not(.ui-state-disabled):not(.ui-state-active) {
+  background-color: #ffffff;
+  color: #404040;
+}
+
+#cohorts-component .ui-button-text-icon-left .ui-button-text {
+  padding: .1em 0.2em .1em 1.9em;
+}
+
+
+#cohorts-component a:focus,#cohorts-component a:hover {
+  text-decoration: none;
+}
+
+#cohorts-component .ui-dialog-footer button{
+  height: auto;
+  color: #8b8b8b;
+}
+
+#cohorts-component .ui-dialog-footer button:hover{
+  background-color: var(--gb-clinical-green);
+  color:white;
+}
+
+#cohorts-component .ui-dialog-footer button:first-of-type{
+  background-color: red;
+  color:white;
+}
+
+#cohorts-component .ui-dialog-footer button:first-of-type:hover{
+  background-color: #b60000;
+}
+
+#cohorts-component .pi-spin{
+  color: transparent;
+}

@@ -1,19 +1,22 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
+ * Copyright 2020 CHUV
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
-import {CombinationState} from './combination-state';
+import { Constraint } from './constraint';
+import { CombinationState } from './combination-state';
 
 export class CombinationConstraint extends Constraint {
 
   private _children: Constraint[];
   private _combinationState: CombinationState;
   private _isRoot: boolean;
+
 
   constructor() {
     super();
@@ -28,11 +31,26 @@ export class CombinationConstraint extends Constraint {
   }
 
   addChild(constraint: Constraint) {
+
     if (!(<CombinationConstraint>constraint).isRoot) {
       // to enforce polymorphism, otherwise child set method is not called
       constraint.parentConstraint = this;
     }
     this.children.push(constraint);
+    if (this.combinationState === CombinationState.Or) {
+    }
+    this.updateTextRepresentation()
+    return
+  }
+
+  clone(): CombinationConstraint {
+    let res = new CombinationConstraint
+    res.textRepresentation = this.textRepresentation
+    res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null
+    res.isRoot = this.isRoot
+    res.combinationState = this.combinationState
+    res.children = this._children.map(constr => constr.clone())
+    return res
   }
 
   isAnd() {
@@ -45,6 +63,7 @@ export class CombinationConstraint extends Constraint {
 
   set children(value: Constraint[]) {
     this._children = value;
+    this.updateTextRepresentation()
   }
 
   get combinationState(): CombinationState {
@@ -53,11 +72,13 @@ export class CombinationConstraint extends Constraint {
 
   set combinationState(value: CombinationState) {
     this._combinationState = value;
+    this.updateTextRepresentation()
   }
 
   switchCombinationState() {
     this.combinationState = (this.combinationState === CombinationState.And) ?
       CombinationState.Or : CombinationState.And;
+    this.updateTextRepresentation()
   }
 
   removeChildConstraint(child: Constraint) {
@@ -73,5 +94,14 @@ export class CombinationConstraint extends Constraint {
 
   set isRoot(value: boolean) {
     this._isRoot = value;
+  }
+
+  private updateTextRepresentation() {
+    if (this.children.length >= 0) {
+      this.textRepresentation = '(' + this.children.map(({ textRepresentation }) => textRepresentation)
+        .join(this.combinationState === CombinationState.And ? ' and ' : ' or ') + ')'
+    } else {
+      this.textRepresentation = ''
+    }
   }
 }

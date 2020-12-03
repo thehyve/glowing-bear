@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {AggregateType} from './aggregate-type';
+import { AggregateType } from './aggregate-type';
 
 export class Aggregate {
   private _type: AggregateType;
@@ -17,5 +17,12 @@ export class Aggregate {
 
   set type(value: AggregateType) {
     this._type = value;
+  }
+
+  clone(): Aggregate {
+    let ret = new Aggregate()
+    ret.type = this.type
+    return ret
+
   }
 }

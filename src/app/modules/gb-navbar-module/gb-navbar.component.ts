@@ -6,13 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {Router, NavigationEnd} from '@angular/router';
-import {MenuItem} from 'primeng/components/common/api';
-import {QueryService} from '../../services/query.service';
-import {NavbarService} from '../../services/navbar.service';
-import {MessageHelper} from '../../utilities/message-helper';
-import {AppConfig} from '../../config/app.config';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { NavbarService } from '../../services/navbar.service';
 
 @Component({
   selector: 'gb-nav-bar',
@@ -21,14 +17,18 @@ import {AppConfig} from '../../config/app.config';
 })
 export class GbNavbarComponent implements OnInit {
   constructor(private router: Router,
-              public navbarService: NavbarService
+    public navbarService: NavbarService
   ) { }
 
   ngOnInit() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
+        console.log('routing event', event)
         let routerLink = event.urlAfterRedirects.split('#')[0];
+
+        console.log('Routing event, router link: ', routerLink)
         this.navbarService.updateNavbar(routerLink);
+
       }
     });
   }

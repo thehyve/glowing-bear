@@ -12,12 +12,12 @@ import {
 import {
   trigger, style, animate, transition
 } from '@angular/animations';
-import {GbConstraintComponent} from '../constraint-components/gb-constraint/gb-constraint.component';
-import {QueryService} from '../../../services/query.service';
-import {ConstraintService} from '../../../services/constraint.service';
-import {FormatHelper} from '../../../utilities/format-helper';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import { GbConstraintComponent } from '../constraint-components/gb-constraint/gb-constraint.component';
+import { QueryService } from '../../../services/query.service';
+import { ConstraintService } from '../../../services/constraint.service';
+import { FormatHelper } from '../../../utilities/format-helper';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 type LoadingState = 'loading' | 'complete';
 

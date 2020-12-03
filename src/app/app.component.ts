@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {AuthenticationService} from './services/authentication.service';
-import {MessageHelper} from './utilities/message-helper';
+import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from './services/authentication.service';
+import { MessageHelper } from './utilities/message-helper';
 
 @Component({
   selector: 'gb-app-root',
