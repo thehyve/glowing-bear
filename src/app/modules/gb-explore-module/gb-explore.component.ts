@@ -80,12 +80,7 @@ export class GbExploreComponent {
   }
 
   get queryType(): ExploreQueryType {
-    return this.queryService.query.type;
-  }
-
-  set queryType(val: ExploreQueryType) {
-    this.queryService.query.type = val;
-    this.queryService.isDirty = true;
+    return this.queryService.queryType;
   }
 
   get lastSuccessfulSet(): number[] {

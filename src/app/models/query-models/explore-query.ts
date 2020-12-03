@@ -16,8 +16,7 @@ export class ExploreQuery {
   private _description: string;
   // the constraint of the query
   private _constraint: Constraint;
-  // the type of the query
-  private _type: ExploreQueryType;
+
   // the query-level i2b2 timing policy
   private _queryTimingSameInstanceNum: boolean;
 
@@ -40,18 +39,6 @@ export class ExploreQuery {
     }
 
     this.uniqueId = id;
-  }
-
-  get hasPerSiteCounts(): boolean {
-    return this.hasPatientLists ||
-      this.type === ExploreQueryType.COUNT_PER_SITE ||
-      this.type === ExploreQueryType.COUNT_PER_SITE_OBFUSCATED ||
-      this.type === ExploreQueryType.COUNT_PER_SITE_SHUFFLED ||
-      this.type === ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
-  }
-
-  get hasPatientLists(): boolean {
-    return this.type === ExploreQueryType.PATIENT_LIST;
   }
 
   // --- getters / setters
@@ -85,14 +72,6 @@ export class ExploreQuery {
 
   set constraint(value: Constraint) {
     this._constraint = value;
-  }
-
-  get type(): ExploreQueryType {
-    return this._type;
-  }
-
-  set type(value: ExploreQueryType) {
-    this._type = value;
   }
 
   set queryTimingSameInstanceNum(val: boolean) {

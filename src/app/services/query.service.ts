@@ -33,11 +33,11 @@ export class QueryService {
   // the currently selected query
   private _query: ExploreQuery;
 
+  // the query type the user is authorized to
+  private _queryType: ExploreQueryType;
+
   // the current query results
   private readonly _queryResults: ReplaySubject<ExploreQueryResult>;
-
-  // list of available query types
-  private _availableExploreQueryTypes: ExploreQueryType[];
 
   // flag indicating if the counts are being updated
   private _isUpdating;
@@ -78,7 +78,7 @@ export class QueryService {
     }
 
     let parsedResults = new ExploreQueryResult();
-    switch (this.query.type) {
+    switch (this.queryType) {
       case ExploreQueryType.COUNT_GLOBAL:
       case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
         parsedResults.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(encResults[0].encryptedCount);
@@ -94,10 +94,10 @@ export class QueryService {
         break;
 
       default:
-        throw ErrorHelper.handleNewError(`unknown explore query type: ${this.query.type}`);
+        throw ErrorHelper.handleNewError(`unknown explore query type: ${this.queryType}`);
     }
 
-    if (this.query.type === ExploreQueryType.PATIENT_LIST) {
+    if (this.queryType === ExploreQueryType.PATIENT_LIST) {
       parsedResults.resultInstanceID = encResults.map(({ patientSetID }) => patientSetID)
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList.map((encryptedPatientID) =>
@@ -114,8 +114,8 @@ export class QueryService {
     if (!this.constraintService.hasConstraint()) {
       MessageHelper.alert('warn', 'No constraints specified, please correct.');
       return;
-    } else if (!this.query.type) {
-      MessageHelper.alert('warn', 'No query type specified, please correct.');
+    } else if (!this.queryType) {
+      MessageHelper.alert('warn', 'No authorized query type.');
       return;
     }
 
@@ -178,13 +178,15 @@ export class QueryService {
     this._isDirty = value;
   }
 
-  get availableExploreQueryTypes(): ExploreQueryType[] {
+  // get the query type from the user's authorizations
+  get queryType(): ExploreQueryType {
 
-    if (this._availableExploreQueryTypes) {
-      return this._availableExploreQueryTypes
+    if (this._queryType) {
+      return this._queryType;
     }
 
-    this._availableExploreQueryTypes = this.authService.userRoles.map((role) => {
+    // map authorization to query type
+    let authorizedTypes = this.authService.userRoles.map((role) => {
       switch (role) {
         case ExploreQueryType.PATIENT_LIST.id:
           return ExploreQueryType.PATIENT_LIST;
@@ -200,8 +202,22 @@ export class QueryService {
       }
     }).filter((role) => role !== null);
 
-    console.log(`User ${this.authService.username} explore query types: ${this._availableExploreQueryTypes}`);
-    return this._availableExploreQueryTypes;
+    if (authorizedTypes.length === 0) {
+      console.log(`User ${this.authService.username} has no explore query types available.`);
+      return undefined;
+    }
+
+    // select the most permissive query type
+    this._queryType = authorizedTypes.reduce((prevRole, curRole) => {
+      if (!prevRole || curRole.weight > prevRole.weight) {
+        return curRole;
+      } else {
+        return prevRole;
+      }
+    })
+
+    console.log(`User ${this.authService.username} has explore query types: ${authorizedTypes}, selected ${this._queryType}`);
+    return this._queryType;
   }
 
 
@@ -210,7 +226,7 @@ export class QueryService {
    */
   get displayExploreResultsComponent(): Observable<boolean> {
     return this.queryResults.pipe(map((queryResults) =>
-      queryResults !== undefined && this.query.hasPerSiteCounts && queryResults.globalCount > 0));
+      queryResults !== undefined && this.queryType.hasPerSiteCounts && queryResults.globalCount > 0));
   }
 
   get lastSuccessfulSet(): Observable<number[]> {

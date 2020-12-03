@@ -34,20 +34,19 @@ export class ExploreQueryService {
   /**
    * @returns {Observable<number>} the resultId
    * @param queryId
-   * @param queryType
+   * @param queryTiming
    * @param userPublicKey
    * @param panels
    * @param nodeUrl
    * @param sync
    */
-  private exploreQuerySingleNode(queryId: string, queryType: ExploreQueryType, userPublicKey: string, panels: ApiI2b2Panel[],
+  private exploreQuerySingleNode(queryId: string, userPublicKey: string, panels: ApiI2b2Panel[],
     queryTiming: ApiI2b2Timing, nodeUrl: string, sync: boolean = true): Observable<ApiExploreQueryResult> {
     return this.apiEndpointService.postCall(
       'node/explore/query?sync=' + sync,
       {
         id: queryId,
         query: {
-          type: queryType.id,
           queryTiming: queryTiming,
           userPublicKey: userPublicKey,
           panels: panels
@@ -64,14 +63,14 @@ export class ExploreQueryService {
    * Ensures before execute that the token is still valid.
    *
    * @param queryId
-   * @param queryType
+   * @param queryTiming
    * @param userPublicKey
    * @param panels
    */
-  private exploreQueryAllNodes(queryId: string, queryType: ExploreQueryType, userPublicKey: string,
+  private exploreQueryAllNodes(queryId: string, userPublicKey: string,
     panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): Observable<ApiExploreQueryResult[]> {
     return forkJoin(...this.medcoNetworkService.nodesUrl.map(
-      (url) => this.exploreQuerySingleNode(queryId, queryType, userPublicKey, panels, queryTiming, url)
+      (url) => this.exploreQuerySingleNode(queryId, userPublicKey, panels, queryTiming, url)
     )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }
 
@@ -82,7 +81,6 @@ export class ExploreQueryService {
   exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
     return this.exploreQueryAllNodes(
       query.uniqueId,
-      query.type,
       this.cryptoService.ephemeralPublicKey,
       this.constraintMappingService.mapConstraint(query.constraint),
       query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any

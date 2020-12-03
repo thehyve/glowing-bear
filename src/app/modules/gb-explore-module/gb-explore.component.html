@@ -35,19 +35,16 @@
             Run
           </button>
         </ng-template>
-
       </span>
 
-
-      <span class="float-right">
-        <label>Result Type:
-          <select [(ngModel)]="queryType">
-            <option *ngFor="let queryType of queryService.availableExploreQueryTypes" [ngValue]="queryType">
-              {{queryType.name}}
-            </option>
-          </select>
-        </label>
+      <!-- display of explore query type -->
+      <span *ngIf="queryType; else noAuthorization" class="float-right">
+        Query Type: {{queryType.name}}
       </span>
+      <ng-template #noAuthorization>
+        <span class="float-right">No authorization for explore query.</span>
+      </ng-template>
+
     </div>
   </div>
   <gb-selection></gb-selection>
