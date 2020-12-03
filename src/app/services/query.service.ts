@@ -97,7 +97,7 @@ export class QueryService {
         throw ErrorHelper.handleNewError(`unknown explore query type: ${this.queryType}`);
     }
 
-    if (this.query.type === ExploreQueryType.PATIENT_LIST) {
+    if (this.queryType === ExploreQueryType.PATIENT_LIST) {
       parsedResults.resultInstanceID = encResults.map(({ patientSetID }) => patientSetID)
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList.map((encryptedPatientID) =>
