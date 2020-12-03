@@ -1,0 +1,20 @@
+<p-accordionTab header="Subgroups" *ngIf="activated" id="gb-cohort-landing-zone-component">
+
+
+  <p-selectButton [options]="subGroups" [(ngModel)]="selectedSubGroup" (onChange)="loadSubGroup($event)">
+  </p-selectButton>
+  <br>
+  <br>
+  <p-button icon="fa fa-plus" label="Add" (onClick)='addSubGroup($event)' [disabled]="subGroups.length >= 4 ">
+  </p-button>
+  &nbsp;
+  <p-button icon="fa fa-minus" label="Remove" (onClick)='removeSubGroup($event)' [disabled]="selectedSubGroup == null ">
+  </p-button>
+  <br>
+  <br>
+  Subgroup name:
+  <br>
+  <input type="text" pInputText [(ngModel)]="name" (drop)="preventDefault($event)" placehodler="subgroup name" />
+  <br>
+  <gb-selection></gb-selection>
+</p-accordionTab>

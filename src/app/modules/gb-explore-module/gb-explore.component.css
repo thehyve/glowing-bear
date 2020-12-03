@@ -24,6 +24,10 @@
   overflow: hidden;
 }
 
+.gb-data-selection-accordion-sub-header-2 #save-box{
+  padding-left: 2em;
+}
+
 .gb-data-selection-accordion-sub-header-3 {
   color: GrayText;
   margin: 0em;
@@ -43,6 +47,10 @@
 .gb-explore-query-btn-dirty {
   border: 2px solid;
   font-weight: bolder;
+}
+
+.gb-explore-waiting-cohort{
+  border : 1px dashed;
 }
 
 .fa-circle-o-notch {

@@ -6,12 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, ViewChild, OnInit} from '@angular/core';
-import {AuthenticationService} from '../../services/authentication.service';
-import {ConstraintService} from '../../services/constraint.service';
-import {TreeNodeService} from '../../services/tree-node.service';
-import {QueryService} from '../../services/query.service';
-import {AppConfig} from '../../config/app.config';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../services/authentication.service';
+import { ConstraintService } from '../../services/constraint.service';
+import { TreeNodeService } from '../../services/tree-node.service';
+import { QueryService } from '../../services/query.service';
+import { AppConfig } from '../../config/app.config';
 
 @Component({
   selector: 'gb-main',
@@ -30,10 +30,10 @@ export class GbMainComponent implements OnInit {
   x_gap: number; // Stores x gap (edge) between mouse and gutter
 
   constructor(public authenticationService: AuthenticationService,
-              private treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private config: AppConfig) {
+    private treeNodeService: TreeNodeService,
+    private constraintService: ConstraintService,
+    private queryService: QueryService,
+    private config: AppConfig) {
   }
 
   ngOnInit() {

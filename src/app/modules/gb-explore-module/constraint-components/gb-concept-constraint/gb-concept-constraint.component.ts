@@ -90,6 +90,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _obsDate1: Date;
   private _obsDate2: Date;
 
+  private _sensitive: boolean;
+
   ngOnInit() {
     this.initializeConstraints();
   }
@@ -254,6 +256,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     if (conceptConstraint.applyObsDateConstraint) {
       this.update();
     }
+  }
+
+  set sensitive(val: boolean) {
+    this._sensitive = val
+  }
+
+  get sensitive(): boolean {
+    return this._sensitive
   }
 
   get obsDate1(): Date {

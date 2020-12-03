@@ -1,0 +1,125 @@
+<p-accordion [multiple]="true">
+  <p-accordionTab header="Input parameters" [selected]=false>
+    <div class="row">
+      <div class="column">
+        <p class="description">
+          Event parameters:
+        </p>
+        Time Granularity: {{inputParameters.timeGranularity}}
+        <br>
+        Time Limit: {{inputParameters.timeLimit}}
+        <br>
+        Start Event: {{inputParameters.startEvent}}
+        <br>
+        End Event: {{inputParameters.endEvent}}
+        <br>
+        Start Modifier: {{inputParameters.startModifier}}
+        <br>
+        End Modifier: {{inputParameters.endModifier}}
+      </div>
+      <div class="column">
+        <p class="description">
+          Subgroup definitions:
+        </p>
+        <p-scrollPanel [style]="{width: '100%', height: '150px'}">
+          <div *ngFor="let subgroup of inputParameters.subGroupTextRepresentations">
+            <p>
+              <strong>{{subgroup.groupId}}</strong>
+            </p>
+            <p *ngIf="subgroup.rootInclusionConstraint" class="indented">
+              <strong>Root inclusion constraint: </strong>{{subgroup.rootInclusionConstraint}}
+            </p>
+            <p *ngIf="subgroup.rootExclusionConstraint" class="indented">
+              <strong>Root exclusion constraint: </strong>{{subgroup.rootExclusionConstraint}}
+            </p>
+            <br>
+
+          </div>
+        </p-scrollPanel>
+      </div>
+    </div>
+
+  </p-accordionTab>
+</p-accordion>
+
+<p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true">
+
+  Confidence interval:
+  <br>
+  <p-dropdown [(ngModel)]="selectedIc" [options]="ic" placeholder="confidence interval"></p-dropdown>
+  <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas" placeholder="1 - &alpha;"
+    [disabled]="(selectedIc) ? false:true"></p-dropdown>
+  <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+  <br>
+  Number of ticks (rendering can modify this number to keep nice intervals):
+  <br>
+  <p-spinner [(ngModel)]="nofTicks" min="1" max="10"></p-spinner>
+
+</p-overlayPanel>
+<br>
+<button class="smallbutton" (click)="op.toggle($event)"><i class="fa fa-cog"></i></button>
+<button class="smallbutton" (click)="exportSVG($event)"><i class="fa fa-download"></i></button>
+
+<div class="row">
+  <div class="column-2">
+    <div id="survivalSvgContainer"></div>
+  </div>
+  <div class="column-3">
+    <table id="summary">
+      <tr>
+        <th>Group</th>
+        <th>Initial count</th>
+        <th>Total # of events</th>
+        <th>Total # of censoring events</th>
+      </tr>
+      <tr *ngFor="let curve of survivalCurve.curves;let i = index">
+        <td>
+          <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+          {{i}}
+        </td>
+        <td>{{groupTotalAtRisk[i]}}</td>
+        <td>{{groupTotalEvent[i]}}</td>
+        <td>{{groupTotalCensoring[i]}}</td>
+
+      </tr>
+    </table>
+    <br>
+    <p-dropdown [options]="groupTables" [(ngModel)]="selectedGroupTable"></p-dropdown>
+    <br>
+    <br>
+    <table id="stattest">
+      <tr>
+        <th>{{selectedGroupTable.legend}}</th>
+        <th *ngFor="let curve of survivalCurve.curves;let i = index">
+          <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+          {{i}}
+        </th>
+      </tr>
+      <tr *ngFor="let curve of survivalCurve.curves;let i = index">
+        <th>
+          <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+        </th>
+        <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
+          {{selectedGroupTable.table[i][j]}}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <table id="milestoned">
+    <tr>
+      <th>
+        sums of at risk(events)
+      </th>
+      <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
+    </tr>
+    <tr *ngFor="let summaries of summaryTable; let i = index">
+      <td>
+        <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+      </td>
+      <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
+    </tr>
+  </table>
+
+  <canvas id="drawingconv" hidden></canvas>
+</div>

@@ -7,7 +7,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CipherText,
   DecryptInt,

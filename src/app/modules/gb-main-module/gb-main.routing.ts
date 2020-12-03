@@ -23,6 +23,14 @@ export const routes: Routes = [
   {
     path: 'explore/results',
     loadChildren: '../gb-explore-results-module/gb-explore-results.module#GbExploreResultsModule'
+  },
+  {
+    path: 'analysis',
+    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+  },
+  {
+    path: 'survival/:id',
+    loadChildren: '../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
   }
 ];
 

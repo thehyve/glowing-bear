@@ -8,16 +8,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, Injector} from '@angular/core';
-import {AppConfig} from '../../../config/app.config';
-import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators'
-import {TreeNode} from '../../../models/tree-models/tree-node';
-import {TreeNodeType} from '../../../models/tree-models/tree-node-type';
-import {ConceptType} from '../../../models/constraint-models/concept-type';
-import {MedcoNetworkService} from '../medco-network.service';
-import {ApiEndpointService} from '../../api-endpoint.service';
+import { Injectable, Injector } from '@angular/core';
+import { AppConfig } from '../../../config/app.config';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators'
+import { TreeNode } from '../../../models/tree-models/tree-node';
+import { TreeNodeType } from '../../../models/tree-models/tree-node-type';
+import { ConceptType } from '../../../models/constraint-models/concept-type';
+import { MedcoNetworkService } from '../medco-network.service';
+import { ApiEndpointService } from '../../api-endpoint.service';
 
 @Injectable()
 export class ExploreSearchService {
@@ -50,7 +50,6 @@ export class ExploreSearchService {
     ).pipe(
       map((searchResp: object) => {
         return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
-
           let treeNode = new TreeNode();
           treeNode.path = treeNodeObj['path'];
           treeNode.appliedPath = treeNodeObj['appliedPath'];

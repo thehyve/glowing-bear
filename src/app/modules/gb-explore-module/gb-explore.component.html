@@ -1,10 +1,23 @@
 <div>
 
+
+
   <div class="gb-data-selection-accordion-header">
     <div class="gb-data-selection-accordion-sub-header-1">
       Define your MedCo Explore query
     </div>
     <div class="gb-data-selection-accordion-sub-header-2">
+      <span id="save-box">
+        <input [(ngModel)]="cohortName" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name" (drop)="preventDefault($event)"/>
+        <span>&nbsp;</span>
+        <button
+          class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn {{lastSuccessfulSet ?  '' : 'gb-explore-waiting-cohort'}}"
+          type="button" [disabled]="!lastSuccessfulSet" (click)="save()">
+
+          <span>Save</span>
+
+        </button>
+      </span>
       <span class="gb-data-selection-accordion-sub-header-3 float-left">
         <span class="gb-data-selection-emphasis-text">{{globalCount | async}} subjects</span>
       </span>
@@ -12,22 +25,22 @@
         <i *ngIf="queryService.isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
 
         <!-- disabled button during query -->
-        <button *ngIf="!queryService.isUpdating && constraintService.hasConstraint(); else disabledButton"
-          type="button"
-          (click)="execQuery($event)"
-          class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
+        <button *ngIf="!queryService.isUpdating && constraintService.hasConstraint(); else disabledButton" type="button"
+          (click)="execQuery($event)" class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
           {{queryService.isDirty? 'gb-explore-query-btn-dirty' : ''}}">
-          Query
+          Run
         </button>
         <ng-template #disabledButton>
-        <button type="button" disabled class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">
-          Query
-        </button>
+          <button type="button" disabled class="btn btn-outline-primary btn-sm gb-data-selection-update-btn">
+            Run
+          </button>
         </ng-template>
 
       </span>
+
+
       <span class="float-right">
-        <label>Query Type:
+        <label>Result Type:
           <select [(ngModel)]="queryType">
             <option *ngFor="let queryType of queryService.availableExploreQueryTypes" [ngValue]="queryType">
               {{queryType.name}}

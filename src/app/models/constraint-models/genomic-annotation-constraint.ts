@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
-import {GenomicAnnotation} from './genomic-annotation';
+import { Constraint } from './constraint';
+import { GenomicAnnotation } from './genomic-annotation';
 
 export class GenomicAnnotationConstraint extends Constraint {
 
@@ -26,6 +26,11 @@ export class GenomicAnnotationConstraint extends Constraint {
     super();
     this.textRepresentation = 'Genomic Annotation';
     this.annotation = new GenomicAnnotation();
+  }
+  toString(): string {
+    return this.annotationValue + ' homozygous ' + (this.zygosityHomozygous ? 'yes ' : 'no ') +
+      'heterozygous ' + (this.zygosityHeterozygous ? 'yes ' : 'no ') +
+      'variant IDs (' + this.variantIds.join(', ') + ')'
   }
 
   get className(): string {

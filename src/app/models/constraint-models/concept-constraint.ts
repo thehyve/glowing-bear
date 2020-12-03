@@ -1,16 +1,18 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
+ * Copyright 2020 CHUV
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
-import {Concept} from './concept';
-import {ValueConstraint} from './value-constraint';
-import {TimeConstraint} from './time-constraint';
-import {FormatHelper} from '../../utilities/format-helper';
+import { Constraint } from './constraint';
+import { Concept } from './concept';
+import { ValueConstraint } from './value-constraint';
+import { TimeConstraint } from './time-constraint';
+import { FormatHelper } from '../../utilities/format-helper';
 
 export class ConceptConstraint extends Constraint {
 
@@ -35,13 +37,21 @@ export class ConceptConstraint extends Constraint {
     this.textRepresentation = 'Concept';
   }
 
+  clone(): ConceptConstraint {
+    let res = new ConceptConstraint()
+    res.textRepresentation = this.textRepresentation
+    res.parentConstraint = this.parentConstraint
+    res.concept = this.concept.clone()
+    return res
+  }
+
   get concept(): Concept {
     return this._concept;
   }
 
   set concept(concept: Concept) {
     this._concept = concept;
-    this.textRepresentation = concept ? `Ontology oncept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
+    this.textRepresentation = concept ? `Ontology concept: ${concept.label}` : FormatHelper.nullValuePlaceholder;
   }
 
   get valueConstraints(): ValueConstraint[] {
