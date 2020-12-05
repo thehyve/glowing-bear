@@ -36,17 +36,11 @@ export class ExploreSearchService {
     private apiEndpointService: ApiEndpointService,
     private injector: Injector) { }
 
-  /**
-   * Perform search concept in ontology.
-   *
-   * @param {string} root - the path to the specific tree node, must include the first slash
-   *
-   * @returns {Observable<Object>}
-   */
-  exploreSearchConcept(root: string): Observable<TreeNode[]> {
+
+  private exploreSearchConcept(operation: string, root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
       'node/explore/search/concept',
-      { path: root }
+      { operation: operation, path: root }
     ).pipe(
       map((searchResp: object) => {
         return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
@@ -122,12 +116,22 @@ export class ExploreSearchService {
       })
     );
   }
+  /**
+   * Perform search concept children in ontology.
+   *
+   * @param {string} root - the path to the specific tree node, must include the first slash
+   *
+   * @returns {Observable<Object>}
+   */
+  exploreSearchConceptChildren(root: string): Observable<TreeNode[]> {
+    return this.exploreSearchConcept('children', root)
+  }
 
 
-  exploreSearchModifier(root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
+  private exploreSearchModifier(operation: string, root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
       'node/explore/search/modifier',
-      { path: root, appliedPath: appliedPath, appliedConcept: appliedConcept }
+      { operation: operation, path: root, appliedPath: appliedPath, appliedConcept: appliedConcept }
     ).pipe(
       map((searchResp: object) => {
         return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
@@ -172,5 +176,16 @@ export class ExploreSearchService {
         }
         )
       }))
+  }
+
+  /**
+   * Perform search modifier children in ontology.
+   *
+   * @param {string} root - the path to the specific tree node, must include the first slash
+   *
+   * @returns {Observable<Object>}
+   */
+  exploreSearchModifierChildren(root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
+    return this.exploreSearchModifier('children', root, appliedPath, appliedConcept)
   }
 }
