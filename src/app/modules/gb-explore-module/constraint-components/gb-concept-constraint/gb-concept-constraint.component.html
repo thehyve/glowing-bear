@@ -13,8 +13,8 @@
                     dropdown="true"
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 
-    <label *ngIf="depth === 1">Same instance number:</label>                
-    <p-checkbox *ngIf="depth === 1" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
+    <label *ngIf="(depth === 1) && queryTimingSameInstance">Same instance:</label>                
+    <p-checkbox *ngIf="(depth === 1) && queryTimingSameInstance" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
                     
   
 
@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <!-- ---------- more options ---------- -->
+  <!-- ---------- more options ---------- 
 
   <div *ngIf="!sensitive" class="gb-constraint-child-container" style="margin-top: 2px">
     <p-panel [collapsed]="!showMoreOptions">
@@ -136,5 +136,6 @@
     </p-panel>
     <br>
   </div>
+-->
 
 </div>

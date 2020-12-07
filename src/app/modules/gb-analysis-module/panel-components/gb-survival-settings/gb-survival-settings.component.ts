@@ -56,11 +56,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   }
   ngOnChanges() {
-    let autoCompleteContainer2 = document.querySelector('#autoCompleteContainer')
-    console.log('containers', this.autoCompleteContainer, autoCompleteContainer2)
-    if (this.autoCompleteContainer) {
-      this.autoCompleteContainer.addEventListener('dragenter', () => { console.log('dragenter') })
-    }
 
   }
 
@@ -69,7 +64,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     let q = event.query.toLowerCase();
 
     let concepts = this.constraintService.concepts;
-    console.log('q', q, 'concepts', concepts)
     if (q) {
       this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
     } else {
@@ -84,7 +78,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     let q = event.query.toLowerCase();
 
     let concepts = this.constraintService.concepts;
-    console.log('q', q, 'concepts', concepts)
     if (q) {
       this.suggestedEndConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
     } else {
@@ -221,21 +214,4 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   get suggestedEndConcepts(): Concept[] {
     return this._suggestedEndConcepts
   }
-
-  set endModifier(mod: string) {
-    this.survivalService.endModifier = mod
-  }
-  set startModifier(mod: string) {
-    this.survivalService.startModifier = mod
-  }
-
-  get startModifier(): string {
-    return this.survivalService.startModifier
-  }
-
-  get endModifier(): string {
-    return this.survivalService.endModifier
-  }
-
-
 }
