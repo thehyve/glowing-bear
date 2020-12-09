@@ -1,51 +1,40 @@
 <div (drop)="onDrop($event)">
-  <div class="form-inline gb-constraint-child-container">
+  <div class="gb-constraint-child-container">
     <label>Ontology concept: </label>
     <p-autoComplete #autoComplete
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
                     field="label"
                     (completeMethod)="onSearch($event)"
-                    [style]="{'width':'100%'}"
-                    [inputStyle]="{'width':'100%'}"
+                    [style]="{'width':'auto'}"
+                    [inputStyle]="{'width':'auto'}"
                     styleClass="gb-concept-constraint-input"
                     size="60"
                     dropdown="true"
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 
-    <label *ngIf="depth === 1">Same instance number:</label>                
+    <label *ngIf="depth === 1">&nbsp;Same instance number:</label>                
     <p-checkbox *ngIf="depth === 1" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
                     
   
 
   <!-- if the concept is NUMERIC -->
-  <div *ngIf="constraintConcept.type === ConceptType.NUMERICAL" class="form-inline gb-constraint-child-container">
-    <span>with value</span>
-    <button type="button" class="btn btn-outline-secondary"
-            (click)="switchOperatorState()">
-      {{getOperatorButtonName()}}
-    </button>
+  <div *ngIf="constraintConcept.type === ConceptType.NUMERIC" class="form-group gb-constraint-child-container" width="auto">
+    <span>with value&nbsp;</span>
+    <p-dropdown [(ngModel)]="operatorState" [options]="valueOperation" dropdownIcon="" (onChange)="changeOperator($event)"></p-dropdown>
 
-    <div *ngIf=" isBetween() " class="d-inline-block">
-      <input type="number" class="form-control col-sm-4" placeholder="min:{{minLimit}}"
+    <div *ngIf="(operatorState !== null) && isBetween() " class="d-inline-block">
+      <input type="number" step="any" class="col-sm-4" placeholder="min:{{minLimit}}"
              [(ngModel)]="minVal"
              (ngModelChange)="updateConceptValues()">
-      <label class="form-check-label d-inline-block">
-        <p-checkbox [(ngModel)]="isMinEqual" binary="true"
-                    (ngModelChange)="updateConceptValues()"></p-checkbox>
-      </label>
       <span>&nbsp;and&nbsp;</span>
-      <input type="number" class="form-control col-sm-4" placeholder="max:{{maxLimit}}"
+      <input type="number" step="any" class="col-sm-4" placeholder="max:{{maxLimit}}"
              [(ngModel)]="maxVal"
              (ngModelChange)="updateConceptValues()">
-      <label class="form-check-label d-inline-block">
-        <p-checkbox [(ngModel)]="isMaxEqual" binary="true"
-                    (ngModelChange)="updateConceptValues()"></p-checkbox>
-      </label>
     </div>
 
-    <div *ngIf=" !isBetween() " class="d-inline-block">
-      <input type="number" class="form-control col-sm-8"
+    <div *ngIf="(operatorState !== null) && !isBetween() " class="d-inline-block">
+      <input type="number" step="any" class="col-sm-8"
              [(ngModel)]="equalVal"
              (ngModelChange)="updateConceptValues()">
     </div>

@@ -158,7 +158,7 @@ export class TreeNodeService {
         }
         switch (node.conceptType) {
           case ConceptType.NUMERICAL:
-            node.icon = 'icon-123';
+            // node.icon = 'icon-123';
             break;
           case ConceptType.CATEGORICAL:
             node.icon = 'icon-abc';

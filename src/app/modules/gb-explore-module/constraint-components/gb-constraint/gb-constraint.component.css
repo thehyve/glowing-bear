@@ -46,8 +46,10 @@
 
 .gb-constraint-child-container {
   background-color: transparent;
-  padding: 0px;
+  margin: 0.25em;
+  padding: 0em;
   margin-bottom: -0.5em;
+  margin-top: 0.5em;
 }
 
 .gb-constraint-remove-btn {
@@ -86,4 +88,14 @@
 .form-inline .btn-outline-secondary {
   font-size: small;
   padding: 0.2em 0.5em 0.2em 0.5em;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }

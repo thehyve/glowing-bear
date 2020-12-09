@@ -12,6 +12,8 @@ import {ErrorHelper} from '../utilities/error-helper';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
 import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import {ApiI2B2Modifier} from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
+import {NumericalOperator} from 'app/models/constraint-models/numerical-operator';
+import {MessageHelper} from 'app/utilities/message-helper';
 
 
 @Injectable()
@@ -122,7 +124,51 @@ export class ConstraintMappingService {
             item.modifier.modifierKey = constraint.concept.modifier.path
             item.modifier.appliedPath = constraint.concept.modifier.appliedPath
           }
+        }
+        break;
+      case ConceptType.NUMERICAL:
+        if (constraint.applyNumericalOperator && (constraint.numericalOperator)) {
+          item.operator = constraint.numericalOperator
+          item.value = ''
+          switch (constraint.numericalOperator) {
+            case NumericalOperator.BETWEEN:
+              if (!(constraint.minValue)) {
+                let err = new Error('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
+                  'The field was left empty or non numerical characters were used.')
+                MessageHelper.alert('error',
+                  err.message
+                )
+                throw err
+              }
+              if (!(constraint.maxValue)) {
+                let err = new Error('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
+                  'The field was left empty or non numerical characters were used.')
+                MessageHelper.alert('error',
+                  err.message
+                )
+                throw err
+              }
+              item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
 
+              break;
+            case NumericalOperator.EQUAL:
+            case NumericalOperator.GREATER:
+            case NumericalOperator.GREATER_OR_EQUAL:
+            case NumericalOperator.LOWER:
+            case NumericalOperator.LOWER_OR_EQUAL:
+            case NumericalOperator.NOT_EQUAL:
+              if (!(constraint.numValue)) {
+                let err = new Error('A numerical operator has been defined, but no valid value provided.' +
+                  'The field was left empty or non numerical characters were used.')
+                MessageHelper.alert('error',
+                  err.message
+                )
+                throw err
+              }
+              break;
+            default:
+              throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator}`);
+          }
         }
         break;
 

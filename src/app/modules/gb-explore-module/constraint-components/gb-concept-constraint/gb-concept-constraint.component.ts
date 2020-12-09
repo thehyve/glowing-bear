@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +12,6 @@ import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
-import {GbConceptOperatorState} from './gb-concept-operator-state';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
@@ -22,6 +22,8 @@ import {SelectItem} from 'primeng/api';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
+import {NumericalOperator} from 'app/models/constraint-models/numerical-operator';
+
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -48,13 +50,24 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   ConceptType = ConceptType;
 
   private _searchResults: Concept[];
-  private _operatorState: GbConceptOperatorState;
   private _isMinEqual: boolean;
   private _isMaxEqual: boolean;
 
   /*
    * numeric value range
    */
+  private _operatorState: NumericalOperator = null;
+
+  private _valueOperation: SelectItem[] = [
+    { label: 'any', value: null },
+    { label: 'greater than', value: NumericalOperator.GREATER },
+    { label: 'greater or equal than', value: NumericalOperator.GREATER_OR_EQUAL },
+    { label: 'lower than', value: NumericalOperator.LOWER },
+    { label: 'lower or equal than', value: NumericalOperator.EQUAL },
+    { label: 'equal to', value: NumericalOperator.EQUAL },
+    { label: 'different from', value: NumericalOperator.NOT_EQUAL },
+    { label: 'between', value: NumericalOperator.BETWEEN }
+  ]
   private _equalVal: number;
   private _minVal: number;
   private _maxVal: number;
@@ -101,12 +114,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       // Initialize aggregate values
       this.isMinEqual = true;
       this.isMaxEqual = true;
-      this.operatorState = GbConceptOperatorState.BETWEEN;
 
       this.selectedCategories = [];
       this.suggestedCategories = [];
 
-      this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
       let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
       if (constraint.concept) {
@@ -177,7 +188,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           this.maxVal = val.value;
         } else if (val.operator === '=') {
           this.equalVal = val.value;
-          this.operatorState = GbConceptOperatorState.EQUAL;
+          this.operatorState = NumericalOperator.EQUAL;
         } else {
           console.warn(`Unknown operator: ${val.operator}`)
         }
@@ -364,14 +375,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateNumericConceptValues() {
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     // if to define a single value
-    if (this.operatorState === GbConceptOperatorState.EQUAL) {
+    if (this.operatorState === NumericalOperator.EQUAL) {
       let newVal: ValueConstraint = new ValueConstraint();
       newVal.operator = '=';
       newVal.value = this.equalVal;
       conceptConstraint.valueConstraints = [];
       conceptConstraint.valueConstraints.push(newVal);
       // else if to define a value range
-    } else if (this.operatorState === GbConceptOperatorState.BETWEEN) {
+    } else if (this.operatorState === NumericalOperator.BETWEEN) {
       conceptConstraint.valueConstraints = [];
 
       let newMinVal: ValueConstraint = new ValueConstraint();
@@ -435,6 +446,20 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   /*
+   * -------------------- event handlers: numerical-operator --------------------
+   */
+
+  changeOperator(event) {
+    if (event.value === null) {
+      (<ConceptConstraint>this.constraint).applyNumericalOperator = false;
+    } else {
+      (<ConceptConstraint>this.constraint).applyNumericalOperator = true;
+      (<ConceptConstraint>this.constraint).numericalOperator = event.value;
+    }
+
+  }
+
+  /*
    * -------------------- state checkers --------------------
    */
 
@@ -443,26 +468,26 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   isBetween() {
-    return this.operatorState === GbConceptOperatorState.BETWEEN;
+    return this.operatorState === NumericalOperator.BETWEEN;
   }
 
   /**
    * Switch the operator state of the current NUMERIC constraint
    */
   switchOperatorState() {
-    if (this.selectedConcept.type === ConceptType.NUMERICAL) {
+    if (this.selectedConcept.type === ConceptType.SIMPLE) {
       this.operatorState =
-        (this.operatorState === GbConceptOperatorState.EQUAL) ?
-          (this.operatorState = GbConceptOperatorState.BETWEEN) :
-          (this.operatorState = GbConceptOperatorState.EQUAL);
+        (this.operatorState === NumericalOperator.EQUAL) ?
+          (this.operatorState = NumericalOperator.BETWEEN) :
+          (this.operatorState = NumericalOperator.EQUAL);
     }
     this.updateConceptValues();
   }
 
   getOperatorButtonName() {
     let name = '';
-    if (this.selectedConcept.type === ConceptType.NUMERICAL || this.selectedConcept.type === ConceptType.DATE) {
-      name = (this.operatorState === GbConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
+    if (this.selectedConcept.type === ConceptType.SIMPLE || this.selectedConcept.type === ConceptType.DATE) {
+      name = (this.operatorState === NumericalOperator.BETWEEN) ? 'between' : 'equal to';
     }
     return name;
   }
@@ -525,12 +550,16 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.droppedConstraint = null;
   }
 
-  get operatorState(): GbConceptOperatorState {
+  get operatorState(): NumericalOperator {
+    console.log(this._operatorState)
     return this._operatorState;
   }
 
-  set operatorState(value: GbConceptOperatorState) {
+  set operatorState(value: NumericalOperator) {
     this._operatorState = value;
+  }
+  get valueOperation(): SelectItem[] {
+    return this._valueOperation
   }
 
   get isMinEqual(): boolean {
@@ -550,19 +579,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   get minVal(): number {
-    return this._minVal;
+    return (<ConceptConstraint>this.constraint).minValue;
   }
 
   set minVal(value: number) {
-    this._minVal = value;
+    (<ConceptConstraint>this.constraint).minValue = value;
   }
 
   get maxVal(): number {
-    return this._maxVal;
+    return (<ConceptConstraint>this.constraint).maxValue;
   }
 
   set maxVal(value: number) {
-    this._maxVal = value;
+    (<ConceptConstraint>this.constraint).maxValue = value;
   }
 
   get maxLimit(): number {
@@ -582,11 +611,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   get equalVal(): number {
-    return this._equalVal;
+    return (<ConceptConstraint>this.constraint).numValue;
   }
 
   set equalVal(value: number) {
-    this._equalVal = value;
+    (<ConceptConstraint>this.constraint).numValue = value;
   }
 
   get searchResults(): Concept[] {

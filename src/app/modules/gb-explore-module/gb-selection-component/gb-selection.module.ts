@@ -8,6 +8,7 @@ import { GbSelectionComponent } from './gb-selection.component';
 import { AccordionModule } from 'primeng/components/accordion/accordion';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DropdownModule} from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CalendarModule } from 'primeng/calendar';
 import { PanelModule } from 'primeng/panel';
@@ -28,6 +29,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     AccordionModule,
     FormsModule,
     AutoCompleteModule,
+    DropdownModule,
     CheckboxModule,
     CalendarModule,
     PanelModule,
