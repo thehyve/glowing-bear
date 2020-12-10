@@ -13,7 +13,7 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintService} from './constraint.service';
-import {ConceptType} from '../models/constraint-models/concept-type';
+import {ValueType} from '../models/constraint-models/value-type';
 import {ErrorHelper} from '../utilities/error-helper';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
@@ -21,6 +21,8 @@ import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation'
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
 import {Observable} from 'rxjs';
 import {Modifier} from 'app/models/constraint-models/modifier';
+import {MessageHelper} from 'app/utilities/message-helper';
+
 
 @Injectable()
 export class TreeNodeService {
@@ -156,20 +158,20 @@ export class TreeNodeService {
           constraintService.conceptConstraints.push(constraint);
           constraintService.allConstraints.push(constraint);
         }
-        switch (node.conceptType) {
-          case ConceptType.NUMERICAL:
+        switch (node.valueType) {
+          case ValueType.NUMERICAL:
             node.icon = 'icon-123';
             break;
-          case ConceptType.CATEGORICAL:
+          case ValueType.CATEGORICAL:
             node.icon = 'icon-abc';
             break;
-          case ConceptType.DATE:
+          case ValueType.DATE:
             node.icon = 'fa fa-calendar';
             break;
-          case ConceptType.TEXT:
+          case ValueType.TEXT:
             node.icon = 'fa fa-newspaper-o';
             break;
-          case ConceptType.SIMPLE:
+          case ValueType.SIMPLE:
           default:
             node.icon = 'fa fa-file';
         }
@@ -195,6 +197,7 @@ export class TreeNodeService {
         node.collapsedIcon = 'fa fa-folder-o';
         break;
       case TreeNodeType.UNKNOWN:
+      case TreeNodeType.CONTAINER:
       default:
         break;
     }
@@ -209,7 +212,24 @@ export class TreeNodeService {
     let concept = new Concept();
     concept.label = `${treeNode.displayName} (${treeNode.path})`;
     concept.path = treeNode.path;
-    concept.type = treeNode.conceptType;
+    concept.type = treeNode.valueType;
+    if (treeNode.metadata) {
+      if (treeNode.metadata.UnitValues) {
+        concept.unit = ''
+        treeNode.metadata.UnitValues.forEach(
+          unitValue => {
+            if ((unitValue.NormalUnits) && unitValue.NormalUnits !== '') {
+              if (concept.unit === '') {
+                concept.unit = unitValue.NormalUnits
+              } else {
+                MessageHelper.alert('warn', `multiple normal units found: keeping ${concept.unit} and ignoring ${unitValue.NormalUnits}`)
+              }
+            }
+
+          }
+        )
+      }
+    }
     concept.code = treeNode.conceptCode;
     concept.fullName = treeNode.path;
     concept.name = treeNode.name;

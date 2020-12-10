@@ -16,7 +16,7 @@ import {ValueConstraint} from '../../../../models/constraint-models/value-constr
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {ValueType} from '../../../../models/constraint-models/value-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {SelectItem} from 'primeng/api';
 import {MessageHelper} from '../../../../utilities/message-helper';
@@ -45,7 +45,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   @ViewChild('categoricalAutoComplete', { static: true }) categoricalAutoComplete: AutoComplete;
   @ViewChild('trialVisitAutoComplete', { static: true }) trialVisitAutoComplete: AutoComplete;
 
-  ConceptType = ConceptType;
+  ValueType = ValueType;
 
   private _searchResults: Concept[];
   private _operatorState: GbConceptOperatorState;
@@ -125,13 +125,13 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         //
         //     constraint.concept.aggregate = responseAggregate;
         //     switch (constraint.concept.type) {
-        //       case ConceptType.NUMERICAL:
+        //       case ValueType.NUMERICAL:
         //         this.handleNumericAggregate(responseAggregate);
         //         break;
-        //       case ConceptType.CATEGORICAL:
+        //       case ValueType.CATEGORICAL:
         //         this.handleCategoricalAggregate(responseAggregate);
         //         break;
-        //       case ConceptType.DATE:
+        //       case ValueType.DATE:
         //         this.handleDateAggregate(responseAggregate);
         //         break;
         //       default:
@@ -351,11 +351,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   // todo: missing types (TEXT)
   updateConceptValues() {
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    if (conceptConstraint.concept.type === ConceptType.NUMERICAL) { // if the concept is numeric
+    if (conceptConstraint.concept.type === ValueType.NUMERICAL) { // if the concept is numeric
       this.updateNumericConceptValues();
-    } else if (conceptConstraint.concept.type === ConceptType.CATEGORICAL) {// else if the concept is categorical
+    } else if (conceptConstraint.concept.type === ValueType.CATEGORICAL) {// else if the concept is categorical
       this.updateCategoricalConceptValues();
-    } else if (conceptConstraint.concept.type === ConceptType.DATE) {
+    } else if (conceptConstraint.concept.type === ValueType.DATE) {
       this.updateDateConceptValues();
     }
     this.update();
@@ -450,7 +450,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * Switch the operator state of the current NUMERIC constraint
    */
   switchOperatorState() {
-    if (this.selectedConcept.type === ConceptType.NUMERICAL) {
+    if (this.selectedConcept.type === ValueType.NUMERICAL) {
       this.operatorState =
         (this.operatorState === GbConceptOperatorState.EQUAL) ?
           (this.operatorState = GbConceptOperatorState.BETWEEN) :
@@ -461,7 +461,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   getOperatorButtonName() {
     let name = '';
-    if (this.selectedConcept.type === ConceptType.NUMERICAL || this.selectedConcept.type === ConceptType.DATE) {
+    if (this.selectedConcept.type === ValueType.NUMERICAL || this.selectedConcept.type === ValueType.DATE) {
       name = (this.operatorState === GbConceptOperatorState.BETWEEN) ? 'between' : 'equal to';
     }
     return name;
@@ -603,5 +603,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   set showMoreOptions(value: boolean) {
     this._showMoreOptions = value;
+  }
+  get unit(): string {
+    let concept = (this.constraint as ConceptConstraint).concept
+
+    return (concept.unit) ? concept.unit : ''
+
   }
 }

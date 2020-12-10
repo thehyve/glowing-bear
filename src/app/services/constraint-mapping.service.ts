@@ -6,7 +6,7 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {ApiI2b2Item} from '../models/api-request-models/medco-node/api-i2b2-item';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
-import {ConceptType} from '../models/constraint-models/concept-type';
+import {ValueType} from '../models/constraint-models/value-type';
 import {CryptoService} from './crypto.service';
 import {ErrorHelper} from '../utilities/error-helper';
 import {NegationConstraint} from '../models/constraint-models/negation-constraint';
@@ -107,7 +107,7 @@ export class ConstraintMappingService {
     switch (constraint.concept.type) {
       // todo: missing types
 
-      case ConceptType.SIMPLE:
+      case ValueType.SIMPLE:
         if (constraint.concept.encryptionDescriptor.encrypted) {
           // todo: children IDs implementation
           item.encrypted = true;

@@ -8,13 +8,13 @@
  */
 
 import {Aggregate} from '../aggregate-models/aggregate';
-import {ConceptType} from './concept-type';
+import {ValueType} from './value-type';
 import {MedcoEncryptionDescriptor} from '../tree-models/medco-encryption-descriptor';
 import {Modifier} from './modifier';
 
 export class Concept {
   private _path: string;
-  private _type: ConceptType;
+  private _type: ValueType;
   // the display text
   private _label: string;
   private _aggregate: Aggregate;
@@ -23,8 +23,29 @@ export class Concept {
   private _fullName: string;
   private _encryptionDescriptor?: MedcoEncryptionDescriptor;
   private _modifier?: Modifier;
+  private _unit: string;
 
   constructor() {
+  }
+
+  clone(): Concept {
+    let ret = new Concept()
+
+    ret.path = this.path
+    ret.type = this.type
+    ret.label = this.label
+    ret.aggregate = (this.aggregate) ? this.aggregate.clone() : null
+    ret.code = this.code
+    ret.name = this.name
+    ret.fullName = this.fullName
+    if (this.encryptionDescriptor) {
+      ret.encryptionDescriptor = this.encryptionDescriptor
+    }
+    if (this.unit) {
+      ret.unit = this.unit
+    }
+
+    return ret
   }
 
   get path(): string {
@@ -35,11 +56,11 @@ export class Concept {
     this._path = value;
   }
 
-  get type(): ConceptType {
+  get type(): ValueType {
     return this._type;
   }
 
-  set type(value: ConceptType) {
+  set type(value: ValueType) {
     this._type = value;
   }
 
@@ -91,30 +112,19 @@ export class Concept {
     this._encryptionDescriptor = value;
   }
 
-
-
-  clone(): Concept {
-    let ret = new Concept()
-
-    ret.path = this.path
-    ret.type = this.type
-    ret.label = this.label
-    ret.aggregate = (this.aggregate) ? this.aggregate.clone() : null
-    ret.code = this.code
-    ret.name = this.name
-    ret.fullName = this.fullName
-    if (this.encryptionDescriptor) {
-      ret.encryptionDescriptor = this.encryptionDescriptor
-    }
-
-    return ret
-  }
-
   get modifier(): Modifier {
     return this._modifier;
   }
 
   set modifier(mod: Modifier) {
     this._modifier = mod
+  }
+
+  get unit(): string {
+    return this._unit;
+  }
+
+  set unit(val: string) {
+    this._unit = val;
   }
 }
