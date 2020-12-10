@@ -111,12 +111,10 @@ export class ConstraintMappingService {
         if (constraint.concept.encryptionDescriptor.encrypted) {
           // todo: children IDs implementation
           item.encrypted = true;
-          item.operator = 'exists';
           item.queryTerm = this.cryptoService.encryptIntegerWithCothorityKey(constraint.concept.encryptionDescriptor.id);
 
         } else {
           item.encrypted = false;
-          item.operator = 'exists';
           item.queryTerm = constraint.concept.path;
           if (constraint.concept.modifier !== undefined) {
             item.modifier = new ApiI2B2Modifier()
@@ -139,7 +137,6 @@ export class ConstraintMappingService {
     return constraint.variantIds.map((variantId) => {
       let item = new ApiI2b2Item();
       item.encrypted = true;
-      item.operator = 'exists';
       item.queryTerm = variantId; // todo: variant IDs are pre-encrypted
       return item;
     });

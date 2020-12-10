@@ -51,7 +51,7 @@ export class TreeNodeService {
 
       // retrieve root tree nodes and extract the concepts
       this._isLoading = true;
-      this.exploreSearchService.exploreSearchConcept('/').subscribe(
+      this.exploreSearchService.exploreSearchConceptChildren('/').subscribe(
         (treeNodes: TreeNode[]) => {
 
           // reset concepts and concept constraints
@@ -84,8 +84,8 @@ export class TreeNodeService {
 
     this._isLoading = true;
     let resultObservable: Observable<TreeNode[]> = parentNode.isModifier() ?
-      this.exploreSearchService.exploreSearchModifier(parentNode.path, parentNode.appliedPath, parentNode.appliedConcept.path) :
-      this.exploreSearchService.exploreSearchConcept(parentNode.path)
+      this.exploreSearchService.exploreSearchModifierChildren(parentNode.path, parentNode.appliedPath, parentNode.appliedConcept.path) :
+      this.exploreSearchService.exploreSearchConceptChildren(parentNode.path)
 
     resultObservable.subscribe(
       (treeNodes: TreeNode[]) => {
