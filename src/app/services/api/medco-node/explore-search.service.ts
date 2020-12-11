@@ -60,7 +60,6 @@ export class ExploreSearchService {
 
           treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
           treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
-
           treeNode.depth = treeNode.path.split('/').length - 2;
           treeNode.children = [];
           treeNode.childrenAttached = false;
@@ -145,11 +144,13 @@ export class ExploreSearchService {
       return null
     }
     if (metadata) {
-      if ((metadata.Oktousevalues) && metadata.Oktousevalues === 'Y') {
-        return ValueType.NUMERICAL
-      }
-      if ((metadata.EnumValues) && metadata.EnumValues.length > 0) {
-        return ValueType.CATEGORICAL
+      if (metadata.ValueMetadata) {
+        if ((metadata.ValueMetadata.Oktousevalues) && metadata.ValueMetadata.Oktousevalues === 'Y') {
+          return ValueType.NUMERICAL
+        }
+        if ((metadata.ValueMetadata.EnumValues) && metadata.ValueMetadata.EnumValues.length > 0) {
+          return ValueType.CATEGORICAL
+        }
       }
     }
     return ValueType.SIMPLE

@@ -606,7 +606,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
   get unit(): string {
     let concept = (this.constraint as ConceptConstraint).concept
-
+    console.warn('concept unit', concept.unit)
     return (concept.unit) ? concept.unit : ''
 
   }

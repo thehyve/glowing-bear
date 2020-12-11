@@ -7,18 +7,20 @@
  */
 
 export class ApiValueMetadata {
-  Version: string
-  EncryptedType: string
-  ChildrenEncryptIDs: string
-  NodeEncryptID: string
-  CreationDateTime: string
-  TestID: string
-  TestName: string
-  DataType: DataType
-  Flagstouse: string
-  Oktousevalues: string
-  UnitValues: UnitValues[]
-  EnumValues: string
+  ValueMetadata: {
+    Version: string
+    EncryptedType: string
+    ChildrenEncryptIDs: string
+    NodeEncryptID: string
+    CreationDateTime: string
+    TestID: string
+    TestName: string
+    DataType: DataType
+    Flagstouse: string
+    Oktousevalues: string
+    UnitValues: UnitValues
+    EnumValues: string
+  }
 }
 
 enum DataType {

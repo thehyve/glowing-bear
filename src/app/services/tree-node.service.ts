@@ -8,20 +8,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, Injector} from '@angular/core';
-import {Concept} from '../models/constraint-models/concept';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {TreeNode} from '../models/tree-models/tree-node';
-import {ConstraintService} from './constraint.service';
-import {ValueType} from '../models/constraint-models/value-type';
-import {ErrorHelper} from '../utilities/error-helper';
-import {TreeNodeType} from '../models/tree-models/tree-node-type';
-import {AppConfig} from '../config/app.config';
-import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
-import {ExploreSearchService} from './api/medco-node/explore-search.service';
-import {Observable} from 'rxjs';
-import {Modifier} from 'app/models/constraint-models/modifier';
-import {MessageHelper} from 'app/utilities/message-helper';
+import { Injectable, Injector } from '@angular/core';
+import { Concept } from '../models/constraint-models/concept';
+import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
+import { TreeNode } from '../models/tree-models/tree-node';
+import { ConstraintService } from './constraint.service';
+import { ValueType } from '../models/constraint-models/value-type';
+import { ErrorHelper } from '../utilities/error-helper';
+import { TreeNodeType } from '../models/tree-models/tree-node-type';
+import { AppConfig } from '../config/app.config';
+import { GenomicAnnotation } from '../models/constraint-models/genomic-annotation';
+import { ExploreSearchService } from './api/medco-node/explore-search.service';
+import { Observable } from 'rxjs';
+import { Modifier } from 'app/models/constraint-models/modifier';
+import { MessageHelper } from 'app/utilities/message-helper';
 
 
 @Injectable()
@@ -214,22 +214,13 @@ export class TreeNodeService {
     concept.path = treeNode.path;
     concept.type = treeNode.valueType;
     if (treeNode.metadata) {
-      if (treeNode.metadata.UnitValues) {
-        concept.unit = ''
-        treeNode.metadata.UnitValues.forEach(
-          unitValue => {
-            if ((unitValue.NormalUnits) && unitValue.NormalUnits !== '') {
-              if (concept.unit === '') {
-                concept.unit = unitValue.NormalUnits
-              } else {
-                MessageHelper.alert('warn', `multiple normal units found: keeping ${concept.unit} and ignoring ${unitValue.NormalUnits}`)
-              }
-            }
-
-          }
-        )
+      if (treeNode.metadata.ValueMetadata) {
+        if (treeNode.metadata.ValueMetadata.UnitValues) {
+          concept.unit = treeNode.metadata.ValueMetadata.UnitValues.NormalUnits
+        }
       }
     }
+
     concept.code = treeNode.conceptCode;
     concept.fullName = treeNode.path;
     concept.name = treeNode.name;

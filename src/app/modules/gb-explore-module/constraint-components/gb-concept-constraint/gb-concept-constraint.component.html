@@ -42,12 +42,14 @@
         <p-checkbox [(ngModel)]="isMaxEqual" binary="true"
                     (ngModelChange)="updateConceptValues()"></p-checkbox>
       </label>
+      <span> {{unit}}</span>
     </div>
 
     <div *ngIf=" !isBetween() " class="d-inline-block">
       <input type="number" class="form-control col-sm-8"
              [(ngModel)]="equalVal"
              (ngModelChange)="updateConceptValues()">
+             <span> {{unit}}</span>
     </div>
   </div>
 
