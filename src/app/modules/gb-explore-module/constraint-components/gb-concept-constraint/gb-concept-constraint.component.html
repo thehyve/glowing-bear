@@ -18,37 +18,37 @@
                     
   
 
-  <!-- if the concept is NUMERIC -->
-  <div *ngIf="constraintConcept.type === ConceptType.NUMERIC" class="form-group gb-constraint-child-container" width="auto">
-    <span>with value&nbsp;</span>
-    <p-dropdown [(ngModel)]="operatorState" [options]="valueOperation" dropdownIcon="" (onChange)="changeOperator($event)"></p-dropdown>
+<!-- if the concept is NUMERIC -->
+<div *ngIf="constraintConcept.type === ValueType.NUMERICAL" class="form-group gb-constraint-child-container" width="auto">
+  <span>with value&nbsp;</span>
+  <p-dropdown [(ngModel)]="operatorState" [options]="valueOperation" dropdownIcon="" (onChange)="changeOperator($event)"></p-dropdown>
+  <span>&nbsp;</span>
 
-    <div *ngIf="(operatorState !== null) && isBetween() " class="d-inline-block">
-      <input type="number" step="any" class="col-sm-4" placeholder="min:{{minLimit}}"
-             [(ngModel)]="minVal"
-             (ngModelChange)="updateConceptValues()">
-      <span>&nbsp;and&nbsp;</span>
-      <input type="number" step="any" class="col-sm-4" placeholder="max:{{maxLimit}}"
-             [(ngModel)]="maxVal"
-             (ngModelChange)="updateConceptValues()">
-    </div>
-
-    <div *ngIf="(operatorState !== null) && !isBetween() " class="d-inline-block">
-      <input type="number" step="any" class="col-sm-8"
-             [(ngModel)]="equalVal"
-             (ngModelChange)="updateConceptValues()">
-    </div>
+  <div *ngIf="(operatorState !== null) && isBetween() " class="d-inline-block">
+    <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-4" placeholder="min:{{minLimit}}"
+           [(ngModel)]="minVal">
+    <span>&nbsp;and&nbsp;</span>
+    <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-4" placeholder="max:{{maxLimit}}"
+           [(ngModel)]="maxVal">
+    <span>&nbsp;{{unit}}</span>
   </div>
 
+  <div *ngIf="(operatorState !== null) && !isBetween() " class="d-inline-block">
+    <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-8"
+           [(ngModel)]="equalVal">
+    <span>&nbsp;{{unit}}</span>
+  </div>
+</div>
+
   <!-- if the concept is CATEGORICAL -->
-  <div *ngIf="constraintConcept.type === ConceptType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
+  <div *ngIf="constraintConcept.type === ValueType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
                    [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"></p-multiSelect>
   </div>
 
   <!--  if the concept is DATE -->
-  <div *ngIf="constraintConcept.type === ConceptType.DATE" class="form-inline gb-constraint-child-container">
+  <div *ngIf="constraintConcept.type === ValueType.DATE" class="form-inline gb-constraint-child-container">
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">

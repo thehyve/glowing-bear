@@ -16,14 +16,13 @@ import {ValueConstraint} from '../../../../models/constraint-models/value-constr
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
-import {ConceptType} from '../../../../models/constraint-models/concept-type';
+import {ValueType} from '../../../../models/constraint-models/value-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
 import {SelectItem} from 'primeng/api';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {NumericalOperator} from 'app/models/constraint-models/numerical-operator';
-
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -47,7 +46,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   @ViewChild('categoricalAutoComplete', { static: true }) categoricalAutoComplete: AutoComplete;
   @ViewChild('trialVisitAutoComplete', { static: true }) trialVisitAutoComplete: AutoComplete;
 
-  ConceptType = ConceptType;
+  ValueType = ValueType;
 
   private _searchResults: Concept[];
   private _isMinEqual: boolean;
@@ -57,6 +56,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * numeric value range
    */
   private _operatorState: NumericalOperator = null;
+
 
   private _valueOperation: SelectItem[] = [
     { label: 'any', value: null },
@@ -68,9 +68,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     { label: 'different from', value: NumericalOperator.NOT_EQUAL },
     { label: 'between', value: NumericalOperator.BETWEEN }
   ]
-  private _equalVal: number;
-  private _minVal: number;
-  private _maxVal: number;
+
+
   private _minLimit: number;
   private _maxLimit: number;
 
@@ -114,10 +113,12 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       // Initialize aggregate values
       this.isMinEqual = true;
       this.isMaxEqual = true;
+      this.operatorState = null;
 
       this.selectedCategories = [];
       this.suggestedCategories = [];
 
+      this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
       let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
       if (constraint.concept) {
@@ -136,13 +137,13 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
         //
         //     constraint.concept.aggregate = responseAggregate;
         //     switch (constraint.concept.type) {
-        //       case ConceptType.NUMERICAL:
+        //       case ValueType.NUMERICAL:
         //         this.handleNumericAggregate(responseAggregate);
         //         break;
-        //       case ConceptType.CATEGORICAL:
+        //       case ValueType.CATEGORICAL:
         //         this.handleCategoricalAggregate(responseAggregate);
         //         break;
-        //       case ConceptType.DATE:
+        //       case ValueType.DATE:
         //         this.handleDateAggregate(responseAggregate);
         //         break;
         //       default:
@@ -362,11 +363,11 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   // todo: missing types (TEXT)
   updateConceptValues() {
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
-    if (conceptConstraint.concept.type === ConceptType.NUMERICAL) { // if the concept is numeric
+    if (conceptConstraint.concept.type === ValueType.NUMERICAL) { // if the concept is numeric
       this.updateNumericConceptValues();
-    } else if (conceptConstraint.concept.type === ConceptType.CATEGORICAL) {// else if the concept is categorical
+    } else if (conceptConstraint.concept.type === ValueType.CATEGORICAL) {// else if the concept is categorical
       this.updateCategoricalConceptValues();
-    } else if (conceptConstraint.concept.type === ConceptType.DATE) {
+    } else if (conceptConstraint.concept.type === ValueType.DATE) {
       this.updateDateConceptValues();
     }
     this.update();
@@ -475,7 +476,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * Switch the operator state of the current NUMERIC constraint
    */
   switchOperatorState() {
-    if (this.selectedConcept.type === ConceptType.SIMPLE) {
+    if (this.selectedConcept.type === ValueType.NUMERICAL) {
       this.operatorState =
         (this.operatorState === NumericalOperator.EQUAL) ?
           (this.operatorState = NumericalOperator.BETWEEN) :
@@ -486,7 +487,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   getOperatorButtonName() {
     let name = '';
-    if (this.selectedConcept.type === ConceptType.SIMPLE || this.selectedConcept.type === ConceptType.DATE) {
+    if (this.selectedConcept.type === ValueType.NUMERICAL || this.selectedConcept.type === ValueType.DATE) {
       name = (this.operatorState === NumericalOperator.BETWEEN) ? 'between' : 'equal to';
     }
     return name;
@@ -551,13 +552,13 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   get operatorState(): NumericalOperator {
-    console.log(this._operatorState)
     return this._operatorState;
   }
 
   set operatorState(value: NumericalOperator) {
     this._operatorState = value;
   }
+
   get valueOperation(): SelectItem[] {
     return this._valueOperation
   }
@@ -594,10 +595,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     (<ConceptConstraint>this.constraint).maxValue = value;
   }
 
-  get maxLimit(): number {
-    return this._maxLimit;
-  }
-
   set maxLimit(value: number) {
     this._maxLimit = value;
   }
@@ -632,5 +629,18 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   set showMoreOptions(value: boolean) {
     this._showMoreOptions = value;
+  }
+  get unit(): string {
+    let concept = (this.constraint as ConceptConstraint).concept
+    return (concept.unit) ? concept.unit : ''
+
+  }
+  get integerOrFloatStep(): string {
+    let concept = (this.constraint as ConceptConstraint).concept
+    return concept.isInteger ? '1' : 'any'
+  }
+  get positive(): string {
+    let concept = (this.constraint as ConceptConstraint).concept
+    return concept.isPositive ? '0' : ''
   }
 }
