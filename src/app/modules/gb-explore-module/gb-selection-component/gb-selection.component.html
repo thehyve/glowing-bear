@@ -1,8 +1,8 @@
 <div>
 
-  <label style="margin: 6px;">Same instance number:</label>
-  <p-checkbox [(ngModel)]="queryTimingSameInstance" [binary]="true"></p-checkbox>
-  
+  <br>
+  <p-dropdown [(ngModel)]="queryTiming" [options]="timings" [ngStyle]="{'font-size':'small','margin-bottom':'1em'}"></p-dropdown>
+  <div>&nbsp;</div>
   <!-- Inclusion criteria -->
   
   <div #inclusionCriteriaBox

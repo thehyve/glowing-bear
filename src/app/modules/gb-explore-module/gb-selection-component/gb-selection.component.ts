@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,7 +8,7 @@
  */
 
 import {
-  Component, OnInit, ViewChild
+  Component, ViewChild
 } from '@angular/core';
 import {
   trigger, style, animate, transition
@@ -18,6 +19,7 @@ import { ConstraintService } from '../../../services/constraint.service';
 import { FormatHelper } from '../../../utilities/format-helper';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { SelectItem } from 'primeng/api';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -40,6 +42,10 @@ type LoadingState = 'loading' | 'complete';
 })
 export class GbSelectionComponent {
 
+  _timings: SelectItem[] = [
+    { label: 'Treat groups independently', value: false },
+    { label: 'Selected groups occur in the same instance', value: true }]
+
   @ViewChild('rootInclusionConstraintComponent', { static: true }) rootInclusionConstraintComponent: GbConstraintComponent;
   @ViewChild('rootExclusionConstraintComponent', { static: true }) rootExclusionConstraintComponent: GbConstraintComponent;
 
@@ -50,6 +56,18 @@ export class GbSelectionComponent {
     this.isUploadListenerNotAdded = true;
   }
 
+  get timings(): SelectItem[] {
+    return this._timings
+  }
+
+  set queryTiming(val: boolean) {
+    this.queryService.queryTimingSameInstance = val
+  }
+
+  get queryTiming(): boolean {
+    return this.queryService.queryTimingSameInstance
+  }
+
   get globalCount(): Observable<string> {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
@@ -58,13 +76,5 @@ export class GbSelectionComponent {
 
   get loadingState(): LoadingState {
     return this.queryService.isUpdating ? 'loading' : 'complete';
-  }
-
-  get queryTimingSameInstance(): boolean {
-    return (this.queryService.queryTimingSameInstance) ? this.queryService.queryTimingSameInstance : false
-  }
-
-  set queryTimingSameInstance(val: boolean) {
-    this.queryService.queryTimingSameInstance = val
   }
 }

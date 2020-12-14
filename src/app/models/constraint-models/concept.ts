@@ -56,6 +56,10 @@ export class Concept {
       ret.isPositive = this.isPositive
     }
 
+    if (this._modifier) {
+      ret._modifier = new Modifier(this._modifier.path, this._modifier.appliedPath, this._modifier.appliedConceptPath)
+    }
+
     return ret
   }
 
@@ -145,6 +149,7 @@ export class Concept {
 
   set isInteger(val: boolean) {
     this._isInteger = val
+    
   }
 
   get isPositive(): boolean {

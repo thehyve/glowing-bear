@@ -13,7 +13,7 @@ import { Observable, of } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ApiSurvivalAnalysisService } from './api/medco-node/api-survival-analysis.service';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear'
-import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
+import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/api-survival-analysis';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { CohortService } from './cohort.service';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
@@ -143,13 +143,25 @@ export class SurvivalService {
 
     }
     apiSurvivalAnalysis.startConcept = this.startConcept.path
-    apiSurvivalAnalysis.startModifier = this.startModifier
+    if (this.startConcept.modifier) {
+      apiSurvivalAnalysis.startConcept = this.startConcept.modifier.appliedConceptPath
+      apiSurvivalAnalysis.startModifier = {
+        ModifierKey: this.startConcept.modifier.path,
+        AppliedPath: this.startConcept.modifier.appliedPath
+      }
+    }
 
     if (!this.endConcept) {
       throw ErrorHelper.handleNewError('End event is undefined')
     }
     apiSurvivalAnalysis.endConcept = this.endConcept.path
-    apiSurvivalAnalysis.endModifier = this.endModifier
+    if (this.endConcept.modifier) {
+      apiSurvivalAnalysis.endConcept = this.endConcept.modifier.appliedConceptPath
+      apiSurvivalAnalysis.endModifier = {
+        ModifierKey: this.endConcept.modifier.path,
+        AppliedPath: this.endConcept.modifier.appliedPath
+      }
+    }
 
     apiSurvivalAnalysis.timeLimit = this.limit
     apiSurvivalAnalysis.timeGranularity = this.granularity
@@ -228,9 +240,7 @@ export class SurvivalService {
       this._granularity,
       this._limit,
       this._startConcept.name,
-      this._startModifier,
       this._endConcept.name,
-      this._endModifier,
       subGroupsTextualRepresentations,
     )
   }

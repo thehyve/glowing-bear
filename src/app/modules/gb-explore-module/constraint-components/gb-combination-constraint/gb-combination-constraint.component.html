@@ -1,8 +1,8 @@
 <div class="gb-combination-constraint-container" (drop)="onDrop($event)">
 
   <div class="{{childContainerClass}}">
-    <label *ngIf="depth === 1" style="margin: 6px;">Same instance number:</label>
-    <p-checkbox *ngIf="depth === 1" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
+    <label *ngIf="(depth === 1) && queryTimingSameInstance" style="margin: 6px;">Same instance:</label>
+    <p-checkbox *ngIf="(depth === 1) && queryTimingSameInstance" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
     <!-- Child Constraints -->
     <div *ngFor="let child of children; let i = index">
       <div *ngIf="i > 0" class="gb-constraint-state-container">

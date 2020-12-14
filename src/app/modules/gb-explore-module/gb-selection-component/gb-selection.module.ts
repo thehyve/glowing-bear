@@ -6,9 +6,9 @@ import { GbConceptConstraintComponent } from '../constraint-components/gb-concep
 import { GbGenomicAnnotationConstraintComponent } from '../constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
 import { GbSelectionComponent } from './gb-selection.component';
 import { AccordionModule } from 'primeng/components/accordion/accordion';
+import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-import { DropdownModule} from 'primeng/dropdown';
 import { CheckboxModule } from 'primeng/checkbox';
 import { CalendarModule } from 'primeng/calendar';
 import { PanelModule } from 'primeng/panel';
@@ -32,6 +32,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     DropdownModule,
     CheckboxModule,
     CalendarModule,
+    DropdownModule,
     PanelModule,
     MultiSelectModule,
   ],
