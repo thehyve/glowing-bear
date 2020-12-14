@@ -149,7 +149,6 @@ export class Concept {
 
   set isInteger(val: boolean) {
     this._isInteger = val
-    
   }
 
   get isPositive(): boolean {
