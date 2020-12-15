@@ -237,7 +237,11 @@ export class TreeNodeService {
     let concept = this.getConceptFromTreeNode(treeNode.appliedConcept)
 
     let modifier = new Modifier(treeNode.path, treeNode.appliedPath, treeNode.appliedConcept.path)
-    let modifierPath = (modifier.path.length > 0 && modifier.path.startsWith('/')) ? modifier.path.substring(1) : modifier.path
+    let modifierPathSplit = (modifier.path.length > 0 && modifier.path.startsWith('/')) ?
+      modifier.path.substring(1).split('/') :
+      modifier.path.split('/')
+    modifierPathSplit.shift()
+    let modifierPath = modifierPathSplit.join('/')
 
     // override the fields
 

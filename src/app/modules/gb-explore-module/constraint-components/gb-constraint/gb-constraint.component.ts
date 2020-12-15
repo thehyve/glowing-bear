@@ -38,6 +38,7 @@ export class GbConstraintComponent implements OnInit {
 
   ngOnInit() {
     this.addEventListeners();
+    this.panelTimingSameInstance = true
   }
 
   /**
@@ -120,6 +121,10 @@ export class GbConstraintComponent implements OnInit {
 
   get panelTimingSameInstance(): boolean {
     return (this.constraint) ? this.constraint.panelTimingSameInstance : false
+  }
+
+  get queryTimingSameInstance(): boolean {
+    return this.queryService.queryTimingSameInstance
   }
 
 }

@@ -12,7 +12,7 @@ import { MedcoNetworkService } from '../medco-network.service';
 import { CryptoService } from '../../crypto.service';
 import { Observable, forkJoin } from 'rxjs';
 import { timeout } from 'rxjs/operators';
-import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/survival-analysis';
+import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/api-survival-analysis';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 
 @Injectable()

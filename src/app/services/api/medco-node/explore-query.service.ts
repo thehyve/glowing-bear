@@ -12,7 +12,7 @@ import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
 import {ErrorHelper} from '../../../utilities/error-helper';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 @Injectable()
 export class ExploreQueryService {
@@ -69,7 +69,10 @@ export class ExploreQueryService {
    */
   private exploreQueryAllNodes(queryId: string, userPublicKey: string,
     panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): Observable<ApiExploreQueryResult[]> {
-    return forkJoin(...this.medcoNetworkService.nodesUrl.map(
+
+    this.preparePanelTimings(panels, queryTiming)
+
+    return forkJoin(this.medcoNetworkService.nodesUrl.map(
       (url) => this.exploreQuerySingleNode(queryId, userPublicKey, panels, queryTiming, url)
     )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }
@@ -85,5 +88,15 @@ export class ExploreQueryService {
       this.constraintMappingService.mapConstraint(query.constraint),
       query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
     );
+  }
+
+  // preparePanelTimings reset all panel timing to false if the query-level is false,
+  // does nothing otherwise
+  private preparePanelTimings(panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): void {
+    if (queryTiming === ApiI2b2Timing.any) {
+      panels.forEach(panel => {
+        panel.panelTiming = ApiI2b2Timing.any
+      })
+    }
   }
 }

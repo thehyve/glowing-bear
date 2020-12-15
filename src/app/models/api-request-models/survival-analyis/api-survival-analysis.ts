@@ -15,8 +15,14 @@ export class ApiSurvivalAnalysis {
   timeGranularity: string
   startConcept: string
   endConcept: string
-  startModifier: string
-  endModifier: string
+  startModifier?: {
+    ModifierKey: string
+    AppliedPath: string
+  }
+  endModifier?: {
+    ModifierKey: string
+    AppliedPath: string
+  }
   userPublicKey: string
 
 }

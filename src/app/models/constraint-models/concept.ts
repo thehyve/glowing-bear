@@ -107,6 +107,10 @@ export class Concept {
       ret.encryptionDescriptor = this.encryptionDescriptor
     }
 
+    if (this._modifier) {
+      ret._modifier = new Modifier(this._modifier.path, this._modifier.appliedPath, this._modifier.appliedConceptPath)
+    }
+
     return ret
   }
 
