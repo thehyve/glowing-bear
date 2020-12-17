@@ -100,9 +100,9 @@ export class QueryService {
     if (this.queryType === ExploreQueryType.PATIENT_LIST) {
       parsedResults.resultInstanceID = encResults.map(({ patientSetID }) => patientSetID)
       parsedResults.patientLists = encResults.map((result) =>
-        result.encryptedPatientList.map((encryptedPatientID) =>
+        result.encryptedPatientList ? result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
-        ));
+        ): []);
     }
 
     console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
