@@ -103,6 +103,11 @@ export class QueryService {
         result.encryptedPatientList ? result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
         ) : []);
+
+      if (parsedResults.globalCount === 0) {
+        alert('No patients found matching this query');
+      }
+
     }
 
     console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
