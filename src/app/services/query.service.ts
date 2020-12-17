@@ -102,7 +102,7 @@ export class QueryService {
       parsedResults.patientLists = encResults.map((result) =>
         result.encryptedPatientList ? result.encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
-        ): []);
+        ) : []);
     }
 
     console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
