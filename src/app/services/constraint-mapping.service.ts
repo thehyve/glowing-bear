@@ -141,27 +141,15 @@ export class ConstraintMappingService {
           switch (constraint.numericalOperator) {
             case NumericalOperator.BETWEEN:
               if (!(constraint.minValue)) {
-                let err = new Error('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
-                  'The field was left empty or non numerical characters were used.')
-                MessageHelper.alert('error',
-                  err.message
-                )
-                throw err
+                throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.')
               }
               if (!(constraint.maxValue)) {
-                let err = new Error('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
-                  'The field was left empty or non numerical characters were used.')
-                MessageHelper.alert('error',
-                  err.message
-                )
-                throw err
+                throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.')
               }
               if (constraint.maxValue < constraint.minValue) {
-                let err = new Error(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`)
-                MessageHelper.alert('error',
-                  err.message
-                )
-                throw err
+                throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`)
               }
               item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
 
