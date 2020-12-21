@@ -1,8 +1,9 @@
 import { TreeNode as PrimeNgTreeNode } from 'primeng/api';
 import { DropMode } from '../drop-mode';
-import { ConceptType } from '../constraint-models/concept-type';
+import { ValueType } from '../constraint-models/value-type';
 import { TreeNodeType } from './tree-node-type';
 import { MedcoEncryptionDescriptor } from './medco-encryption-descriptor';
+import { ApiValueMetadata } from '../api-response-models/medco-node/api-value-metadata';
 
 export class TreeNode implements PrimeNgTreeNode {
 
@@ -18,11 +19,11 @@ export class TreeNode implements PrimeNgTreeNode {
 
   // type of node (concept, study, ...)
   nodeType: TreeNodeType;
-  // type of concept if node is a concept
-  conceptType: ConceptType;
+  // type of value if node is an ontology concept
+  valueType: ValueType;
   conceptCode: string;
   dropMode: DropMode;
-  metadata: object;
+  metadata: ApiValueMetadata;
   // depth of the node in the tree
   depth: number;
   // number of subject (possibly undefined) associated with this node
@@ -54,7 +55,7 @@ export class TreeNode implements PrimeNgTreeNode {
     copy.displayName = this.displayName;
     copy.description = this.description;
     copy.nodeType = this.nodeType;
-    copy.conceptType = this.conceptType;
+    copy.valueType = this.valueType;
     copy.conceptCode = this.conceptCode;
     copy.dropMode = this.dropMode;
     if (this.metadata) {

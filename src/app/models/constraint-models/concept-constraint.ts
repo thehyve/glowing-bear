@@ -13,6 +13,8 @@ import { Concept } from './concept';
 import { ValueConstraint } from './value-constraint';
 import { TimeConstraint } from './time-constraint';
 import { FormatHelper } from '../../utilities/format-helper';
+import { NumericalOperator } from './numerical-operator';
+import { Numeric } from 'd3';
 
 export class ConceptConstraint extends Constraint {
 
@@ -22,6 +24,13 @@ export class ConceptConstraint extends Constraint {
   // the time constraint used for date type constraint of this concept
   private _valDateConstraint: TimeConstraint;
   private _applyValDateConstraint = false;
+
+  // numerical operator
+  private _applyNumericalOperator = false;
+  private _numericalOperator: NumericalOperator;
+  private _numValue: number;
+  private _minValue: number;
+  private _maxValue: number;
 
   // observation date range
   private _applyObsDateConstraint = false;
@@ -42,6 +51,19 @@ export class ConceptConstraint extends Constraint {
     res.textRepresentation = this.textRepresentation
     res.parentConstraint = this.parentConstraint
     res.concept = this.concept.clone()
+    res.applyNumericalOperator = this.applyNumericalOperator
+    if (this.numericalOperator) {
+      res.numericalOperator = this.numericalOperator
+    }
+    if (this.numValue) {
+      res.numValue = this.numValue
+    }
+    if (this.minValue) {
+      res.minValue = this.minValue
+    }
+    if (this.maxValue) {
+      res.maxValue = this.maxValue
+    }
     return res
   }
 
@@ -96,5 +118,47 @@ export class ConceptConstraint extends Constraint {
 
   set applyValDateConstraint(value: boolean) {
     this._applyValDateConstraint = value;
+  }
+
+  set applyNumericalOperator(val: boolean) {
+    this._applyNumericalOperator = val
+  }
+
+  get applyNumericalOperator(): boolean {
+    return this._applyNumericalOperator
+  }
+
+  set numericalOperator(val: NumericalOperator) {
+    this._numericalOperator = val
+  }
+
+  get numericalOperator(): NumericalOperator {
+    return this._numericalOperator
+
+  }
+
+  set numValue(val: number) {
+    this._numValue = val
+  }
+
+  get numValue(): number {
+    return this._numValue
+  }
+
+  set minValue(val: number) {
+    this._minValue = val
+  }
+
+  get minValue(): number {
+    return this._minValue
+
+  }
+  set maxValue(val: number) {
+    this._maxValue = val
+  }
+
+  get maxValue(): number {
+    return this._maxValue
+
   }
 }

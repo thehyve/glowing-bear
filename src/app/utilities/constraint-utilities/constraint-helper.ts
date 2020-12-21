@@ -7,7 +7,7 @@
  */
 
 import {ConceptConstraint} from '../../models/constraint-models/concept-constraint';
-import {ConceptType} from '../../models/constraint-models/concept-type';
+import {ValueType} from '../../models/constraint-models/value-type';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';
 
@@ -24,7 +24,7 @@ export class ConstraintHelper {
       return false;
     }
     let conceptConstraint = <ConceptConstraint>constraint;
-    return conceptConstraint.concept.type === ConceptType.CATEGORICAL;
+    return conceptConstraint.concept.type === ValueType.CATEGORICAL;
   }
 
   /**
