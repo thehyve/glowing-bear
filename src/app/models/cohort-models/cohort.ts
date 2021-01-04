@@ -12,11 +12,13 @@ import { rootCertificates } from 'tls'
 import { CombinationConstraint } from '../constraint-models/combination-constraint'
 
 import { ErrorHelper } from 'app/utilities/error-helper'
+import { ApiQueryDefinition } from '../api-request-models/medco-node/api-query-definition'
 
 
 export class Cohort {
   protected _name: string
   protected _patient_set_id: Array<number>
+  protected _queryDefinitions: Array<ApiQueryDefinition>
 
   public selected: boolean
   protected _creationDate: Date
@@ -150,7 +152,13 @@ export class Cohort {
 
   }
 
+  set queryDefinition(qd : Array<ApiQueryDefinition>){
+    this._queryDefinitions = qd
+  }
 
+  get queryDefinition() : Array<ApiQueryDefinition>{
+    return this._queryDefinitions
+  }
 
   get creationDate(): Date {
     return (this._creationDate) ? new Date(this._creationDate) : null

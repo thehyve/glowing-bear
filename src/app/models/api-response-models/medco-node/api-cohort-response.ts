@@ -8,6 +8,7 @@
 
 import { ApiI2b2Panel } from "app/models/api-request-models/medco-node/api-i2b2-panel";
 import { ApiI2b2Timing } from "app/models/api-request-models/medco-node/api-i2b2-timing";
+import { ApiQueryDefinition } from "app/models/api-request-models/medco-node/api-query-definition";
 
 export class ApiCohortResponse {
   cohortName: string;
@@ -15,10 +16,5 @@ export class ApiCohortResponse {
   patientSetID: number;
   creationDate: string;
   updateDate: string;
-  queryDefinition?: QueryDefinition;
-}
-
-class QueryDefinition {
-  panels: ApiI2b2Panel[];
-  queryTiming : ApiI2b2Timing;
+  queryDefinition?: ApiQueryDefinition;
 }

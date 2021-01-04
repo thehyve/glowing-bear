@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,16 +18,19 @@ import { Modifier } from 'app/models/constraint-models/modifier';
 import { CombinationState } from 'app/models/constraint-models/combination-state';
 import { ConstraintService } from './constraint.service';
 import { TreeNodeService } from './tree-node.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, zip } from 'rxjs';
 import { modifiedConceptPath } from 'app/utilities/constraint-utilities/modified-concept-path';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
+import { map } from 'rxjs/operators';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { DropMode } from 'app/models/drop-mode';
 
 
 
 @Injectable()
-export class ConstraintMappingService {
+export class ConstraintReverseMappingService {
 
-  constructor(private constraintService: ConstraintService,private treeNodeService: TreeNodeService, private exploreSearchService: ExploreSearchService) { }
+  constructor(private constraintService: ConstraintService, private exploreSearchService: ExploreSearchService) { }
   /**
    * 
    * Maps an array of panels to a constraint if the panels are fully composed
@@ -35,14 +38,22 @@ export class ConstraintMappingService {
    * 
    * @param panels 
    */
-  public mapPanels(panels: ApiI2b2Panel[], targetConstraint: Constraint, targetPanelTiming: ApiI2b2Timing[]): boolean {
-    targetPanelTiming = new Array<ApiI2b2Timing>()
+  public mapPanels(panels: ApiI2b2Panel[], targetPanelTiming: ApiI2b2Timing[]): Observable<Constraint> {
+    targetPanelTiming = new Array<ApiI2b2Timing>(panels.length)
+    targetPanelTiming.fill(ApiI2b2Timing.any)
+
     if (panels.length === 1 && panels[0].items.length === 1) {
 
-      this.mapPanel(panels[0], targetConstraint, targetPanelTiming[0])
+      return this.mapItem(panels[0].items[0])
 
     } else {
-      var combiConstraint = new CombinationConstraint()
+      return zip(panels.map((panel, index) => this.mapPanel(panel, targetPanelTiming[index]))).pipe(map(constraints => {
+        let combinationConstraint = new CombinationConstraint()
+        constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
+        combinationConstraint.combinationState = CombinationState.And
+        return combinationConstraint
+
+      }))
 
     }
   }
@@ -57,30 +68,24 @@ export class ConstraintMappingService {
    * @param panel 
    * @param target 
    */
-  private mapPanel(panel: ApiI2b2Panel, targetConstraint: Constraint, panelTiming: ApiI2b2Timing): boolean {
+  private mapPanel(panel: ApiI2b2Panel, panelTiming: ApiI2b2Timing): Observable<Constraint> {
+    for (const item of panel.items) {
+      if (item.encrypted) {
+        // restoration of encrypted concept is not supported
+        return null
+      }
+    }
     panelTiming = panel.panelTiming
     if (panel.items.length === 1) {
-      targetConstraint = new ConceptConstraint()
-      var encryption = this.mapItem(panel.items[0], targetConstraint)
-      if (encryption === true) {
-        targetConstraint = null
-        return true
-      }
+      return this.mapItem(panel.items[0])
     } else {
-      targetConstraint = new CombinationConstraint();
-      (<CombinationConstraint>targetConstraint).combinationState = CombinationState.Or
-
-      for (var item of panel.items) {
-
-        var childConstraint = new ConceptConstraint()
-        var encryption = this.mapItem(item, childConstraint)
-        if (encryption === true) {
-          targetConstraint = null
-          return true
-        }
-        (<CombinationConstraint>targetConstraint).addChild(childConstraint)
-
+      return zip(panel.items.map(item => this.mapItem(item))).pipe(map(constraints => {
+        let combinationConstraint = new CombinationConstraint()
+        constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
+        combinationConstraint.combinationState = CombinationState.Or
+        return combinationConstraint
       }
+      ))
     }
   }
 
@@ -89,21 +94,28 @@ export class ConstraintMappingService {
       // this should have been checked out before
       return null
     }
-    var conceptURI = item.modifier? modifiedConceptPath(item.queryTerm,item.modifier.modifierKey):item.queryTerm
+    var conceptURI = item.modifier ? modifiedConceptPath(item.queryTerm, item.modifier.modifierKey) : item.queryTerm
     // check if the concept is already loaded
-    var existingConstraint = this.constraintService.allConstraints.find(value=> (value instanceof ConceptConstraint) && (<ConceptConstraint>value).concept.path === conceptURI)
-    if (existingConstraint){
+    var existingConstraint = this.constraintService.allConstraints.find(value => (value instanceof ConceptConstraint) && (<ConceptConstraint>value).concept.path === conceptURI)
+    if (existingConstraint) {
       return of(existingConstraint)
     }
     // else, get details
-    if (item.modifier){
+    let obs = (item.modifier) ?
+      this.exploreSearchService.exploreSearchModifierInfo(item.modifier.modifierKey, item.modifier.appliedPath, item.queryTerm) :
+      this.exploreSearchService.exploreSearchConceptInfo(item.queryTerm)
 
-    } else {
-
-    }
-
-
-
-
+    return obs.pipe(map(treenodes => {
+      switch (treenodes.length) {
+        case 0:
+          return null
+        case 1:
+          return treenodes[0]
+        default:
+          MessageHelper.alert('warn', `expected result length 1 got ${treenodes.length} from search info request, keeping the first one`)
+          return treenodes[0]
+      }
+    }),
+      map(treenode => this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode)))
   }
 }

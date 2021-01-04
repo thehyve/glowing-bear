@@ -189,7 +189,7 @@ function apiCohortsToCohort(apiCohorts: ApiCohortResponse[][]): Cohort[] {
     let cohort = new Cohort(cohortName, null, null, new Date(creationDate), new Date(updateDate))
 
     cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryId)
-    res.push(cohort)
+    cohort.queryDefinition = apiCohorts.map(apiCohort => apiCohort[i].queryDefinition)
 
   }
   return res
