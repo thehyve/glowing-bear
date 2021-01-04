@@ -1,17 +1,19 @@
-import {Constraint} from '../models/constraint-models/constraint';
-import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
-import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
-import {ApiI2b2Item} from '../models/api-request-models/medco-node/api-i2b2-item';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
-import {ConceptType} from '../models/constraint-models/concept-type';
-import {CryptoService} from './crypto.service';
-import {ErrorHelper} from '../utilities/error-helper';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-import {ApiI2B2Modifier} from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
+import { Constraint } from '../models/constraint-models/constraint';
+import { ApiI2b2Panel } from '../models/api-request-models/medco-node/api-i2b2-panel';
+import { Injectable } from '@angular/core';
+import { CombinationConstraint } from '../models/constraint-models/combination-constraint';
+import { CombinationState } from '../models/constraint-models/combination-state';
+import { ApiI2b2Item } from '../models/api-request-models/medco-node/api-i2b2-item';
+import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
+import { GenomicAnnotationConstraint } from '../models/constraint-models/genomic-annotation-constraint';
+import { ValueType } from '../models/constraint-models/value-type';
+import { CryptoService } from './crypto.service';
+import { ErrorHelper } from '../utilities/error-helper';
+import { NegationConstraint } from '../models/constraint-models/negation-constraint';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import { ApiI2B2Modifier } from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
+import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
+import { MessageHelper } from 'app/utilities/message-helper';
 
 
 @Injectable()
@@ -107,7 +109,7 @@ export class ConstraintMappingService {
     switch (constraint.concept.type) {
       // todo: missing types
 
-      case ConceptType.SIMPLE:
+      case ValueType.SIMPLE:
         if (constraint.concept.encryptionDescriptor.encrypted) {
           // todo: children IDs implementation
           item.encrypted = true;
@@ -122,7 +124,55 @@ export class ConstraintMappingService {
             item.modifier.modifierKey = constraint.concept.modifier.path
             item.modifier.appliedPath = constraint.concept.modifier.appliedPath
           }
+        }
+        break;
+      case ValueType.NUMERICAL:
+        item.encrypted = false;
+        item.queryTerm = constraint.concept.path;
+        if (constraint.concept.modifier !== undefined) {
+          item.modifier = new ApiI2B2Modifier()
+          item.queryTerm = constraint.concept.modifier.appliedConceptPath;
+          item.modifier.modifierKey = constraint.concept.modifier.path
+          item.modifier.appliedPath = constraint.concept.modifier.appliedPath
+        }
+        if (constraint.applyNumericalOperator && (constraint.numericalOperator)) {
+          item.operator = constraint.numericalOperator
+          item.value = ''
+          switch (constraint.numericalOperator) {
+            case NumericalOperator.BETWEEN:
+              if (!(constraint.minValue)) {
+                throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.')
+              }
+              if (!(constraint.maxValue)) {
+                throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.')
+              }
+              if (constraint.maxValue < constraint.minValue) {
+                throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`)
+              }
+              item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
 
+              break;
+            case NumericalOperator.EQUAL:
+            case NumericalOperator.GREATER:
+            case NumericalOperator.GREATER_OR_EQUAL:
+            case NumericalOperator.LOWER:
+            case NumericalOperator.LOWER_OR_EQUAL:
+            case NumericalOperator.NOT_EQUAL:
+              if (!(constraint.numValue)) {
+                let err = new Error('A numerical operator has been defined, but no valid value provided.' +
+                  'The field was left empty or non numerical characters were used.')
+                MessageHelper.alert('error',
+                  err.message
+                )
+                throw err
+              }
+              item.value = constraint.numValue.toString()
+              break;
+            default:
+              throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
+          }
         }
         break;
 

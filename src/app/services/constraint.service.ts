@@ -167,6 +167,7 @@ export class ConstraintService {
           (<ConceptConstraint>constraint).concept = sourceConcept;
           break;
 
+        case TreeNodeType.CONTAINER:
         case TreeNodeType.UNKNOWN:
           let descendants = [];
           this.treeNodeService.getTreeNodeDescendantsWithExcludedTypes(

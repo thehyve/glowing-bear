@@ -15,9 +15,6 @@ import {OverlayPanelModule} from 'primeng/components/overlaypanel/overlaypanel';
 import {RouterModule} from '@angular/router';
 import {GbCombinationConstraintComponent} from './constraint-components/gb-combination-constraint/gb-combination-constraint.component';
 import {GbConstraintComponent} from './constraint-components/gb-constraint/gb-constraint.component';
-import {GbConceptConstraintComponent} from './constraint-components/gb-concept-constraint/gb-concept-constraint.component';
-import {GbGenomicAnnotationConstraintComponent} from './constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
-import {GbSelectionComponent} from './gb-selection-component/gb-selection.component';
 
 import {FormsModule} from '@angular/forms';
 import {AutoCompleteModule} from 'primeng/autocomplete';
