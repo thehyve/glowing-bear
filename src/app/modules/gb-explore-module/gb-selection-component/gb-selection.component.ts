@@ -20,6 +20,8 @@ import { FormatHelper } from '../../../utilities/format-helper';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SelectItem } from 'primeng/api';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import { CohortService } from 'app/services/cohort.service';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -52,8 +54,13 @@ export class GbSelectionComponent {
   private isUploadListenerNotAdded: boolean;
 
   constructor(public constraintService: ConstraintService,
-    private queryService: QueryService) {
+    private queryService: QueryService,
+    private cohortService: CohortService) {
     this.isUploadListenerNotAdded = true;
+    // changes coming from cohrot restoration
+    this.cohortService.queryTiming.subscribe(timing => {
+      this.queryService.queryTimingSameInstance = timing === ApiI2b2Timing.sameInstanceNum
+    })
   }
 
   get timings(): SelectItem[] {

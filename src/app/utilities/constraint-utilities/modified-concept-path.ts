@@ -10,9 +10,9 @@
  /**
   * Takes a concept path and a modifier path  and returns the corresponding URI that
   * services uses to identified the concept with applied modifier.
-  * 
-  * @param unmodifiedConceptPath 
-  * @param modifierPath 
+  *
+  * @param unmodifiedConceptPath
+  * @param modifierPath
   */
 export function modifiedConceptPath(unmodifiedConceptPath: string, modifierPath: string): string {
   let modifierPathSplit = (modifierPath.length > 0 && modifierPath.startsWith('/')) ?

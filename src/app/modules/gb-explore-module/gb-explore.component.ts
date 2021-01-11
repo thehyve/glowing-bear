@@ -17,6 +17,7 @@ import { ConstraintService } from '../../services/constraint.service';
 import { CohortService } from 'app/services/cohort.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Cohort } from 'app/models/cohort-models/cohort';
+import { MedcoNetworkService } from 'app/services/api/medco-network.service';
 
 @Component({
   selector: 'gb-explore',
@@ -29,7 +30,8 @@ export class GbExploreComponent {
 
   constructor(public queryService: QueryService,
     private cohortService: CohortService,
-    public constraintService: ConstraintService) {
+    public constraintService: ConstraintService,
+    private medcoNetworkService: MedcoNetworkService) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
       console.log('last_successful_set', resIDs)
       this._lastSuccessfulSet = resIDs
@@ -51,13 +53,21 @@ export class GbExploreComponent {
         MessageHelper.alert('warn', `Name ${this.cohortName} already used.`)
       } else {
 
+        let creationDates = new Array<Date>()
+        let updateDates = new Array<Date>()
+        const nunc = Date.now()
+        for (let i = 0; i < this.medcoNetworkService.nodesUrl.length; i++) {
+          creationDates.push(new Date(nunc))
+          updateDates.push(new Date(nunc))
+        }
+
 
         let cohort = new Cohort(
           this.cohortName,
           this.constraintService.rootInclusionConstraint,
           this.constraintService.rootExclusionConstraint,
-          new Date(Date.now()),
-          new Date(Date.now())
+          creationDates,
+          updateDates,
         )
         cohort.patient_set_id = this.lastSuccessfulSet
         existingCohorts.push(cohort)

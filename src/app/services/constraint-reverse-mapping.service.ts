@@ -13,16 +13,12 @@ import { CombinationConstraint } from 'app/models/constraint-models/combination-
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
-import { Concept } from 'app/models/constraint-models/concept';
-import { Modifier } from 'app/models/constraint-models/modifier';
 import { CombinationState } from 'app/models/constraint-models/combination-state';
 import { ConstraintService } from './constraint.service';
-import { TreeNodeService } from './tree-node.service';
 import { Observable, of, zip } from 'rxjs';
 import { modifiedConceptPath } from 'app/utilities/constraint-utilities/modified-concept-path';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { map } from 'rxjs/operators';
-import { MessageHelper } from 'app/utilities/message-helper';
 import { DropMode } from 'app/models/drop-mode';
 
 
@@ -32,19 +28,26 @@ export class ConstraintReverseMappingService {
 
   constructor(private constraintService: ConstraintService, private exploreSearchService: ExploreSearchService) { }
   /**
-   * 
+   *
    * Maps an array of panels to a constraint if the panels are fully composed
    * of clear concepts. If one or more encrypted concepts are found, null is returned instead.
-   * 
-   * @param panels 
+   *
+   * @param panels
+   * @param targetPanelTiming
+   * @param nots
    */
-  public mapPanels(panels: ApiI2b2Panel[], targetPanelTiming: ApiI2b2Timing[]): Observable<Constraint> {
+  public mapPanels(panels: ApiI2b2Panel[], targetPanelTiming: ApiI2b2Timing[], nots: boolean[]): Observable<Constraint> {
     targetPanelTiming = new Array<ApiI2b2Timing>(panels.length)
     targetPanelTiming.fill(ApiI2b2Timing.any)
+    nots = new Array<boolean>(panels.length)
+    nots.fill(false)
 
     if (panels.length === 1 && panels[0].items.length === 1) {
 
-      return this.mapItem(panels[0].items[0])
+      return this.mapItem(panels[0].items[0]).pipe(map(constraint => {
+        constraint.panelTimingSameInstance = panels[0].panelTiming === ApiI2b2Timing.sameInstanceNum
+        return constraint
+      }))
 
     } else {
       return zip(panels.map((panel, index) => this.mapPanel(panel, targetPanelTiming[index]))).pipe(map(constraints => {
@@ -59,14 +62,14 @@ export class ConstraintReverseMappingService {
   }
 
   /**
-   * 
+   *
    * Maps one panel to a constraint if the panel is fully composed
    * of clear concepts and returns false.
    * If one or more encrypted concepts are found, null is set instead and true is returned.
-   * 
+   *
    * @param panelTiming
-   * @param panel 
-   * @param target 
+   * @param panel
+   * @param target
    */
   private mapPanel(panel: ApiI2b2Panel, panelTiming: ApiI2b2Timing): Observable<Constraint> {
     for (const item of panel.items) {
@@ -75,14 +78,18 @@ export class ConstraintReverseMappingService {
         return null
       }
     }
-    panelTiming = panel.panelTiming
+    let sameInstance = panel.panelTiming === ApiI2b2Timing.sameInstanceNum
     if (panel.items.length === 1) {
-      return this.mapItem(panel.items[0])
+      return this.mapItem(panel.items[0]).pipe(map(constraint => {
+        constraint.panelTimingSameInstance = sameInstance
+        return constraint
+      }))
     } else {
       return zip(panel.items.map(item => this.mapItem(item))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
         constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.Or
+        combinationConstraint.panelTimingSameInstance = sameInstance
         return combinationConstraint
       }
       ))
@@ -94,9 +101,10 @@ export class ConstraintReverseMappingService {
       // this should have been checked out before
       return null
     }
-    var conceptURI = item.modifier ? modifiedConceptPath(item.queryTerm, item.modifier.modifierKey) : item.queryTerm
+    let conceptURI = item.modifier ? modifiedConceptPath(item.queryTerm, item.modifier.modifierKey) : item.queryTerm
     // check if the concept is already loaded
-    var existingConstraint = this.constraintService.allConstraints.find(value => (value instanceof ConceptConstraint) && (<ConceptConstraint>value).concept.path === conceptURI)
+    let existingConstraint = this.constraintService.allConstraints.find(
+      value => (value instanceof ConceptConstraint) && ((<ConceptConstraint>value).concept.path === conceptURI))
     if (existingConstraint) {
       return of(existingConstraint)
     }
@@ -112,7 +120,6 @@ export class ConstraintReverseMappingService {
         case 1:
           return treenodes[0]
         default:
-          MessageHelper.alert('warn', `expected result length 1 got ${treenodes.length} from search info request, keeping the first one`)
           return treenodes[0]
       }
     }),

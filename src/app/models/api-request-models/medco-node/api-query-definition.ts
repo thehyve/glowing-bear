@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ApiI2b2Panel } from "./api-i2b2-panel";
-import { ApiI2b2Timing } from "./api-i2b2-timing";
+import { ApiI2b2Panel } from './api-i2b2-panel';
+import { ApiI2b2Timing } from './api-i2b2-timing';
 
 export class ApiQueryDefinition {
   panels: ApiI2b2Panel[];
-  queryTiming : ApiI2b2Timing;
+  queryTiming: ApiI2b2Timing;
 }

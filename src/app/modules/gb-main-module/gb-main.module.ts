@@ -17,6 +17,7 @@ import { GbAnalysisModule } from '../gb-analysis-module/gb-analysis.module';
 import { CohortService } from 'app/services/cohort.service';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-survival-results.module';
+import { ConstraintReverseMappingService } from 'app/services/constraint-reverse-mapping.service';
 
 @NgModule({
   imports: [
@@ -29,7 +30,7 @@ import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-surviv
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule],
-  providers: [CohortService, SurvivalResultsService]
+  providers: [CohortService, SurvivalResultsService, ConstraintReverseMappingService]
 })
 export class GbMainModule {
 }
