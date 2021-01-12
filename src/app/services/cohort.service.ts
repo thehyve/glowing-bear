@@ -287,7 +287,7 @@ export class CohortService {
     this._queryTiming.next(cohortDefinition.queryTiming)
 
     this.constraintReverseMappingService.mapPanels(cohortDefinition.panels, panelTimings, nots)
-      .pipe(tap(() => { // TODO handle this
+      .pipe(tap(() => {
         this._panelTimings.next(panelTimings)
       }))
       .subscribe(constraint => {

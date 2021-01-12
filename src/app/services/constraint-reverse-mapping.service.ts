@@ -20,6 +20,7 @@ import { modifiedConceptPath } from 'app/utilities/constraint-utilities/modified
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { map } from 'rxjs/operators';
 import { DropMode } from 'app/models/drop-mode';
+import { TreeNode } from 'app/models/tree-models/tree-node';
 
 
 
@@ -96,7 +97,9 @@ export class ConstraintReverseMappingService {
     }
   }
 
-  private mapItem(item: ApiI2b2Item): Observable<Constraint> {
+  private mapItem(item: ApiI2b2Item): Observable<ConceptConstraint> {
+    let modificated: Observable<TreeNode>
+    let resTreeNode: Observable<TreeNode>
     if (item.encrypted === true) {
       // this should have been checked out before
       return null
@@ -106,14 +109,14 @@ export class ConstraintReverseMappingService {
     let existingConstraint = this.constraintService.allConstraints.find(
       value => (value instanceof ConceptConstraint) && ((<ConceptConstraint>value).concept.path === conceptURI))
     if (existingConstraint) {
-      return of(existingConstraint)
+      return of(existingConstraint as ConceptConstraint)
     }
     // else, get details
     let obs = (item.modifier) ?
       this.exploreSearchService.exploreSearchModifierInfo(item.modifier.modifierKey, item.modifier.appliedPath, item.queryTerm) :
       this.exploreSearchService.exploreSearchConceptInfo(item.queryTerm)
 
-    return obs.pipe(map(treenodes => {
+    let treeNodeObs = obs.pipe(map(treenodes => {
       switch (treenodes.length) {
         case 0:
           return null
@@ -122,7 +125,26 @@ export class ConstraintReverseMappingService {
         default:
           return treenodes[0]
       }
-    }),
-      map(treenode => this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode)))
+    }))
+    if (item.modifier) {
+      let modificandum = new ApiI2b2Item()
+      modificandum.encrypted = item.encrypted
+      modificandum.modifier = null
+      modificandum.operator = item.operator
+      modificandum.value = item.value
+      modificandum.queryTerm = item.queryTerm
+      modificated = this.mapItem(modificandum).pipe(map(({ treeNode }) => treeNode))
+
+      resTreeNode = zip(treeNodeObs, modificated).pipe(map(nodes => {
+        let newNode = nodes[0].clone()
+        newNode.appliedConcept = nodes[1]
+        return newNode
+      }))
+    }else{
+      resTreeNode=treeNodeObs
+    }
+    return resTreeNode.pipe(
+      map(treenode => this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode) as ConceptConstraint)
+      )
   }
 }
