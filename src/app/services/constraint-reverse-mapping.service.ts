@@ -140,11 +140,11 @@ export class ConstraintReverseMappingService {
         newNode.appliedConcept = nodes[1]
         return newNode
       }))
-    }else{
-      resTreeNode=treeNodeObs
+    } else {
+      resTreeNode = treeNodeObs
     }
     return resTreeNode.pipe(
       map(treenode => this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode) as ConceptConstraint)
-      )
+    )
   }
 }
