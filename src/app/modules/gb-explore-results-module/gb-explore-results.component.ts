@@ -24,6 +24,11 @@ export class GbExploreResultsComponent implements OnInit {
 
   private _perSiteCountsChart: Chart;
 
+  static numberMatrixToCSV(data: number[][]) {
+    const csv = data.map((row) => row.toString());
+    return csv.join('\r\n');
+  }
+
   constructor(private medcoNetworkService: MedcoNetworkService,
               public queryService: QueryService) { }
 
@@ -94,18 +99,8 @@ export class GbExploreResultsComponent implements OnInit {
     ));
   }
 
-  private numberMatrixToCSV(data: number[][]) {
-    let replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
-    const csv = data.map((row) =>
-      row
-        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-        .join(',')
-    );
-    return csv.join('\r\n');
-  }
-
   savePatientListToCSVFile() {
-    this.patientLists.pipe(map((patientLists) => this.numberMatrixToCSV(patientLists)))
+    this.patientLists.pipe(map((patientLists) => GbExploreResultsComponent.numberMatrixToCSV(patientLists)))
       .subscribe((csvArray) => {
           let exportFileEL = document.createElement('a');
           let blob = new Blob([csvArray], {type: 'text/csv'});
