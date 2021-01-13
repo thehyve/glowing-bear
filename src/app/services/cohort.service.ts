@@ -7,7 +7,7 @@
  */
 import { Injectable } from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { MedcoNetworkService } from './api/medco-network.service';
 import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
@@ -297,16 +297,17 @@ export class CohortService {
         }
 
         CohortService.conformConstraints(nots, constraint, formatedConstraint)
-        if (formatedConstraint.inclusionConstraint) {
+
+        if ((formatedConstraint.inclusionConstraint) || (formatedConstraint.exclusionConstraint)) {
           this.constraintService.rootInclusionConstraint = new CombinationConstraint()
           this.constraintService.rootInclusionConstraint.isRoot = true
-
+          this.constraintService.rootExclusionConstraint = new CombinationConstraint()
+          this.constraintService.rootExclusionConstraint.isRoot = true
+        }
+        if (formatedConstraint.inclusionConstraint) {
           this.constraintService.rootInclusionConstraint.addChild(formatedConstraint.inclusionConstraint)
         }
         if (formatedConstraint.exclusionConstraint) {
-          this.constraintService.rootExclusionConstraint = new CombinationConstraint()
-          this.constraintService.rootExclusionConstraint.isRoot = true
-
           this.constraintService.rootExclusionConstraint.addChild(formatedConstraint.exclusionConstraint)
         }
       })

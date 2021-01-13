@@ -1,13 +1,14 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2020  LDS EPFL
+ * Copyright 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormatHelper } from '../../utilities/format-helper';
 import { QueryService } from '../../services/query.service';
 import { ExploreQueryType } from '../../models/query-models/explore-query-type';
@@ -18,6 +19,7 @@ import { CohortService } from 'app/services/cohort.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import { MedcoNetworkService } from 'app/services/api/medco-network.service';
+import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api-query-definition';
 
 @Component({
   selector: 'gb-explore',
@@ -55,12 +57,16 @@ export class GbExploreComponent {
 
         let creationDates = new Array<Date>()
         let updateDates = new Array<Date>()
+        let queryDefinitions = new Array<ApiQueryDefinition>()
         const nunc = Date.now()
         for (let i = 0; i < this.medcoNetworkService.nodesUrl.length; i++) {
           creationDates.push(new Date(nunc))
           updateDates.push(new Date(nunc))
+          let definition = new ApiQueryDefinition()
+          definition.panels = this.queryService.lastDefinition
+          definition.queryTiming = this.queryService.lastTiming
+          queryDefinitions.push(definition)
         }
-
 
         let cohort = new Cohort(
           this.cohortName,
@@ -69,9 +75,10 @@ export class GbExploreComponent {
           creationDates,
           updateDates,
         )
+        if (queryDefinitions.some(apiDef => (apiDef.panels) || (apiDef.queryTiming))) {
+          cohort.queryDefinition = queryDefinitions
+        }
         cohort.patient_set_id = this.lastSuccessfulSet
-        existingCohorts.push(cohort)
-        this.cohortService.cohorts = existingCohorts
         this.cohortService.postCohort(cohort)
 
         MessageHelper.alert('success', 'Cohort has been sent.')
