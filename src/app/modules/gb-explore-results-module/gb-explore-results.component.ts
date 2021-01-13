@@ -11,7 +11,7 @@ import {Chart} from 'chart.js';
 import {QueryService} from '../../services/query.service';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 
 @Component({
   selector: 'gb-medco-results',
@@ -26,6 +26,7 @@ export class GbExploreResultsComponent implements OnInit {
 
   static numberMatrixToCSV(data: number[][]) {
     const csv = data.map((row) => row.toString());
+    console.log(csv.join('\r\n'))
     return csv.join('\r\n');
   }
 
@@ -100,7 +101,7 @@ export class GbExploreResultsComponent implements OnInit {
   }
 
   savePatientListToCSVFile() {
-    this.patientLists.pipe(map((patientLists) => GbExploreResultsComponent.numberMatrixToCSV(patientLists)))
+    this.patientLists.pipe(first(), map((patientLists) => GbExploreResultsComponent.numberMatrixToCSV(patientLists)))
       .subscribe((csvArray) => {
           let exportFileEL = document.createElement('a');
           let blob = new Blob([csvArray], {type: 'text/csv'});
