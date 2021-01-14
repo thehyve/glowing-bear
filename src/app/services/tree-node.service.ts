@@ -184,6 +184,8 @@ export class TreeNodeService {
         break;
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
+        console.warn('node', node)
+        console.warn('source concept', sourceConcept)
         constraintService.concepts.push(sourceConcept);
         let constraintFromModifier = new ConceptConstraint(node);
         constraintFromModifier.concept = sourceConcept;
@@ -285,6 +287,7 @@ export class TreeNodeService {
     concept.path = `${concept.path}${modifierPath}`
     concept.label = `${treeNode.displayName} (${concept.path})`
     concept.modifier = modifier
+    concept.type = treeNode.valueType
     if (treeNode.metadata) {
       this.processMetadata(concept, treeNode.metadata)
     }
