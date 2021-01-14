@@ -21,6 +21,7 @@ import { ConstraintReverseMappingService } from './constraint-reverse-mapping.se
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import { tap } from 'rxjs/operators';
 import { Constraint } from 'app/models/constraint-models/constraint';
+import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
 
 @Injectable()
 export class CohortService {
@@ -305,10 +306,20 @@ export class CohortService {
           this.constraintService.rootExclusionConstraint.isRoot = true
         }
         if (formatedConstraint.inclusionConstraint) {
-          this.constraintService.rootInclusionConstraint.addChild(formatedConstraint.inclusionConstraint)
+          if (formatedConstraint.inclusionConstraint instanceof ConceptConstraint) {
+            this.constraintService.rootInclusionConstraint.addChild(formatedConstraint.inclusionConstraint)
+          } else {
+            this.constraintService.rootInclusionConstraint = (formatedConstraint.inclusionConstraint as CombinationConstraint);
+            this.constraintService.rootInclusionConstraint.isRoot = true
+          }
         }
         if (formatedConstraint.exclusionConstraint) {
-          this.constraintService.rootExclusionConstraint.addChild(formatedConstraint.exclusionConstraint)
+          if (formatedConstraint.exclusionConstraint instanceof ConceptConstraint) {
+            this.constraintService.rootExclusionConstraint.addChild(formatedConstraint.exclusionConstraint)
+          } else {
+            this.constraintService.rootExclusionConstraint = (formatedConstraint.exclusionConstraint as CombinationConstraint);
+            this.constraintService.rootExclusionConstraint.isRoot = true
+          }
         }
       })
     this.restoring.next(true)

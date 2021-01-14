@@ -15,12 +15,13 @@ import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
 import { CombinationState } from 'app/models/constraint-models/combination-state';
 import { ConstraintService } from './constraint.service';
-import { Observable, of, zip } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { modifiedConceptPath } from 'app/utilities/constraint-utilities/modified-concept-path';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { map } from 'rxjs/operators';
 import { DropMode } from 'app/models/drop-mode';
 import { TreeNode } from 'app/models/tree-models/tree-node';
+import { forkJoin } from 'rxjs';
 
 
 
@@ -51,7 +52,8 @@ export class ConstraintReverseMappingService {
       }))
 
     } else {
-      return zip(panels.map((panel, index) => this.mapPanel(panel, targetPanelTiming[index]))).pipe(map(constraints => {
+
+      return forkJoin(panels.map(panel => this.mapPanel(panel))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
         constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.And
@@ -72,7 +74,7 @@ export class ConstraintReverseMappingService {
    * @param panel
    * @param target
    */
-  private mapPanel(panel: ApiI2b2Panel, panelTiming: ApiI2b2Timing): Observable<Constraint> {
+  private mapPanel(panel: ApiI2b2Panel): Observable<Constraint> {
     for (const item of panel.items) {
       if (item.encrypted) {
         // restoration of encrypted concept is not supported
@@ -86,7 +88,7 @@ export class ConstraintReverseMappingService {
         return constraint
       }))
     } else {
-      return zip(panel.items.map(item => this.mapItem(item))).pipe(map(constraints => {
+      return forkJoin(panel.items.map(item => this.mapItem(item))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
         constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.Or
@@ -135,10 +137,9 @@ export class ConstraintReverseMappingService {
       modificandum.queryTerm = item.queryTerm
       modificated = this.mapItem(modificandum).pipe(map(({ treeNode }) => treeNode))
 
-      resTreeNode = zip(treeNodeObs, modificated).pipe(map(nodes => {
-        let newNode = nodes[0].clone()
-        newNode.appliedConcept = nodes[1]
-        return newNode
+      resTreeNode = forkJoin([treeNodeObs, modificated]).pipe(map(([modifierNode, modificatedNode]) => {
+        modifierNode.appliedConcept = modificatedNode.clone()
+        return modifierNode
       }))
     } else {
       resTreeNode = treeNodeObs
