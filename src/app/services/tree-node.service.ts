@@ -13,7 +13,7 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintService} from './constraint.service';
-import {ConceptType} from '../models/constraint-models/concept-type';
+import {ValueType} from '../models/constraint-models/value-type';
 import {ErrorHelper} from '../utilities/error-helper';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
@@ -21,6 +21,8 @@ import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation'
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
 import {Observable} from 'rxjs';
 import {Modifier} from 'app/models/constraint-models/modifier';
+import {ApiValueMetadata, DataType} from 'app/models/api-response-models/medco-node/api-value-metadata';
+
 
 @Injectable()
 export class TreeNodeService {
@@ -156,20 +158,20 @@ export class TreeNodeService {
           constraintService.conceptConstraints.push(constraint);
           constraintService.allConstraints.push(constraint);
         }
-        switch (node.conceptType) {
-          case ConceptType.NUMERICAL:
+        switch (node.valueType) {
+          case ValueType.NUMERICAL:
             node.icon = 'icon-123';
             break;
-          case ConceptType.CATEGORICAL:
+          case ValueType.CATEGORICAL:
             node.icon = 'icon-abc';
             break;
-          case ConceptType.DATE:
+          case ValueType.DATE:
             node.icon = 'fa fa-calendar';
             break;
-          case ConceptType.TEXT:
+          case ValueType.TEXT:
             node.icon = 'fa fa-newspaper-o';
             break;
-          case ConceptType.SIMPLE:
+          case ValueType.SIMPLE:
           default:
             node.icon = 'fa fa-file';
         }
@@ -182,6 +184,8 @@ export class TreeNodeService {
         break;
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
+        console.warn('node', node)
+        console.warn('source concept', sourceConcept)
         constraintService.concepts.push(sourceConcept);
         let constraintFromModifier = new ConceptConstraint();
         constraintFromModifier.concept = sourceConcept;
@@ -195,6 +199,7 @@ export class TreeNodeService {
         node.collapsedIcon = 'fa fa-folder-o';
         break;
       case TreeNodeType.UNKNOWN:
+      case TreeNodeType.CONTAINER:
       default:
         break;
     }
@@ -209,12 +214,46 @@ export class TreeNodeService {
     let concept = new Concept();
     concept.label = `${treeNode.displayName} (${treeNode.path})`;
     concept.path = treeNode.path;
-    concept.type = treeNode.conceptType;
+    concept.type = treeNode.valueType;
+    if (treeNode.metadata) {
+      this.processMetadata(concept, treeNode.metadata)
+    }
+
+
     concept.code = treeNode.conceptCode;
     concept.fullName = treeNode.path;
     concept.name = treeNode.name;
     concept.encryptionDescriptor = treeNode.encryptionDescriptor;
     return concept;
+  }
+
+  private processMetadata(target: Concept, metadata: ApiValueMetadata) {
+    if (metadata.ValueMetadata.UnitValues) {
+      target.unit = metadata.ValueMetadata.UnitValues.NormalUnits
+    }
+    if (metadata.ValueMetadata.DataType) {
+      switch (metadata.ValueMetadata.DataType) {
+        case DataType.POS_INTEGER:
+          target.isInteger = true;
+          target.isPositive = true;
+          break;
+        case DataType.POS_FLOAT:
+          target.isInteger = false;
+          target.isPositive = true;
+          break;
+        case DataType.INTEGER:
+          target.isInteger = true;
+          target.isPositive = false;
+          break;
+        case DataType.FLOAT:
+          target.isInteger = false;
+          target.isPositive = false;
+          break;
+        default:
+          break;
+      }
+    }
+
   }
 
 
@@ -248,6 +287,10 @@ export class TreeNodeService {
     concept.path = `${concept.path}${modifierPath}`
     concept.label = `${treeNode.displayName} (${concept.path})`
     concept.modifier = modifier
+    concept.type = treeNode.valueType
+    if (treeNode.metadata) {
+      this.processMetadata(concept, treeNode.metadata)
+    }
     return concept
   }
 

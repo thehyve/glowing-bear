@@ -29,6 +29,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
     AccordionModule,
     FormsModule,
     AutoCompleteModule,
+    DropdownModule,
     CheckboxModule,
     CalendarModule,
     DropdownModule,

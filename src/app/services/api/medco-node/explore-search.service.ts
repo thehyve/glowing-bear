@@ -12,12 +12,13 @@ import { Injectable, Injector } from '@angular/core';
 import { AppConfig } from '../../../config/app.config';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators'
+import { map } from 'rxjs/operators'
 import { TreeNode } from '../../../models/tree-models/tree-node';
 import { TreeNodeType } from '../../../models/tree-models/tree-node-type';
-import { ConceptType } from '../../../models/constraint-models/concept-type';
+import { ValueType } from '../../../models/constraint-models/value-type';
 import { MedcoNetworkService } from '../medco-network.service';
 import { ApiEndpointService } from '../../api-endpoint.service';
+import { ApiValueMetadata } from 'app/models/api-response-models/medco-node/api-value-metadata';
 
 @Injectable()
 export class ExploreSearchService {
@@ -57,56 +58,8 @@ export class ExploreSearchService {
           treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
 
-          switch ((treeNodeObj['type'] as string).toLowerCase()) {
-            case 'concept':
-              treeNode.nodeType = TreeNodeType.CONCEPT;
-              treeNode.conceptType = ConceptType.SIMPLE;
-              break;
-
-            case 'concept_numeric':
-              treeNode.nodeType = TreeNodeType.CONCEPT;
-              treeNode.conceptType = ConceptType.NUMERICAL;
-              break;
-
-            case 'concept_enum':
-              treeNode.nodeType = TreeNodeType.CONCEPT;
-              treeNode.conceptType = ConceptType.CATEGORICAL;
-              break;
-
-            case 'concept_text':
-              treeNode.nodeType = TreeNodeType.CONCEPT;
-              treeNode.conceptType = ConceptType.TEXT;
-              break;
-
-            case 'genomic_annotation':
-              treeNode.nodeType = TreeNodeType.GENOMIC_ANNOTATION;
-              treeNode.conceptType = undefined;
-              treeNode.leaf = true;
-              break;
-
-            case 'modifier':
-              treeNode.nodeType = TreeNodeType.MODIFIER;
-              treeNode.conceptType = undefined;
-              treeNode.leaf = true;
-              break;
-
-            case 'modifier_folder':
-              treeNode.nodeType = TreeNodeType.MODIFIER_FOLDER;
-              treeNode.conceptType = undefined;
-              break;
-
-            case 'modifier_container':
-              treeNode.nodeType = TreeNodeType.MODIFIER_CONTAINER;
-              treeNode.conceptType = undefined;
-              break;
-
-            default:
-            case 'container':
-              treeNode.nodeType = TreeNodeType.UNKNOWN;
-              treeNode.conceptType = undefined;
-              break;
-          }
-
+          treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
+          treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
           treeNode.depth = treeNode.path.split('/').length - 2;
           treeNode.children = [];
           treeNode.childrenAttached = false;
@@ -146,28 +99,8 @@ export class ExploreSearchService {
           treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
 
-          switch ((treeNodeObj['type'] as string).toLowerCase()) {
-            case 'modifier':
-              treeNode.nodeType = TreeNodeType.MODIFIER;
-              treeNode.conceptType = undefined;
-              treeNode.leaf = true;
-              break;
-
-            case 'modifier_folder':
-              treeNode.nodeType = TreeNodeType.MODIFIER_FOLDER;
-              treeNode.conceptType = undefined;
-              break;
-
-            case 'modifier_container':
-              treeNode.nodeType = TreeNodeType.MODIFIER_CONTAINER;
-              treeNode.conceptType = undefined;
-              break;
-            default:
-              treeNode.nodeType = TreeNodeType.UNKNOWN;
-              treeNode.conceptType = undefined;
-              break;
-
-          }
+          treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
+          treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
 
           treeNode.depth = treeNode.path.split('/').length - 2;
           treeNode.children = [];
@@ -176,6 +109,51 @@ export class ExploreSearchService {
         }
         )
       }))
+  }
+
+  private nodeType(nodeTypeString: string): TreeNodeType {
+    switch (nodeTypeString.toLowerCase()) {
+      case 'concept':
+        return TreeNodeType.CONCEPT;
+
+      case 'genomic_annotation':
+        return TreeNodeType.GENOMIC_ANNOTATION;
+
+
+      case 'modifier':
+        return TreeNodeType.MODIFIER
+
+      case 'modifier_folder':
+        return TreeNodeType.MODIFIER_FOLDER;
+
+
+      case 'modifier_container':
+        return TreeNodeType.MODIFIER_CONTAINER;
+
+
+      case 'container':
+        return TreeNodeType.CONTAINER;
+
+      default:
+        return TreeNodeType.UNKNOWN;
+    }
+  }
+
+  private valueType(nodeType: TreeNodeType, metadata: ApiValueMetadata): ValueType {
+    if (nodeType === TreeNodeType.GENOMIC_ANNOTATION) {
+      return null
+    }
+    if (metadata) {
+      if (metadata.ValueMetadata) {
+        if ((metadata.ValueMetadata.Oktousevalues) && metadata.ValueMetadata.Oktousevalues === 'Y') {
+          return ValueType.NUMERICAL
+        }
+        if ((metadata.ValueMetadata.EnumValues) && metadata.ValueMetadata.EnumValues.length > 0) {
+          return ValueType.CATEGORICAL
+        }
+      }
+    }
+    return ValueType.SIMPLE
   }
 
   /**
