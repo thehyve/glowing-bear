@@ -11,7 +11,7 @@ import {Chart} from 'chart.js';
 import {QueryService} from '../../services/query.service';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
 import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {first, map} from 'rxjs/operators';
 
 @Component({
   selector: 'gb-medco-results',
@@ -23,6 +23,12 @@ export class GbExploreResultsComponent implements OnInit {
   @ViewChild('perSiteCountsChartElement', { static: true }) perSiteCountsChartElement: ElementRef;
 
   private _perSiteCountsChart: Chart;
+
+  static numberMatrixToCSV(data: number[][]) {
+    const csv = data.map((row) => row.toString());
+    console.log(csv.join('\r\n'))
+    return csv.join('\r\n');
+  }
 
   constructor(private medcoNetworkService: MedcoNetworkService,
               public queryService: QueryService) { }
@@ -94,18 +100,8 @@ export class GbExploreResultsComponent implements OnInit {
     ));
   }
 
-  private numberMatrixToCSV(data: number[][]) {
-    let replacer = (key, value) => (value === null ? '' : value); // specify how you want to handle null values here
-    const csv = data.map((row) =>
-      row
-        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-        .join(',')
-    );
-    return csv.join('\r\n');
-  }
-
   savePatientListToCSVFile() {
-    this.patientLists.pipe(map((patientLists) => this.numberMatrixToCSV(patientLists)))
+    this.patientLists.pipe(first(), map((patientLists) => GbExploreResultsComponent.numberMatrixToCSV(patientLists)))
       .subscribe((csvArray) => {
           let exportFileEL = document.createElement('a');
           let blob = new Blob([csvArray], {type: 'text/csv'});
