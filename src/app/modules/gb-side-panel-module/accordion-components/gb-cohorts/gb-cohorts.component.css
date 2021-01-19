@@ -149,11 +149,18 @@ hr {
 /*
  * margin: top right bottom left
  */
+
+.panel-header-btn-block {
+  margin-right: 0.5em;
+}
+
 mat-expansion-panel-header button, .ui-button-secondary {
   margin-top: auto;
   color: #505050;
   border: none;
   background-color: transparent;
+  padding-left: 0.6em;
+  padding-right: 0.6em;
 }
 mat-expansion-panel-header button:hover, .ui-button-secondary:hover {
   background-color: var(--gb-orange-light-light);
@@ -167,9 +174,7 @@ mat-expansion-panel mat-expansion-panel-header {
   color: #606060 !important;
   background-color: transparent !important;
   border: black;
-  padding: 0em;
-  margin: 0px -3px 0px 0px;
-  -moz-margin-start: 1.1em;
+  padding: 0 0.6em 0 0.6em;
 }
 
 .sort-btn:hover {
