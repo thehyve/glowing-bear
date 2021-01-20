@@ -184,8 +184,6 @@ export class TreeNodeService {
         break;
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
-        console.warn('node', node)
-        console.warn('source concept', sourceConcept)
         constraintService.concepts.push(sourceConcept);
         let constraintFromModifier = new ConceptConstraint();
         constraintFromModifier.concept = sourceConcept;
@@ -203,6 +201,7 @@ export class TreeNodeService {
       default:
         break;
     }
+    console.log(`Processed tree node ${node.name} of type ${node.nodeType}`, node)
   }
 
   /**
