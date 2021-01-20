@@ -86,7 +86,7 @@ export class CohortService {
 
       }).bind(this),
       (() => {
-        MessageHelper.alert('', 'Saved cohorts successfully retrieved')
+        MessageHelper.alert('success', 'Saved cohorts successfully retrieved')
         this._isRefreshing = false
       }).bind(this)
     )
