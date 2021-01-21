@@ -39,7 +39,7 @@
 
       <!-- display of explore query type -->
       <span *ngIf="queryType; else noAuthorization" class="float-right">
-        Query Type: {{queryType.name}}
+        Allowed Result Type: {{queryType.name}}
       </span>
       <ng-template #noAuthorization>
         <span class="float-right">No authorization for explore query.</span>
