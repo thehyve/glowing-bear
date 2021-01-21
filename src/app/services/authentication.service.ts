@@ -11,9 +11,6 @@ import {Injectable} from '@angular/core';
 import {AppConfig} from '../config/app.config';
 import {Observable, from} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
-import {ExploreQueryType} from '../models/query-models/explore-query-type';
-import {MessageHelper} from "../utilities/message-helper";
-import {ErrorHelper} from "../utilities/error-helper";
 
 @Injectable()
 export class AuthenticationService {
