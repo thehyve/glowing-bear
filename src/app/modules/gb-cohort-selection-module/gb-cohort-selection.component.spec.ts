@@ -18,8 +18,7 @@ import {
   OverlayPanelModule,
   TooltipModule,
   TreeModule
-} from 'primeng/primeng';
-import {Md2AccordionModule} from 'md2';
+} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {ConstraintService} from '../../services/constraint.service';
@@ -49,7 +48,6 @@ describe('GbCohortSelectionComponent', () => {
         CommonModule,
         FormsModule,
         AutoCompleteModule,
-        Md2AccordionModule,
         CheckboxModule,
         CalendarModule,
         TreeModule,

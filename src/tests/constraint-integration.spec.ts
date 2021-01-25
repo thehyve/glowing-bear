@@ -25,7 +25,7 @@ import {
   AutoCompleteModule,
   CalendarModule,
   CheckboxModule,
-  DataListModule,
+  DataViewModule,
   DropdownModule,
   InputSwitchModule,
   MessagesModule,
@@ -35,7 +35,7 @@ import {
   PanelModule,
   TreeNode,
   TreeTableModule
-} from 'primeng/primeng';
+} from 'primeng';
 import {AuthenticationService} from '../app/services/authentication/authentication.service';
 import {AuthenticationServiceMock} from '../app/services/mocks/authentication.service.mock';
 import {TreeNodeService} from '../app/services/tree-node.service';
@@ -44,7 +44,6 @@ import {CohortService} from '../app/services/cohort.service';
 import {StudyService} from '../app/services/study.service';
 import {CombinationConstraint} from '../app/models/constraint-models/combination-constraint';
 import {CommonModule} from '@angular/common';
-import {Md2AccordionModule} from 'md2';
 import {AppConfig} from '../app/config/app.config';
 import {AppConfigMock} from '../app/config/app.config.mock';
 import {ResourceServiceMock} from '../app/services/mocks/resource.service.mock';
@@ -77,11 +76,10 @@ describe('Integration tests for constraint composing', () => {
         CommonModule,
         FormsModule,
         AutoCompleteModule,
-        Md2AccordionModule,
         CheckboxModule,
         CalendarModule,
         PanelModule,
-        DataListModule,
+        DataViewModule,
         TreeTableModule,
         PaginatorModule,
         DropdownModule,

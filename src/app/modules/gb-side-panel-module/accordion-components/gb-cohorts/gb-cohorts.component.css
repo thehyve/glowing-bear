@@ -9,25 +9,20 @@
   max-width: 7em;
 }
 
-/*Make the font size in the saved query list smaller*/
-:host >>> p-dataList {
-  font-size: small;
-}
-
 /*style fix for hiding the border in data list in saved queries in the side panel*/
 :host >>> .ui-widget-content {
   border: none;
 }
 
-:host >>> md2-accordion-tab.md2-accordion-tab-active > .md2-accordion-header {
-  border-width: medium;
-  border-color: lightgray !important;
-  box-shadow: 0 1px 0 lightgray !important;
+:host >>> mat-expansion-panel.mat-expanded {
   background-color: var(--gb-clinical-green-light-light);
-  padding-left: 0.5em;
 }
 
-:host >>> md2-accordion-tab > .md2-accordion-header {
+:host >>> mat-expansion-panel.mat-expanded > .mat-expansion-panel-header {
+  background: none;
+}
+
+:host >>> mat-expansion-panel > .mat-expansion-panel-header {
   background-color: white;
   padding-left: 0.5em;
   font-size: small;
@@ -35,14 +30,14 @@
   color: dimgray;
 }
 
-:host >>> md2-accordion-tab > .md2-accordion-tab-body {
+:host >>> mat-expansion-panel > .mat-expansion-panel-content {
   background-color: #fbfbfb;
   padding-left: 0.5em;
   font-size: small;
   color: dimgray;
 }
 
-:host >>> md2-accordion-tab > .md2-accordion-tab-body.ng-animating {
+:host >>> mat-expansion-panel > .mat-expansion-panel-content.ng-animating {
   color: transparent;
 }
 
@@ -154,25 +149,32 @@ hr {
 /*
  * margin: top right bottom left
  */
-md2-accordion-header .ui-button-secondary {
+
+.panel-header-btn-block {
+  margin-right: 0.5em;
+}
+
+mat-expansion-panel-header button, .ui-button-secondary {
   margin-top: auto;
-  padding-left: 8px;
-  padding-right: 8px;
   color: #505050;
   border: none;
   background-color: transparent;
+  padding-left: 0.6em;
+  padding-right: 0.6em;
 }
-md2-accordion-header .ui-button-secondary:hover {
+mat-expansion-panel-header button:hover, .ui-button-secondary:hover {
   background-color: var(--gb-orange-light-light);
+}
+
+mat-expansion-panel mat-expansion-panel-header {
+  height: auto!important;
 }
 
 .sort-btn {
   color: #606060 !important;
   background-color: transparent !important;
   border: black;
-  padding: 0em;
-  margin: 0px -3px 0px 0px;
-  -moz-margin-start: 1.1em;
+  padding: 0 0.6em 0 0.6em;
 }
 
 .sort-btn:hover {
@@ -202,6 +204,7 @@ md2-accordion-header .ui-button-secondary:hover {
 
 .cohort-header {
   display: flow-root;
+  width: 100%;
   padding-bottom: 0.1em;
 }
 

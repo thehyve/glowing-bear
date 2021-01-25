@@ -1,8 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbCategorizedVariablesComponent} from './gb-categorized-variables.component';
-import {CheckboxModule, DragDropModule} from 'primeng/primeng';
+import {CheckboxModule, DragDropModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
-import {MatButtonModule, MatExpansionModule} from '@angular/material';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {NavbarServiceMock} from '../../../../../services/mocks/navbar.service.mock';
 import {VariableService} from '../../../../../services/variable.service';
@@ -10,6 +9,8 @@ import {VariableServiceMock} from '../../../../../services/mocks/variable.servic
 import {TreeNodeService} from '../../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../../services/mocks/tree-node.service.mock';
 import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatButtonModule} from '@angular/material/button';
 
 describe('GbCategorizedVariablesComponent', () => {
   let component: GbCategorizedVariablesComponent;

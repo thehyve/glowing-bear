@@ -61,7 +61,7 @@ export class DataTableService {
       let names = invalidRowDimensions.map(dimension => dimension.name).join(', ');
       let message = `Dimension not allowed as row dimension: ${names}`;
       console.warn(message);
-      MessageHelper.alert('warning', message);
+      MessageHelper.alert('warn', message);
       for (let dimension of invalidRowDimensions) {
         let deletedDimensions = this.rowDimensions.splice(this.rowDimensions.indexOf(dimension), 1);
         deletedDimensions.forEach(deletedDimension =>

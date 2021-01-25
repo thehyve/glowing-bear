@@ -9,7 +9,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbCombinationConstraintComponent} from './gb-combination-constraint.component';
-import {AutoCompleteModule, DropdownModule} from 'primeng/primeng';
+import {AutoCompleteModule, DropdownModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';

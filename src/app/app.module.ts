@@ -21,7 +21,6 @@ import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbExportModule} from './modules/gb-export-module/gb-export.module';
 import {DatePipe} from '@angular/common';
-import {GrowlModule} from 'primeng/growl';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 
 import {ApiHttpInterceptor} from './services/http/api-http-interceptor.service';
@@ -29,11 +28,14 @@ import {AuthenticationService} from './services/authentication/authentication.se
 import {Oauth2Authentication} from './services/authentication/oauth2-authentication';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {NavbarService} from './services/navbar.service';
+import {MessageService, ToastModule} from 'primeng';
 
 export function initConfigAndAuth(config: AppConfig, authService: AuthenticationService) {
   return () => config.load()
-    .then(() => authService.load())
-    .catch(error => { console.error(error) });
+      .then(() => authService.load())
+      .catch(error => {
+        console.error(error)
+      });
 }
 
 @NgModule({
@@ -45,7 +47,7 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    GrowlModule,
+    ToastModule,
     GbMainModule,
     GbNavBarModule,
     GbCohortSelectionModule,
@@ -62,13 +64,14 @@ export function initConfigAndAuth(config: AppConfig, authService: Authentication
     {
       provide: APP_INITIALIZER,
       useFactory: initConfigAndAuth,
-      deps: [AppConfig, AuthenticationService, Oauth2Authentication],
+      deps: [AppConfig, AuthenticationService],
       multi: true
     }, {
       provide: HTTP_INTERCEPTORS,
       useClass: ApiHttpInterceptor,
       multi: true
     },
+    MessageService,
     NavbarService
   ],
   bootstrap: [AppComponent]

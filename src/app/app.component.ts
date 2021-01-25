@@ -16,6 +16,7 @@ import {AppConfig} from './config/app.config';
 import {AccessLevel} from './services/authentication/access-level';
 import {Router, NavigationEnd} from '@angular/router';
 import {NavbarService} from './services/navbar.service';
+import {MessageService} from 'primeng';
 
 @Component({
   selector: 'gb-app-root',
@@ -31,11 +32,13 @@ export class AppComponent implements OnInit {
   private _accessLevel: AccessLevel = null;
   private _serverStatus = ServerStatus.NONE;
 
-  constructor(private authenticationService: AuthenticationService,
+  constructor(private messageService: MessageService,
+              private authenticationService: AuthenticationService,
               private resourceService: ResourceService,
               private config: AppConfig,
               private router: Router,
               private navbarService: NavbarService) {
+    MessageHelper.setMessageService(messageService);
     if (this.config.isLoaded) {
       this.docUrl = config.getConfig('doc-url');
     }
@@ -115,14 +118,6 @@ export class AppComponent implements OnInit {
     return this._authenticationCompleted &&
       this._accessLevel && this._accessLevel !== AccessLevel.None &&
       this._serverStatus === ServerStatus.ERROR;
-  }
-
-  get messages(): any[] {
-    return MessageHelper.messages;
-  }
-
-  set messages(value: any[]) {
-    MessageHelper.messages = value;
   }
 
 }

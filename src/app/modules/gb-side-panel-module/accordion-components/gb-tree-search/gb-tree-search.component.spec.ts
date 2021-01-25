@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTreeSearchComponent} from './gb-tree-search.component';
 import {TreeModule} from 'primeng/tree';
-import {AutoCompleteModule} from 'primeng/primeng';
+import {AutoCompleteModule} from 'primeng';
 import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 import {FormsModule} from '@angular/forms';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';

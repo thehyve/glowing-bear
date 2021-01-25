@@ -6,16 +6,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Message} from 'primeng/api';
+import {MessageService} from 'primeng';
 
 export class MessageHelper {
-  public static messages: Message[] = [];
+  public static messageService: MessageService;
 
-  public static alert(severity: string, summary: string, detail?: string) {
+  public static alert(severity: 'info' | 'success' | 'warn' | 'error', summary: string, detail?: string) {
     let _detail = detail ? detail : '';
-    // This hack is to address the bug where primneNg growl does not time out
-    MessageHelper.messages = [].concat(MessageHelper.messages);
-    MessageHelper.messages.push({severity: severity, summary: summary, detail: _detail});
-    console.log(summary);
+    if (MessageHelper.messageService) {
+      MessageHelper.messageService.add({severity: severity, summary: summary, detail: _detail, life: 3000});
+    }
+    switch (severity) {
+      case 'warn':
+        console.warn(summary); break;
+      case 'error':
+        console.error(summary); break;
+      default:
+        console.log(summary);
+    }
+  }
+
+  static setMessageService(messageService: MessageService) {
+    MessageHelper.messageService = messageService;
   }
 }

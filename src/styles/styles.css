@@ -100,29 +100,6 @@ body .hline {
 }
 
 /*
- * Style for PrimeNg growl messages
- */
-.gb-container .ui-growl .ui-growl-message-warn {
-  background-color: #f4b30a;
-  color: white;
-}
-
-.gb-container .ui-growl .ui-growl-message-success {
-  background-color: #5db85c;
-  color: white;
-}
-
-.gb-container .ui-growl .ui-growl-message-info {
-  background-color: #5bc0de;
-  color: white;
-}
-
-.gb-container .ui-growl .ui-growl-message-error {
-  background-color: #d9534f;
-  color: white;
-}
-
-/*
  * Fractalis chart settings panel
  * to be removed after replacing default panel with one
  */

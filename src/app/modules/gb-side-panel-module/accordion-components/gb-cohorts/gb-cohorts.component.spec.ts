@@ -14,19 +14,18 @@ import {
   ButtonModule,
   ConfirmationService,
   ConfirmDialogModule,
-  DataListModule,
+  DataViewModule,
   DragDropModule,
   InputTextModule,
   PanelModule,
   RadioButtonModule,
   ToggleButtonModule,
   TooltipModule
-} from 'primeng/primeng';
+} from 'primeng';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {FormsModule} from '@angular/forms';
 import {CohortService} from '../../../../services/cohort.service';
 import {CohortServiceMock} from '../../../../services/mocks/cohort.service.mock';
-import {Md2AccordionModule} from 'md2';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {Cohort} from '../../../../models/cohort-models/cohort';
 import {CohortDiffRecord} from '../../../../models/cohort-models/cohort-diff-record';
@@ -48,7 +47,7 @@ describe('GbCohortsComponent', () => {
       declarations: [GbCohortsComponent],
       imports: [
         BrowserAnimationsModule,
-        DataListModule,
+        DataViewModule,
         DragDropModule,
         PanelModule,
         ButtonModule,
@@ -57,7 +56,6 @@ describe('GbCohortsComponent', () => {
         FormsModule,
         AutoCompleteModule,
         ConfirmDialogModule,
-        Md2AccordionModule,
         RadioButtonModule,
         ToggleButtonModule
       ],

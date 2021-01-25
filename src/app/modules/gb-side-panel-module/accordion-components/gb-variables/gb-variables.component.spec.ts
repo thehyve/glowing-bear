@@ -8,8 +8,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbVariablesComponent} from './gb-variables.component';
-import {MatExpansionModule} from '@angular/material';
-import {AutoCompleteModule, CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng/primeng';
+import {AutoCompleteModule, CheckboxModule, DragDropModule, SelectButtonModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {MockComponent} from 'ng2-mock-component';
 import {NavbarService} from '../../../../services/navbar.service';
@@ -25,6 +24,7 @@ import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
 import {GbTreeSearchComponent} from '../gb-tree-search/gb-tree-search.component';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 describe('GbVariablesComponent', () => {
   let component: GbVariablesComponent;

@@ -12,27 +12,27 @@ import {GbExportComponent} from './gb-export.component';
 import {
   AutoCompleteModule,
   CheckboxModule,
-  DataListModule,
-  DataTableModule,
+  DataViewModule,
   DropdownModule,
   FieldsetModule,
   MessagesModule,
   OverlayPanelModule,
   PanelModule
-} from 'primeng/primeng';
+} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ExportService} from '../../services/export.service';
 import {ExportServiceMock} from '../../services/mocks/export.service.mock';
 import {MockComponent} from 'ng2-mock-component';
-import {MatExpansionModule} from '@angular/material';
 import {ExportJob} from '../../models/export-models/export-job';
 import {GbValidatorsModule} from '../../validators/gb-validators.module';
 import {By} from '@angular/platform-browser';
 import {ExportFileFormat} from '../../models/export-models/export-file-format';
 import {ExportDataType} from '../../models/export-models/export-data-type';
 import {GbGenericModule} from '../gb-generic-module/gb-generic.module';
+import {TableModule} from 'primeng/table';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 
 const createMockJob = (id: string, name: string) => {
@@ -72,10 +72,10 @@ describe('GbExportComponent (dataTable)', () => {
         CommonModule,
         FormsModule,
         AutoCompleteModule,
-        DataListModule,
+        DataViewModule,
         CheckboxModule,
         FieldsetModule,
-        DataTableModule,
+        TableModule,
         PanelModule,
         DropdownModule,
         MessagesModule,
@@ -136,10 +136,10 @@ describe('GbExportComponent (surveyTable)', () => {
         CommonModule,
         FormsModule,
         AutoCompleteModule,
-        DataListModule,
+        DataViewModule,
         CheckboxModule,
         FieldsetModule,
-        DataTableModule,
+        TableModule,
         PanelModule,
         DropdownModule,
         MessagesModule,
