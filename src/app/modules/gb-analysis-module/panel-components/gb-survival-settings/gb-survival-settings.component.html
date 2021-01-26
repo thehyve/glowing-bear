@@ -1,30 +1,31 @@
 <p-accordionTab *ngIf="activated" header="Settings" id="gb-survival-settings-component">
 
   <div style="padding-top: 2em;">
-    <span class="description">
-      Time Granularity:
-    </span>
-    &nbsp;
 
-    <p-dropdown [(ngModel)]="selectedGranularity" [options]="granularities"></p-dropdown>
-    &nbsp;
-    <span style="white-space: nowrap;">
-      <span class="description">
-        Time Limit:
+    <div class="input-label-wrapper">
+      <span class="input-field-label">
+        Time Granularity: 
       </span>
-      &nbsp;
-      <input type="number" pInputText [(ngModel)]="limit" />
-      &nbsp;
-    </span>
+      <p-dropdown [(ngModel)]="selectedGranularity" [options]="granularities" class="input-field"></p-dropdown>
+    </div>
+
+    <div class ="input-label-wrapper">
+      <span style="white-space: nowrap;">
+        <span class="input-field-label">
+          Time Limit:
+        </span>
+        <input type="number" pInputText [(ngModel)]="limit" class="input-field" />
+      </span>
+    </div>
   </div>
 
-  <div style="padding-top: 2em;">
+  <!--  -->
+  <div style="padding-top: 2em;" class="input-label-wrapper">
+
     <span style="white-space: nowrap;">
-      <span class="description">
+      <label for="startEvent" class="input-field-label">
         Start Event:
-      </span>
-      &nbsp;
-      &nbsp;
+      </label>
       <div style="padding: 1em;"
         [ngStyle]="{'background-color' : startEventHovering ? 'var(--gb-clinical-green-light-light)' : 'white'}"
         (dragover)="onStartDragOver($event)" (dragleave)="onStartDragLeave($event)" (drop)="onStartDrop($event)">
@@ -38,11 +39,12 @@
         </p-autoComplete>
       </div>
     </span>
+
+
     <span style="white-space: nowrap;">
-      <span class="description">
+      <span class="input-field-label">
         End Event:&nbsp;
       </span>
-      &nbsp;
 
       <div #autoCompleteContainer style="padding: 1em;"
         [ngStyle]="{'background-color' : endEventHovering ?  'var(--gb-clinical-green-light-light)' : 'white'}"
@@ -57,8 +59,6 @@
         </p-autoComplete>
       </div>
     </span>
-
-
 
   </div>
 

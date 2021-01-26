@@ -529,3 +529,16 @@ gb-cross-table .ui-resizable-column {
   min-width: 30px;
   width: 100px;
 }
+
+.input-label-wrapper {
+  display: inline-block;
+	margin: 0.5em;
+}
+
+.input-label-wrapper .input-field-label {
+    display: block;
+}
+
+.input-label-wrapper .input-field {
+  margin-left: 1em;
+}
