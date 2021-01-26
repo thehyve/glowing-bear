@@ -191,6 +191,7 @@ export class TreeNodeService {
         constraintFromModifier.concept = sourceConcept;
         constraintService.conceptConstraints.push(constraintFromModifier);
         constraintService.allConstraints.push(constraintFromModifier);
+        node.leaf = true;
         node.icon = 'fa fa-file-o';
         break;
       case TreeNodeType.MODIFIER_FOLDER:
