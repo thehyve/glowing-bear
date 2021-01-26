@@ -12,6 +12,7 @@ import { Injectable } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { QueryService } from './query.service';
 import { Subject, Observable } from 'rxjs';
+import { OperationType } from 'app/models/operation-models/operation-types';
 
 @Injectable()
 export class NavbarService {
@@ -32,13 +33,13 @@ export class NavbarService {
     this.items = [
 
       // 0: explore tab, default page
-      { label: 'Explore', routerLink: '/explore' },
+      { label: OperationType.EXPLORE, routerLink: '/explore' },
 
       // 1: explore results tab, not visible by default
       { label: 'Explore Results', routerLink: '/explore/results', visible: false },
 
       // 2: survival analysis tab
-      { label: 'Analysis', routerLink: '/analysis' }
+      { label: OperationType.ANALYSIS, routerLink: '/analysis' }
     ];
 
     // hook to update explore results tab visibility

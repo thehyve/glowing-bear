@@ -16,5 +16,5 @@
   <br>
   <input type="text" pInputText [(ngModel)]="name" (drop)="preventDefault($event)" placehodler="subgroup name" />
   <br>
-  <gb-selection></gb-selection>
+  <gb-selection [operationType] = "OperationType.ANALYSIS"></gb-selection>
 </p-accordionTab>
