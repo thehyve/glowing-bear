@@ -1,6 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2020 - 2021 CHUV
+ * Copyright 2020 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -36,6 +37,25 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   PatientListOperationStatus = PatientListOperationStatus;
 
   @ViewChild('op', { static: false }) deletionRequest: OverlayPanel;
+
+  static numberMatrixToCSV(data: number[][]) {
+    const csv = data.map((row) => row.toString());
+    console.log(csv.join('\r\n'))
+    return csv.join('\r\n');
+  }
+
+  static savePatientListToCSVFile(patientLists: number[][]) {
+    const csvContent = GbCohortsComponent.numberMatrixToCSV(patientLists)
+
+    let exportFileEL = document.createElement('a');
+    let blob = new Blob([csvContent], { type: 'text/csv' });
+    let url = window.URL.createObjectURL(blob);
+    exportFileEL.href = url;
+    exportFileEL.download = 'patientList.csv';
+    exportFileEL.click();
+    window.URL.revokeObjectURL(url);
+    exportFileEL.remove();
+  }
 
   constructor(public cohortService: CohortService,
     private constraintService: ConstraintService,
@@ -105,7 +125,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       (x) => { console.log(`New status of request for patient list of saved cohort ${cohort.name}, status: ${x}`) }
     )
     this.savedCohortsPatientListService.getList(cohort.name).subscribe(
-      value => { console.warn('IMPLEMENT THE REMAINING STEPS', value) },
+      value => { GbCohortsComponent.savePatientListToCSVFile(value) },
       err => {
         throw ErrorHelper.handleError(`While retrieving list for cohort ${cohort.name}`, err)
       }
