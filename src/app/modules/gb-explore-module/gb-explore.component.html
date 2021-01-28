@@ -10,7 +10,7 @@
       <span id="save-box">
         <input [(ngModel)]="cohortName" pInputText (keydown)="saveIfEnter($event)" placeholder="Cohort name" (drop)="preventDefault($event)"/>
         <span>&nbsp;</span>
-        <button
+        <button 
           class="btn btn-outline-primary btn-sm gb-data-selection-overview-panel-btn {{lastSuccessfulSet ?  '' : 'gb-explore-waiting-cohort'}}"
           type="button" [disabled]="!lastSuccessfulSet" (click)="save()">
 
@@ -47,6 +47,9 @@
 
     </div>
   </div>
-  <gb-selection></gb-selection>
+
+  <div style="margin-top: 1em;">
+    <gb-selection></gb-selection>
+  </div>
 
 </div>

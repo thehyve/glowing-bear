@@ -1,67 +1,88 @@
 <p-accordionTab *ngIf="activated" header="Settings" id="gb-survival-settings-component">
 
-  <div style="padding-top: 2em;">
+  <div class="small-font">
 
     <div class="input-label-wrapper">
-      <span class="input-field-label">
+
+      <div>
+        <label>
         Time Granularity: 
-      </span>
-      <p-dropdown [(ngModel)]="selectedGranularity" [options]="granularities" class="input-field"></p-dropdown>
+        </label>
+      </div>
+      <div class="input-field-margin">
+        <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"  [options]="granularities">
+          <!--utiliser ces classes pour la fleche du dropdown ui-button-icon-left ui-clickable pi pi-caret-down-->
+        </p-dropdown>
+      </div>
     </div>
 
-    <div class ="input-label-wrapper">
-      <span style="white-space: nowrap;">
-        <span class="input-field-label">
+    <div class="input-label-wrapper">
+      <div>
+        <label for="timeLimit">
           Time Limit:
-        </span>
-        <input type="number" pInputText [(ngModel)]="limit" class="input-field" />
-      </span>
+        </label>
+      </div>
+      <input id="timeLimit" type="number" pInputText [(ngModel)]="limit" class="input-field input-field-margin" />
     </div>
-  </div>
 
-  <!--  -->
-  <div style="padding-top: 2em;" class="input-label-wrapper">
 
-    <span style="white-space: nowrap;">
-      <label for="startEvent" class="input-field-label">
-        Start Event:
-      </label>
-      <div style="padding: 1em;"
+    <!-- <div *ngIf="(operatorState !== null) && !isBetween() " class="d-inline-block">
+      <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-8" -->
+
+    <!--  -->
+    <div class="input-label-wrapper">
+      <div>
+        <label>
+          Start Event:
+        </label>
+      </div>
+      <div
+        class="input-field-margin"
         [ngStyle]="{'background-color' : startEventHovering ? 'var(--gb-clinical-green-light-light)' : 'white'}"
         (dragover)="onStartDragOver($event)" (dragleave)="onStartDragLeave($event)" (drop)="onStartDrop($event)">
-        <p-autoComplete #autoComplete [(ngModel)]="startConcept" [suggestions]="suggestedStartConcepts"
+        <p-autoComplete 
+          #autoComplete [(ngModel)]="startConcept" [suggestions]="suggestedStartConcepts"
           (completeMethod)="searchStart($event)" field="path" (onDropDownClick)="onDropdown($event)"
-          placeholder="Select clear concept" dropdown="true">
+          placeholder="Select clear concept" dropdown="true"
+          
+          [inputStyle]="{'width':'auto'}"
+          styleClass="gb-concept-constraint-input"
+          size="60">
 
           <ng-template let-concept pTemplate="item">
             <span>{{concept.label}}</span>
           </ng-template>
         </p-autoComplete>
       </div>
-    </span>
+    </div>
 
+    <div class="input-label-wrapper">
+      <div>
+        <label>
+          End Event:&nbsp;
+        </label>
+      </div>
 
-    <span style="white-space: nowrap;">
-      <span class="input-field-label">
-        End Event:&nbsp;
-      </span>
-
-      <div #autoCompleteContainer style="padding: 1em;"
+      <div #autoCompleteContainer
+        class="input-field-margin"
         [ngStyle]="{'background-color' : endEventHovering ?  'var(--gb-clinical-green-light-light)' : 'white'}"
         (dragover)="onEndDragOver($event)" (dragleave)="onEndDragLeave($event)" (drop)="onEndDrop($event)">
         <p-autoComplete #autoComplete [(ngModel)]="endConcept" [suggestions]="suggestedEndConcepts"
           (completeMethod)="searchEnd($event)" field="path" (onDropDownClick)="onDropdown($event)"
-          placeholder="Select clear concept" dropdown="true">
+          placeholder="Select clear concept" dropdown="true"
+          
+          [inputStyle]="{'width':'auto'}"
+          styleClass="gb-concept-constraint-input"
+          size="60">
 
           <ng-template let-concept pTemplate="item">
             <span>{{concept.label}}</span>
           </ng-template>
         </p-autoComplete>
       </div>
-    </span>
+    </div>
+
 
   </div>
-
-
 
 </p-accordionTab>

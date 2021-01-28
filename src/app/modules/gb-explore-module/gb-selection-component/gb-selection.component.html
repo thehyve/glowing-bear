@@ -1,12 +1,18 @@
-<div>
+<div class="small-font">
+  <!-- https://stackoverflow.com/questions/tagged/ui-grid?tab=Votes -->
+<!-- how to use the grid for sizing components https://stackoverflow.com/questions/41354416/primeng-p-dropdown-stretch-100 -->
 
-  <br>
-  <p-dropdown [(ngModel)]="queryTiming" [options]="timings" [ngStyle]="{'font-size':'small','margin-bottom':'1em'}"></p-dropdown>
-  <div>&nbsp;</div>
-  <!-- Inclusion criteria -->
+  <div class="input-label-wrapper">
+    <div class="input-field-margin">
+        <p-dropdown 
+        [style]="{'min-width':'25em'}"
+        dropdownIcon="pi pi-caret-down white-color" 
+        [(ngModel)]="queryTiming" [options]="timings" [ngStyle]="{'margin-bottom':'1em'}"></p-dropdown>
+    </div>
+  </div>
   
   <div #inclusionCriteriaBox
-       class="criteria-box">
+       class="criteria-box input-label-wrapper">
     <p><b>Inclusion</b> criteria:</p>
     <gb-constraint #rootInclusionConstraintComponent
                 [constraint]="constraintService.rootInclusionConstraint"
@@ -15,7 +21,7 @@
 
   <!-- Exclusion criteria -->
   <div #exclusionCriteriaBox
-       class="criteria-box">
+       class="criteria-box input-label-wrapper">
     <p><b>Exclusion</b> criteria:</p>
     <gb-constraint #rootExclusionConstraintComponent
                 [constraint]="constraintService.rootExclusionConstraint"
