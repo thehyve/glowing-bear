@@ -35,7 +35,7 @@
         </p-toggleButton>
 
 
-        <button pButton class="ui-button-secondary" type="button" pTooltip="Download this cohort for sharing/importing"
+        <button *ngIf="!notAuthorized" pButton class="ui-button-secondary" type="button" pTooltip="Download this cohort for sharing/importing"
           tooltipPosition="top" placeholder="Top" (click)="downloadCohort($event, cohort)" icon="fa fa-download">
         </button>
         <button pButton class="ui-button-secondary" type="button" pTooltip="Restore" tooltipPosition="top"
@@ -49,6 +49,13 @@
           placeholder="Top" (click)="bookmarkCohort($event,cohort)"
           icon="{{cohort.bookmarked ? 'fa fa-star':'fa fa-star-o'}}">
         </button>
+        <p *ngIf="patientListsStatus.has(cohort.name) && patientListsStatus.get(cohort.name) === PatientListOperationStatus.waitOnAPI" class="loading-blink">
+          Waiting on MedCo server nodes response <span>•</span><span>•</span><span>•</span>
+        </p>
+        <p *ngIf="patientListsStatus.has(cohort.name) && patientListsStatus.get(cohort.name) === PatientListOperationStatus.decryption" class="loading-blink">
+          Decryption of local lists  <span>🔒</span><span>🔒</span><span>🔓</span><br/>
+          (this may take a few seconds)
+        </p>
       </p-header>
       <span style="font-size: 0.8em;">
         Creation :{{cohort.creationDate.toLocaleString()}}

@@ -9,6 +9,7 @@
 
 import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewChild } from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
+import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
 import { CohortService } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
 import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
@@ -32,6 +33,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   deletionCandidate: Cohort;
 
   file: File; // holds the uploaded cohort file
+  PatientListOperationStatus = PatientListOperationStatus;
 
   @ViewChild('op', { static: false }) deletionRequest: OverlayPanel;
 
@@ -51,6 +53,15 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   set selectedCohort(cohort: Cohort) {
     this.cohortService.selectedCohort = cohort
   }
+
+  get notAuthorized(): boolean {
+    return this.savedCohortsPatientListService.notAuthorized
+  }
+
+  get patientListsStatus(): Map<string, PatientListOperationStatus> {
+    return this.savedCohortsPatientListService.statusStorage
+  }
+
   ngOnInit() {
     this.refreshCohorts()
   }
@@ -76,15 +87,11 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
     this.cohortService.selectedCohort = cohort
 
-
-
   }
 
   refreshCohorts() {
     this.cohortService.getCohorts()
   }
-
-
 
 
 
@@ -94,6 +101,9 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   downloadCohort(e: Event, cohort: Cohort) {
     e.stopPropagation()
+    this.savedCohortsPatientListService.getListStatusNotifier(cohort.name).subscribe(
+      (x) => { console.log(`New status of request for patient list of saved cohort ${cohort.name}, status: ${x}`) }
+    )
     this.savedCohortsPatientListService.getList(cohort.name).subscribe(
       value => { console.warn('IMPLEMENT THE REMAINING STEPS', value) },
       err => {
@@ -170,11 +180,6 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
       }
     });
-
     this.deletionCandidate = undefined
-
-
   }
-
-
 }
