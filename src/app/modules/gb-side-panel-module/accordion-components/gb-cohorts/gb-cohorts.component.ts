@@ -44,14 +44,14 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
     return csv.join('\r\n');
   }
 
-  static savePatientListToCSVFile(patientLists: number[][]) {
+  static savePatientListToCSVFile(cohortName: string, patientLists: number[][]) {
     const csvContent = GbCohortsComponent.numberMatrixToCSV(patientLists)
 
     let exportFileEL = document.createElement('a');
     let blob = new Blob([csvContent], { type: 'text/csv' });
     let url = window.URL.createObjectURL(blob);
     exportFileEL.href = url;
-    exportFileEL.download = 'patientList.csv';
+    exportFileEL.download = `${cohortName}.csv`;
     exportFileEL.click();
     window.URL.revokeObjectURL(url);
     exportFileEL.remove();
@@ -125,7 +125,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       (x) => { console.log(`New status of request for patient list of saved cohort ${cohort.name}, status: ${x}`) }
     )
     this.savedCohortsPatientListService.getList(cohort.name).subscribe(
-      value => { GbCohortsComponent.savePatientListToCSVFile(value) },
+      value => { if (value) { GbCohortsComponent.savePatientListToCSVFile(cohort.name, value) } },
       err => {
         throw ErrorHelper.handleError(`While retrieving list for cohort ${cohort.name}`, err)
       }

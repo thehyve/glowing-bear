@@ -9,7 +9,9 @@
 import { Injectable } from '@angular/core';
 import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
 import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
+import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
 import { ErrorHelper } from 'app/utilities/error-helper';
+import { MessageHelper } from 'app/utilities/message-helper';
 import { Observable, Subject, throwError } from 'rxjs';
 import { of } from 'rxjs';
 import { catchError, delay, flatMap, tap } from 'rxjs/operators';
@@ -21,8 +23,10 @@ import { CryptoService } from './crypto.service';
 export class SavedCohortsPatientListService {
 
 
-  // user is assumed to be authorized, it will changed if he gets a forbidden error
-  _notAuthorized = false
+  /*
+   * The user must be authorized to retrieve patient lists
+   */
+  _notAuthorized: boolean
 
   /*
    * listStorage stores the patient list, indexed by the cohort's name they relate to.
@@ -57,7 +61,15 @@ export class SavedCohortsPatientListService {
 
   constructor(private cryptoService: CryptoService,
     private exploreCohortsService: ExploreCohortsService,
-    private authenticationService: AuthenticationService) { }
+    private authenticationService: AuthenticationService) {
+    this._notAuthorized = true
+    this.authenticationService.userRoles.forEach(role => {
+      if (role === ExploreQueryType.PATIENT_LIST.id) {
+        this._notAuthorized = false
+      }
+    }
+    )
+  }
 
   private decrypt(cipherPatientLists: string[][]): Observable<number[][]> {
     return of(cipherPatientLists.map(value => value.map(cipher => this.cryptoService.decryptIntegerWithEphemeralKey(cipher))))
@@ -80,7 +92,8 @@ export class SavedCohortsPatientListService {
   }
 
   /**
-   * getList returns an Observalbe of an array of arrays of numbers.
+   * getList returns an Observalbe of an array of arrays of numbers
+   * if no request is not already ongoing for the given cohort name. I returns observable of null otherwise.
    * There is one array per MedCo node, and each array represents clear patient numbers from this node.
    *
    * @param cohortName
@@ -96,6 +109,20 @@ export class SavedCohortsPatientListService {
         notifier.next(PatientListOperationStatus.done)
       }
       return of(this._listStorage.get(cohortName))
+    }
+    if (this._statusStorage.has(cohortName)) {
+      switch (this._statusStorage.get(cohortName)) {
+        case PatientListOperationStatus.waitOnAPI:
+          MessageHelper.alert('warn', `A request was already made to MedCo server nodes for cohort ${cohortName}`)
+          return of(null)
+
+        case PatientListOperationStatus.decryption:
+          MessageHelper.alert('warn', `Cipher text for ${cohortName} still in decryption process`)
+          return of(null)
+
+        default:
+          break;
+      }
     }
 
     this._statusStorage.set(cohortName, PatientListOperationStatus.waitOnAPI)
@@ -149,7 +176,8 @@ export class SavedCohortsPatientListService {
         }
       ),
       tap(
-        () => {
+        (patientLists) => {
+          this._listStorage.set(cohortName, patientLists)
           this._statusStorage.set(cohortName, PatientListOperationStatus.done)
           if (notifier) {
             notifier.next(PatientListOperationStatus.done)
@@ -157,6 +185,20 @@ export class SavedCohortsPatientListService {
         }
       )
     )
+  }
+
+  /**
+   * insertPatientList insert new patient lists to its list storage.
+   * It may be used when clear patient numbers come from another service/component
+   *
+   * @param cohortName
+   * @param patientList
+   */
+  insertPatientList(cohortName: string, patientLists: number[][]) {
+    if (this._listStorage.has(cohortName)) {
+      throw ErrorHelper.handleNewError(`Cannot insert new patient lists to already existing saved cohort ${cohortName}`)
+    }
+    this._listStorage.set(cohortName, patientLists)
   }
 
   get notAuthorized(): boolean {

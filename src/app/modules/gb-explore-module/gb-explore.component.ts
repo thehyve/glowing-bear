@@ -18,6 +18,8 @@ import { CohortService } from 'app/services/cohort.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Cohort } from 'app/models/cohort-models/cohort';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
+import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
 
 @Component({
   selector: 'gb-explore',
@@ -33,7 +35,8 @@ export class GbExploreComponent implements AfterViewChecked {
   constructor(public queryService: QueryService,
     private cohortService: CohortService,
     public constraintService: ConstraintService,
-    private changeDetectorRef: ChangeDetectorRef) {
+    private changeDetectorRef: ChangeDetectorRef,
+    private savedCohortsPatientListService: SavedCohortsPatientListService) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
       console.log('last_successful_set', resIDs)
       this._lastSuccessfulSet = resIDs
@@ -73,6 +76,17 @@ export class GbExploreComponent implements AfterViewChecked {
         this.cohortService.postCohort(cohort)
 
         MessageHelper.alert('success', 'Cohort has been sent.')
+
+        // handle patient list locally
+
+        this.queryService.queryResults.subscribe(
+          result => {
+            if (result.patientLists) {
+              this.savedCohortsPatientListService.insertPatientList(this.cohortName, result.patientLists)
+              this.savedCohortsPatientListService.statusStorage.set(this.cohortName, PatientListOperationStatus.done)
+            }
+          }
+        )
       }
     }
   }
