@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,8 @@ import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewCh
 import { Cohort } from 'app/models/cohort-models/cohort';
 import { CohortService } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
+import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
+import { ErrorHelper } from 'app/utilities/error-helper';
 import { ConfirmationService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel'
 
@@ -36,7 +38,8 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   constructor(public cohortService: CohortService,
     private constraintService: ConstraintService,
     private confirmationService: ConfirmationService,
-    private element: ElementRef) { }
+    private element: ElementRef,
+    private savedCohortsPatientListService: SavedCohortsPatientListService) { }
 
   get cohorts(): Array<Cohort> {
 
@@ -91,6 +94,12 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   downloadCohort(e: Event, cohort: Cohort) {
     e.stopPropagation()
+    this.savedCohortsPatientListService.getList(cohort.name).subscribe(
+      value => { console.warn('IMPLEMENT THE REMAINING STEPS', value) },
+      err => {
+        throw ErrorHelper.handleError(`While retrieving list for cohort ${cohort.name}`, err)
+      }
+    )
   }
 
   restoreCohort(e: Event, cohort: Cohort) {

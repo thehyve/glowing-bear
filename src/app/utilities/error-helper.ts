@@ -55,6 +55,6 @@ export class ErrorHelper {
 
     console.error(`${errMsg}\n${errDetail}\n${error.error}`);
     MessageHelper.alert('error', errMsg);
-    return throwError(error.error);
+    return throwError(error);
   }
 }
