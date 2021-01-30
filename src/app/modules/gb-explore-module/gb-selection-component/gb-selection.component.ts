@@ -1,18 +1,14 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-  Component, ViewChild
-} from '@angular/core';
-import {
-  trigger, style, animate, transition
-} from '@angular/animations';
+import { Component, Input, ViewChild } from '@angular/core';
+import { trigger, style, animate, transition } from '@angular/animations';
 import { GbConstraintComponent } from '../constraint-components/gb-constraint/gb-constraint.component';
 import { QueryService } from '../../../services/query.service';
 import { ConstraintService } from '../../../services/constraint.service';
@@ -22,6 +18,7 @@ import { map } from 'rxjs/operators';
 import { SelectItem } from 'primeng/api';
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import { CohortService } from 'app/services/cohort.service';
+import { OperationType } from 'app/models/operation-models/operation-types';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -61,6 +58,15 @@ export class GbSelectionComponent {
     this.cohortService.queryTiming.subscribe(timing => {
       this.queryService.queryTimingSameInstance = timing === ApiI2b2Timing.sameInstanceNum
     })
+  }
+
+  @Input()
+  set operationType(opType: OperationType) {
+    this.constraintService.operationType = opType
+  }
+
+  get operationType(): OperationType {
+    return this.constraintService.operationType
   }
 
   get timings(): SelectItem[] {

@@ -284,6 +284,10 @@ export class CohortService {
   restoreTerms(cohors: Cohort): void {
     let panelTimings: ApiI2b2Timing[]
     let cohortDefinition = cohors.mostRecentQueryDefinition()
+    if (!cohortDefinition){
+      MessageHelper.alert('warn',`Definition not found for cohort ${cohors.name}`)
+      return
+    }
     let nots = cohortDefinition.panels.map(({ not }) => not)
     this._queryTiming.next(cohortDefinition.queryTiming)
 
