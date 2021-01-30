@@ -37,6 +37,9 @@ import {GbExploreResultsModule} from './modules/gb-explore-results-module/gb-exp
 import {ConstraintMappingService} from './services/constraint-mapping.service';
 import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
+import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
+import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
+
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
                              medcoNetworkService: MedcoNetworkService,
@@ -69,6 +72,8 @@ export function loadServices(config: AppConfig,
     GbMainModule,
     GbExploreModule,
     GbExploreResultsModule,
+    GbAnalysisModule,
+    GbSurvivalResultsModule,
     GbNavBarModule,
     GbSidePanelModule
   ],
