@@ -11,6 +11,7 @@ import { ConstraintService } from 'app/services/constraint.service';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { SurvivalService } from 'app/services/survival-analysis.service';
 import { SubGroup } from 'app/services/survival-analysis.service';
+import { OperationType } from 'app/models/operation-models/operation-types';
 
 
 
@@ -30,6 +31,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   _selectedSubGroup: SubGroup
   _usedNames: Set<string>
 
+  OperationType = OperationType
 
   constructor(private constraintService: ConstraintService, private survivalService: SurvivalService) {
     this._subGroups = new Array()
@@ -39,9 +41,6 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
 
   ngOnInit() {
-
-    // clear constraint selection form previous operations
-    this.constraintService.clearConstraint()
 
     // reload existing subgroups from previous analysis
     this._subGroups = this.survivalService.subGroups.map(sg => { return { label: sg.name, value: sg } })
