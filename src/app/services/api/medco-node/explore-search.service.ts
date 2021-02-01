@@ -112,7 +112,6 @@ export class ExploreSearchService {
   }
 
   private nodeType(nodeTypeString: string): TreeNodeType {
-    console.warn('node type ', nodeTypeString.toLowerCase())
     switch (nodeTypeString.toLowerCase()) {
       case 'concept':
         return TreeNodeType.CONCEPT;
@@ -135,8 +134,8 @@ export class ExploreSearchService {
         return TreeNodeType.MODIFIER_CONTAINER;
 
 
-      case 'container':
-        return TreeNodeType.CONTAINER;
+      case 'concept_container':
+        return TreeNodeType.CONCEPT_CONTAINER;
 
       default:
         return TreeNodeType.UNKNOWN;

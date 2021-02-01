@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 -2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,6 +16,7 @@ import { ConceptConstraint } from 'app/models/constraint-models/concept-constrai
 import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { SelectItem } from 'primeng/api';
 import { SurvivalService } from 'app/services/survival-analysis.service';
+import { TreeNodeType } from 'app/models/tree-models/tree-node-type';
 
 @Component({
   selector: 'gb-survival-settings',
@@ -60,32 +61,19 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
 
   searchStart(event) {
-
-    let q = event.query.toLowerCase();
-
-    let concepts = this.constraintService.concepts;
-    if (q) {
-      this.suggestedStartConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
-    } else {
-      this.suggestedStartConcepts = concepts;
-    }
-    console.log('element', this.element)
+    let results = this.constraintService.searchAllConstraints(event.query);
+    this.suggestedStartConcepts = results
+      .filter(constraint => constraint instanceof ConceptConstraint)
+      .map(constraint => (constraint as ConceptConstraint).concept);
     UIHelper.removePrimeNgLoaderIcon(this.element, 200)
-
   }
   searchEnd(event) {
-
-    let q = event.query.toLowerCase();
-
-    let concepts = this.constraintService.concepts;
-    if (q) {
-      this.suggestedEndConcepts = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(q));
-    } else {
-      this.suggestedEndConcepts = concepts;
-    }
+    let results = this.constraintService.searchAllConstraints(event.query);
+    this.suggestedEndConcepts = results
+      .filter(constraint => constraint instanceof ConceptConstraint)
+      .map(constraint => (constraint as ConceptConstraint).concept);
     console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200)
-
   }
   onStartDragOver(event: DragEvent) {
     event.preventDefault()
@@ -103,8 +91,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   }
 
-
-  onStartDrop(event: DragEvent) {
+  private onDrop(event: DragEvent): Concept {
     event.preventDefault()
     event.stopPropagation()
     this.startEventHovering = false
@@ -114,35 +101,36 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
         MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
         return
       }
-
-
-      let constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      let concept = (<ConceptConstraint>constraint).clone().concept
-      if (!concept.code || concept.code === '') {
-        MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
-        return
+      switch (node.nodeType) {
+        case TreeNodeType.CONCEPT:
+        case TreeNodeType.CONCEPT_FOLDER:
+        case TreeNodeType.MODIFIER:
+        case TreeNodeType.MODIFIER_FOLDER:
+          let constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
+          let concept = (<ConceptConstraint>constraint).clone().concept
+          return concept
+        case TreeNodeType.CONCEPT_CONTAINER:
+        case TreeNodeType.MODIFIER_CONTAINER:
+          MessageHelper.alert('warn', `${node.displayName} is a container and cannot be used`)
+          break;
+        default:
+          break;
       }
-      this.startConcept = concept
     }
+    return null
+
 
   }
-  onEndDrop(event: DragEvent) {
-    event.preventDefault()
-    event.stopPropagation()
-    this.endEventHovering = false
-    let node = this.treeNodeService.selectedTreeNode
-    if (node) {
-      if (node.encryptionDescriptor.encrypted) {
-        MessageHelper.alert('warn', 'Cannot select this concept as it is encrypted')
-        return
-      }
 
-      let constraint = this.constraintService.generateConstraintFromTreeNode(node, node ? node.dropMode : null)
-      let concept = (<ConceptConstraint>constraint).clone().concept
-      if (!concept.code || concept.code === '') {
-        MessageHelper.alert('warn', 'This concept has no code. Please, select one of its children.')
-        return
-      }
+  onStartDrop(event: DragEvent) {
+    let concept = this.onDrop(event)
+    if (concept) {
+      this.startConcept = concept
+    }
+  }
+  onEndDrop(event: DragEvent) {
+    let concept = this.onDrop(event)
+    if (concept) {
       this.endConcept = concept
     }
   }

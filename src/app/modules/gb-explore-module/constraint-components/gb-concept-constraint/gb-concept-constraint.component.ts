@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -342,13 +342,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * @param event
    */
   onSearch(event) {
-    let query = event.query.toLowerCase();
-    let concepts = this.constraintService.concepts;
-    if (query) {
-      this.searchResults = concepts.filter((concept: Concept) => concept.path.toLowerCase().includes(query));
-    } else {
-      this.searchResults = concepts;
-    }
+    let results = this.constraintService.searchAllConstraints(event.query);
+    this.searchResults = results
+      .filter(constraint => constraint instanceof ConceptConstraint)
+      .map(constraint => (constraint as ConceptConstraint).concept);
   }
 
   /**
@@ -533,7 +530,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   onDrop(event: DragEvent) {
     event.stopPropagation();
-    console.warn('dropped something')
+
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     this.droppedConstraint =
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);

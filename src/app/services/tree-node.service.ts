@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019  LDS EPFL
- * Copyright 2020  CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -148,6 +148,7 @@ export class TreeNodeService {
 
     // extract concept
     switch (node.nodeType) {
+      case TreeNodeType.CONCEPT_FOLDER:
       case TreeNodeType.CONCEPT:
         let concept = this.getConceptFromTreeNode(node);
         if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
@@ -182,24 +183,19 @@ export class TreeNodeService {
           constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
         }
         break;
+      case TreeNodeType.MODIFIER_FOLDER:
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
-        console.warn('node', node)
-        console.warn('source concept', sourceConcept)
+
         constraintService.concepts.push(sourceConcept);
         let constraintFromModifier = new ConceptConstraint();
         constraintFromModifier.concept = sourceConcept;
         constraintService.conceptConstraints.push(constraintFromModifier);
         constraintService.allConstraints.push(constraintFromModifier);
-        node.icon = 'fa fa-file-o';
-        break;
-      case TreeNodeType.MODIFIER_FOLDER:
         node.icon = '';
         node.expandedIcon = 'fa fa-folder-open-o';
         node.collapsedIcon = 'fa fa-folder-o';
         break;
-      case TreeNodeType.UNKNOWN:
-      case TreeNodeType.CONTAINER:
       default:
         break;
     }

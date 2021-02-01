@@ -22,7 +22,7 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ErrorHelper} from '../utilities/error-helper';
-import { MessageHelper } from 'app/utilities/message-helper';
+import {MessageHelper} from 'app/utilities/message-helper';
 
 /**
  * This service concerns with
@@ -195,12 +195,12 @@ export class ConstraintService {
           }
           break;
 
-        case TreeNodeType.CONTAINER:
+        case TreeNodeType.CONCEPT_CONTAINER:
         case TreeNodeType.MODIFIER_CONTAINER:
-          MessageHelper.alert('warn', `${treeNode.name} is a container, cannot be used`)
+          MessageHelper.alert('warn', `${treeNode.name} a container and cannot be used`)
           break;
         default:
-          MessageHelper.alert('warn',`Could not get constraint from node ${treeNode.path}`);
+          MessageHelper.alert('warn', `Could not get constraint from node ${treeNode.path}`);
           break;
       }
     }
