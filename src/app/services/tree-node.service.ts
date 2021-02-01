@@ -267,8 +267,8 @@ export class TreeNodeService {
    * @returns {Concept}
    */
   public getConceptFromModifierTreeNode(treeNode: TreeNode): Concept {
-    if (treeNode.nodeType !== TreeNodeType.MODIFIER) {
-      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed' +
+    if (!treeNode.isModifier()) {
+      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed ' +
         'to getConceptModifierTreeNode')
     }
     // this is not the same object of the node if it happens to be here, so it is safe

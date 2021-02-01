@@ -108,6 +108,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
   updateEventListeners(treeNodeElements, treeNodes) {
     let index = 0;
     for (let elm of treeNodeElements) {
+      console.warn('new elm in tree node',elm)
       let dataObject: TreeNode = treeNodes[index];
       let metadata = dataObject.metadata;
       let treeNodeElm = elm.querySelector('li.ui-treenode');
@@ -115,6 +116,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       let handleDragstart = (function (event) {
         event.stopPropagation();
         dataObject.dropMode = DropMode.TreeNode;
+        console.warn("started dragged",dataObject)
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
@@ -130,6 +132,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
 
       // if the data object type is known, it is considered queryable
       if (dataObject.nodeType !== TreeNodeType.UNKNOWN) {
+        console.warn("an objected received the right to be dragged",dataObject)
         treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
       // if metadata exits

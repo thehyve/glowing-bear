@@ -533,6 +533,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   onDrop(event: DragEvent) {
     event.stopPropagation();
+    console.warn('dropped something')
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     this.droppedConstraint =
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);

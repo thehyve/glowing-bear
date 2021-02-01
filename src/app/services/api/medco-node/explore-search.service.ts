@@ -112,9 +112,13 @@ export class ExploreSearchService {
   }
 
   private nodeType(nodeTypeString: string): TreeNodeType {
+    console.warn('node type ', nodeTypeString.toLowerCase())
     switch (nodeTypeString.toLowerCase()) {
       case 'concept':
         return TreeNodeType.CONCEPT;
+
+      case 'concept_folder':
+        return TreeNodeType.CONCEPT_FOLDER;
 
       case 'genomic_annotation':
         return TreeNodeType.GENOMIC_ANNOTATION;

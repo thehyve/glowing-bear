@@ -22,6 +22,7 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ErrorHelper} from '../utilities/error-helper';
+import { MessageHelper } from 'app/utilities/message-helper';
 
 /**
  * This service concerns with
@@ -148,6 +149,7 @@ export class ConstraintService {
       switch (treeNode.nodeType) {
 
         case TreeNodeType.CONCEPT:
+        case TreeNodeType.CONCEPT_FOLDER:
           let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
           constraint = new ConceptConstraint();
           (<ConceptConstraint>constraint).concept = concept;
@@ -162,12 +164,12 @@ export class ConstraintService {
           break;
 
         case TreeNodeType.MODIFIER:
+        case TreeNodeType.MODIFIER_FOLDER:
           let sourceConcept = this.treeNodeService.getConceptFromModifierTreeNode(treeNode);
           constraint = new ConceptConstraint();
           (<ConceptConstraint>constraint).concept = sourceConcept;
           break;
 
-        case TreeNodeType.CONTAINER:
         case TreeNodeType.UNKNOWN:
           let descendants = [];
           this.treeNodeService.getTreeNodeDescendantsWithExcludedTypes(
@@ -193,8 +195,13 @@ export class ConstraintService {
           }
           break;
 
+        case TreeNodeType.CONTAINER:
+        case TreeNodeType.MODIFIER_CONTAINER:
+          MessageHelper.alert('warn', `${treeNode.name} is a container, cannot be used`)
+          break;
         default:
-          console.warn(`Could not get constraint from node ${treeNode.path}`);
+          MessageHelper.alert('warn',`Could not get constraint from node ${treeNode.path}`);
+          break;
       }
     }
 
