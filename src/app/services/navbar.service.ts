@@ -25,7 +25,7 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isSurvivalRes = new Array<boolean>();
 
-  private EXPLORE_INDEX = 0; 
+  private EXPLORE_INDEX = 0;
   private ANALYSIS_INDEX = 1;
 
 
@@ -40,7 +40,6 @@ export class NavbarService {
       // 1: survival analysis tab
       { label: 'Analysis', routerLink: '/analysis' }
     ];
- 
   }
 
   updateNavbar(routerLink: string) {
