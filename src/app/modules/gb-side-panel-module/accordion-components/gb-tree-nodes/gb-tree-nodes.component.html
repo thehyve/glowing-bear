@@ -1,6 +1,7 @@
 <div id="tree-nodes-component">
 
   <!--the search/filter input-->
+  <!-- todo: disable the search-box until a better solution is designed
   <div>
     <p-autoComplete [(ngModel)]="searchTerm"
                     styleClass="gb-tree-filter-input"
@@ -15,7 +16,7 @@
       {{hits}} results found
     </div>
   </div>
-
+  -->
 
   <!-- the tree itself -->
   <p-tree [value]="treeNodeService.rootTreeNodes"
