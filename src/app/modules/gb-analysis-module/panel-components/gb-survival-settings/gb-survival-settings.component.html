@@ -38,6 +38,10 @@
         </p-autoComplete>
       </div>
     </span>
+    <div>
+      <p-dropdown [(ngModel)]="selectedStartsWhen" [options]="temporalBoundaries"></p-dropdown>&nbsp;observation<br/>
+      <br/>
+    </div>
     <span style="white-space: nowrap;">
       <span class="description">
         End Event:&nbsp;
@@ -57,6 +61,10 @@
         </p-autoComplete>
       </div>
     </span>
+    <div>
+      <p-dropdown [(ngModel)]="selectedEndsWhen" [options]="temporalBoundaries"></p-dropdown>&nbsp;observation
+    </div>
+    
 
 
 

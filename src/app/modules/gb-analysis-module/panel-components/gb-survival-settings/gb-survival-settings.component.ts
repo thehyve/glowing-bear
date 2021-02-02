@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 -2021 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ import { Granularity } from 'app/models/survival-analysis/granularity-type';
 import { SelectItem } from 'primeng/api';
 import { SurvivalService } from 'app/services/survival-analysis.service';
 import { TreeNodeType } from 'app/models/tree-models/tree-node-type';
+import { When } from 'app/models/survival-analysis/when-type';
 
 @Component({
   selector: 'gb-survival-settings',
@@ -31,6 +32,11 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     { label: 'Week', value: Granularity.week },
     { label: 'Month', value: Granularity.month },
     { label: 'Year', value: Granularity.month }
+  ]
+
+  _temporalBoundaries: SelectItem[] = [
+    { label: 'Earliest', value: When.earliest },
+    { label: 'Latest', value: When.latest }
   ]
 
 
@@ -154,6 +160,26 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   get granularities() {
     return this._granularities
+  }
+
+  get temporalBoundaries() {
+    return this._temporalBoundaries
+  }
+
+  get selectedStartsWhen(): When {
+    return this.survivalService.startsWhen
+  }
+
+  set selectedStartsWhen(when: When) {
+    this.survivalService.startsWhen = when
+  }
+
+  get selectedEndsWhen(): When {
+    return this.survivalService.endsWhen
+  }
+
+  set selectedEndsWhen(when: When) {
+    this.survivalService.endsWhen = when
   }
 
   get selectedGranularity(): Granularity {

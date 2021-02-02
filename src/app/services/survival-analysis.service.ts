@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,7 @@ import { ConstraintMappingService } from './constraint-mapping.service';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { ClearGroup } from 'app/models/survival-analysis/clear-group';
+import { When } from 'app/models/survival-analysis/when-type';
 
 export class SubGroup {
   name: string
@@ -35,15 +36,17 @@ export class SubGroup {
 
 @Injectable()
 export class SurvivalService {
-  protected _id: string
-  protected _patientGroupIds: Map<string, number[]> // one string[] per node
-  protected _granularity = Granularity.day
-  protected _limit = 2000
-  protected _startConcept: Concept
-  protected _endConcept: Concept
-  protected _startModifier = '@'
-  protected _endModifier = '@'
-  protected _subGroups = new Array<SubGroup>()
+  private _id: string
+  private _patientGroupIds: Map<string, number[]> // one string[] per node
+  private _granularity = Granularity.day
+  private _limit = 2000
+  private _startConcept: Concept
+  private _endConcept: Concept
+  private _startModifier = '@'
+  private _endModifier = '@'
+  private _startsWhen = When.earliest
+  private _endsWhen = When.earliest
+  private _subGroups = new Array<SubGroup>()
 
   set granularity(gran: Granularity) {
     this._granularity = gran
@@ -90,6 +93,22 @@ export class SurvivalService {
     return this._endModifier
   }
 
+  set startsWhen(when: When) {
+    this._startsWhen = when
+
+  }
+  get startsWhen(): When {
+    return this._startsWhen
+  }
+
+  set endsWhen(when: When) {
+    this._endsWhen = when
+
+  }
+  get endsWhen(): When {
+    return this._endsWhen
+  }
+
   set subGroups(sg: SubGroup[]) {
     this._subGroups = sg
   }
@@ -99,13 +118,13 @@ export class SurvivalService {
   }
 
 
-  constructor(protected authService: AuthenticationService,
-    protected cryptoService: CryptoService,
-    protected medcoNetworkService: MedcoNetworkService,
-    protected exploreSearchService: ExploreSearchService,
-    protected apiSurvivalAnalysisService: ApiSurvivalAnalysisService,
-    protected cohortService: CohortService,
-    protected constraintMappingService: ConstraintMappingService) {
+  constructor(private authService: AuthenticationService,
+    private cryptoService: CryptoService,
+    private medcoNetworkService: MedcoNetworkService,
+    private exploreSearchService: ExploreSearchService,
+    private apiSurvivalAnalysisService: ApiSurvivalAnalysisService,
+    private cohortService: CohortService,
+    private constraintMappingService: ConstraintMappingService) {
     this._patientGroupIds = new Map<string, number[]>()
     medcoNetworkService.nodes.forEach((apiNodeMetadata => { this._patientGroupIds[apiNodeMetadata.name] = new Array<string>() }
     ).bind(this))
@@ -164,10 +183,14 @@ export class SurvivalService {
     }
 
     apiSurvivalAnalysis.timeLimit = this.limit
-    apiSurvivalAnalysis.timeGranularity = this.granularity
     if (!this.granularity) {
       throw ErrorHelper.handleNewError('Granularity is undefined')
     }
+    apiSurvivalAnalysis.timeGranularity = this.granularity
+
+    apiSurvivalAnalysis.startsWhen = this.startsWhen
+    apiSurvivalAnalysis.endsWhen = this.endsWhen
+
     apiSurvivalAnalysis.cohortName = this.cohortService.selectedCohort.name
     apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name, panels: this.generatePanels(sg) } })
 
@@ -240,7 +263,9 @@ export class SurvivalService {
       this._granularity,
       this._limit,
       this._startConcept.name,
+      this._startsWhen,
       this._endConcept.name,
+      this._endsWhen,
       subGroupsTextualRepresentations,
     )
   }
