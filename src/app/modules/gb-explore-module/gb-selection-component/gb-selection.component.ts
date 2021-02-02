@@ -19,6 +19,7 @@ import { SelectItem } from 'primeng/api';
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import { CohortService } from 'app/services/cohort.service';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -50,7 +51,7 @@ export class GbSelectionComponent {
 
   private isUploadListenerNotAdded: boolean;
 
-  constructor(public constraintService: ConstraintService,
+  constructor(private constraintService: ConstraintService,
     private queryService: QueryService,
     private cohortService: CohortService) {
     this.isUploadListenerNotAdded = true;
@@ -89,5 +90,13 @@ export class GbSelectionComponent {
 
   get loadingState(): LoadingState {
     return this.queryService.isUpdating ? 'loading' : 'complete';
+  }
+
+  get rootInclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootInclusionConstraint
+  }
+
+  get rootExclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootExclusionConstraint
   }
 }

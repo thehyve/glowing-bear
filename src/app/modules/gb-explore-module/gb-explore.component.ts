@@ -33,9 +33,9 @@ export class GbExploreComponent implements AfterViewChecked {
 
   OperationType = OperationType
 
-  constructor(public queryService: QueryService,
+  constructor(private queryService: QueryService,
     private cohortService: CohortService,
-    public constraintService: ConstraintService,
+    private constraintService: ConstraintService,
     private medcoNetworkService: MedcoNetworkService,
     private changeDetectorRef: ChangeDetectorRef) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
@@ -121,6 +121,18 @@ export class GbExploreComponent implements AfterViewChecked {
   }
   get cohortName(): string {
     return this._cohortName
+  }
+
+  get isUpdating(): boolean {
+    return this.queryService.isUpdating
+  }
+
+  get isDirty(): boolean {
+    return this.queryService.isDirty
+  }
+
+  get hasConstraint(): boolean {
+    return this.constraintService.hasConstraint().valueOf()
   }
 
 

@@ -22,12 +22,12 @@
         <span class="gb-data-selection-emphasis-text">{{globalCount | async}} subjects</span>
       </span>
       <span class="float-right">
-        <i *ngIf="queryService.isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
+        <i *ngIf="isUpdating" class="fa fa-circle-o-notch fa-spin"></i>
 
         <!-- disabled button during query -->
-        <button *ngIf="!queryService.isUpdating && constraintService.hasConstraint(); else disabledButton" type="button"
+        <button *ngIf="!isUpdating && hasConstraint; else disabledButton" type="button"
           (click)="execQuery($event)" class="btn btn-outline-primary btn-sm gb-data-selection-update-btn
-          {{queryService.isDirty? 'gb-explore-query-btn-dirty' : ''}}">
+          {{isDirty? 'gb-explore-query-btn-dirty' : ''}}">
           Run
         </button>
         <ng-template #disabledButton>

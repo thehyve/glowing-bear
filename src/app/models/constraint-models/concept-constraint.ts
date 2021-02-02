@@ -50,7 +50,7 @@ export class ConceptConstraint extends Constraint {
   }
 
   clone(): ConceptConstraint {
-    let res = new ConceptConstraint(this._treeNode)
+    let res = new ConceptConstraint(this._treeNode.clone())
     res.textRepresentation = this.textRepresentation
     res.parentConstraint = this.parentConstraint
     res.concept = this.concept.clone()
