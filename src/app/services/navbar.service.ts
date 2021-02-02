@@ -25,6 +25,9 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isSurvivalRes = new Array<boolean>();
 
+  private EXPLORE_INDEX = 0; 
+  private ANALYSIS_INDEX = 1;
+
 
 
   constructor(private queryService: QueryService) {
@@ -34,22 +37,14 @@ export class NavbarService {
       // 0: explore tab, default page
       { label: 'Explore', routerLink: '/explore' },
 
-      // 1: explore results tab, not visible by default
-      { label: 'Explore Results', routerLink: '/explore/results', visible: false },
-
-      // 2: survival analysis tab
+      // 1: survival analysis tab
       { label: 'Analysis', routerLink: '/analysis' }
     ];
-
-    // hook to update explore results tab visibility
-    this.queryService.displayExploreResultsComponent.subscribe((display) => {
-      this.items[1].visible = display;
-    })
+ 
   }
 
   updateNavbar(routerLink: string) {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
-    this.isExploreResults = (routerLink === '/explore/results');
     this.isAnalysis = (routerLink === '/analysis')
     for (let i = 0; i < this.isSurvivalRes.length; i++) {
       this.isSurvivalRes[i] = (routerLink === `/survival/${i}`)
@@ -57,15 +52,13 @@ export class NavbarService {
     console.log('Updated router link: ', routerLink)
 
     if (this.isExplore) {
-      this.activeItem = this._items[0];
-    } else if (this.isExploreResults) {
-      this.activeItem = this._items[1];
+      this.activeItem = this._items[this.EXPLORE_INDEX];
     } else if (this.isAnalysis) {
-      this.activeItem = this._items[2];
+      this.activeItem = this._items[this.ANALYSIS_INDEX];
     } else {
       for (let i = 0; i < this.isSurvivalRes.length; i++) {
         if (this.isSurvivalRes[i]) {
-          this.activeItem = this._items[i + 3]
+          this.activeItem = this._items[i + this.items.length]
           this._selectedSurvivalId.next(i)
           break
         }
