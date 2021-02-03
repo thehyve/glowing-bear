@@ -31,7 +31,6 @@ export class GbExploreComponent {
     private cohortService: CohortService,
     public constraintService: ConstraintService) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
-      console.log('last_successful_set', resIDs)
       this._lastSuccessfulSet = resIDs
     })
   }
