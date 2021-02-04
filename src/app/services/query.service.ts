@@ -108,7 +108,7 @@ export class QueryService {
         ) : []);
 
       if (parsedResults.globalCount === 0) {
-        alert('No patients found matching this query');
+        MessageHelper.alert('success', 'No patients found matching this query');
       }
 
     }

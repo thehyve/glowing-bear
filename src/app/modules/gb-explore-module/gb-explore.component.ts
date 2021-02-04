@@ -39,7 +39,6 @@ export class GbExploreComponent implements AfterViewChecked {
     private medcoNetworkService: MedcoNetworkService,
     private changeDetectorRef: ChangeDetectorRef) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
-      console.log('last_successful_set', resIDs)
       this._lastSuccessfulSet = resIDs
     })
   }

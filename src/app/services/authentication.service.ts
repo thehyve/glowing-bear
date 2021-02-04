@@ -15,13 +15,18 @@ import {KeycloakService} from 'keycloak-angular';
 @Injectable()
 export class AuthenticationService {
 
+  static readonly MEDCO_NETWORK_ROLE = 'medco-network';
+  static readonly MEDCO_EXPLORE_ROLE = 'medco-explore';
+  static readonly MEDCO_GEN_ANNOTATIONS_ROLE = 'medco-genomic-annotations';
+  static readonly MEDCO_SURVIVAL_ANALYSIS_ROLE = 'medco-survival-analysis';
+
   constructor(private config: AppConfig,
               private keycloakService: KeycloakService) { }
 
   /**
    * Init the keycloak service with proper parameters.
    */
-  public load(): Promise<boolean> {
+  public load(): Promise<void> {
     return this.keycloakService.init({
       config: {
         url: this.config.getConfig('keycloak-url'),
@@ -37,7 +42,24 @@ export class AuthenticationService {
       bearerPrefix: 'Bearer',
       bearerExcludedUrls: ['/assets', '/app'],
       loadUserProfileAtStartUp: true
-    })
+    }).then((success) => new Promise((resolve, reject) => {
+      if (!success || !this.hasMinimumRoles()) {
+        console.error('Authentication or authorization failed. Roles: ', this.userRoles)
+        alert('Authentication has failed or authorizations are insufficient. Please login with a different account or contact an administrator. You will now be logged out.')
+        reject(this.logout);
+      } else {
+        resolve();
+      }
+    }))
+  }
+
+  /**
+   * Returns true if the user has the minimum set of roles needed for the basic operation of MedCo.
+   */
+  public hasMinimumRoles(): boolean {
+    return this.userRoles.includes(AuthenticationService.MEDCO_NETWORK_ROLE) &&
+      this.userRoles.includes(AuthenticationService.MEDCO_EXPLORE_ROLE) &&
+      this.userRoles.includes(AuthenticationService.MEDCO_GEN_ANNOTATIONS_ROLE);
   }
 
   /**
