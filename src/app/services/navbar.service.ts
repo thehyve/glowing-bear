@@ -37,9 +37,9 @@ export class NavbarService {
 
       // 0: explore tab, default page
       { label: OperationType.EXPLORE, routerLink: '/explore' },
- 
+
       // 1: survival analysis tab
-      { label: OperationType.ANALYSIS, routerLink: '/analysis' } 
+      { label: OperationType.ANALYSIS, routerLink: '/analysis' }
     ];
   }
 
