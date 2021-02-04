@@ -14,11 +14,13 @@ import { ValueConstraint } from './value-constraint';
 import { TimeConstraint } from './time-constraint';
 import { FormatHelper } from '../../utilities/format-helper';
 import { NumericalOperator } from './numerical-operator';
-import { Numeric } from 'd3';
+import { TreeNode } from '../tree-models/tree-node';
 
 export class ConceptConstraint extends Constraint {
 
   private _concept: Concept;
+  // the treeNode it has been generated from
+  private _treeNode: TreeNode;
   // the value constraints used for numeric or categorical values of this concept
   private _valueConstraints: ValueConstraint[];
   // the time constraint used for date type constraint of this concept
@@ -36,8 +38,9 @@ export class ConceptConstraint extends Constraint {
   private _applyObsDateConstraint = false;
   private _obsDateConstraint: TimeConstraint;
 
-  constructor() {
+  constructor(treeNode: TreeNode) {
     super();
+    this._treeNode = treeNode;
     this.valueConstraints = [];
     this.valDateConstraint = new TimeConstraint();
     this.valDateConstraint.isObservationDate = false;
@@ -47,7 +50,7 @@ export class ConceptConstraint extends Constraint {
   }
 
   clone(): ConceptConstraint {
-    let res = new ConceptConstraint()
+    let res = new ConceptConstraint(this._treeNode.clone())
     res.textRepresentation = this.textRepresentation
     res.parentConstraint = this.parentConstraint
     res.concept = this.concept.clone()
@@ -86,6 +89,10 @@ export class ConceptConstraint extends Constraint {
 
   get className(): string {
     return 'ConceptConstraint';
+  }
+
+  get treeNode(): TreeNode {
+    return this._treeNode
   }
 
   get valDateConstraint(): TimeConstraint {

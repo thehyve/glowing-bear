@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020-2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,7 @@ import { ButtonModule } from 'primeng/button';
 import { SpinnerModule } from 'primeng/spinner';
 import { routing } from './gb-survival-results.routing'
 import { GbSurvivalResultsComponent } from './gb-survival-results.component';
+import { RouterModule } from '@angular/router';
 
 
 
@@ -32,7 +33,10 @@ import { GbSurvivalResultsComponent } from './gb-survival-results.component';
     DropdownModule,
     ButtonModule,
     SpinnerModule,
-  ]
+  ],
+  exports: [
+    RouterModule,
+  ],
 })
 export class GbSurvivalResultsModule {
 

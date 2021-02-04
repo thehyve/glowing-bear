@@ -22,6 +22,8 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ErrorHelper} from '../utilities/error-helper';
+import {OperationType} from 'app/models/operation-models/operation-types';
+import {MessageHelper} from 'app/utilities/message-helper';
 
 /**
  * This service concerns with
@@ -50,6 +52,15 @@ export class ConstraintService {
    * The maximum number of search results allowed when searching for a constraint
    */
   private _maxNumSearchResults = 100;
+
+  /*
+   * It changes the way to handle internal states of ConstraintService
+   */
+  private _operationType: OperationType;
+
+  // internal states to save when changing operationType
+  private _exploreRootInclusionConstraint: CombinationConstraint;
+  private _exploreRootExclusionConstraint: CombinationConstraint;
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
@@ -149,7 +160,7 @@ export class ConstraintService {
 
         case TreeNodeType.CONCEPT:
           let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-          constraint = new ConceptConstraint();
+          constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = concept;
           break;
 
@@ -163,7 +174,7 @@ export class ConstraintService {
 
         case TreeNodeType.MODIFIER:
           let sourceConcept = this.treeNodeService.getConceptFromModifierTreeNode(treeNode);
-          constraint = new ConceptConstraint();
+          constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = sourceConcept;
           break;
 
@@ -199,6 +210,47 @@ export class ConstraintService {
     }
 
     return constraint;
+  }
+
+  set operationType(opType: OperationType) {
+
+    switch (opType) {
+      case OperationType.EXPLORE:
+        console.log('The operation type of constraint service is now Explore.')
+
+
+        // reload previous selection
+        if (this._operationType === OperationType.ANALYSIS) {
+          if (this._exploreRootInclusionConstraint) {
+            this.rootInclusionConstraint = this._exploreRootInclusionConstraint
+          }
+          if (this._exploreRootExclusionConstraint) {
+            this.rootExclusionConstraint = this._exploreRootExclusionConstraint
+          }
+        }
+
+        this._operationType = opType
+        break;
+      case OperationType.ANALYSIS:
+        console.log('The operation type of constraint service is now Analysis.')
+
+        // save current selection
+        if (this._operationType === OperationType.EXPLORE) {
+          this._exploreRootInclusionConstraint = this.rootInclusionConstraint.clone()
+          this._exploreRootExclusionConstraint = this.rootExclusionConstraint.clone()
+        }
+        this._operationType = opType
+        break;
+      default:
+
+        MessageHelper.alert('warn', `The operation type ${opType} is unknown. Previous internal states of constraint service apply ()${this._operationType}.`)
+        break;
+    }
+
+  }
+
+  get operationType(): OperationType {
+    return this._operationType
   }
 
   get rootInclusionConstraint(): CombinationConstraint {
