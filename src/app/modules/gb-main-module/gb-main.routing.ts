@@ -21,10 +21,6 @@ export const routes: Routes = [
     loadChildren: '../gb-explore-module/gb-explore.module#GbExploreModule'
   },
   {
-    path: 'explore/results',
-    loadChildren: '../gb-explore-results-module/gb-explore-results.module#GbExploreResultsModule'
-  },
-  {
     path: 'analysis',
     loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
   },

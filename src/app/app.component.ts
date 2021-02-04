@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
 
   private _authenticationCompleted = false;
 
+
   constructor(private authenticationService: AuthenticationService) {
   }
 
