@@ -1,6 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2019 - 2020 LDS EPFL
+ * Copyright 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,6 +24,8 @@ import { ExploreQueryResult } from '../models/query-models/explore-query-result'
 import { Observable, ReplaySubject, throwError, Subject } from 'rxjs';
 import { ErrorHelper } from '../utilities/error-helper';
 import { MessageHelper } from '../utilities/message-helper';
+import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 /**
  * This service concerns with updating subject counts.
@@ -105,7 +108,7 @@ export class QueryService {
         ) : []);
 
       if (parsedResults.globalCount === 0) {
-        alert('No patients found matching this query');
+        MessageHelper.alert('success', 'No patients found matching this query');
       }
 
     }
@@ -244,4 +247,13 @@ export class QueryService {
   set queryTimingSameInstance(val: boolean) {
     this._queryTimingSameInstance = val
   }
+
+  get lastDefinition(): ApiI2b2Panel[] {
+    return this.exploreQueryService.lastDefinition
+  }
+
+  get lastTiming(): ApiI2b2Timing {
+    return this.exploreQueryService.lastQueryTiming
+  }
+
 }

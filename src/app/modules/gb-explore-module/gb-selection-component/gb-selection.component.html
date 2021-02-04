@@ -15,7 +15,7 @@
        class="criteria-box input-label-wrapper">
     <p><b>Inclusion</b> criteria:</p>
     <gb-constraint #rootInclusionConstraintComponent
-                [constraint]="constraintService.rootInclusionConstraint"
+                [constraint]="rootInclusionConstraint"
                 [isRoot]="true"></gb-constraint>
   </div>
 
@@ -24,7 +24,7 @@
        class="criteria-box input-label-wrapper">
     <p><b>Exclusion</b> criteria:</p>
     <gb-constraint #rootExclusionConstraintComponent
-                [constraint]="constraintService.rootExclusionConstraint"
+                [constraint]="rootExclusionConstraint"
                 [isRoot]="true"></gb-constraint>
   </div>
 

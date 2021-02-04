@@ -7,6 +7,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { TreeNode } from '../tree-models/tree-node';
+
 
 export class Constraint {
 
@@ -15,13 +17,13 @@ export class Constraint {
   // The parent constraint
   protected _parentConstraint: Constraint;
   // i2b2 timing policiy
-  protected _panelTimingSameInstance: boolean;
+  protected _panelTimingSameInstance?: boolean;
 
 
   constructor() {
     this.textRepresentation = '';
     this.parentConstraint = null;
-    this._panelTimingSameInstance = false;
+    this._panelTimingSameInstance = null;
   }
 
   get textRepresentation(): string {
@@ -43,8 +45,6 @@ export class Constraint {
   get className(): string {
     return 'Constraint';
   }
-
-
   clone(): Constraint {
     let ret = new Constraint()
     ret.textRepresentation = this.textRepresentation

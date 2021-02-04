@@ -153,7 +153,7 @@ export class TreeNodeService {
         if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
           constraintService.concepts.push(concept);
           constraintService.conceptLabels.push(concept.label);
-          let constraint = new ConceptConstraint();
+          let constraint = new ConceptConstraint(node);
           constraint.concept = concept;
           constraintService.conceptConstraints.push(constraint);
           constraintService.allConstraints.push(constraint);
@@ -184,10 +184,8 @@ export class TreeNodeService {
         break;
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
-        console.warn('node', node)
-        console.warn('source concept', sourceConcept)
         constraintService.concepts.push(sourceConcept);
-        let constraintFromModifier = new ConceptConstraint();
+        let constraintFromModifier = new ConceptConstraint(node);
         constraintFromModifier.concept = sourceConcept;
         constraintService.conceptConstraints.push(constraintFromModifier);
         constraintService.allConstraints.push(constraintFromModifier);
@@ -204,6 +202,7 @@ export class TreeNodeService {
       default:
         break;
     }
+    console.log(`Processed tree node ${node.name} of type ${node.nodeType}`, node)
   }
 
   /**
