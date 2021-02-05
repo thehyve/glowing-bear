@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2019 - 2020 LDS EPFL
+ * Copyright 2019 - 2021 LDS EPFL
  * Copyright 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -201,6 +201,18 @@ export class QueryService {
 
         case ExploreQueryType.COUNT_PER_SITE.id:
           return ExploreQueryType.COUNT_PER_SITE;
+
+        case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_PER_SITE_OBFUSCATED;
+
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED.id:
+          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED;
+
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED;
+
+        case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED.id:
+          return ExploreQueryType.COUNT_GLOBAL_OBFUSCATED;
 
         case ExploreQueryType.COUNT_GLOBAL.id:
           return ExploreQueryType.COUNT_GLOBAL;

@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020  EPFL LDS
+ * Copyright 2020 - 2021 EPFL LDS
  * Copyright 2020  CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -13,6 +13,7 @@ import { MenuItem } from 'primeng/api';
 import { QueryService } from './query.service';
 import { Subject, Observable } from 'rxjs';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { AuthenticationService } from './authentication.service';
 
 @Injectable()
 export class NavbarService {
@@ -29,9 +30,7 @@ export class NavbarService {
   private EXPLORE_INDEX = 0;
   private ANALYSIS_INDEX = 1;
 
-
-
-  constructor(private queryService: QueryService) {
+  constructor(private queryService: QueryService, private authService: AuthenticationService) {
     this._selectedSurvivalId = new Subject<number>()
     this.items = [
 
@@ -39,7 +38,7 @@ export class NavbarService {
       { label: OperationType.EXPLORE, routerLink: '/explore' },
 
       // 1: survival analysis tab
-      { label: OperationType.ANALYSIS, routerLink: '/analysis' }
+      { label: OperationType.ANALYSIS, routerLink: '/analysis', visible: this.authService.hasAnalysisAuth }
     ];
   }
 
