@@ -8,7 +8,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable, OnInit} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { QueryService } from './query.service';
 import { Subject, Observable } from 'rxjs';
