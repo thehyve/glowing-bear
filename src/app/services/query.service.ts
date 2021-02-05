@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2019 - 2020 LDS EPFL
+ * Copyright 2019 - 2021 LDS EPFL
  * Copyright 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
