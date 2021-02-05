@@ -3,14 +3,14 @@
 <!-- how to use the grid for sizing components https://stackoverflow.com/questions/41354416/primeng-p-dropdown-stretch-100 -->
 
   <div class="input-label-wrapper">
-    <div class="input-field-margin">
-        <p-dropdown 
+    <div class="input-field-margin" style="margin-left: 0;">
+        <p-dropdown
         [style]="{'min-width':'25em'}"
-        dropdownIcon="pi pi-caret-down white-color" 
+        dropdownIcon="pi pi-caret-down white-color"
         [(ngModel)]="queryTiming" [options]="timings" [ngStyle]="{'margin-bottom':'1em'}"></p-dropdown>
     </div>
   </div>
-  
+
   <div #inclusionCriteriaBox
        class="criteria-box input-label-wrapper">
     <p><b>Inclusion</b> criteria:</p>
