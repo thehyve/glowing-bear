@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020  EPFL LDS
+ * Copyright 2020 - 2021  EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,7 @@ import {Injectable} from '@angular/core';
 import {AppConfig} from '../config/app.config';
 import {Observable, from} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
+import {ExploreQueryType} from '../models/query-models/explore-query-type';
 
 @Injectable()
 export class AuthenticationService {
@@ -60,6 +61,13 @@ export class AuthenticationService {
     return this.userRoles.includes(AuthenticationService.MEDCO_NETWORK_ROLE) &&
       this.userRoles.includes(AuthenticationService.MEDCO_EXPLORE_ROLE) &&
       this.userRoles.includes(AuthenticationService.MEDCO_GEN_ANNOTATIONS_ROLE);
+  }
+
+  /**
+   * Returns true if the user has the authorization for analysis.
+   */
+  get hasAnalysisAuth(): boolean {
+    return this.userRoles.includes(AuthenticationService.MEDCO_SURVIVAL_ANALYSIS_ROLE);
   }
 
   /**
