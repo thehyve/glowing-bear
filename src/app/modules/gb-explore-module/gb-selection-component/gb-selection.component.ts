@@ -16,7 +16,10 @@ import { FormatHelper } from '../../../utilities/format-helper';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SelectItem } from 'primeng/api';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import { CohortService } from 'app/services/cohort.service';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -48,9 +51,14 @@ export class GbSelectionComponent {
 
   private isUploadListenerNotAdded: boolean;
 
-  constructor(public constraintService: ConstraintService,
-    private queryService: QueryService) {
+  constructor(private constraintService: ConstraintService,
+    private queryService: QueryService,
+    private cohortService: CohortService) {
     this.isUploadListenerNotAdded = true;
+    // changes coming from cohrot restoration
+    this.cohortService.queryTiming.subscribe(timing => {
+      this.queryService.queryTimingSameInstance = timing === ApiI2b2Timing.sameInstanceNum
+    })
   }
 
   @Input()
@@ -82,5 +90,13 @@ export class GbSelectionComponent {
 
   get loadingState(): LoadingState {
     return this.queryService.isUpdating ? 'loading' : 'complete';
+  }
+
+  get rootInclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootInclusionConstraint
+  }
+
+  get rootExclusionConstraint(): CombinationConstraint {
+    return this.constraintService.rootExclusionConstraint
   }
 }

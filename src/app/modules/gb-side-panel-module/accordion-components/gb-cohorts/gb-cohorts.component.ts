@@ -135,7 +135,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   restoreCohort(e: Event, cohort: Cohort) {
     e.stopPropagation()
     this.cohortService.selectedCohort = cohort
-    this.cohortService.restoreTerms()
+    this.cohortService.restoreTerms(cohort)
   }
 
   bookmarkCohort(e: Event, cohort: Cohort) {
@@ -154,7 +154,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   }
   sortByDate() {
     let sorted = this.cohortService.cohorts.sort((a, b) => (!b.creationDate ||
-      a.creationDate && a.creationDate.getTime() > b.creationDate.getTime()
+      a.creationDate && a.lastUpdateDate() > b.lastUpdateDate()
     ) ? -1 : 1)
 
     this.cohortService.cohorts = sorted

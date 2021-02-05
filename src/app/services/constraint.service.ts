@@ -160,7 +160,7 @@ export class ConstraintService {
 
         case TreeNodeType.CONCEPT:
           let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
-          constraint = new ConceptConstraint();
+          constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = concept;
           break;
 
@@ -174,7 +174,7 @@ export class ConstraintService {
 
         case TreeNodeType.MODIFIER:
           let sourceConcept = this.treeNodeService.getConceptFromModifierTreeNode(treeNode);
-          constraint = new ConceptConstraint();
+          constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = sourceConcept;
           break;
 

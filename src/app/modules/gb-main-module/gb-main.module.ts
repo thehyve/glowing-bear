@@ -16,6 +16,9 @@ import { routing } from './gb-main.routing';
 import { RouterModule } from '@angular/router';
 import { CohortService } from 'app/services/cohort.service';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
+import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-survival-results.module';
+import { ConstraintReverseMappingService } from 'app/services/constraint-reverse-mapping.service';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -25,7 +28,7 @@ import { SurvivalResultsService } from 'app/services/survival-results.service';
   ],
   declarations: [GbMainComponent],
   exports: [GbMainComponent, RouterModule],
-  providers: [CohortService, SurvivalResultsService]
+  providers: [CohortService, SurvivalResultsService, ConstraintReverseMappingService]
 })
 export class GbMainModule {
 }

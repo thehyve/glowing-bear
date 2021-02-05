@@ -282,7 +282,7 @@ body .ui-dropdown .ui-dropdown-label {
   background: #ffffff;
 }
 body .ui-dropdown .ui-dropdown-trigger {
-  background-color: #ffffff;
+  background-color: var(--gb-clinical-green);
 }
 body .ui-dropdown .ui-dropdown-trigger .fa {
   color: #55595c;

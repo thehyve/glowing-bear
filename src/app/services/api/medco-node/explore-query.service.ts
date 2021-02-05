@@ -1,17 +1,15 @@
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {Observable, forkJoin, of} from 'rxjs';
-import {timeout, map} from 'rxjs/operators';
+import {timeout, map, tap} from 'rxjs/operators';
 import {ApiI2b2Panel} from '../../../models/api-request-models/medco-node/api-i2b2-panel';
 import {ConstraintMappingService} from '../../constraint-mapping.service';
 import {ApiEndpointService} from '../../api-endpoint.service';
 import {GenomicAnnotationsService} from '../genomic-annotations.service';
 import {ApiExploreQueryResult} from '../../../models/api-response-models/medco-node/api-explore-query-result';
-import {ExploreQueryType} from '../../../models/query-models/explore-query-type';
 import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
-import {ErrorHelper} from '../../../utilities/error-helper';
 import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 @Injectable()
@@ -21,6 +19,16 @@ export class ExploreQueryService {
    * Query timeout: 10 minutes.
    */
   private static QUERY_TIMEOUT_MS = 1000 * 60 * 10;
+
+  /**
+   * Last query definition used in query that successed to return anything
+   */
+  private _lastDefinition: ApiI2b2Panel[]
+
+  /**
+   * Last query timing used in query that successed to return anything
+   */
+  private _lastQueryTiming: ApiI2b2Timing
 
   constructor(private config: AppConfig,
     private apiEndpointService: ApiEndpointService,
@@ -82,12 +90,19 @@ export class ExploreQueryService {
    * @param query
    */
   exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
+    let currentDefinition = this.constraintMappingService.mapConstraint(query.constraint)
+    let currentTiming = query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
+
+
     return this.exploreQueryAllNodes(
       query.uniqueId,
       this.cryptoService.ephemeralPublicKey,
-      this.constraintMappingService.mapConstraint(query.constraint),
-      query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
-    );
+      currentDefinition,
+      currentTiming,
+    ).pipe(tap(() => {
+      this._lastDefinition = currentDefinition
+      this._lastQueryTiming = currentTiming
+    }));
   }
 
   // preparePanelTimings reset all panel timing to false if the query-level is false,
@@ -98,5 +113,13 @@ export class ExploreQueryService {
         panel.panelTiming = ApiI2b2Timing.any
       })
     }
+  }
+
+  get lastDefinition(): ApiI2b2Panel[] {
+    return this._lastDefinition
+  }
+
+  get lastQueryTiming(): ApiI2b2Timing {
+    return this._lastQueryTiming
   }
 }
