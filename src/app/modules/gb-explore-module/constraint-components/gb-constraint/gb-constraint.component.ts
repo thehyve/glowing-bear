@@ -38,7 +38,10 @@ export class GbConstraintComponent implements OnInit {
 
   ngOnInit() {
     this.addEventListeners();
-    this.panelTimingSameInstance = true
+    if (this.constraint && this.constraint.panelTimingSameInstance === null) {
+      this.panelTimingSameInstance = true
+    }
+
   }
 
   /**

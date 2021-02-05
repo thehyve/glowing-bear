@@ -80,6 +80,17 @@ export class ExploreSearchService {
     return this.exploreSearchConcept('children', root)
   }
 
+    /**
+   * Perform search concept info in ontology.
+   *
+   * @param {string} root - the path to the specific tree node, must include the first slash
+   *
+   * @returns {Observable<Object>}
+   */
+  exploreSearchConceptInfo(root: string): Observable<TreeNode[]> {
+    return this.exploreSearchConcept('info', root)
+  }
+
 
   private exploreSearchModifier(operation: string, root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
@@ -168,5 +179,16 @@ export class ExploreSearchService {
    */
   exploreSearchModifierChildren(root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
     return this.exploreSearchModifier('children', root, appliedPath, appliedConcept)
+  }
+
+  /**
+   * Perform search modifier info in ontology.
+   *
+   * @param {string} root - the path to the specific tree node, must include the first slash
+   *
+   * @returns {Observable<Object>}
+   */
+  exploreSearchModifierInfo(root: string, appliedPath: string, appliedConcept: string): Observable<TreeNode[]> {
+    return this.exploreSearchModifier('info', root, appliedPath, appliedConcept)
   }
 }

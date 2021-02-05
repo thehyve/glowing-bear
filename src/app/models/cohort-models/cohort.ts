@@ -12,36 +12,36 @@ import { rootCertificates } from 'tls'
 import { CombinationConstraint } from '../constraint-models/combination-constraint'
 
 import { ErrorHelper } from 'app/utilities/error-helper'
+import { ApiQueryDefinition } from '../api-request-models/medco-node/api-query-definition'
 
 
 export class Cohort {
-  protected _name: string
-  protected _patient_set_id: Array<number>
+  private _name: string
+  private _patient_set_id: Array<number>
+  private _queryDefinitions: Array<ApiQueryDefinition>
 
   public selected: boolean
-  protected _creationDate: Date
-  protected _updateDate: Date
+  private _creationDate: Date[]
+  private _updateDate: Date[]
 
   public bookmarked: boolean
   public visible: boolean
 
 
-  protected _rootInclusionConstraint: CombinationConstraint
-  protected _rootExclusionConstraint: CombinationConstraint
+  private _rootInclusionConstraint: CombinationConstraint
+  private _rootExclusionConstraint: CombinationConstraint
   constructor(
     name: string, rootInclusionConstraint: CombinationConstraint,
-    rootExclusionConstraint: CombinationConstraint, createDate: Date,
-    updateDate: Date
+    rootExclusionConstraint: CombinationConstraint, createDate: Date[],
+    updateDate: Date[]
   ) {
     this._name = name
 
     if (rootInclusionConstraint !== null) {
 
-
       this._rootInclusionConstraint = rootInclusionConstraint.clone()
     }
     if (rootExclusionConstraint !== null) {
-
 
       this._rootExclusionConstraint = rootExclusionConstraint.clone()
     }
@@ -150,20 +150,123 @@ export class Cohort {
 
   }
 
-
-
-  get creationDate(): Date {
-    return (this._creationDate) ? new Date(this._creationDate) : null
+  set queryDefinition(qd: Array<ApiQueryDefinition>) {
+    this._queryDefinitions = qd
   }
 
-  get updateDate(): Date {
+  get queryDefinition(): Array<ApiQueryDefinition> {
+    return this._queryDefinitions
+  }
+
+  get creationDate(): Date[] {
+    return this._creationDate
+  }
+
+  get updateDate(): Date[] {
     return this._updateDate
   }
 
-  set updateDate(date: Date) {
-    if (this._creationDate !== null && this._creationDate > date) {
-      throw ErrorHelper.handleNewError('Update date cannot be set earlier than the creation date')
+  updateCohort(date: Date) {
+    for (let i = 0; i < this._creationDate.length; i) {
+      if (this._creationDate[i] !== null && this._creationDate[i] > date) {
+        throw ErrorHelper.handleNewError('Update date cannot be set earlier than the creation date')
+      }
+      if (this._updateDate[i] !== null && this._updateDate[i] > date) {
+        throw ErrorHelper.handleNewError('Update date cannot be set earlier than the previous update date')
+      }
+
+      this._updateDate[i] = date
+
     }
-    this._updateDate = date
   }
+
+  /**
+   * hasAllQueryDefinitions checks whether all nodes have returned a query definition
+   */
+  hasAllQueryDefinitions(): boolean {
+    if (this.queryDefinition.length === 0) {
+      return false
+    }
+    for (const definition of this.queryDefinition) {
+      if ((definition === null) || (definition === undefined)) {
+        return false
+      }
+    }
+    return true
+
+  }
+
+  /**
+   * sameDateQueryDefinitions check if available definitions have the same update date
+   */
+  sameDateQueryDefinitions(): boolean {
+    if (this.queryDefinition.length === 0) {
+      return true
+    }
+    let testDate = null
+    for (const updatedate of this.updateDate) {
+      if ((updatedate !== null) && (updatedate !== undefined)) {
+        if (testDate === null) {
+          testDate = updatedate
+        } else if (updatedate !== testDate) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  /**
+   * sameQueryDefinitions check if query definitions, grouped by update dates, have the same date.
+   * If dates don't match within a group, false is returned.
+   */
+  sameQueryDefinitions(): boolean {
+    let map = new Map<Date, ApiQueryDefinition>()
+
+    for (let i = 0; i < this.updateDate.length; i++) {
+      let date = this.updateDate[i]
+      let queryDefinition = this.queryDefinition[i]
+      if (map.has(date)) {
+        let lastDefinition = map.get(date)
+        if (lastDefinition !== queryDefinition) {
+          return false
+        }
+      } else {
+        map.set(date, queryDefinition)
+      }
+    }
+    return true
+  }
+
+
+  /**
+   * mostRecentQueryDefinitions returns the definition with the most recent
+   */
+  mostRecentQueryDefinition(): ApiQueryDefinition {
+    let sortedDef = this.queryDefinition
+      .filter(definition => ((definition !== null) || (definition !== undefined)))
+      .map((definition, index) => { return { date: this.updateDate[index], definition: definition } })
+      .sort((a, b) => (a.date < b.date) ? -1 : 1)
+
+    if (sortedDef.length !== 0) {
+      return sortedDef[sortedDef.length - 1].definition
+    } else {
+      return null
+    }
+  }
+
+  /**
+   * lastUpdateDate returns the most recent update date
+   */
+  lastUpdateDate(): Date {
+    return this._updateDate.reduce((date1, date2) => (date1 > date2) ? date1 : date2)
+  }
+
+  /**
+   * lastCreationDate returns the most recent creation date
+   */
+  lastCreationDate(): Date {
+    return this._creationDate.reduce((date1, date2) => (date1 > date2) ? date1 : date2)
+  }
+
 }

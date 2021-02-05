@@ -124,7 +124,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       if (constraint.concept) {
         // Construct a new constraint that only has the concept as sub constraint
         // (We don't want to apply value and date constraints when getting aggregates)
-        let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint();
+        let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint(constraint.treeNode);
         conceptOnlyConstraint.concept = constraint.concept;
 
         // todo: this initializes the aggregate values, not supported for now
