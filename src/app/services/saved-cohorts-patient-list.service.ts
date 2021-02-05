@@ -26,7 +26,6 @@ export class SavedCohortsPatientListService {
   /*
    * The user must be authorized to retrieve patient lists
    */
-  _notAuthorized: boolean
 
   /*
    * listStorage stores the patient list, indexed by the cohort's name they relate to.
@@ -61,15 +60,7 @@ export class SavedCohortsPatientListService {
 
   constructor(private cryptoService: CryptoService,
     private exploreCohortsService: ExploreCohortsService,
-    private authenticationService: AuthenticationService) {
-    this._notAuthorized = true
-    this.authenticationService.userRoles.forEach(role => {
-      if (role === ExploreQueryType.PATIENT_LIST.id) {
-        this._notAuthorized = false
-      }
-    }
-    )
-  }
+    private authenticationService: AuthenticationService) { }
 
   private decrypt(cipherPatientLists: string[][]): Observable<number[][]> {
     return of(cipherPatientLists.map(value => value.map(cipher => this.cryptoService.decryptIntegerWithEphemeralKey(cipher))))
@@ -99,7 +90,7 @@ export class SavedCohortsPatientListService {
    * @param cohortName
    */
   getList(cohortName: string): Observable<number[][]> {
-    if (this._notAuthorized) {
+    if (!this.authorizedForPatientList) {
       throw ErrorHelper.handleNewError(`User ${this.authenticationService.username} is not authorized to retrieve patient lists from previous cohorts`)
     }
 
@@ -152,9 +143,6 @@ export class SavedCohortsPatientListService {
           if (notifier) {
             notifier.next(PatientListOperationStatus.error)
           }
-          if (err.status === 403) {
-            this._notAuthorized = true
-          }
         }
       ),
       catchError(err => {
@@ -201,8 +189,14 @@ export class SavedCohortsPatientListService {
     this._listStorage.set(cohortName, patientLists)
   }
 
-  get notAuthorized(): boolean {
-    return this._notAuthorized
+  get authorizedForPatientList(): boolean {
+
+    for (const role of this.authenticationService.userRoles) {
+      if (role === ExploreQueryType.PATIENT_LIST.id) {
+        return true
+      }
+    }
+    return false
   }
 
   get statusStorage(): Map<string, PatientListOperationStatus> {

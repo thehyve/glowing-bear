@@ -40,7 +40,6 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   static numberMatrixToCSV(data: number[][]) {
     const csv = data.map((row) => row.toString());
-    console.log(csv.join('\r\n'))
     return csv.join('\r\n');
   }
 
@@ -74,8 +73,8 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
     this.cohortService.selectedCohort = cohort
   }
 
-  get notAuthorized(): boolean {
-    return this.savedCohortsPatientListService.notAuthorized
+  get authorizedForPatientList(): boolean {
+    return this.savedCohortsPatientListService.authorizedForPatientList
   }
 
   get patientListsStatus(): Map<string, PatientListOperationStatus> {
