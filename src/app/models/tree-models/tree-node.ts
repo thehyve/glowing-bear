@@ -56,9 +56,6 @@ export class TreeNode implements PrimeNgTreeNode {
     copy.description = this.description;
 
     copy.appliedPath = this.appliedPath;
-    if (this.appliedConcept) {
-      copy.appliedConcept = this.appliedConcept.clone()
-    }
 
     copy.nodeType = this.nodeType;
     copy.valueType = this.valueType;
