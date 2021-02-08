@@ -87,7 +87,7 @@ export class GbExploreComponent implements AfterViewChecked {
         }
         cohort.patient_set_id = this.lastSuccessfulSet
         this.cohortService.postCohort(cohort)
-
+        this.cohortName = ''
         MessageHelper.alert('success', 'Cohort has been sent.')
       }
     }

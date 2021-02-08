@@ -4,6 +4,7 @@ export class ApiI2b2Item {
   queryTerm: string;
   operator?: string;
   value?: string;
+  type?: string;
   modifier?: ApiI2B2Modifier;
   encrypted: boolean;
 }
