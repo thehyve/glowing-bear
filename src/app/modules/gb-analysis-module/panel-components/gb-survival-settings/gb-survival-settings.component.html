@@ -37,7 +37,7 @@
         <p-autoComplete 
           #autoComplete [(ngModel)]="startConcept" [suggestions]="suggestedStartConcepts"
           (completeMethod)="searchStart($event)" field="path" (onDropDownClick)="onDropdown($event)"
-          placeholder="Select clear concept" dropdown="true"
+          placeholder="Drag and drop a categorical concept" dropdown="true"
           
           [inputStyle]="{'width':'auto'}"
           styleClass="gb-concept-constraint-input"
@@ -63,7 +63,7 @@
         (dragover)="onEndDragOver($event)" (dragleave)="onEndDragLeave($event)" (drop)="onEndDrop($event)">
         <p-autoComplete #autoComplete [(ngModel)]="endConcept" [suggestions]="suggestedEndConcepts"
           (completeMethod)="searchEnd($event)" field="path" (onDropDownClick)="onDropdown($event)"
-          placeholder="Select clear concept" dropdown="true"
+          placeholder="Drag and drop a categorical concept" dropdown="true"
           
           [inputStyle]="{'width':'auto'}"
           styleClass="gb-concept-constraint-input"
