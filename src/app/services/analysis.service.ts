@@ -42,7 +42,7 @@ export class AnalysisType {
     return this._name
   }
   static readonly SURVIVAL = new AnalysisType('Survival')
-  static readonly LINEAR_REGRESSION = new AnalysisType('Linear Regresion')
+  static readonly LINEAR_REGRESSION = new AnalysisType('Linear Regression')
   static readonly LOGISTIC_REGRESSION = new AnalysisType('Logistic Regression')
 
   static readonly ALL_TYPES = [
