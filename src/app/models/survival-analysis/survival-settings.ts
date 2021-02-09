@@ -12,7 +12,9 @@ export class SurvivalSettings {
     public timeGranularity: Granularity,
     public timeLimit: number,
     public startEvent: string,
+    public startsWhen: string,
     public endEvent: string,
+    public endsWhen: string,
     public subGroupTextRepresentations: {
       groupId: string,
       rootInclusionConstraint?: string,
@@ -22,11 +24,13 @@ export class SurvivalSettings {
 
   mainSettingsToTable(): { headers: string[][], data: string[][] } {
     let headers = [['Name', 'Value']]
-    let data = new Array<string[]>(4)
+    let data = new Array<string[]>(6)
     data[0] = ['time granularity', `${this.timeGranularity}`]
     data[1] = ['time limit (in unit defined in granularity)', `${this.timeLimit}`]
     data[2] = ['start event', `${this.startEvent}`]
-    data[3] = ['end event', `${this.endEvent}`]
+    data[3] = ['starts when', `${this.startsWhen}`]
+    data[4] = ['end event', `${this.endEvent}`]
+    data[5] = ['ends when', `${this.endsWhen}`]
 
 
     return { headers: headers, data: data }

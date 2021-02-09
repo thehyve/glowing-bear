@@ -159,6 +159,7 @@ export class ConstraintService {
       switch (treeNode.nodeType) {
 
         case TreeNodeType.CONCEPT:
+        case TreeNodeType.CONCEPT_FOLDER:
           let concept = this.treeNodeService.getConceptFromTreeNode(treeNode);
           constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = concept;
@@ -173,12 +174,12 @@ export class ConstraintService {
           break;
 
         case TreeNodeType.MODIFIER:
+        case TreeNodeType.MODIFIER_FOLDER:
           let sourceConcept = this.treeNodeService.getConceptFromModifierTreeNode(treeNode);
           constraint = new ConceptConstraint(treeNode);
           (<ConceptConstraint>constraint).concept = sourceConcept;
           break;
 
-        case TreeNodeType.CONTAINER:
         case TreeNodeType.UNKNOWN:
           let descendants = [];
           this.treeNodeService.getTreeNodeDescendantsWithExcludedTypes(
@@ -204,8 +205,13 @@ export class ConstraintService {
           }
           break;
 
+        case TreeNodeType.CONCEPT_CONTAINER:
+        case TreeNodeType.MODIFIER_CONTAINER:
+          MessageHelper.alert('warn', `${treeNode.name} is a container and cannot be used`)
+          break;
         default:
-          console.warn(`Could not get constraint from node ${treeNode.path}`);
+          MessageHelper.alert('warn', `Could not get constraint from node ${treeNode.path}`);
+          break;
       }
     }
 
