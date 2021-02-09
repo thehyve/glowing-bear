@@ -39,6 +39,7 @@ p-scrollpanel p.indented{
 
 .smallbutton{
   color: var(--gb-clinical-green-light);
+  cursor: pointer;
   background-color: white;
   border:none;
   -moz-transition: color 0.3s;

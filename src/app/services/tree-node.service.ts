@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019  LDS EPFL
- * Copyright 2020  CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -148,6 +148,7 @@ export class TreeNodeService {
 
     // extract concept
     switch (node.nodeType) {
+      case TreeNodeType.CONCEPT_FOLDER:
       case TreeNodeType.CONCEPT:
         let concept = this.getConceptFromTreeNode(node);
         if (constraintService.conceptLabels.indexOf(concept.label) === -1) {
@@ -182,6 +183,7 @@ export class TreeNodeService {
           constraintService.genomicAnnotations.push(new GenomicAnnotation(node.name, node.displayName, node.path));
         }
         break;
+      case TreeNodeType.MODIFIER_FOLDER:
       case TreeNodeType.MODIFIER:
         let sourceConcept = this.getConceptFromModifierTreeNode(node);
         constraintService.concepts.push(sourceConcept);
@@ -197,8 +199,6 @@ export class TreeNodeService {
         node.expandedIcon = 'fa fa-folder-open-o';
         node.collapsedIcon = 'fa fa-folder-o';
         break;
-      case TreeNodeType.UNKNOWN:
-      case TreeNodeType.CONTAINER:
       default:
         break;
     }
@@ -267,8 +267,8 @@ export class TreeNodeService {
    * @returns {Concept}
    */
   public getConceptFromModifierTreeNode(treeNode: TreeNode): Concept {
-    if (treeNode.nodeType !== TreeNodeType.MODIFIER) {
-      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed' +
+    if (!treeNode.isModifier()) {
+      throw ErrorHelper.handleNewError('Unexpected error. A tree node that is not a modifier cannot be passed ' +
         'to getConceptModifierTreeNode')
     }
     // this is not the same object of the node if it happens to be here, so it is safe
