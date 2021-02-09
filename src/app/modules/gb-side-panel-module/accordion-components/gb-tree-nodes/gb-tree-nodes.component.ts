@@ -310,11 +310,11 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
     }
   }
 
-  get isLoading(): boolean{
+  get isLoading(): boolean {
     return this.treeNodeService.isLoading
   }
 
-  get rootTreeNodes(): TreeNode[]{
+  get rootTreeNodes(): TreeNode[] {
     return this.treeNodeService.rootTreeNodes
   }
 }
