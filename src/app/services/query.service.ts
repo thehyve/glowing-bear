@@ -148,7 +148,7 @@ export class QueryService {
         }
         this.queryResults.next(parsedResults);
         this.isUpdating = false;
-        this.isDirty = false;
+        this.isDirty = this.constraintService.hasConstraint().valueOf();
       },
       (err) => {
         ErrorHelper.handleError(`Error during explore query ${this.query.uniqueId}`, err);

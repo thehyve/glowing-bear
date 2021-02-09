@@ -128,6 +128,9 @@ export class ExploreSearchService {
       case 'concept':
         return TreeNodeType.CONCEPT;
 
+      case 'concept_folder':
+        return TreeNodeType.CONCEPT_FOLDER;
+
       case 'genomic_annotation':
         return TreeNodeType.GENOMIC_ANNOTATION;
 
@@ -143,8 +146,8 @@ export class ExploreSearchService {
         return TreeNodeType.MODIFIER_CONTAINER;
 
 
-      case 'container':
-        return TreeNodeType.CONTAINER;
+      case 'concept_container':
+        return TreeNodeType.CONCEPT_CONTAINER;
 
       default:
         return TreeNodeType.UNKNOWN;
