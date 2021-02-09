@@ -15,6 +15,7 @@ import { CohortService } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
 import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
 import { ErrorHelper } from 'app/utilities/error-helper';
+import { savePatientListToCSVFile } from 'app/utilities/files/csv';
 import { ConfirmationService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel'
 
@@ -38,23 +39,6 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   @ViewChild('op', { static: false }) deletionRequest: OverlayPanel;
 
-  static numberMatrixToCSV(data: number[][]) {
-    const csv = data.map((row) => row.toString());
-    return csv.join('\r\n');
-  }
-
-  static savePatientListToCSVFile(cohortName: string, patientLists: number[][]) {
-    const csvContent = GbCohortsComponent.numberMatrixToCSV(patientLists)
-
-    let exportFileEL = document.createElement('a');
-    let blob = new Blob([csvContent], { type: 'text/csv' });
-    let url = window.URL.createObjectURL(blob);
-    exportFileEL.href = url;
-    exportFileEL.download = `${cohortName}.csv`;
-    exportFileEL.click();
-    window.URL.revokeObjectURL(url);
-    exportFileEL.remove();
-  }
 
   constructor(public cohortService: CohortService,
     private constraintService: ConstraintService,
@@ -124,7 +108,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       (x) => { console.log(`New status of request for patient list of saved cohort ${cohort.name}, status: ${x}`) }
     )
     this.savedCohortsPatientListService.getList(cohort.name).subscribe(
-      value => { if (value) { GbCohortsComponent.savePatientListToCSVFile(cohort.name, value) } },
+      value => { if (value) { savePatientListToCSVFile(cohort.name, value) } },
       err => {
         throw ErrorHelper.handleError(`While retrieving list for cohort ${cohort.name}`, err)
       }

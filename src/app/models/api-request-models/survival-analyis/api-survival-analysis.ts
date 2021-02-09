@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,15 +14,17 @@ export class ApiSurvivalAnalysis {
   timeLimit: number
   timeGranularity: string
   startConcept: string
-  endConcept: string
+  startsWhen: string
   startModifier?: {
     ModifierKey: string
     AppliedPath: string
   }
+  endConcept: string
   endModifier?: {
     ModifierKey: string
     AppliedPath: string
   }
+  endsWhen: string
   userPublicKey: string
 
 }
