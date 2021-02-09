@@ -71,10 +71,6 @@ export class GbTopComponent implements OnInit {
     this._ready = event
   }
 
-  tooltip() {
-    return null
-  }
-
   runAnalysis() {
     this._ready = false
     this.launched = true

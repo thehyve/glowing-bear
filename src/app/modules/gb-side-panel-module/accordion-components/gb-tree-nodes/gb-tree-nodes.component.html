@@ -19,7 +19,7 @@
   -->
 
   <!-- the tree itself -->
-  <p-tree [value]="treeNodeService.rootTreeNodes"
+  <p-tree [value]="rootTreeNodes"
           (onNodeExpand)="expandNode($event)"
           draggableNodes="true"
           styleClass="gb-tree-container"></p-tree>
@@ -39,7 +39,7 @@
 
 
   <!-- the loading indicator -->
-  <div *ngIf="treeNodeService.isLoading" style="margin: auto;">
+  <div *ngIf="isLoading" style="margin: auto;">
     <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
   </div>
 
