@@ -9,8 +9,16 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {ErrorHelper} from './error-helper';
 import {HttpHeaders} from '@angular/common/http';
+import {MessageHelper} from './message-helper';
+import {MessageService} from 'primeng';
 
-describe('ErrorHelper.handleError', () => {
+fdescribe('ErrorHelper.handleError', () => {
+
+  beforeEach(() => {
+    MessageHelper.messageService = new MessageService();
+    MessageHelper.messageService.add = jasmine.createSpy('add');
+    console.error = jasmine.createSpy('error');
+  });
 
   it('logs an http error', () => {
     let error = new HttpErrorResponse({
@@ -20,10 +28,9 @@ describe('ErrorHelper.handleError', () => {
       statusText: 'Unauthorized user',
       url: 'http://example.com'
     });
-
-    console.error = jasmine.createSpy('error');
     ErrorHelper.handleError(error);
-    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalledTimes(3);
+    expect(MessageHelper.messageService.add).toHaveBeenCalledTimes(1);
   });
 
   it('logs an access http error', () => {
@@ -35,9 +42,9 @@ describe('ErrorHelper.handleError', () => {
       url: 'http://example.com'
     });
 
-    console.error = jasmine.createSpy('error');
     ErrorHelper.handleError(error);
-    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalledTimes(3);
+    expect(MessageHelper.messageService.add).toHaveBeenCalledTimes(1);
   });
 
 });

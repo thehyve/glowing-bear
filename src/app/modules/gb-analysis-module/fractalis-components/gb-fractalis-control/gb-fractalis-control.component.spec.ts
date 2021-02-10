@@ -3,9 +3,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {GbFractalisControlComponent} from './gb-fractalis-control.component';
 import {FractalisService} from '../../../../services/fractalis.service';
 import {FractalisServiceMock} from '../../../../services/mocks/fractalis.service.mock';
-import {DragDropModule, SelectButtonModule} from 'primeng/primeng';
+import {DragDropModule, SelectButtonModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
-import {MatChipsModule, MatIconModule} from '@angular/material';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ChartType} from '../../../../models/chart-models/chart-type';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';
@@ -15,6 +14,8 @@ import {By} from '@angular/platform-browser';
 import {GbGenericModule} from '../../../gb-generic-module/gb-generic.module';
 import {VariableService} from '../../../../services/variable.service';
 import {VariableServiceMock} from '../../../../services/mocks/variable.service.mock';
+import {MatIconModule} from '@angular/material/icon';
+import {MatChipsModule} from '@angular/material/chips';
 
 describe('GbFractalisControlComponent', () => {
   let component: GbFractalisControlComponent;

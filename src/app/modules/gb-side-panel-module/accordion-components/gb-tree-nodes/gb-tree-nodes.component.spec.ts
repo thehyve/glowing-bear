@@ -9,7 +9,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GbTreeNodesComponent} from './gb-tree-nodes.component';
-import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule, TreeNode} from 'primeng/primeng';
+import {AutoCompleteModule, DragDropModule, OverlayPanelModule, TreeModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
 import {TreeNodeService} from '../../../../services/tree-node.service';
 import {TreeNodeServiceMock} from '../../../../services/mocks/tree-node.service.mock';

@@ -5,7 +5,7 @@
       <mat-expansion-panel-header>
         <mat-panel-title>
           <div class="section-banner">
-            Data Table
+            Data table
             <i class="fa fa-info" (mouseenter)="op_data_table.show($event)"
                (mouseleave)="op_data_table.hide($event)"></i>
           </div>
@@ -127,59 +127,78 @@
 
       <div class="ui-widget-header" style="padding:4px 10px;border-bottom: 0 none">
         <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-        <input #globalFilter type="text" pInputText size="50" placeholder="Filter the table">
+        <input type="text" pInputText (input)="dt.filterGlobal($event.target.value, 'contains')" size="50" placeholder="Filter the table">
       </div>
-      <p-dataTable #dt
+      <p-table #dt tableStyleClass="export-table"
                    sortField="time"
                    sortOrder="-1"
+                   [globalFilterFields]="['name', 'status']"
                    [value]="exportJobs"
-                   [rows]="10" [paginator]="true"
-                   [globalFilter]="globalFilter">
-        <p-column field="name" header="Name"
-                  [sortable]="true"
-                  [filter]="true" filterPlaceholder="Filter column" filterMatchMode="contains">
-        </p-column>
-        <p-column field="status" header="Status"
-                  [sortable]="true"
-                  [filter]="true" filterPlaceholder="Filter column">
-        </p-column>
-        <p-column field="timeDescription" header="Last updated"
-                  [sortable]="true" sortField="time">
-        </p-column>
-        <p-column>
-          <ng-template pTemplate="header">
-          </ng-template>
-          <ng-template let-job="rowData" pTemplate="body">
-            <button type="button"
-                    *ngIf="job.status === 'Completed'"
-                    class="btn btn-outline-primary btn-sm"
-                    [disabled]="job.disabled"
-                    (click)="downloadExportJob(job)">
-              <span class="fa fa-download"></span>
-              Download
-            </button>
-            <span>&nbsp;</span>
-            <button type="button"
-                    *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
-                    class="btn btn-outline-primary btn-sm"
-                    [disabled]="job.disabled"
-                    (click)="cancelExportJob(job)">
-              <span class="fa fa-times"></span>
-              Cancel
-            </button>
-            <ng-template #archive>
+                   [rows]="10" [paginator]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="name">
+              Name
+              <p-sortIcon [field]="'name'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="status">
+              Status
+              <p-sortIcon [field]="'status'"></p-sortIcon>
+            </th>
+            <th pSortableColumn="time">
+              Last updated
+              <p-sortIcon [field]="'time'"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+          <tr>
+            <th>
+              <input pInputText type="text" (input)="dt.filter($event.target.value, 'name', 'contains')" placeholder="Filter by name" class="ui-column-filter">
+            </th>
+            <th>
+              <input pInputText type="text" (input)="dt.filter($event.target.value, 'status', 'contains')" placeholder="Filter by status" class="ui-column-filter">
+            </th>
+            <th>&nbsp;</th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template let-job pTemplate="body">
+          <tr>
+            <td>{{job.name}}</td>
+            <td>{{job.status}}</td>
+            <td>{{job.timeDescription}}</td>
+            <td>
               <button type="button"
-                      *ngIf="!isExternalExportAvailable"
+                      *ngIf="job.status === 'Completed'"
                       class="btn btn-outline-primary btn-sm"
                       [disabled]="job.disabled"
-                      (click)="archiveExportJob(job)">
-                <span class="fa fa-archive"></span>
-                Archive
+                      (click)="downloadExportJob(job)">
+                <span class="fa fa-download"></span>
+                Download
               </button>
-            </ng-template>
-          </ng-template>
-        </p-column>
-      </p-dataTable>
+              <span>&nbsp;</span>
+              <button type="button"
+                      *ngIf="['Completed','Error','Cancelled'].indexOf(job.status) < 0;else archive"
+                      class="btn btn-outline-primary btn-sm"
+                      [disabled]="job.disabled"
+                      (click)="cancelExportJob(job)">
+                <span class="fa fa-times"></span>
+                Cancel
+              </button>
+              <ng-template #archive>
+                <button type="button"
+                        *ngIf="!isExternalExportAvailable"
+                        class="btn btn-outline-primary btn-sm"
+                        [disabled]="job.disabled"
+                        (click)="archiveExportJob(job)">
+                  <span class="fa fa-archive"></span>
+                  Archive
+                </button>
+              </ng-template>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
     </mat-expansion-panel>
   </mat-accordion>
 

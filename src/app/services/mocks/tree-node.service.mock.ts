@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {TreeNode} from 'primeng/primeng';
+import {TreeNode} from 'primeng';
 import {Concept} from '../../models/constraint-models/concept';
 import {Subject} from 'rxjs';
 import {CountItem} from '../../models/aggregate-models/count-item';

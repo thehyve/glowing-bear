@@ -26,7 +26,7 @@ import {GbCohortSelectionModule} from './modules/gb-cohort-selection-module/gb-c
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.module';
-import {GrowlModule} from 'primeng/growl';
+import {ToastModule} from 'primeng/toast';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
 import {MessageHelper} from './utilities/message-helper';
 import {of as observableOf} from 'rxjs';
@@ -35,6 +35,7 @@ import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
 import {Router} from '@angular/router';
 import {NavbarService} from './services/navbar.service';
 import {NavbarServiceMock} from './services/mocks/navbar.service.mock';
+import {MessageService} from 'primeng';
 
 export function initConfig(config: AppConfig) {
   return () => config.load();
@@ -61,7 +62,7 @@ describe('AppComponent', () => {
         FormsModule,
         HttpClientModule,
         BrowserAnimationsModule,
-        GrowlModule,
+        ToastModule,
         GbMainModule,
         GbNavBarModule,
         GbSidePanelModule,
@@ -95,7 +96,8 @@ describe('AppComponent', () => {
         {
           provide: ResourceService,
           useClass: ResourceServiceMock
-        }
+        },
+        MessageService
       ]
     }).compileComponents();
 
@@ -119,18 +121,6 @@ describe('AppComponent', () => {
     component.logout();
     expect(component.logout).toHaveBeenCalled();
     expect(authenticationService.logout).toHaveBeenCalled();
-  });
-
-  it('should get messages', () => {
-    spyOnProperty(component, 'messages', 'get').and.callThrough();
-    expect(component.messages).toBe(MessageHelper.messages);
-  });
-
-  it('should set messages', () => {
-    const dummy = [{foo: 'bar'}];
-    spyOnProperty(component, 'messages', 'set').and.callThrough();
-    component.messages = dummy;
-    expect(component.messages).toBe(dummy);
   });
 
   it('should handle authentication success', () => {

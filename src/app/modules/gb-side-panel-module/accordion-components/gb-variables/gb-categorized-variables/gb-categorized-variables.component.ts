@@ -7,7 +7,6 @@
  */
 import {Component} from '@angular/core';
 import {TreeNodeService} from '../../../../../services/tree-node.service';
-import {TreeNode} from 'primeng/api';
 import {VariableService} from '../../../../../services/variable.service';
 import {NavbarService} from '../../../../../services/navbar.service';
 import {GbTreeNode} from '../../../../../models/tree-node-models/gb-tree-node';

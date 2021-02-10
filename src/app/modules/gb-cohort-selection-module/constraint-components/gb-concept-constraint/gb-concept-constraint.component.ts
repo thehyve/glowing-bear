@@ -8,7 +8,6 @@
 
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {GbConceptOperatorState} from './gb-concept-operator-state';
@@ -30,6 +29,7 @@ import {Operator} from '../../../../models/constraint-models/operator';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {Study} from '../../../../models/constraint-models/study';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
+import {AutoComplete} from 'primeng';
 
 @Component({
   selector: 'gb-concept-constraint',

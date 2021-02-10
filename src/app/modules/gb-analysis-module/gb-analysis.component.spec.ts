@@ -13,10 +13,12 @@ import {MockComponent} from 'ng2-mock-component';
 import {FormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {routing} from './gb-analysis.routing';
-import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng/primeng';
+import {DragDropModule, OverlayPanelModule, SelectButtonModule} from 'primeng';
 import {TableModule} from 'primeng/table';
-import {MatButtonModule, MatExpansionModule, MatIconModule} from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatIconModule} from '@angular/material/icon';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatButtonModule} from '@angular/material/button';
 
 describe('GbAnalysisComponent', () => {
   let component: GbAnalysisComponent;

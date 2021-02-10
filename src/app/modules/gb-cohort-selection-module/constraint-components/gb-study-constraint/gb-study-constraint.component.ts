@@ -10,10 +10,9 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Study} from '../../../../models/constraint-models/study';
 import {StudyConstraint} from '../../../../models/constraint-models/study-constraint';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
 import {UIHelper} from '../../../../utilities/ui-helper';
-import {TreeNode} from 'primeng/api';
 import {GbTreeNode} from '../../../../models/tree-node-models/gb-tree-node';
+import {AutoComplete} from 'primeng';
 
 @Component({
   selector: 'gb-study-constraint',
