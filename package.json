@@ -6,7 +6,7 @@
     "ng": "ng",
     "serve": "ng serve --aot --ssl",
     "build": "ng build",
-    "package": "ng build --prod",
+    "package": "ng build --prod --progress=false",
     "test": "ng test --code-coverage",
     "testOnce": "ng test --watch=false --code-coverage",
     "lint": "ng lint glowing-bear --type-check",
