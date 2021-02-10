@@ -30,6 +30,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
 import { SurvivalService } from 'app/services/survival-analysis.service';
+import { AnalysisService } from 'app/services/analysis.service';
 
 
 @NgModule({
@@ -58,7 +59,7 @@ import { SurvivalService } from 'app/services/survival-analysis.service';
     GbSelectionModule
   ],
 
-  providers: [ApiSurvivalAnalysisService, SurvivalService],
+  providers: [ApiSurvivalAnalysisService, AnalysisService, SurvivalService],
 
   exports: [
     RouterModule

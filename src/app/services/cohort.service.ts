@@ -33,6 +33,10 @@ export class CohortService {
 
   private _isRefreshing: boolean
 
+  // internal states of the explore component handling cohorts
+  _cohortName: string
+  _lastSuccessfulSet: number[]
+
   // term restoration
   public restoring: Subject<boolean>
   private _queryTiming: Subject<ApiI2b2Timing>
@@ -176,6 +180,22 @@ export class CohortService {
   }
   get isRefreshing(): boolean {
     return this._isRefreshing
+  }
+
+  set lastSuccessfulSet(setIDs: number[]) {
+    this._lastSuccessfulSet = setIDs
+  }
+
+  get lastSuccessfulSet(): number[] {
+    return this._lastSuccessfulSet
+  }
+
+  set cohortName(name: string) {
+    this._cohortName = name
+  }
+
+  get cohortName(): string {
+    return this._cohortName
   }
 
   get queryTiming(): Observable<ApiI2b2Timing> {

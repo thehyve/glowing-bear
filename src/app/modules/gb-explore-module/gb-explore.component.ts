@@ -28,8 +28,6 @@ import { OperationType } from 'app/models/operation-models/operation-types';
   styleUrls: ['./gb-explore.component.css']
 })
 export class GbExploreComponent implements AfterViewChecked {
-  _cohortName: string
-  _lastSuccessfulSet: number[]
 
   OperationType = OperationType
 
@@ -39,7 +37,7 @@ export class GbExploreComponent implements AfterViewChecked {
     private medcoNetworkService: MedcoNetworkService,
     private changeDetectorRef: ChangeDetectorRef) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
-      this._lastSuccessfulSet = resIDs
+      this.lastSuccessfulSet = resIDs
     })
   }
 
@@ -107,8 +105,11 @@ export class GbExploreComponent implements AfterViewChecked {
     return this.queryService.queryType;
   }
 
+  set lastSuccessfulSet(setIDs: number[]) {
+    this.cohortService.lastSuccessfulSet = setIDs
+  }
   get lastSuccessfulSet(): number[] {
-    return this._lastSuccessfulSet
+    return this.cohortService.lastSuccessfulSet
   }
   get globalCount(): Observable<string> {
     return this.queryService.queryResults.pipe(map((queryResults) =>
@@ -116,10 +117,10 @@ export class GbExploreComponent implements AfterViewChecked {
     ));
   }
   set cohortName(name: string) {
-    this._cohortName = name
+    this.cohortService.cohortName = name
   }
   get cohortName(): string {
-    return this._cohortName
+    return this.cohortService.cohortName
   }
 
   get isUpdating(): boolean {
