@@ -6,12 +6,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Chart} from 'chart.js';
-import {QueryService} from '../../services/query.service';
-import {MedcoNetworkService} from '../../services/api/medco-network.service';
-import {Observable} from 'rxjs';
-import {first, map} from 'rxjs/operators';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Chart } from 'chart.js';
+import { QueryService } from '../../services/query.service';
+import { MedcoNetworkService } from '../../services/api/medco-network.service';
+import { Observable } from 'rxjs';
+import { first, map } from 'rxjs/operators';
+import { savePatientListToCSVFile } from 'app/utilities/files/csv';
 
 @Component({
   selector: 'gb-medco-results',
@@ -31,7 +32,7 @@ export class GbExploreResultsComponent implements OnInit {
   }
 
   constructor(private medcoNetworkService: MedcoNetworkService,
-              public queryService: QueryService) { }
+    public queryService: QueryService) { }
 
   ngOnInit() {
     this._perSiteCountsChart = new Chart(this.perSiteCountsChartElement.nativeElement, {
@@ -101,18 +102,10 @@ export class GbExploreResultsComponent implements OnInit {
   }
 
   savePatientListToCSVFile() {
-    this.patientLists.pipe(first(), map((patientLists) => GbExploreResultsComponent.numberMatrixToCSV(patientLists)))
-      .subscribe((csvArray) => {
-          let exportFileEL = document.createElement('a');
-          let blob = new Blob([csvArray], {type: 'text/csv'});
-          let url = window.URL.createObjectURL(blob);
-
-          exportFileEL.href = url;
-          exportFileEL.download = 'patientList.csv';
-          exportFileEL.click();
-          window.URL.revokeObjectURL(url);
-          exportFileEL.remove();
-        }
+    this.patientLists.pipe(first())
+      .subscribe((patientList) => {
+        savePatientListToCSVFile('patientList', patientList)
+      }
       )
   }
 }
