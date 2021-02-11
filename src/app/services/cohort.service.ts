@@ -261,7 +261,7 @@ export class CohortService {
     })
     cohorts.forEach(newCohort => {
       if (tmp.has(newCohort.name)) {
-        if (newCohort.lastUpdateDate() > tmp.get(newCohort.name)) {
+        if (newCohort.lastUpdateDate() >= tmp.get(newCohort.name)) {
           let i = this._cohorts.findIndex(c => c.name === newCohort.name)
           this._cohorts[i] = newCohort
         } else {
