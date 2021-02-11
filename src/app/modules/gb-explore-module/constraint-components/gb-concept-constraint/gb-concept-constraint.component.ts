@@ -23,6 +23,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {NumericalOperator} from 'app/models/constraint-models/numerical-operator';
+import {TextOperator} from 'app/models/constraint-models/text-operator';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -55,10 +56,15 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   /*
    * numeric value range
    */
-  private _operatorState: NumericalOperator = null;
+  private _numericalOperatorState: NumericalOperator = null;
+
+  /*
+   * text value
+   */
+  private _textOperatorState: TextOperator = null;
 
 
-  private _valueOperation: SelectItem[] = [
+  private _numericalOperation: SelectItem[] = [
     { label: 'any', value: null },
     { label: 'greater than', value: NumericalOperator.GREATER },
     { label: 'greater or equal than', value: NumericalOperator.GREATER_OR_EQUAL },
@@ -72,6 +78,16 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   private _minLimit: number;
   private _maxLimit: number;
+
+  private _textOperation: SelectItem[] = [
+    { label: 'any', value: null },
+    { label: 'exactly matches', value: TextOperator.LIKE_EXACT },
+    { label: 'in', value: TextOperator.IN },
+    { label: 'begins with', value: TextOperator.LIKE_BEGIN },
+    { label: 'contains', value: TextOperator.LIKE_CONTAINS },
+    { label: 'ends with', value: TextOperator.LIKE_END }
+  ]
+
 
   /*
    * date value range
@@ -110,17 +126,46 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   initializeConstraints(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
+
+      let constraint = (<ConceptConstraint>this.constraint);
       // Initialize aggregate values
       this.isMinEqual = true;
       this.isMaxEqual = true;
-      this.operatorState = null;
+      this.numericalOperatorState = null;
+      if (constraint.concept.isText) {
+        constraint.applyTextOperator = true;
+      }
+
+
+      // if constraints comes from restoration
+
+      if (constraint.applyTextOperator) {
+        if (constraint.textOperator) {
+          this.textOperatorState = constraint.textOperator
+          this.textValue = constraint.textOperatorValue
+        }
+      }
+
+      if (constraint.applyNumericalOperator) {
+        if (constraint.numericalOperator) {
+          this.numericalOperatorState = constraint.numericalOperator
+          if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
+            this.minVal = constraint.minValue
+            this.maxVal = constraint.maxValue
+          } else {
+            this.equalVal = constraint.numValue
+          }
+
+        }
+      }
+
+
 
       this.selectedCategories = [];
       this.suggestedCategories = [];
 
       this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
-      let constraint: ConceptConstraint = <ConceptConstraint>this.constraint;
       if (constraint.concept) {
         // Construct a new constraint that only has the concept as sub constraint
         // (We don't want to apply value and date constraints when getting aggregates)
@@ -189,7 +234,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
           this.maxVal = val.value;
         } else if (val.operator === '=') {
           this.equalVal = val.value;
-          this.operatorState = NumericalOperator.EQUAL;
+          this.numericalOperatorState = NumericalOperator.EQUAL;
         } else {
           console.warn(`Unknown operator: ${val.operator}`)
         }
@@ -373,14 +418,14 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   updateNumericConceptValues() {
     let conceptConstraint: ConceptConstraint = <ConceptConstraint>this.constraint;
     // if to define a single value
-    if (this.operatorState === NumericalOperator.EQUAL) {
+    if (this.numericalOperatorState === NumericalOperator.EQUAL) {
       let newVal: ValueConstraint = new ValueConstraint();
       newVal.operator = '=';
       newVal.value = this.equalVal;
       conceptConstraint.valueConstraints = [];
       conceptConstraint.valueConstraints.push(newVal);
       // else if to define a value range
-    } else if (this.operatorState === NumericalOperator.BETWEEN) {
+    } else if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
       conceptConstraint.valueConstraints = [];
 
       let newMinVal: ValueConstraint = new ValueConstraint();
@@ -447,7 +492,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    * -------------------- event handlers: numerical-operator --------------------
    */
 
-  changeOperator(event) {
+  changeNumericalOperator(event) {
     if (event.value === null) {
       (<ConceptConstraint>this.constraint).applyNumericalOperator = false;
     } else {
@@ -455,6 +500,19 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       (<ConceptConstraint>this.constraint).numericalOperator = event.value;
     }
 
+  }
+
+  /**
+   * -------------------- event handlers: text-operator --------------------
+   */
+
+  changeTextOperator(event) {
+    if (event.value === null) {
+      (<ConceptConstraint>this.constraint).applyTextOperator = false;
+    } else {
+      (<ConceptConstraint>this.constraint).applyTextOperator = true;
+      (<ConceptConstraint>this.constraint).textOperator = event.value;
+    }
   }
 
   /*
@@ -466,7 +524,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   isBetween() {
-    return this.operatorState === NumericalOperator.BETWEEN;
+    return this.numericalOperatorState === NumericalOperator.BETWEEN;
   }
 
   /**
@@ -474,10 +532,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
    */
   switchOperatorState() {
     if (this.selectedConcept.type === ValueType.NUMERICAL) {
-      this.operatorState =
-        (this.operatorState === NumericalOperator.EQUAL) ?
-          (this.operatorState = NumericalOperator.BETWEEN) :
-          (this.operatorState = NumericalOperator.EQUAL);
+      this.numericalOperatorState =
+        (this.numericalOperatorState === NumericalOperator.EQUAL) ?
+          (this.numericalOperatorState = NumericalOperator.BETWEEN) :
+          (this.numericalOperatorState = NumericalOperator.EQUAL);
     }
     this.updateConceptValues();
   }
@@ -485,7 +543,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   getOperatorButtonName() {
     let name = '';
     if (this.selectedConcept.type === ValueType.NUMERICAL || this.selectedConcept.type === ValueType.DATE) {
-      name = (this.operatorState === NumericalOperator.BETWEEN) ? 'between' : 'equal to';
+      name = (this.numericalOperatorState === NumericalOperator.BETWEEN) ? 'between' : 'equal to';
     }
     return name;
   }
@@ -549,16 +607,36 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     this.droppedConstraint = null;
   }
 
-  get operatorState(): NumericalOperator {
-    return this._operatorState;
+  get numericalOperatorState(): NumericalOperator {
+    return this._numericalOperatorState;
   }
 
-  set operatorState(value: NumericalOperator) {
-    this._operatorState = value;
+  set numericalOperatorState(value: NumericalOperator) {
+    this._numericalOperatorState = value;
   }
 
-  get valueOperation(): SelectItem[] {
-    return this._valueOperation
+  get textOperatorState(): TextOperator {
+    return this._textOperatorState;
+  }
+
+  set textOperatorState(value: TextOperator) {
+    this._textOperatorState = value;
+  }
+
+  get numericalOperation(): SelectItem[] {
+    return this._numericalOperation
+  }
+
+  get textOperation(): SelectItem[] {
+    return this._textOperation
+  }
+
+  set textValue(val: string) {
+    (<ConceptConstraint>this.constraint).textOperatorValue = val
+  }
+
+  get textValue(): string {
+    return (<ConceptConstraint>this.constraint).textOperatorValue
   }
 
   get isMinEqual(): boolean {

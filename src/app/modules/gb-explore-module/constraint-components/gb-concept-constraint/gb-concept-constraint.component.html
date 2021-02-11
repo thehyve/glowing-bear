@@ -25,10 +25,10 @@
 <!-- if the concept is NUMERIC -->
 <div *ngIf="constraintConcept.type === ValueType.NUMERICAL" class="form-group gb-constraint-child-container" width="auto">
   <span>with value&nbsp;</span>
-  <p-dropdown [(ngModel)]="operatorState" [options]="valueOperation" dropdownIcon="" (onChange)="changeOperator($event)"></p-dropdown>
+  <p-dropdown [(ngModel)]="numericalOperatorState" [options]="numericalOperation" dropdownIcon="" (onChange)="changeNumericalOperator($event)"></p-dropdown>
   <span>&nbsp;</span>
 
-  <div *ngIf="(operatorState !== null) && isBetween() " class="d-inline-block">
+  <div *ngIf="(numericalOperatorState !== null) && isBetween() " class="d-inline-block">
     <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-4" placeholder="min:{{minLimit}}"
            [(ngModel)]="minVal">
     <span>&nbsp;and&nbsp;</span>
@@ -37,11 +37,22 @@
     <span>&nbsp;{{unit}}</span>
   </div>
 
-  <div *ngIf="(operatorState !== null) && !isBetween() " class="d-inline-block">
+  <div *ngIf="(numericalOperatorState !== null) && !isBetween() " class="d-inline-block">
     <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-8"
            [(ngModel)]="equalVal">
     <span>&nbsp;{{unit}}</span>
   </div>
+</div>
+<!-- if the concept is TEXT -->
+<div *ngIf="constraintConcept.type === ValueType.TEXT" class="form-group gb-constraint-child-container" width="auto">
+  <span>with value&nbsp;</span>
+  <p-dropdown [(ngModel)]="textOperatorState" [options]="textOperation" dropdownIcon="" (onChange)="changeTextOperator($event)"></p-dropdown>
+  <span>&nbsp;&nbsp;&nbsp;</span>
+  <div *ngIf="(textOperatorState !== null)" class="d-inline-block">
+    <input type="text" class="col-sm-12" placeholder="expression"
+           [(ngModel)]="textValue">
+  </div>
+
 </div>
 
   <!-- if the concept is CATEGORICAL -->

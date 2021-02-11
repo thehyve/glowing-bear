@@ -1,5 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -30,6 +31,8 @@ import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts
 import { ToggleButtonModule } from 'primeng/togglebutton'
 import { ExploreCohortsService } from 'app/services/api/medco-node/explore-cohorts.service';
 import { SurvivalService } from 'app/services/survival-analysis.service';
+import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
+
 
 
 @NgModule({
@@ -56,7 +59,7 @@ import { SurvivalService } from 'app/services/survival-analysis.service';
     GbSummaryComponent,
     GbCohortsComponent
   ],
-  providers: [TreeDragDropService, ConfirmationService, SurvivalService, ExploreCohortsService],
+  providers: [TreeDragDropService, ConfirmationService, SurvivalService, ExploreCohortsService, SavedCohortsPatientListService],
   exports: [GbSidePanelComponent]
 })
 export class GbSidePanelModule {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +17,8 @@ import { Observable, forkJoin } from 'rxjs';
 import { map, timeout } from 'rxjs/operators';
 
 import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api-cohort-response';
+import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
+import { ApiCohortsPatientListsResponse } from 'app/models/api-response-models/medco-node/api-cohorts-patient-list-response';
 
 
 @Injectable()
@@ -56,6 +58,18 @@ export class ExploreCohortsService {
     )
   }
 
+  postCohortsPatientListSingleNode(
+    nodeUrl: string,
+    cohortPatientListRequest: ApiCohortsPatientLists
+  ): Observable<ApiCohortsPatientListsResponse> {
+    return this.apiEndpointService.postCall(
+      'node/explore/cohorts/patient-list',
+      cohortPatientListRequest,
+      nodeUrl
+    )
+  }
+
+
   getCohortAllNodes(): Observable<ApiCohortResponse[][]> {
     return forkJoin(this.medcoNetworkService.nodesUrl.map(url => this.getCohortSingleNode(url)))
       .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
@@ -69,6 +83,11 @@ export class ExploreCohortsService {
   removeCohortAllNodes(cohortName: string) {
     return forkJoin(this.medcoNetworkService.nodesUrl.map(url => this.removeCohortSingleNode(url, cohortName)))
       .pipe(timeout(ExploreCohortsService.TIMEOUT_MS))
+  }
+
+  postCohortsPatientListAllNodes(cohortPatientListRequest: ApiCohortsPatientLists): Observable<ApiCohortsPatientListsResponse[]> {
+    return forkJoin(this.medcoNetworkService.nodesUrl.map(url => this.postCohortsPatientListSingleNode(url, cohortPatientListRequest)))
+      .pipe(timeout((ExploreCohortsService.TIMEOUT_MS)))
   }
 
 

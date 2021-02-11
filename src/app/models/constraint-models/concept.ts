@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -26,6 +26,7 @@ export class Concept {
   private _unit?: string;
   private _isInteger?: boolean;
   private _isPositive?: boolean;
+  private _isText?: boolean;
 
 
   constructor() {
@@ -157,5 +158,13 @@ export class Concept {
 
   set isPositive(val: boolean) {
     this._isPositive = val
+  }
+
+  set isText(val: boolean) {
+    this._isText = val
+  }
+
+  get isText(): boolean {
+    return this._isText
   }
 }

@@ -14,6 +14,7 @@ import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2
 import { ApiI2B2Modifier } from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
 import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
 import { MessageHelper } from 'app/utilities/message-helper';
+import { TextOperator } from 'app/models/constraint-models/text-operator';
 
 
 @Injectable()
@@ -102,7 +103,6 @@ export class ConstraintMappingService {
 
   private generateI2b2ItemFromConcept(constraint: ConceptConstraint): ApiI2b2Item {
     let item = new ApiI2b2Item();
-
     switch (constraint.concept.type) {
       // todo: missing types
 
@@ -126,6 +126,7 @@ export class ConstraintMappingService {
       case ValueType.NUMERICAL:
         item.encrypted = false;
         item.queryTerm = constraint.concept.path;
+        item.type = 'NUMBER'
         if (constraint.concept.modifier !== undefined) {
           item.modifier = new ApiI2B2Modifier()
           item.queryTerm = constraint.concept.modifier.appliedConceptPath;
@@ -139,11 +140,11 @@ export class ConstraintMappingService {
             case NumericalOperator.BETWEEN:
               if (!(constraint.minValue)) {
                 throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
-                'The field was left empty or non numerical characters were used.')
+                  'The field was left empty or non numerical characters were used.')
               }
               if (!(constraint.maxValue)) {
                 throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
-                'The field was left empty or non numerical characters were used.')
+                  'The field was left empty or non numerical characters were used.')
               }
               if (constraint.maxValue < constraint.minValue) {
                 throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`)
@@ -171,6 +172,28 @@ export class ConstraintMappingService {
               throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
           }
         }
+        break;
+      case ValueType.TEXT:
+        item.encrypted = false;
+        item.queryTerm = constraint.concept.path;
+        item.type = 'TEXT'
+        switch (constraint.textOperator) {
+          case TextOperator.LIKE_EXACT:
+          case TextOperator.LIKE_BEGIN:
+          case TextOperator.LIKE_CONTAINS:
+          case TextOperator.LIKE_END:
+            item.operator = constraint.textOperator;
+            item.value = constraint.textOperatorValue;
+            break;
+          case TextOperator.IN:
+            item.operator = constraint.textOperator;
+            item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
+            break;
+          default:
+            throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
+
+        }
+
         break;
 
       default:
