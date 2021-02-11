@@ -19,26 +19,27 @@
   -->
 
   <!-- the tree itself -->
-  <p-tree [value]="treeNodeService.rootTreeNodes"
+  <p-tree [value]="rootTreeNodes"
           (onNodeExpand)="expandNode($event)"
           draggableNodes="true"
           styleClass="gb-tree-container"></p-tree>
 
-  <!-- the metadata popup -->
+  <!-- the metadata popup 
   <p-overlayPanel #treeNodeMetadataPanel
                   [dismissable]="true"
                   [showCloseIcon]="true">
-    <!--{{metadataContent}}-->
+
     <div *ngFor="let item of metadataContent">
       <div class="ui-grid-row gb-metadata-row">
         {{item.key}}: {{item.val}}
       </div>
     </div>
   </p-overlayPanel>
+  -->
 
 
   <!-- the loading indicator -->
-  <div *ngIf="treeNodeService.isLoading" style="margin: auto;">
+  <div *ngIf="isLoading" style="margin: auto;">
     <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
   </div>
 

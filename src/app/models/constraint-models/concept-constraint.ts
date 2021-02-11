@@ -15,6 +15,7 @@ import { TimeConstraint } from './time-constraint';
 import { FormatHelper } from '../../utilities/format-helper';
 import { NumericalOperator } from './numerical-operator';
 import { TreeNode } from '../tree-models/tree-node';
+import { TextOperator } from './text-operator';
 
 export class ConceptConstraint extends Constraint {
 
@@ -33,6 +34,11 @@ export class ConceptConstraint extends Constraint {
   private _numValue: number;
   private _minValue: number;
   private _maxValue: number;
+
+  // text operator
+  private _applyTextOperator = false;
+  private _textOperator: TextOperator;
+  private _textOperatorValue: string;
 
   // observation date range
   private _applyObsDateConstraint = false;
@@ -168,4 +174,30 @@ export class ConceptConstraint extends Constraint {
     return this._maxValue
 
   }
+
+  set applyTextOperator(val: boolean) {
+    this._applyTextOperator = val
+  }
+
+  get applyTextOperator(): boolean {
+    return this._applyTextOperator
+  }
+
+  set textOperator(val: TextOperator) {
+    this._textOperator = val
+  }
+
+  get textOperator(): TextOperator {
+    return this._textOperator
+  }
+
+  set textOperatorValue(val: string) {
+    this._textOperatorValue = val
+  }
+
+  get textOperatorValue(): string {
+    return this._textOperatorValue
+  }
+
+
 }

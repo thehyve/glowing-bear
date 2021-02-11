@@ -57,10 +57,10 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
   // current number of hits in search
   hits = 0;
 
-  constructor(public treeNodeService: TreeNodeService,
-              private constraintService: ConstraintService,
-              private queryService: QueryService,
-              private element: ElementRef) {
+  constructor(private treeNodeService: TreeNodeService,
+    private constraintService: ConstraintService,
+    private queryService: QueryService,
+    private element: ElementRef) {
     this.expansionStatus = {
       expanded: false,
       treeNodeElm: null,
@@ -118,6 +118,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
         this.treeNodeService.selectedTreeNode = dataObject;
       }).bind(this);
 
+      /*
       let showInfo = (function (event: MouseEvent) {
         this.updateMetadataContent(metadata);
         this.treeNodeMetadataPanel.show(event);
@@ -128,14 +129,16 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
         this.treeNodeMetadataPanel.hide(event);
       }).bind(this);
 
-      // if the data object type is known, it is considered queryable
-      if (dataObject.nodeType !== TreeNodeType.UNKNOWN) {
-        treeNodeElm.addEventListener('dragstart', handleDragstart);
-      }
       // if metadata exits
       if (metadata) {
         treeNodeElmIcon.addEventListener('mouseenter', showInfo);
         treeNodeElmIcon.addEventListener('mouseleave', hideInfo);
+      }
+      */
+
+      // if the data object type is known, it is considered queryable
+      if (dataObject.nodeType !== TreeNodeType.UNKNOWN) {
+        treeNodeElm.addEventListener('dragstart', handleDragstart);
       }
 
       let uiTreeNodeChildrenElm = elm.querySelector('.ui-treenode-children');
@@ -307,4 +310,11 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
     }
   }
 
+  get isLoading(): boolean {
+    return this.treeNodeService.isLoading
+  }
+
+  get rootTreeNodes(): TreeNode[] {
+    return this.treeNodeService.rootTreeNodes
+  }
 }

@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2018 - 2019 EPFL LDS (LCA1) EPFL
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,7 +18,8 @@ import { TreeNodeType } from '../../../models/tree-models/tree-node-type';
 import { ValueType } from '../../../models/constraint-models/value-type';
 import { MedcoNetworkService } from '../medco-network.service';
 import { ApiEndpointService } from '../../api-endpoint.service';
-import { ApiValueMetadata } from 'app/models/api-response-models/medco-node/api-value-metadata';
+import { ApiValueMetadata, DataType } from 'app/models/api-response-models/medco-node/api-value-metadata';
+import { MessageHelper } from 'app/utilities/message-helper';
 
 @Injectable()
 export class ExploreSearchService {
@@ -80,7 +81,7 @@ export class ExploreSearchService {
     return this.exploreSearchConcept('children', root)
   }
 
-    /**
+  /**
    * Perform search concept info in ontology.
    *
    * @param {string} root - the path to the specific tree node, must include the first slash
@@ -160,10 +161,21 @@ export class ExploreSearchService {
     if (metadata) {
       if (metadata.ValueMetadata) {
         if ((metadata.ValueMetadata.Oktousevalues) && metadata.ValueMetadata.Oktousevalues === 'Y') {
-          return ValueType.NUMERICAL
-        }
-        if ((metadata.ValueMetadata.EnumValues) && metadata.ValueMetadata.EnumValues.length > 0) {
-          return ValueType.CATEGORICAL
+          switch (metadata.ValueMetadata.DataType) {
+            case DataType.FLOAT:
+            case DataType.INTEGER:
+            case DataType.POS_FLOAT:
+            case DataType.POS_INTEGER:
+              return ValueType.NUMERICAL
+            case DataType.ENUM:
+              return ValueType.CATEGORICAL
+            case DataType.STRING:
+              return ValueType.TEXT
+            default:
+              MessageHelper.alert('warn', `In ontology tree, data type ${metadata.ValueMetadata.DataType} unkown`)
+              return ValueType.SIMPLE
+              break;
+          }
         }
       }
     }

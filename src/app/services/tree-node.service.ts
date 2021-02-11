@@ -137,9 +137,6 @@ export class TreeNodeService {
     if (node.subjectCount) {
       node.label = node.label + ` (${node.subjectCount})`;
     }
-    if (node.metadata) {
-      node.label = node.label + ` ⓘ`;
-    }
 
 
     node.icon = '';
@@ -248,6 +245,9 @@ export class TreeNodeService {
         case DataType.FLOAT:
           target.isInteger = false;
           target.isPositive = false;
+          break;
+        case DataType.STRING:
+          target.isText = true;
           break;
         default:
           break;

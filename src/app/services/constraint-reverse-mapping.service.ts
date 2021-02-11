@@ -22,6 +22,10 @@ import { map } from 'rxjs/operators';
 import { DropMode } from 'app/models/drop-mode';
 import { TreeNode } from 'app/models/tree-models/tree-node';
 import { forkJoin } from 'rxjs';
+import { ValueType } from 'app/models/constraint-models/value-type';
+import { MessageHelper } from 'app/utilities/message-helper';
+import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
+import { TextOperator } from 'app/models/constraint-models/text-operator';
 
 
 
@@ -134,6 +138,7 @@ export class ConstraintReverseMappingService {
       modificandum.modifier = null
       modificandum.operator = item.operator
       modificandum.value = item.value
+      modificandum.type = item.type
       modificandum.queryTerm = item.queryTerm
       modificated = this.mapItem(modificandum).pipe(map(({ treeNode }) => treeNode))
 
@@ -145,7 +150,82 @@ export class ConstraintReverseMappingService {
       resTreeNode = treeNodeObs
     }
     return resTreeNode.pipe(
-      map(treenode => this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode) as ConceptConstraint)
+      map(treenode => {
+        let res = this.constraintService.generateConstraintFromTreeNode(treenode, DropMode.TreeNode) as ConceptConstraint
+        this.setValues(res, item.value, item.operator)
+        return res
+      })
     )
+  }
+
+
+  private setValues(constraint: ConceptConstraint, value: string, operator: string) {
+    if (operator) {
+      switch (constraint.concept.type) {
+
+        // ----- numerical operation
+
+
+
+        case ValueType.NUMERICAL:
+          constraint.applyNumericalOperator = true
+          switch (operator) {
+            case NumericalOperator.EQUAL:
+            case NumericalOperator.GREATER:
+            case NumericalOperator.GREATER_OR_EQUAL:
+            case NumericalOperator.LOWER:
+            case NumericalOperator.LOWER_OR_EQUAL:
+            case NumericalOperator.NOT_EQUAL:
+              constraint.numericalOperator = operator
+              constraint.numValue = constraint.concept.isInteger ? parseInt(value, 10) : parseFloat(value)
+              break;
+            case NumericalOperator.BETWEEN:
+              constraint.numericalOperator = operator;
+              let boundaries = value.split('and').map(substring => substring.trim())
+              constraint.minValue = constraint.concept.isInteger ? parseInt(boundaries[0], 10) : parseFloat(boundaries[0])
+              constraint.maxValue = constraint.concept.isInteger ? parseInt(boundaries[1], 10) : parseFloat(boundaries[1])
+              break;
+            default:
+              MessageHelper.alert('error', `While parsing concept constraint ${constraint.textRepresentation}, numerical operator ${operator} unkown`)
+              break;
+          }
+          break;
+
+
+
+        // ------- text operation
+
+
+
+
+        case ValueType.TEXT:
+          constraint.applyTextOperator = true
+          switch (operator) {
+            case TextOperator.LIKE_BEGIN:
+            case TextOperator.LIKE_CONTAINS:
+            case TextOperator.LIKE_END:
+            case TextOperator.LIKE_EXACT:
+              constraint.textOperator = operator
+              constraint.textOperatorValue = value
+              break;
+            case TextOperator.IN:
+              constraint.textOperator = operator
+              constraint.textOperatorValue = value.split(',').map(substr => {
+                let trimmed = substr.trim()
+                return trimmed.replace('^\'|\'$', '')
+              }).join(',')
+              break;
+            default:
+              MessageHelper.alert('error', `While parsing concept constraint ${constraint.textRepresentation}, text operator ${operator} unkown`)
+              break;
+
+          }
+          break;
+        default:
+          MessageHelper.alert('error', `While parsing concept constraint ${constraint.textRepresentation}, type ${constraint.concept.type} unkown`)
+          break;
+      }
+    }
+
   }
 }
