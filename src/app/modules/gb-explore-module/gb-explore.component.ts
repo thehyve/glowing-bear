@@ -21,6 +21,8 @@ import { Cohort } from 'app/models/cohort-models/cohort';
 import { MedcoNetworkService } from 'app/services/api/medco-network.service';
 import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api-query-definition';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
+import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
 
 @Component({
   selector: 'gb-explore',
@@ -35,9 +37,10 @@ export class GbExploreComponent implements AfterViewChecked {
 
   constructor(private queryService: QueryService,
     private cohortService: CohortService,
-    private constraintService: ConstraintService,
     private medcoNetworkService: MedcoNetworkService,
-    private changeDetectorRef: ChangeDetectorRef) {
+    public constraintService: ConstraintService,
+    private changeDetectorRef: ChangeDetectorRef,
+    private savedCohortsPatientListService: SavedCohortsPatientListService) {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
       this._lastSuccessfulSet = resIDs
     })
@@ -89,6 +92,17 @@ export class GbExploreComponent implements AfterViewChecked {
         this.cohortService.postCohort(cohort)
 
         MessageHelper.alert('success', 'Cohort has been sent.')
+
+        // handle patient list locally
+
+        this.queryService.queryResults.subscribe(
+          result => {
+            if (result.patientLists) {
+              this.savedCohortsPatientListService.insertPatientList(this.cohortName, result.patientLists)
+              this.savedCohortsPatientListService.statusStorage.set(this.cohortName, PatientListOperationStatus.done)
+            }
+          }
+        )
       }
     }
   }
