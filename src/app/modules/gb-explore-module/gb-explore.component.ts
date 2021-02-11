@@ -33,6 +33,8 @@ export class GbExploreComponent implements AfterViewChecked {
   _cohortName: string
   _lastSuccessfulSet: number[]
 
+  _patternValidation = new RegExp('^\\w+$')
+
   OperationType = OperationType
 
   constructor(private queryService: QueryService,
@@ -59,6 +61,8 @@ export class GbExploreComponent implements AfterViewChecked {
   save() {
     if (this.cohortName === '') {
       MessageHelper.alert('warn', 'You must provide a name for the cohort you want to save.')
+    } else if (!this._patternValidation.test(this.cohortName).valueOf()) {
+      MessageHelper.alert('error', `Name ${this.cohortName} can only contain digits and alphabetical symbols`)
     } else {
       let existingCohorts = this.cohortService.cohorts
       if (existingCohorts.findIndex((cohort => cohort.name === this.cohortName).bind(this)) !== -1) {

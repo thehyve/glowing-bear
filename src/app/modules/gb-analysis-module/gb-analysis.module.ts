@@ -21,6 +21,7 @@ import { ToggleButtonModule } from 'primeng/togglebutton'
 import { CardModule } from 'primeng/card';
 import { OverlayPanelModule } from 'primeng/overlaypanel'
 import { FormsModule } from '@angular/forms'
+import { TooltipModule } from 'primeng/tooltip'
 import { SliderModule } from 'primeng/slider'
 import { GbAnalysisComponent } from './gb-analysis.component';
 import { TableModule } from 'primeng/table'
@@ -45,6 +46,7 @@ import { SurvivalService } from 'app/services/survival-analysis.service';
     ToggleButtonModule,
     OverlayPanelModule,
     CardModule,
+    TooltipModule,
     SliderModule,
     TableModule,
     CommonModule,
