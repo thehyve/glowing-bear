@@ -31,7 +31,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
 import { SurvivalService } from 'app/services/survival-analysis.service';
-import { findSourceMap } from 'module';
 
 
 @NgModule({
