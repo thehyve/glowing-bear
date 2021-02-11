@@ -57,7 +57,7 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
   // current number of hits in search
   hits = 0;
 
-  constructor(public treeNodeService: TreeNodeService,
+  constructor(private treeNodeService: TreeNodeService,
     private constraintService: ConstraintService,
     private queryService: QueryService,
     private element: ElementRef) {
@@ -310,4 +310,11 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
     }
   }
 
+  get isLoading(): boolean {
+    return this.treeNodeService.isLoading
+  }
+
+  get rootTreeNodes(): TreeNode[] {
+    return this.treeNodeService.rootTreeNodes
+  }
 }
