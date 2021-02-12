@@ -12,6 +12,7 @@ import { MessageHelper } from 'app/utilities/message-helper';
 import { SurvivalService } from 'app/services/survival-analysis.service';
 import { SubGroup } from 'app/services/survival-analysis.service';
 import { OperationType } from 'app/models/operation-models/operation-types';
+import { AnalysisService } from 'app/services/analysis.service';
 
 
 
@@ -33,7 +34,9 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   OperationType = OperationType
 
-  constructor(private constraintService: ConstraintService, private survivalService: SurvivalService) {
+  constructor(private analysisService: AnalysisService,
+    private constraintService: ConstraintService,
+    private survivalService: SurvivalService) {
     this._subGroups = new Array()
     this._usedNames = new Set()
 
@@ -54,6 +57,15 @@ export class GbCohortLandingZoneComponent implements OnInit {
   get activated(): boolean {
     return this._activated
   }
+
+  get expanded(): boolean {
+    return this.analysisService.survivalSubGroupExpanded
+  }
+
+  set expanded(val: boolean) {
+    this.analysisService.survivalSubGroupExpanded = val
+  }
+
 
   get subGroups(): SelectItem[] {
     return this._subGroups
