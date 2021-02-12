@@ -17,6 +17,7 @@ import { MessageHelper } from 'app/utilities/message-helper';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { CohortService } from 'app/services/cohort.service';
 import { SurvivalService } from 'app/services/survival-analysis.service';
+import { AnalysisService } from 'app/services/analysis.service';
 
 @Component({
   selector: 'gb-top',
@@ -31,32 +32,40 @@ export class GbTopComponent implements OnInit {
   // _selectedLinearRegression:boolean
   // _selectedLogisticRegression:boolean
 
-  _selected: AnalysisType
   _clearRes: Subject<SurvivalAnalysisClear>
   _available = AnalysisType.ALL_TYPES
   _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
   _ready = false
 
-  constructor(private survivalAnalysisService: SurvivalService,
+  constructor(private analysisService: AnalysisService,
+    private survivalAnalysisService: SurvivalService,
     private survivalResultsService: SurvivalResultsService,
     private cohortService: CohortService) {
     this._clearRes = new Subject<SurvivalAnalysisClear>()
+  }
+
+  get expanded(): boolean {
+    return this.analysisService.analysisTypeExpanded
+  }
+
+  set expanded(val: boolean) {
+    this.analysisService.analysisTypeExpanded = val
   }
 
   set selected(sel: AnalysisType) {
     if (sel === AnalysisType.SURVIVAL) {
       this._selectedSurvival = true
     }
-    this._selected = sel
+    this.analysisService.selected = AnalysisType.SURVIVAL
   }
 
   get selected(): AnalysisType {
-    return this._selected
+    return this.analysisService.selected
   }
 
 
   get selectedSurvival(): boolean {
-    return this._selectedSurvival
+    return this.analysisService.selected === AnalysisType.SURVIVAL
   }
 
   get available(): AnalysisType[] {

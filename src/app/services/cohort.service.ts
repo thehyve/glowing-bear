@@ -33,6 +33,10 @@ export class CohortService {
 
   private _isRefreshing: boolean
 
+  // internal states of the explore component handling cohorts
+  _cohortName: string
+  _lastSuccessfulSet: number[]
+
   // term restoration
   public restoring: Subject<boolean>
   private _queryTiming: Subject<ApiI2b2Timing>
@@ -178,6 +182,22 @@ export class CohortService {
     return this._isRefreshing
   }
 
+  set lastSuccessfulSet(setIDs: number[]) {
+    this._lastSuccessfulSet = setIDs
+  }
+
+  get lastSuccessfulSet(): number[] {
+    return this._lastSuccessfulSet
+  }
+
+  set cohortName(name: string) {
+    this._cohortName = name
+  }
+
+  get cohortName(): string {
+    return this._cohortName
+  }
+
   get queryTiming(): Observable<ApiI2b2Timing> {
     return this._queryTiming.asObservable()
   }
@@ -241,7 +261,7 @@ export class CohortService {
     })
     cohorts.forEach(newCohort => {
       if (tmp.has(newCohort.name)) {
-        if (newCohort.lastUpdateDate() > tmp.get(newCohort.name)) {
+        if (newCohort.lastUpdateDate() >= tmp.get(newCohort.name)) {
           let i = this._cohorts.findIndex(c => c.name === newCohort.name)
           this._cohorts[i] = newCohort
         } else {

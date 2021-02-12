@@ -18,6 +18,7 @@ import { SelectItem } from 'primeng/api';
 import { SurvivalService } from 'app/services/survival-analysis.service';
 import { TreeNodeType } from 'app/models/tree-models/tree-node-type';
 import { When } from 'app/models/survival-analysis/when-type';
+import { AnalysisService } from 'app/services/analysis.service';
 
 @Component({
   selector: 'gb-survival-settings',
@@ -51,7 +52,8 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
 
   @Output() changedEventConcepts: EventEmitter<boolean> = new EventEmitter()
 
-  constructor(private constraintService: ConstraintService,
+  constructor(private analysisService: AnalysisService,
+    private constraintService: ConstraintService,
     private survivalService: SurvivalService,
     private element: ElementRef,
     private treeNodeService: TreeNodeService) { }
@@ -150,6 +152,14 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   @Input()
   set activated(bool: boolean) {
     this._activated = bool
+  }
+
+  get expanded(): boolean {
+    return this.analysisService.survivalSettingsExpanded
+  }
+
+  set expanded(val: boolean) {
+    this.analysisService.survivalSettingsExpanded = val
   }
 
 
