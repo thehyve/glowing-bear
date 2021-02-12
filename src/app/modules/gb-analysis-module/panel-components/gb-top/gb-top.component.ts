@@ -9,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 import { AnalysisType } from 'app/models/analysis-models/analysis-type';
 import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
 import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
-import { Subject, Observable, throwError } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
 import { MessageHelper } from 'app/utilities/message-helper';
@@ -17,6 +17,9 @@ import { MessageHelper } from 'app/utilities/message-helper';
 import { SurvivalResultsService } from 'app/services/survival-results.service';
 import { CohortService } from 'app/services/cohort.service';
 import { SurvivalService } from 'app/services/survival-analysis.service';
+import { delay, tap } from 'rxjs/operators';
+import { OperationStatus } from 'app/models/operation-status';
+import { NavbarService } from 'app/services/navbar.service';
 
 @Component({
   selector: 'gb-top',
@@ -37,10 +40,15 @@ export class GbTopComponent implements OnInit {
   _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
   _ready = false
 
+  OperationStatus = OperationStatus
+  _operationStatus: OperationStatus
+
   constructor(private survivalAnalysisService: SurvivalService,
     private survivalResultsService: SurvivalResultsService,
-    private cohortService: CohortService) {
+    private cohortService: CohortService,
+    private navbarService: NavbarService) {
     this._clearRes = new Subject<SurvivalAnalysisClear>()
+    this.operationStatus = OperationStatus.done
   }
 
   set selected(sel: AnalysisType) {
@@ -63,6 +71,14 @@ export class GbTopComponent implements OnInit {
     return this._available
   }
 
+  set operationStatus(opStat: OperationStatus) {
+    this._operationStatus = opStat
+  }
+
+  get operationStatus(): OperationStatus {
+    return this._operationStatus
+  }
+
   isReady(event: boolean) {
     this._ready = event
   }
@@ -76,7 +92,12 @@ export class GbTopComponent implements OnInit {
     this.launched = true
     let settings = this.survivalAnalysisService.settings()
     try {
+      this.operationStatus = OperationStatus.waitOnAPI
       this.survivalAnalysisService.runSurvivalAnalysis()
+        .pipe(
+          tap(() => { this.operationStatus = OperationStatus.decryption }),
+          delay(100)
+        )
         .subscribe(res => {
           this.launched = false
           console.log(res)
@@ -86,13 +107,17 @@ export class GbTopComponent implements OnInit {
           this.survivalResultsService.pushCopy(survivalAnalysisClear, settings)
           this.ran = true
           this._ready = true
+          this.operationStatus = OperationStatus.done
+          this.navbarService.navigateToNewResults()
 
         })
     } catch (exception) {
+      this.operationStatus = OperationStatus.error
       console.log(exception as Error)
       MessageHelper.alert('error', (exception as Error).message)
       this._ready = true
       this.launched = false
+      return
     }
 
 

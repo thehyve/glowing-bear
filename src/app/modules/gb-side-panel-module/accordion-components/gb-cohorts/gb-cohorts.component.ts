@@ -10,7 +10,7 @@
 
 import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewChild } from '@angular/core';
 import { Cohort } from 'app/models/cohort-models/cohort';
-import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
+import { OperationStatus } from 'app/models/operation-status';
 import { CohortService } from 'app/services/cohort.service';
 import { ConstraintService } from 'app/services/constraint.service';
 import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
@@ -35,7 +35,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
   deletionCandidate: Cohort;
 
   file: File; // holds the uploaded cohort file
-  PatientListOperationStatus = PatientListOperationStatus;
+  OperationStatus = OperationStatus;
 
   @ViewChild('op', { static: false }) deletionRequest: OverlayPanel;
 
@@ -61,7 +61,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
     return this.savedCohortsPatientListService.authorizedForPatientList
   }
 
-  get patientListsStatus(): Map<string, PatientListOperationStatus> {
+  get patientListsStatus(): Map<string, OperationStatus> {
     return this.savedCohortsPatientListService.statusStorage
   }
 

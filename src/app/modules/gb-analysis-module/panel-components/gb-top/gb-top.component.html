@@ -8,8 +8,15 @@
   <button pButton label="Run" style="float: right;" [disabled]="!ready" (click)="runAnalysis()"
     pTooltip="You must select a cohort, an analysis, and start and end events (for survival analysis)."
     [tooltipDisabled]="ready"></button>
-  <span *ngIf="launched" style="font-size: 1em; float: right;" class="loading-blink"> Waiting on response from
-    servers, do not refresh <span>•</span><span>•</span><span>•</span></span>
+  <span *ngIf="operationStatus === OperationStatus.waitOnAPI" style="font-size: 1em; float: right;"
+    class="loading-blink"> Waiting on response from
+    servers, do not refresh <span>•</span><span>•</span><span>•</span>
+  </span>
+
+  <span *ngIf="operationStatus === OperationStatus.decryption" style="font-size: 1em; float: right;"
+    class="loading-blink">
+    Decryption of local lists, this may take a few seconds, do not refresh <span>🔒</span><span>🔒</span><span>🔓</span>
+  </span>
 
 </p-accordionTab>
 <gb-survival-settings [activated]="selectedSurvival" (changedEventConcepts)="isReady($event)"></gb-survival-settings>
