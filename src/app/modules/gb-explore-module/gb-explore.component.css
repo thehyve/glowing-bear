@@ -23,7 +23,7 @@
   padding-left: 2em;
   padding-right: 2em;
   overflow: hidden;
-  height: 2em;
+  min-height: 2em;
   display: flex;
   align-items: center;
   justify-content: space-between;
