@@ -28,7 +28,7 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isSurvivalRes = new Array<boolean>();
 
-  private _lastSuccessfulSurvival:number;
+  private _lastSuccessfulSurvival: number;
 
   private EXPLORE_INDEX = 0;
   private ANALYSIS_INDEX = 1;
