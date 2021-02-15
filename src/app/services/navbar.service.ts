@@ -28,6 +28,8 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isSurvivalRes = new Array<boolean>();
 
+  private _lastSuccessfulSurvival:number;
+
   private EXPLORE_INDEX = 0;
   private ANALYSIS_INDEX = 1;
 
@@ -69,11 +71,12 @@ export class NavbarService {
   insertNewSurvResults() {
     let index = this.isSurvivalRes.push(false) - 1;
     this.items.push({ label: `Survival Result ${index + 1}`, routerLink: `/survival/${index + 1}` });
+    this._lastSuccessfulSurvival = index + 1;
 
   }
 
   navigateToNewResults() {
-    this.router.navigateByUrl('/survival/1')
+    this.router.navigateByUrl(`/survival/${this._lastSuccessfulSurvival}`)
   }
 
   get items(): MenuItem[] {
