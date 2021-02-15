@@ -4,3 +4,6 @@
 .selected{
     background-color: var(--gb-clinical-green-dark);
 }
+.loading-blink{
+  padding-top: 0.4em;
+}

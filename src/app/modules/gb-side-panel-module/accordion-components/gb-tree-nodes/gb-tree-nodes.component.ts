@@ -189,6 +189,9 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       this.expansionStatus['treeNodeElm'] = event.originalEvent.target.parentElement.parentElement;
       this.expansionStatus['treeNode'] = event.node;
       this.treeNodeService.loadChildrenNodes(event.node, this.constraintService);
+      if (event.node.leaf) {
+        this.expansionStatus['expanded'] = false;
+      }
     }
   }
 

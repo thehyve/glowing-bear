@@ -13,7 +13,6 @@ import {Concept} from '../models/constraint-models/concept';
 import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
 import {TreeNode} from '../models/tree-models/tree-node';
 import {ConstraintService} from './constraint.service';
-import {ValueType} from '../models/constraint-models/value-type';
 import {ErrorHelper} from '../utilities/error-helper';
 import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {AppConfig} from '../config/app.config';
@@ -95,6 +94,9 @@ export class TreeNodeService {
         parentNode.attachModifierData(treeNodes);
         this.processTreeNodes(parentNode.children, constraintService);
         this._isLoading = false;
+        if (treeNodes.length === 0) {
+          parentNode.leaf = true
+        }
       },
       (err) => {
         ErrorHelper.handleError('Error during tree children loading', err);
@@ -156,23 +158,6 @@ export class TreeNodeService {
           constraintService.conceptConstraints.push(constraint);
           constraintService.allConstraints.push(constraint);
         }
-        switch (node.valueType) {
-          case ValueType.NUMERICAL:
-            node.icon = 'icon-123';
-            break;
-          case ValueType.CATEGORICAL:
-            node.icon = 'icon-abc';
-            break;
-          case ValueType.DATE:
-            node.icon = 'fa fa-calendar';
-            break;
-          case ValueType.TEXT:
-            node.icon = 'fa fa-newspaper-o';
-            break;
-          case ValueType.SIMPLE:
-          default:
-            node.icon = 'fa fa-file';
-        }
         break;
       case TreeNodeType.GENOMIC_ANNOTATION:
         if (constraintService.genomicAnnotations.filter(
@@ -188,13 +173,10 @@ export class TreeNodeService {
         constraintFromModifier.concept = sourceConcept;
         constraintService.conceptConstraints.push(constraintFromModifier);
         constraintService.allConstraints.push(constraintFromModifier);
-        node.leaf = true;
-        node.icon = 'fa fa-file-o';
-        break;
-      case TreeNodeType.MODIFIER_FOLDER:
-        node.icon = '';
-        node.expandedIcon = 'fa fa-folder-open-o';
-        node.collapsedIcon = 'fa fa-folder-o';
+        if (node.nodeType === TreeNodeType.MODIFIER) {
+          node.leaf = true;
+          node.icon = 'fa fa-file';
+        }
         break;
       default:
         break;

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { AnalysisType } from 'app/models/analysis-models/analysis-type';
 
 @Injectable({
   providedIn: 'root'
@@ -8,7 +9,17 @@ export class AnalysisService {
 
   _selected: AnalysisType
 
+  _analysisTypeExpanded = true
+
+  _survivalSettingsExpanded = false
+
+  _survivalSubGroupExpanded = false
+
   constructor() { }
+
+  get available(): AnalysisType[] {
+    return this._available
+  }
 
   get selected(): AnalysisType {
     return this._selected
@@ -19,8 +30,28 @@ export class AnalysisService {
     this._selected = analysisType
   }
 
-  get available(): AnalysisType[] {
-    return this._available
+  get analysisTypeExpanded(): boolean {
+    return this._analysisTypeExpanded
+  }
+
+  set analysisTypeExpanded(val: boolean) {
+    this._analysisTypeExpanded = val
+  }
+
+  get survivalSettingsExpanded(): boolean {
+    return this._survivalSettingsExpanded
+  }
+
+  set survivalSettingsExpanded(val: boolean) {
+    this._survivalSettingsExpanded = val
+  }
+
+  get survivalSubGroupExpanded(): boolean {
+    return this._survivalSubGroupExpanded
+  }
+
+  set survivalSubGroupExpanded(val: boolean) {
+    this._survivalSubGroupExpanded = val
   }
 
   selectSurvival() {
@@ -33,27 +64,5 @@ export class AnalysisService {
 
   selectLogisticRegression() {
     this._selected = AnalysisType.LOGISTIC_REGRESSION
-  }
-}
-
-export class AnalysisType {
-
-  get name(): string {
-    return this._name
-  }
-  static readonly SURVIVAL = new AnalysisType('Survival')
-  static readonly LINEAR_REGRESSION = new AnalysisType('Linear Regression')
-  static readonly LOGISTIC_REGRESSION = new AnalysisType('Logistic Regression')
-
-  static readonly ALL_TYPES = [
-    AnalysisType.SURVIVAL,
-    AnalysisType.LINEAR_REGRESSION,
-    AnalysisType.LOGISTIC_REGRESSION
-  ]
-  _name: string
-
-  private constructor(name: string) {
-    this._name = name
-
   }
 }

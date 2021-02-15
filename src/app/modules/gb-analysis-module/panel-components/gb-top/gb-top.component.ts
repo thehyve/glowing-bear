@@ -20,6 +20,7 @@ import { SurvivalService } from 'app/services/survival-analysis.service';
 import { delay, tap } from 'rxjs/operators';
 import { OperationStatus } from 'app/models/operation-status';
 import { NavbarService } from 'app/services/navbar.service';
+import { AnalysisService } from 'app/services/analysis.service';
 
 @Component({
   selector: 'gb-top',
@@ -27,14 +28,12 @@ import { NavbarService } from 'app/services/navbar.service';
   styleUrls: ['./gb-top.component.css']
 })
 export class GbTopComponent implements OnInit {
-  ran = false
   launched = false
 
   _selectedSurvival: boolean
   // _selectedLinearRegression:boolean
   // _selectedLogisticRegression:boolean
 
-  _selected: AnalysisType
   _clearRes: Subject<SurvivalAnalysisClear>
   _available = AnalysisType.ALL_TYPES
   _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
@@ -43,7 +42,21 @@ export class GbTopComponent implements OnInit {
   OperationStatus = OperationStatus
   _operationStatus: OperationStatus
 
-  constructor(private survivalAnalysisService: SurvivalService,
+  private static filterResults(res: SurvivalAnalysisClear): SurvivalAnalysisClear {
+    let ret = new SurvivalAnalysisClear()
+    ret.results = new Array()
+    for (const result of res.results) {
+      if (result.groupResults.length > 0) {
+        ret.results.push(result)
+      } else {
+        MessageHelper.alert('warn', `No observation available for group ${result.groupId} within the given time limit`)
+      }
+    }
+    return ret
+  }
+
+  constructor(private analysisService: AnalysisService,
+    private survivalAnalysisService: SurvivalService,
     private survivalResultsService: SurvivalResultsService,
     private cohortService: CohortService,
     private navbarService: NavbarService) {
@@ -51,20 +64,28 @@ export class GbTopComponent implements OnInit {
     this.operationStatus = OperationStatus.done
   }
 
+  get expanded(): boolean {
+    return this.analysisService.analysisTypeExpanded
+  }
+
+  set expanded(val: boolean) {
+    this.analysisService.analysisTypeExpanded = val
+  }
+
   set selected(sel: AnalysisType) {
     if (sel === AnalysisType.SURVIVAL) {
       this._selectedSurvival = true
     }
-    this._selected = sel
+    this.analysisService.selected = AnalysisType.SURVIVAL
   }
 
   get selected(): AnalysisType {
-    return this._selected
+    return this.analysisService.selected
   }
 
 
   get selectedSurvival(): boolean {
-    return this._selectedSurvival
+    return this.analysisService.selected === AnalysisType.SURVIVAL
   }
 
   get available(): AnalysisType[] {
@@ -95,19 +116,35 @@ export class GbTopComponent implements OnInit {
       this.operationStatus = OperationStatus.waitOnAPI
       this.survivalAnalysisService.runSurvivalAnalysis()
         .pipe(
-          tap(() => { this.operationStatus = OperationStatus.decryption }),
+          tap(() => { this.operationStatus = OperationStatus.decryption },
+            err => {
+              this.operationStatus = OperationStatus.error
+              MessageHelper.alert('error', (err as Error).message)
+            }),
           delay(100)
         )
         .subscribe(res => {
           this.launched = false
           console.log(res)
           this._survivalAnalysisResponses = res
-          let survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
+
+          let survivalAnalysisClear: SurvivalAnalysisClear
+          try {
+            survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
+          } catch (err) {
+            MessageHelper.alert('error', 'while decrypting survival analysis: ' + (err as Error).message)
+            this.operationStatus = OperationStatus.error
+            return
+          }
+          this.operationStatus = OperationStatus.done
+          let survivalFiltered = GbTopComponent.filterResults(survivalAnalysisClear)
+          if (!(survivalFiltered.results) || survivalFiltered.results.length === 0) {
+            return
+          }
           this._clearRes.next(survivalAnalysisClear)
           this.survivalResultsService.pushCopy(survivalAnalysisClear, settings)
-          this.ran = true
           this._ready = true
-          this.operationStatus = OperationStatus.done
+
           this.navbarService.navigateToNewResults()
 
         })
@@ -115,10 +152,10 @@ export class GbTopComponent implements OnInit {
       this.operationStatus = OperationStatus.error
       console.log(exception as Error)
       MessageHelper.alert('error', (exception as Error).message)
-      this._ready = true
-      this.launched = false
       return
     }
+    this._ready = true
+    this.launched = false
 
 
   }
@@ -169,3 +206,4 @@ function fillTestPanels() {
 
   testPanels[1].panels.push(secondPanel)
 }
+
