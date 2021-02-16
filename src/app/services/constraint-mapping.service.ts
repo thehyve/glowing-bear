@@ -103,102 +103,93 @@ export class ConstraintMappingService {
 
   private generateI2b2ItemFromConcept(constraint: ConceptConstraint): ApiI2b2Item {
     let item = new ApiI2b2Item();
-    switch (constraint.concept.type) {
-      // todo: missing types
 
+    if (constraint.concept.encryptionDescriptor.encrypted) {
+      // todo: children IDs implementation
+      item.encrypted = true;
+      item.queryTerm = this.cryptoService.encryptIntegerWithCothorityKey(constraint.concept.encryptionDescriptor.id);
+
+    } else {
+      item.encrypted = false;
+      item.queryTerm = constraint.concept.path;
+      if (constraint.concept.modifier) {
+        item.modifier = new ApiI2B2Modifier()
+        item.queryTerm = constraint.concept.modifier.appliedConceptPath;
+        item.modifier.modifierKey = constraint.concept.modifier.path
+        item.modifier.appliedPath = constraint.concept.modifier.appliedPath
+      }
+
+      switch (constraint.concept.type) {
       case ValueType.SIMPLE:
-        if (constraint.concept.encryptionDescriptor.encrypted) {
-          // todo: children IDs implementation
-          item.encrypted = true;
-          item.queryTerm = this.cryptoService.encryptIntegerWithCothorityKey(constraint.concept.encryptionDescriptor.id);
-
-        } else {
-          item.encrypted = false;
-          item.queryTerm = constraint.concept.path;
-          if (constraint.concept.modifier !== undefined) {
-            item.modifier = new ApiI2B2Modifier()
-            item.queryTerm = constraint.concept.modifier.appliedConceptPath;
-            item.modifier.modifierKey = constraint.concept.modifier.path
-            item.modifier.appliedPath = constraint.concept.modifier.appliedPath
-          }
-        }
         break;
+
       case ValueType.NUMERICAL:
-        item.encrypted = false;
-        item.queryTerm = constraint.concept.path;
         item.type = 'NUMBER'
-        if (constraint.concept.modifier !== undefined) {
-          item.modifier = new ApiI2B2Modifier()
-          item.queryTerm = constraint.concept.modifier.appliedConceptPath;
-          item.modifier.modifierKey = constraint.concept.modifier.path
-          item.modifier.appliedPath = constraint.concept.modifier.appliedPath
-        }
         if (constraint.applyNumericalOperator && (constraint.numericalOperator)) {
           item.operator = constraint.numericalOperator
           item.value = ''
-          switch (constraint.numericalOperator) {
-            case NumericalOperator.BETWEEN:
-              if (!(constraint.minValue)) {
-                throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
-                  'The field was left empty or non numerical characters were used.')
-              }
-              if (!(constraint.maxValue)) {
-                throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
-                  'The field was left empty or non numerical characters were used.')
-              }
-              if (constraint.maxValue < constraint.minValue) {
-                throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`)
-              }
-              item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
 
-              break;
-            case NumericalOperator.EQUAL:
-            case NumericalOperator.GREATER:
-            case NumericalOperator.GREATER_OR_EQUAL:
-            case NumericalOperator.LOWER:
-            case NumericalOperator.LOWER_OR_EQUAL:
-            case NumericalOperator.NOT_EQUAL:
-              if (!(constraint.numValue)) {
-                let err = new Error('A numerical operator has been defined, but no valid value provided.' +
-                  'The field was left empty or non numerical characters were used.')
-                MessageHelper.alert('error',
-                  err.message
-                )
-                throw err
-              }
-              item.value = constraint.numValue.toString()
-              break;
-            default:
-              throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
+          switch (constraint.numericalOperator) {
+          case NumericalOperator.BETWEEN:
+            if (!(constraint.minValue)) {
+              throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.');
+            } else if (!(constraint.maxValue)) {
+              throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
+                'The field was left empty or non numerical characters were used.');
+            } else if (constraint.maxValue < constraint.minValue) {
+              throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`);
+            }
+
+            item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
+            break;
+
+          case NumericalOperator.EQUAL:
+          case NumericalOperator.GREATER:
+          case NumericalOperator.GREATER_OR_EQUAL:
+          case NumericalOperator.LOWER:
+          case NumericalOperator.LOWER_OR_EQUAL:
+          case NumericalOperator.NOT_EQUAL:
+            if (!(constraint.numValue)) {
+              throw ErrorHelper.handleNewError('A numerical operator has been defined, but no valid value provided.' +
+                'The field was left empty or non numerical characters were used.');
+            }
+
+            item.value = constraint.numValue.toString();
+            break;
+
+          default:
+            throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
           }
         }
         break;
+
       case ValueType.TEXT:
-        item.encrypted = false;
-        item.queryTerm = constraint.concept.path;
         item.type = 'TEXT'
         switch (constraint.textOperator) {
-          case TextOperator.LIKE_EXACT:
-          case TextOperator.LIKE_BEGIN:
-          case TextOperator.LIKE_CONTAINS:
-          case TextOperator.LIKE_END:
-            item.operator = constraint.textOperator;
-            item.value = constraint.textOperatorValue;
-            break;
-          case TextOperator.IN:
-            item.operator = constraint.textOperator;
-            item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
-            break;
-          default:
-            throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
+        case TextOperator.LIKE_EXACT:
+        case TextOperator.LIKE_BEGIN:
+        case TextOperator.LIKE_CONTAINS:
+        case TextOperator.LIKE_END:
+          item.operator = constraint.textOperator;
+          item.value = constraint.textOperatorValue;
+          break;
 
+        case TextOperator.IN:
+          item.operator = constraint.textOperator;
+          item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
+          break;
+
+        default:
+          throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
         }
-
         break;
 
       default:
         throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
+      }
     }
+
     console.log(`Generated i2b2 item ${item.queryTerm}`, item)
     return item;
   }
