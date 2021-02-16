@@ -7,6 +7,7 @@
  */
 
 import { inv } from 'mathjs';
+import { ErrorHelper } from '../error-helper';
 
 
 
@@ -18,6 +19,9 @@ export abstract class CoxRegression {
   protected tolerance: number;
   protected data: TimePoint[];
   public constructor(data, maxIter, tolerance) {
+    if (data.length === 0) {
+      throw ErrorHelper.handleNewError('Number of observation is 0, this exception should be treated before.')
+    }
     this.data = data
     this.maxIter = maxIter
     this.tolerance = tolerance

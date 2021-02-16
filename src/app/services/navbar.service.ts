@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  * Copyright 2020 - 2021 EPFL LDS
- * Copyright 2020  CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,6 +14,7 @@ import { QueryService } from './query.service';
 import { Subject, Observable } from 'rxjs';
 import { OperationType } from 'app/models/operation-models/operation-types';
 import { AuthenticationService } from './authentication.service';
+import { Router } from '@angular/router'
 
 @Injectable()
 export class NavbarService {
@@ -27,10 +28,12 @@ export class NavbarService {
   private _isAnalysis = false;
   private _isSurvivalRes = new Array<boolean>();
 
+  private _lastSuccessfulSurvival: number;
+
   private EXPLORE_INDEX = 0;
   private ANALYSIS_INDEX = 1;
 
-  constructor(private queryService: QueryService, private authService: AuthenticationService) {
+  constructor(private authService: AuthenticationService, private router: Router) {
     this._selectedSurvivalId = new Subject<number>()
     this.items = [
 
@@ -46,7 +49,7 @@ export class NavbarService {
     this.isExplore = (routerLink === '/explore' || routerLink === '');
     this.isAnalysis = (routerLink === '/analysis')
     for (let i = 0; i < this.isSurvivalRes.length; i++) {
-      this.isSurvivalRes[i] = (routerLink === `/survival/${i}`)
+      this.isSurvivalRes[i] = (routerLink === `/survival/${i + 1}`)
     }
     console.log('Updated router link: ', routerLink)
 
@@ -64,10 +67,16 @@ export class NavbarService {
       }
     }
   }
+
   insertNewSurvResults() {
     let index = this.isSurvivalRes.push(false) - 1;
-    this.items.push({ label: `Survival Result ${index + 1}`, routerLink: `/survival/${index}` });
+    this.items.push({ label: `Survival Result ${index + 1}`, routerLink: `/survival/${index + 1}` });
+    this._lastSuccessfulSurvival = index + 1;
 
+  }
+
+  navigateToNewResults() {
+    this.router.navigateByUrl(`/survival/${this._lastSuccessfulSurvival}`)
   }
 
   get items(): MenuItem[] {
