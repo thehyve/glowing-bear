@@ -1,7 +1,7 @@
 <div (drop)="onDrop($event)">
   <div class="gb-constraint-child-container">
     <div>
-      <label *ngIf="(depth === 1) && queryTimingSameInstance" style="margin: 6px;">Same instance:</label>                
+      <label *ngIf="(depth === 1) && queryTimingSameInstance" style="margin: 6px;">Same instance:</label>
       <p-checkbox *ngIf="(depth === 1) && queryTimingSameInstance" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
     </div>
 
@@ -19,13 +19,13 @@
                     (onDropdownClick)="onDropdown($event)"></p-autoComplete>
 
 
-                    
-  
+
+
 
 <!-- if the concept is NUMERIC -->
 <div *ngIf="constraintConcept.type === ValueType.NUMERICAL" class="form-group gb-constraint-child-container" width="auto">
   <span>with value&nbsp;</span>
-  <p-dropdown [(ngModel)]="numericalOperatorState" [options]="numericalOperation" dropdownIcon="" (onChange)="changeNumericalOperator($event)"></p-dropdown>
+  <p-dropdown [(ngModel)]="numericalOperatorState" [options]="numericalOperation" dropdownIcon="pi pi-caret-down white-color" (onChange)="changeNumericalOperator($event)"></p-dropdown>
   <span>&nbsp;</span>
 
   <div *ngIf="(numericalOperatorState !== null) && isBetween() " class="d-inline-block">
@@ -46,7 +46,7 @@
 <!-- if the concept is TEXT -->
 <div *ngIf="constraintConcept.type === ValueType.TEXT" class="form-group gb-constraint-child-container" width="auto">
   <span>with value&nbsp;</span>
-  <p-dropdown [(ngModel)]="textOperatorState" [options]="textOperation" dropdownIcon="" (onChange)="changeTextOperator($event)"></p-dropdown>
+  <p-dropdown [(ngModel)]="textOperatorState" [options]="textOperation" dropdownIcon="pi pi-caret-down white-color" (onChange)="changeTextOperator($event)"></p-dropdown>
   <span>&nbsp;&nbsp;&nbsp;</span>
   <div *ngIf="(textOperatorState !== null)" class="d-inline-block">
     <input type="text" class="col-sm-12" placeholder="expression"
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- ---------- more options ---------- 
+  <!-- ---------- more options ----------
 
   <div *ngIf="!sensitive" class="gb-constraint-child-container" style="margin-top: 2px">
     <p-panel [collapsed]="!showMoreOptions">
