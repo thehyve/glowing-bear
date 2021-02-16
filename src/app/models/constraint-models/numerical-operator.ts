@@ -10,7 +10,7 @@
 export enum NumericalOperator {
   BETWEEN = 'BETWEEN',
   EQUAL = 'EQ',
-  NOT_EQUAL = 'EQ',
+  NOT_EQUAL = 'NE',
   GREATER = 'GT',
   GREATER_OR_EQUAL = 'GE',
   LOWER = 'LT',

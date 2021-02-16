@@ -67,9 +67,9 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   private _numericalOperation: SelectItem[] = [
     { label: 'any', value: null },
     { label: 'greater than', value: NumericalOperator.GREATER },
-    { label: 'greater or equal than', value: NumericalOperator.GREATER_OR_EQUAL },
+    { label: 'equal to or greater than', value: NumericalOperator.GREATER_OR_EQUAL },
     { label: 'lower than', value: NumericalOperator.LOWER },
-    { label: 'lower or equal than', value: NumericalOperator.EQUAL },
+    { label: 'equal to or lower than', value: NumericalOperator.LOWER_OR_EQUAL },
     { label: 'equal to', value: NumericalOperator.EQUAL },
     { label: 'different from', value: NumericalOperator.NOT_EQUAL },
     { label: 'between', value: NumericalOperator.BETWEEN }
