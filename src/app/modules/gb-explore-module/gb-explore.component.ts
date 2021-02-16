@@ -22,7 +22,7 @@ import { MedcoNetworkService } from 'app/services/api/medco-network.service';
 import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api-query-definition';
 import { OperationType } from 'app/models/operation-models/operation-types';
 import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
-import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
+import { OperationStatus } from 'app/models/operation-status';
 
 @Component({
   selector: 'gb-explore',
@@ -101,7 +101,7 @@ export class GbExploreComponent implements AfterViewChecked {
           result => {
             if (result.patientLists) {
               this.savedCohortsPatientListService.insertPatientList(this.cohortName, result.patientLists)
-              this.savedCohortsPatientListService.statusStorage.set(this.cohortName, PatientListOperationStatus.done)
+              this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
             }
           }
         )

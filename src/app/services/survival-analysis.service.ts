@@ -155,7 +155,7 @@ export class SurvivalService {
   runSurvivalAnalysis(): Observable<ApiSurvivalAnalysisResponse[]> {
     let apiSurvivalAnalysis = new ApiSurvivalAnalysis()
     let d = new Date()
-    apiSurvivalAnalysis.ID = `MedCo_Explore_Query_${d.getUTCFullYear()}${d.getUTCMonth()}${d.getUTCDate()}${d.getUTCHours()}` +
+    apiSurvivalAnalysis.ID = `MedCo_Survival_Analysis_${d.getUTCFullYear()}${d.getUTCMonth()}${d.getUTCDate()}${d.getUTCHours()}` +
       `${d.getUTCMinutes()}${d.getUTCSeconds()}${d.getUTCMilliseconds()}`
     if (!this.startConcept) {
       throw ErrorHelper.handleNewError('Start event is undefined')

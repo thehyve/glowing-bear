@@ -102,7 +102,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   private onDrop(event: DragEvent): Concept {
     event.preventDefault()
     event.stopPropagation()
-    this.startEventHovering = false
     let node = this.treeNodeService.selectedTreeNode
     if (node) {
       if (node.encryptionDescriptor.encrypted) {
@@ -131,12 +130,14 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
 
   onStartDrop(event: DragEvent) {
+    this.startEventHovering = false
     let concept = this.onDrop(event)
     if (concept) {
       this.startConcept = concept
     }
   }
   onEndDrop(event: DragEvent) {
+    this.endEventHovering = false
     let concept = this.onDrop(event)
     if (concept) {
       this.endConcept = concept

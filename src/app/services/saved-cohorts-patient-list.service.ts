@@ -8,7 +8,7 @@
 
 import { Injectable } from '@angular/core';
 import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
-import { PatientListOperationStatus } from 'app/models/cohort-models/patient-list-operation-status';
+import { OperationStatus } from 'app/models/operation-status';
 import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { MessageHelper } from 'app/utilities/message-helper';
@@ -38,13 +38,13 @@ export class SavedCohortsPatientListService {
   /*
    * statusStorage stores the status of list when API calls were necessary
    */
-  _statusStorage = new Map<string, PatientListOperationStatus>()
+  _statusStorage = new Map<string, OperationStatus>()
 
   /*
    * statusSubjectStorage is used to notify changes in patient list status
    */
 
-  _statusSubjectStorage = new Map<string, Subject<PatientListOperationStatus>>()
+  _statusSubjectStorage = new Map<string, Subject<OperationStatus>>()
 
   /*
   * Generates a newID for a query.
@@ -73,11 +73,11 @@ export class SavedCohortsPatientListService {
    *
    * @param cohortName
    */
-  getListStatusNotifier(cohortName: string): Observable<PatientListOperationStatus> {
+  getListStatusNotifier(cohortName: string): Observable<OperationStatus> {
     if (this._statusSubjectStorage.has(cohortName)) {
       return this._statusSubjectStorage.get(cohortName).asObservable()
     }
-    let sub = new Subject<PatientListOperationStatus>()
+    let sub = new Subject<OperationStatus>()
     this._statusSubjectStorage.set(cohortName, sub)
     return sub.asObservable()
   }
@@ -97,17 +97,17 @@ export class SavedCohortsPatientListService {
     let notifier = this._statusSubjectStorage.has(cohortName) ? this._statusSubjectStorage.get(cohortName) : null
     if (this._listStorage.has(cohortName)) {
       if (notifier) {
-        notifier.next(PatientListOperationStatus.done)
+        notifier.next(OperationStatus.done)
       }
       return of(this._listStorage.get(cohortName))
     }
     if (this._statusStorage.has(cohortName)) {
       switch (this._statusStorage.get(cohortName)) {
-        case PatientListOperationStatus.waitOnAPI:
+        case OperationStatus.waitOnAPI:
           MessageHelper.alert('warn', `A request was already made to MedCo server nodes for cohort ${cohortName}`)
           return of(null)
 
-        case PatientListOperationStatus.decryption:
+        case OperationStatus.decryption:
           MessageHelper.alert('warn', `Cipher text for ${cohortName} still in decryption process`)
           return of(null)
 
@@ -116,9 +116,9 @@ export class SavedCohortsPatientListService {
       }
     }
 
-    this._statusStorage.set(cohortName, PatientListOperationStatus.waitOnAPI)
+    this._statusStorage.set(cohortName, OperationStatus.waitOnAPI)
     if (notifier) {
-      notifier.next(PatientListOperationStatus.waitOnAPI)
+      notifier.next(OperationStatus.waitOnAPI)
     }
 
     // creat the POST body object
@@ -133,15 +133,15 @@ export class SavedCohortsPatientListService {
     return this.exploreCohortsService.postCohortsPatientListAllNodes(patientListRequest).pipe(
       tap(
         () => {
-          this._statusStorage.set(cohortName, PatientListOperationStatus.decryption)
+          this._statusStorage.set(cohortName, OperationStatus.decryption)
           if (notifier) {
-            notifier.next(PatientListOperationStatus.decryption)
+            notifier.next(OperationStatus.decryption)
           }
         },
         err => {
-          this._statusStorage.set(cohortName, PatientListOperationStatus.error)
+          this._statusStorage.set(cohortName, OperationStatus.error)
           if (notifier) {
-            notifier.next(PatientListOperationStatus.error)
+            notifier.next(OperationStatus.error)
           }
         }
       ),
@@ -166,9 +166,9 @@ export class SavedCohortsPatientListService {
       tap(
         (patientLists) => {
           this._listStorage.set(cohortName, patientLists)
-          this._statusStorage.set(cohortName, PatientListOperationStatus.done)
+          this._statusStorage.set(cohortName, OperationStatus.done)
           if (notifier) {
-            notifier.next(PatientListOperationStatus.done)
+            notifier.next(OperationStatus.done)
           }
         }
       )
@@ -199,7 +199,7 @@ export class SavedCohortsPatientListService {
     return false
   }
 
-  get statusStorage(): Map<string, PatientListOperationStatus> {
+  get statusStorage(): Map<string, OperationStatus> {
     return this._statusStorage
   }
 }
