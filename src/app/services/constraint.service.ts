@@ -238,12 +238,12 @@ export class ConstraintService {
         this._operationType = opType
         break;
       case OperationType.ANALYSIS:
-        console.log('The operation type of constraint service is now Analysis.')
 
         // save current selection
         if (this._operationType === OperationType.EXPLORE) {
           this._exploreRootInclusionConstraint = this.rootInclusionConstraint.clone()
           this._exploreRootExclusionConstraint = this.rootExclusionConstraint.clone()
+          this.clearConstraint()
         }
         this._operationType = opType
         break;
