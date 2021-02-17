@@ -171,7 +171,9 @@ export class CohortService {
       this._selectedCohort.selected = false
     }
     this._selectedCohort = cohort
-    this._selectedCohort.selected = true
+    if (cohort) {
+      this._selectedCohort.selected = true
+    }
     this._selectingCohort.next(cohort)
   }
 

@@ -33,6 +33,8 @@ export class GbExploreComponent implements AfterViewChecked {
 
   _patternValidation = new RegExp('^\\w+$')
 
+  _lastPatientList: number[][]
+
   OperationType = OperationType
 
   constructor(private queryService: QueryService,
@@ -44,6 +46,13 @@ export class GbExploreComponent implements AfterViewChecked {
     this.queryService.lastSuccessfulSet.subscribe(resIDs => {
       this.lastSuccessfulSet = resIDs
     })
+    this.queryService.queryResults.subscribe(
+      result => {
+        if ((result) && (result.patientLists)) {
+          this._lastPatientList = result.patientLists
+        }
+      }
+    )
   }
 
   // without this, ExpressionChangedAfterItHasBeenCheckedError when going from Analysis to Explore
@@ -92,19 +101,16 @@ export class GbExploreComponent implements AfterViewChecked {
         }
         cohort.patient_set_id = this.lastSuccessfulSet
         this.cohortService.postCohort(cohort)
-        this.cohortName = ''
         MessageHelper.alert('success', 'Cohort has been sent.')
 
         // handle patient list locally
-
-        this.queryService.queryResults.subscribe(
-          result => {
-            if (result.patientLists) {
-              this.savedCohortsPatientListService.insertPatientList(this.cohortName, result.patientLists)
-              this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
-            }
-          }
-        )
+        if (this._lastPatientList) {
+          this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList)
+          this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
+        } else {
+          MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may probably have to download the list again.')
+        }
+        this.cohortName = ''
       }
     }
   }

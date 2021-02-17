@@ -189,6 +189,14 @@ export class SavedCohortsPatientListService {
     this._listStorage.set(cohortName, patientLists)
   }
 
+  removePatientList(cohortName: string) {
+    if (this._listStorage.has(cohortName)) {
+      this._listStorage.delete(cohortName)
+    } else {
+      throw ErrorHelper.handleNewError(`Cannot delete patient list for non-existing cohort ${cohortName}`)
+    }
+  }
+
   get authorizedForPatientList(): boolean {
 
     for (const role of this.authenticationService.userRoles) {

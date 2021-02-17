@@ -172,6 +172,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       header: 'Confirmation',
       icon: null,
       accept: () => {
+        this.savedCohortsPatientListService.removePatientList(cohort.name)
         this.cohortService.removeCohorts(cohort)
         if (this.cohortService.selectedCohort && this.cohortService.selectedCohort === cohort) {
           this.cohortService.selectedCohort = null
