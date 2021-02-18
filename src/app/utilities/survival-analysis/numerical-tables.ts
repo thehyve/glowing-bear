@@ -53,8 +53,7 @@ export function numericalTables(
         try {
           res = logRank2Groups(curvesArg[i], curvesArg[j]).toPrecision(stringPrecision)
         } catch (err) {
-          console.warn('y a une erreur')
-          return { res: null, errMessage: 'y a une erreur' }
+          return { res: null, errMessage: 'generic error message' }
         }
         return { res: res, errMessage: null }
       }
@@ -63,8 +62,9 @@ export function numericalTables(
       logrankRow.push(logrank)
 
       // ---- cox regression
+
       let coxCallback = (curvesArg: SurvivalPoint[][]) => {
-        let cox_ = NewCoxRegression([curvesArg[i], curvesArg[j]], maxIter, tolerance, 'breslow').run()
+        let cox_ = NewCoxRegression([curvesArg[0], curvesArg[1]], maxIter, tolerance, 'breslow').run()
         return { res: cox_, errMessage: null }
       }
 
