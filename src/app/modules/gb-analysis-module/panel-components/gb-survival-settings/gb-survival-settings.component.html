@@ -3,25 +3,15 @@
   <div class="small-font">
 
     <div class="input-label-wrapper">
-
-      <div>
-        <label>
-          Time Granularity:
-        </label>
-      </div>
-      <div class="input-field-margin">
-        <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"
-          [options]="granularities"></p-dropdown>
-      </div>
-    </div>
-
-    <div class="input-label-wrapper">
       <div>
         <label for="timeLimit">
           Time Limit:
         </label>
       </div>
       <input id="timeLimit" type="number" pInputText [(ngModel)]="limit" class="input-field input-field-margin" />
+      <span>&nbsp;&nbsp;</span>
+      <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"
+          [options]="granularities"></p-dropdown>
     </div>
 
 
