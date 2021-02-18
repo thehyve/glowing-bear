@@ -166,22 +166,24 @@ export class ConstraintMappingService {
 
       case ValueType.TEXT:
         item.type = 'TEXT'
-        switch (constraint.textOperator) {
-        case TextOperator.LIKE_EXACT:
-        case TextOperator.LIKE_BEGIN:
-        case TextOperator.LIKE_CONTAINS:
-        case TextOperator.LIKE_END:
-          item.operator = constraint.textOperator;
-          item.value = constraint.textOperatorValue;
-          break;
+        if (constraint.applyTextOperator && (constraint.textOperator)) {
+          switch (constraint.textOperator) {
+            case TextOperator.LIKE_EXACT:
+            case TextOperator.LIKE_BEGIN:
+            case TextOperator.LIKE_CONTAINS:
+            case TextOperator.LIKE_END:
+              item.operator = constraint.textOperator;
+              item.value = constraint.textOperatorValue;
+              break;
 
-        case TextOperator.IN:
-          item.operator = constraint.textOperator;
-          item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
-          break;
+            case TextOperator.IN:
+              item.operator = constraint.textOperator;
+              item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
+              break;
 
-        default:
-          throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
+            default:
+              throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
+          }
         }
         break;
 
