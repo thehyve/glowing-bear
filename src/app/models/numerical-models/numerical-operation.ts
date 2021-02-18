@@ -30,6 +30,7 @@ export class NumericalOperation<T, U> {
     numOperation._observable = of(numOperation._callback(numOperation._data))
     numOperation._observable.subscribe(
       result => {
+        console.warn('subscripta', numOperation)
         if (result.res) {
           numOperation._result = result.res
         }
@@ -50,6 +51,7 @@ export class NumericalOperation<T, U> {
     numOperation._subject= new BehaviorSubject({res:numOperation._result,errMessage:numOperation._errorMessage})
     numOperation._observable = this._subject.pipe(map(
       val => {
+        console.warn('piped to', numOperation)
         let returnResult = numOperation._callback(val.res)
         let errMessage = ((val.errMessage) || val.errMessage === '') ? val.errMessage : returnResult.errMessage
 
@@ -58,6 +60,7 @@ export class NumericalOperation<T, U> {
     ))
     numOperation._observable.subscribe(
       result => {
+        console.warn('subscripta', numOperation)
         if (result.res) {
           numOperation._result = result.res
         }

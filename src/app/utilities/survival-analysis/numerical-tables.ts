@@ -19,55 +19,69 @@ export function numericalTables(
 ): NumericalTablesType {
   const len = curves.length
 
-  let groupLogrankTable = new Array<Array<NumericalOperation<SurvivalPoint[][],string>>>()
-  let groupCoxRegTable = new Array<Array<NumericalOperation<SurvivalPoint[][],string>>>()
-  let groupCoxWaldTable = new Array<Array<NumericalOperation<SurvivalPoint[][],string>>>()
-  let groupCoxLogtestTable = new Array<Array<NumericalOperation<SurvivalPoint[][],string>>>()
+  let groupLogrankTable = new Array<Array<NumericalOperation<any, string>>>()
+  let groupCoxRegTable = new Array<Array<NumericalOperation<any, string>>>()
+  let groupCoxWaldTable = new Array<Array<NumericalOperation<any, string>>>()
+  let groupCoxLogtestTable = new Array<Array<NumericalOperation<any, string>>>()
 
   let groupTotalEvent = new Array<string>()
   let groupTotalCensoring = new Array<string>()
   let groupTotalAtRisk = new Array<string>()
 
   for (let i = 0; i < len; i++) {
-    let logrankRow = new Array<NumericalOperation<SurvivalPoint[][],string>>()
-    let coxRegRow = new Array<NumericalOperation<SurvivalPoint[][],string>>()
-    let waldCoxRow = new Array<NumericalOperation<SurvivalPoint[][],string>>()
-    let coxLogtestRow = new Array<NumericalOperation<SurvivalPoint[][],string>>()
+    let logrankRow = new Array<NumericalOperation<any, string>>()
+    let coxRegRow = new Array<NumericalOperation<any, string>>()
+    let waldCoxRow = new Array<NumericalOperation<any, string>>()
+    let coxLogtestRow = new Array<NumericalOperation<any, string>>()
     let totalAtRisk: string
     let totalEvent: string
     let totalCensoring: string
     for (let j = 0; j < len; j++) {
-      
+
       // ------ logrank
 
-      let logrankCallback = (curvesArg:SurvivalPoint[][])=>{
-        let res : string
-        try{
-          res=logRank2Groups(curvesArg[i], curvesArg[j]).toPrecision(stringPrecision)
-        }catch(err){
+      let logrankCallback = (curvesArg: SurvivalPoint[][]) => {
+        let res: string
+        try {
+          res = logRank2Groups(curvesArg[i], curvesArg[j]).toPrecision(stringPrecision)
+        } catch (err) {
           console.warn('y a une erreur')
           return { res: null, errMessage: 'y a une erreur' }
         }
-        return { res: res, errMessage: null}
+        return { res: res, errMessage: null }
       }
-      let logrank = NumericalOperation.NewNumericalOperation<SurvivalPoint[][],string>([curves[i], curves[j]],logrankCallback)
+      let logrank = NumericalOperation.NewNumericalOperation([curves[i], curves[j]], logrankCallback)
 
       logrankRow.push(logrank)
 
       // ---- cox regression
+      let coxCallback = (curvesArg: SurvivalPoint[][]) => {
+        let cox = NewCoxRegression([curvesArg[i], curvesArg[j]], maxIter, tolerance, 'breslow').run()
+        return { res: cox, errMessage: null }
+      }
+
+      let cox = NumericalOperation.NewNumericalOperation([curves[i], curves[j]],coxCallback)
       
+      let coxReg_=cox.addChild(({finalBeta,finalCovarianceMatrixEstimate})=>{
+        return {res: coxToString(finalBeta[0],finalCovarianceMatrixEstimate[0][0]),errMessage:null}
+      })
+
+      let waldTest_=cox.addChild(({finalBeta,finalCovarianceMatrixEstimate})=>{
+        let waldStat= Math.pow(finalBeta[0],2) / (finalCovarianceMatrixEstimate[0][0] + 1e-14)
+        let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
+        return {res: waldTest,errMessage:null}
+      })
+
+      let coxLogtest= cox.addChild(({initialLogLikelihood,finalLogLikelihood})=>{
+        let likelihoodRatio = 2.0 * (finalLogLikelihood - initialLogLikelihood)
+        let logTest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
+        return {res:logTest, errMessage:null}
+      })
 
 
-      let cox = NewCoxRegression([curves[i], curves[j]], maxIter, tolerance, 'breslow').run()
-      let beta = cox.finalBeta[0]
-      let variance = cox.finalCovarianceMatrixEstimate[0][0]
-      let coxReg = coxToString(beta, variance)
-      let waldStat = Math.pow(beta, 2) / (variance + 1e-14)
-      let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
-      let likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
-      let coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-      coxRegRow.push(coxReg)
-      waldCoxRow.push(waldTest)
+
+      coxRegRow.push(coxReg_)
+      waldCoxRow.push(waldTest_)
       coxLogtestRow.push(coxLogtest)
 
     }
@@ -96,10 +110,10 @@ export function numericalTables(
 }
 
 export interface NumericalTablesType {
-  groupLogrankTable: string[][],
-  groupCoxRegTable: string[][],
-  groupCoxWaldTable: string[][],
-  groupCoxLogtestTable: string[][],
+  groupLogrankTable: NumericalOperation<any, string>[][],
+  groupCoxRegTable: NumericalOperation<any, string>[][],
+  groupCoxWaldTable: NumericalOperation<any, string>[][],
+  groupCoxLogtestTable: NumericalOperation<any, string>[][],
   groupTotalEvent: string[],
   groupTotalCensoring: string[],
   groupTotalAtRisk: string[]
