@@ -192,8 +192,6 @@ export class SavedCohortsPatientListService {
   removePatientList(cohortName: string) {
     if (this._listStorage.has(cohortName)) {
       this._listStorage.delete(cohortName)
-    } else {
-      throw ErrorHelper.handleNewError(`Cannot delete patient list for non-existing cohort ${cohortName}`)
     }
   }
 
