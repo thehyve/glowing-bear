@@ -37,6 +37,14 @@ export function numericalTables(
     let totalEvent: string
     let totalCensoring: string
     for (let j = 0; j < len; j++) {
+      /**
+       *
+       * Descriptions of wald test and loglikelihood tests used further in this function can be found at
+       *
+       * BUSE, A. The Likelihood Ratio, Wald, and Lagrange Multiplier Tests: An Expository Note.
+       * The American Statistician, 1982, 36(3 Part 1), 153-157
+       *
+       */
 
       // ------ logrank
 
@@ -60,22 +68,22 @@ export function numericalTables(
         return { res: cox, errMessage: null }
       }
 
-      let cox = NumericalOperation.NewNumericalOperation([curves[i], curves[j]],coxCallback)
-      
-      let coxReg_=cox.addChild(({finalBeta,finalCovarianceMatrixEstimate})=>{
-        return {res: coxToString(finalBeta[0],finalCovarianceMatrixEstimate[0][0]),errMessage:null}
+      let cox = NumericalOperation.NewNumericalOperation([curves[i], curves[j]], coxCallback)
+
+      let coxReg_ = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
+        return { res: coxToString(finalBeta[0], finalCovarianceMatrixEstimate[0][0]), errMessage: null }
       })
 
-      let waldTest_=cox.addChild(({finalBeta,finalCovarianceMatrixEstimate})=>{
-        let waldStat= Math.pow(finalBeta[0],2) / (finalCovarianceMatrixEstimate[0][0] + 1e-14)
+      let waldTest_ = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
+        let waldStat = Math.pow(finalBeta[0], 2) / (finalCovarianceMatrixEstimate[0][0] + 1e-14)
         let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
-        return {res: waldTest,errMessage:null}
+        return { res: waldTest, errMessage: null }
       })
 
-      let coxLogtest= cox.addChild(({initialLogLikelihood,finalLogLikelihood})=>{
+      let coxLogtest = cox.addChild(({ initialLogLikelihood, finalLogLikelihood }) => {
         let likelihoodRatio = 2.0 * (finalLogLikelihood - initialLogLikelihood)
         let logTest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-        return {res:logTest, errMessage:null}
+        return { res: logTest, errMessage: null }
       })
 
 

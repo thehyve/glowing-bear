@@ -22,6 +22,8 @@ import { PDF } from 'app/utilities/files/pdf';
 import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
 import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
 import { ErrorHelper } from 'app/utilities/error-helper';
+import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
+import { NumericalOperation } from 'app/models/numerical-models/numerical-operation';
 
 
 @Component({
@@ -35,6 +37,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   advancedSettings = false
   _results: SurvivalAnalysisClear
   _inputParameters: SurvivalSettings
+  _numericalTables: NumericalTablesType
   _survivalCurve: SurvivalCurve
   _groupComparisons: SelectItem[]
 
@@ -78,7 +81,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _drawing: SurvivalCurvesDrawing
 
   _groupTables: SelectItem[]
-  selectedGroupTable: { legend: string, table: Array<Array<string>> }
+  selectedGroupTable: { legend: string, table: Array<Array<NumericalOperation<any,string>>> }
 
   _summaryTableMileStones: number[]
   _summaryTable: { atRisk: number, event: number }[][]
@@ -89,9 +92,10 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   constructor(private elmRef: ElementRef, private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
-      let resAndSettings = this.survivalResultsService.selectedSurvivalResult
-      this.results = resAndSettings.survivalAnalysisClear
-      this.inputParameters = resAndSettings.settings
+      let resAndSettingsAndTables = this.survivalResultsService.selectedSurvivalResult
+      this.results = resAndSettingsAndTables.survivalAnalysisClear
+      this.inputParameters = resAndSettingsAndTables.settings
+      this.numericalTables= resAndSettingsAndTables.numericalTables
 
       this.display()
     })
@@ -228,11 +232,11 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     }
     this._groupTables.push(
-      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'Logrank p-value', table: this._groupLogrankTable } },
-      { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this._groupCoxRegTable } },
-      { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this._groupCoxWaldTable } },
-      { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this._groupCoxLogtestTable } })
-    this.selectedGroupTable = { legend: 'KM p-value', table: this._groupLogrankTable }
+      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'Logrank p-value', table: this.numericalTables.groupLogrankTable } },
+      { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this.numericalTables.groupCoxRegTable } },
+      { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this.numericalTables.groupCoxWaldTable } },
+      { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this.numericalTables.groupCoxLogtestTable } })
+    this.selectedGroupTable = { legend: 'KM p-value', table: this.numericalTables.groupLogrankTable }
 
     if (len) {
       this._selectedGroupComparison = this._groupComparisons[0].value
@@ -374,6 +378,14 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   get inputParameters(): SurvivalSettings {
     return this._inputParameters
+  }
+
+  set numericalTables(tables:NumericalTablesType){
+    this._numericalTables=tables
+  }
+
+  get numericalTables(): NumericalTablesType{
+    return this._numericalTables
   }
 
   get survivalCurve(): SurvivalCurve {
