@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -81,7 +81,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _drawing: SurvivalCurvesDrawing
 
   _groupTables: SelectItem[]
-  selectedGroupTable: { legend: string, table: Array<Array<NumericalOperation<any,string>>> }
+  selectedGroupTable: { legend: string, table: Array<Array<NumericalOperation<any, string>>> }
 
   _summaryTableMileStones: number[]
   _summaryTable: { atRisk: number, event: number }[][]
@@ -95,7 +95,7 @@ export class GbSurvivalResultsComponent implements OnInit {
       let resAndSettingsAndTables = this.survivalResultsService.selectedSurvivalResult
       this.results = resAndSettingsAndTables.survivalAnalysisClear
       this.inputParameters = resAndSettingsAndTables.settings
-      this.numericalTables= resAndSettingsAndTables.numericalTables
+      this.numericalTables = resAndSettingsAndTables.numericalTables
 
       this.display()
     })
@@ -232,10 +232,23 @@ export class GbSurvivalResultsComponent implements OnInit {
 
     }
     this._groupTables.push(
-      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'Logrank p-value', table: this.numericalTables.groupLogrankTable } },
-      { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this.numericalTables.groupCoxRegTable } },
-      { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this.numericalTables.groupCoxWaldTable } },
-      { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this.numericalTables.groupCoxLogtestTable } })
+      {
+        label: 'Haenszel-Mantel LogRank p-value',
+        value: { legend: 'Logrank p-value', table: this.numericalTables.groupLogrankTable }
+      },
+      {
+        label: 'Cox regression proportional hazard ratio',
+        value: { legend: 'Cox PH, [95% CI]', table: this.numericalTables.groupCoxRegTable }
+      },
+      {
+        label: 'Cox regression Wald test p-value',
+        value: { legend: 'Wald p-value', table: this.numericalTables.groupCoxWaldTable }
+      },
+      {
+        label: 'Cox likelihood ratio p-value',
+        value: { legend: 'Logtest p-vale', table: this.numericalTables.groupCoxLogtestTable }
+      })
+
     this.selectedGroupTable = { legend: 'KM p-value', table: this.numericalTables.groupLogrankTable }
 
     if (len) {
@@ -380,11 +393,11 @@ export class GbSurvivalResultsComponent implements OnInit {
     return this._inputParameters
   }
 
-  set numericalTables(tables:NumericalTablesType){
-    this._numericalTables=tables
+  set numericalTables(tables: NumericalTablesType) {
+    this._numericalTables = tables
   }
 
-  get numericalTables(): NumericalTablesType{
+  get numericalTables(): NumericalTablesType {
     return this._numericalTables
   }
 

@@ -100,10 +100,18 @@
           <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
         </th>
         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
-          <ng-container *ngIf="selectedGroupTable.table[i][j].finished">
-            <span *ngIf="selectedGroupTable.table[i][j].result">{{selectedGroupTable.table[i][j].result}}</span>
+          <ng-container *ngIf="selectedGroupTable.table[i][j].finished; else NumericalOperationNotFinished">
+            <ng-container *ngIf="selectedGroupTable.table[i][j].errMessage; else NumericalOperationNoError">
+              <i [pTooltip]="selectedGroupTable.table[i][j].errMessage" class="fa fa-exclamation-triangle"
+                aria-hidden="true"></i>
+            </ng-container>
+            <ng-template #NumericalOperationNoError>
+              <span *ngIf="selectedGroupTable.table[i][j].result">{{selectedGroupTable.table[i][j].result}}</span>
+            </ng-template>
           </ng-container>
-          <span *ngIf="!(selectedGroupTable.table[i][j].finished)">not finished :(</span>
+          <ng-template #NumericalOperationNotFinished>
+            <i pTooltip="operation not finished" class="fa fa-cog fa-spin" aria-hidden="true"></i>
+          </ng-template>
         </td>
       </tr>
     </table>

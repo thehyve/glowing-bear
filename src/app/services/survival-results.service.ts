@@ -66,12 +66,12 @@ export class SurvivalResultsService {
       })
       return x
     })
-    let res=new SurvivalResults()
-    res.settings=settings
-    res.survivalAnalysisClear=survivalAnalysisClear
-    
+    let res = new SurvivalResults()
+    res.settings = settings
+    res.survivalAnalysisClear = survivalAnalysisClear
+
     let points = clearResultsToArray(survivalAnalysisClear).curves.map(x => x.points)
-    res.numericalTables=numericalTables(points)
+    res.numericalTables = numericalTables(points)
     this.survivalResults.push(res)
     this._numericalTables.push(numericalTables(points))
     this.navBarService.insertNewSurvResults()

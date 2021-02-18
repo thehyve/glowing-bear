@@ -64,32 +64,32 @@ export function numericalTables(
 
       // ---- cox regression
       let coxCallback = (curvesArg: SurvivalPoint[][]) => {
-        let cox = NewCoxRegression([curvesArg[i], curvesArg[j]], maxIter, tolerance, 'breslow').run()
-        return { res: cox, errMessage: null }
+        let cox_ = NewCoxRegression([curvesArg[i], curvesArg[j]], maxIter, tolerance, 'breslow').run()
+        return { res: cox_, errMessage: null }
       }
 
       let cox = NumericalOperation.NewNumericalOperation([curves[i], curves[j]], coxCallback)
 
-      let coxReg_ = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
+      let coxReg = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
         return { res: coxToString(finalBeta[0], finalCovarianceMatrixEstimate[0][0]), errMessage: null }
       })
 
-      let waldTest_ = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
+      let waldTest = cox.addChild(({ finalBeta, finalCovarianceMatrixEstimate }) => {
         let waldStat = Math.pow(finalBeta[0], 2) / (finalCovarianceMatrixEstimate[0][0] + 1e-14)
-        let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
-        return { res: waldTest, errMessage: null }
+        let waldTest_ = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
+        return { res: waldTest_, errMessage: null }
       })
 
       let coxLogtest = cox.addChild(({ initialLogLikelihood, finalLogLikelihood }) => {
         let likelihoodRatio = 2.0 * (finalLogLikelihood - initialLogLikelihood)
-        let logTest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-        return { res: logTest, errMessage: null }
+        let logTest_ = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
+        return { res: logTest_, errMessage: null }
       })
 
 
 
-      coxRegRow.push(coxReg_)
-      waldCoxRow.push(waldTest_)
+      coxRegRow.push(coxReg)
+      waldCoxRow.push(waldTest)
       coxLogtestRow.push(coxLogtest)
 
     }
