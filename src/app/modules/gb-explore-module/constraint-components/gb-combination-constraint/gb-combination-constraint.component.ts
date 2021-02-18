@@ -50,8 +50,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   }
 
   onSearch(event) {
-    let results = this.constraintService.searchAllConstraints(event.query);
-    this.searchResults = results;
+    this.searchResults = this.constraintService.searchAllConstraints(event.query);
   }
 
   onDropdown(event) {
@@ -71,24 +70,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
         (<CombinationConstraint>newConstraint).children = [];
       }
 
-      // Add it as a new child
-      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      try {
-        combinationConstraint.addChild(newConstraint);
-      } catch (error) {
-        MessageHelper.alert('error', error.message)
-      }
-      // force combination state if i2b2 style nesting
-      let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
-      if (parentConstraint && parentConstraint.isRoot) {
-        (<CombinationConstraint>this.constraint).combinationState = CombinationState.Or;
-      }
-      this.update();
-
-      // Clear selection (for some reason, setting the model selectedConstraint
-      // to null doesn't work)
-      this.autoComplete.selectItem(null);
-      this.update();
+      this.addChildConstraint(newConstraint);
     }
   }
 
@@ -98,25 +80,37 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     this.droppedConstraint =
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
     this.treeNodeService.selectedTreeNode = null;
+
     if (this.droppedConstraint) {
-      let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
-      try {
-        combinationConstraint.addChild(this.droppedConstraint);
-
-      } catch (error) {
-        MessageHelper.alert('error', error.message)
-
-      }
-
-      // force combination state if free nesting not supported
-      let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
-      if (parentConstraint && parentConstraint.isRoot) {
-        combinationConstraint.combinationState = CombinationState.Or;
-      }
-
-      this.update();
-      this.droppedConstraint = null;
+      this.addChildConstraint(this.droppedConstraint);
     }
+  }
+
+  private addChildConstraint(constraint: Constraint) {
+    let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+    try {
+      // do not allow single concept at root of combination constraint
+      if (combinationConstraint.isRoot) {
+        let subCombinationConstraint = new CombinationConstraint()
+        subCombinationConstraint.combinationState = CombinationState.Or;
+        subCombinationConstraint.addChild(constraint)
+        combinationConstraint.addChild(subCombinationConstraint)
+      } else {
+        combinationConstraint.addChild(constraint);
+      }
+    } catch (error) {
+      MessageHelper.alert('error', error.message)
+    }
+
+    // force combination state to or for second-level combination constraint
+    let parentConstraint = this.constraint.parentConstraint as CombinationConstraint;
+    if (parentConstraint && parentConstraint.isRoot) {
+      combinationConstraint.combinationState = CombinationState.Or;
+    }
+
+    this.autoComplete.selectItem(null);
+    this.droppedConstraint = null;
+    this.update();
   }
 
   get combinationState() {

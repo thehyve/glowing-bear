@@ -4,15 +4,15 @@
     <label *ngIf="(depth === 1) && queryTimingSameInstance" style="margin: 6px;">Same instance:</label>
     <p-checkbox *ngIf="(depth === 1) && queryTimingSameInstance" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
     <!-- Child Constraints -->
-    <div *ngFor="let child of children; let i = index">
-      <div *ngIf="i > 0" class="gb-constraint-state-container">
+    <div *ngFor="let child of children">
+      <gb-constraint [constraint]="child"
+                     (constraintRemoved)="onConstraintRemoved(child)"></gb-constraint>
+      <div class="gb-constraint-state-container">
         <button type="button" class="btn btn-outline-primary btn-sm" [ngSwitch]="combinationState">
           <i *ngSwitchCase="CombinationState.And">and</i>
           <i *ngSwitchCase="CombinationState.Or">or</i>
         </button>
       </div>
-      <gb-constraint [constraint]="child"
-                     (constraintRemoved)="onConstraintRemoved(child)"></gb-constraint>
     </div>
 
     <div class="form-inline input-field-margin">
