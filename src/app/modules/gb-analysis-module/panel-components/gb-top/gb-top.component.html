@@ -1,23 +1,38 @@
 <p-accordionTab header="Analyses" id="gb-top-component" [(selected)]="expanded">
 
-
-
+  <div>
   <button pButton *ngFor="let analysisType of available" [label]="analysisType.name" (click)="selected = analysisType"
     [ngClass]="{'selected': selected==analysisType}" [disabled]="!analysisType.implemented"></button>
 
   <button pButton label="Run" style="float: right;" [disabled]="!ready" (click)="runAnalysis()"
     pTooltip="You must select a cohort, an analysis, and start and end events (for survival analysis)."
     [tooltipDisabled]="ready"></button>
-  <span *ngIf="operationStatus === OperationStatus.waitOnAPI" style="font-size: 1em; float: right;"
-    class="loading-blink"> Waiting on response from
-    servers, do not refresh <span>•</span><span>•</span><span>•</span>
-  </span>
+  </div>
 
-  <span *ngIf="operationStatus === OperationStatus.decryption" style="font-size: 1em; float: right;"
-    class="loading-blink">
-    Decryption of local lists, this may take a few seconds, do not refresh <span>🔒</span><span>🔒</span><span>🔓</span>
-  </span>
+  <div *ngIf="selectedSurvival" style="font-size: 1em; margin-top: 1em;">
+    <b>Status:</b>
+    <span *ngIf="!ready" >
+      You must select a cohort and start and end events
+    </span>
+
+    <span *ngIf="ready && operationStatus === OperationStatus.done">
+      Ready
+    </span>
+
+    <span *ngIf="operationStatus === OperationStatus.waitOnAPI" class="loading-blink">
+      Waiting on response from servers, do not refresh <span>•</span><span>•</span><span>•</span>
+    </span>
+
+    <span *ngIf="operationStatus === OperationStatus.decryption" class="loading-blink">
+      Decryption of local lists, this may take a few seconds, do not refresh <span>🔒</span><span>🔒</span><span>🔓</span>
+    </span>
+
+    <span *ngIf="operationStatus === OperationStatus.error" class="loading-blink">
+      Error, check console for details <span>🔒</span><span>🔒</span><span>🔓</span>
+    </span>
+  </div>
 
 </p-accordionTab>
+
 <gb-survival-settings [activated]="selectedSurvival" (changedEventConcepts)="isReady($event)"></gb-survival-settings>
 <gb-cohort-landing-zone [activated]="selectedSurvival"></gb-cohort-landing-zone>
