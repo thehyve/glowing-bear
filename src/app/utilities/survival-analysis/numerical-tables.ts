@@ -65,6 +65,9 @@ export function numericalTables(
 
       let coxCallback = (curvesArg: SurvivalPoint[][]) => {
         let cox_ = NewCoxRegression([curvesArg[0], curvesArg[1]], maxIter, tolerance, 'breslow').run()
+        if ((cox_.status) && cox_.status !== '') {
+          return { res: cox_, errMessage: cox_.status }
+        }
         return { res: cox_, errMessage: null }
       }
 

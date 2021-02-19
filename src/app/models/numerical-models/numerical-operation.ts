@@ -53,8 +53,7 @@ export class NumericalOperation<T, U> {
     numOperation._observable = this._subject.pipe(map(
       val => {
         let returnResult = numOperation._callback(val.res)
-        let errMessage = ((val.errMessage) || val.errMessage === '') ? val.errMessage : returnResult.errMessage
-
+        let errMessage = ((val.errMessage) || val.errMessage !== '') ? val.errMessage : returnResult.errMessage
         return { res: returnResult.res, errMessage: errMessage }
       }
     ))
@@ -63,7 +62,7 @@ export class NumericalOperation<T, U> {
         if (result.res) {
           numOperation._result = result.res
         }
-        if (result.errMessage) {
+        if ((result.errMessage) && result.errMessage !== '') {
           numOperation._errorMessage = result.errMessage
         }
         numOperation._subject.next(result)

@@ -101,8 +101,8 @@
         </th>
         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
           <ng-container *ngIf="selectedGroupTable.table[i][j].finished; else NumericalOperationNotFinished">
-            <ng-container *ngIf="selectedGroupTable.table[i][j].errMessage; else NumericalOperationNoError">
-              <i [pTooltip]="selectedGroupTable.table[i][j].errMessage" class="fa fa-exclamation-triangle"
+            <ng-container *ngIf="selectedGroupTable.table[i][j].errorMessage; else NumericalOperationNoError">
+              <i [pTooltip]="selectedGroupTable.table[i][j].errorMessage" class="fa fa-exclamation-triangle"
                 aria-hidden="true"></i>
             </ng-container>
             <ng-template #NumericalOperationNoError>
