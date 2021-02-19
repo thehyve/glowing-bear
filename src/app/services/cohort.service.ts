@@ -28,7 +28,6 @@ export class CohortService {
 
   private _cohorts: Array<Cohort>
   private _selectedCohort: Cohort
-  private _selectingCohort: Subject<Cohort>
   private _nodeName: Array<string>
 
   private _isRefreshing: boolean
@@ -146,7 +145,6 @@ export class CohortService {
     private constraintService: ConstraintService,
     private constraintReverseMappingService: ConstraintReverseMappingService) {
     this.restoring = new Subject<boolean>()
-    this._selectingCohort = new Subject<Cohort>()
     this._queryTiming = new Subject<ApiI2b2Timing>()
     this._panelTimings = new Subject<ApiI2b2Timing[]>()
     this._nodeName = new Array<string>(this.medcoNetworkService.nodes.length)
@@ -163,18 +161,20 @@ export class CohortService {
   get selectedCohort() {
     return this._selectedCohort
   }
-  get selectingCohort(): Observable<Cohort> {
-    return this._selectingCohort as Observable<Cohort>
-  }
   set selectedCohort(cohort: Cohort) {
     if (this._selectedCohort) {
       this._selectedCohort.selected = false
+
+      if (this._selectedCohort === cohort) {
+        this._selectedCohort = null
+        return
+      }
+
     }
     this._selectedCohort = cohort
     if (cohort) {
       this._selectedCohort.selected = true
     }
-    this._selectingCohort.next(cohort)
   }
 
   set cohorts(cohorts: Array<Cohort>) {
