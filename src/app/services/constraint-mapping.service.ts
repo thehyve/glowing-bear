@@ -13,7 +13,6 @@ import { NegationConstraint } from '../models/constraint-models/negation-constra
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import { ApiI2B2Modifier } from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
 import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
-import { MessageHelper } from 'app/utilities/message-helper';
 import { TextOperator } from 'app/models/constraint-models/text-operator';
 
 
@@ -29,6 +28,7 @@ export class ConstraintMappingService {
   }
 
   private mapCombinationConstraint(panels: ApiI2b2Panel[], constraint: Constraint, negated: boolean) {
+
     switch (constraint.className) {
       case 'NegationConstraint':
         ((constraint as NegationConstraint).constraint as CombinationConstraint).children.forEach((childConstraint) =>
@@ -37,7 +37,7 @@ export class ConstraintMappingService {
 
       case 'CombinationConstraint':
         if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
-          panels.push(this.generateI2b2Panel(constraint, false));
+          panels.push(this.generateI2b2Panel(constraint, negated));
         } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
           (constraint as CombinationConstraint).children.forEach((childConstraint) =>
             this.mapCombinationConstraint(panels, childConstraint as CombinationConstraint, negated))
@@ -120,75 +120,75 @@ export class ConstraintMappingService {
       }
 
       switch (constraint.concept.type) {
-      case ValueType.SIMPLE:
-        break;
+        case ValueType.SIMPLE:
+          break;
 
-      case ValueType.NUMERICAL:
-        item.type = 'NUMBER'
-        if (constraint.applyNumericalOperator && (constraint.numericalOperator)) {
-          item.operator = constraint.numericalOperator
-          item.value = ''
+        case ValueType.NUMERICAL:
+          item.type = 'NUMBER'
+          if (constraint.applyNumericalOperator && (constraint.numericalOperator)) {
+            item.operator = constraint.numericalOperator
+            item.value = ''
 
-          switch (constraint.numericalOperator) {
-          case NumericalOperator.BETWEEN:
-            if (!(constraint.minValue)) {
-              throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
-                'The field was left empty or non numerical characters were used.');
-            } else if (!(constraint.maxValue)) {
-              throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
-                'The field was left empty or non numerical characters were used.');
-            } else if (constraint.maxValue < constraint.minValue) {
-              throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`);
+            switch (constraint.numericalOperator) {
+              case NumericalOperator.BETWEEN:
+                if (!(constraint.minValue)) {
+                  throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
+                    'The field was left empty or non numerical characters were used.');
+                } else if (!(constraint.maxValue)) {
+                  throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
+                    'The field was left empty or non numerical characters were used.');
+                } else if (constraint.maxValue < constraint.minValue) {
+                  throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`);
+                }
+
+                item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
+                break;
+
+              case NumericalOperator.EQUAL:
+              case NumericalOperator.GREATER:
+              case NumericalOperator.GREATER_OR_EQUAL:
+              case NumericalOperator.LOWER:
+              case NumericalOperator.LOWER_OR_EQUAL:
+              case NumericalOperator.NOT_EQUAL:
+                if (!(constraint.numValue)) {
+                  throw ErrorHelper.handleNewError('A numerical operator has been defined, but no valid value provided.' +
+                    'The field was left empty or non numerical characters were used.');
+                }
+
+                item.value = constraint.numValue.toString();
+                break;
+
+              default:
+                throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
             }
+          }
+          break;
 
-            item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
-            break;
+        case ValueType.TEXT:
+          item.type = 'TEXT'
+          if (constraint.applyTextOperator && (constraint.textOperator)) {
+            switch (constraint.textOperator) {
+              case TextOperator.LIKE_EXACT:
+              case TextOperator.LIKE_BEGIN:
+              case TextOperator.LIKE_CONTAINS:
+              case TextOperator.LIKE_END:
+                item.operator = constraint.textOperator;
+                item.value = constraint.textOperatorValue;
+                break;
 
-          case NumericalOperator.EQUAL:
-          case NumericalOperator.GREATER:
-          case NumericalOperator.GREATER_OR_EQUAL:
-          case NumericalOperator.LOWER:
-          case NumericalOperator.LOWER_OR_EQUAL:
-          case NumericalOperator.NOT_EQUAL:
-            if (!(constraint.numValue)) {
-              throw ErrorHelper.handleNewError('A numerical operator has been defined, but no valid value provided.' +
-                'The field was left empty or non numerical characters were used.');
+              case TextOperator.IN:
+                item.operator = constraint.textOperator;
+                item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
+                break;
+
+              default:
+                throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
             }
-
-            item.value = constraint.numValue.toString();
-            break;
-
-          default:
-            throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
           }
-        }
-        break;
+          break;
 
-      case ValueType.TEXT:
-        item.type = 'TEXT'
-        if (constraint.applyTextOperator && (constraint.textOperator)) {
-          switch (constraint.textOperator) {
-            case TextOperator.LIKE_EXACT:
-            case TextOperator.LIKE_BEGIN:
-            case TextOperator.LIKE_CONTAINS:
-            case TextOperator.LIKE_END:
-              item.operator = constraint.textOperator;
-              item.value = constraint.textOperatorValue;
-              break;
-
-            case TextOperator.IN:
-              item.operator = constraint.textOperator;
-              item.value = constraint.textOperatorValue.split(',').map(substring => '\'' + substring + '\'').join(',');
-              break;
-
-            default:
-              throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
-          }
-        }
-        break;
-
-      default:
-        throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
+        default:
+          throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
       }
     }
 

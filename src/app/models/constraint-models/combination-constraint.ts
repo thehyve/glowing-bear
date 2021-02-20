@@ -1,7 +1,7 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
  *
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -43,12 +43,22 @@ export class CombinationConstraint extends Constraint {
     return
   }
 
+  updateChild(index: number, constraint: Constraint) {
+    if (!(<CombinationConstraint>constraint).isRoot) {
+      constraint.parentConstraint = this;
+    }
+    this.children[index] = constraint
+    this.updateTextRepresentation()
+    return
+  }
+
   clone(): CombinationConstraint {
     let res = new CombinationConstraint
     res.textRepresentation = this.textRepresentation
     res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null
     res.isRoot = this.isRoot
     res.combinationState = this.combinationState
+    res.panelTimingSameInstance = this.panelTimingSameInstance
     res.children = this._children.map(constr => constr.clone())
     return res
   }
