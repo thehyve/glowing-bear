@@ -36,8 +36,9 @@ export class ExploreCohortsService {
     private cryptoService: CryptoService) { }
 
   getCohortSingleNode(nodeUrl: string): Observable<ApiCohortResponse[]> {
+
     return this.apiEndpointService.getCall(
-      'node/explore/cohorts',
+      'node/explore/cohorts?limit=0',
       false,
       nodeUrl
     )
