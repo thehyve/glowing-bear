@@ -6,16 +6,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Constraint} from './constraint';
+import { Constraint } from './constraint';
 
 export class NegationConstraint extends Constraint {
 
   private _constraint: Constraint;
+  _textRepresentation: string;
 
   constructor(constraint: Constraint) {
     super();
     this.constraint = constraint;
-    this.textRepresentation = 'Negation';
   }
 
   get constraint(): Constraint {
@@ -24,6 +24,15 @@ export class NegationConstraint extends Constraint {
 
   set constraint(value: Constraint) {
     this._constraint = value;
+  }
+
+  // this is called by constructor of the super class
+  set textRepresentation(rep: string) {
+    this._textRepresentation = rep
+  }
+
+  get textRepresentation(): string {
+    return `Negation: (${this.constraint.textRepresentation})`
   }
 
   get className(): string {
