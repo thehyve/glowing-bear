@@ -84,3 +84,5 @@ export class NumericalOperation<T, U> {
     return ((this.result) || (this.errorMessage)) ? true : false
   }
 }
+
+export type NumericalMethodResult = NumericalOperation<any, string>

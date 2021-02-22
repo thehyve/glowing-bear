@@ -20,7 +20,7 @@ import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/u
 import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
-import { NumericalOperation } from 'app/models/numerical-models/numerical-operation';
+import { NumericalMethodResult, NumericalOperation } from 'app/models/numerical-models/numerical-operation';
 
 
 @Component({
@@ -78,10 +78,12 @@ export class GbSurvivalResultsComponent implements OnInit {
   _drawing: SurvivalCurvesDrawing
 
   _groupTables: SelectItem[]
-  selectedGroupTable: { legend: string, table: Array<Array<NumericalOperation<any, string>>> }
+  selectedGroupTable: { legend: string, table: Array<Array<NumericalMethodResult>> }
 
   _summaryTableMileStones: number[]
   _summaryTable: { atRisk: number, event: number }[][]
+
+  
 
 
 
@@ -251,7 +253,7 @@ export class GbSurvivalResultsComponent implements OnInit {
     }
     let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
     pdfDoc.addOneLineText('Summary')
-    tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
+    tables= summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
     pdfDoc.addOneLineText('Summary at time point')
@@ -261,20 +263,24 @@ export class GbSurvivalResultsComponent implements OnInit {
     if (curveNames.length > 1) {
       pdfDoc.addOneLineText('Logrank')
       console.log(`Debug: curveNames length: ${curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
-      tables = statTestToTable(curveNames, this.groupLogrankTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      let numTables = statTestToTable(curveNames, this.numericalTables.groupLogrankTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression coefficient')
-      tables = statTestToTable(curveNames, this.groupCoxRegTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxRegTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression wald test')
-      tables = statTestToTable(curveNames, this.groupCoxWaldTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxWaldTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Logtest')
-      tables = statTestToTable(curveNames, this.groupCoxLogtestTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxLogtestTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
     }
 
     let exportDate = new Date(Date.now())
