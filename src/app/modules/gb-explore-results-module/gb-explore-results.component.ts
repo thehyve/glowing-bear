@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 - 2020 EPFL LCA1 / LDS
+ * Copyright 2018 - 2021 EPFL LCA1 / LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -25,14 +25,7 @@ export class GbExploreResultsComponent implements OnInit {
 
   private _perSiteCountsChart: Chart;
 
-  static numberMatrixToCSV(data: number[][]) {
-    const csv = data.map((row) => row.toString());
-    console.log(csv.join('\r\n'))
-    return csv.join('\r\n');
-  }
-
-  constructor(private medcoNetworkService: MedcoNetworkService,
-    public queryService: QueryService) { }
+  constructor(private medcoNetworkService: MedcoNetworkService, public queryService: QueryService) { }
 
   ngOnInit() {
     this._perSiteCountsChart = new Chart(this.perSiteCountsChartElement.nativeElement, {
@@ -102,10 +95,13 @@ export class GbExploreResultsComponent implements OnInit {
   }
 
   savePatientListToCSVFile() {
-    this.patientLists.pipe(first())
-      .subscribe((patientList) => {
-        savePatientListToCSVFile('patientList', patientList)
+    this.queryService.queryResults.pipe(first()).subscribe(
+      (queryResult) => {
+        if (!queryResult) {
+          return;
+        }
+        savePatientListToCSVFile('patientList', queryResult.nodes.map(node => node.name), queryResult.patientLists);
       }
-      )
+    )
   }
 }

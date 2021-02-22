@@ -23,6 +23,7 @@ import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api
 import { OperationType } from 'app/models/operation-models/operation-types';
 import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
 import { OperationStatus } from 'app/models/operation-status';
+import {ApiNodeMetadata} from '../../models/api-response-models/medco-network/api-node-metadata';
 
 @Component({
   selector: 'gb-explore',
@@ -33,7 +34,7 @@ export class GbExploreComponent implements AfterViewChecked {
 
   _patternValidation = new RegExp('^\\w+$')
 
-  _lastPatientList: number[][]
+  _lastPatientList: [ApiNodeMetadata[], number[][]]
 
   OperationType = OperationType
 
@@ -49,7 +50,7 @@ export class GbExploreComponent implements AfterViewChecked {
     this.queryService.queryResults.subscribe(
       result => {
         if ((result) && (result.patientLists)) {
-          this._lastPatientList = result.patientLists
+          this._lastPatientList = [result.nodes, result.patientLists];
         }
       }
     )
@@ -80,7 +81,7 @@ export class GbExploreComponent implements AfterViewChecked {
         let updateDates = new Array<Date>()
         let queryDefinitions = new Array<ApiQueryDefinition>()
         const nunc = Date.now()
-        for (let i = 0; i < this.medcoNetworkService.nodesUrl.length; i++) {
+        for (let i = 0; i < this.medcoNetworkService.nodes.length; i++) {
           creationDates.push(new Date(nunc))
           updateDates.push(new Date(nunc))
           let definition = new ApiQueryDefinition()
@@ -105,7 +106,7 @@ export class GbExploreComponent implements AfterViewChecked {
 
         // handle patient list locally
         if (this._lastPatientList) {
-          this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList)
+          this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList[0], this._lastPatientList[1])
           this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
         } else {
           MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may probably have to download the list again.')

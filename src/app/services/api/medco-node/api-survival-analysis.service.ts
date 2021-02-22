@@ -1,5 +1,6 @@
 /**
  * Copyright 2020 CHUV
+ * Copyright 2021 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -38,9 +39,9 @@ export class ApiSurvivalAnalysisService {
 
   survivalAnalysisAllNodes(apiSurvivalAnalysis: ApiSurvivalAnalysis): Observable<ApiSurvivalAnalysisResponse[]> {
     apiSurvivalAnalysis.userPublicKey = this.cryptoService.ephemeralPublicKey
-    return forkJoin(this.medcoNetworkService.nodesUrl.map(
-      url => {
-        return this.survivalAnalysisSingleNode(url, apiSurvivalAnalysis)
+    return forkJoin(this.medcoNetworkService.nodes.map(
+      node => {
+        return this.survivalAnalysisSingleNode(node.url, apiSurvivalAnalysis)
       }
     ))
       .pipe(timeout(ApiSurvivalAnalysisService.TIMEOUT_MS))

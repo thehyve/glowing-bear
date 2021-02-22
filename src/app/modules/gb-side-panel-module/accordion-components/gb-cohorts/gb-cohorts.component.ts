@@ -108,7 +108,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
       (x) => { console.log(`New status of request for patient list of saved cohort ${cohort.name}, status: ${x}`) }
     )
     this.savedCohortsPatientListService.getList(cohort.name).subscribe(
-      value => { if (value) { savePatientListToCSVFile(cohort.name, value) } },
+      value => { if (value) { savePatientListToCSVFile(cohort.name, value[0].map(node => node.name), value[1]) } },
       err => {
         throw ErrorHelper.handleError(`While retrieving list for cohort ${cohort.name}`, err)
       }

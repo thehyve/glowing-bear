@@ -26,6 +26,7 @@ import { ErrorHelper } from '../utilities/error-helper';
 import { MessageHelper } from '../utilities/message-helper';
 import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
 
 /**
  * This service concerns with updating subject counts.
@@ -75,16 +76,18 @@ export class QueryService {
   /**
    * Parse and decrypt results from MedCo nodes.
    */
-  private parseExploreQueryResults(encResults: ApiExploreQueryResult[]): ExploreQueryResult {
+  private parseExploreQueryResults(encResults: [ApiNodeMetadata, ApiExploreQueryResult][]): ExploreQueryResult {
     if (encResults.length === 0) {
       throw ErrorHelper.handleNewError('Empty results, no processing done');
     }
 
     let parsedResults = new ExploreQueryResult();
+    parsedResults.nodes = encResults.map(res => res[0]);
+
     switch (this.queryType) {
       case ExploreQueryType.COUNT_GLOBAL:
       case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
-        parsedResults.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(encResults[0].encryptedCount);
+        parsedResults.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(encResults[0][1].encryptedCount);
         break;
 
       case ExploreQueryType.COUNT_PER_SITE:
@@ -92,7 +95,8 @@ export class QueryService {
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED:
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED:
       case ExploreQueryType.PATIENT_LIST:
-        parsedResults.perSiteCounts = encResults.map((result) => this.cryptoService.decryptIntegerWithEphemeralKey(result.encryptedCount));
+        parsedResults.perSiteCounts = encResults.map((result) =>
+          this.cryptoService.decryptIntegerWithEphemeralKey(result[1].encryptedCount));
         parsedResults.globalCount = parsedResults.perSiteCounts.reduce((a, b) => a + b);
         break;
 
@@ -101,9 +105,9 @@ export class QueryService {
     }
 
     if (this.queryType === ExploreQueryType.PATIENT_LIST) {
-      parsedResults.resultInstanceID = encResults.map(({ patientSetID }) => patientSetID)
+      parsedResults.resultInstanceID = encResults.map(result => result[1].patientSetID)
       parsedResults.patientLists = encResults.map((result) =>
-        result.encryptedPatientList ? result.encryptedPatientList.map((encryptedPatientID) =>
+        result[1].encryptedPatientList ? result[1].encryptedPatientList.map((encryptedPatientID) =>
           this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
         ) : []);
 
@@ -141,7 +145,7 @@ export class QueryService {
       }),
       switchMap(() => this.exploreQueryService.exploreQuery(this.query))
     ).subscribe(
-      (results: ApiExploreQueryResult[]) => {
+      (results: [ApiNodeMetadata, ApiExploreQueryResult][]) => {
         let parsedResults = this.parseExploreQueryResults(results);
         if (parsedResults.resultInstanceID) {
           this._lastSuccessfulSet.next(parsedResults.resultInstanceID)
