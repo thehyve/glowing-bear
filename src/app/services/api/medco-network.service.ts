@@ -59,10 +59,6 @@ export class MedcoNetworkService {
     return this._nodes;
   }
 
-  get nodesUrl(): string[] {
-    return this._nodes.map((node) => node.url);
-  }
-
   //  ------------------- others ----------------------
 
   /**
