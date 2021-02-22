@@ -80,7 +80,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     this.suggestedEndConcepts = results
       .filter(constraint => constraint instanceof ConceptConstraint)
       .map(constraint => (constraint as ConceptConstraint).concept);
-    console.log('element', this.element)
     UIHelper.removePrimeNgLoaderIcon(this.element, 200)
   }
   onStartDragOver(event: DragEvent) {
@@ -198,7 +197,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
 
   set selectedGranularity(gran: Granularity) {
-    console.log(gran)
     this.survivalService.granularity = gran
   }
 

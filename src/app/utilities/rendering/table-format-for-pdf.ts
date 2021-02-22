@@ -56,7 +56,8 @@ export function milestonedSummaryToTable(
   return { headers: headers, data: data }
 }
 
-export function statTestToTable(groupNames: string[], table: NumericalMethodResult[][]): { headers: string[][], data: string[][], logs: string[] }{
+export function statTestToTable(groupNames: string[], table: NumericalMethodResult[][])
+  : { headers: string[][], data: string[][], logs: string[] } {
   let headers = [['Group 1 name', 'Group 2 name', 'Value']]
   let nofGroups = groupNames.length
   let data = new Array<string[]>()
@@ -64,16 +65,16 @@ export function statTestToTable(groupNames: string[], table: NumericalMethodResu
 
   for (let i = 0; i < nofGroups; i++) {
     for (let j = i + 1; j < nofGroups; j++) {
-      let elm =table[i][j]
+      let elm = table[i][j]
       let value: string
-      if (!elm.finished){
-        value= 'NA (not completed)'
+      if (!elm.finished) {
+        value = 'NA (not completed)'
       }
-      if ((elm.errorMessage) && elm.errorMessage !== ''){
+      if ((elm.errorMessage) && elm.errorMessage !== '') {
         value = 'NA (exception, see logs below)'
         logs.push(`Groups ${groupNames[i]} and ${groupNames[j]}: ${elm.errorMessage}`)
-      }else{
-        value =elm.result
+      } else {
+        value = elm.result
       }
       data.push([groupNames[i], groupNames[j], value])
 

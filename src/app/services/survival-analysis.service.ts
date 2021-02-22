@@ -195,8 +195,6 @@ export class SurvivalService {
     apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name, panels: this.generatePanels(sg) } })
 
 
-
-    console.log('selected cohort from cohort service', this.cohortService.selectedCohort)
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)
   }
 
@@ -243,7 +241,6 @@ export class SurvivalService {
     })
 
     let end = performance.now()
-    console.log('survival result', res.results)
 
     console.log(`${nofDecryptions} ElGamal points decrypted in ${end - start} milliseconds`)
 

@@ -1,17 +1,17 @@
 <p-accordionTab header="Analyses" id="gb-top-component" [(selected)]="expanded">
 
   <div>
-  <button pButton *ngFor="let analysisType of available" [label]="analysisType.name" (click)="selected = analysisType"
-    [ngClass]="{'selected': selected==analysisType}" [disabled]="!analysisType.implemented"></button>
-
-  <button pButton label="Run" style="float: right;" [disabled]="!ready" (click)="runAnalysis()"
-    pTooltip="You must select a cohort, an analysis, and start and end events (for survival analysis)."
-    [tooltipDisabled]="ready"></button>
+    <button pButton *ngFor="let analysisType of available" [label]="analysisType.name" (click)="selected = analysisType"
+      [ngClass]="{'selected': selected==analysisType}" [disabled]="!analysisType.implemented"></button>
+    <span pTooltip="You must select a cohort, an analysis, and start and end events (for survival analysis)."
+      [tooltipDisabled]="ready" style="float: right;">
+      <button pButton label="Run" [disabled]="!ready" (click)="runAnalysis()"></button>
+    </span>
   </div>
 
   <div *ngIf="selectedSurvival" style="font-size: 1em; margin-top: 1em;">
     <b>Status:</b>
-    <span *ngIf="!ready" >
+    <span *ngIf="!ready">
       You must select a cohort and start and end events
     </span>
 
@@ -24,7 +24,8 @@
     </span>
 
     <span *ngIf="operationStatus === OperationStatus.decryption" class="loading-blink">
-      Decryption of local lists, this may take a few seconds, do not refresh <span>🔒</span><span>🔒</span><span>🔓</span>
+      Decryption of local lists, this may take a few seconds, do not refresh
+      <span>🔒</span><span>🔒</span><span>🔓</span>
     </span>
 
     <span *ngIf="operationStatus === OperationStatus.error" class="loading-blink">

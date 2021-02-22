@@ -42,11 +42,9 @@ export class ConstraintReverseMappingService {
    * @param targetPanelTiming
    * @param nots
    */
-  public mapPanels(panels: ApiI2b2Panel[], targetPanelTiming: ApiI2b2Timing[], nots: boolean[]): Observable<Constraint> {
-    targetPanelTiming = new Array<ApiI2b2Timing>(panels.length)
-    targetPanelTiming.fill(ApiI2b2Timing.any)
-    nots = new Array<boolean>(panels.length)
-    nots.fill(false)
+  public mapPanels(panels: ApiI2b2Panel[]): Observable<Constraint> {
+
+
 
     if (panels.length === 1 && panels[0].items.length === 1) {
 
@@ -115,6 +113,8 @@ export class ConstraintReverseMappingService {
     let existingConstraint = this.constraintService.allConstraints.find(
       value => (value instanceof ConceptConstraint) && ((<ConceptConstraint>value).concept.path === conceptURI))
     if (existingConstraint) {
+      let existingRes = (existingConstraint as ConceptConstraint);
+      this.setValues(existingRes, item.value, item.operator)
       return of(existingConstraint as ConceptConstraint)
     }
     // else, get details
@@ -220,6 +220,8 @@ export class ConstraintReverseMappingService {
               break;
 
           }
+          break;
+        case ValueType.SIMPLE:
           break;
         default:
           MessageHelper.alert('error', `While parsing concept constraint ${constraint.textRepresentation}, type ${constraint.concept.type} unkown`)

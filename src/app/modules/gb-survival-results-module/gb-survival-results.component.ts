@@ -83,7 +83,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _summaryTableMileStones: number[]
   _summaryTable: { atRisk: number, event: number }[][]
 
-  
+
 
 
 
@@ -253,7 +253,7 @@ export class GbSurvivalResultsComponent implements OnInit {
     }
     let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
     pdfDoc.addOneLineText('Summary')
-    tables= summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
+    tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
     pdfDoc.addOneLineText('Summary at time point')

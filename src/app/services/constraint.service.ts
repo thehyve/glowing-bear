@@ -123,7 +123,6 @@ export class ConstraintService {
    */
   public generateConstraint(): Constraint {
     let resultConstraint: Constraint;
-
     if (!this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
       throw ErrorHelper.handleNewError('Empty constraints');
 
