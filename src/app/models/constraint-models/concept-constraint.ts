@@ -73,6 +73,13 @@ export class ConceptConstraint extends Constraint {
     if (this.maxValue) {
       res.maxValue = this.maxValue
     }
+    if (this.textOperator) {
+      res.textOperator = this.textOperator
+    }
+    if (this.textOperatorValue) {
+      res.textOperatorValue = this.textOperatorValue
+    }
+
     return res
   }
 
