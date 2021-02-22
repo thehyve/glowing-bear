@@ -55,6 +55,9 @@
   background-color: #ffffff;
   color: #404040;
 }
+#cohorts-component .ui-togglebutton.ui-button.ui-state-focus {
+  box-shadow: none;
+}
 
 #cohorts-component .ui-button-text-icon-left .ui-button-text {
   padding: .1em 0.2em .1em 1.9em;
@@ -63,6 +66,7 @@
 
 #cohorts-component a:focus,#cohorts-component a:hover {
   text-decoration: none;
+  outline: none;
 }
 
 #cohorts-component .ui-dialog-footer button{

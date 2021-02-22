@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2021 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -22,13 +22,13 @@ import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2
 import { tap } from 'rxjs/operators';
 import { Constraint } from 'app/models/constraint-models/constraint';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
+import { CombinationState } from 'app/models/constraint-models/combination-state';
 
 @Injectable()
 export class CohortService {
 
   private _cohorts: Array<Cohort>
   private _selectedCohort: Cohort
-  private _selectingCohort: Subject<Cohort>
   private _nodeName: Array<string>
 
   private _isRefreshing: boolean
@@ -106,7 +106,6 @@ export class CohortService {
     nots: boolean[],
     constraintArg: Constraint,
     target: { inclusionConstraint: Constraint, exclusionConstraint: Constraint }): void {
-
     target.inclusionConstraint = null
     target.exclusionConstraint = null
 
@@ -124,19 +123,63 @@ export class CohortService {
       return
 
     } else {
-      if (nots.length !== 2) {
-        ErrorHelper.handleNewError('Could not conform the restored constraints into MedCo format.')
+      if (!(constraintArg instanceof CombinationConstraint)) {
+        ErrorHelper.handleNewError('Unexpected error in restore cohort: multiple and distinct negation flags for a constraint that is not a combination.')
+      }
+      let panels = (constraintArg as CombinationConstraint).children;
+      if (nots.length !== panels.length) {
+        ErrorHelper.handleNewError(`Unexpected error in restore cohort: the number of negation flags (${nots.length}) is not equal to that of panels (${panels.length})`)
       } else {
-        if (constraintArg instanceof CombinationConstraint) {
-          let combinationChildren = (constraintArg as CombinationConstraint).children
-          target.inclusionConstraint = nots[0] ? combinationChildren[1] : combinationChildren[0]
-          target.exclusionConstraint = nots[0] ? combinationChildren[0] : combinationChildren[1]
-          return
-        } else {
-          ErrorHelper.handleNewError('Unexpected error. Multiple negation flags provided for a constraint that is not a combination')
-        }
+        target.inclusionConstraint = new CombinationConstraint()
+        target.exclusionConstraint = new CombinationConstraint()
+        panels.forEach((child, index) => {
+          if (nots[index]) {
+            (target.exclusionConstraint as CombinationConstraint).addChild(child)
+          } else {
+            (target.inclusionConstraint as CombinationConstraint).addChild(child)
+          }
+        })
       }
     }
+  }
+
+  /**
+   * unflattenConstraints check if the root exclusion and inclusion constraint are made of a simple concept constraint,
+   * or AND-composed consrtaints. If it is the case, it unflattens them into AND-composed OR-composed combinations
+   *
+   * @param flatConstraint
+   * @returns {Constraint}
+   *
+   */
+  private static unflattenConstraints(flatConstraint: Constraint): Constraint {
+    if (!(flatConstraint)) {
+      return null
+    }
+    if (!(flatConstraint instanceof CombinationConstraint)) {
+      let newCombination = new CombinationConstraint()
+      newCombination.combinationState = CombinationState.And
+      newCombination.panelTimingSameInstance = flatConstraint.panelTimingSameInstance
+      let newLevel2Combination = new CombinationConstraint()
+      newLevel2Combination.combinationState = CombinationState.Or
+      newLevel2Combination.addChild(flatConstraint)
+      newCombination.addChild(newLevel2Combination)
+      return newCombination
+
+    }
+    let newAndCombination = flatConstraint.clone()
+    for (let i = 0; i < (flatConstraint as CombinationConstraint).children.length; i++) {
+      const childConstraint = (flatConstraint as CombinationConstraint).children[i]
+      if (childConstraint instanceof ConceptConstraint) {
+        let newConstraint = new CombinationConstraint()
+        newConstraint.combinationState = CombinationState.Or
+        newConstraint.panelTimingSameInstance = childConstraint.panelTimingSameInstance;
+        newConstraint.addChild((newAndCombination as CombinationConstraint).children[i]);
+        (newAndCombination as CombinationConstraint).updateChild(i, newConstraint)
+      }
+    }
+
+    return newAndCombination
+
   }
 
   constructor(
@@ -146,7 +189,6 @@ export class CohortService {
     private constraintService: ConstraintService,
     private constraintReverseMappingService: ConstraintReverseMappingService) {
     this.restoring = new Subject<boolean>()
-    this._selectingCohort = new Subject<Cohort>()
     this._queryTiming = new Subject<ApiI2b2Timing>()
     this._panelTimings = new Subject<ApiI2b2Timing[]>()
     this._nodeName = new Array<string>(this.medcoNetworkService.nodes.length)
@@ -163,18 +205,20 @@ export class CohortService {
   get selectedCohort() {
     return this._selectedCohort
   }
-  get selectingCohort(): Observable<Cohort> {
-    return this._selectingCohort as Observable<Cohort>
-  }
   set selectedCohort(cohort: Cohort) {
     if (this._selectedCohort) {
       this._selectedCohort.selected = false
+
+      if (this._selectedCohort === cohort) {
+        this._selectedCohort = null
+        return
+      }
+
     }
     this._selectedCohort = cohort
     if (cohort) {
       this._selectedCohort.selected = true
     }
-    this._selectingCohort.next(cohort)
   }
 
   set cohorts(cohorts: Array<Cohort>) {
@@ -304,7 +348,7 @@ export class CohortService {
 
   // from cached to view
   restoreTerms(cohors: Cohort): void {
-    let panelTimings: ApiI2b2Timing[]
+
     let cohortDefinition = cohors.mostRecentQueryDefinition()
     if (!cohortDefinition) {
       MessageHelper.alert('warn', `Definition not found for cohort ${cohors.name}`)
@@ -313,17 +357,15 @@ export class CohortService {
     let nots = cohortDefinition.panels.map(({ not }) => not)
     this._queryTiming.next(cohortDefinition.queryTiming)
 
-    this.constraintReverseMappingService.mapPanels(cohortDefinition.panels, panelTimings, nots)
-      .pipe(tap(() => {
-        this._panelTimings.next(panelTimings)
-      }))
+    this.constraintReverseMappingService.mapPanels(cohortDefinition.panels)
       .subscribe(constraint => {
         let formatedConstraint = {
           inclusionConstraint: <Constraint>{},
           exclusionConstraint: <Constraint>{}
         }
-
         CohortService.conformConstraints(nots, constraint, formatedConstraint)
+        formatedConstraint.inclusionConstraint = CohortService.unflattenConstraints(formatedConstraint.inclusionConstraint)
+        formatedConstraint.exclusionConstraint = CohortService.unflattenConstraints(formatedConstraint.exclusionConstraint)
 
         if ((formatedConstraint.inclusionConstraint) || (formatedConstraint.exclusionConstraint)) {
           this.constraintService.rootInclusionConstraint = new CombinationConstraint()

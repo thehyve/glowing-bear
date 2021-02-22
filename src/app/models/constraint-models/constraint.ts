@@ -48,6 +48,7 @@ export class Constraint {
   clone(): Constraint {
     let ret = new Constraint()
     ret.textRepresentation = this.textRepresentation
+    ret.panelTimingSameInstance = this.panelTimingSameInstance
 
     ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
     return ret
