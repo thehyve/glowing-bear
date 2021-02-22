@@ -1,3 +1,10 @@
+/**
+ * Copyright 2020-2021 EPFL LDS
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
 import {Observable, forkJoin, of} from 'rxjs';
@@ -11,6 +18,7 @@ import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
 import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
+import {ApiNodeMetadata} from '../../../models/api-response-models/medco-network/api-node-metadata';
 
 @Injectable()
 export class ExploreQueryService {
@@ -45,11 +53,11 @@ export class ExploreQueryService {
    * @param queryTiming
    * @param userPublicKey
    * @param panels
-   * @param nodeUrl
+   * @param node
    * @param sync
    */
   private exploreQuerySingleNode(queryId: string, userPublicKey: string, panels: ApiI2b2Panel[],
-    queryTiming: ApiI2b2Timing, nodeUrl: string, sync: boolean = true): Observable<ApiExploreQueryResult> {
+    queryTiming: ApiI2b2Timing, node: ApiNodeMetadata, sync: boolean = true): Observable<[ApiNodeMetadata, ApiExploreQueryResult]> {
     return this.apiEndpointService.postCall(
       'node/explore/query?sync=' + sync,
       {
@@ -60,8 +68,8 @@ export class ExploreQueryService {
           panels: panels
         }
       },
-      nodeUrl
-    ).pipe(map((expQueryResp) => expQueryResp['result']));
+      node.url
+    ).pipe(map((expQueryResp) => [node, expQueryResp['result']]));
   }
 
   // -------------------------------------- helper calls --------------------------------------
@@ -76,12 +84,12 @@ export class ExploreQueryService {
    * @param panels
    */
   private exploreQueryAllNodes(queryId: string, userPublicKey: string,
-    panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): Observable<ApiExploreQueryResult[]> {
+    panels: ApiI2b2Panel[], queryTiming: ApiI2b2Timing): Observable<[ApiNodeMetadata, ApiExploreQueryResult][]> {
 
     this.preparePanelTimings(panels, queryTiming)
 
-    return forkJoin(this.medcoNetworkService.nodesUrl.map(
-      (url) => this.exploreQuerySingleNode(queryId, userPublicKey, panels, queryTiming, url)
+    return forkJoin(this.medcoNetworkService.nodes.map(
+      (node) => this.exploreQuerySingleNode(queryId, userPublicKey, panels, queryTiming, node)
     )).pipe(timeout(ExploreQueryService.QUERY_TIMEOUT_MS));
   }
 
@@ -89,10 +97,9 @@ export class ExploreQueryService {
    *
    * @param query
    */
-  exploreQuery(query: ExploreQuery): Observable<ApiExploreQueryResult[]> {
+  exploreQuery(query: ExploreQuery): Observable<[ApiNodeMetadata, ApiExploreQueryResult][]> {
     let currentDefinition = this.constraintMappingService.mapConstraint(query.constraint)
     let currentTiming = query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
-
 
     return this.exploreQueryAllNodes(
       query.uniqueId,
