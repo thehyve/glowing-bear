@@ -1,5 +1,6 @@
 /**
  * Copyright 2021 CHUV
+ * Copyright 2021 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,26 +15,20 @@ import { ErrorHelper } from 'app/utilities/error-helper';
 import { MessageHelper } from 'app/utilities/message-helper';
 import { Observable, Subject, throwError } from 'rxjs';
 import { of } from 'rxjs';
-import { catchError, delay, flatMap, tap } from 'rxjs/operators';
+import {catchError, delay, flatMap, map, tap} from 'rxjs/operators';
 import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service';
 import { AuthenticationService } from './authentication.service';
 import { CryptoService } from './crypto.service';
+import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
 
 @Injectable()
 export class SavedCohortsPatientListService {
-
-
-  /*
-   * The user must be authorized to retrieve patient lists
-   */
 
   /*
    * listStorage stores the patient list, indexed by the cohort's name they relate to.
    * There is one list per node.
    */
-  _listStorage = new Map<string, number[][]>()
-
-
+  _listStorage = new Map<string, [ApiNodeMetadata[], number[][]]>()
 
   /*
    * statusStorage stores the status of list when API calls were necessary
@@ -56,7 +51,6 @@ export class SavedCohortsPatientListService {
 
     return id
   }
-
 
   constructor(private cryptoService: CryptoService,
     private exploreCohortsService: ExploreCohortsService,
@@ -83,13 +77,13 @@ export class SavedCohortsPatientListService {
   }
 
   /**
-   * getList returns an Observalbe of an array of arrays of numbers
+   * getList returns an Observable of an array of arrays of numbers
    * if no request is not already ongoing for the given cohort name. I returns observable of null otherwise.
    * There is one array per MedCo node, and each array represents clear patient numbers from this node.
    *
    * @param cohortName
    */
-  getList(cohortName: string): Observable<number[][]> {
+  getList(cohortName: string): Observable<[ApiNodeMetadata[], number[][]]> {
     if (!this.authorizedForPatientList) {
       throw ErrorHelper.handleNewError(`User ${this.authenticationService.username} is not authorized to retrieve patient lists from previous cohorts`)
     }
@@ -121,14 +115,12 @@ export class SavedCohortsPatientListService {
       notifier.next(OperationStatus.waitOnAPI)
     }
 
-    // creat the POST body object
+    // create the POST body object
 
     let patientListRequest = new ApiCohortsPatientLists()
     patientListRequest.cohortName = cohortName
     patientListRequest.userPublicKey = this.cryptoService.ephemeralPublicKey
     patientListRequest.id = SavedCohortsPatientListService.generateId()
-
-
 
     return this.exploreCohortsService.postCohortsPatientListAllNodes(patientListRequest).pipe(
       tap(
@@ -151,28 +143,28 @@ export class SavedCohortsPatientListService {
         } else {
           return throwError(ErrorHelper.handleNewError(`User ${this.authenticationService.username} is not authorized to retrieve patient lists from previous cohorts`))
         }
-      }
-      ),
-      // dirty trick: if the decryption starts immediatelly, views depending on notifiers won't be updating on
+      }),
+      // dirty trick: if the decryption starts immediately, views depending on notifiers won't be updating on
       // as the browser would be frozen (even for 2 or 3 seconds)
       // a solution could be the use of a web worker
       delay(100),
       flatMap(
-        value => {
-          let cipher = value.map(({ results }) => results)
-          return this.decrypt(cipher)
-        }
+       res => this.decrypt(res.map(x => x[1].results)).pipe(map( numbers => {
+         // need the explicit declaration in order to create the tuple
+         let ret: [ApiNodeMetadata[], number[][]] = [res.map(x => x[0]), numbers];
+         return ret;
+       }))
       ),
       tap(
-        (patientLists) => {
-          this._listStorage.set(cohortName, patientLists)
+        (res) => {
+          this._listStorage.set(cohortName, res)
           this._statusStorage.set(cohortName, OperationStatus.done)
           if (notifier) {
             notifier.next(OperationStatus.done)
           }
         }
       )
-    )
+    );
   }
 
   /**
@@ -180,13 +172,14 @@ export class SavedCohortsPatientListService {
    * It may be used when clear patient numbers come from another service/component
    *
    * @param cohortName
-   * @param patientList
+   * @param nodes
+   * @param patientLists
    */
-  insertPatientList(cohortName: string, patientLists: number[][]) {
+  insertPatientList(cohortName: string, nodes: ApiNodeMetadata[], patientLists: number[][]) {
     if (this._listStorage.has(cohortName)) {
       throw ErrorHelper.handleNewError(`Cannot insert new patient lists to already existing saved cohort ${cohortName}`)
     }
-    this._listStorage.set(cohortName, patientLists)
+    this._listStorage.set(cohortName, [nodes, patientLists])
   }
 
   removePatientList(cohortName: string) {

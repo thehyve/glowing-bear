@@ -279,7 +279,7 @@ export class CohortService {
     let apiCohorts = new Array<ApiCohort>()
     this._isRefreshing = true
     let cohortName = cohort.name
-    this.medcoNetworkService.nodesUrl.forEach((_, index) => {
+    this.medcoNetworkService.nodes.forEach((_, index) => {
       let apiCohort = new ApiCohort()
       apiCohort.patientSetID = cohort.patient_set_id[index]
 
