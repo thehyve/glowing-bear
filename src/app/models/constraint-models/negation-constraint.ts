@@ -11,7 +11,6 @@ import { Constraint } from './constraint';
 export class NegationConstraint extends Constraint {
 
   private _constraint: Constraint;
-  _textRepresentation: string;
 
   constructor(constraint: Constraint) {
     super();
