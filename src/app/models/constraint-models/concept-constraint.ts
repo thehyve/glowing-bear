@@ -61,6 +61,8 @@ export class ConceptConstraint extends Constraint {
     res.parentConstraint = this.parentConstraint
     res.concept = this.concept.clone()
     res.applyNumericalOperator = this.applyNumericalOperator
+    res.applyTextOperator = this.applyTextOperator;
+
     if (this.numericalOperator) {
       res.numericalOperator = this.numericalOperator
     }
