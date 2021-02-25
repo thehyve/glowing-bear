@@ -20,7 +20,7 @@ import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/u
 import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
-import { NumericalMethodResult, NumericalOperation } from 'app/models/numerical-models/numerical-operation';
+import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation';
 
 
 @Component({

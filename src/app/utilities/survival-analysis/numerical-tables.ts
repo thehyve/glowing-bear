@@ -9,7 +9,7 @@ import { logRank2Groups } from './log-rank-p-value'
 import { NewCoxRegression, coxToString } from '../numerical-methods/cox-model'
 import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
-import { NumericalOperation } from 'app/models/numerical-models/numerical-operation'
+import { NumericalOperation } from 'app/models/survival-analysis/numerical-models/numerical-operation'
 
 export function numericalTables(
   curves: SurvivalPoint[][],

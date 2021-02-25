@@ -1,4 +1,4 @@
-import { NumericalMethodResult } from 'app/models/numerical-models/numerical-operation'
+import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation'
 import { ErrorHelper } from '../error-helper'
 
 export function summaryToTable(

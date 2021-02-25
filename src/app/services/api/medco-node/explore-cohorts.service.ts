@@ -18,6 +18,7 @@ import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api
 import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
 import { ApiCohortsPatientListsResponse } from 'app/models/api-response-models/medco-node/api-cohorts-patient-list-response';
 import { ApiNodeMetadata } from '../../../models/api-response-models/medco-network/api-node-metadata';
+import { HttpParams } from '@angular/common/http';
 
 
 @Injectable()
@@ -29,12 +30,15 @@ export class ExploreCohortsService {
   private static TIMEOUT_MS = 1000 * 60 * 10;
 
   constructor(private config: AppConfig, private apiEndpointService: ApiEndpointService,
-              private medcoNetworkService: MedcoNetworkService) { }
+    private medcoNetworkService: MedcoNetworkService) { }
 
   getCohortSingleNode(node: ApiNodeMetadata): Observable<ApiCohortResponse[]> {
+
+    const params = new HttpParams().set('limit', '0')
+
     return this.apiEndpointService.getCall(
-      'node/explore/cohorts?limit=0',
-      false,
+      'node/explore/cohorts',
+      { params },
       node.url
     );
   }
