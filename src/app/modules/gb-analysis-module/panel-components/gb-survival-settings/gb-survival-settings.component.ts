@@ -36,8 +36,8 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   ]
 
   _temporalBoundaries: SelectItem[] = [
-    { label: 'Earliest', value: When.earliest },
-    { label: 'Latest', value: When.latest }
+    { label: 'Earliest observation', value: When.earliest },
+    { label: 'Latest observation', value: When.latest }
   ]
 
 

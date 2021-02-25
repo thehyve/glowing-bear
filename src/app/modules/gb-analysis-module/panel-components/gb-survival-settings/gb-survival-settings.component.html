@@ -9,9 +9,10 @@
         </label>
       </div>
       <input id="timeLimit" type="number" pInputText [(ngModel)]="limit" class="input-field input-field-margin" />
-      <span>&nbsp;&nbsp;</span>
-      <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"
-          [options]="granularities"></p-dropdown>
+      <span class="input-field-margin">
+        <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"
+            [options]="granularities"></p-dropdown>
+      </span>
     </div>
 
 
@@ -33,24 +34,13 @@
             <span>{{concept.label}}</span>
           </ng-template>
         </p-autoComplete>
+
+        <span class="input-field-margin">
+          <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedStartsWhen"
+                      [options]="temporalBoundaries"></p-dropdown>
+        </span>
       </div>
     </div>
-
-    <div class="input-label-wrapper">
-      <div>
-        <label>
-          Starts with:
-        </label>
-      </div>
-
-      <div class="input-field-margin">
-        <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedStartsWhen"
-          [options]="temporalBoundaries"></p-dropdown>&nbsp;observation<br />
-        <br />
-      </div>
-    </div>
-
-
 
     <div class="input-label-wrapper">
       <div>
@@ -71,18 +61,11 @@
             <span>{{concept.label}}</span>
           </ng-template>
         </p-autoComplete>
-      </div>
-    </div>
-    <div class="input-label-wrapper">
-      <div>
-        <label>
-          Ends with:
-        </label>
-      </div>
 
-      <div class="input-field-margin">
-        <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedEndsWhen"
-          [options]="temporalBoundaries"></p-dropdown>&nbsp;observation
+        <span class="input-field-margin">
+          <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedEndsWhen"
+                      [options]="temporalBoundaries"></p-dropdown>
+        </span>
       </div>
     </div>
   </div>
