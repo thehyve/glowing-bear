@@ -50,7 +50,7 @@ p-scrollpanel p.indented{
 
 .smallbutton:hover{
   color: var(--gb-clinical-green-dark);
-  
+
 }
 
 #stattest th, #stattest td{
@@ -102,4 +102,8 @@ p-scrollpanel p.indented{
 canvas{
   height: 500px;
   width: 750px;
+}
+
+#survivalSvgContainer {
+  position: relative;
 }

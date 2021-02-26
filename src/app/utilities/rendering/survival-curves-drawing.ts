@@ -113,7 +113,7 @@ export class SurvivalCurvesDrawing {
       cumul: number;
       remaining: number;
     }>().x(d => this._xaxis(d.timePoint)).y(d => this._yaxis(d.prob)).curve(curveStepAfter);
-    this._div = select('gb-survival-results').append('div')
+    this._div = select('#survivalSvgContainer').append('div')
       .style('position', 'absolute')
       .style('opacity', 0.0)
       .style('z-index', 10)
