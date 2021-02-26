@@ -5,20 +5,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild, OnChanges } from '@angular/core';
-import { Concept } from 'app/models/constraint-models/concept';
-import { ConstraintService } from 'app/services/constraint.service';
-import { UIHelper } from 'app/utilities/ui-helper';
-import { AutoComplete } from 'primeng/autocomplete';
-import { TreeNodeService } from 'app/services/tree-node.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
-import { Granularity } from 'app/models/survival-analysis/granularity-type';
-import { SelectItem } from 'primeng/api';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { TreeNodeType } from 'app/models/tree-models/tree-node-type';
-import { When } from 'app/models/survival-analysis/when-type';
-import { AnalysisService } from 'app/services/analysis.service';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild} from '@angular/core';
+import {Concept} from 'app/models/constraint-models/concept';
+import {ConstraintService} from 'app/services/constraint.service';
+import {UIHelper} from 'app/utilities/ui-helper';
+import {AutoComplete} from 'primeng/autocomplete';
+import {TreeNodeService} from 'app/services/tree-node.service';
+import {MessageHelper} from 'app/utilities/message-helper';
+import {ConceptConstraint} from 'app/models/constraint-models/concept-constraint';
+import {Granularity} from 'app/models/survival-analysis/granularity-type';
+import {SelectItem} from 'primeng/api';
+import {SurvivalService} from 'app/services/survival-analysis.service';
+import {TreeNodeType} from 'app/models/tree-models/tree-node-type';
+import {When} from 'app/models/survival-analysis/when-type';
+import {AnalysisService} from 'app/services/analysis.service';
 
 @Component({
   selector: 'gb-survival-settings',
@@ -32,12 +32,12 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     { label: 'Day', value: Granularity.day },
     { label: 'Week', value: Granularity.week },
     { label: 'Month', value: Granularity.month },
-    { label: 'Year', value: Granularity.month }
+    { label: 'Year', value: Granularity.year }
   ]
 
   _temporalBoundaries: SelectItem[] = [
-    { label: 'Earliest', value: When.earliest },
-    { label: 'Latest', value: When.latest }
+    { label: 'Earliest observation', value: When.earliest },
+    { label: 'Latest observation', value: When.latest }
   ]
 
 
@@ -236,5 +236,14 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
   get suggestedEndConcepts(): Concept[] {
     return this._suggestedEndConcepts
+  }
+
+  reset() {
+    this.limit = 2000
+    this.selectedGranularity = Granularity.day
+    this.startConcept = null
+    this.selectedStartsWhen = When.earliest
+    this.endConcept = null
+    this.selectedEndsWhen = When.earliest
   }
 }

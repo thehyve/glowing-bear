@@ -19,9 +19,9 @@ import { ErrorHelper } from 'app/utilities/error-helper';
 import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api-cohort-response';
 import { ConstraintReverseMappingService } from './constraint-reverse-mapping.service';
 import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-import { tap } from 'rxjs/operators';
 import { Constraint } from 'app/models/constraint-models/constraint';
 import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CombinationState } from 'app/models/constraint-models/combination-state';
 
 @Injectable()
@@ -259,12 +259,12 @@ export class CohortService {
         try {
           this.updateCohorts(CohortService.apiCohortsToCohort(apiCohorts))
         } catch (err) {
-          MessageHelper.alert('error', 'An error occured with received saved cohorts', err)
+          MessageHelper.alert('error', 'An error occured with received saved cohorts', (err as Error).message)
         }
         this._isRefreshing = false
       }).bind(this),
       (err => {
-        MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', err)
+        MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', (err as HttpErrorResponse).error.message)
         this._isRefreshing = false
 
       }).bind(this),
@@ -294,7 +294,7 @@ export class CohortService {
       this._isRefreshing = false
     },
       error => {
-        MessageHelper.alert('error', 'An error occured while saving cohort', error)
+        MessageHelper.alert('error', 'An error occured while saving cohort', (error as HttpErrorResponse).error.message)
         this._isRefreshing = false
       })
 
@@ -327,7 +327,7 @@ export class CohortService {
         console.log('on remove cohort, message: ', message)
       },
       err => {
-        MessageHelper.alert('error', 'An error occured while removing saved cohorts', err)
+        MessageHelper.alert('error', 'An error occured while removing saved cohorts', (err as HttpErrorResponse).error.message)
       }
     )
   }
