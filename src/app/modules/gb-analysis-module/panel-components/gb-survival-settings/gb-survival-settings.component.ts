@@ -32,7 +32,7 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     { label: 'Day', value: Granularity.day },
     { label: 'Week', value: Granularity.week },
     { label: 'Month', value: Granularity.month },
-    { label: 'Year', value: Granularity.month }
+    { label: 'Year', value: Granularity.year }
   ]
 
   _temporalBoundaries: SelectItem[] = [
