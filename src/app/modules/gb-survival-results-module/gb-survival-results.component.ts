@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,14 +14,13 @@ import { select, Selection } from 'd3';
 import { alphas, alphasReverseMap, CIs, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
 import { clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
 import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
-import { NewCoxRegression, coxToString } from 'app/utilities/numerical-methods/cox-model';
-import { logRank2Groups } from 'app/utilities/survival-analysis/log-rank-p-value';
-import { ChiSquaredCdf } from 'app/utilities/numerical-methods/chi-squared-cdf';
 import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
 import { PDF } from 'app/utilities/files/pdf';
 import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
 import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
 import { ErrorHelper } from 'app/utilities/error-helper';
+import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
+import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation';
 
 
 @Component({
@@ -35,6 +34,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   advancedSettings = false
   _results: SurvivalAnalysisClear
   _inputParameters: SurvivalSettings
+  _numericalTables: NumericalTablesType
   _survivalCurve: SurvivalCurve
   _groupComparisons: SelectItem[]
 
@@ -78,7 +78,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _drawing: SurvivalCurvesDrawing
 
   _groupTables: SelectItem[]
-  selectedGroupTable: { legend: string, table: Array<Array<string>> }
+  selectedGroupTable: { legend: string, table: Array<Array<NumericalMethodResult>> }
 
   _summaryTableMileStones: number[]
   _summaryTable: { atRisk: number, event: number }[][]
@@ -87,11 +87,14 @@ export class GbSurvivalResultsComponent implements OnInit {
 
 
 
+
+
   constructor(private elmRef: ElementRef, private activatedRoute: ActivatedRoute, private survivalResultsService: SurvivalResultsService) {
     this.survivalResultsService.id.subscribe(id => {
-      let resAndSettings = this.survivalResultsService.selectedSurvivalResult
-      this.results = resAndSettings.survivalAnalysisClear
-      this.inputParameters = resAndSettings.settings
+      let resAndSettingsAndTables = this.survivalResultsService.selectedSurvivalResult
+      this.results = resAndSettingsAndTables.survivalAnalysisClear
+      this.inputParameters = resAndSettingsAndTables.settings
+      this.numericalTables = resAndSettingsAndTables.numericalTables
 
       this.display()
     })
@@ -167,76 +170,45 @@ export class GbSurvivalResultsComponent implements OnInit {
     this._groupTotalEvent = new Array<string>()
     this._groupCoxLogtestTable = new Array<Array<string>>()
     let len = this.survivalCurve.curves.length
-    let curveName = this.survivalCurve.curves.map(curve => curve.groupId)
+    // let curveName = this.survivalCurve.curves.map(curve => curve.groupId)
     this._groupComparisons = new Array<SelectItem>()
 
     for (let i = 0; i < len; i++) {
-      let logrankRow = new Array<string>()
-      let coxRegRow = new Array<string>()
-      let waldCoxRow = new Array<string>()
-      let coxLogtestRow = new Array<string>()
       let totalAtRisk: string
       let totalEvent: string
       let totalCensoring: string
       for (let j = /*i+1*/ 0; j < len; j++) {
-        let logrank = logRank2Groups(this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points).toPrecision(3)
-        logrankRow.push(logrank)
-        let cox = NewCoxRegression([this.survivalCurve.curves[i].points, this.survivalCurve.curves[j].points], 1000, 1e-14, 'breslow').run()
-        let beta = cox.finalBeta[0]
-        let variance = cox.finalCovarianceMatrixEstimate[0][0]
-        let coxReg = coxToString(beta, variance)
 
-        // wald
-        let waldStat = Math.pow(beta, 2) / (variance + 1e-14)
-        let waldTest = (1.0 - ChiSquaredCdf(waldStat, 1)).toPrecision(3)
-
-        // loglikelihood
-        let likelihoodRatio = 2.0 * (cox.finalLogLikelihood - cox.initialLogLikelihood)
-        let coxLogtest = (1.0 - ChiSquaredCdf(likelihoodRatio, 1)).toPrecision(3)
-
-        coxRegRow.push(coxReg)
-        waldCoxRow.push(waldTest)
-        coxLogtestRow.push(coxLogtest)
         totalAtRisk = this.survivalCurve.curves[i].points[0].atRisk.toString()
         totalEvent = this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString()
         totalCensoring = this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a, b) => a + b).toString()
-        this._groupComparisons.push({
-          label: curveName[i] + curveName[j], value: {
-            name1: curveName[i],
-            name2: curveName[j],
-            color1: colorRange[i],
-            color2: colorRange[j],
-            logrank: logrank,
-            coxReg: coxReg,
-            initialCount1: totalAtRisk,
-            initialCount2: this.survivalCurve.curves[j].points[0].atRisk.toString(),
-            cumulatEvent1: totalEvent,
-            cumulatEvent2: this.survivalCurve.curves[j].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString(),
-            cumulatCensoring1: totalCensoring,
-            cumulatCensoring2: this.survivalCurve.curves[j].points.map(p => p.nofCensorings).reduce((a, b) => a + b).toString(),
-          }
-        })
 
       }
-      this._groupLogrankTable.push(logrankRow)
-      this._groupCoxRegTable.push(coxRegRow)
-      this._groupCoxWaldTable.push(waldCoxRow)
+
       this._groupTotalEvent.push(totalEvent)
       this._groupTotalCensoring.push(totalCensoring)
       this._groupTotalAtRisk.push(totalAtRisk)
-      this._groupCoxLogtestTable.push(coxLogtestRow)
 
     }
     this._groupTables.push(
-      { label: 'Haenszel-Mantel LogRank p-value', value: { legend: 'Logrank p-value', table: this._groupLogrankTable } },
-      { label: 'Cox regression proportional hazard ratio', value: { legend: 'Cox PH, [95% CI]', table: this._groupCoxRegTable } },
-      { label: 'Cox regression Wald test p-value', value: { legend: 'Wald p-value', table: this._groupCoxWaldTable } },
-      { label: 'Cox likelihood ratio p-value', value: { legend: 'Logtest p-vale', table: this._groupCoxLogtestTable } })
-    this.selectedGroupTable = { legend: 'KM p-value', table: this._groupLogrankTable }
+      {
+        label: 'Haenszel-Mantel LogRank p-value',
+        value: { legend: 'Logrank p-value', table: this.numericalTables.groupLogrankTable }
+      },
+      {
+        label: 'Cox regression proportional hazard ratio',
+        value: { legend: 'Cox PH, [95% CI]', table: this.numericalTables.groupCoxRegTable }
+      },
+      {
+        label: 'Cox regression Wald test p-value',
+        value: { legend: 'Wald p-value', table: this.numericalTables.groupCoxWaldTable }
+      },
+      {
+        label: 'Cox likelihood ratio p-value',
+        value: { legend: 'Logtest p-vale', table: this.numericalTables.groupCoxLogtestTable }
+      })
 
-    if (len) {
-      this._selectedGroupComparison = this._groupComparisons[0].value
-    }
+    this.selectedGroupTable = { legend: 'KM p-value', table: this.numericalTables.groupLogrankTable }
   }
 
   updateSummaryTable() {
@@ -291,20 +263,24 @@ export class GbSurvivalResultsComponent implements OnInit {
     if (curveNames.length > 1) {
       pdfDoc.addOneLineText('Logrank')
       console.log(`Debug: curveNames length: ${curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
-      tables = statTestToTable(curveNames, this.groupLogrankTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      let numTables = statTestToTable(curveNames, this.numericalTables.groupLogrankTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression coefficient')
-      tables = statTestToTable(curveNames, this.groupCoxRegTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxRegTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression wald test')
-      tables = statTestToTable(curveNames, this.groupCoxWaldTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxWaldTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Logtest')
-      tables = statTestToTable(curveNames, this.groupCoxLogtestTable)
-      pdfDoc.addTableFromObjects(tables.headers, tables.data)
+      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxLogtestTable)
+      pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
+      pdfDoc.addContentText(numTables.logs)
     }
 
     let exportDate = new Date(Date.now())
@@ -374,6 +350,14 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   get inputParameters(): SurvivalSettings {
     return this._inputParameters
+  }
+
+  set numericalTables(tables: NumericalTablesType) {
+    this._numericalTables = tables
+  }
+
+  get numericalTables(): NumericalTablesType {
+    return this._numericalTables
   }
 
   get survivalCurve(): SurvivalCurve {
