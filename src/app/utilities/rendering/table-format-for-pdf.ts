@@ -1,3 +1,4 @@
+import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation'
 import { ErrorHelper } from '../error-helper'
 
 export function summaryToTable(
@@ -55,17 +56,30 @@ export function milestonedSummaryToTable(
   return { headers: headers, data: data }
 }
 
-export function statTestToTable(groupNames: string[], table: string[][]) {
+export function statTestToTable(groupNames: string[], table: NumericalMethodResult[][])
+  : { headers: string[][], data: string[][], logs: string[] } {
   let headers = [['Group 1 name', 'Group 2 name', 'Value']]
   let nofGroups = groupNames.length
   let data = new Array<string[]>()
+  let logs = new Array<string>()
 
   for (let i = 0; i < nofGroups; i++) {
     for (let j = i + 1; j < nofGroups; j++) {
-      data.push([groupNames[i], groupNames[j], table[i][j]])
+      let elm = table[i][j]
+      let value: string
+      if (!elm.finished) {
+        value = 'NA (not completed)'
+      }
+      if ((elm.errorMessage) && elm.errorMessage !== '') {
+        value = 'NA (exception, see logs below)'
+        logs.push(`Groups ${groupNames[i]} and ${groupNames[j]}: ${elm.errorMessage}`)
+      } else {
+        value = elm.result
+      }
+      data.push([groupNames[i], groupNames[j], value])
 
     }
 
   }
-  return { headers: headers, data: data }
+  return { headers: headers, data: data, logs: logs }
 }

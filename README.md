@@ -14,7 +14,9 @@ For further details, support, and contacts, you can check the [MedCo Technical D
       - *gb-explore-results-module*: explore query results module, displaying the results of the explore queries
       - *gb-main-module*: angular main module
       - *gb-navbar-module*: navigation bar module, containing the menu with tabs
-      - *gb-side-panel-module*: side panel module, containing the summary and ontology tree
+      - *gb-side-panel-module*: side panel module, containing the summary, ontology tree and saved cohorts
+      - *gb-analysis-module*: analysis module, containing the analysis option (only survival at the current time) and settings for the analysis to run
+      - *gb-survival-results-module*: survival results module, containing the results of the various operations run on survival data points in the context of survival analysis. An overview of this compenent's logic can be found in this [file](https://github.com/ldsec/glowing-bear-medco/src/survival-analysis.md).
     - *services*: services handling data flow
     - *utilities*: utility tools: crypto, log, error, etc.
   - *assets*: static assets 
