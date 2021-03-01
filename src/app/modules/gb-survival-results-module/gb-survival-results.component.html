@@ -63,6 +63,22 @@
 <div class="row">
   <div class="column-2">
     <div id="survivalSvgContainer"></div>
+    <div id="milestonedContainer" style="overflow-x:auto; width: 90%;">
+      <table id="milestoned">
+        <tr>
+          <th>
+            sums of at risk (events)
+          </th>
+          <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
+        </tr>
+        <tr *ngFor="let summaries of summaryTable; let i = index">
+          <td>
+            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+          </td>
+          <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
+        </tr>
+      </table>
+    </div>
   </div>
   <div class="column-3">
     <table id="summary">
@@ -116,21 +132,6 @@
       </tr>
     </table>
   </div>
-
-  <table id="milestoned">
-    <tr>
-      <th>
-        sums of at risk(events)
-      </th>
-      <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
-    </tr>
-    <tr *ngFor="let summaries of summaryTable; let i = index">
-      <td>
-        <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-      </td>
-      <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
-    </tr>
-  </table>
 
   <canvas id="drawingconv" hidden></canvas>
 </div>

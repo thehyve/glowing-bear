@@ -10,7 +10,10 @@
 }
 
 .column-2 {
+  display: flex;
+  flex-direction: column;
   flex: 60%;
+  overflow: hidden;
 }
 
 .description{
@@ -77,6 +80,12 @@ p-scrollpanel p.indented{
 #summary{
   width: 85%;
   table-layout:fixed;
+}
+
+#milestonedContainer{
+  overflow-x:auto;
+  width: 90%;
+  margin-left: 2em;
 }
 
 #milestoned{
