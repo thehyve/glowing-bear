@@ -29,10 +29,10 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   _activated: boolean
 
   _granularities: SelectItem[] = [
-    { label: 'Day', value: Granularity.day },
-    { label: 'Week', value: Granularity.week },
-    { label: 'Month', value: Granularity.month },
-    { label: 'Year', value: Granularity.year }
+    { label: 'days', value: Granularity.day },
+    { label: 'weeks', value: Granularity.week },
+    { label: 'months', value: Granularity.month },
+    { label: 'years', value: Granularity.year }
   ]
 
   _temporalBoundaries: SelectItem[] = [
@@ -239,8 +239,8 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   }
 
   reset() {
-    this.limit = 2000
-    this.selectedGranularity = Granularity.day
+    this.limit = 48
+    this.selectedGranularity = Granularity.month
     this.startConcept = null
     this.selectedStartsWhen = When.earliest
     this.endConcept = null
