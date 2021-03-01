@@ -50,7 +50,7 @@ p-scrollpanel p.indented{
 
 .smallbutton:hover{
   color: var(--gb-clinical-green-dark);
-  
+
 }
 
 #stattest th, #stattest td{
@@ -70,7 +70,13 @@ p-scrollpanel p.indented{
   border-right-style:none;
   padding:0.5em;
   height:1em;
+  width: 25%;
   text-align:left;
+}
+
+#summary{
+  width: 85%;
+  table-layout:fixed;
 }
 
 #milestoned{
