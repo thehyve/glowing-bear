@@ -32,8 +32,6 @@ import {ApiNodeMetadata} from '../../models/api-response-models/medco-network/ap
 })
 export class GbExploreComponent implements AfterViewChecked {
 
-  _patternValidation = new RegExp('^\\w+$')
-
   _lastPatientList: [ApiNodeMetadata[], number[][]]
 
   OperationType = OperationType
@@ -69,7 +67,7 @@ export class GbExploreComponent implements AfterViewChecked {
   save() {
     if (this.cohortName === '') {
       MessageHelper.alert('warn', 'You must provide a name for the cohort you want to save.')
-    } else if (!this._patternValidation.test(this.cohortName).valueOf()) {
+    } else if (!this.cohortService.patternValidation.test(this.cohortName).valueOf()) {
       MessageHelper.alert('error', `Name ${this.cohortName} can only contain digits and alphabetical symbols`)
     } else {
       let existingCohorts = this.cohortService.cohorts

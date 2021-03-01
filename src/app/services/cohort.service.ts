@@ -42,6 +42,10 @@ export class CohortService {
   private _queryTiming: Subject<ApiI2b2Timing>
   private _panelTimings: Subject<ApiI2b2Timing[]>
 
+  // constraint on cohort name
+  _patternValidation: RegExp
+
+
   private static apiCohortsToCohort(apiCohorts: ApiCohortResponse[][]): Cohort[] {
 
     const cohortNumber = apiCohorts[0].length
@@ -195,7 +199,7 @@ export class CohortService {
     this.medcoNetworkService.nodes.forEach((apiMetadata => {
       this._nodeName[apiMetadata.index] = apiMetadata.name
     }).bind(this))
-
+    this._patternValidation = new RegExp('^\\w+$')
     this._cohorts = new Array<Cohort>()
   }
 
@@ -250,6 +254,10 @@ export class CohortService {
 
   get panelTimings(): Observable<ApiI2b2Timing[]> {
     return this._panelTimings.asObservable()
+  }
+
+  get patternValidation(): RegExp {
+    return this._patternValidation
   }
 
   getCohorts() {
