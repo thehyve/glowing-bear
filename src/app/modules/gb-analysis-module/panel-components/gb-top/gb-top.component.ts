@@ -21,6 +21,7 @@ import { delay, tap } from 'rxjs/operators';
 import { OperationStatus } from 'app/models/operation-status';
 import { NavbarService } from 'app/services/navbar.service';
 import { AnalysisService } from 'app/services/analysis.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'gb-top',
@@ -119,7 +120,9 @@ export class GbTopComponent implements OnInit {
           tap(() => { this.operationStatus = OperationStatus.decryption },
             err => {
               this.operationStatus = OperationStatus.error
-              MessageHelper.alert('error', (err as Error).message)
+              MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
+              (err as HttpErrorResponse).error.message :
+              (err as Error).message)
             }),
           delay(100)
         )
