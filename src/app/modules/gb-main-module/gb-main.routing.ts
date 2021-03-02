@@ -18,15 +18,15 @@ export const routes: Routes = [
   },
   {
     path: 'explore',
-    loadChildren: '../gb-explore-module/gb-explore.module#GbExploreModule'
+    loadChildren: () => import('../gb-explore-module/gb-explore.module').then(m => m.GbExploreModule)
   },
   {
     path: 'analysis',
-    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+    loadChildren: () => import('../gb-analysis-module/gb-analysis.module').then(m => m.GbAnalysisModule)
   },
   {
     path: 'survival/:id',
-    loadChildren: '../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
+    loadChildren: () => import('../gb-survival-results-module/gb-survival-results.module').then(m => m.GbSurvivalResultsModule)
   }
 ];
 

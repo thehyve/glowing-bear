@@ -47,8 +47,8 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   endEventHovering = false
   _suggestedEndConcepts: Concept[]
 
-  @ViewChild('autoComplete', { static: false }) autoComplete: AutoComplete;
-  @ViewChild('autoCompleteContainer', { static: false }) autoCompleteContainer: HTMLElement;
+  @ViewChild('autoComplete') autoComplete: AutoComplete;
+  @ViewChild('autoCompleteContainer') autoCompleteContainer: HTMLElement;
 
   @Output() changedEventConcepts: EventEmitter<boolean> = new EventEmitter()
 
