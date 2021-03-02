@@ -241,9 +241,9 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
   reset() {
     this.limit = 48
     this.selectedGranularity = Granularity.month
-    this.startConcept = null
+    this.startConcept = undefined
     this.selectedStartsWhen = When.earliest
-    this.endConcept = null
+    this.endConcept = undefined
     this.selectedEndsWhen = When.earliest
   }
 }
