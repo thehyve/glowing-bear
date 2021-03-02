@@ -6,19 +6,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild, OnChanges } from '@angular/core';
-import { Concept } from 'app/models/constraint-models/concept';
-import { ConstraintService } from 'app/services/constraint.service';
-import { UIHelper } from 'app/utilities/ui-helper';
-import { AutoComplete } from 'primeng/autocomplete';
-import { TreeNodeService } from 'app/services/tree-node.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
-import { Granularity } from 'app/models/survival-analysis/granularity-type';
-import { SelectItem } from 'primeng/api';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { TreeNodeType } from 'app/models/tree-models/tree-node-type';
-import { When } from 'app/models/survival-analysis/when-type';
-import { AnalysisService } from 'app/services/analysis.service';
+import {Granularity} from '../../../../models/survival-analysis/granularity-type';
+import {SelectItem} from 'primeng/api';
+import {Concept} from '../../../../models/constraint-models/concept';
+import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {When} from '../../../../models/survival-analysis/when-type';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {TreeNodeService} from '../../../../services/tree-node.service';
+import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {SurvivalService} from '../../../../services/survival-analysis.service';
+import {UIHelper} from '../../../../utilities/ui-helper';
+import {AnalysisService} from '../../../../services/analysis.service';
+import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
 
 @Component({
   selector: 'gb-survival-settings',

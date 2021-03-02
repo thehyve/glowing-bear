@@ -60,6 +60,24 @@ export class CryptoService {
     return DecryptInt(this._ephemeralPrivateKey, cipherText);
   }
 
+  // batchDecryptIntegerWithEphemeralKey(encIntegers: string[]): number[] {
+  //   if (typeof Worker !== 'undefined') {
+  //     // Create a new
+  //     const worker = new Worker('./workers/crypto.worker', { type: 'module' });
+  //     worker.onmessage = ({ data }) => {
+  //       console.log(`page got message: ${data}`);
+  //     };
+  //     worker.onerror = ({ error }) => {
+  //
+  //     };
+  //     worker.postMessage('hello');
+  //   } else {
+  //     // Web workers are not supported in this environment.
+  //     // You should add a fallback so that your program still executes correctly.
+  //   }
+  //   return [];
+  // }
+
   get ephemeralPublicKey(): string {
     return SerializePoint(this._ephemeralPublicKey);
   }

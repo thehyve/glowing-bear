@@ -1,7 +1,7 @@
 import * as jsPDF from 'jspdf'
 import 'jspdf-autotable'
 import canvg from 'canvg'
-import { ErrorHelper } from 'app/utilities/error-helper'
+import {ErrorHelper} from '../error-helper';
 
 const gbClinicalGreen = [51, 156, 144]
 

@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
         MessageHelper.alert('error', 'Authentication failed!');
       }
     });
+    //this.testww();
   }
 
   get authenticationCompleted(): boolean {
@@ -47,5 +48,22 @@ export class AppComponent implements OnInit {
   set messages(value: any[]) {
     MessageHelper.messages = value;
   }
+
+  // testww(): void {
+  //   if (typeof Worker !== 'undefined') {
+  //     const worker = new Worker('./workers/decryption.worker', { type: 'module' });
+  //     let xx: WorkerDecryptionRequest;
+  //
+  //     worker.onmessage = ({ data }) => {
+  //       console.log(`page got message: ${data}`);
+  //     };
+  //     worker.onerror = ({ error }) => {
+  //
+  //     };
+  //     worker.postMessage('hello');
+  //   } else {
+  //     MessageHelper.alert('error', 'Your browser does not support web workers')
+  //   }
+  // }
 
 }

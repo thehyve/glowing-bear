@@ -27,6 +27,7 @@
     "@types/chart.js": "^2.9.13",
     "@types/elliptic": "^6.4.12",
     "@types/file-saver": "^2.0.1",
+    "angular-web-worker": "^1.0.6",
     "arraybuffer-to-buffer": "0.0.7",
     "base64url": "^3.0.1",
     "canvas": "^2.6.1",

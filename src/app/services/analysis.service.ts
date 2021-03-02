@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AnalysisType } from 'app/models/analysis-models/analysis-type';
+import {AnalysisType} from '../models/analysis-models/analysis-type';
 
 @Injectable({
   providedIn: 'root'

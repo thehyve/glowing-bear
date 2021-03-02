@@ -14,7 +14,7 @@ import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
 import { CombinationState } from '../../../../models/constraint-models/combination-state';
 import { TreeNode } from '../../../../models/tree-models/tree-node';
 import { UIHelper } from '../../../../utilities/ui-helper';
-import { MessageHelper } from 'app/utilities/message-helper';
+import {MessageHelper} from '../../../../utilities/message-helper';
 
 @Component({
   selector: 'gb-combination-constraint',

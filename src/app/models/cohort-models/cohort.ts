@@ -5,14 +5,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Constraint } from '../constraint-models/constraint'
-import { subscribeOn } from 'rxjs/operators'
-import { runInThisContext } from 'vm'
-import { rootCertificates } from 'tls'
 import { CombinationConstraint } from '../constraint-models/combination-constraint'
 
-import { ErrorHelper } from 'app/utilities/error-helper'
 import { ApiQueryDefinition } from '../api-request-models/medco-node/api-query-definition'
+import {ErrorHelper} from '../../utilities/error-helper';
 
 
 export class Cohort {

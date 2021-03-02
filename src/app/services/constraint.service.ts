@@ -22,8 +22,8 @@ import {TreeNodeType} from '../models/tree-models/tree-node-type';
 import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ErrorHelper} from '../utilities/error-helper';
-import {OperationType} from 'app/models/operation-models/operation-types';
-import {MessageHelper} from 'app/utilities/message-helper';
+import {OperationType} from '../models/operation-models/operation-types';
+import {MessageHelper} from '../utilities/message-helper';
 
 /**
  * This service concerns with

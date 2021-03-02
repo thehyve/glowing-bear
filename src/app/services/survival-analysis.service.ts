@@ -12,21 +12,21 @@ import { MedcoNetworkService } from './api/medco-network.service';
 import { Observable, of } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ApiSurvivalAnalysisService } from './api/medco-node/api-survival-analysis.service';
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear'
-import { ApiSurvivalAnalysis } from 'app/models/api-request-models/survival-analyis/api-survival-analysis';
-import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
 import { CohortService } from './cohort.service';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
-import { Granularity } from 'app/models/survival-analysis/granularity-type';
-import { Concept } from 'app/models/constraint-models/concept';
-import { Constraint } from 'app/models/constraint-models/constraint';
-import { NegationConstraint } from 'app/models/constraint-models/negation-constraint';
-import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
-import { ConstraintMappingService } from './constraint-mapping.service';
-import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
-import { ErrorHelper } from 'app/utilities/error-helper';
-import { ClearGroup } from 'app/models/survival-analysis/clear-group';
-import { When } from 'app/models/survival-analysis/when-type';
+import {Concept} from '../models/constraint-models/concept';
+import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
+import {ClearGroup} from '../models/survival-analysis/clear-group';
+import {ApiSurvivalAnalysisResponse} from '../models/api-response-models/survival-analysis/survival-analysis-response';
+import {Constraint} from '../models/constraint-models/constraint';
+import {SurvivalAnalysisClear} from '../models/survival-analysis/survival-analysis-clear';
+import {Granularity} from '../models/survival-analysis/granularity-type';
+import {NegationConstraint} from '../models/constraint-models/negation-constraint';
+import {ErrorHelper} from '../utilities/error-helper';
+import {ConstraintMappingService} from './constraint-mapping.service';
+import {When} from '../models/survival-analysis/when-type';
+import {SurvivalSettings} from '../models/survival-analysis/survival-settings';
+import {ApiSurvivalAnalysis} from '../models/api-request-models/survival-analyis/api-survival-analysis';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 
 export class SubGroup {
   name: string

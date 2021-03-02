@@ -9,8 +9,8 @@
 import { CoxRegression, TimePoint, EventType } from './cox-regression'
 import { BreslowCoxRegression } from './breslow'
 import { EfronCoxRegression } from './efron'
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 import { ErrorHelper } from '../error-helper';
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
 
   if (maxIter <= 0) {

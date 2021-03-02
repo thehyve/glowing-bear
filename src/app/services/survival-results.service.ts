@@ -7,15 +7,13 @@
  */
 
 import { Injectable } from '@angular/core';
-
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
-
 import { NavbarService } from './navbar.service';
-import { clearResultsToArray } from 'app/models/survival-analysis/survival-curves';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
-import { NumericalTablesType, numericalTables } from 'app/utilities/survival-analysis/numerical-tables';
+import {SurvivalSettings} from '../models/survival-analysis/survival-settings';
+import {clearResultsToArray} from '../models/survival-analysis/survival-curves';
+import {SurvivalAnalysisClear} from '../models/survival-analysis/survival-analysis-clear';
+import {numericalTables, NumericalTablesType} from '../utilities/survival-analysis/numerical-tables';
 
 @Injectable()
 export class SurvivalResultsService {

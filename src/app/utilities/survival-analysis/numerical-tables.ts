@@ -7,8 +7,8 @@
  */
 import { logRank2Groups } from './log-rank-p-value'
 import { NewCoxRegression, coxToString } from '../numerical-methods/cox-model'
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 export function numericalTables(
   curves: SurvivalPoint[][],

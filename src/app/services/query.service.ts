@@ -24,9 +24,9 @@ import { ExploreQueryResult } from '../models/query-models/explore-query-result'
 import { Observable, ReplaySubject, throwError, Subject } from 'rxjs';
 import { ErrorHelper } from '../utilities/error-helper';
 import { MessageHelper } from '../utilities/message-helper';
-import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
+import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
+import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
 
 /**
  * This service concerns with updating subject counts.

@@ -9,15 +9,15 @@
  */
 
 import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewChild } from '@angular/core';
-import { Cohort } from 'app/models/cohort-models/cohort';
-import { OperationStatus } from 'app/models/operation-status';
-import { CohortService } from 'app/services/cohort.service';
-import { ConstraintService } from 'app/services/constraint.service';
-import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
-import { ErrorHelper } from 'app/utilities/error-helper';
-import { savePatientListToCSVFile } from 'app/utilities/files/csv';
 import { ConfirmationService } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel'
+import {CohortService} from '../../../../services/cohort.service';
+import {SavedCohortsPatientListService} from '../../../../services/saved-cohorts-patient-list.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {Cohort} from '../../../../models/cohort-models/cohort';
+import {savePatientListToCSVFile} from '../../../../utilities/files/csv';
+import {OperationStatus} from '../../../../models/operation-status';
+import {ErrorHelper} from '../../../../utilities/error-helper';
 
 
 @Component({

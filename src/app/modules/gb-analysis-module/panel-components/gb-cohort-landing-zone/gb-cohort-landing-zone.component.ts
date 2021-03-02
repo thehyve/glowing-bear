@@ -7,14 +7,11 @@
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { ConstraintService } from 'app/services/constraint.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { SubGroup } from 'app/services/survival-analysis.service';
-import { OperationType } from 'app/models/operation-models/operation-types';
-import { AnalysisService } from 'app/services/analysis.service';
-
-
+import {SubGroup, SurvivalService} from '../../../../services/survival-analysis.service';
+import {AnalysisService} from '../../../../services/analysis.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {OperationType} from '../../../../models/operation-models/operation-types';
 
 const nameMaxLength = 12
 

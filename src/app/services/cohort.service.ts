@@ -6,23 +6,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Injectable } from '@angular/core';
-import { Cohort } from 'app/models/cohort-models/cohort';
 import { Observable, Subject } from 'rxjs';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { MedcoNetworkService } from './api/medco-network.service';
-import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
 import { ConstraintService } from './constraint.service';
 import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
-import { ErrorHelper } from 'app/utilities/error-helper';
-import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api-cohort-response';
 import { ConstraintReverseMappingService } from './constraint-reverse-mapping.service';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-import { tap } from 'rxjs/operators';
-import { Constraint } from 'app/models/constraint-models/constraint';
-import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
-import { CombinationState } from 'app/models/constraint-models/combination-state';
+import {MessageHelper} from '../utilities/message-helper';
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {Cohort} from '../models/cohort-models/cohort';
+import {Constraint} from '../models/constraint-models/constraint';
+import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
+import {ApiCohortResponse} from '../models/api-response-models/medco-node/api-cohort-response';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {ApiCohort} from '../models/api-request-models/medco-node/api-cohort';
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class CohortService {

@@ -6,9 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
-import {AppConfig} from '../../config/app.config';
 
 @Component({
   selector: 'gb-side-panel',

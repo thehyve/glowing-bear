@@ -7,20 +7,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Injectable } from '@angular/core';
-import { AppConfig } from 'app/config/app.config';
-import { ApiEndpointService } from 'app/services/api-endpoint.service';
 import { MedcoNetworkService } from '../medco-network.service';
-import { GenomicAnnotationsService } from '../genomic-annotations.service';
-import { ConstraintMappingService } from 'app/services/constraint-mapping.service';
-import { CryptoService } from 'app/services/crypto.service';
-import { ApiCohort } from 'app/models/api-request-models/medco-node/api-cohort';
 import { Observable, forkJoin } from 'rxjs';
 import { map, timeout } from 'rxjs/operators';
-
-import { ApiCohortResponse } from 'app/models/api-response-models/medco-node/api-cohort-response';
-import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
-import { ApiCohortsPatientListsResponse } from 'app/models/api-response-models/medco-node/api-cohorts-patient-list-response';
 import {ApiNodeMetadata} from '../../../models/api-response-models/medco-network/api-node-metadata';
+import {AppConfig} from '../../../config/app.config';
+import {ApiCohortsPatientLists} from '../../../models/api-request-models/medco-node/api-cohorts-patient-lists';
+import {ApiCohortsPatientListsResponse} from '../../../models/api-response-models/medco-node/api-cohorts-patient-list-response';
+import {ApiCohortResponse} from '../../../models/api-response-models/medco-node/api-cohort-response';
+import {ApiEndpointService} from '../../api-endpoint.service';
+import {ApiCohort} from '../../../models/api-request-models/medco-node/api-cohort';
 
 
 @Injectable()

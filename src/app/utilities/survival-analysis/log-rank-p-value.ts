@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 
 /**

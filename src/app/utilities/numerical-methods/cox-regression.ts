@@ -9,8 +9,6 @@
 import { inv } from 'mathjs';
 import { ErrorHelper } from '../error-helper';
 
-
-
 export interface EventType { x: number[], event: boolean }
 export interface TimePoint { time: number, events: EventType[] }
 export abstract class CoxRegression {

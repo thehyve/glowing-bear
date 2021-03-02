@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
 import { AccordionModule } from 'primeng/accordion'
 import { routing } from './gb-analysis.routing'
 import { RouterModule } from '@angular/router';
-import { ApiSurvivalAnalysisService } from 'app/services/api/medco-node/api-survival-analysis.service';
 import { GbCohortLandingZoneComponent } from './panel-components/gb-cohort-landing-zone/gb-cohort-landing-zone.component';
 import { GbTopComponent } from './panel-components/gb-top/gb-top.component';
 import { GbSurvivalSettingsComponent } from './panel-components/gb-survival-settings/gb-survival-settings.component';
@@ -30,8 +29,9 @@ import { TabViewModule } from 'primeng/tabview'
 import { DropdownModule } from 'primeng/dropdown';
 import { AutoCompleteModule } from 'primeng/autocomplete'
 import { GbSelectionModule } from '../gb-explore-module/gb-selection-component/gb-selection.module';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { AnalysisService } from 'app/services/analysis.service';
+import {ApiSurvivalAnalysisService} from '../../services/api/medco-node/api-survival-analysis.service';
+import {SurvivalService} from '../../services/survival-analysis.service';
+import {AnalysisService} from '../../services/analysis.service';
 
 
 @NgModule({

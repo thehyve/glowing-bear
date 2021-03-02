@@ -6,21 +6,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit } from '@angular/core';
-import { AnalysisType } from 'app/models/analysis-models/analysis-type';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
 import { Subject, Observable } from 'rxjs';
-import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
-import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
-import { MessageHelper } from 'app/utilities/message-helper';
+import {AnalysisType} from '../../../../models/analysis-models/analysis-type';
+import {ApiI2b2Panel} from '../../../../models/api-request-models/medco-node/api-i2b2-panel';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {delay, tap} from 'rxjs/operators';
+import {ApiSurvivalAnalysisResponse} from '../../../../models/api-response-models/survival-analysis/survival-analysis-response';
+import {SurvivalAnalysisClear} from '../../../../models/survival-analysis/survival-analysis-clear';
+import {CohortService} from '../../../../services/cohort.service';
+import {NavbarService} from '../../../../services/navbar.service';
+import {ApiI2b2Item} from '../../../../models/api-request-models/medco-node/api-i2b2-item';
+import {OperationStatus} from '../../../../models/operation-status';
+import {SurvivalService} from '../../../../services/survival-analysis.service';
+import {SurvivalResultsService} from '../../../../services/survival-results.service';
+import {AnalysisService} from '../../../../services/analysis.service';
 
-import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { CohortService } from 'app/services/cohort.service';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { delay, tap } from 'rxjs/operators';
-import { OperationStatus } from 'app/models/operation-status';
-import { NavbarService } from 'app/services/navbar.service';
-import { AnalysisService } from 'app/services/analysis.service';
 
 @Component({
   selector: 'gb-top',
@@ -128,6 +128,8 @@ export class GbTopComponent implements OnInit {
           console.log(res)
           this._survivalAnalysisResponses = res
 
+          // todo: include this part in a callback function
+          // this callback function will process the decrypted results once they are available
           let survivalAnalysisClear: SurvivalAnalysisClear
           try {
             survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])

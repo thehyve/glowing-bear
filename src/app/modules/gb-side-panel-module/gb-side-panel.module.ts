@@ -29,11 +29,9 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
 
 import { ToggleButtonModule } from 'primeng/togglebutton'
-import { ExploreCohortsService } from 'app/services/api/medco-node/explore-cohorts.service';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
-
-
+import {SurvivalService} from '../../services/survival-analysis.service';
+import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
+import {ExploreCohortsService} from '../../services/api/medco-node/explore-cohorts.service';
 
 @NgModule({
   imports: [
