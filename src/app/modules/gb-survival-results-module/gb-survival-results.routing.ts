@@ -17,7 +17,7 @@ const routes: Routes = [
   {
     path: '',
     component: GbSurvivalResultsComponent,
-    canActivate:[GbSurvivalResultsGuard]
+    canActivate: [GbSurvivalResultsGuard]
   }
 ]
 

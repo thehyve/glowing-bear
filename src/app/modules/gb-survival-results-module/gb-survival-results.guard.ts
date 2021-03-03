@@ -22,9 +22,9 @@ export class GbSurvivalResultsGuard implements CanActivate {
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     let urlTokens = state.url.split('/')
     let resultIDString = urlTokens[urlTokens.length - 1]
-    let resultID = parseInt(resultIDString)
+    let resultID = parseInt(resultIDString, 10)
 
-    if ((resultID <= 0) || (resultID > this.survivalResultsService.survivalResults.length)) {
+    if ((isNaN(resultID)) || (resultID <= 0) || (resultID > this.survivalResultsService.survivalResults.length)) {
       console.log(`${resultIDString} not in survival results, redirect to /analysis ...`)
       this.router.navigateByUrl('/analysis')
       return false
