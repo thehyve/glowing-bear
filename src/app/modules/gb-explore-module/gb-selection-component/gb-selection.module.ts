@@ -5,7 +5,7 @@ import { GbConstraintComponent } from '../constraint-components/gb-constraint/gb
 import { GbConceptConstraintComponent } from '../constraint-components/gb-concept-constraint/gb-concept-constraint.component';
 import { GbGenomicAnnotationConstraintComponent } from '../constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
 import { GbSelectionComponent } from './gb-selection.component';
-import { AccordionModule } from 'primeng/components/accordion/accordion';
+import { AccordionModule } from 'primeng/accordion';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng/autocomplete';

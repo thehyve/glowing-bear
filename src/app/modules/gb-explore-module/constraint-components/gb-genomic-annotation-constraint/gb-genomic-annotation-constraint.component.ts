@@ -8,7 +8,7 @@
 
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {AutoComplete} from 'primeng/autocomplete';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {GenomicAnnotationConstraint} from '../../../../models/constraint-models/genomic-annotation-constraint';

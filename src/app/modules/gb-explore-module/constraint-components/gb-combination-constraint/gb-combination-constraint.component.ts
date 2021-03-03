@@ -10,7 +10,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { GbConstraintComponent } from '../gb-constraint/gb-constraint.component';
 import { CombinationConstraint } from '../../../../models/constraint-models/combination-constraint';
 import { Constraint } from '../../../../models/constraint-models/constraint';
-import { AutoComplete } from 'primeng/components/autocomplete/autocomplete';
+import { AutoComplete } from 'primeng/autocomplete';
 import { CombinationState } from '../../../../models/constraint-models/combination-state';
 import { TreeNode } from '../../../../models/tree-models/tree-node';
 import { UIHelper } from '../../../../utilities/ui-helper';

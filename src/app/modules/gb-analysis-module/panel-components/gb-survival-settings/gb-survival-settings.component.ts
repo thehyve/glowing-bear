@@ -14,7 +14,7 @@ import {MessageHelper} from '../../../../utilities/message-helper';
 import {When} from '../../../../models/survival-analysis/when-type';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {AutoComplete} from 'primeng/autocomplete';
 import {SurvivalService} from '../../../../services/survival-analysis.service';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {AnalysisService} from '../../../../services/analysis.service';

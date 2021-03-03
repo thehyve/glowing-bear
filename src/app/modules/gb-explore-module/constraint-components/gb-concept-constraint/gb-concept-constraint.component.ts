@@ -9,7 +9,7 @@
 
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng/components/autocomplete/autocomplete';
+import {AutoComplete} from 'primeng/autocomplete';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
