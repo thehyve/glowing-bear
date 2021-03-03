@@ -19,6 +19,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { routing } from './gb-survival-results.routing'
 import { GbSurvivalResultsComponent } from './gb-survival-results.component';
 import { RouterModule } from '@angular/router';
+import { GbSurvivalResultsGuard } from './gb-survival-results.guard';
 
 
 
@@ -35,6 +36,9 @@ import { RouterModule } from '@angular/router';
     ButtonModule,
     SpinnerModule,
     TooltipModule,
+  ],
+  providers: [
+    GbSurvivalResultsGuard,
   ],
   exports: [
     RouterModule,
