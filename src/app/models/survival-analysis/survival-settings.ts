@@ -8,6 +8,8 @@
 import { Granularity } from './granularity-type';
 
 export class SurvivalSettings {
+  public cohortName: string
+
   constructor(
     public timeGranularity: Granularity,
     public timeLimit: number,
@@ -24,13 +26,14 @@ export class SurvivalSettings {
 
   mainSettingsToTable(): { headers: string[][], data: string[][] } {
     let headers = [['Name', 'Value']]
-    let data = new Array<string[]>(6)
-    data[0] = ['time granularity', `${this.timeGranularity}`]
-    data[1] = ['time limit (in unit defined in granularity)', `${this.timeLimit}`]
-    data[2] = ['start event', `${this.startEvent}`]
-    data[3] = ['starts when', `${this.startsWhen}`]
-    data[4] = ['end event', `${this.endEvent}`]
-    data[5] = ['ends when', `${this.endsWhen}`]
+    let data = new Array<string[]>(7)
+    data[0] = ['cohort name', `${this.cohortName}`]
+    data[1] = ['time granularity', `${this.timeGranularity}`]
+    data[2] = ['time limit (in unit defined in granularity)', `${this.timeLimit}`]
+    data[3] = ['start event', `${this.startEvent}`]
+    data[4] = ['starts when', `${this.startsWhen}`]
+    data[5] = ['end event', `${this.endEvent}`]
+    data[6] = ['ends when', `${this.endsWhen}`]
 
 
     return { headers: headers, data: data }
