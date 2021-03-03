@@ -113,7 +113,7 @@ export class SurvivalCurvesDrawing {
       cumul: number;
       remaining: number;
     }>().x(d => this._xaxis(d.timePoint)).y(d => this._yaxis(d.prob)).curve(curveStepAfter);
-    this._div = select('gb-survival-results').append('div')
+    this._div = select('#survivalSvgContainer').append('div')
       .style('position', 'absolute')
       .style('opacity', 0.0)
       .style('z-index', 10)
@@ -289,9 +289,9 @@ export class SurvivalCurvesDrawing {
         .attr('cx', d => this._xaxis(d.timePoint))
         .attr('cy', d => this._yaxis(d.prob))
         .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
-        .attr('r', '3px')
-        .attr('opacity', 0.0)
-        .attr('fill', 'black').on('mouseover', (d) => {
+        .attr('r', '4px')
+        .attr('opacity', 0.1)
+        .attr('fill', 'grey').on('mouseover', (d) => {
           this._div.transition().style('display', 'block')
           this._div.transition().duration(100).style('opacity', 0.8)
             .style('top', (event.layerY + 20) + 'px')

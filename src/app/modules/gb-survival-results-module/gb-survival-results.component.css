@@ -7,6 +7,7 @@
 .column {
   flex: 50%;
   padding: 1em;
+  font-size: small;
 }
 
 .column-2 {
@@ -14,14 +15,17 @@
   flex-direction: column;
   flex: 60%;
   overflow: hidden;
+  font-size:small;
 }
 
-.description{
+
+p.description{
   padding :0.3em;
   background-color:#339C90;
   color:#ffffff ;
   border-radius: 0.2em;
   white-space: nowrap;
+  font-size: 1rem;
 }
 
 p-scrollpanel p{
@@ -62,7 +66,7 @@ p-scrollpanel p.indented{
   height: 5em;
   padding: 0.2em;
   text-align: center;
-  font-size: "15px";
+  font-size: small;
   border-bottom: white 1px solid;
   border-right:  white 1px solid;
 }
@@ -75,6 +79,7 @@ p-scrollpanel p.indented{
   height:1em;
   width: 25%;
   text-align:left;
+  font-size:small;
 }
 
 #summary{
@@ -90,6 +95,7 @@ p-scrollpanel p.indented{
 
 #milestoned{
   margin-left: 2em;
+  font-size: small;
 }
 
 #milestoned tr th, #milestoned tr td{
@@ -99,6 +105,7 @@ p-scrollpanel p.indented{
   text-align: center;
   padding:0.5em;
   height:1em;
+  font-size: small;
 
 }
 
@@ -117,4 +124,8 @@ p-scrollpanel p.indented{
 canvas{
   height: 500px;
   width: 750px;
+}
+
+#survivalSvgContainer {
+  position: relative;
 }

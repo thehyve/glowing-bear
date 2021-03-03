@@ -13,6 +13,7 @@ import { SurvivalService } from 'app/services/survival-analysis.service';
 import { SubGroup } from 'app/services/survival-analysis.service';
 import { OperationType } from 'app/models/operation-models/operation-types';
 import { AnalysisService } from 'app/services/analysis.service';
+import { CohortService } from 'app/services/cohort.service';
 
 
 
@@ -35,6 +36,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   OperationType = OperationType
 
   constructor(private analysisService: AnalysisService,
+    private cohortService: CohortService,
     private constraintService: ConstraintService,
     private survivalService: SurvivalService) {
     this._subGroups = new Array()
@@ -97,8 +99,8 @@ export class GbCohortLandingZoneComponent implements OnInit {
       MessageHelper.alert('error', `Subgroup name ${this.name} already used`)
       return
     }
-    if (this.name.includes(' ') || this.name.includes('"')) {
-      MessageHelper.alert('error', 'Subgroup name cannot contain white space nor "')
+    if (!this.cohortService.patternValidation.test(this.name).valueOf()) {
+      MessageHelper.alert('error', `Subgroup name ${this.name} can only contain digits and alphabetical symbols`)
       return
     }
     if (this.name.length === nameMaxLength) {
