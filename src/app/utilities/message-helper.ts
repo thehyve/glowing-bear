@@ -1,15 +1,18 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020  EPFL LDS
+ * Copyright 2020 - 2021 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Message} from 'primeng/api';
+import {Message, MessageService} from 'primeng/api';
 
 export class MessageHelper {
+  // this field is injected by the AppComponent constructor
+  public static messageService: MessageService;
+
   public static messages: Message[] = [];
 
   public static alert(severity: string, summary: string, detail?: string) {

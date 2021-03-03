@@ -8,7 +8,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { AuthenticationService } from './services/authentication.service';
-import { MessageHelper } from './utilities/message-helper';
+import {MessageService} from 'primeng/api'
+import {MessageHelper} from './utilities/message-helper';
 
 @Component({
   selector: 'gb-app-root',
@@ -19,8 +20,9 @@ export class AppComponent implements OnInit {
 
   private _authenticationCompleted = false;
 
-
-  constructor(private authenticationService: AuthenticationService) {
+  constructor(private authenticationService: AuthenticationService, private messageService: MessageService) {
+    // provide instance of MessageService to the MessageHelper
+    MessageHelper.messageService = messageService;
   }
 
   ngOnInit() {
@@ -39,14 +41,6 @@ export class AppComponent implements OnInit {
 
   get authenticationCompleted(): boolean {
     return this._authenticationCompleted;
-  }
-
-  get messages(): any[] {
-    return MessageHelper.messages;
-  }
-
-  set messages(value: any[]) {
-    MessageHelper.messages = value;
   }
 
   // testww(): void {

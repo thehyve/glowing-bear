@@ -23,7 +23,7 @@ import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {QueryService} from './services/query.service';
 import {NavbarService} from './services/navbar.service';
 import {DatePipe} from '@angular/common';
-import {GrowlModule} from 'primeng/growl';
+import {ToastModule} from 'primeng/toast';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthenticationService} from './services/authentication.service';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
@@ -39,6 +39,7 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
+import {MessageService} from 'primeng/api';
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
@@ -67,7 +68,7 @@ export function loadServices(config: AppConfig,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    GrowlModule,
+    ToastModule,
     routing,
     GbMainModule,
     GbExploreModule,
@@ -93,6 +94,7 @@ export function loadServices(config: AppConfig,
     KeycloakService,
     AuthenticationService,
     ConstraintMappingService,
+    MessageService,
     {
       provide: APP_INITIALIZER,
       useFactory: loadServices,
