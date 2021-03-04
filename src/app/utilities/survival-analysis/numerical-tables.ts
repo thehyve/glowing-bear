@@ -51,9 +51,9 @@ export function numericalTables(
       let logrankCallback = (curvesArg: SurvivalPoint[][]) => {
         let res: string
         try {
-          res = logRank2Groups(curvesArg[i], curvesArg[j]).toPrecision(stringPrecision)
+          res = logRank2Groups(curvesArg[0], curvesArg[1]).toPrecision(stringPrecision)
         } catch (err) {
-          return { res: null, errMessage: 'generic error message' }
+          return { res: null, errMessage: (err as Error).message }
         }
         return { res: res, errMessage: null }
       }
