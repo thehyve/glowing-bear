@@ -54,11 +54,13 @@
 
 .gb-right-panel {
   top: var(--gb-top-panel-height);
+  display: flex;
+  flex-direction: column;
   position: relative;
   padding-top: 0px;
   padding-left: 3px;
   padding-right: 3px;
-  
+
   margin-top: 0px;
   width: calc(74% - 10px - 6px);
   background-color: white;
