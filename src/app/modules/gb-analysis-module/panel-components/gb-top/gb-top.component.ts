@@ -113,6 +113,8 @@ export class GbTopComponent implements OnInit {
     this._ready = false
     this.launched = true
     let settings = this.survivalAnalysisService.settings()
+    settings.cohortName = this.cohortService.selectedCohort.name
+
     try {
       this.operationStatus = OperationStatus.waitOnAPI
       this.survivalAnalysisService.runSurvivalAnalysis()
@@ -121,8 +123,8 @@ export class GbTopComponent implements OnInit {
             err => {
               this.operationStatus = OperationStatus.error
               MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
-              (err as HttpErrorResponse).error.message :
-              (err as Error).message)
+                (err as HttpErrorResponse).error.message :
+                (err as Error).message)
             }),
           delay(100)
         )
