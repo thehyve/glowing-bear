@@ -2,7 +2,7 @@ import { AngularWebWorker, bootstrapWorker, OnWorkerInit } from 'angular-web-wor
 /// <reference lib="webworker" />
 
 @AngularWebWorker()
-export class DecryptionWorkerWorker implements OnWorkerInit {
+export class DecryptionWorker implements OnWorkerInit {
 
     constructor() {}
 
@@ -11,7 +11,7 @@ export class DecryptionWorkerWorker implements OnWorkerInit {
     }
 
 }
-bootstrapWorker(DecryptionWorkerWorker);
+bootstrapWorker(DecryptionWorker);
 
 /// <reference lib="webworker" />
 
