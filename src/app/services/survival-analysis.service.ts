@@ -38,8 +38,8 @@ export class SubGroup {
 export class SurvivalService {
   private _id: string
   private _patientGroupIds: Map<string, number[]> // one string[] per node
-  private _granularity = Granularity.day
-  private _limit = 2000
+  private _granularity = Granularity.month
+  private _limit = 48
   private _startConcept: Concept
   private _endConcept: Concept
   private _startModifier = '@'
