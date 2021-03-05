@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,9 +20,6 @@ export class SurvivalCurve {
 }
 
 
-
-
-
 export function clearResultsToArray(clearRes: SurvivalAnalysisClear): SurvivalCurve {
 
   let curves = clearRes.results.map(result => {
@@ -30,9 +27,21 @@ export function clearResultsToArray(clearRes: SurvivalAnalysisClear): SurvivalCu
       return a.timepoint < b.timepoint ? -1 : 1;
     })
 
+    const nofTimePoints = sortedByTimePoint.length
+    let points = new Array<SurvivalPoint>(nofTimePoints + 1)
+
+
     let survivalState = new SurvivalState(result.initialCount)
-    let points = sortedByTimePoint.map(oneTimePointRes => survivalState
-      .next(oneTimePointRes.timepoint, oneTimePointRes.events.eventOfInterest, oneTimePointRes.events.censoringEvent)
+
+    // make the curve start at zero with prob 1 and variance 0
+    points[0] = survivalState.current()
+
+    // fill the rest of the points
+    sortedByTimePoint.forEach((oneTimePointRes, idx) => {
+      let survPoint = survivalState
+        .next(oneTimePointRes.timepoint, oneTimePointRes.events.eventOfInterest, oneTimePointRes.events.censoringEvent)
+      points[idx + 1] = survPoint
+    }
     )
     return {
       groupId: result.groupId,

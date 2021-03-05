@@ -20,6 +20,19 @@ export class SurvivalState {
   constructor(remaining: number) {
     this._remaining = remaining
   }
+
+  current(): SurvivalPoint {
+    return new SurvivalPoint(
+      this._prob,
+      this._cumul,
+      this._remaining,
+      this._timePoint,
+      this._cumulEvents,
+      this._cumulCensorings,
+      this._eventOfInterest,
+      this._censoring
+    )
+  }
   next(timePoint: number, eventOfInterest: number, censoring: number): SurvivalPoint {
 
     let ponctualProb = (this._remaining - eventOfInterest) / (this._remaining)

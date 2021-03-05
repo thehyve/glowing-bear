@@ -36,13 +36,17 @@ export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number
 
 function prepare(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): TimePoint[] {
 
-  let tmpArray = survivalPointsClass0.map(spoint => {
-    return { time: spoint.timePoint, class: 0, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
-  })
+  let tmpArray = survivalPointsClass0
+    .filter(({ timePoint }) => timePoint !== 0)
+    .map(spoint => {
+      return { time: spoint.timePoint, class: 0, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
+    })
     .concat(
-      survivalPointsClass1.map(spoint => {
-        return { time: spoint.timePoint, class: 1, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
-      }))
+      survivalPointsClass1
+        .filter(({ timePoint }) => timePoint !== 0)
+        .map(spoint => {
+          return { time: spoint.timePoint, class: 1, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
+        }))
 
 
   let tmpMap = new Map<number, EventType[]>()
