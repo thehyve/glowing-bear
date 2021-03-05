@@ -100,7 +100,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
       return
     }
     if (!this.cohortService.patternValidation.test(this.name).valueOf()) {
-      MessageHelper.alert('error', `Subgroup name ${this.name} can only contain digits and alphabetical symbols`)
+      MessageHelper.alert('error', `Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
       return
     }
     if (this.name.length === nameMaxLength) {
