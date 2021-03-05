@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -131,7 +131,7 @@ export class SurvivalCurvesDrawing {
     res += '<p>Time point ' + point.timePoint.toString() + '<br>\n'
     res += 'At risk ' + point.atRisk.toString() + '<br>\n'
     res += 'Events ' + point.cumulEvents.toString() + '<br>\n'
-    res += 'Censoring ' + point.cumulCensorings.toString() + '</p>\n'
+    res += 'Censoring ' + point.cumulCensoringEvents.toString() + '</p>\n'
 
     return res
   }
@@ -259,7 +259,7 @@ export class SurvivalCurvesDrawing {
       this._singlePoints.get(curve.groupId)
         .data(curve.points)
         .enter()
-        .filter(d => d.nofCensorings > 0)
+        .filter(d => d.censoringEvent > 0)
         .append('rect')
         .attr('x', d => this._xaxis(d.timePoint) - this.rectWidth / 2)
         .attr('y', d => this._yaxis(d.prob) - this._rectHeight / 2)
