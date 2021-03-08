@@ -10,24 +10,24 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GbSidePanelComponent } from './gb-side-panel.component';
-import { AccordionModule } from 'primeng/accordion';
-import { TreeModule } from 'primeng/tree';
+import { AccordionModule } from 'primeng';
+import { TreeModule } from 'primeng';
 import { GbTreeNodesComponent } from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
-import { ConfirmationService, TreeDragDropService } from 'primeng/api';
-import { OverlayPanelModule } from 'primeng/overlaypanel';
-import { DragDropModule } from 'primeng/dragdrop';
+import { ConfirmationService, TreeDragDropService } from 'primeng';
+import { OverlayPanelModule } from 'primeng';
+import { DragDropModule } from 'primeng';
 import { FormsModule } from '@angular/forms';
 import { GbSummaryComponent } from './accordion-components/gb-summary/gb-summary.component';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { PanelModule } from 'primeng/panel';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { AutoCompleteModule } from 'primeng';
+import { PanelModule } from 'primeng';
+import { ButtonModule } from 'primeng';
+import { InputTextModule } from 'primeng';
+import { TooltipModule } from 'primeng';
+import { ConfirmDialogModule } from 'primeng';
+import { RadioButtonModule } from 'primeng';
 import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
 
-import { ToggleButtonModule } from 'primeng/togglebutton'
+import { ToggleButtonModule } from 'primeng'
 import {SurvivalService} from '../../services/survival-analysis.service';
 import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
 import {ExploreCohortsService} from '../../services/api/medco-node/explore-cohorts.service';

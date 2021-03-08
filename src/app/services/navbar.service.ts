@@ -9,7 +9,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem } from 'primeng';
 import { Subject, Observable } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
 import { Router } from '@angular/router'

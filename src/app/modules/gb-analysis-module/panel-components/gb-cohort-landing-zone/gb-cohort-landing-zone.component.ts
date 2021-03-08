@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng';
 import {SubGroup, SurvivalService} from '../../../../services/survival-analysis.service';
 import {AnalysisService} from '../../../../services/analysis.service';
 import {ConstraintService} from '../../../../services/constraint.service';

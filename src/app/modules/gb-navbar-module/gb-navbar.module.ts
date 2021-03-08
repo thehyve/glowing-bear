@@ -10,9 +10,9 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GbNavbarComponent} from './gb-navbar.component';
 import {RouterModule} from '@angular/router';
-import {TabMenuModule} from 'primeng/tabmenu';
+import {TabMenuModule} from 'primeng';
 import {FormsModule} from '@angular/forms';
-import {MessagesModule} from 'primeng/messages';
+import {MessagesModule} from 'primeng';
 
 @NgModule({
   imports: [

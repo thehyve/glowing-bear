@@ -7,7 +7,7 @@
  */
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SelectItem } from 'primeng/api';
+import { SelectItem } from 'primeng';
 import { select, Selection } from 'd3';
 import {coxToString, NewCoxRegression} from '../../utilities/numerical-methods/cox-model';
 import {SurvivalAnalysisClear} from '../../models/survival-analysis/survival-analysis-clear';

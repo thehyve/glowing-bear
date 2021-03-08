@@ -9,7 +9,7 @@
 
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng/autocomplete';
+import {AutoComplete} from 'primeng';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
@@ -18,7 +18,7 @@ import {DateOperatorState} from '../../../../models/constraint-models/date-opera
 import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
 import {ValueType} from '../../../../models/constraint-models/value-type';
 import {Aggregate} from '../../../../models/aggregate-models/aggregate';
-import {SelectItem} from 'primeng/api';
+import {SelectItem} from 'primeng';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
 import {TreeNode} from '../../../../models/tree-models/tree-node';

@@ -9,8 +9,8 @@
  */
 
 import { Component, OnInit, ElementRef, ViewEncapsulation, AfterViewInit, ViewChild } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
-import { OverlayPanel } from 'primeng/overlaypanel'
+import { ConfirmationService } from 'primeng';
+import { OverlayPanel } from 'primeng'
 import {CohortService} from '../../../../services/cohort.service';
 import {SavedCohortsPatientListService} from '../../../../services/saved-cohorts-patient-list.service';
 import {ConstraintService} from '../../../../services/constraint.service';
@@ -18,7 +18,6 @@ import {Cohort} from '../../../../models/cohort-models/cohort';
 import {savePatientListToCSVFile} from '../../../../utilities/files/csv';
 import {OperationStatus} from '../../../../models/operation-status';
 import {ErrorHelper} from '../../../../utilities/error-helper';
-
 
 @Component({
   selector: 'gb-cohorts',

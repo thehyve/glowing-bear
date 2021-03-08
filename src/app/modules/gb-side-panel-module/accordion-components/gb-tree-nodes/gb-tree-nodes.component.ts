@@ -8,7 +8,7 @@
 
 import {Component, ElementRef, AfterViewInit, ViewChild, AfterViewChecked} from '@angular/core';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
-import {OverlayPanel} from 'primeng/overlaypanel';
+import {OverlayPanel} from 'primeng';
 import {trigger, transition, animate, style} from '@angular/animations';
 import {DropMode} from '../../../../models/drop-mode';
 import {TreeNodeService} from '../../../../services/tree-node.service';

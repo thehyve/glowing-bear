@@ -7,14 +7,14 @@
  */
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChild, OnChanges } from '@angular/core';
 import {Granularity} from '../../../../models/survival-analysis/granularity-type';
-import {SelectItem} from 'primeng/api';
+import {SelectItem} from 'primeng';
 import {Concept} from '../../../../models/constraint-models/concept';
 import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {When} from '../../../../models/survival-analysis/when-type';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {TreeNodeService} from '../../../../services/tree-node.service';
-import {AutoComplete} from 'primeng/autocomplete';
+import {AutoComplete} from 'primeng';
 import {SurvivalService} from '../../../../services/survival-analysis.service';
 import {UIHelper} from '../../../../utilities/ui-helper';
 import {AnalysisService} from '../../../../services/analysis.service';

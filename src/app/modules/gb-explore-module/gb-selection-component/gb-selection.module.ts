@@ -5,14 +5,14 @@ import { GbConstraintComponent } from '../constraint-components/gb-constraint/gb
 import { GbConceptConstraintComponent } from '../constraint-components/gb-concept-constraint/gb-concept-constraint.component';
 import { GbGenomicAnnotationConstraintComponent } from '../constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
 import { GbSelectionComponent } from './gb-selection.component';
-import { AccordionModule } from 'primeng/accordion';
-import { DropdownModule } from 'primeng/dropdown';
+import { AccordionModule } from 'primeng';
+import { DropdownModule } from 'primeng';
 import { FormsModule } from '@angular/forms';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { CheckboxModule } from 'primeng/checkbox';
-import { CalendarModule } from 'primeng/calendar';
-import { PanelModule } from 'primeng/panel';
-import { MultiSelectModule } from 'primeng/multiselect';
+import { AutoCompleteModule } from 'primeng';
+import { CheckboxModule } from 'primeng';
+import { CalendarModule } from 'primeng';
+import { PanelModule } from 'primeng';
+import { MultiSelectModule } from 'primeng';
 
 
 
