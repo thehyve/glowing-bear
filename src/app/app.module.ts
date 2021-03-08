@@ -38,19 +38,24 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
-import {MessageService} from 'primeng/api';
+import {WorkerModule} from 'angular-web-worker/angular';
+import {DecryptionWorker} from '../decryption.worker';
+import {ToastrModule} from 'ngx-toastr';
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
                              medcoNetworkService: MedcoNetworkService,
-                             treeNodeService: TreeNodeService) {
+                             treeNodeService: TreeNodeService,
+                             cryptoService: CryptoService) {
 
   return () => config.load().then(
     () => authService.load().then(
       () => Promise.all([
         medcoNetworkService.load(),
-        treeNodeService.load()
-      ]).then( () => {
+        treeNodeService.load(),
+      ])
+        .then(() => cryptoService.load())
+        .then( () => {
         console.log('Application loaded.');
       })
     )
@@ -75,7 +80,10 @@ export function loadServices(config: AppConfig,
     GbAnalysisModule,
     GbSurvivalResultsModule,
     GbNavBarModule,
-    GbSidePanelModule
+    GbSidePanelModule,
+    WorkerModule.forWorkers([
+      {worker: DecryptionWorker, initFn: () => new Worker('../decryption.worker.ts', {type: 'module'})},
+    ]),
   ],
   providers: [
     ApiEndpointService,
@@ -93,11 +101,10 @@ export function loadServices(config: AppConfig,
     KeycloakService,
     AuthenticationService,
     ConstraintMappingService,
-    MessageService,
     {
       provide: APP_INITIALIZER,
       useFactory: loadServices,
-      deps: [AppConfig, AuthenticationService, MedcoNetworkService, TreeNodeService],
+      deps: [AppConfig, AuthenticationService, MedcoNetworkService, TreeNodeService, CryptoService],
       multi: true
     },
   ],

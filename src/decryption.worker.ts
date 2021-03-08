@@ -1,55 +1,57 @@
-import { AngularWebWorker, bootstrapWorker, OnWorkerInit } from 'angular-web-worker';
+import {Accessable, AngularWebWorker, bootstrapWorker, Callable, OnWorkerInit} from 'angular-web-worker';
+import {
+  CipherText,
+  DecryptInt,
+  DeserializePoint, DeserializeScalar,
+  EncryptInt
+} from './app/utilities/crypto/crypto';
+import {Point, Scalar} from '@dedis/kyber';
 /// <reference lib="webworker" />
 
 @AngularWebWorker()
 export class DecryptionWorker implements OnWorkerInit {
 
-    constructor() {}
+  // the keys are set as parameters because all data in/out the worker is serialized, this avoids slowing down the operation
+  // they must be basic types, because of the serialization the object's function are not transferred
 
-    onWorkerInit() {
+  @Accessable() collectiveKeyPublic: string;
+  @Accessable() keyPairPublic: string;
+  @Accessable() keyPairPrivate: string;
 
+  private _collectiveKeyPublic: Point;
+  private _keyPairPublic: Point;
+  private _keyPairPrivate: Scalar;
+
+  constructor() {}
+
+  onWorkerInit() {}
+
+  private deserializeKeys(): void {
+    if (!this._collectiveKeyPublic) {
+      this._collectiveKeyPublic = DeserializePoint(this.collectiveKeyPublic);
     }
+    if (!this._keyPairPublic) {
+      this._keyPairPublic = DeserializePoint(this.keyPairPublic);
+    }
+    if (!this._keyPairPrivate) {
+      this._keyPairPrivate = DeserializeScalar(this.keyPairPrivate);
+    }
+  }
+
+  @Callable()
+  decryptWithKeyPair(encInts: string[]): number[] {
+    this.deserializeKeys();
+    return encInts.map(encInt => {
+      let cipherText = CipherText.deserialize(encInt);
+      return DecryptInt(this._keyPairPrivate, cipherText);
+    })
+  }
+
+  @Callable()
+  encryptWithKeyPair(ints: number[]): string[] {
+    this.deserializeKeys();
+    return ints.map(int => EncryptInt(this._collectiveKeyPublic, int).toString());
+  }
 
 }
 bootstrapWorker(DecryptionWorker);
-
-/// <reference lib="webworker" />
-
-// import {Point, Scalar} from '@dedis/kyber';
-// import {CipherText, DecryptInt} from '../utilities/crypto/crypto';
-
-// todo: support decryption of an array in here, then responsibility of calling code to maintain a pool and distribute values
-
-
-// export class WorkerDecryptionRequest {
-//
-//   //privKey: Scalar;
-//
-//   // ciphers: CipherText[];
-//
-// }
-//
-// export class WorkerDecryptionResponse {
-//   cleartexts: number[];
-// }
-//
-// addEventListener('message', ({ data }) => {
-//   const decryptionReq = data as WorkerDecryptionRequest;
-//
-//   // data.inta
-//   // data.labels
-//
-//   // DecryptInt
-//   const response = `worker response to ${data}`;
-//   postMessage(response);
-// });
-
-// spawn many web workers (have a fixed number) to do the decryption, each worker has one integer to decrypt
-// pass an idx + key for that
-
-// function batchDecryption(encInts: string[], privKey: Scalar): number[] {
-//   return encInts.map(encInt => {
-//     let cipherText = CipherText.deserialize(encInt);
-//     return DecryptInt(privKey, cipherText);
-//   })
-// }

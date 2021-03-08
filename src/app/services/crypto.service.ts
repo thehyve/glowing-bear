@@ -1,26 +1,32 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2018 - 2020  EPFL LCA1 / LDS
+ * Copyright 2018 - 2021  EPFL LCA1 / LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {
-  CipherText,
-  DecryptInt,
   EncryptInt,
   DeserializePoint,
   GenerateKeyPair,
-  SerializePoint
+  SerializePoint, SerializeScalar
 } from '../utilities/crypto/crypto';
 import {Point, Scalar} from '@dedis/kyber';
 import {MedcoNetworkService} from './api/medco-network.service';
+import {WorkerClient, WorkerManager} from 'angular-web-worker/angular';
+import {DecryptionWorker} from '../../decryption.worker';
+import {fromPromise} from 'rxjs/internal-compatibility';
+import {Observable} from 'rxjs';
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
-export class CryptoService {
+export class CryptoService implements OnDestroy {
+
+  private static nbParallelWorkers = 8;
+  private decryptionClients: WorkerClient<DecryptionWorker>[];
 
   private _ephemeralPublicKey: Point;
   private _ephemeralPrivateKey: Scalar;
@@ -28,8 +34,37 @@ export class CryptoService {
   /**
    * This constructor loads an ephemeral pair of keys for this instance of Glowing-Bear.
    */
-  constructor(private medcoNetworkService: MedcoNetworkService) {
+  constructor(private medcoNetworkService: MedcoNetworkService, private workerManager: WorkerManager) {
+
+    // create clients workers
+    this.decryptionClients = [];
+    if (this.workerManager.isBrowserCompatible) {
+      for (let i = 0 ; i < CryptoService.nbParallelWorkers ; i++) {
+        this.decryptionClients.push(this.workerManager.createClient(DecryptionWorker));
+      }
+      console.log('[CRYPTO] Web worker support is enabled.')
+    } else {
+      // fallback if web workers are not supported
+      for (let i = 0 ; i < CryptoService.nbParallelWorkers ; i++) {
+        this.decryptionClients.push(this.workerManager.createClient(DecryptionWorker, true));
+      }
+      console.warn('[CRYPTO] Web workers are not supported in this environment, decryption will slow down the UI.')
+    }
+  }
+
+  load(): Promise<void> {
     this.loadEphemeralKeyPair();
+    return Promise.all(this.decryptionClients.map(client => client.connect()))
+      .then(() => Promise.all([
+        this.decryptionClients.forEach(client => client.set(w => w.collectiveKeyPublic, this.medcoNetworkService.networkPubKey)),
+        this.decryptionClients.forEach(client => client.set(w => w.keyPairPublic, SerializePoint(this._ephemeralPublicKey))),
+        this.decryptionClients.forEach(client => client.set(w => w.keyPairPrivate, SerializeScalar(this._ephemeralPrivateKey)))
+      ]))
+      .then(() => console.log(`[CRYPTO] Initialised ${CryptoService.nbParallelWorkers} decryption workers.`));
+  }
+
+  ngOnDestroy() {
+    this.decryptionClients.forEach(client => client.destroy());
   }
 
   /**
@@ -37,7 +72,7 @@ export class CryptoService {
    */
   private loadEphemeralKeyPair(): void {
     [this._ephemeralPrivateKey, this._ephemeralPublicKey] = GenerateKeyPair();
-    console.log(`Generated the ephemeral pair of keys (public: ${this.ephemeralPublicKey})`);
+    console.log(`[CRYPTO] Generated the ephemeral pair of keys (public: ${this.ephemeralPublicKey}).`);
   }
 
   /**
@@ -51,32 +86,28 @@ export class CryptoService {
   }
 
   /**
-   * Decrypts an integer with the ephemeral private key that was generated.
-   * @param {string} encInteger to decrypt
+   * Decrypts integers with the ephemeral private key that was generated.
    * @returns {number} the integer decrypted with ephemeral key
+   * @param encIntegers
    */
-  decryptIntegerWithEphemeralKey(encInteger: string): number {
-    let cipherText = CipherText.deserialize(encInteger);
-    return DecryptInt(this._ephemeralPrivateKey, cipherText);
-  }
+  decryptIntegersWithEphemeralKey(encIntegers: string[]): Observable<number[]> {
+    const start = performance.now()
+    const valsPerWorkers = Math.ceil(encIntegers.length / CryptoService.nbParallelWorkers);
 
-  // batchDecryptIntegerWithEphemeralKey(encIntegers: string[]): number[] {
-  //   if (typeof Worker !== 'undefined') {
-  //     // Create a new
-  //     const worker = new Worker('./workers/crypto.worker', { type: 'module' });
-  //     worker.onmessage = ({ data }) => {
-  //       console.log(`page got message: ${data}`);
-  //     };
-  //     worker.onerror = ({ error }) => {
-  //
-  //     };
-  //     worker.postMessage('hello');
-  //   } else {
-  //     // Web workers are not supported in this environment.
-  //     // You should add a fallback so that your program still executes correctly.
-  //   }
-  //   return [];
-  // }
+    return fromPromise(
+      Promise.all(this.decryptionClients.map((client, clientIdx) =>
+        client.call(worker =>
+          worker.decryptWithKeyPair(encIntegers.slice(clientIdx * valsPerWorkers, (clientIdx + 1) * valsPerWorkers))
+        )
+      )).then(doubleArray => {
+        console.log(`[CRYPTO] Decrypted ${encIntegers.length} values with ${CryptoService.nbParallelWorkers} workers in ${performance.now() - start}ms.`);
+        return doubleArray.reduce((prevArray, currArray) => prevArray.concat(currArray), [])
+      }).catch(err => {
+        ErrorHelper.handleError('Error during decryption', err);
+        throw err;
+      })
+    );
+  }
 
   get ephemeralPublicKey(): string {
     return SerializePoint(this._ephemeralPublicKey);
