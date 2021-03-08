@@ -42,6 +42,7 @@ import { GbSurvivalResultsGuard } from './gb-survival-results.guard';
   ],
   exports: [
     RouterModule,
+    GbSurvivalResultsComponent,
   ],
 })
 export class GbSurvivalResultsModule {

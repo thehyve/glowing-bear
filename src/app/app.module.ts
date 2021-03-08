@@ -39,6 +39,7 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
+import {GbResultsModule} from "./modules/gb-results-module/gb-results.module";
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
@@ -73,6 +74,7 @@ export function loadServices(config: AppConfig,
     GbExploreModule,
     GbExploreResultsModule,
     GbAnalysisModule,
+    GbResultsModule,
     GbSurvivalResultsModule,
     GbNavBarModule,
     GbSidePanelModule

@@ -14,6 +14,7 @@ import {GbMainComponent} from './modules/gb-main-module/gb-main.component';
 export const routes: Routes = [
   {path: '', redirectTo: 'main/data-selection', pathMatch: 'full'},
   {path: 'main', component: GbMainComponent},
-  {path: '**', component: GbMainComponent}];
+  {path: '**', component: GbMainComponent}
+];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes);

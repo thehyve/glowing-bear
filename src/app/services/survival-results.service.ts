@@ -44,10 +44,9 @@ export class SurvivalResultsService {
   _survivalResults = new Array<SurvivalResults>()
   _selectedSurvivalResult: SurvivalResults
   _numericalTables = new Array<NumericalTablesType>()
-  _selectedNumericalTables: NumericalTablesType
 
   constructor(private navBarService: NavbarService) {
-    this._id = navBarService.selectedSurvivalId.pipe(tap(id => {
+    this.id = navBarService.selectedSurvivalId.pipe(tap(id => {
       this.selectedSurvivalResult = this.survivalResults[id]
     }))
 
