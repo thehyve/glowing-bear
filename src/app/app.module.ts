@@ -23,7 +23,6 @@ import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {QueryService} from './services/query.service';
 import {NavbarService} from './services/navbar.service';
 import {DatePipe} from '@angular/common';
-import {ToastModule} from 'primeng/toast';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthenticationService} from './services/authentication.service';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
@@ -68,7 +67,7 @@ export function loadServices(config: AppConfig,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    ToastModule,
+    ToastrModule.forRoot(),
     routing,
     GbMainModule,
     GbExploreModule,

@@ -1,15 +1,16 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
+ * Copyright 2020 - 2021 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import { AuthenticationService } from './services/authentication.service';
-import {MessageService} from 'primeng/api'
 import {MessageHelper} from './utilities/message-helper';
+import {ToastrService} from 'ngx-toastr';
 
 @Component({
   selector: 'gb-app-root',
@@ -18,11 +19,12 @@ import {MessageHelper} from './utilities/message-helper';
 })
 export class AppComponent implements OnInit {
 
-  private _authenticationCompleted = false;
+  private _authenticationCompleted;
 
-  constructor(private authenticationService: AuthenticationService, private messageService: MessageService) {
-    // provide instance of MessageService to the MessageHelper
-    MessageHelper.messageService = messageService;
+  constructor(private toastr: ToastrService, private authenticationService: AuthenticationService) {
+    this._authenticationCompleted = false;
+    // inject toaster service in the MessageHelper
+    MessageHelper.toastrService = this.toastr;
   }
 
   ngOnInit() {
@@ -36,28 +38,9 @@ export class AppComponent implements OnInit {
         MessageHelper.alert('error', 'Authentication failed!');
       }
     });
-    //this.testww();
   }
 
   get authenticationCompleted(): boolean {
     return this._authenticationCompleted;
   }
-
-  // testww(): void {
-  //   if (typeof Worker !== 'undefined') {
-  //     const worker = new Worker('./workers/decryption.worker', { type: 'module' });
-  //     let xx: WorkerDecryptionRequest;
-  //
-  //     worker.onmessage = ({ data }) => {
-  //       console.log(`page got message: ${data}`);
-  //     };
-  //     worker.onerror = ({ error }) => {
-  //
-  //     };
-  //     worker.postMessage('hello');
-  //   } else {
-  //     MessageHelper.alert('error', 'Your browser does not support web workers')
-  //   }
-  // }
-
 }

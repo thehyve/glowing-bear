@@ -6,21 +6,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
-import {Message, MessageService} from 'primeng/api';
+import {ToastrService} from 'ngx-toastr';
 
 export class MessageHelper {
-  // this field is injected by the AppComponent constructor
-  public static messageService: MessageService;
 
-  public static messages: Message[] = [];
+  // this service is injected at boot by the AppComponent
+  public static toastrService: ToastrService;
+  public static readonly toastTimeoutMs = 20000;
 
-  public static alert(severity: string, summary: string, detail?: string) {
-    let _detail = detail ? detail : '';
-    // This hack is to address the bug where primneNg growl does not time out
-    MessageHelper.messages = [].concat(MessageHelper.messages);
-    MessageHelper.messages.push({severity: severity, summary: summary, detail: _detail});
-
+  public static alert(severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail?: string) {
     let consoleMsg = `[MESSAGE] ${summary}`;
     if (detail) {
       consoleMsg += `\n${detail}`;
@@ -28,14 +22,23 @@ export class MessageHelper {
 
     switch (severity) {
       case 'error':
+        this.toastrService.error(summary, detail, {timeOut: this.toastTimeoutMs})
         console.error(consoleMsg);
         break;
 
       case 'warn':
+        this.toastrService.warning(summary, detail, {timeOut: this.toastTimeoutMs})
         console.warn(consoleMsg);
         break;
 
+      case 'success':
+        this.toastrService.success(summary, detail, {timeOut: this.toastTimeoutMs})
+        console.log(consoleMsg);
+        break;
+
+      case 'info':
       default:
+        this.toastrService.info(summary, detail, {timeOut: this.toastTimeoutMs})
         console.log(consoleMsg);
         break;
     }
