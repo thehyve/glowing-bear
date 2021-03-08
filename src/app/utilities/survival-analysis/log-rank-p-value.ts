@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -42,10 +42,10 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
   for (let j = 0; j < group1.length; j++) {
     let point = group1[j]
 
-    if (point.nofEvents > 0) {
+    if (point.eventOfInterest > 0) {
       events.set(
         point.timePoint,
-        events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents
+        events.has(point.timePoint) ? events.get(point.timePoint) + point.eventOfInterest : point.eventOfInterest
       )
       atRiskGroup1.set(
         point.timePoint,
@@ -53,7 +53,7 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
       )
       eventsGroup1.set(
         point.timePoint,
-        eventsGroup1.has(point.timePoint) ? eventsGroup1.get(point.timePoint) + point.nofEvents : point.nofEvents
+        eventsGroup1.has(point.timePoint) ? eventsGroup1.get(point.timePoint) + point.eventOfInterest : point.eventOfInterest
       )
 
     }
@@ -61,11 +61,11 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
   for (let j = 0; j < group2.length; j++) {
     let point = group2[j]
 
-    if (point.nofEvents > 0) {
+    if (point.eventOfInterest > 0) {
 
       events.set(
         point.timePoint,
-        events.has(point.timePoint) ? events.get(point.timePoint) + point.nofEvents : point.nofEvents
+        events.has(point.timePoint) ? events.get(point.timePoint) + point.eventOfInterest : point.eventOfInterest
       )
       atRiskGroup2.set(
         point.timePoint,
@@ -73,7 +73,7 @@ export function logRank2Groups(group1: Array<SurvivalPoint>, group2: Array<Survi
       )
       eventsGroup2.set(
         point.timePoint,
-        eventsGroup2.has(point.timePoint) ? eventsGroup2.get(point.timePoint) + point.nofEvents : point.nofEvents
+        eventsGroup2.has(point.timePoint) ? eventsGroup2.get(point.timePoint) + point.eventOfInterest : point.eventOfInterest
       )
 
     }
@@ -125,7 +125,7 @@ function computeTotalRisks(groups: Array<Array<SurvivalPoint>>): Map<number, num
   let subtractions = new Map<number, number>()
   commonArray.forEach(point => {
     subtractions.set(point.timePoint,
-      point.nofCensorings + point.nofEvents + ((subtractions.has(point.timePoint)) ? subtractions.get(point.timePoint) : 0))
+      point.censoringEvent + point.eventOfInterest + ((subtractions.has(point.timePoint)) ? subtractions.get(point.timePoint) : 0))
 
 
   })

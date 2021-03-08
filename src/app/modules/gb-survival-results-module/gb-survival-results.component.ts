@@ -177,13 +177,10 @@ export class GbSurvivalResultsComponent implements OnInit {
       let totalAtRisk: string
       let totalEvent: string
       let totalCensoring: string
-      for (let j = /*i+1*/ 0; j < len; j++) {
-
-        totalAtRisk = this.survivalCurve.curves[i].points[0].atRisk.toString()
-        totalEvent = this.survivalCurve.curves[i].points.map(p => p.nofEvents).reduce((a, b) => a + b).toString()
-        totalCensoring = this.survivalCurve.curves[i].points.map(p => p.nofCensorings).reduce((a, b) => a + b).toString()
-
-      }
+      let points = this.survivalCurve.curves[i].points
+      totalAtRisk = points[0].atRisk.toString()
+      totalEvent = points[points.length - 1].cumulEvents.toString()
+      totalCensoring = points[points.length - 1].cumulCensoringEvents.toString()
 
       this._groupTotalEvent.push(totalEvent)
       this._groupTotalCensoring.push(totalCensoring)

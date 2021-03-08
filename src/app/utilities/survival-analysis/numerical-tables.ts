@@ -97,8 +97,8 @@ export function numericalTables(
 
     }
     totalAtRisk = curves[i][0].atRisk.toString()
-    totalEvent = curves[i].map(p => p.nofEvents).reduce((a, b) => a + b).toString()
-    totalCensoring = curves[i].map(p => p.nofCensorings).reduce((a, b) => a + b).toString()
+    totalEvent = curves[i].map(p => p.eventOfInterest).reduce((a, b) => a + b).toString()
+    totalCensoring = curves[i].map(p => p.censoringEvent).reduce((a, b) => a + b).toString()
     groupLogrankTable.push(logrankRow)
     groupCoxRegTable.push(coxRegRow)
     groupCoxWaldTable.push(waldCoxRow)
