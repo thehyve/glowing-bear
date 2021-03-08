@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 import { CryptoService } from './crypto.service';
 import { MedcoNetworkService } from './api/medco-network.service';
-import { Observable, of } from 'rxjs';
+import {forkJoin, Observable, of} from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ApiSurvivalAnalysisService } from './api/medco-node/api-survival-analysis.service';
 import { CohortService } from './cohort.service';
@@ -27,6 +27,7 @@ import {When} from '../models/survival-analysis/when-type';
 import {SurvivalSettings} from '../models/survival-analysis/survival-settings';
 import {ApiSurvivalAnalysis} from '../models/api-request-models/survival-analyis/api-survival-analysis';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {map} from 'rxjs/operators';
 
 export class SubGroup {
   name: string
@@ -198,53 +199,58 @@ export class SurvivalService {
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)
   }
 
-  survivalAnalysisDecrypt(survivalAnalysisResponse: ApiSurvivalAnalysisResponse): SurvivalAnalysisClear {
-    let start = performance.now()
-    let res = new SurvivalAnalysisClear()
-    let nofDecryptions = 0
-    res.results = survivalAnalysisResponse.results.map(group => {
-      let newGroup = new ClearGroup()
+  survivalAnalysisDecrypt(survivalAnalysisResponse: ApiSurvivalAnalysisResponse): Observable<SurvivalAnalysisClear> {
+    return forkJoin(
+      // generate the ClearGroup[]
+      survivalAnalysisResponse.results.map(group =>
+        this.cryptoService.decryptIntegersWithEphemeralKey(
+          [group.initialCount]
+            .concat(group.groupResults.map(groupResult => groupResult.events.eventofinterest))
+            .concat(group.groupResults.map(groupResult => groupResult.events.censoringevent))
+        ).pipe(map(decrypted => {
 
-      newGroup.groupId = group.groupID
-      newGroup.groupResults = new Array<{
-        events: {
-          censoringEvent: number;
-          eventOfInterest: number;
-        };
-        timepoint: number;
-      }>()
+          // assemble back the decrypted values
+          const nbEvents = group.groupResults.length;
+          let eventsOfInterest = decrypted.slice(1, nbEvents + 1);
+          let censoringEvents = decrypted.slice(nbEvents + 1);
+          console.log(`Decrypted 1+${eventsOfInterest.length}+${censoringEvents.length}=${decrypted.length} survival analysis elements`);
 
-      newGroup.initialCount = this.cryptoService.decryptIntegerWithEphemeralKey(group.initialCount)
-      nofDecryptions++
-
-      for (let i = 0; i < group.groupResults.length; i++) {
-        let eventOfInterest = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.eventofinterest)
-        let censoringEvent = this.cryptoService.decryptIntegerWithEphemeralKey(group.groupResults[i].events.censoringevent)
-        nofDecryptions += 2
-        if (eventOfInterest === 0 && censoringEvent === 0) {
-          continue
-        }
-        newGroup.groupResults.push({
-          timepoint: group.groupResults[i].timepoint,
-          events: {
-            eventOfInterest: eventOfInterest,
-            censoringEvent: censoringEvent
+          // filter out points that are null
+          let timepoints = group.groupResults.map(groupResult => groupResult.timepoint);
+          for (let i = 0; i < nbEvents; i++) {
+            if (eventsOfInterest[i] === 0 && censoringEvents[i] === 0) {
+              timepoints.splice(i, 1);
+              eventsOfInterest.splice(i, 1);
+              censoringEvents.splice(i, 1);
+            }
           }
-        })
+          console.log(`Decryption of survival analysis results: ${nbEvents - timepoints.length} points ignored`);
 
-      }
-
-
-
-      return newGroup
-
-    })
-
-    let end = performance.now()
-
-    console.log(`${nofDecryptions} ElGamal points decrypted in ${end - start} milliseconds`)
-
-    return res
+          // create cleartext group
+          let cleartextGroup = new ClearGroup()
+          cleartextGroup.groupId = group.groupID;
+          cleartextGroup.groupResults = [];
+          cleartextGroup.initialCount = decrypted[0];
+          for (let i = 0; i < nbEvents; i++) {
+            cleartextGroup.groupResults.push({
+              timepoint: timepoints[i],
+              events: {
+                eventOfInterest: eventsOfInterest[i],
+                censoringEvent: censoringEvents[i]
+              }
+            });
+          }
+          return cleartextGroup;
+        }))
+      )
+    ).pipe(
+      // package it into SurvivalAnalysisClear
+      map(clearGroups => {
+        let res = new SurvivalAnalysisClear();
+        res.results = clearGroups;
+        return res;
+      })
+    );
   }
 
   settings(): SurvivalSettings {

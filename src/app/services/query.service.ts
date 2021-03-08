@@ -15,13 +15,13 @@ import { ConstraintService } from './constraint.service';
 import { AppConfig } from '../config/app.config';
 import { ExploreQueryType } from '../models/query-models/explore-query-type';
 import { AuthenticationService } from './authentication.service';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { ApiExploreQueryResult } from '../models/api-response-models/medco-node/api-explore-query-result';
 import { CryptoService } from './crypto.service';
 import { GenomicAnnotationsService } from './api/genomic-annotations.service';
 import { ExploreQueryResult } from '../models/query-models/explore-query-result';
-import { Observable, ReplaySubject, throwError, Subject } from 'rxjs';
+import {Observable, ReplaySubject, throwError, Subject, of} from 'rxjs';
 import { ErrorHelper } from '../utilities/error-helper';
 import { MessageHelper } from '../utilities/message-helper';
 import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
@@ -76,18 +76,23 @@ export class QueryService {
   /**
    * Parse and decrypt results from MedCo nodes.
    */
-  private parseExploreQueryResults(encResults: [ApiNodeMetadata, ApiExploreQueryResult][]): ExploreQueryResult {
+  private parseExploreQueryResults(encResults: [ApiNodeMetadata, ApiExploreQueryResult][]): Observable<ExploreQueryResult> {
     if (encResults.length === 0) {
-      throw ErrorHelper.handleNewError('Empty results, no processing done');
+      return throwError(ErrorHelper.handleNewError('Empty results, no processing done'));
     }
 
-    let parsedResults = new ExploreQueryResult();
-    parsedResults.nodes = encResults.map(res => res[0]);
-
+    let queryResult: Observable<ExploreQueryResult>;
     switch (this.queryType) {
       case ExploreQueryType.COUNT_GLOBAL:
       case ExploreQueryType.COUNT_GLOBAL_OBFUSCATED:
-        parsedResults.globalCount = this.cryptoService.decryptIntegerWithEphemeralKey(encResults[0][1].encryptedCount);
+        queryResult = this.cryptoService.decryptIntegersWithEphemeralKey([encResults[0][1].encryptedCount]).pipe(
+          map(decrypted => {
+            let parsedResults = new ExploreQueryResult();
+            parsedResults.nodes = encResults.map(res => res[0]);
+            parsedResults.globalCount = decrypted[0];
+            return parsedResults;
+          })
+        );
         break;
 
       case ExploreQueryType.COUNT_PER_SITE:
@@ -95,30 +100,52 @@ export class QueryService {
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED:
       case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED:
       case ExploreQueryType.PATIENT_LIST:
-        parsedResults.perSiteCounts = encResults.map((result) =>
-          this.cryptoService.decryptIntegerWithEphemeralKey(result[1].encryptedCount));
-        parsedResults.globalCount = parsedResults.perSiteCounts.reduce((a, b) => a + b);
+        queryResult = this.cryptoService.decryptIntegersWithEphemeralKey(encResults.map(result => result[1].encryptedCount))
+          .pipe(
+            map(decrypted => {
+              let parsedResults = new ExploreQueryResult();
+              parsedResults.nodes = encResults.map(res => res[0]);
+              parsedResults.perSiteCounts = decrypted;
+              parsedResults.globalCount = parsedResults.perSiteCounts.reduce((a, b) => a + b, 0);
+              parsedResults.resultInstanceID = encResults.map(result => result[1].patientSetID)
+              return parsedResults;
+            }),
+            switchMap(parsedResults => {
+              if (this.queryType === ExploreQueryType.PATIENT_LIST) {
+                // decrypt patient lists if they are present
+                const encPatientLists = encResults.map(result =>
+                  result[1].encryptedPatientList ? result[1].encryptedPatientList : []
+                );
+
+                return this.cryptoService.decryptIntegersWithEphemeralKey(
+                  encPatientLists.reduce((prevArray, currArray) => prevArray.concat(currArray))
+                ).pipe(
+                  tap(decrypted => {
+                    parsedResults.patientLists = [];
+                    encPatientLists.forEach(encPatientList => parsedResults.patientLists.push(
+                      decrypted.splice(0, encPatientList.length)
+                    ));
+                  }),
+                  map(() => parsedResults)
+                );
+              } else {
+                return of(parsedResults);
+              }
+            })
+          );
         break;
 
       default:
-        throw ErrorHelper.handleNewError(`unknown explore query type: ${this.queryType}`);
+        return throwError(ErrorHelper.handleNewError(`unknown explore query type: ${this.queryType}`))
     }
 
-    if (this.queryType === ExploreQueryType.PATIENT_LIST) {
-      parsedResults.resultInstanceID = encResults.map(result => result[1].patientSetID)
-      parsedResults.patientLists = encResults.map((result) =>
-        result[1].encryptedPatientList ? result[1].encryptedPatientList.map((encryptedPatientID) =>
-          this.cryptoService.decryptIntegerWithEphemeralKey(encryptedPatientID)
-        ) : []);
-
+    return queryResult.pipe(tap(parsedResults => {
       if (parsedResults.globalCount === 0) {
         MessageHelper.alert('success', 'No patients found matching this query');
       }
 
-    }
-
-    console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
-    return parsedResults;
+      console.log(`Parsed results of ${encResults.length} nodes with a global count of ${parsedResults.globalCount}`);
+    }))
   }
 
   public execQuery(): void {
@@ -143,10 +170,10 @@ export class QueryService {
         MessageHelper.alert('warn', 'Invalid genomic annotation in query, please correct.');
         return throwError(err);
       }),
-      switchMap(() => this.exploreQueryService.exploreQuery(this.query))
+      switchMap(() => this.exploreQueryService.exploreQuery(this.query)),
+      switchMap(results => this.parseExploreQueryResults(results))
     ).subscribe(
-      (results: [ApiNodeMetadata, ApiExploreQueryResult][]) => {
-        let parsedResults = this.parseExploreQueryResults(results);
+      (parsedResults: ExploreQueryResult) => {
         if (parsedResults.resultInstanceID) {
           this._lastSuccessfulSet.next(parsedResults.resultInstanceID)
         }
