@@ -9,12 +9,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MenuItem } from 'primeng/api';
-import { QueryService } from './query.service';
+import { MenuItem } from 'primeng';
 import { Subject, Observable } from 'rxjs';
-import { OperationType } from 'app/models/operation-models/operation-types';
 import { AuthenticationService } from './authentication.service';
 import { Router } from '@angular/router'
+import {OperationType} from '../models/operation-models/operation-types';
 
 @Injectable()
 export class NavbarService {

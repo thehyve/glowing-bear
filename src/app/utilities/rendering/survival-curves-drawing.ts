@@ -7,16 +7,14 @@
  */
 import {
   Selection, scaleLinear, ScaleLinear, axisBottom,
-  event, axisLeft, scaleOrdinal, ScaleOrdinal, scaleBand,
+  event, axisLeft, scaleOrdinal, ScaleOrdinal,
   select, area, curveStepAfter, Line, Area, line, BaseType
 } from 'd3'
-import { colorRange } from 'app/modules/gb-survival-results-module/gb-survival-results.component'
 import { Observable } from 'rxjs';
-import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
-import { SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
-
-
+import {colorRange} from '../../modules/gb-survival-results-module/gb-survival-results.component';
+import {SurvivalCurve} from '../../models/survival-analysis/survival-curves';
+import {ConfidenceInterval} from '../../models/survival-analysis/confidence-intervals';
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 export const CIs: Array<{ label: string, value: ConfidenceInterval }> = [
   { label: 'identity', value: ConfidenceInterval.identity() },

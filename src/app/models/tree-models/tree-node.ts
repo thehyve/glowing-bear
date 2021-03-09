@@ -1,4 +1,4 @@
-import { TreeNode as PrimeNgTreeNode } from 'primeng/api';
+import { TreeNode as PrimeNgTreeNode } from 'primeng';
 import { DropMode } from '../drop-mode';
 import { ValueType } from '../constraint-models/value-type';
 import { TreeNodeType } from './tree-node-type';

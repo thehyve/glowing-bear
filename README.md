@@ -30,7 +30,7 @@ For further details, support, and contacts, you can check the [MedCo Technical D
 ### Use the live development server
 ```bash
 cd deployment
-docker-compose up dev-server
+./dev-server.sh
 ```
 
 ### Build the Docker image

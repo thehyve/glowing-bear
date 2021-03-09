@@ -12,6 +12,9 @@
     "curly": true,
     "eofline": true,
     "forin": false,
+    "deprecation": {
+      "severity": "warning"
+    },
     "import-blacklist": [
       true,
       "primeng/primeng"

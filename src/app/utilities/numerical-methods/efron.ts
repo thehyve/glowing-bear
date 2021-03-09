@@ -6,8 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { exp, log } from 'mathjs'
-import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, TimePoint, EventType } from './cox-regression'
-
+import { scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, CoxRegression, TimePoint} from './cox-regression'
 
 /**
  * Efron's can be optimized !

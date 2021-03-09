@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear'
-import { clearResultsToArray } from 'app/models/survival-analysis/survival-curves'
 import { NewCoxRegression } from './cox-model'
+import {clearResultsToArray} from '../../models/survival-analysis/survival-curves';
+import {SurvivalAnalysisClear} from '../../models/survival-analysis/survival-analysis-clear';
 
 describe('Cox regression test', () => {
 

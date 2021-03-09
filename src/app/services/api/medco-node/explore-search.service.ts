@@ -18,8 +18,8 @@ import { TreeNodeType } from '../../../models/tree-models/tree-node-type';
 import { ValueType } from '../../../models/constraint-models/value-type';
 import { MedcoNetworkService } from '../medco-network.service';
 import { ApiEndpointService } from '../../api-endpoint.service';
-import { ApiValueMetadata, DataType } from 'app/models/api-response-models/medco-node/api-value-metadata';
-import { MessageHelper } from 'app/utilities/message-helper';
+import {ApiValueMetadata, DataType} from '../../../models/api-response-models/medco-node/api-value-metadata';
+import {MessageHelper} from '../../../utilities/message-helper';
 
 @Injectable()
 export class ExploreSearchService {
