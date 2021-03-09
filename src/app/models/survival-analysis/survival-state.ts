@@ -37,7 +37,9 @@ export class SurvivalState {
 
     let ponctualProb = (this._remaining - eventOfInterest) / (this._remaining)
     this._prob = ponctualProb * this._prob
-    this._cumul = this._cumul + eventOfInterest / (this._remaining * (this._remaining - eventOfInterest))
+    this._cumul = (this._remaining - eventOfInterest === 0) ?
+      0 :
+      this._cumul + eventOfInterest / (this._remaining * (this._remaining - eventOfInterest))
 
     this._timePoint = timePoint
     this._censoring = censoring
