@@ -222,16 +222,17 @@ export class SurvivalService {
               timepoints.splice(i, 1);
               eventsOfInterest.splice(i, 1);
               censoringEvents.splice(i, 1);
+              i--;
             }
           }
           console.log(`Decryption of survival analysis results: ${nbEvents - timepoints.length} points ignored`);
 
           // create cleartext group
-          let cleartextGroup = new ClearGroup()
+          let cleartextGroup = new ClearGroup();
           cleartextGroup.groupId = group.groupID;
           cleartextGroup.groupResults = [];
           cleartextGroup.initialCount = decrypted[0];
-          for (let i = 0; i < nbEvents; i++) {
+          for (let i = 0; i < timepoints.length; i++) {
             cleartextGroup.groupResults.push({
               timepoint: timepoints[i],
               events: {
