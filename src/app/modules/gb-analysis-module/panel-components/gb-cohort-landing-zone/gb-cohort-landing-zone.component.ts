@@ -12,6 +12,7 @@ import {AnalysisService} from '../../../../services/analysis.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {OperationType} from '../../../../models/operation-models/operation-types';
+import {CohortService} from '../../../../services/cohort.service';
 
 const nameMaxLength = 12
 
@@ -32,6 +33,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   OperationType = OperationType
 
   constructor(private analysisService: AnalysisService,
+    private cohortService: CohortService,
     private constraintService: ConstraintService,
     private survivalService: SurvivalService) {
     this._subGroups = new Array()
@@ -94,8 +96,8 @@ export class GbCohortLandingZoneComponent implements OnInit {
       MessageHelper.alert('error', `Subgroup name ${this.name} already used`)
       return
     }
-    if (this.name.includes(' ') || this.name.includes('"')) {
-      MessageHelper.alert('error', 'Subgroup name cannot contain white space nor "')
+    if (!this.cohortService.patternValidation.test(this.name).valueOf()) {
+      MessageHelper.alert('error', `Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
       return
     }
     if (this.name.length === nameMaxLength) {

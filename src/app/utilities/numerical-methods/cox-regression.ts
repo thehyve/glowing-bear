@@ -1,13 +1,14 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { inv } from 'mathjs';
+import { inv, det } from 'mathjs';
 import { ErrorHelper } from '../error-helper';
+import { MessageHelper } from '../message-helper';
 
 export interface EventType { x: number[], event: boolean }
 export interface TimePoint { time: number, events: EventType[] }
@@ -16,7 +17,7 @@ export abstract class CoxRegression {
   protected initialParameter: number[];
   protected tolerance: number;
   protected data: TimePoint[];
-  public constructor(data, maxIter, tolerance) {
+  public constructor(data: TimePoint[], maxIter: number, tolerance: number) {
     if (data.length === 0) {
       throw ErrorHelper.handleNewError('Number of observation is 0, this exception should be treated before.')
     }
@@ -56,33 +57,64 @@ export abstract class CoxRegression {
       }
 
     }
-    let status = 'finished before reaching the convergence criterion'
 
-    for (let i = 0; i < this.maxIter; i++) {
+    let finalCovarianceMatrixEstimate: number[][]
 
+    // default status to set if the iteration number exceeds the limit without reaching tolerance
 
-
-
-      gradient = this.gradient(this.data, beta)
-      inMatrix(hessian, this.hessian(this.data, beta))
-
-      let delta = multiplyMatrixVector(inv(hessian), gradient)
-      addTo(beta, delta)
-      lLikelihood = this.logLikelihood(this.data, beta)
-      if (((previouslogLikelihood - lLikelihood) / lLikelihood) < this.tolerance) {
-        status = ''
-        break
-      }
-      previouslogLikelihood = lLikelihood
+    let status = `Finished before reaching the convergence criterion (i. e. a relative ` +
+      `logLikekilhood difference below ${this.tolerance}) after ${this.maxIter} iterations. ` +
+      `This happens when all events of interest of a group occur after the latest event of interest of another group.`
 
 
-    }
+    // do a dry run to detect non-invertible hessian matrix
+
     inMatrix(hessian, this.hessian(this.data, beta))
+    if (det(hessian) === 0) {
+      status = 'The determinant of the hessian matrix is zero. The inverse of this hessian is used for Newton-Raphson method inside numerical methods. ' +
+        'It happens when no event of interest has occured within the time limit defined by the user. In the survival graphs, this is related to a constant line.'
+      return {
+        initialLogLikelihood: initialLogLikelihood,
+        finalLogLikelihood: lLikelihood,
+        finalBeta: beta,
+        finalCovarianceMatrixEstimate: hessian,
+        status: status,
+      }
+    }
+
+
+    // the numerical method
+    try {
+
+      for (let i = 0; i < this.maxIter; i++) {
+
+        gradient = this.gradient(this.data, beta)
+        inMatrix(hessian, this.hessian(this.data, beta))
+
+        let delta = multiplyMatrixVector(inv(hessian), gradient)
+        addTo(beta, delta)
+        lLikelihood = this.logLikelihood(this.data, beta)
+        if (((previouslogLikelihood - lLikelihood) / lLikelihood) < this.tolerance) {
+          status = ''
+          break
+        }
+        previouslogLikelihood = lLikelihood
+
+
+      }
+      inMatrix(hessian, this.hessian(this.data, beta))
+      finalCovarianceMatrixEstimate = inv(hessian)
+
+    } catch (err) {
+      status = 'Unexpected error: ' + (err as Error).message
+      MessageHelper.alert('error', 'Unexpected error: ' + (err as Error).message)
+      console.error((err as Error).stack)
+    }
     return {
       initialLogLikelihood: initialLogLikelihood,
       finalLogLikelihood: lLikelihood,
       finalBeta: beta,
-      finalCovarianceMatrixEstimate: inv(hessian),
+      finalCovarianceMatrixEstimate: finalCovarianceMatrixEstimate,
       status: status,
     }
   }

@@ -9,7 +9,7 @@
     </span>
   </div>
 
-  <div *ngIf="selectedSurvival" style="font-size: 1em; margin-top: 1em;">
+  <div *ngIf="selectedSurvival" style="font-size: small; margin-top: 1em;">
     <b>Status:</b>
     <span *ngIf="!ready">
       You must select a cohort and start and end events
@@ -24,12 +24,12 @@
     </span>
 
     <span *ngIf="operationStatus === OperationStatus.decryption" class="loading-blink">
-      Decryption of local lists, this may take a few seconds, do not refresh
+      Decryption of results can take a few seconds, please do not refresh the page
       <span>🔒</span><span>🔒</span><span>🔓</span>
     </span>
 
     <span *ngIf="operationStatus === OperationStatus.error" class="loading-blink">
-      Error, check console for details <span>🔒</span><span>🔒</span><span>🔓</span>
+      Error, check console for details
     </span>
   </div>
 

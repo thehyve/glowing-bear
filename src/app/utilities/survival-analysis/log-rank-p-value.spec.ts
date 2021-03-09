@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,44 +17,44 @@ describe('Logrank test', () => {
         timePoint: 1,
         prob: 0,
         cumul: 0,
-        cumulCensorings: 0,
+        cumulCensoringEvents: 0,
         cumulEvents: 0,
         remaining: 1,
         atRisk: 2, // at risk at instant t, it is equivalent to remaining +censorings +events
-        nofEvents: 1,
-        nofCensorings: 0,
+        eventOfInterest: 1,
+        censoringEvent: 0,
       }, {
         timePoint: 2,
         prob: 0,
         cumul: 0,
-        cumulCensorings: 0,
+        cumulCensoringEvents: 0,
         cumulEvents: 0,
         remaining: 0,
         atRisk: 1, // at risk at instant t, it is equivalent to remaining +censorings +events
-        nofEvents: 1,
-        nofCensorings: 0,
+        eventOfInterest: 1,
+        censoringEvent: 0,
       }
 
     ], [{
       timePoint: 3,
       prob: 0,
       cumul: 0,
-      cumulCensorings: 0,
+      cumulCensoringEvents: 0,
       cumulEvents: 0,
       remaining: 1,
       atRisk: 2, // at risk at instant t, it is equivalent to remaining +censorings +events
-      nofEvents: 1,
-      nofCensorings: 0,
+      eventOfInterest: 1,
+      censoringEvent: 0,
     }, {
       timePoint: 4,
       prob: 0,
       cumul: 0,
-      cumulCensorings: 0,
+      cumulCensoringEvents: 0,
       cumulEvents: 0,
       remaining: 0,
       atRisk: 1, // at risk at instant t, it is equivalent to remaining +censorings +events
-      nofEvents: 1,
-      nofCensorings: 0,
+      eventOfInterest: 1,
+      censoringEvent: 0,
     }
 
     ]

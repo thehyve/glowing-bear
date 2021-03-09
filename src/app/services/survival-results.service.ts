@@ -14,6 +14,7 @@ import {SurvivalSettings} from '../models/survival-analysis/survival-settings';
 import {clearResultsToArray} from '../models/survival-analysis/survival-curves';
 import {SurvivalAnalysisClear} from '../models/survival-analysis/survival-analysis-clear';
 import {numericalTables, NumericalTablesType} from '../utilities/survival-analysis/numerical-tables';
+import {SurvivalResults} from '../models/survival-analysis/survival-results';
 
 @Injectable()
 export class SurvivalResultsService {
@@ -25,21 +26,21 @@ export class SurvivalResultsService {
     return this._id
   }
 
-  set survivalResults(res: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }[]) {
+  set survivalResults(res: SurvivalResults[]) {
     this._survivalResults = res
   }
-  get survivalResults(): { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }[] {
+  get survivalResults(): SurvivalResults[] {
     return this._survivalResults
   }
-  set selectedSurvivalResult(res: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }) {
+  set selectedSurvivalResult(res: SurvivalResults) {
     this._selectedSurvivalResult = res
   }
-  get selectedSurvivalResult(): { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings } {
+  get selectedSurvivalResult(): SurvivalResults {
     return this._selectedSurvivalResult
   }
   _id: Observable<number>
-  _survivalResults = new Array<{ survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }>()
-  _selectedSurvivalResult: { survivalAnalysisClear: SurvivalAnalysisClear, settings: SurvivalSettings }
+  _survivalResults = new Array<SurvivalResults>()
+  _selectedSurvivalResult: SurvivalResults
   _numericalTables = new Array<NumericalTablesType>()
   _selectedNumericalTables: NumericalTablesType
 
@@ -63,9 +64,14 @@ export class SurvivalResultsService {
       })
       return x
     })
-    this.survivalResults.push({ survivalAnalysisClear, settings })
-    let points = clearResultsToArray(survivalAnalysisClear).curves.map(x => x.points)
-    this._numericalTables.push(numericalTables(points))
+    let res = new SurvivalResults()
+    res.settings = settings
+    res.survivalAnalysisClear = survivalAnalysisClear
+
+    let clearPoints = clearResultsToArray(survivalAnalysisClear).curves.map(({points}) => points)
+    res.numericalTables = numericalTables(clearPoints)
+    this.survivalResults.push(res)
+    this._numericalTables.push(res.numericalTables)
     this.navBarService.insertNewSurvResults()
 
   }

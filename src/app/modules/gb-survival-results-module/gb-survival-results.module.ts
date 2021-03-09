@@ -1,5 +1,5 @@
 /**
- * Copyright 2020-2021 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,7 +9,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AccordionModule } from 'primeng';
+import {AccordionModule, TooltipModule} from 'primeng';
 import { OverlayPanelModule } from 'primeng'
 import { DropdownModule } from 'primeng';
 import { ScrollPanelModule } from 'primeng'
@@ -18,8 +18,7 @@ import { SpinnerModule } from 'primeng';
 import { routing } from './gb-survival-results.routing'
 import { GbSurvivalResultsComponent } from './gb-survival-results.component';
 import { RouterModule } from '@angular/router';
-
-
+import { GbSurvivalResultsGuard } from './gb-survival-results.guard';
 
 @NgModule({
   declarations: [GbSurvivalResultsComponent],
@@ -33,6 +32,10 @@ import { RouterModule } from '@angular/router';
     DropdownModule,
     ButtonModule,
     SpinnerModule,
+    TooltipModule,
+  ],
+  providers: [
+    GbSurvivalResultsGuard,
   ],
   exports: [
     RouterModule,

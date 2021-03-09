@@ -5,6 +5,8 @@
         <p class="description">
           Event parameters:
         </p>
+        Cohort Name: {{inputParameters.cohortName}}
+        <br>
         Time Granularity: {{inputParameters.timeGranularity}}
         <br>
         Time Limit: {{inputParameters.timeLimit}}
@@ -63,6 +65,22 @@
 <div class="row">
   <div class="column-2">
     <div id="survivalSvgContainer"></div>
+    <div id="milestonedContainer">
+      <table id="milestoned">
+        <tr>
+          <th>
+            at risk (sum of events)
+          </th>
+          <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
+        </tr>
+        <tr *ngFor="let summaries of summaryTable; let i = index">
+          <td>
+            <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
+          </td>
+          <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
+        </tr>
+      </table>
+    </div>
   </div>
   <div class="column-3">
     <table id="summary">
@@ -84,7 +102,7 @@
       </tr>
     </table>
     <br>
-    <p-dropdown [options]="groupTables" [(ngModel)]="selectedGroupTable"></p-dropdown>
+    <p-dropdown [options]="groupTables" [(ngModel)]="selectedGroupTable" [style]="{'width':'85%'}"></p-dropdown>
     <br>
     <br>
     <table id="stattest">
@@ -100,26 +118,22 @@
           <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
         </th>
         <td *ngFor="let curve2 of survivalCurve.curves;let j = index">
-          {{selectedGroupTable.table[i][j]}}
+          <ng-container *ngIf="selectedGroupTable.table[i][j].finished; else NumericalOperationNotFinished">
+            <ng-container *ngIf="selectedGroupTable.table[i][j].errorMessage; else NumericalOperationNoError">
+              <i [pTooltip]="selectedGroupTable.table[i][j].errorMessage" class="fa fa-exclamation-triangle"
+                aria-hidden="true"></i>
+            </ng-container>
+            <ng-template #NumericalOperationNoError>
+              <span *ngIf="selectedGroupTable.table[i][j].result">{{selectedGroupTable.table[i][j].result}}</span>
+            </ng-template>
+          </ng-container>
+          <ng-template #NumericalOperationNotFinished>
+            <i pTooltip="operation not finished" class="fa fa-cog fa-spin" aria-hidden="true"></i>
+          </ng-template>
         </td>
       </tr>
     </table>
   </div>
-
-  <table id="milestoned">
-    <tr>
-      <th>
-        sums of at risk(events)
-      </th>
-      <td *ngFor="let mileStone of summaryTableMileStones">{{mileStone}}</td>
-    </tr>
-    <tr *ngFor="let summaries of summaryTable; let i = index">
-      <td>
-        <i class="fa fa-users" aria-hidden="true" [style.color]="colorRange[i]"></i>
-      </td>
-      <td *ngFor="let summary of summaries">{{summary.atRisk}}({{summary.event}})</td>
-    </tr>
-  </table>
 
   <canvas id="drawingconv" hidden></canvas>
 </div>

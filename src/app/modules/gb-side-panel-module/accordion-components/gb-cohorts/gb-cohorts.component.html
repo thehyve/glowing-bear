@@ -53,8 +53,7 @@
           Waiting on MedCo server nodes response <span>•</span><span>•</span><span>•</span>
         </p>
         <p *ngIf="patientListsStatus.has(cohort.name) && patientListsStatus.get(cohort.name) === OperationStatus.decryption" class="loading-blink">
-          Decryption of local lists  <span>🔒</span><span>🔒</span><span>🔓</span><br/>
-          (this may take a few seconds)
+          Decryption of results can take a few seconds, please do not refresh the page <span>🔒</span><span>🔒</span><span>🔓</span><br/>
         </p>
       </p-header>
       <span style="font-size: 0.8em;">

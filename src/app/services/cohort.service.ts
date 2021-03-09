@@ -22,6 +22,7 @@ import {CombinationState} from '../models/constraint-models/combination-state';
 import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
 import {ApiCohort} from '../models/api-request-models/medco-node/api-cohort';
 import {ErrorHelper} from '../utilities/error-helper';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Injectable()
 export class CohortService {
@@ -40,6 +41,10 @@ export class CohortService {
   public restoring: Subject<boolean>
   private _queryTiming: Subject<ApiI2b2Timing>
   private _panelTimings: Subject<ApiI2b2Timing[]>
+
+  // constraint on cohort name
+  _patternValidation: RegExp
+
 
   private static apiCohortsToCohort(apiCohorts: ApiCohortResponse[][]): Cohort[] {
 
@@ -194,7 +199,7 @@ export class CohortService {
     this.medcoNetworkService.nodes.forEach((apiMetadata => {
       this._nodeName[apiMetadata.index] = apiMetadata.name
     }).bind(this))
-
+    this._patternValidation = new RegExp('^\\w+$')
     this._cohorts = new Array<Cohort>()
   }
 
@@ -251,6 +256,10 @@ export class CohortService {
     return this._panelTimings.asObservable()
   }
 
+  get patternValidation(): RegExp {
+    return this._patternValidation
+  }
+
   getCohorts() {
     this._isRefreshing = true
     this.exploreCohortsService.getCohortAllNodes().subscribe(
@@ -258,12 +267,12 @@ export class CohortService {
         try {
           this.updateCohorts(CohortService.apiCohortsToCohort(apiCohorts))
         } catch (err) {
-          MessageHelper.alert('error', 'An error occured with received saved cohorts', err)
+          MessageHelper.alert('error', 'An error occured with received saved cohorts', (err as Error).message)
         }
         this._isRefreshing = false
       }).bind(this),
       (err => {
-        MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', err)
+        MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', (err as HttpErrorResponse).error.message)
         this._isRefreshing = false
 
       }).bind(this),
@@ -293,7 +302,7 @@ export class CohortService {
       this._isRefreshing = false
     },
       error => {
-        MessageHelper.alert('error', 'An error occured while saving cohort', error)
+        MessageHelper.alert('error', 'An error occured while saving cohort', (error as HttpErrorResponse).error.message)
         this._isRefreshing = false
       })
 
@@ -326,7 +335,7 @@ export class CohortService {
         console.log('on remove cohort, message: ', message)
       },
       err => {
-        MessageHelper.alert('error', 'An error occured while removing saved cohorts', err)
+        MessageHelper.alert('error', 'An error occured while removing saved cohorts', (err as HttpErrorResponse).error.message)
       }
     )
   }

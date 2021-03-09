@@ -19,7 +19,7 @@ import {OperationStatus} from '../../../../models/operation-status';
 import {SurvivalService} from '../../../../services/survival-analysis.service';
 import {SurvivalResultsService} from '../../../../services/survival-results.service';
 import {AnalysisService} from '../../../../services/analysis.service';
-
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'gb-top',
@@ -108,6 +108,8 @@ export class GbTopComponent {
     this._ready = false
     this.launched = true
     let settings = this.survivalAnalysisService.settings()
+    settings.cohortName = this.cohortService.selectedCohort.name
+
     try {
       this.operationStatus = OperationStatus.waitOnAPI
       this.survivalAnalysisService.runSurvivalAnalysis()
@@ -115,7 +117,9 @@ export class GbTopComponent {
           tap(() => { this.operationStatus = OperationStatus.decryption },
             err => {
               this.operationStatus = OperationStatus.error
-              MessageHelper.alert('error', (err as Error).message)
+                  MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
+                    (err as HttpErrorResponse).error.message :
+                    (err as Error).message)
           }),
           switchMap(encryptedResult => this.survivalAnalysisService.survivalAnalysisDecrypt(encryptedResult[0]))
         )

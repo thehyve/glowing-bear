@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,36 +17,21 @@
  */
 
 export class SurvivalPoint {
-  timePoint: number
-  prob: number
-  cumul: number // used to compute variances
-  remaining: number
-  atRisk: number // at risk at instant t, it is equivalent to remaining +censorings +events
-  nofEvents: number
-  nofCensorings: number
-  cumulEvents: number
-  cumulCensorings: number
-  constructor(previousProb: number,
-    previousCumul: number,
-    remainingTotal: number,
-    timePoint: number,
-    previousCumulEvents: number,
-    previousCumulCensoringEvents: number,
-    currentEventOfInterest: number,
-    currentCensoringEvent: number) {
-    let ponctualProb = (remainingTotal - currentEventOfInterest) / (remainingTotal)
-    let prob = ponctualProb * previousProb
-    let cumul = previousCumul + currentEventOfInterest / (remainingTotal * (remainingTotal - currentEventOfInterest))
 
-    this.timePoint = timePoint
-    this.prob = prob
-    this.cumul = cumul
-    this.remaining = remainingTotal - currentCensoringEvent - currentEventOfInterest
-    this.atRisk = remainingTotal
-    this.nofEvents = currentEventOfInterest
-    this.nofCensorings = currentCensoringEvent
-    this.cumulEvents = previousCumulEvents + currentEventOfInterest
-    this.cumulCensorings = previousCumulCensoringEvents + currentCensoringEvent
+  constructor(
+    public readonly prob: number,
+    // cumul is used for computing variance estimate
+    public readonly cumul: number,
+    public readonly remaining: number,
+    public readonly timePoint: number,
+    public readonly cumulEvents: number,
+    public readonly cumulCensoringEvents: number,
+    public readonly eventOfInterest: number,
+    public readonly censoringEvent: number) {
 
+  }
+
+  get atRisk(): number {
+    return this.remaining + this.censoringEvent + this.eventOfInterest
   }
 }
