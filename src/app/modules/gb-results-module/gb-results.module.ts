@@ -7,13 +7,13 @@
  */
 
 
-import {NgModule} from "@angular/core";
-import {AccordionModule} from "primeng/accordion";
-import {RouterModule} from "@angular/router";
-import {GbResultsComponent} from "./gb-results.component";
-import {routing} from "./gb-results.routing";
-import {TabMenuModule, TabViewModule} from "primeng/primeng";
-import { CommonModule } from "@angular/common";
+import {NgModule} from '@angular/core';
+import {AccordionModule} from 'primeng/accordion';
+import {RouterModule} from '@angular/router';
+import {GbResultsComponent} from './gb-results.component';
+import {routing} from './gb-results.routing';
+import {TabMenuModule} from 'primeng/components/tabmenu/tabmenu';
+import {CommonModule} from '@angular/common';
 
 @NgModule({
   declarations: [GbResultsComponent],
@@ -23,7 +23,6 @@ import { CommonModule } from "@angular/common";
     imports: [
         AccordionModule,
         routing,
-        TabViewModule,
         CommonModule,
         TabMenuModule
     ]

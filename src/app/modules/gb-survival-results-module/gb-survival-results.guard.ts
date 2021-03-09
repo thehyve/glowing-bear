@@ -24,9 +24,9 @@ export class GbSurvivalResultsGuard implements CanActivate {
     let resultIDString = urlTokens[urlTokens.length - 1]
     let resultID = parseInt(resultIDString, 10)
 
-    if ((isNaN(resultID)) || (resultID <= 0) || (resultID > this.survivalResultsService.survivalResults.length)) {
-      console.log(`${resultIDString} not in survival results, redirect to /analysis ...`)
-      this.router.navigateByUrl('/analysis')
+    if (!this.survivalResultsService.isValidResultIndex(resultID - 1)) {
+      console.log(`${resultIDString} not in survival results, redirect to /results ...`)
+      this.router.navigateByUrl('/results')
       return false
     }
 

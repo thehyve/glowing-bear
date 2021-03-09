@@ -8,7 +8,7 @@
 
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
-import {GbResultsComponent} from "../gb-results-module/gb-results.component";
+import {GbResultsComponent} from '../gb-results-module/gb-results.component';
 
 // Route Configuration
 export const routes: Routes = [
