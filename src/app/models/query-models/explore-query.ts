@@ -7,7 +7,6 @@
  */
 
 import { Constraint } from '../constraint-models/constraint';
-import { ExploreQueryType } from './explore-query-type';
 
 export class ExploreQuery {
 

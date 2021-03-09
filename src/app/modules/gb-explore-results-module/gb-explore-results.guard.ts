@@ -10,7 +10,7 @@ import {Injectable} from '@angular/core';
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from '@angular/router';
 import {QueryService} from '../../services/query.service';
 import {Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {tap} from 'rxjs/operators';
 
 /**
  * Activation guard for GbExploreResultsModule preventing activation if no results are available for display.

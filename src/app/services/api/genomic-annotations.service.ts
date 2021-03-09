@@ -8,9 +8,8 @@
 
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../config/app.config';
-import {ErrorHelper} from '../../utilities/error-helper';
 import {Observable, of, forkJoin} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Constraint} from '../../models/constraint-models/constraint';
 import {GenomicAnnotationConstraint} from '../../models/constraint-models/genomic-annotation-constraint';
 import {CombinationConstraint} from '../../models/constraint-models/combination-constraint';

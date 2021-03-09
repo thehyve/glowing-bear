@@ -7,20 +7,24 @@
  */
 import { Component, OnInit, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { SelectItem } from 'primeng/api';
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
+import { SelectItem } from 'primeng';
 import { select, Selection } from 'd3';
-import { alphas, alphasReverseMap, CIs, SurvivalCurvesDrawing } from 'app/utilities/rendering/survival-curves-drawing';
-import { clearResultsToArray, SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
-import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings';
-import { summaryTable } from 'app/utilities/survival-analysis/summary-table';
-import { PDF } from 'app/utilities/files/pdf';
-import { milestonedSummaryToTable, statTestToTable, summaryToTable } from 'app/utilities/rendering/table-format-for-pdf';
-import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
-import { ErrorHelper } from 'app/utilities/error-helper';
-import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
-import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation';
+import {SurvivalAnalysisClear} from '../../models/survival-analysis/survival-analysis-clear';
+import {alphas, alphasReverseMap, CIs, SurvivalCurvesDrawing} from '../../utilities/rendering/survival-curves-drawing';
+import {
+  milestonedSummaryToTable,
+  statTestToTable,
+  summaryToTable
+} from '../../utilities/rendering/table-format-for-pdf';
+import {ErrorHelper} from '../../utilities/error-helper';
+import {SurvivalSettings} from '../../models/survival-analysis/survival-settings';
+import {summaryTable} from '../../utilities/survival-analysis/summary-table';
+import {PDF} from '../../utilities/files/pdf';
+import {clearResultsToArray, SurvivalCurve} from '../../models/survival-analysis/survival-curves';
+import {SurvivalResultsService} from '../../services/survival-results.service';
+import {ConfidenceInterval} from '../../models/survival-analysis/confidence-intervals';
+import {NumericalTablesType} from '../../utilities/survival-analysis/numerical-tables';
+import {NumericalMethodResult} from '../../models/survival-analysis/numerical-models/numerical-operation';
 
 
 @Component({

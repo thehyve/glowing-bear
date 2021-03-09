@@ -6,16 +6,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { SelectItem } from 'primeng/api';
-import { ConstraintService } from 'app/services/constraint.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { SubGroup } from 'app/services/survival-analysis.service';
-import { OperationType } from 'app/models/operation-models/operation-types';
-import { AnalysisService } from 'app/services/analysis.service';
-import { CohortService } from 'app/services/cohort.service';
-
-
+import { SelectItem } from 'primeng';
+import {SubGroup, SurvivalService} from '../../../../services/survival-analysis.service';
+import {AnalysisService} from '../../../../services/analysis.service';
+import {ConstraintService} from '../../../../services/constraint.service';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {OperationType} from '../../../../models/operation-models/operation-types';
+import {CohortService} from '../../../../services/cohort.service';
 
 const nameMaxLength = 12
 

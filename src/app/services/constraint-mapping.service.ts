@@ -10,10 +10,10 @@ import { ValueType } from '../models/constraint-models/value-type';
 import { CryptoService } from './crypto.service';
 import { ErrorHelper } from '../utilities/error-helper';
 import { NegationConstraint } from '../models/constraint-models/negation-constraint';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-import { ApiI2B2Modifier } from 'app/models/api-request-models/medco-node/api-i2b2-modifier';
-import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
-import { TextOperator } from 'app/models/constraint-models/text-operator';
+import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
+import {TextOperator} from '../models/constraint-models/text-operator';
+import {NumericalOperator} from '../models/constraint-models/numerical-operator';
+import {ApiI2B2Modifier} from '../models/api-request-models/medco-node/api-i2b2-modifier';
 
 
 @Injectable()
