@@ -6,11 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ApiI2b2Panel } from '../medco-node/api-i2b2-panel'
+import { ApiI2b2Timing } from '../medco-node/api-i2b2-timing'
 
 export class ApiSurvivalAnalysis {
   ID: string
   cohortName: string
-  subGroupDefinitions: Array<{ groupName: string, panels: Array<ApiI2b2Panel> }>
+  subGroupDefinitions: Array<{ groupName: string, subGroupTiming: ApiI2b2Timing, panels: Array<ApiI2b2Panel> }>
   timeLimit: number
   timeGranularity: string
   startConcept: string

@@ -221,8 +221,6 @@ export class ConstraintService {
 
     switch (opType) {
       case OperationType.EXPLORE:
-        console.log('The operation type of constraint service is now Explore.')
-
 
         // reload previous selection
         if (this._operationType === OperationType.ANALYSIS) {
@@ -235,6 +233,7 @@ export class ConstraintService {
         }
 
         this._operationType = opType
+        console.log('The operation type of constraint service is now Explore.')
         break;
       case OperationType.ANALYSIS:
 
@@ -245,6 +244,7 @@ export class ConstraintService {
           this.clearConstraint()
         }
         this._operationType = opType
+        console.log('The operation type of constraint service is now Analysis.')
         break;
       default:
 

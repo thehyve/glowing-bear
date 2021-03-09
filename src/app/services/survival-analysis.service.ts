@@ -27,9 +27,11 @@ import { SurvivalSettings } from 'app/models/survival-analysis/survival-settings
 import { ErrorHelper } from 'app/utilities/error-helper';
 import { ClearGroup } from 'app/models/survival-analysis/clear-group';
 import { When } from 'app/models/survival-analysis/when-type';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 export class SubGroup {
   name: string
+  timing: ApiI2b2Timing
   rootInclusionConstraint: CombinationConstraint
   rootExclusionConstraint: CombinationConstraint
 }
@@ -192,7 +194,7 @@ export class SurvivalService {
     apiSurvivalAnalysis.endsWhen = this.endsWhen
 
     apiSurvivalAnalysis.cohortName = this.cohortService.selectedCohort.name
-    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name, panels: this.generatePanels(sg) } })
+    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name,subGroupTiming:sg.timing, panels: this.generatePanels(sg) } })
 
 
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)

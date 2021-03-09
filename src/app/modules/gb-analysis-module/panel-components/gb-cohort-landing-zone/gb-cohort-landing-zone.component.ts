@@ -14,6 +14,8 @@ import { SubGroup } from 'app/services/survival-analysis.service';
 import { OperationType } from 'app/models/operation-models/operation-types';
 import { AnalysisService } from 'app/services/analysis.service';
 import { CohortService } from 'app/services/cohort.service';
+import { QueryService } from 'app/services/query.service';
+import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 
 
 
@@ -38,6 +40,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   constructor(private analysisService: AnalysisService,
     private cohortService: CohortService,
     private constraintService: ConstraintService,
+    private queryService: QueryService,
     private survivalService: SurvivalService) {
     this._subGroups = new Array()
     this._usedNames = new Set()
@@ -114,6 +117,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
     let newSubGroup: SubGroup = {
       name: this.name,
+      timing: this.queryService.queryTimingSameInstance ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any,
       rootInclusionConstraint: this.constraintService.rootInclusionConstraint.clone(),
       rootExclusionConstraint: this.constraintService.rootExclusionConstraint.clone()
     }
@@ -137,6 +141,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   loadSubGroup(event: Event) {
     this.name = this.selectedSubGroup.name
+    this.queryService.queryTimingSameInstance = (this.selectedSubGroup.timing === ApiI2b2Timing.sameInstanceNum) ? true : false
     this.constraintService.rootInclusionConstraint = this.selectedSubGroup.rootInclusionConstraint.clone()
     this.constraintService.rootExclusionConstraint = this.selectedSubGroup.rootExclusionConstraint.clone()
   }
