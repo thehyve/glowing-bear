@@ -63,7 +63,7 @@ export class GbSelectionComponent {
 
   @Input()
   set operationType(opType: OperationType) {
-    this.queryService.operationType =opType
+    this.queryService.operationType = opType
   }
 
   get operationType(): OperationType {

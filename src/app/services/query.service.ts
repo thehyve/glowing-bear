@@ -280,7 +280,7 @@ export class QueryService {
   set operationType(opType: OperationType) {
     switch (opType) {
       case OperationType.EXPLORE:
-        
+
         // reload previous selection
         if (this.operationType === OperationType.ANALYSIS) {
           if (this._exploreQueryTimingSameInstance !== null) {

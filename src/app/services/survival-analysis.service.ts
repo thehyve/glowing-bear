@@ -194,7 +194,9 @@ export class SurvivalService {
     apiSurvivalAnalysis.endsWhen = this.endsWhen
 
     apiSurvivalAnalysis.cohortName = this.cohortService.selectedCohort.name
-    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name,subGroupTiming:sg.timing, panels: this.generatePanels(sg) } })
+    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(
+      sg => { return { groupName: sg.name, subGroupTiming: sg.timing, panels: this.generatePanels(sg) } }
+    )
 
 
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)
