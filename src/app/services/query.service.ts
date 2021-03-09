@@ -289,7 +289,6 @@ export class QueryService {
         }
 
         this.constraintService.operationType = opType
-        console.log('The operation type of query service is now Explore.')
         break;
       case OperationType.ANALYSIS:
 
@@ -298,7 +297,6 @@ export class QueryService {
           this._exploreQueryTimingSameInstance = this.queryTimingSameInstance
         }
         this.constraintService.operationType = opType
-        console.log('The operation type of query service is now Analysis.')
         break;
       default:
 
