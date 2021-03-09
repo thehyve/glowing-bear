@@ -23,7 +23,6 @@ import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {QueryService} from './services/query.service';
 import {NavbarService} from './services/navbar.service';
 import {DatePipe} from '@angular/common';
-import {GrowlModule} from 'primeng/growl';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthenticationService} from './services/authentication.service';
 import {GbMainModule} from './modules/gb-main-module/gb-main.module';
@@ -39,18 +38,24 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
+import {WorkerModule} from 'angular-web-worker/angular';
+import {DecryptionWorker} from '../decryption.worker';
+import {ToastrModule} from 'ngx-toastr';
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
                              medcoNetworkService: MedcoNetworkService,
-                             treeNodeService: TreeNodeService) {
+                             treeNodeService: TreeNodeService,
+                             cryptoService: CryptoService) {
 
   return () => config.load().then(
     () => authService.load().then(
       () => Promise.all([
         medcoNetworkService.load(),
-        treeNodeService.load()
-      ]).then( () => {
+        treeNodeService.load(),
+      ])
+        .then(() => cryptoService.load())
+        .then( () => {
         console.log('Application loaded.');
       })
     )
@@ -67,7 +72,7 @@ export function loadServices(config: AppConfig,
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    GrowlModule,
+    ToastrModule.forRoot(),
     routing,
     GbMainModule,
     GbExploreModule,
@@ -75,7 +80,10 @@ export function loadServices(config: AppConfig,
     GbAnalysisModule,
     GbSurvivalResultsModule,
     GbNavBarModule,
-    GbSidePanelModule
+    GbSidePanelModule,
+    WorkerModule.forWorkers([
+      {worker: DecryptionWorker, initFn: () => new Worker('../decryption.worker.ts', {type: 'module'})},
+    ]),
   ],
   providers: [
     ApiEndpointService,
@@ -96,7 +104,7 @@ export function loadServices(config: AppConfig,
     {
       provide: APP_INITIALIZER,
       useFactory: loadServices,
-      deps: [AppConfig, AuthenticationService, MedcoNetworkService, TreeNodeService],
+      deps: [AppConfig, AuthenticationService, MedcoNetworkService, TreeNodeService, CryptoService],
       multi: true
     },
   ],

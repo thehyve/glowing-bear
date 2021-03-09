@@ -10,30 +10,27 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GbSidePanelComponent } from './gb-side-panel.component';
-import { AccordionModule } from 'primeng/components/accordion/accordion';
-import { TreeModule } from 'primeng/components/tree/tree';
-import { DataListModule } from 'primeng/components/datalist/datalist';
+import { AccordionModule } from 'primeng';
+import { TreeModule } from 'primeng';
 import { GbTreeNodesComponent } from './accordion-components/gb-tree-nodes/gb-tree-nodes.component';
-import { ConfirmationService, TreeDragDropService } from 'primeng/components/common/api';
-import { OverlayPanelModule } from 'primeng/components/overlaypanel/overlaypanel';
-import { DragDropModule } from 'primeng/components/dragdrop/dragdrop';
+import { ConfirmationService, TreeDragDropService } from 'primeng';
+import { OverlayPanelModule } from 'primeng';
+import { DragDropModule } from 'primeng';
 import { FormsModule } from '@angular/forms';
 import { GbSummaryComponent } from './accordion-components/gb-summary/gb-summary.component';
-import { AutoCompleteModule } from 'primeng/autocomplete';
-import { PanelModule } from 'primeng/panel';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { RadioButtonModule } from 'primeng/radiobutton';
+import { AutoCompleteModule } from 'primeng';
+import { PanelModule } from 'primeng';
+import { ButtonModule } from 'primeng';
+import { InputTextModule } from 'primeng';
+import { TooltipModule } from 'primeng';
+import { ConfirmDialogModule } from 'primeng';
+import { RadioButtonModule } from 'primeng';
 import { GbCohortsComponent } from './accordion-components/gb-cohorts/gb-cohorts.component';
 
-import { ToggleButtonModule } from 'primeng/togglebutton'
-import { ExploreCohortsService } from 'app/services/api/medco-node/explore-cohorts.service';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
-
-
+import { ToggleButtonModule } from 'primeng'
+import {SurvivalService} from '../../services/survival-analysis.service';
+import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
+import {ExploreCohortsService} from '../../services/api/medco-node/explore-cohorts.service';
 
 @NgModule({
   imports: [
@@ -41,7 +38,6 @@ import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patie
     AccordionModule,
     TreeModule,
     OverlayPanelModule,
-    DataListModule,
     DragDropModule,
     FormsModule,
     AutoCompleteModule,

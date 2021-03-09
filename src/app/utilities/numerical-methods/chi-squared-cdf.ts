@@ -1,4 +1,3 @@
-
 import * as jstat from 'jstat'
 
 export function ChiSquaredCdf(value: number, degreesOfFreedom: number): number {

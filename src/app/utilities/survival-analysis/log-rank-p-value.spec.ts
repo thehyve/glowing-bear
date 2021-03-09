@@ -6,8 +6,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { logRank2Groups } from './log-rank-p-value'
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 describe('Logrank test', () => {
   const precision = 5

@@ -12,7 +12,7 @@ import { QueryService } from '../../services/query.service';
 import { MedcoNetworkService } from '../../services/api/medco-network.service';
 import { Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
-import { savePatientListToCSVFile } from 'app/utilities/files/csv';
+import {savePatientListToCSVFile} from '../../utilities/files/csv';
 
 @Component({
   selector: 'gb-medco-results',

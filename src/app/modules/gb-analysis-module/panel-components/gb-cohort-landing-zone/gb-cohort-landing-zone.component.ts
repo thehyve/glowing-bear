@@ -6,18 +6,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
-import { SelectItem } from 'primeng/api';
-import { ConstraintService } from 'app/services/constraint.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { SubGroup } from 'app/services/survival-analysis.service';
-import { OperationType } from 'app/models/operation-models/operation-types';
-import { AnalysisService } from 'app/services/analysis.service';
-import { CohortService } from 'app/services/cohort.service';
-import { QueryService } from 'app/services/query.service';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-
-
+import { SelectItem } from 'primeng';
+import { SubGroup, SurvivalService } from '../../../../services/survival-analysis.service';
+import { AnalysisService } from '../../../../services/analysis.service';
+import { ConstraintService } from '../../../../services/constraint.service';
+import { MessageHelper } from '../../../../utilities/message-helper';
+import { OperationType } from '../../../../models/operation-models/operation-types';
+import { CohortService } from '../../../../services/cohort.service';
+import { ApiI2b2Timing } from '../../../../models/api-request-models/medco-node/api-i2b2-timing';
+import { QueryService } from '../../../../services/query.service';
 
 const nameMaxLength = 12
 

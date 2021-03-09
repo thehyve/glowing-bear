@@ -5,52 +5,47 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Component, OnInit } from '@angular/core';
-import { AnalysisType } from 'app/models/analysis-models/analysis-type';
-import { ApiSurvivalAnalysisResponse } from 'app/models/api-response-models/survival-analysis/survival-analysis-response';
-import { SurvivalAnalysisClear } from 'app/models/survival-analysis/survival-analysis-clear';
-import { Subject, Observable } from 'rxjs';
-import { ApiI2b2Panel } from 'app/models/api-request-models/medco-node/api-i2b2-panel';
-import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
-import { MessageHelper } from 'app/utilities/message-helper';
-
-import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { CohortService } from 'app/services/cohort.service';
-import { SurvivalService } from 'app/services/survival-analysis.service';
-import { delay, tap } from 'rxjs/operators';
-import { OperationStatus } from 'app/models/operation-status';
-import { NavbarService } from 'app/services/navbar.service';
-import { AnalysisService } from 'app/services/analysis.service';
-import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import {Subject, Observable} from 'rxjs';
+import {AnalysisType} from '../../../../models/analysis-models/analysis-type';
+import {ApiI2b2Panel} from '../../../../models/api-request-models/medco-node/api-i2b2-panel';
+import {MessageHelper} from '../../../../utilities/message-helper';
+import {switchMap, tap} from 'rxjs/operators';
+import {SurvivalAnalysisClear} from '../../../../models/survival-analysis/survival-analysis-clear';
+import {CohortService} from '../../../../services/cohort.service';
+import {NavbarService} from '../../../../services/navbar.service';
+import {ApiI2b2Item} from '../../../../models/api-request-models/medco-node/api-i2b2-item';
+import {OperationStatus} from '../../../../models/operation-status';
+import {SurvivalService} from '../../../../services/survival-analysis.service';
+import {SurvivalResultsService} from '../../../../services/survival-results.service';
+import {AnalysisService} from '../../../../services/analysis.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'gb-top',
   templateUrl: './gb-top.component.html',
   styleUrls: ['./gb-top.component.css']
 })
-export class GbTopComponent implements OnInit {
+export class GbTopComponent {
   launched = false
 
   _selectedSurvival: boolean
-  // _selectedLinearRegression:boolean
-  // _selectedLogisticRegression:boolean
 
   _clearRes: Subject<SurvivalAnalysisClear>
   _available = AnalysisType.ALL_TYPES
-  _survivalAnalysisResponses: ApiSurvivalAnalysisResponse[]
   _ready = false
 
   OperationStatus = OperationStatus
   _operationStatus: OperationStatus
 
   private static filterResults(res: SurvivalAnalysisClear): SurvivalAnalysisClear {
-    let ret = new SurvivalAnalysisClear()
-    ret.results = new Array()
+    let ret = new SurvivalAnalysisClear();
+    ret.results = [];
     for (const result of res.results) {
       if (result.groupResults.length > 0) {
-        ret.results.push(result)
+        ret.results.push(result);
       } else {
-        MessageHelper.alert('warn', `No observation available for group ${result.groupId} within the given time limit`)
+        MessageHelper.alert('warn', `No observation available for group ${result.groupId} within the given time limit`);
       }
     }
     return ret
@@ -122,36 +117,30 @@ export class GbTopComponent implements OnInit {
           tap(() => { this.operationStatus = OperationStatus.decryption },
             err => {
               this.operationStatus = OperationStatus.error
-              MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
-                (err as HttpErrorResponse).error.message :
-                (err as Error).message)
-            }),
-          delay(100)
+                  MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
+                    (err as HttpErrorResponse).error.message :
+                    (err as Error).message)
+          }),
+          switchMap(encryptedResult => this.survivalAnalysisService.survivalAnalysisDecrypt(encryptedResult[0]))
         )
-        .subscribe(res => {
+        .subscribe(clearResult => {
           this.launched = false
-          console.log(res)
-          this._survivalAnalysisResponses = res
-
-          let survivalAnalysisClear: SurvivalAnalysisClear
-          try {
-            survivalAnalysisClear = this.survivalAnalysisService.survivalAnalysisDecrypt(this._survivalAnalysisResponses[0])
-          } catch (err) {
-            MessageHelper.alert('error', 'while decrypting survival analysis: ' + (err as Error).message)
-            this.operationStatus = OperationStatus.error
-            return
-          }
+          console.log('Decrypted survival analysis result', clearResult);
           this.operationStatus = OperationStatus.done
-          let survivalFiltered = GbTopComponent.filterResults(survivalAnalysisClear)
+
+          let survivalFiltered = GbTopComponent.filterResults(clearResult)
           if (!(survivalFiltered.results) || survivalFiltered.results.length === 0) {
             return
           }
-          this._clearRes.next(survivalAnalysisClear)
-          this.survivalResultsService.pushCopy(survivalAnalysisClear, settings)
+          this._clearRes.next(clearResult)
+          this.survivalResultsService.pushCopy(clearResult, settings)
           this._ready = true
 
           this.navbarService.navigateToNewResults()
 
+        }, err => {
+          MessageHelper.alert('error', 'while decrypting survival analysis: ' + (err as Error).message)
+          this.operationStatus = OperationStatus.error
         })
     } catch (exception) {
       this.operationStatus = OperationStatus.error
@@ -161,8 +150,6 @@ export class GbTopComponent implements OnInit {
     }
     this._ready = true
     this.launched = false
-
-
   }
 
   get clearRes(): Observable<SurvivalAnalysisClear> {
@@ -174,11 +161,6 @@ export class GbTopComponent implements OnInit {
       this.selected !== undefined &&
       this.cohortService.selectedCohort !== undefined
   }
-
-
-  ngOnInit() {
-  }
-
 }
 
 

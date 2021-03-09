@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {AppConfig} from 'app/config/app.config';
 import {ErrorHelper} from '../utilities/error-helper';
+import {AppConfig} from '../config/app.config';
 
 @Injectable()
 export class ApiEndpointService {

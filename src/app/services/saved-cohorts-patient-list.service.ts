@@ -8,18 +8,18 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ApiCohortsPatientLists } from 'app/models/api-request-models/medco-node/api-cohorts-patient-lists';
-import { OperationStatus } from 'app/models/operation-status';
-import { ExploreQueryType } from 'app/models/query-models/explore-query-type';
-import { ErrorHelper } from 'app/utilities/error-helper';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { Observable, Subject, throwError } from 'rxjs';
+import {forkJoin, Observable, Subject, throwError} from 'rxjs';
 import { of } from 'rxjs';
-import {catchError, delay, flatMap, map, tap} from 'rxjs/operators';
+import {catchError, map, switchMap, tap} from 'rxjs/operators';
 import { ExploreCohortsService } from './api/medco-node/explore-cohorts.service';
 import { AuthenticationService } from './authentication.service';
 import { CryptoService } from './crypto.service';
 import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
+import {MessageHelper} from '../utilities/message-helper';
+import {ApiCohortsPatientLists} from '../models/api-request-models/medco-node/api-cohorts-patient-lists';
+import {OperationStatus} from '../models/operation-status';
+import {ExploreQueryType} from '../models/query-models/explore-query-type';
+import {ErrorHelper} from '../utilities/error-helper';
 
 @Injectable()
 export class SavedCohortsPatientListService {
@@ -55,10 +55,6 @@ export class SavedCohortsPatientListService {
   constructor(private cryptoService: CryptoService,
     private exploreCohortsService: ExploreCohortsService,
     private authenticationService: AuthenticationService) { }
-
-  private decrypt(cipherPatientLists: string[][]): Observable<number[][]> {
-    return of(cipherPatientLists.map(value => value.map(cipher => this.cryptoService.decryptIntegerWithEphemeralKey(cipher))))
-  }
 
   /**
    * getListStatusNotifier creates or returns existing rxjs Subject, indentified by the cohort name,
@@ -144,16 +140,17 @@ export class SavedCohortsPatientListService {
           return throwError(ErrorHelper.handleNewError(`User ${this.authenticationService.username} is not authorized to retrieve patient lists from previous cohorts`))
         }
       }),
-      // dirty trick: if the decryption starts immediately, views depending on notifiers won't be updating on
-      // as the browser would be frozen (even for 2 or 3 seconds)
-      // a solution could be the use of a web worker
-      delay(100),
-      flatMap(
-       res => this.decrypt(res.map(x => x[1].results)).pipe(map( numbers => {
-         // need the explicit declaration in order to create the tuple
-         let ret: [ApiNodeMetadata[], number[][]] = [res.map(x => x[0]), numbers];
-         return ret;
-       }))
+      // decrypt results and reassemble object
+      switchMap(cohorts =>
+        forkJoin(
+          cohorts.map(cohort => this.cryptoService.decryptIntegersWithEphemeralKey(cohort[1].results))
+        ).pipe(map(decryptedResults => {
+          let ret: [ApiNodeMetadata[], number[][]] = [
+            cohorts.map(cohort => cohort[0]),
+            decryptedResults
+          ];
+          return ret;
+        }))
       ),
       tap(
         (res) => {

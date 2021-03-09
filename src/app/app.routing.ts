@@ -16,4 +16,4 @@ export const routes: Routes = [
   {path: 'main', component: GbMainComponent},
   {path: '**', component: GbMainComponent}];
 
-export const routing: ModuleWithProviders = RouterModule.forRoot(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forRoot(routes);
