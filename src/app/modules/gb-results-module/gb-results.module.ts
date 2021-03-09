@@ -12,7 +12,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {RouterModule} from '@angular/router';
 import {GbResultsComponent} from './gb-results.component';
 import {routing} from './gb-results.routing';
-import {TabMenuModule} from 'primeng/components/tabmenu/tabmenu';
+import {TabMenuModule} from 'primeng';
 import {CommonModule} from '@angular/common';
 
 @NgModule({

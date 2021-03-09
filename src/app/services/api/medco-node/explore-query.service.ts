@@ -7,7 +7,7 @@
  */
 import {Injectable} from '@angular/core';
 import {AppConfig} from '../../../config/app.config';
-import {Observable, forkJoin, of} from 'rxjs';
+import {Observable, forkJoin} from 'rxjs';
 import {timeout, map, tap} from 'rxjs/operators';
 import {ApiI2b2Panel} from '../../../models/api-request-models/medco-node/api-i2b2-panel';
 import {ConstraintMappingService} from '../../constraint-mapping.service';
@@ -17,8 +17,8 @@ import {ApiExploreQueryResult} from '../../../models/api-response-models/medco-n
 import {MedcoNetworkService} from '../medco-network.service';
 import {ExploreQuery} from '../../../models/query-models/explore-query';
 import {CryptoService} from '../../crypto.service';
-import {ApiI2b2Timing} from 'app/models/api-request-models/medco-node/api-i2b2-timing';
 import {ApiNodeMetadata} from '../../../models/api-response-models/medco-network/api-node-metadata';
+import {ApiI2b2Timing} from '../../../models/api-request-models/medco-node/api-i2b2-timing';
 
 @Injectable()
 export class ExploreQueryService {

@@ -5,8 +5,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import {ApiQueryDefinition} from '../../api-request-models/medco-node/api-query-definition';
 
-import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api-query-definition';
 
 export class ApiCohortResponse {
   cohortName: string;

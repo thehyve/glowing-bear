@@ -19,9 +19,8 @@ import {AppConfig} from '../config/app.config';
 import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
 import {ExploreSearchService} from './api/medco-node/explore-search.service';
 import {Observable} from 'rxjs';
-import {Modifier} from 'app/models/constraint-models/modifier';
-import {ApiValueMetadata, DataType} from 'app/models/api-response-models/medco-node/api-value-metadata';
-
+import {ApiValueMetadata, DataType} from '../models/api-response-models/medco-node/api-value-metadata';
+import {Modifier} from '../models/constraint-models/modifier';
 
 @Injectable()
 export class TreeNodeService {

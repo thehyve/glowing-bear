@@ -9,19 +9,16 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AccordionModule } from 'primeng/accordion';
-import { OverlayPanelModule } from 'primeng/overlaypanel'
-import { DropdownModule } from 'primeng/dropdown';
-import { ScrollPanelModule } from 'primeng/scrollpanel'
-import { ButtonModule } from 'primeng/button';
-import { SpinnerModule } from 'primeng/spinner';
-import { TooltipModule } from 'primeng/tooltip';
+import {AccordionModule, TooltipModule} from 'primeng';
+import { OverlayPanelModule } from 'primeng'
+import { DropdownModule } from 'primeng';
+import { ScrollPanelModule } from 'primeng'
+import { ButtonModule } from 'primeng';
+import { SpinnerModule } from 'primeng';
 import { routing } from './gb-survival-results.routing'
 import { GbSurvivalResultsComponent } from './gb-survival-results.component';
 import { RouterModule } from '@angular/router';
 import { GbSurvivalResultsGuard } from './gb-survival-results.guard';
-
-
 
 @NgModule({
   declarations: [GbSurvivalResultsComponent],

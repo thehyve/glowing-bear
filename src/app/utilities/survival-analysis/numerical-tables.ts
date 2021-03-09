@@ -7,9 +7,9 @@
  */
 import { logRank2Groups } from './log-rank-p-value'
 import { NewCoxRegression, coxToString } from '../numerical-methods/cox-model'
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { ChiSquaredCdf } from '../numerical-methods/chi-squared-cdf'
-import { NumericalOperation } from 'app/models/survival-analysis/numerical-models/numerical-operation'
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
+import {NumericalOperation} from '../../models/survival-analysis/numerical-models/numerical-operation';
 
 export function numericalTables(
   curves: SurvivalPoint[][],
@@ -97,8 +97,8 @@ export function numericalTables(
 
     }
     totalAtRisk = curves[i][0].atRisk.toString()
-    totalEvent = curves[i].map(p => p.nofEvents).reduce((a, b) => a + b).toString()
-    totalCensoring = curves[i].map(p => p.nofCensorings).reduce((a, b) => a + b).toString()
+    totalEvent = curves[i].map(p => p.eventOfInterest).reduce((a, b) => a + b).toString()
+    totalCensoring = curves[i].map(p => p.censoringEvent).reduce((a, b) => a + b).toString()
     groupLogrankTable.push(logrankRow)
     groupCoxRegTable.push(coxRegRow)
     groupCoxWaldTable.push(waldCoxRow)

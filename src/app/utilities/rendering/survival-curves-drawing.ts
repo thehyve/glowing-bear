@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -7,22 +7,21 @@
  */
 import {
   Selection, scaleLinear, ScaleLinear, axisBottom,
-  event, axisLeft, scaleOrdinal, ScaleOrdinal, scaleBand,
+  event, axisLeft, scaleOrdinal, ScaleOrdinal,
   select, area, curveStepAfter, Line, Area, line, BaseType
 } from 'd3'
-import { colorRange } from 'app/modules/gb-survival-results-module/gb-survival-results.component'
 import { Observable } from 'rxjs';
-import { ConfidenceInterval } from 'app/models/survival-analysis/confidence-intervals';
-import { SurvivalCurve } from 'app/models/survival-analysis/survival-curves';
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
-
-
+import {colorRange} from '../../modules/gb-survival-results-module/gb-survival-results.component';
+import {SurvivalCurve} from '../../models/survival-analysis/survival-curves';
+import {ConfidenceInterval} from '../../models/survival-analysis/confidence-intervals';
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 export const CIs: Array<{ label: string, value: ConfidenceInterval }> = [
   { label: 'identity', value: ConfidenceInterval.identity() },
   { label: 'log', value: ConfidenceInterval.logarithm() },
   { label: 'log -log', value: ConfidenceInterval.logarithmMinusLogarithm() },
-  { label: 'arcsine squared', value: ConfidenceInterval.arcsineSquaredRoot() }
+  { label: 'arcsine squared', value: ConfidenceInterval.arcsineSquaredRoot() },
+  { label: 'none', value: null }
 ]
 export const alphas: Array<{ label: string, value: number }> = [
   { label: '90%', value: 1.645 },
@@ -131,7 +130,7 @@ export class SurvivalCurvesDrawing {
     res += '<p>Time point ' + point.timePoint.toString() + '<br>\n'
     res += 'At risk ' + point.atRisk.toString() + '<br>\n'
     res += 'Events ' + point.cumulEvents.toString() + '<br>\n'
-    res += 'Censoring ' + point.cumulCensorings.toString() + '</p>\n'
+    res += 'Censoring ' + point.cumulCensoringEvents.toString() + '</p>\n'
 
     return res
   }
@@ -181,17 +180,22 @@ export class SurvivalCurvesDrawing {
             this._hiding.set(curve.groupId, hidden);
 
             if (hidden) {
-              let selectedGroup = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId))
-              selectedGroup.transition().duration(50).attr('opacity', '0.0')
-              selectedGroup.transition().delay(50).attr('visibility', 'hidden')
+              let selectedGroupCurves = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId))
+              let selectedGroupCIs = this._svgRef.select('.CIs#' + this._labelClasses.get(curve.groupId) + '_ci')
+
+              selectedGroupCurves.transition().duration(50).attr('opacity', '0.0')
+              selectedGroupCurves.transition().delay(50).attr('visibility', 'hidden')
+
+              selectedGroupCIs.transition().duration(50).attr('opacity', '0.0')
+              selectedGroupCIs.transition().delay(50).attr('visibility', 'hidden')
 
             } else {
-              let selectedGroup = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId) + ':not(.ci)')
-              selectedGroup.transition().attr('visibility', 'visible')
-              selectedGroup.transition().duration(50).attr('opacity', '1.0')
-              let selectedGroupCI = this._svgRef.selectAll('.ci.' + this._labelClasses.get(curve.groupId))
-              selectedGroupCI.transition().attr('visibility', 'visible')
-              selectedGroupCI.transition().duration(50).attr('opacity', confidenceIntervalOpacity)
+              let selectedGroupCurves = this._svgRef.selectAll('.' + this._labelClasses.get(curve.groupId))
+              selectedGroupCurves.transition().attr('visibility', 'visible')
+              selectedGroupCurves.transition().duration(50).attr('opacity', '1.0')
+              let selectedGroupCIs = this._svgRef.select('.CIs#' + this._labelClasses.get(curve.groupId) + '_ci')
+              selectedGroupCIs.transition().attr('visibility', 'visible')
+              selectedGroupCIs.transition().duration(50).attr('opacity', confidenceIntervalOpacity)
 
             }
 
@@ -213,7 +217,9 @@ export class SurvivalCurvesDrawing {
     let curvePerSe = this._svgRef.append('g').attr('id', 'resultDrawing')
     this.curves.curves.forEach(({ groupId }) => {
 
-      this._CIs.set(groupId, curvePerSe.append('path'))
+      this._CIs.set(groupId, curvePerSe.append('path')
+        .attr('class', 'CIs')
+        .attr('id', this._labelClasses.get(groupId) + '_ci'))
       this._curves.set(groupId, curvePerSe.append('path'))
       this._singlePoints.set(groupId, curvePerSe.append('g').attr('class', this._labelClasses.get(groupId)).selectAll('dot'))
     });
@@ -259,7 +265,7 @@ export class SurvivalCurvesDrawing {
       this._singlePoints.get(curve.groupId)
         .data(curve.points)
         .enter()
-        .filter(d => d.nofCensorings > 0)
+        .filter(d => d.censoringEvent > 0)
         .append('rect')
         .attr('x', d => this._xaxis(d.timePoint) - this.rectWidth / 2)
         .attr('y', d => this._yaxis(d.prob) - this._rectHeight / 2)
@@ -271,7 +277,6 @@ export class SurvivalCurvesDrawing {
       if (this.selectedInterval) {
         this._CIs.get(curve.groupId)
           .datum(curve.points)
-          .attr('class', this._labelClasses.get(curve.groupId) + ' ci')
           .attr('stroke', this._colorSet(curve.groupId))
           .attr('fill', this._colorSet(curve.groupId))
           .attr('opacity', confidenceIntervalOpacity)
@@ -308,24 +313,36 @@ export class SurvivalCurvesDrawing {
     })
   }
   changeIntervals() {
-    this._areaGen = area<{ timePoint: number, prob: number, cumul: number, remaining: number }>()
-      .x(d => this._xaxis(d.timePoint))
-      .y0(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).inf))
-      .y1(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).sup))
-      .curve(curveStepAfter)
+    if (this.selectedInterval) {
+      this._areaGen = area<{ timePoint: number, prob: number, cumul: number, remaining: number }>()
+        .x(d => this._xaxis(d.timePoint))
+        .y0(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).inf))
+        .y1(d => this._yaxis(this.selectedInterval.callback(this.alpha, d).sup))
+        .curve(curveStepAfter)
 
-    this.curves.curves.forEach(c => {
-      this._CIs.get(c.groupId)
-        .datum(c.points)
-        .transition()
-        .duration(50)
-        .attr('stroke', this._colorSet(c.groupId))
-        .attr('fill', this._colorSet(c.groupId))
-        .attr('stroke-opacity', '0.3')
-        .attr('opacity', '0.3')
-        .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
-        .attr('d', this._areaGen)
-    })
+      this.curves.curves.forEach(c => {
+        this._CIs.get(c.groupId)
+          .datum(c.points)
+          .attr('transform', `translate(${2 * this.margins},${-1 * this.margins})`)
+          .transition()
+          .duration(50)
+          .attr('stroke', this._colorSet(c.groupId))
+          .attr('fill', this._colorSet(c.groupId))
+          .attr('stroke-opacity', '0.3')
+          .attr('opacity', '0.3')
+          .attr('d', this._areaGen)
+      })
+    } else {
+      // delete area if they already exist and user has disabled confidence interval
+      this._svgRef.selectAll('.CIs').remove()
+      let curvePerSe = this._svgRef.select('#resultDrawing')
+      this.curves.curves.forEach(({ groupId }) => {
+        this._CIs.set(groupId, curvePerSe.append('path')
+          .attr('class', 'CIs')
+          .attr('id', this._labelClasses.get(groupId) + '_ci'))
+      })
+
+    }
 
   }
   changeGrid() {

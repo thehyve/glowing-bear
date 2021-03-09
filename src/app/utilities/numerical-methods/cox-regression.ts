@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,8 +10,6 @@ import { inv, det } from 'mathjs';
 import { ErrorHelper } from '../error-helper';
 import { MessageHelper } from '../message-helper';
 
-
-
 export interface EventType { x: number[], event: boolean }
 export interface TimePoint { time: number, events: EventType[] }
 export abstract class CoxRegression {
@@ -19,7 +17,7 @@ export abstract class CoxRegression {
   protected initialParameter: number[];
   protected tolerance: number;
   protected data: TimePoint[];
-  public constructor(data, maxIter, tolerance) {
+  public constructor(data: TimePoint[], maxIter: number, tolerance: number) {
     if (data.length === 0) {
       throw ErrorHelper.handleNewError('Number of observation is 0, this exception should be treated before.')
     }

@@ -1,19 +1,23 @@
 /**
- * Copyright 2020  EPFL LDS
+ * Copyright 2020 - 2021  EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import {Point, Scalar} from '@dedis/kyber';
 import {newCurve} from '@dedis/kyber/curve';
 import {PointToInt} from './point-to-int-mapping';
 import base64url from 'base64url';
-import {ErrorHelper} from '../error-helper';
 
 const arrayBufferToBuffer = require('arraybuffer-to-buffer');
 const curve25519 = newCurve('edwards25519');
+
+/**
+ * Note that all the elements exported in this file are meant to be used within a web worker.
+ * As such, complex dependencies (e.g. angular modules, etc.) should be avoided, and the error handling is different
+ * as error thrown but not caught would crash the workers, and logs in the console would not show.
+ */
 
 /**
  * CipherText is an ElGamal encrypted integer.
@@ -30,7 +34,7 @@ export class CipherText {
     let buf = base64url.toBuffer(str);
 
     if (buf.length !== pointLength * 2) {
-      throw ErrorHelper.handleNewError(`Invalid CipherText, byte length = ${buf.length}, expected = ${pointLength}`);
+      throw new Error(`Invalid CipherText, byte length = ${buf.length}, expected = ${pointLength}`);
     }
 
     let k = buf.subarray(0, pointLength);
@@ -52,7 +56,7 @@ export class CipherText {
    */
   serialize(): string {
     if (!this.C || !this.K) {
-      throw ErrorHelper.handleNewError('Attempting to serialize invalid CipherText');
+      throw new Error('Attempting to serialize invalid CipherText');
     }
 
     return padBase64(base64url.encode(Buffer.concat([this.K.marshalBinary(), this.C.marshalBinary()])));

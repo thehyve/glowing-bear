@@ -14,10 +14,9 @@ import { GbNavBarModule } from '../gb-navbar-module/gb-navbar.module';
 import { GbSidePanelModule } from '../gb-side-panel-module/gb-side-panel.module';
 import { routing } from './gb-main.routing';
 import { RouterModule } from '@angular/router';
-import { CohortService } from 'app/services/cohort.service';
-import { SurvivalResultsService } from 'app/services/survival-results.service';
-import { GbSurvivalResultsModule } from '../gb-survival-results-module/gb-survival-results.module';
-import { ConstraintReverseMappingService } from 'app/services/constraint-reverse-mapping.service';
+import {CohortService} from '../../services/cohort.service';
+import {ConstraintReverseMappingService} from '../../services/constraint-reverse-mapping.service';
+import {SurvivalResultsService} from '../../services/survival-results.service';
 
 @NgModule({
   imports: [

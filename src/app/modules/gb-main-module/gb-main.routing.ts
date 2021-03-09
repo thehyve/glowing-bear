@@ -19,11 +19,11 @@ export const routes: Routes = [
   },
   {
     path: 'explore',
-    loadChildren: '../gb-explore-module/gb-explore.module#GbExploreModule'
+    loadChildren: () => import('../gb-explore-module/gb-explore.module').then(m => m.GbExploreModule)
   },
   {
     path: 'analysis',
-    loadChildren: '../gb-analysis-module/gb-analysis.module#GbAnalysisModule'
+    loadChildren: () => import('../gb-analysis-module/gb-analysis.module').then(m => m.GbAnalysisModule)
   },
   {
     path: 'results',
@@ -37,4 +37,4 @@ export const routes: Routes = [
   }
 ];
 
-export const routing: ModuleWithProviders = RouterModule.forChild(routes);
+export const routing: ModuleWithProviders<RouterModule> = RouterModule.forChild(routes);

@@ -15,15 +15,15 @@ import { ExploreQueryType } from '../../models/query-models/explore-query-type';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ConstraintService } from '../../services/constraint.service';
-import { CohortService } from 'app/services/cohort.service';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { Cohort } from 'app/models/cohort-models/cohort';
-import { MedcoNetworkService } from 'app/services/api/medco-network.service';
-import { ApiQueryDefinition } from 'app/models/api-request-models/medco-node/api-query-definition';
-import { OperationType } from 'app/models/operation-models/operation-types';
-import { SavedCohortsPatientListService } from 'app/services/saved-cohorts-patient-list.service';
-import { OperationStatus } from 'app/models/operation-status';
 import {ApiNodeMetadata} from '../../models/api-response-models/medco-network/api-node-metadata';
+import {CohortService} from '../../services/cohort.service';
+import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
+import {MessageHelper} from '../../utilities/message-helper';
+import {Cohort} from '../../models/cohort-models/cohort';
+import {OperationStatus} from '../../models/operation-status';
+import {OperationType} from '../../models/operation-models/operation-types';
+import {ApiQueryDefinition} from '../../models/api-request-models/medco-node/api-query-definition';
+import {MedcoNetworkService} from '../../services/api/medco-network.service';
 
 @Component({
   selector: 'gb-explore',
@@ -68,7 +68,8 @@ export class GbExploreComponent implements AfterViewChecked {
     if (this.cohortName === '') {
       MessageHelper.alert('warn', 'You must provide a name for the cohort you want to save.')
     } else if (!this.cohortService.patternValidation.test(this.cohortName).valueOf()) {
-      MessageHelper.alert('error', `Name ${this.cohortName} can only contain digits and alphabetical symbols`)
+      MessageHelper.alert('error',
+        `Name ${this.cohortName} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
     } else {
       let existingCohorts = this.cohortService.cohorts
       if (existingCohorts.findIndex((cohort => cohort.name === this.cohortName).bind(this)) !== -1) {
@@ -100,7 +101,7 @@ export class GbExploreComponent implements AfterViewChecked {
         }
         cohort.patient_set_id = this.lastSuccessfulSet
         this.cohortService.postCohort(cohort)
-        MessageHelper.alert('success', 'Cohort has been sent.')
+        MessageHelper.alert('success', 'Cohort successfully saved')
 
         // handle patient list locally
         if (this._lastPatientList) {

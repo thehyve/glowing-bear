@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,8 +9,8 @@
 import { CoxRegression, TimePoint, EventType } from './cox-regression'
 import { BreslowCoxRegression } from './breslow'
 import { EfronCoxRegression } from './efron'
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point';
 import { ErrorHelper } from '../error-helper';
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number, tolerance: number, method: string): CoxRegression {
 
   if (maxIter <= 0) {
@@ -36,13 +36,17 @@ export function NewCoxRegression(pointGroups: SurvivalPoint[][], maxIter: number
 
 function prepare(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): TimePoint[] {
 
-  let tmpArray = survivalPointsClass0.map(spoint => {
-    return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings }
-  })
+  let tmpArray = survivalPointsClass0
+    .filter(({ timePoint }) => timePoint !== 0)
+    .map(spoint => {
+      return { time: spoint.timePoint, class: 0, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
+    })
     .concat(
-      survivalPointsClass1.map(spoint => {
-        return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings }
-      }))
+      survivalPointsClass1
+        .filter(({ timePoint }) => timePoint !== 0)
+        .map(spoint => {
+          return { time: spoint.timePoint, class: 1, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
+        }))
 
 
   let tmpMap = new Map<number, EventType[]>()

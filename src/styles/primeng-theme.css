@@ -1651,24 +1651,7 @@ body .fc .fc-toolbar .fc-next-button .ui-icon {
 .ui-messages.ui-messages-error .ui-messages-close {
   color: #a94442;
 }
-/* Growl */
 
-.ui-growl .ui-growl-message-success {
-  background-color: #dff0d8;
-  color: #3c763d;
-}
-.ui-growl .ui-growl-message-info {
-  background-color: #d9edf7;
-  color: #31708f;
-}
-.ui-growl .ui-growl-message-warn {
-  background-color: #fcf8e3;
-  color: #8a6d3b;
-}
-.ui-growl .ui-growl-message-error {
-  background-color: #f2dede;
-  color: #a94442;
-}
 body .ui-overlaypanel {
   -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);

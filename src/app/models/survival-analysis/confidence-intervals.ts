@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,14 +20,15 @@ export class ConfidenceInterval {
   private static _identity(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = point.cumul * point.prob * point.prob
     limes = Math.sqrt(limes)
-    return { inf: point.prob - sigma * limes, sup: point.prob + sigma * limes }
+    let candidates = { inf: point.prob - sigma * limes, sup: point.prob + sigma * limes }
+    return { inf: (candidates.inf < 0.0) ? 0.0 : candidates.inf, sup: (candidates.sup > 1.) ? 1.0 : candidates.sup }
   }
 
   private static _logarithm(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = point.cumul
     limes = Math.sqrt(limes)
-    return { inf: point.prob * Math.exp(- sigma * limes), sup: point.prob * Math.exp(sigma * limes) }
-
+    let candidates = { inf: point.prob * Math.exp(- sigma * limes), sup: point.prob * Math.exp(sigma * limes) }
+    return { inf: (candidates.inf < 0.0) ? 0.0 : candidates.inf, sup: (candidates.sup > 1.) ? 1.0 : candidates.sup }
 
   }
 
@@ -35,16 +36,19 @@ export class ConfidenceInterval {
 
     let limes = (point.prob === 0 || point.prob === 1) ? 0 : point.cumul / (Math.pow(Math.log(point.prob), 2))
     limes = Math.sqrt(limes)
-    return { inf: Math.pow(point.prob, Math.exp(sigma * limes)), sup: Math.pow(point.prob, Math.exp(- sigma * limes)) }
-
-
+    let candidates = { inf: Math.pow(point.prob, Math.exp(sigma * limes)), sup: Math.pow(point.prob, Math.exp(- sigma * limes)) }
+    return { inf: (candidates.inf < 0.0) ? 0.0 : candidates.inf, sup: (candidates.sup > 1.) ? 1.0 : candidates.sup }
   }
 
   private static _arcsineSquaredRoot(sigma: number, point: PointData): { inf: number, sup: number } {
     let limes = (point.prob === 1) ? 0 : 0.25 * point.prob / (1 - point.prob) * point.cumul
     let transformed = Math.asin(Math.sqrt(point.prob))
     limes = Math.sqrt(limes)
-    return { inf: Math.pow(Math.sin(transformed - sigma * limes), 2.0), sup: Math.pow(Math.sin(transformed + sigma * limes), 2.0) }
+    let candidates = {
+      inf: Math.pow(Math.sin(transformed - sigma * limes), 2.0),
+      sup: Math.pow(Math.sin(transformed + sigma * limes), 2.0)
+    }
+    return { inf: (candidates.inf < 0.0) ? 0.0 : candidates.inf, sup: (candidates.sup > 1.) ? 1.0 : candidates.sup }
   }
 
   static identity(): ConfidenceInterval {

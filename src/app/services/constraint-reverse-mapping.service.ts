@@ -9,25 +9,23 @@
 import { Constraint } from '../models/constraint-models/constraint';
 import { ApiI2b2Panel } from '../models/api-request-models/medco-node/api-i2b2-panel';
 import { Injectable } from '@angular/core';
-import { CombinationConstraint } from 'app/models/constraint-models/combination-constraint';
-import { ConceptConstraint } from 'app/models/constraint-models/concept-constraint';
-import { ApiI2b2Timing } from 'app/models/api-request-models/medco-node/api-i2b2-timing';
-import { ApiI2b2Item } from 'app/models/api-request-models/medco-node/api-i2b2-item';
-import { CombinationState } from 'app/models/constraint-models/combination-state';
 import { ConstraintService } from './constraint.service';
 import { Observable, of } from 'rxjs';
-import { modifiedConceptPath } from 'app/utilities/constraint-utilities/modified-concept-path';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { map } from 'rxjs/operators';
-import { DropMode } from 'app/models/drop-mode';
-import { TreeNode } from 'app/models/tree-models/tree-node';
 import { forkJoin } from 'rxjs';
-import { ValueType } from 'app/models/constraint-models/value-type';
-import { MessageHelper } from 'app/utilities/message-helper';
-import { NumericalOperator } from 'app/models/constraint-models/numerical-operator';
-import { TextOperator } from 'app/models/constraint-models/text-operator';
-
-
+import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
+import {MessageHelper} from '../utilities/message-helper';
+import {modifiedConceptPath} from '../utilities/constraint-utilities/modified-concept-path';
+import {ValueType} from '../models/constraint-models/value-type';
+import {ApiI2b2Item} from '../models/api-request-models/medco-node/api-i2b2-item';
+import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
+import {CombinationState} from '../models/constraint-models/combination-state';
+import {TextOperator} from '../models/constraint-models/text-operator';
+import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
+import {NumericalOperator} from '../models/constraint-models/numerical-operator';
+import {DropMode} from '../models/drop-mode';
+import {TreeNode} from '../models/tree-models/tree-node';
 
 @Injectable()
 export class ConstraintReverseMappingService {

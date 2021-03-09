@@ -10,6 +10,7 @@ services:
       - "4200:4200"
     volumes:
       - ..:/glowing-bear-src
+    user: ${USER_GROUP:?}
 
   glowing-bear-medco:
     image: medco/glowing-bear-medco:dev

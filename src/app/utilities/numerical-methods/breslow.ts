@@ -1,13 +1,13 @@
 /**
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SurvivalPoint } from 'app/models/survival-analysis/survival-point'
 import { exp, log } from 'mathjs'
 import { TimePoint, scalarProduct, reset, addTo, multiplyByScalar, addVec, externalProduct, EventType, CoxRegression } from './cox-regression'
+import {SurvivalPoint} from '../../models/survival-analysis/survival-point';
 
 
 /**
@@ -189,11 +189,11 @@ export function secondDerivative(timePoints: TimePoint[], beta: number[]): numbe
 export function prepareEfron(survivalPointsClass0: SurvivalPoint[], survivalPointsClass1: SurvivalPoint[]): TimePoint[] {
 
   let tmpArray = survivalPointsClass0.map(spoint => {
-    return { time: spoint.timePoint, class: 0, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+    return { time: spoint.timePoint, class: 0, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
   })
     .concat(
       survivalPointsClass1.map(spoint => {
-        return { time: spoint.timePoint, class: 1, events: spoint.nofEvents, censorings: spoint.nofCensorings }
+        return { time: spoint.timePoint, class: 1, events: spoint.eventOfInterest, censorings: spoint.censoringEvent }
       }))
 
 
