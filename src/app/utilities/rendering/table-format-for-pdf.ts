@@ -1,5 +1,5 @@
-import { NumericalMethodResult } from 'app/models/survival-analysis/numerical-models/numerical-operation'
 import { ErrorHelper } from '../error-helper'
+import {NumericalMethodResult} from '../../models/survival-analysis/numerical-models/numerical-operation';
 
 export function summaryToTable(
   groupNames: string[],

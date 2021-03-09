@@ -6,9 +6,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NumericalTablesType } from 'app/utilities/survival-analysis/numerical-tables';
 import { SurvivalAnalysisClear } from './survival-analysis-clear';
 import { SurvivalSettings } from './survival-settings';
+import {NumericalTablesType} from '../../utilities/survival-analysis/numerical-tables';
 
 export class SurvivalResults {
   survivalAnalysisClear: SurvivalAnalysisClear
