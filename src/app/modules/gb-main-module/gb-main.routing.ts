@@ -8,6 +8,7 @@
 
 import {ModuleWithProviders} from '@angular/core';
 import {Routes, RouterModule} from '@angular/router';
+import {GbResultsComponent} from '../gb-results-module/gb-results.component';
 
 // Route Configuration
 export const routes: Routes = [
@@ -25,8 +26,14 @@ export const routes: Routes = [
     loadChildren: () => import('../gb-analysis-module/gb-analysis.module').then(m => m.GbAnalysisModule)
   },
   {
-    path: 'survival/:id',
-    loadChildren: () => import('../gb-survival-results-module/gb-survival-results.module').then(m => m.GbSurvivalResultsModule)
+    path: 'results',
+    component: GbResultsComponent,
+    children: [
+      {
+        path: 'survival/:id',
+        loadChildren: '../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
+      }
+    ]
   }
 ];
 

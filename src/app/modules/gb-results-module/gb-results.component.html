@@ -1,0 +1,8 @@
+<div *ngIf="navbarService.resultItems.length === 0; else results">
+No results yet.
+</div>
+<ng-template #results>
+  Double click to close result.
+  <p-tabMenu class="menu-result" [model]="navbarService.resultItems" [activeItem]="navbarService.activeResultItem" (dblclick)="navbarService.deleteSrvResult()"></p-tabMenu>
+</ng-template>
+<router-outlet></router-outlet>
