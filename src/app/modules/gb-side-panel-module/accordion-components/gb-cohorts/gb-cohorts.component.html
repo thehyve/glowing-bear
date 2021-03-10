@@ -1,5 +1,5 @@
 <div id="cohorts-component" class="small-font">
-  <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+  <p-confirmDialog appendTo="body" header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
   <button pButton class="ui-button-secondary" [disabled]="cohortService.isRefreshing"
     [ngStyle]="{'color': cohortService.isRefreshing ? 'var(--gb-light-light-clinical-green)':'var(--gb-clinical-green)'}"
     type="button" pTooltip="Refresh cohorts" tooltipPosition="top" (click)="refreshCohorts()" icon="fa fa-refresh">
