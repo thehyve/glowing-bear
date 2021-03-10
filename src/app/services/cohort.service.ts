@@ -262,8 +262,8 @@ export class CohortService {
 
   getCohorts() {
     this._isRefreshing = true
-    this.exploreCohortsService.getCohortAllNodes().subscribe(
-      (apiCohorts => {
+    this.exploreCohortsService.getCohortAllNodes().subscribe({
+      next: (apiCohorts => {
         try {
           this.updateCohorts(CohortService.apiCohortsToCohort(apiCohorts))
         } catch (err) {
@@ -271,16 +271,16 @@ export class CohortService {
         }
         this._isRefreshing = false
       }).bind(this),
-      (err => {
+      error: (err => {
         MessageHelper.alert('error', 'An error occured while retrieving saved cohorts', (err as HttpErrorResponse).error.message)
         this._isRefreshing = false
 
       }).bind(this),
-      (() => {
+      complete: (() => {
         MessageHelper.alert('success', 'Saved cohorts successfully retrieved')
         this._isRefreshing = false
       }).bind(this)
-    )
+    })
   }
 
   postCohort(cohort: Cohort) {
