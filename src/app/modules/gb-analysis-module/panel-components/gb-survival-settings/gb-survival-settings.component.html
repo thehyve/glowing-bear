@@ -10,7 +10,7 @@
           Time Limit:
         </label>
       </div>
-      <input id="timeLimit" type="number" pInputText [(ngModel)]="limit" class="input-field input-field-margin" />
+      <p-inputNumber id="timeLimit" [(ngModel)]="limit" class="input-field-margin"></p-inputNumber>
       <span class="input-field-margin">
         <p-dropdown dropdownIcon="pi pi-caret-down white-color" [(ngModel)]="selectedGranularity"
             [options]="granularities"></p-dropdown>
