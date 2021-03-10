@@ -38,7 +38,7 @@
         <button *ngIf="authorizedForPatientList" pButton class="ui-button-secondary" type="button" pTooltip="Download this cohort for sharing/importing"
           tooltipPosition="top" placeholder="Top" (click)="downloadCohort($event, cohort)" icon="fa fa-download">
         </button>
-        <button pButton class="ui-button-secondary" type="button" pTooltip="Restore" tooltipPosition="top"
+        <button pButton class="ui-button-secondary" type="button" pTooltip="Restore query definition" tooltipPosition="top"
           placeholder="Top" (click)="restoreCohort($event, cohort)" icon="fa fa-arrow-right">
         </button>
         <span>&nbsp;</span>
