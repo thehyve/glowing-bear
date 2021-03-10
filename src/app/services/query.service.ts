@@ -27,6 +27,7 @@ import { MessageHelper } from '../utilities/message-helper';
 import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
 import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
 import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
+import { OperationType } from '../models/operation-models/operation-types';
 
 /**
  * This service concerns with updating subject counts.
@@ -50,8 +51,12 @@ export class QueryService {
   private _isDirty;
 
   private _lastSuccessfulSet = new Subject<number[]>()
+
   // i2b2 query-level timing policy
   private _queryTimingSameInstance = false;
+
+  // keep track queryTiming when switching tab
+  private _exploreQueryTimingSameInstance: boolean;
 
 
   constructor(private appConfig: AppConfig,
@@ -297,6 +302,39 @@ export class QueryService {
 
   get lastTiming(): ApiI2b2Timing {
     return this.exploreQueryService.lastQueryTiming
+  }
+
+  set operationType(opType: OperationType) {
+    switch (opType) {
+      case OperationType.EXPLORE:
+
+        // reload previous selection
+        if (this.operationType === OperationType.ANALYSIS) {
+          if (this._exploreQueryTimingSameInstance !== null) {
+            this.queryTimingSameInstance = this._exploreQueryTimingSameInstance
+          }
+        }
+
+        this.constraintService.operationType = opType
+        break;
+      case OperationType.ANALYSIS:
+
+        // save current selection
+        if (this.operationType === OperationType.EXPLORE) {
+          this._exploreQueryTimingSameInstance = this.queryTimingSameInstance
+        }
+        this.constraintService.operationType = opType
+        break;
+      default:
+
+        // do nothing constraint service already warns about it
+        break;
+    }
+
+  }
+
+  get operationType(): OperationType {
+    return this.constraintService.operationType
   }
 
 }

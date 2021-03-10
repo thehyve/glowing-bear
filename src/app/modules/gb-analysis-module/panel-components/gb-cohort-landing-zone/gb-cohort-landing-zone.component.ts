@@ -7,12 +7,14 @@
  */
 import { Component, OnInit, Input, ViewEncapsulation } from '@angular/core';
 import { SelectItem } from 'primeng';
-import {SubGroup, SurvivalService} from '../../../../services/survival-analysis.service';
-import {AnalysisService} from '../../../../services/analysis.service';
-import {ConstraintService} from '../../../../services/constraint.service';
-import {MessageHelper} from '../../../../utilities/message-helper';
-import {OperationType} from '../../../../models/operation-models/operation-types';
-import {CohortService} from '../../../../services/cohort.service';
+import { SubGroup, SurvivalService } from '../../../../services/survival-analysis.service';
+import { AnalysisService } from '../../../../services/analysis.service';
+import { ConstraintService } from '../../../../services/constraint.service';
+import { MessageHelper } from '../../../../utilities/message-helper';
+import { OperationType } from '../../../../models/operation-models/operation-types';
+import { CohortService } from '../../../../services/cohort.service';
+import { ApiI2b2Timing } from '../../../../models/api-request-models/medco-node/api-i2b2-timing';
+import { QueryService } from '../../../../services/query.service';
 
 const nameMaxLength = 12
 
@@ -35,6 +37,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   constructor(private analysisService: AnalysisService,
     private cohortService: CohortService,
     private constraintService: ConstraintService,
+    private queryService: QueryService,
     private survivalService: SurvivalService) {
     this._subGroups = new Array()
     this._usedNames = new Set()
@@ -111,6 +114,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
     let newSubGroup: SubGroup = {
       name: this.name,
+      timing: this.queryService.queryTimingSameInstance ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any,
       rootInclusionConstraint: this.constraintService.rootInclusionConstraint.clone(),
       rootExclusionConstraint: this.constraintService.rootExclusionConstraint.clone()
     }
@@ -134,6 +138,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
   loadSubGroup(event: Event) {
     this.name = this.selectedSubGroup.name
+    this.queryService.queryTimingSameInstance = (this.selectedSubGroup.timing === ApiI2b2Timing.sameInstanceNum) ? true : false
     this.constraintService.rootInclusionConstraint = this.selectedSubGroup.rootInclusionConstraint.clone()
     this.constraintService.rootExclusionConstraint = this.selectedSubGroup.rootExclusionConstraint.clone()
   }

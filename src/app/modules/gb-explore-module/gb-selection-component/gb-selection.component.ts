@@ -63,11 +63,11 @@ export class GbSelectionComponent {
 
   @Input()
   set operationType(opType: OperationType) {
-    this.constraintService.operationType = opType
+    this.queryService.operationType = opType
   }
 
   get operationType(): OperationType {
-    return this.constraintService.operationType
+    return this.queryService.operationType
   }
 
   get timings(): SelectItem[] {

@@ -9,28 +9,30 @@ import { Injectable } from '@angular/core';
 import { AuthenticationService } from './authentication.service';
 import { CryptoService } from './crypto.service';
 import { MedcoNetworkService } from './api/medco-network.service';
-import {forkJoin, Observable, of} from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { ApiSurvivalAnalysisService } from './api/medco-node/api-survival-analysis.service';
 import { CohortService } from './cohort.service';
-import {Concept} from '../models/constraint-models/concept';
-import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
-import {ClearGroup} from '../models/survival-analysis/clear-group';
-import {ApiSurvivalAnalysisResponse} from '../models/api-response-models/survival-analysis/survival-analysis-response';
-import {Constraint} from '../models/constraint-models/constraint';
-import {SurvivalAnalysisClear} from '../models/survival-analysis/survival-analysis-clear';
-import {Granularity} from '../models/survival-analysis/granularity-type';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {ErrorHelper} from '../utilities/error-helper';
-import {ConstraintMappingService} from './constraint-mapping.service';
-import {When} from '../models/survival-analysis/when-type';
-import {SurvivalSettings} from '../models/survival-analysis/survival-settings';
-import {ApiSurvivalAnalysis} from '../models/api-request-models/survival-analyis/api-survival-analysis';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {map} from 'rxjs/operators';
+import { Concept } from '../models/constraint-models/concept';
+import { ApiI2b2Panel } from '../models/api-request-models/medco-node/api-i2b2-panel';
+import { ClearGroup } from '../models/survival-analysis/clear-group';
+import { ApiSurvivalAnalysisResponse } from '../models/api-response-models/survival-analysis/survival-analysis-response';
+import { Constraint } from '../models/constraint-models/constraint';
+import { SurvivalAnalysisClear } from '../models/survival-analysis/survival-analysis-clear';
+import { Granularity } from '../models/survival-analysis/granularity-type';
+import { NegationConstraint } from '../models/constraint-models/negation-constraint';
+import { ErrorHelper } from '../utilities/error-helper';
+import { ConstraintMappingService } from './constraint-mapping.service';
+import { When } from '../models/survival-analysis/when-type';
+import { SurvivalSettings } from '../models/survival-analysis/survival-settings';
+import { ApiSurvivalAnalysis } from '../models/api-request-models/survival-analyis/api-survival-analysis';
+import { CombinationConstraint } from '../models/constraint-models/combination-constraint';
+import { map } from 'rxjs/operators';
+import { ApiI2b2Timing } from '../models/api-request-models/medco-node/api-i2b2-timing';
 
 export class SubGroup {
   name: string
+  timing: ApiI2b2Timing
   rootInclusionConstraint: CombinationConstraint
   rootExclusionConstraint: CombinationConstraint
 }
@@ -193,7 +195,9 @@ export class SurvivalService {
     apiSurvivalAnalysis.endsWhen = this.endsWhen
 
     apiSurvivalAnalysis.cohortName = this.cohortService.selectedCohort.name
-    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(sg => { return { groupName: sg.name, panels: this.generatePanels(sg) } })
+    apiSurvivalAnalysis.subGroupDefinitions = this.subGroups.map(
+      sg => { return { groupName: sg.name, subGroupTiming: sg.timing, panels: this.generatePanels(sg) } }
+    )
 
 
     return this.apiSurvivalAnalysisService.survivalAnalysisAllNodes(apiSurvivalAnalysis)

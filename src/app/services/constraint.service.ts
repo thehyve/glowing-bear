@@ -221,8 +221,6 @@ export class ConstraintService {
 
     switch (opType) {
       case OperationType.EXPLORE:
-        console.log('The operation type of constraint service is now Explore.')
-
 
         // reload previous selection
         if (this._operationType === OperationType.ANALYSIS) {
@@ -251,7 +249,7 @@ export class ConstraintService {
         MessageHelper.alert('warn', `The operation type ${opType} is unknown. Previous internal states of constraint service apply ()${this._operationType}.`)
         break;
     }
-
+    console.log(`The operation type of constraint service is now ${this._operationType}.`)
   }
 
   get operationType(): OperationType {
