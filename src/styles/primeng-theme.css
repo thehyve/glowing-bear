@@ -7,6 +7,7 @@ body .ui-widget input, body .ui-widget select, body .ui-widget textarea, body .u
   font-family: 'Roboto', sans-serif;
   text-decoration: none;
   font-size: 1em;
+  vertical-align: middle;
 }
 body .ui-widget-content {
   background-color: #ffffff;
@@ -273,74 +274,85 @@ body .ui-autocomplete-panel .ui-autocomplete-items .ui-autocomplete-group {
 }
 body .ui-dropdown {
   border: 1px solid #d6d6d6;
+  -moz-transition: border-color 0.2s, box-shadow 0.2s;
+  -o-transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 body .ui-dropdown:not(.ui-state-disabled):hover {
-  background-color: #d9d9d9;
+  border-color: #cccccc;
+}
+body .ui-dropdown:not(.ui-state-disabled).ui-state-focus {
+  outline: 0 none;
+  outline-offset: 0;
   border-color: #cccccc;
 }
 body .ui-dropdown .ui-dropdown-label {
-  background: #ffffff;
+  padding-right: 2em;
+}
+body .ui-dropdown .ui-dropdown-label .ui-placeholder {
+  color: #9b9b9b;
 }
 body .ui-dropdown .ui-dropdown-trigger {
   background-color: var(--gb-clinical-green);
+  width: 2em;
+  line-height: 2em;
+  text-align: center;
+  padding: 0;
+  color: #dedede;
 }
-body .ui-dropdown .ui-dropdown-trigger .fa {
-  color: #55595c;
-  margin-top: .65em;
+body .ui-dropdown .ui-dropdown-clear-icon {
+  color: #dedede;
 }
-body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-trigger,
-body .ui-dropdown.ui-state-focus .ui-dropdown-trigger,
-body .ui-dropdown.ui-state-focus .ui-dropdown-label,
-body .ui-dropdown:not(.ui-state-disabled):hover .ui-dropdown-label {
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  border-radius: 3px;
-  -moz-border-top-left-radius: 0;
-  -webkit-border-top-left-radius: 0;
-  border-top-left-radius: 0;
-  -moz-border-bottom-left-radius: 0;
-  -webkit-border-bottom-left-radius: 0;
-  border-bottom-left-radius: 0;
-  background-color: #d9d9d9;
+body .ui-dropdown.ui-dropdown-clearable .ui-dropdown-label {
+  padding-right: 4em;
 }
-body .ui-dropdown.ui-state-focus .ui-dropdown-label.ui-inputtext {
-  border: 0 none;
+body .ui-dropdown-panel {
+  padding: 0;
+  border: 1px solid #cccccc;
+  background-color: var(--gb-clinical-green);
+  -webkit-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+  -moz-box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
 }
 body .ui-dropdown-panel .ui-dropdown-filter-container {
-  padding: 0.375em 0.75em;
+  padding: 0.429em 0.857em 0.429em 0.857em;
+  border-bottom: 1px solid #191919;
+  background-color: var(--gb-clinical-green);
+  margin: 0;
 }
 body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter {
   width: 100%;
-  box-sizing: border-box;
-  padding-right: 1.250em;
+  padding-right: 2em;
 }
-body .ui-dropdown-panel .ui-dropdown-filter-container .fa {
-  top: 1.05em;
-  right: 1.25em;
+body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
+  top: 50%;
+  margin-top: -0.5em;
+  right: 1.357em;
+  color: var(--gb-clinical-green);
 }
 body .ui-dropdown-panel .ui-dropdown-items {
   padding: 0;
 }
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item {
-  padding: 0.375em 0.75em;
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item, body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group {
+  margin: 0;
+  padding: 0.429em 0.857em;
+  border: 0 none;
+  background-color: transparent;
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
   border-radius: 0;
 }
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item:not(.ui-state-highlight):hover {
-  background-color: #f4f3f4;
-  color: #373a3c;
-}
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
-  background-color: var(--gb-clinical-green);
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight, body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
   color: #ffffff;
+  background-color: var(--gb-clinical-green);
 }
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item > td {
-  padding: 0.375em 0.75em;
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item:not(.ui-state-highlight):not(.ui-state-disabled):hover, body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group:not(.ui-state-highlight):not(.ui-state-disabled):hover {
+  color: #ffffff;
+  background-color: var(--gb-clinical-green);
 }
-body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group {
-  padding: 0.375em 0.75em;
-  background-color: #e6e6e6;
+body p-dropdown.ng-dirty.ng-invalid > .ui-dropdown {
+  border: 1px solid #CD3A3A;
 }
 body .ui-multiselect {
   background: #ffffff;

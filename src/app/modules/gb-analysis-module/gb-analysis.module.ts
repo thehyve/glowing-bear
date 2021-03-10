@@ -8,7 +8,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AccordionModule } from 'primeng'
+import {AccordionModule, InputNumberModule, InputTextModule} from 'primeng'
 import { routing } from './gb-analysis.routing'
 import { RouterModule } from '@angular/router';
 import { GbCohortLandingZoneComponent } from './panel-components/gb-cohort-landing-zone/gb-cohort-landing-zone.component';
@@ -58,7 +58,9 @@ import {AnalysisService} from '../../services/analysis.service';
     ButtonModule,
     DropdownModule,
     TabViewModule,
-    GbSelectionModule
+    GbSelectionModule,
+    InputTextModule,
+    InputNumberModule
   ],
 
   providers: [ApiSurvivalAnalysisService, AnalysisService, SurvivalService],
