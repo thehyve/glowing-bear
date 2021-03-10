@@ -11,6 +11,7 @@ import { QueryService } from '../../../../services/query.service';
 import { FormatHelper } from '../../../../utilities/format-helper';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import {ExploreQueryResult} from '../../../../models/query-models/explore-query-result';
 
 @Component({
   selector: 'gb-summary',
@@ -27,5 +28,13 @@ export class GbSummaryComponent {
     return this.queryService.queryResults.pipe(map((queryResults) =>
       queryResults ? FormatHelper.formatCountNumber(queryResults.globalCount) : '0'
     ));
+  }
+
+  get hasPerSiteCounts(): boolean {
+    return this.queryService.queryType.hasPerSiteCounts;
+  }
+
+  get queryResults(): Observable<ExploreQueryResult> {
+    return this.queryService.queryResults;
   }
 }

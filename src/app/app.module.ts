@@ -38,6 +38,7 @@ import {KeycloakAngularModule, KeycloakService} from 'keycloak-angular';
 
 import {GbAnalysisModule} from './modules/gb-analysis-module/gb-analysis.module';
 import {GbSurvivalResultsModule} from './modules/gb-survival-results-module/gb-survival-results.module';
+import {GbResultsModule} from './modules/gb-results-module/gb-results.module';
 import {WorkerModule} from 'angular-web-worker/angular';
 import {DecryptionWorker} from '../decryption.worker';
 import {ToastrModule} from 'ngx-toastr';
@@ -78,6 +79,7 @@ export function loadServices(config: AppConfig,
     GbExploreModule,
     GbExploreResultsModule,
     GbAnalysisModule,
+    GbResultsModule,
     GbSurvivalResultsModule,
     GbNavBarModule,
     GbSidePanelModule,
