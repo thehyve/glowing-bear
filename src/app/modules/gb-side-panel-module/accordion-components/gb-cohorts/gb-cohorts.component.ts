@@ -157,7 +157,11 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
 
   changeSelect(event: Event, cohort: Cohort) {
     event.stopPropagation()
-    this.cohortService.selectedCohort = cohort
+    if (cohort.selected) {
+      this.cohortService.selectedCohort = cohort;
+    } else {
+      this.cohortService.selectedCohort = undefined;
+    }
   }
 
   remove(event: Event, cohort: Cohort) {
@@ -174,7 +178,7 @@ export class GbCohortsComponent implements AfterViewInit, OnInit {
         this.savedCohortsPatientListService.removePatientList(cohort.name)
         this.cohortService.removeCohorts(cohort)
         if (this.cohortService.selectedCohort && this.cohortService.selectedCohort === cohort) {
-          this.cohortService.selectedCohort = null
+          this.cohortService.selectedCohort = undefined;
         }
         this.cohortService.cohorts = this.cohortService.cohorts.filter(c => cohort !== c)
 
