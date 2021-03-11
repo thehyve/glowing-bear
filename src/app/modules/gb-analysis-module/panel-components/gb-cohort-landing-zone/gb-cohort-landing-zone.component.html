@@ -8,10 +8,13 @@
         </p-selectButton>
       <br>
       <br>
-      <p-button icon="fa fa-plus" label="Add" (onClick)='addSubGroup($event)' [disabled]="subGroups.length >= 4 ">
+      <p-button icon="fa fa-plus" label="Save" (onClick)='addSubGroup($event)' [disabled]="subGroups.length >= 4 ">
       </p-button>
       &nbsp;
       <p-button icon="fa fa-minus" label="Remove" (onClick)='removeSubGroup($event)' [disabled]="selectedSubGroup == null ">
+      </p-button>
+      &nbsp;
+      <p-button label="Reset" (onClick)='reset()'>
       </p-button>
     </div>
 
@@ -28,6 +31,6 @@
       <gb-selection [operationType] = "OperationType.ANALYSIS"></gb-selection>
     </div>
   </div>
-  
-  
+
+
 </p-accordionTab>
