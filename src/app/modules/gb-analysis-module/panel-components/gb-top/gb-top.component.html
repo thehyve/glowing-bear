@@ -11,11 +11,11 @@
 
   <div *ngIf="selectedSurvival" style="font-size: small; margin-top: 1em;">
     <b>Status:</b>
-    <span *ngIf="!ready && cohortService.selectedCohort == undefined">
+    <span *ngIf="!ready && cohortService.selectedCohort === undefined">
       You must select a cohort, and start and end events.
     </span>
 
-    <span *ngIf="ready && cohortService.selectedCohort == undefined">
+    <span *ngIf="ready && cohortService.selectedCohort === undefined">
       You must select a cohort.
     </span>
 
