@@ -158,8 +158,7 @@ export class GbTopComponent {
 
   get ready(): boolean {
     return this._ready &&
-      this.selected !== undefined &&
-      this.cohortService.selectedCohort !== undefined
+      this.selected !== undefined
   }
 }
 
