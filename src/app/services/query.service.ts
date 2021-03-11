@@ -74,6 +74,7 @@ export class QueryService {
     this.queryResults.next();
     this.isUpdating = false;
     this.isDirty = false;
+    this.queryTimingSameInstance = false
     this.constraintService.clearConstraint();
     this.query = new ExploreQuery();
   }
