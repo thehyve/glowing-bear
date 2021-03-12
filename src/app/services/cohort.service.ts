@@ -214,7 +214,7 @@ export class CohortService {
       this._selectedCohort.selected = false
 
       if (this._selectedCohort === cohort) {
-        this._selectedCohort = null
+        this._selectedCohort = undefined
         return
       }
 
