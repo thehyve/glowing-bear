@@ -40,6 +40,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   _inputParameters: SurvivalSettings
   _numericalTables: NumericalTablesType
   _survivalCurve: SurvivalCurve
+  _curveNames: string[]
   _groupComparisons: SelectItem[]
 
   _selectedGroupComparison: {
@@ -116,6 +117,7 @@ export class GbSurvivalResultsComponent implements OnInit {
   display() {
     // -- get the results
     this._survivalCurve = clearResultsToArray(this._results)
+    this._curveNames = this._survivalCurve.curves.map(({ groupId }) => groupId)
 
     // -- remove previous svg
     let previous = select('#survivalSvgContainer svg')
@@ -174,7 +176,6 @@ export class GbSurvivalResultsComponent implements OnInit {
     this._groupTotalEvent = new Array<string>()
     this._groupCoxLogtestTable = new Array<Array<string>>()
     let len = this.survivalCurve.curves.length
-    // let curveName = this.survivalCurve.curves.map(curve => curve.groupId)
     this._groupComparisons = new Array<SelectItem>()
 
     for (let i = 0; i < len; i++) {
@@ -252,34 +253,34 @@ export class GbSurvivalResultsComponent implements OnInit {
       )
 
     }
-    let curveNames = this.survivalCurve.curves.map(({ groupId }) => groupId)
+
     pdfDoc.addOneLineText('Summary')
-    tables = summaryToTable(curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
+    tables = summaryToTable(this.curveNames, this.groupTotalAtRisk, this.groupTotalEvent, this.groupTotalCensoring)
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
     pdfDoc.addOneLineText('Summary at time point')
-    tables = milestonedSummaryToTable(curveNames, this.summaryTableMileStones, this._summaryTable)
+    tables = milestonedSummaryToTable(this.curveNames, this.summaryTableMileStones, this._summaryTable)
     pdfDoc.addTableFromObjects(tables.headers, tables.data)
 
-    if (curveNames.length > 1) {
+    if (this.curveNames.length > 1) {
       pdfDoc.addOneLineText('Logrank')
-      console.log(`Debug: curveNames length: ${curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
-      let numTables = statTestToTable(curveNames, this.numericalTables.groupLogrankTable)
+      console.log(`Debug: curveNames length: ${this.curveNames.length}; groupLogrank length: ${this.groupLogrankTable}`)
+      let numTables = statTestToTable(this.curveNames, this.numericalTables.groupLogrankTable)
       pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
       pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression coefficient')
-      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxRegTable)
+      numTables = statTestToTable(this.curveNames, this.numericalTables.groupCoxRegTable)
       pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
       pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Cox regression wald test')
-      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxWaldTable)
+      numTables = statTestToTable(this.curveNames, this.numericalTables.groupCoxWaldTable)
       pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
       pdfDoc.addContentText(numTables.logs)
 
       pdfDoc.addOneLineText('Logtest')
-      numTables = statTestToTable(curveNames, this.numericalTables.groupCoxLogtestTable)
+      numTables = statTestToTable(this.curveNames, this.numericalTables.groupCoxLogtestTable)
       pdfDoc.addTableFromObjects(numTables.headers, numTables.data)
       pdfDoc.addContentText(numTables.logs)
     }
@@ -363,6 +364,10 @@ export class GbSurvivalResultsComponent implements OnInit {
 
   get survivalCurve(): SurvivalCurve {
     return this._survivalCurve
+  }
+
+  get curveNames(): string[] {
+    return this._curveNames
   }
 
   get groupTables(): SelectItem[] {
