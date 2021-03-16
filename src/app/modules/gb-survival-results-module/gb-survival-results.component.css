@@ -90,11 +90,12 @@ p-scrollpanel p.indented{
 #milestonedContainer{
   overflow-x:auto;
   width: 90%;
-  margin-left: 2em;
+  margin-left: 4em;
+  margin-bottom: 4em;
 }
 
 #milestoned{
-  margin-left: 2em;
+  margin-bottom: 0.5em;
   font-size: small;
 }
 
