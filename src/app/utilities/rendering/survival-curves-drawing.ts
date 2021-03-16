@@ -204,11 +204,11 @@ export class SurvivalCurvesDrawing {
       )
       )
 
-
+      let title = curve.groupId.length > 8 ? curve.groupId.slice(0, 9) : curve.groupId
       this._svgRef.append('text')
         .attr('x', this._legendxPos + 7)
         .attr('y', this._legendyPos + 5)
-        .text(curve.groupId)
+        .text(title)
       this._legendxPos += this._legendInterval
 
     }).bind(this))

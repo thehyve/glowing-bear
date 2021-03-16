@@ -105,6 +105,7 @@ p-scrollpanel p.indented{
   border-right: #cccccc 1px solid;
   text-align: center;
   padding:0.5em;
+  white-space: nowrap;
   height:1em;
   font-size: small;
 
