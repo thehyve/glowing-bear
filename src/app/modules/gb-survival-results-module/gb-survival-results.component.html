@@ -44,16 +44,19 @@
   </p-accordionTab>
 </p-accordion>
 
-<p-overlayPanel #op [dismissable]="true" [showCloseIcon]="true">
+<p-overlayPanel #op [dismissable]="true" [appendTo]="summary" [showCloseIcon]="true">
 
   Confidence interval:
   <br>
+  <br>
   <p-dropdown [(ngModel)]="selectedIc" [options]="ic" placeholder="confidence interval"></p-dropdown>
-  <p-dropdown [(ngModel)]="selectedAlpha" [options]="alphas" placeholder="1 - &alpha;"
+  <p-dropdown class="input-field-margin" [(ngModel)]="selectedAlpha" [options]="alphas" placeholder="1 - &alpha;"
     [disabled]="(selectedIc) ? false:true"></p-dropdown>
-  <p-button label="Grid" (onClick)="grid = !grid"></p-button>
+  <p-button class="input-field-margin" label="Grid" (onClick)="grid = !grid"></p-button>
+  <br>
   <br>
   Number of ticks (rendering can modify this number to keep nice intervals):
+  <br>
   <br>
   <p-spinner [(ngModel)]="nofTicks" min="1" max="10"></p-spinner>
 
