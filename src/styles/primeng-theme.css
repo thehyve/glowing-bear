@@ -1667,6 +1667,10 @@ body .ui-overlaypanel {
   -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
 }
+body .ui-overlaypanel-content{
+  font-size: small;
+  margin: 0.5em;
+}
 body .ui-overlaypanel .ui-overlaypanel-close {
   background-color: #ffffff;
   color: #373a3c;
