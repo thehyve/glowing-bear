@@ -11,6 +11,7 @@ import {Component, OnInit} from '@angular/core';
 import { AuthenticationService } from './services/authentication.service';
 import {MessageHelper} from './utilities/message-helper';
 import {ToastrService} from 'ngx-toastr';
+import {DeviceDetectorService} from 'ngx-device-detector';
 
 @Component({
   selector: 'gb-app-root',
@@ -21,7 +22,9 @@ export class AppComponent implements OnInit {
 
   private _authenticationCompleted;
 
-  constructor(private toastr: ToastrService, private authenticationService: AuthenticationService) {
+  constructor(private toastr: ToastrService,
+              private authenticationService: AuthenticationService,
+              private deviceService: DeviceDetectorService) {
     this._authenticationCompleted = false;
     // inject toaster service in the MessageHelper
     MessageHelper.toastrService = this.toastr;
@@ -37,7 +40,26 @@ export class AppComponent implements OnInit {
         console.warn('Authenticated failed.');
         MessageHelper.alert('error', 'Authentication failed!');
       }
+
+      this.browserCompatibilityWarning();
     });
+  }
+
+  private browserCompatibilityWarning() {
+    if (!this.deviceService.isDesktop()) {
+      MessageHelper.alert('warn', 'This app has not been tested on mobile and tablet environments, we advise to use a desktop.')
+    }
+
+    const bName = this.deviceService.browser.toLowerCase();
+    const bVersion = parseInt(this.deviceService.browser_version, 10);
+    if (!(bName.includes('chrome') && bVersion >= 80) &&
+      !(bName.includes('firefox') && bVersion >= 78)
+    ) {
+      MessageHelper.alert('warn',
+        `This app has not been tested with your browser (${this.deviceService.browser} ${this.deviceService.browser_version})`
+        + ', we advise to use a recent version of Chrome of Firefox.'
+      );
+    }
   }
 
   get authenticationCompleted(): boolean {
