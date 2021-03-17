@@ -42,6 +42,7 @@ import {GbResultsModule} from './modules/gb-results-module/gb-results.module';
 import {WorkerModule} from 'angular-web-worker/angular';
 import {DecryptionWorker} from '../decryption.worker';
 import {ToastrModule} from 'ngx-toastr';
+import {DeviceDetectorService} from 'ngx-device-detector';
 
 export function loadServices(config: AppConfig,
                              authService: AuthenticationService,
@@ -103,6 +104,7 @@ export function loadServices(config: AppConfig,
     KeycloakService,
     AuthenticationService,
     ConstraintMappingService,
+    DeviceDetectorService,
     {
       provide: APP_INITIALIZER,
       useFactory: loadServices,
