@@ -65,7 +65,6 @@ export class SurvivalCurvesDrawing {
   _groupTitleText = new Map<string, Selection<SVGTextElement, unknown, HTMLElement, any>>()
 
   _legendInterval: number
-  _legendxPos: number
   _legendyPos: number
   _legendRadius: number
 
@@ -95,7 +94,6 @@ export class SurvivalCurvesDrawing {
     public grid: boolean = false
   ) {
 
-    this._legendxPos = (this.width - this.curves.curves.length) / 2.0 - 30
     this._legendyPos = -25
     this._legendRadius = 4
     this._legendInterval = 60
