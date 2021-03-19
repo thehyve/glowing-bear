@@ -62,6 +62,7 @@ export class SurvivalCurvesDrawing {
   _rectHeight: number
   _div: Selection<HTMLDivElement, unknown, HTMLElement, any>
   _groupButton = new Map<string, Selection<SVGCircleElement, unknown, HTMLElement, any>>()
+  _groupTitleText = new Map<string, Selection<SVGTextElement, unknown, HTMLElement, any>>()
 
   _legendInterval: number
   _legendxPos: number
@@ -168,11 +169,14 @@ export class SurvivalCurvesDrawing {
     this._colorSet = scaleOrdinal<string, string>().domain(this.curves.curves.map(c => c.groupId)).range(colorRange)
 
     // interactive title
+    let textAndCircleOffset = 0
+
     this.curves.curves.forEach((curve => {
+      console.warn('circle offset', textAndCircleOffset)
       this._groupButton.set(curve.groupId, this.toggleStyle(curve.groupId,
         this._svgRef.append('circle')
 
-          .attr('cx', this._legendxPos)
+          .attr('cx', textAndCircleOffset)
           .attr('cy', this._legendyPos)
           .attr('r', this._legendRadius)
           .on('mousedown', (() => {
@@ -204,14 +208,31 @@ export class SurvivalCurvesDrawing {
       )
       )
 
-      let title = curve.groupId.length > 8 ? curve.groupId.slice(0, 9) : curve.groupId
-      this._svgRef.append('text')
-        .attr('x', this._legendxPos + 7)
-        .attr('y', this._legendyPos + 5)
-        .text(title)
-      this._legendxPos += this._legendInterval
+      textAndCircleOffset += this._legendRadius + 5
+
+      let addedText = this._svgRef.append('text')
+        .attr('x', textAndCircleOffset)
+        .attr('y', this._legendyPos + 4)
+        .text(curve.groupId)
+      console.warn('test property width', addedText.property('width'))
+      console.warn('test style width', addedText.style('width'))
+      console.warn('test style computedTextLength', addedText.node().getComputedTextLength())
+
+      textAndCircleOffset += addedText.node().getComputedTextLength() + 15
+      this._groupTitleText.set(curve.groupId, addedText)
 
     }).bind(this))
+
+    // center buttons and titles
+
+    this._groupButton.forEach(value => {
+
+      value.attr('cx', +value.attr('cx') + (this.width - textAndCircleOffset) / 2.0 + this.margins * 3.0)
+    })
+
+    this._groupTitleText.forEach(value => {
+      value.attr('x', +value.attr('x') + (this.width - textAndCircleOffset) / 2.0 + this.margins * 3.0)
+    })
 
     // curve references
     let curvePerSe = this._svgRef.append('g').attr('id', 'resultDrawing')

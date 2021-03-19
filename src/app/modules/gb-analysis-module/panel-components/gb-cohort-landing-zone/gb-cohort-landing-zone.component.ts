@@ -16,7 +16,7 @@ import { CohortService } from '../../../../services/cohort.service';
 import { ApiI2b2Timing } from '../../../../models/api-request-models/medco-node/api-i2b2-timing';
 import { QueryService } from '../../../../services/query.service';
 
-const nameMaxLength = 12
+const nameMaxLength = 10
 
 @Component({
   selector: 'gb-cohort-landing-zone',
@@ -103,7 +103,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
       MessageHelper.alert('error', `Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
       return
     }
-    if (this.name.length === nameMaxLength) {
+    if (this.name.length > nameMaxLength) {
       MessageHelper.alert('error', `Subgroup name length cannot exceed ${nameMaxLength}`)
       return
     }
