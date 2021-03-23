@@ -1,7 +1,7 @@
 {
-  "api-url": "${TRANSMART_API_SERVER_URL}",
+  "api-url": "/api/transmart-api-server",
   "api-version": "v2",
-  "gb-backend-url": "${GB_BACKEND_URL}",
+  "gb-backend-url": "/api/gb-backend",
   "doc-url": "https://glowingbear.app",
   "enable-fractalis-analysis": false,
   "autosave-subject-sets": ${AUTOSAVE_SUBJECT_SETS},
@@ -14,7 +14,7 @@
   "export-mode": {
     "name": "packer",
     "data-view": "basic_export",
-    "export-url": "${TRANSMART_PACKER_URL}"
+    "export-url": "/api/transmart-packer"
   },
   "check-server-status": ${CHECK_SERVER_STATUS},
   "deny-access-to-users-without-role": ${DENY_ACCESS_WITHOUT_ROLE}
