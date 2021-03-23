@@ -20,6 +20,7 @@ import { SurvivalService } from '../../../../services/survival-analysis.service'
 import { SurvivalResultsService } from '../../../../services/survival-results.service';
 import { AnalysisService } from '../../../../services/analysis.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { Cohort } from 'src/app/models/cohort-models/cohort';
 
 @Component({
   selector: 'gb-top',
@@ -159,6 +160,10 @@ export class GbTopComponent {
   get ready(): boolean {
     return this._ready &&
       this.selected !== undefined
+  }
+
+  get selectedCohort(): Cohort {
+    return this.cohortService.selectedCohort
   }
 }
 
