@@ -5,25 +5,25 @@
       [ngClass]="{'selected': selected==analysisType}" [disabled]="!analysisType.implemented"></button>
     <span pTooltip="You must select a cohort, an analysis, and start and end events (for survival analysis)."
       [tooltipDisabled]="ready" style="float: right;">
-      <button pButton label="Run" [disabled]="!ready" (click)="runAnalysis()"></button>
+      <button pButton label="Run" [disabled]="!ready || selectedCohort === undefined" (click)="runAnalysis()"></button>
     </span>
   </div>
 
   <div *ngIf="selectedSurvival" style="font-size: small; margin-top: 1em;">
     <b>Status:</b>
-    <span *ngIf="!ready && cohortService.selectedCohort === undefined">
+    <span *ngIf="!ready && selectedCohort === undefined">
       You must select a cohort, and start and end events.
     </span>
 
-    <span *ngIf="ready && cohortService.selectedCohort === undefined">
+    <span *ngIf="ready && selectedCohort === undefined">
       You must select a cohort.
     </span>
 
-    <span *ngIf="!ready && cohortService.selectedCohort !== undefined">
+    <span *ngIf="!ready && selectedCohort !== undefined">
       You must select start and end events.
     </span>
 
-    <span *ngIf="ready && cohortService.selectedCohort !== undefined && operationStatus === OperationStatus.done">
+    <span *ngIf="ready && selectedCohort !== undefined && operationStatus === OperationStatus.done">
       Ready.
     </span>
 
