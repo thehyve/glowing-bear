@@ -170,7 +170,6 @@ export class SurvivalCurvesDrawing {
     let textAndCircleOffset = 0
 
     this.curves.curves.forEach((curve => {
-      console.warn('circle offset', textAndCircleOffset)
       this._groupButton.set(curve.groupId, this.toggleStyle(curve.groupId,
         this._svgRef.append('circle')
 
@@ -212,9 +211,6 @@ export class SurvivalCurvesDrawing {
         .attr('x', textAndCircleOffset)
         .attr('y', this._legendyPos + 4)
         .text(curve.groupId)
-      console.warn('test property width', addedText.property('width'))
-      console.warn('test style width', addedText.style('width'))
-      console.warn('test style computedTextLength', addedText.node().getComputedTextLength())
 
       textAndCircleOffset += addedText.node().getComputedTextLength() + 15
       this._groupTitleText.set(curve.groupId, addedText)
