@@ -88,7 +88,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.11.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.11/glowing-bear-2.0.11.tar).
+The latest release is [glowing-bear-2.0.12.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.12/glowing-bear-2.0.12.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -178,7 +178,7 @@ All extensions require a proper configuration, as described in [configuration](#
 
 ## License
 
-Copyright &copy; 2017&ndash;2019 &nbsp; The Hyve B.V.
+Copyright &copy; 2017&ndash;2021 &nbsp; The Hyve B.V.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the [Mozilla Public License 2.0](LICENSE).
