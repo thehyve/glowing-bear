@@ -64,7 +64,10 @@ export class ConstraintMappingService {
 
     switch (constraint.className) {
       case 'ConceptConstraint':
-        panel.items.push(this.generateI2b2ItemFromConcept(constraint as ConceptConstraint));
+        const conceptConstraint = constraint as ConceptConstraint;
+        if (conceptConstraint.concept) {
+          panel.items.push(this.generateI2b2ItemFromConcept(conceptConstraint));
+        }
         break;
 
       case 'GenomicAnnotationConstraint':
@@ -80,7 +83,10 @@ export class ConstraintMappingService {
         for (let i in combConstraint.children) {
           switch (combConstraint.children[i].className) {
             case 'ConceptConstraint':
-              panel.items.push(this.generateI2b2ItemFromConcept(combConstraint.children[i] as ConceptConstraint));
+              const childConceptConstraint = combConstraint.children[i] as ConceptConstraint;
+              if (childConceptConstraint.concept) {
+                panel.items.push(this.generateI2b2ItemFromConcept(childConceptConstraint));
+              }
               break;
 
             case 'GenomicAnnotationConstraint':
