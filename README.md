@@ -32,6 +32,8 @@ For further details, support, and contacts, you can check the [MedCo Technical D
 cd deployment
 ./dev-server.sh
 ```
+The default configuration will attempt to use the local `dev-local-3nodes` deployment of MedCo. 
+An alternative configuration is provided to use the deployment `medco-demo.epfl.ch` (if it is online). To use it, update `src/app/config/env.json` with the value `medco-demo`.
 
 ### Build the Docker image
 ```bash
