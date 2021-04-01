@@ -25,7 +25,7 @@ import {TreeNodeType} from '../../../../models/tree-models/tree-node-type';
   templateUrl: './gb-survival-settings.component.html',
   styleUrls: ['./gb-survival-settings.component.css'],
 })
-export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
+export class GbSurvivalSettingsComponent implements OnInit {
   _activated: boolean
 
   _granularities: SelectItem[] = [
@@ -62,10 +62,6 @@ export class GbSurvivalSettingsComponent implements OnInit, OnChanges {
     this.changedEventConcepts.emit(
       this.survivalService.startConcept !== undefined && this.survivalService.endConcept !== undefined
     )
-
-  }
-  ngOnChanges() {
-
   }
 
   searchStart(event) {

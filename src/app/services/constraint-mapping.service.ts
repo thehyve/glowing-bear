@@ -64,7 +64,10 @@ export class ConstraintMappingService {
 
     switch (constraint.className) {
       case 'ConceptConstraint':
-        panel.items.push(this.generateI2b2ItemFromConcept(constraint as ConceptConstraint));
+        const conceptConstraint = constraint as ConceptConstraint;
+        if (conceptConstraint.concept) {
+          panel.items.push(this.generateI2b2ItemFromConcept(conceptConstraint));
+        }
         break;
 
       case 'GenomicAnnotationConstraint':
@@ -80,7 +83,10 @@ export class ConstraintMappingService {
         for (let i in combConstraint.children) {
           switch (combConstraint.children[i].className) {
             case 'ConceptConstraint':
-              panel.items.push(this.generateI2b2ItemFromConcept(combConstraint.children[i] as ConceptConstraint));
+              const childConceptConstraint = combConstraint.children[i] as ConceptConstraint;
+              if (childConceptConstraint.concept) {
+                panel.items.push(this.generateI2b2ItemFromConcept(childConceptConstraint));
+              }
               break;
 
             case 'GenomicAnnotationConstraint':
@@ -132,13 +138,13 @@ export class ConstraintMappingService {
             switch (constraint.numericalOperator) {
               case NumericalOperator.BETWEEN:
                 if (!(constraint.minValue)) {
-                  throw ErrorHelper.handleNewError('Numerical operator BETWEEN defined, but no valid lower bound value provided.' +
-                    'The field was left empty or non numerical characters were used.');
+                  throw ErrorHelper.handleNewUserInputError('Numerical operator BETWEEN defined, but no valid ' +
+                    'lower bound value provided. The field was left empty or non numerical characters were used.');
                 } else if (!(constraint.maxValue)) {
-                  throw ErrorHelper.handleNewError('numerical operator BETWEEN has been defined, but no valid lower bound value provided.' +
-                    'The field was left empty or non numerical characters were used.');
+                  throw ErrorHelper.handleNewUserInputError('Numerical operator BETWEEN has been defined, but no ' +
+                    'valid lower bound value provided. The field was left empty or non numerical characters were used.');
                 } else if (constraint.maxValue < constraint.minValue) {
-                  throw ErrorHelper.handleNewError(`upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}`);
+                  throw ErrorHelper.handleNewUserInputError(`Upper bound ${constraint.maxValue} lower than lower bound ${constraint.minValue}.`);
                 }
 
                 item.value = constraint.minValue.toString() + ' and ' + constraint.maxValue.toString()
@@ -151,7 +157,7 @@ export class ConstraintMappingService {
               case NumericalOperator.LOWER_OR_EQUAL:
               case NumericalOperator.NOT_EQUAL:
                 if (!(constraint.numValue)) {
-                  throw ErrorHelper.handleNewError('A numerical operator has been defined, but no valid value provided.' +
+                  throw ErrorHelper.handleNewUserInputError('A numerical operator has been defined, but no valid value provided. ' +
                     'The field was left empty or non numerical characters were used.');
                 }
 
@@ -159,7 +165,7 @@ export class ConstraintMappingService {
                 break;
 
               default:
-                throw ErrorHelper.handleNewError(`Numerical operator: ${constraint.numericalOperator} not handled`);
+                throw ErrorHelper.handleNewUserInputError(`Numerical operator: ${constraint.numericalOperator} not handled.`);
             }
           }
           break;
@@ -182,17 +188,17 @@ export class ConstraintMappingService {
                 break;
 
               default:
-                throw ErrorHelper.handleNewError(`Text operator: ${constraint.textOperator} not handled`);
+                throw ErrorHelper.handleNewUserInputError(`Text operator: ${constraint.textOperator} not handled.`);
             }
           }
           break;
 
         default:
-          throw ErrorHelper.handleNewError(`Concept type not supported: ${constraint.concept.type.toString()}`);
+          throw ErrorHelper.handleNewUserInputError(`Concept type not supported: ${constraint.concept.type.toString()}.`);
       }
     }
 
-    console.log(`Generated i2b2 item ${item.queryTerm}`, item)
+    console.log(`Generated i2b2 item ${item.queryTerm}.`, item)
     return item;
   }
 

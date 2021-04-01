@@ -98,8 +98,8 @@ export class ExploreQueryService {
    * @param query
    */
   exploreQuery(query: ExploreQuery): Observable<[ApiNodeMetadata, ApiExploreQueryResult][]> {
-    let currentDefinition = this.constraintMappingService.mapConstraint(query.constraint)
-    let currentTiming = query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any
+    let currentDefinition = this.constraintMappingService.mapConstraint(query.constraint);
+    let currentTiming = query.queryTimingSameInstanceNum ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any;
 
     return this.exploreQueryAllNodes(
       query.uniqueId,

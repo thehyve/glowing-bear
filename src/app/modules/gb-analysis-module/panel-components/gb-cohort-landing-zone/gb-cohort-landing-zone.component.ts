@@ -15,6 +15,7 @@ import { OperationType } from '../../../../models/operation-models/operation-typ
 import { CohortService } from '../../../../services/cohort.service';
 import { ApiI2b2Timing } from '../../../../models/api-request-models/medco-node/api-i2b2-timing';
 import { QueryService } from '../../../../services/query.service';
+import {ErrorHelper} from '../../../../utilities/error-helper';
 
 const nameMaxLength = 10
 
@@ -92,24 +93,15 @@ export class GbCohortLandingZoneComponent implements OnInit {
   addSubGroup(event: Event) {
 
     if (this.name === '') {
-      MessageHelper.alert('error', 'Subgroup name cannot be empty')
-      return
-    }
-    if (this._usedNames.has(this.name)) {
-      MessageHelper.alert('error', `Subgroup name ${this.name} already used`)
-      return
-    }
-    if (!this.cohortService.patternValidation.test(this.name).valueOf()) {
-      MessageHelper.alert('error', `Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
-      return
-    }
-    if (this.name.length > nameMaxLength) {
-      MessageHelper.alert('error', `Subgroup name length cannot exceed ${nameMaxLength}`)
-      return
-    }
-    if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
-      MessageHelper.alert('error', 'Both inclusion and exclusion constraints are empty, nothing to add')
-      return
+      throw ErrorHelper.handleNewUserInputError('Subgroup name cannot be empty.');
+    } else if (this._usedNames.has(this.name)) {
+      throw ErrorHelper.handleNewUserInputError(`Subgroup name ${this.name} already used.`);
+    } else if (!this.cohortService.patternValidation.test(this.name).valueOf()) {
+      throw ErrorHelper.handleNewUserInputError(`Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_".`);
+    } else if (this.name.length > nameMaxLength) {
+      throw ErrorHelper.handleNewUserInputError(`Subgroup name length cannot exceed ${nameMaxLength}.`);
+    } else if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
+      throw ErrorHelper.handleNewUserInputError('Both inclusion and exclusion constraints are empty, nothing to add.');
     }
 
     let newSubGroup: SubGroup = {
@@ -125,7 +117,6 @@ export class GbCohortLandingZoneComponent implements OnInit {
 
     this.survivalService.subGroups = this.subGroups.map(({ value }) => value as SubGroup)
     this.selectedSubGroup = null
-
   }
 
   removeSubGroup(event: Event) {

@@ -21,6 +21,8 @@ import { SurvivalResultsService } from '../../../../services/survival-results.se
 import { AnalysisService } from '../../../../services/analysis.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Cohort } from 'src/app/models/cohort-models/cohort';
+import {UserInputError} from '../../../../utilities/user-input-error';
+import {ErrorHelper} from '../../../../utilities/error-helper';
 
 @Component({
   selector: 'gb-top',
@@ -28,8 +30,6 @@ import { Cohort } from 'src/app/models/cohort-models/cohort';
   styleUrls: ['./gb-top.component.css']
 })
 export class GbTopComponent {
-  launched = false
-
   _selectedSurvival: boolean
 
   _clearRes: Subject<SurvivalAnalysisClear>
@@ -101,56 +101,39 @@ export class GbTopComponent {
     this._ready = event
   }
 
-  isCompleted(event: boolean) {
-    this._ready = event
-  }
-
   runAnalysis() {
     this._ready = false
-    this.launched = true
     let settings = this.survivalAnalysisService.settings()
     settings.cohortName = this.cohortService.selectedCohort.name
 
-    try {
-      this.operationStatus = OperationStatus.waitOnAPI
-      this.survivalAnalysisService.runSurvivalAnalysis()
-        .pipe(
-          tap(() => { this.operationStatus = OperationStatus.decryption },
-            err => {
-              this.operationStatus = OperationStatus.error
-              MessageHelper.alert('error', (err instanceof HttpErrorResponse) ?
-                (err as HttpErrorResponse).error.message :
-                (err as Error).message)
-            }),
-          switchMap(encryptedResult => this.survivalAnalysisService.survivalAnalysisDecrypt(encryptedResult[0]))
-        )
-        .subscribe(clearResult => {
-          this.launched = false
-          console.log('Decrypted survival analysis result', clearResult);
-          this.operationStatus = OperationStatus.done
+    this.operationStatus = OperationStatus.waitOnAPI
+    this.survivalAnalysisService.runSurvivalAnalysis().pipe(
+      tap(() => { this.operationStatus = OperationStatus.decryption }),
+      switchMap(encryptedResult => this.survivalAnalysisService.survivalAnalysisDecrypt(encryptedResult[0]))
+    ).subscribe(clearResult => {
+      console.log('[ANALYSIS] Decrypted survival analysis result', clearResult);
+      this.operationStatus = OperationStatus.done
 
-          let survivalFiltered = GbTopComponent.filterResults(clearResult)
-          if (!(survivalFiltered.results) || survivalFiltered.results.length === 0) {
-            return
-          }
-          this._clearRes.next(survivalFiltered)
-          this.survivalResultsService.pushCopy(survivalFiltered, settings)
-          this._ready = true
+      let survivalFiltered = GbTopComponent.filterResults(clearResult)
+      if (!(survivalFiltered.results) || survivalFiltered.results.length === 0) {
+        return
+      }
+      this._clearRes.next(survivalFiltered)
+      this.survivalResultsService.pushCopy(survivalFiltered, settings)
+      this._ready = true
 
-          this.navbarService.navigateToNewResults()
-
-        }, err => {
-          MessageHelper.alert('error', 'while decrypting survival analysis: ' + (err as Error).message)
-          this.operationStatus = OperationStatus.error
-        })
-    } catch (exception) {
+      this.navbarService.navigateToNewResults()
+    }, err => {
+      if (err instanceof UserInputError) {
+        console.warn(`[ANALYSIS] Interrupted survival analysis query (cohort ${settings.cohortName}) due to user input error.`, err);
+      } else if (err instanceof HttpErrorResponse) {
+        ErrorHelper.handleError(`Server error during survival analysis query (cohort ${settings.cohortName}): ${(err as HttpErrorResponse).error.message}`, err);
+      } else {
+        ErrorHelper.handleError(`Error during survival analysis (cohort ${settings.cohortName}).`, err);
+      }
       this.operationStatus = OperationStatus.error
-      console.log(exception as Error)
-      MessageHelper.alert('error', (exception as Error).message)
-      return
-    }
-    this._ready = true
-    this.launched = false
+      this._ready = true
+    })
   }
 
   get clearRes(): Observable<SurvivalAnalysisClear> {
@@ -166,7 +149,6 @@ export class GbTopComponent {
     return this.cohortService.selectedCohort
   }
 }
-
 
 let testPanels = [{
   cohortName: 'group1',

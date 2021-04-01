@@ -24,6 +24,7 @@ import {OperationStatus} from '../../models/operation-status';
 import {OperationType} from '../../models/operation-models/operation-types';
 import {ApiQueryDefinition} from '../../models/api-request-models/medco-node/api-query-definition';
 import {MedcoNetworkService} from '../../services/api/medco-network.service';
+import {ErrorHelper} from '../../utilities/error-helper';
 
 @Component({
   selector: 'gb-explore',
@@ -66,53 +67,51 @@ export class GbExploreComponent implements AfterViewChecked {
 
   save() {
     if (this.cohortName === '') {
-      MessageHelper.alert('warn', 'You must provide a name for the cohort you want to save.')
+      throw ErrorHelper.handleNewUserInputError('You must provide a name for the cohort you want to save.');
     } else if (!this.cohortService.patternValidation.test(this.cohortName).valueOf()) {
-      MessageHelper.alert('error',
-        `Name ${this.cohortName} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_"`)
-    } else {
-      let existingCohorts = this.cohortService.cohorts
-      if (existingCohorts.findIndex((cohort => cohort.name === this.cohortName).bind(this)) !== -1) {
-        MessageHelper.alert('warn', `Name ${this.cohortName} already used.`)
-      } else {
-
-        let creationDates = new Array<Date>()
-        let updateDates = new Array<Date>()
-        let queryDefinitions = new Array<ApiQueryDefinition>()
-        const nunc = Date.now()
-        for (let i = 0; i < this.medcoNetworkService.nodes.length; i++) {
-          creationDates.push(new Date(nunc))
-          updateDates.push(new Date(nunc))
-          let definition = new ApiQueryDefinition()
-          definition.panels = this.queryService.lastDefinition
-          definition.queryTiming = this.queryService.lastTiming
-          queryDefinitions.push(definition)
-        }
-
-        let cohort = new Cohort(
-          this.cohortName,
-          this.constraintService.rootInclusionConstraint,
-          this.constraintService.rootExclusionConstraint,
-          creationDates,
-          updateDates,
-        )
-        if (queryDefinitions.some(apiDef => (apiDef.panels) || (apiDef.queryTiming))) {
-          cohort.queryDefinition = queryDefinitions
-        }
-        cohort.patient_set_id = this.lastSuccessfulSet
-        this.cohortService.postCohort(cohort)
-        MessageHelper.alert('success', 'Cohort successfully saved')
-
-        // handle patient list locally
-        if (this._lastPatientList) {
-          this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList[0], this._lastPatientList[1])
-          this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
-        } else {
-          MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may probably have to download the list again.')
-        }
-        this.cohortName = ''
-      }
+      throw ErrorHelper.handleNewUserInputError(`Name ${this.cohortName} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_".`);
     }
+
+    let existingCohorts = this.cohortService.cohorts
+    if (existingCohorts.findIndex((c => c.name === this.cohortName).bind(this)) !== -1) {
+      throw ErrorHelper.handleNewUserInputError(`Name ${this.cohortName} already used.`);
+    }
+
+    let creationDates = new Array<Date>()
+    let updateDates = new Array<Date>()
+    let queryDefinitions = new Array<ApiQueryDefinition>()
+    const nunc = Date.now()
+    for (let i = 0; i < this.medcoNetworkService.nodes.length; i++) {
+      creationDates.push(new Date(nunc))
+      updateDates.push(new Date(nunc))
+      let definition = new ApiQueryDefinition()
+      definition.panels = this.queryService.lastDefinition
+      definition.queryTiming = this.queryService.lastTiming
+      queryDefinitions.push(definition)
+    }
+
+    let cohort = new Cohort(
+      this.cohortName,
+      this.constraintService.rootInclusionConstraint,
+      this.constraintService.rootExclusionConstraint,
+      creationDates,
+      updateDates,
+    )
+    if (queryDefinitions.some(apiDef => (apiDef.panels) || (apiDef.queryTiming))) {
+      cohort.queryDefinition = queryDefinitions
+    }
+    cohort.patient_set_id = this.lastSuccessfulSet
+    this.cohortService.postCohort(cohort)
+    MessageHelper.alert('success', 'Cohort successfully saved.');
+
+    // handle patient list locally
+    if (this._lastPatientList) {
+      this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList[0], this._lastPatientList[1])
+      this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
+    } else {
+      MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may have to download the list again.')
+    }
+    this.cohortName = ''
   }
 
   saveIfEnter(event) {

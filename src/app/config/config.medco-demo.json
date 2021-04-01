@@ -1,0 +1,9 @@
+{
+  "medco-node-url": "https://medco-demo.epfl.ch/local-3nodes/medco-0",
+
+  "keycloak-url": "https://medco-demo.epfl.ch/auth",
+  "keycloak-realm": "master",
+  "keycloak-client-id": "medco",
+
+  "footer-text": ""
+}

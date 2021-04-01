@@ -10,6 +10,7 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {MessageHelper} from './message-helper';
 import {Observable, throwError} from 'rxjs';
+import {UserInputError} from './user-input-error';
 
 export class ErrorHelper {
 
@@ -35,6 +36,15 @@ export class ErrorHelper {
     console.error(`${errMsg}\n${err.stack}`);
     MessageHelper.alert('error', `Error: ${errMsg}`);
     return err;
+  }
+
+  /**
+   * Handle and create a new user input error.
+   * @param errMsg
+   */
+  static handleNewUserInputError(errMsg: string): UserInputError  {
+    MessageHelper.alert('warn', `Invalid input: ${errMsg}`);
+    return new UserInputError(errMsg);
   }
 
   /**
