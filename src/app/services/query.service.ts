@@ -28,6 +28,7 @@ import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-n
 import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
 import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
 import { OperationType } from '../models/operation-models/operation-types';
+import {UserInputError} from '../utilities/user-input-error';
 
 /**
  * This service concerns with updating subject counts.
@@ -188,7 +189,11 @@ export class QueryService {
         this.isDirty = this.constraintService.hasConstraint().valueOf();
       },
       (err) => {
-        ErrorHelper.handleError(`Error during explore query ${this.query.uniqueId}`, err);
+        if (err instanceof UserInputError) {
+          console.warn(`[EXPLORE] Interrupted explore query ${this.query.uniqueId} due to user input error.`, err);
+        } else {
+          ErrorHelper.handleError(`Error during explore query ${this.query.uniqueId}.`, err);
+        }
         this.isUpdating = false;
         this.isDirty = true;
       }

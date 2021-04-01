@@ -12,7 +12,6 @@ export class MessageHelper {
 
   // this service is injected at boot by the AppComponent
   public static toastrService: ToastrService;
-  public static readonly toastTimeoutMs = 20000;
 
   public static alert(severity: 'success' | 'info' | 'warn' | 'error', summary: string, detail?: string) {
     let consoleMsg = `[MESSAGE] ${summary}`;
@@ -22,23 +21,23 @@ export class MessageHelper {
 
     switch (severity) {
       case 'error':
-        this.toastrService.error(summary, detail, {timeOut: this.toastTimeoutMs})
+        this.toastrService.error(summary, detail);
         console.error(consoleMsg);
         break;
 
       case 'warn':
-        this.toastrService.warning(summary, detail, {timeOut: this.toastTimeoutMs})
+        this.toastrService.warning(summary, detail);
         console.warn(consoleMsg);
         break;
 
       case 'success':
-        this.toastrService.success(summary, detail, {timeOut: this.toastTimeoutMs})
+        this.toastrService.success(summary, detail);
         console.log(consoleMsg);
         break;
 
       case 'info':
       default:
-        this.toastrService.info(summary, detail, {timeOut: this.toastTimeoutMs})
+        this.toastrService.info(summary, detail);
         console.log(consoleMsg);
         break;
     }

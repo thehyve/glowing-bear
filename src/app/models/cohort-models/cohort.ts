@@ -10,7 +10,6 @@ import { CombinationConstraint } from '../constraint-models/combination-constrai
 import { ApiQueryDefinition } from '../api-request-models/medco-node/api-query-definition'
 import {ErrorHelper} from '../../utilities/error-helper';
 
-
 export class Cohort {
   private _name: string
   private _patient_set_id: Array<number>
@@ -50,8 +49,6 @@ export class Cohort {
       this._updateDate = createDate
     }
 
-
-
     this.selected = false
     this.visible = true
   }
@@ -78,7 +75,6 @@ export class Cohort {
     } else {
       return null
     }
-
   }
 
   set rootInclusionConstraint(constr: CombinationConstraint) {
@@ -96,8 +92,6 @@ export class Cohort {
     } else {
       this._rootInclusionConstraint = null
     }
-
-
   }
 
   get rootExclusionConstraint(): CombinationConstraint {
@@ -111,12 +105,10 @@ export class Cohort {
       cpy.combinationState = this._rootExclusionConstraint.combinationState
       cpy.isRoot = this._rootExclusionConstraint.isRoot
 
-
       return cpy
     } else {
       return null
     }
-
   }
 
   set rootExclusionConstraint(constr: CombinationConstraint) {
@@ -133,8 +125,6 @@ export class Cohort {
     } else {
       this._rootExclusionConstraint = null
     }
-
-
   }
 
   set name(n: string) {
@@ -162,20 +152,6 @@ export class Cohort {
     return this._updateDate
   }
 
-  updateCohort(date: Date) {
-    for (let i = 0; i < this._creationDate.length; i) {
-      if (this._creationDate[i] !== null && this._creationDate[i] > date) {
-        throw ErrorHelper.handleNewError('Update date cannot be set earlier than the creation date')
-      }
-      if (this._updateDate[i] !== null && this._updateDate[i] > date) {
-        throw ErrorHelper.handleNewError('Update date cannot be set earlier than the previous update date')
-      }
-
-      this._updateDate[i] = date
-
-    }
-  }
-
   /**
    * hasAllQueryDefinitions checks whether all nodes have returned a query definition
    */
@@ -190,26 +166,6 @@ export class Cohort {
     }
     return true
 
-  }
-
-  /**
-   * sameDateQueryDefinitions check if available definitions have the same update date
-   */
-  sameDateQueryDefinitions(): boolean {
-    if (this.queryDefinition.length === 0) {
-      return true
-    }
-    let testDate = null
-    for (const updatedate of this.updateDate) {
-      if ((updatedate !== null) && (updatedate !== undefined)) {
-        if (testDate === null) {
-          testDate = updatedate
-        } else if (updatedate !== testDate) {
-          return false
-        }
-      }
-    }
-    return true
   }
 
   /**
