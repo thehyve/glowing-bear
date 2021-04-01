@@ -7,23 +7,29 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
-import {AutoComplete} from 'primeng';
-import {Concept} from '../../../../models/constraint-models/concept';
-import {ConceptConstraint} from '../../../../models/constraint-models/concept-constraint';
-import {ValueConstraint} from '../../../../models/constraint-models/value-constraint';
-import {UIHelper} from '../../../../utilities/ui-helper';
-import {DateOperatorState} from '../../../../models/constraint-models/date-operator-state';
-import {CategoricalAggregate} from '../../../../models/aggregate-models/categorical-aggregate';
-import {ValueType} from '../../../../models/constraint-models/value-type';
-import {Aggregate} from '../../../../models/aggregate-models/aggregate';
-import {SelectItem} from 'primeng';
-import {MessageHelper} from '../../../../utilities/message-helper';
-import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-aggregate';
-import {TreeNode} from '../../../../models/tree-models/tree-node';
-import {TextOperator} from '../../../../models/constraint-models/text-operator';
-import {NumericalOperator} from '../../../../models/constraint-models/numerical-operator';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { GbConstraintComponent } from '../gb-constraint/gb-constraint.component';
+import { AutoComplete } from 'primeng';
+import { Concept } from '../../../../models/constraint-models/concept';
+import { ConceptConstraint } from '../../../../models/constraint-models/concept-constraint';
+import { ValueConstraint } from '../../../../models/constraint-models/value-constraint';
+import { UIHelper } from '../../../../utilities/ui-helper';
+import { DateOperatorState } from '../../../../models/constraint-models/date-operator-state';
+import { CategoricalAggregate } from '../../../../models/aggregate-models/categorical-aggregate';
+import { ValueType } from '../../../../models/constraint-models/value-type';
+import { Aggregate } from '../../../../models/aggregate-models/aggregate';
+import { SelectItem } from 'primeng';
+import { MessageHelper } from '../../../../utilities/message-helper';
+import { NumericalAggregate } from '../../../../models/aggregate-models/numerical-aggregate';
+import { TreeNode } from '../../../../models/tree-models/tree-node';
+import { TextOperator } from '../../../../models/constraint-models/text-operator';
+import { NumericalOperator } from '../../../../models/constraint-models/numerical-operator';
+import { DeviceDetectorService } from 'ngx-device-detector';
+import { AppConfig } from 'src/app/config/app.config';
+import { GenomicAnnotationsService } from 'src/app/services/api/genomic-annotations.service';
+import { ConstraintService } from 'src/app/services/constraint.service';
+import { QueryService } from 'src/app/services/query.service';
+import { TreeNodeService } from 'src/app/services/tree-node.service';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -120,8 +126,31 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   private _sensitive: boolean;
 
+  /*
+   * fields for handling copy/cut-paste events in input fields
+   */
+  private _isMacOS = false
+
+
+  constructor(protected treeNodeService: TreeNodeService,
+    protected constraintService: ConstraintService,
+    protected queryService: QueryService,
+    protected genomicAnnotationsService: GenomicAnnotationsService,
+    protected element: ElementRef,
+    protected config: AppConfig,
+    private deviceService: DeviceDetectorService) {
+    super(treeNodeService,
+      constraintService,
+      queryService,
+      genomicAnnotationsService,
+      element,
+      config)
+  }
+
   ngOnInit() {
     this.initializeConstraints();
+    this._isMacOS = (this.deviceService.os === 'Mac')
+
   }
 
   initializeConstraints(): Promise<any> {
@@ -605,6 +634,42 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
     this.treeNodeService.selectedTreeNode = null;
     this.droppedConstraint = null;
+  }
+
+  // input number prevents spinning below 0 when the min value is 0, but it does not prevent to enter a minus sign by hand
+  // input number does not prevent using character taht are non number
+
+  keyControl(event: KeyboardEvent) {
+    if (event.key === 'Backspace') {
+      return
+    }
+    if ((this._isMacOS && event.metaKey) || (!this._isMacOS && event.ctrlKey)) {
+      return
+    }
+    if ((this._isMacOS && event.getModifierState('Meta')) || (!this._isMacOS && event.getModifierState('Control'))) {
+      if ((event.key === 'x') || (event.key === 'c') || (event.key === 'v')) {
+        return
+      }
+    }
+
+    // non numerical
+    let numerical = new RegExp('[0-9]|\\-|\\.')
+    if (!numerical.test(event.key)) {
+      event.preventDefault()
+    }
+    if ((this.constraint as ConceptConstraint).concept.isPositive) {
+      if (event.key === '-') {
+        event.preventDefault()
+      }
+    }
+  }
+
+  pasteControl(event: ClipboardEvent) {
+    let dataString = event.clipboardData.getData('text')
+    let numericalString = new RegExp('^\\-?(?:[0-9])+\\.?(?:[0-9])+$')
+    if (!numericalString.test(dataString)) {
+      event.preventDefault()
+    }
   }
 
   get numericalOperatorState(): NumericalOperator {
