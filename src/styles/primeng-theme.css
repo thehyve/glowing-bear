@@ -286,6 +286,7 @@ body .ui-dropdown:not(.ui-state-disabled).ui-state-focus {
   border-color: #cccccc;
 }
 body .ui-dropdown .ui-dropdown-label {
+  min-width: 12em;
   padding-right: 2em;
 }
 body .ui-dropdown .ui-dropdown-label .ui-placeholder {
