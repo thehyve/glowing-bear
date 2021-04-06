@@ -58,4 +58,13 @@ export class Constraint {
   get panelTimingSameInstance(): boolean {
     return this._panelTimingSameInstance
   }
+
+  /**
+   *  inputValueValidity check that all values needed values are defined for concept with textual or numerical constraint.
+   *  Parent class Constraint does not have such field and is by default valid.
+   */
+
+  get inputValueValidity(): boolean {
+    return true
+  }
 }

@@ -30,17 +30,17 @@
 
   <div *ngIf="(numericalOperatorState !== null) && isBetween() " class="d-inline-block">
     <input type="number" [step]="integerOrFloatStep" [min]="positive" class="col-sm-4" placeholder="min:{{minLimit}}"
-           [(ngModel)]="minVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)">
+           [(ngModel)]="minVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)" (blur)="blurControl()">
     <span>&nbsp;and&nbsp;</span>
     <input type="number" [step]="integerOrFloatStep" [min]="positive" class="col-sm-4" placeholder="max:{{maxLimit}}"
-           [(ngModel)]="maxVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)">
+           [(ngModel)]="maxVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)" (blur)="blurControl()">
     <span>&nbsp;{{unit}}</span>
   </div>
 
   <div *ngIf="(numericalOperatorState !== null) && !isBetween() " class="d-inline-block">
     <input type="number" [step]="integerOrFloatStep" [min]="positive" class="col-sm-8"
-           [(ngModel)]="equalVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)">
-    <span>&nbsp;{{unit}}</span>
+           [(ngModel)]="equalVal" (keydown)="keyControl($event)" (paste)="pasteControl($event)" (blur)="blurControl()">
+    <span>&nbsp;{{unit}}</span> <span>&nbsp;{{equalVal}}</span>
   </div>
 </div>
 <!-- if the concept is TEXT -->

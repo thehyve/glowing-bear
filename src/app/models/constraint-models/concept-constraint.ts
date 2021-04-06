@@ -16,6 +16,7 @@ import { FormatHelper } from '../../utilities/format-helper';
 import { NumericalOperator } from './numerical-operator';
 import { TreeNode } from '../tree-models/tree-node';
 import { TextOperator } from './text-operator';
+import { ThrowStmt, unescapeIdentifier } from '@angular/compiler';
 
 export class ConceptConstraint extends Constraint {
 
@@ -83,6 +84,21 @@ export class ConceptConstraint extends Constraint {
     }
 
     return res
+  }
+
+  /**
+   * checkRealNumberSubset assumes the test number to be defined: not 'undefined' or 'null'.
+   * checks if its current value belongs to the correct subset of real number, as it could be restricted to
+   * positive and/or integer number
+   */
+  private checkEqualValueRealNumberSubset(testNumber: number): boolean {
+    if (this.concept.isInteger && !Number.isInteger(testNumber)) {
+      return false
+    }
+    if (this.concept.isPositive && testNumber < 0) {
+      return false
+    }
+    return true
   }
 
   get concept(): Concept {
@@ -208,5 +224,48 @@ export class ConceptConstraint extends Constraint {
     return this._textOperatorValue
   }
 
+  get inputValueValidity(): boolean {
+    if (!this.applyNumericalOperator && !this.applyTextOperator) {
+      return true
+    }
 
+    if (this.applyNumericalOperator) {
+      if (this.numericalOperator === undefined) {
+        return true
+      }
+      switch (this.numericalOperator) {
+
+        case NumericalOperator.EQUAL:
+        case NumericalOperator.NOT_EQUAL:
+        case NumericalOperator.GREATER:
+        case NumericalOperator.GREATER_OR_EQUAL:
+        case NumericalOperator.LOWER_OR_EQUAL:
+        case NumericalOperator.LOWER:
+          if ((this.numValue !== undefined) && (this.numValue !== null)) {
+            return this.checkEqualValueRealNumberSubset(this.numValue)
+          } else {
+            return false
+          }
+          break;
+        case NumericalOperator.BETWEEN:
+          if ((this.minValue !== undefined) &&
+            (this.minValue !== null) &&
+            (this.maxValue !== undefined) &&
+            (this.maxValue !== null)) {
+            return this.checkEqualValueRealNumberSubset(this.minValue) &&
+              this.checkEqualValueRealNumberSubset(this.maxValue)
+          } else {
+            return false
+          }
+        default:
+          break;
+      }
+    }
+    if (this.applyTextOperator) {
+      if (this.textOperator === undefined) {
+        return true
+      }
+      return ((this.textOperatorValue) && this.textOperatorValue !== '')
+    }
+  }
 }

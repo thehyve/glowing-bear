@@ -106,6 +106,13 @@ export class CombinationConstraint extends Constraint {
     this._isRoot = value;
   }
 
+  /**
+   *  the input value validity of a combination constraint is true if all children constraints have valid values.
+   */
+  get inputValueValidity(): boolean {
+    return this.children.map(({ inputValueValidity }) => inputValueValidity).reduce((a, b) => a && b, true)
+  }
+
   private updateTextRepresentation() {
     if (this.children.length >= 0) {
       this.textRepresentation = '(' + this.children.map(({ textRepresentation }) => textRepresentation)
