@@ -672,10 +672,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     }
   }
 
-  blurControl() {
-    console.warn('I am blurred :(')
-  }
-
   get numericalOperatorState(): NumericalOperator {
     return this._numericalOperatorState;
   }

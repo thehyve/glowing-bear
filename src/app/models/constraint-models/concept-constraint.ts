@@ -89,16 +89,16 @@ export class ConceptConstraint extends Constraint {
   /**
    * checkRealNumberSubset assumes the test number to be defined: not 'undefined' or 'null'.
    * checks if its current value belongs to the correct subset of real number, as it could be restricted to
-   * positive and/or integer number
+   * positive and/or integer number. If the number is valid, an empty string is returned.
    */
-  private checkEqualValueRealNumberSubset(testNumber: number): boolean {
+  private checkEqualValueRealNumberSubset(testNumber: number): string {
     if (this.concept.isInteger && !Number.isInteger(testNumber)) {
-      return false
+      return `concept ${this.concept.name} only accepts integer values.`
     }
     if (this.concept.isPositive && testNumber < 0) {
-      return false
+      return `concept ${this.concept.name} only accepts positive values.`
     }
-    return true
+    return ''
   }
 
   get concept(): Concept {
@@ -224,14 +224,14 @@ export class ConceptConstraint extends Constraint {
     return this._textOperatorValue
   }
 
-  get inputValueValidity(): boolean {
+  inputValueValidity(): string {
     if (!this.applyNumericalOperator && !this.applyTextOperator) {
-      return true
+      return ''
     }
 
     if (this.applyNumericalOperator) {
       if (this.numericalOperator === undefined) {
-        return true
+        return ''
       }
       switch (this.numericalOperator) {
 
@@ -244,28 +244,40 @@ export class ConceptConstraint extends Constraint {
           if ((this.numValue !== undefined) && (this.numValue !== null)) {
             return this.checkEqualValueRealNumberSubset(this.numValue)
           } else {
-            return false
+            return `concept ${this.concept.name} needs a numerical input.`
           }
           break;
         case NumericalOperator.BETWEEN:
-          if ((this.minValue !== undefined) &&
-            (this.minValue !== null) &&
-            (this.maxValue !== undefined) &&
-            (this.maxValue !== null)) {
-            return this.checkEqualValueRealNumberSubset(this.minValue) &&
-              this.checkEqualValueRealNumberSubset(this.maxValue)
+          if ((this.minValue !== undefined) && (this.minValue !== null)) {
+            let minValueValidation = this.checkEqualValueRealNumberSubset(this.minValue)
+            if (minValueValidation !== '') {
+              return minValueValidation
+            } else {
+              if ((this.maxValue !== undefined) && (this.maxValue !== null)) {
+                return this.checkEqualValueRealNumberSubset(this.maxValue)
+              } else {
+                return `concept ${this.concept.name} needs a numerical input for max value.`
+              }
+            }
           } else {
-            return false
+            return `concept ${this.concept.name} needs a numerical input for min value.`
           }
+
+
         default:
           break;
       }
     }
+
     if (this.applyTextOperator) {
       if (this.textOperator === undefined) {
-        return true
+        return ''
       }
-      return ((this.textOperatorValue) && this.textOperatorValue !== '')
+      if ((this.textOperatorValue) && this.textOperatorValue !== '') {
+        return ''
+      } else {
+        return `concept ${this.concept.name} needs a textual input.`
+      }
     }
   }
 }

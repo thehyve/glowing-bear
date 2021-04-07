@@ -101,8 +101,4 @@ export class GbSelectionComponent {
     return this.constraintService.rootExclusionConstraint
   }
 
-  get inputValueValidity(): boolean {
-    return this.rootExclusionConstraint.inputValueValidity &&
-      this.rootInclusionConstraint.inputValueValidity
-  }
 }
