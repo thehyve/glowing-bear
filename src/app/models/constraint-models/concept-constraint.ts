@@ -260,6 +260,8 @@ export class ConceptConstraint extends Constraint {
                 } else {
                   if (this.minValue > this.maxValue) {
                     return `in concept ${this.concept.name} upper bound cannot be smaller than lower bound.`
+                  } else {
+                    return ''
                   }
                 }
 
