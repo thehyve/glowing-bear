@@ -51,7 +51,6 @@ export class GbSelectionComponent {
 
   private isUploadListenerNotAdded: boolean;
 
-  public testValue: number;
   constructor(private constraintService: ConstraintService,
     private queryService: QueryService,
     private cohortService: CohortService) {
