@@ -8,6 +8,7 @@
 
 import {Component} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
+import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
 
 @Component({
   selector: 'gb-side-panel',
@@ -16,6 +17,7 @@ import {NavbarService} from '../../services/navbar.service';
 })
 export class GbSidePanelComponent {
 
-  constructor(public navbarService: NavbarService) { }
+  constructor(public navbarService: NavbarService,
+              public savedCohortsPatientListService: SavedCohortsPatientListService) { }
 
 }
