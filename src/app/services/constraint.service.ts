@@ -131,8 +131,12 @@ export class ConstraintService {
       } else {
         if (this.hasExclusionConstraint()) {
           return this.rootExclusionConstraint.inputValueValidity()
+        } else {
+          return ''
         }
       }
+    } else {
+      return ''
     }
   }
 

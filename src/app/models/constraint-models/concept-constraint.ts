@@ -16,7 +16,7 @@ import { FormatHelper } from '../../utilities/format-helper';
 import { NumericalOperator } from './numerical-operator';
 import { TreeNode } from '../tree-models/tree-node';
 import { TextOperator } from './text-operator';
-import { ThrowStmt, unescapeIdentifier } from '@angular/compiler';
+import { ErrorHelper } from 'src/app/utilities/error-helper';
 
 export class ConceptConstraint extends Constraint {
 
@@ -254,7 +254,15 @@ export class ConceptConstraint extends Constraint {
               return minValueValidation
             } else {
               if ((this.maxValue !== undefined) && (this.maxValue !== null)) {
-                return this.checkEqualValueRealNumberSubset(this.maxValue)
+                let maxValueValidation = this.checkEqualValueRealNumberSubset(this.maxValue)
+                if (maxValueValidation !== '') {
+                  return minValueValidation
+                } else {
+                  if (this.minValue > this.maxValue) {
+                    return `in concept ${this.concept.name} upper bound cannot be smaller than lower bound.`
+                  }
+                }
+
               } else {
                 return `concept ${this.concept.name} needs a numerical input for max value.`
               }
@@ -263,8 +271,9 @@ export class ConceptConstraint extends Constraint {
             return `concept ${this.concept.name} needs a numerical input for min value.`
           }
 
-
+          break;
         default:
+          throw ErrorHelper.handleNewError(`operator ${this.numericalOperator} not handled.`)
           break;
       }
     }
