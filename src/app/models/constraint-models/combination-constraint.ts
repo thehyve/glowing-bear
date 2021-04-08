@@ -37,10 +37,8 @@ export class CombinationConstraint extends Constraint {
       constraint.parentConstraint = this;
     }
     this.children.push(constraint);
-    if (this.combinationState === CombinationState.Or) {
-    }
-    this.updateTextRepresentation()
-    return
+    this.updateTextRepresentation();
+    return;
   }
 
   updateChild(index: number, constraint: Constraint) {
@@ -48,19 +46,19 @@ export class CombinationConstraint extends Constraint {
       constraint.parentConstraint = this;
     }
     this.children[index] = constraint
-    this.updateTextRepresentation()
-    return
+    this.updateTextRepresentation();
+    return;
   }
 
   clone(): CombinationConstraint {
-    let res = new CombinationConstraint
-    res.textRepresentation = this.textRepresentation
-    res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null
-    res.isRoot = this.isRoot
-    res.combinationState = this.combinationState
-    res.panelTimingSameInstance = this.panelTimingSameInstance
-    res.children = this._children.map(constr => constr.clone())
-    return res
+    let res = new CombinationConstraint;
+    res.textRepresentation = this.textRepresentation;
+    res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null;
+    res.isRoot = this.isRoot;
+    res.combinationState = this.combinationState;
+    res.panelTimingSameInstance = this.panelTimingSameInstance;
+    res.children = this._children.map(constr => constr.clone());
+    return res;
   }
 
   isAnd() {
@@ -89,7 +87,7 @@ export class CombinationConstraint extends Constraint {
 
   set children(value: Constraint[]) {
     this._children = value;
-    this.updateTextRepresentation()
+    this.updateTextRepresentation();
   }
 
   get combinationState(): CombinationState {
@@ -98,13 +96,13 @@ export class CombinationConstraint extends Constraint {
 
   set combinationState(value: CombinationState) {
     this._combinationState = value;
-    this.updateTextRepresentation()
+    this.updateTextRepresentation();
   }
 
   switchCombinationState() {
     this.combinationState = (this.combinationState === CombinationState.And) ?
       CombinationState.Or : CombinationState.And;
-    this.updateTextRepresentation()
+    this.updateTextRepresentation();
   }
 
   removeChildConstraint(child: Constraint) {
@@ -112,6 +110,7 @@ export class CombinationConstraint extends Constraint {
     if (index > -1) {
       this.children.splice(index, 1);
     }
+    this.updateTextRepresentation();
   }
 
   get isRoot(): boolean {
@@ -124,11 +123,11 @@ export class CombinationConstraint extends Constraint {
 
 
   private updateTextRepresentation() {
-    if (this.children.length >= 0) {
+    if (this.children.length > 0) {
       this.textRepresentation = '(' + this.children.map(({ textRepresentation }) => textRepresentation)
         .join(this.combinationState === CombinationState.And ? ' and ' : ' or ') + ')'
     } else {
-      this.textRepresentation = ''
+      this.textRepresentation = 'Group';
     }
   }
 }

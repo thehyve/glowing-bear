@@ -36,7 +36,9 @@ export class ConstraintMappingService {
         break;
 
       case 'CombinationConstraint':
-        if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
+        if ((constraint as CombinationConstraint).children.length === 0) {
+          return;
+        } else if ((constraint as CombinationConstraint).combinationState === CombinationState.Or) {
           panels.push(this.generateI2b2Panel(constraint, negated));
         } else if ((constraint as CombinationConstraint).combinationState === CombinationState.And) {
           (constraint as CombinationConstraint).children.forEach((childConstraint) =>
