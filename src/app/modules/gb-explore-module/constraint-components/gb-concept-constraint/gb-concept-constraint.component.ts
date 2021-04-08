@@ -711,7 +711,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return (concept.unit) ? concept.unit : ''
 
   }
-  get integerOrFloatStep(): string {
+  get integerOrFloat(): string {
     let concept = (this.constraint as ConceptConstraint).concept
     return concept.isInteger ? '1' : 'any'
   }

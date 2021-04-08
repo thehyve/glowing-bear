@@ -16,6 +16,7 @@ import { FormatHelper } from '../../utilities/format-helper';
 import { NumericalOperator } from './numerical-operator';
 import { TreeNode } from '../tree-models/tree-node';
 import { TextOperator } from './text-operator';
+import { ErrorHelper } from 'src/app/utilities/error-helper';
 
 export class ConceptConstraint extends Constraint {
 
@@ -83,6 +84,21 @@ export class ConceptConstraint extends Constraint {
     }
 
     return res
+  }
+
+  /**
+   * checkRealNumberSubset assumes the test number to be defined: not 'undefined' or 'null'.
+   * checks if its current value belongs to the correct subset of real number, as it could be restricted to
+   * positive and/or integer number. If the number is valid, an empty string is returned.
+   */
+  private checkEqualValueRealNumberSubset(testNumber: number): string {
+    if (this.concept.isInteger && !Number.isInteger(testNumber)) {
+      return `concept ${this.concept.name} only accepts integer values.`
+    }
+    if (this.concept.isPositive && testNumber < 0) {
+      return `concept ${this.concept.name} only accepts positive values.`
+    }
+    return ''
   }
 
   get concept(): Concept {
@@ -208,5 +224,71 @@ export class ConceptConstraint extends Constraint {
     return this._textOperatorValue
   }
 
+  inputValueValidity(): string {
+    if (!this.applyNumericalOperator && !this.applyTextOperator) {
+      return ''
+    }
 
+    if (this.applyNumericalOperator) {
+      if (this.numericalOperator === undefined) {
+        return ''
+      }
+      switch (this.numericalOperator) {
+
+        case NumericalOperator.EQUAL:
+        case NumericalOperator.NOT_EQUAL:
+        case NumericalOperator.GREATER:
+        case NumericalOperator.GREATER_OR_EQUAL:
+        case NumericalOperator.LOWER_OR_EQUAL:
+        case NumericalOperator.LOWER:
+          if ((this.numValue !== undefined) && (this.numValue !== null)) {
+            return this.checkEqualValueRealNumberSubset(this.numValue)
+          } else {
+            return `concept ${this.concept.name} needs a numerical input.`
+          }
+          break;
+        case NumericalOperator.BETWEEN:
+          if ((this.minValue !== undefined) && (this.minValue !== null)) {
+            let minValueValidation = this.checkEqualValueRealNumberSubset(this.minValue)
+            if (minValueValidation !== '') {
+              return minValueValidation
+            } else {
+              if ((this.maxValue !== undefined) && (this.maxValue !== null)) {
+                let maxValueValidation = this.checkEqualValueRealNumberSubset(this.maxValue)
+                if (maxValueValidation !== '') {
+                  return minValueValidation
+                } else {
+                  if (this.minValue > this.maxValue) {
+                    return `in concept ${this.concept.name} upper bound cannot be smaller than lower bound.`
+                  } else {
+                    return ''
+                  }
+                }
+
+              } else {
+                return `concept ${this.concept.name} needs a numerical input for max value.`
+              }
+            }
+          } else {
+            return `concept ${this.concept.name} needs a numerical input for min value.`
+          }
+
+          break;
+        default:
+          throw ErrorHelper.handleNewError(`operator ${this.numericalOperator} not handled.`)
+          break;
+      }
+    }
+
+    if (this.applyTextOperator) {
+      if (this.textOperator === undefined) {
+        return ''
+      }
+      if ((this.textOperatorValue) && this.textOperatorValue !== '') {
+        return ''
+      } else {
+        return `concept ${this.concept.name} needs a textual input.`
+      }
+    }
+  }
 }

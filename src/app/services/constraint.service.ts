@@ -7,23 +7,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Injectable} from '@angular/core';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {Constraint} from '../models/constraint-models/constraint';
-import {Concept} from '../models/constraint-models/concept';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {CombinationState} from '../models/constraint-models/combination-state';
-import {NegationConstraint} from '../models/constraint-models/negation-constraint';
-import {DropMode} from '../models/drop-mode';
-import {TreeNodeService} from './tree-node.service';
-import {TreeNode} from '../models/tree-models/tree-node';
-import {ConstraintHelper} from '../utilities/constraint-utilities/constraint-helper';
-import {TreeNodeType} from '../models/tree-models/tree-node-type';
-import {GenomicAnnotationConstraint} from '../models/constraint-models/genomic-annotation-constraint';
-import {GenomicAnnotation} from '../models/constraint-models/genomic-annotation';
-import {ErrorHelper} from '../utilities/error-helper';
-import {OperationType} from '../models/operation-models/operation-types';
-import {MessageHelper} from '../utilities/message-helper';
+import { Injectable } from '@angular/core';
+import { CombinationConstraint } from '../models/constraint-models/combination-constraint';
+import { Constraint } from '../models/constraint-models/constraint';
+import { Concept } from '../models/constraint-models/concept';
+import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
+import { CombinationState } from '../models/constraint-models/combination-state';
+import { NegationConstraint } from '../models/constraint-models/negation-constraint';
+import { DropMode } from '../models/drop-mode';
+import { TreeNodeService } from './tree-node.service';
+import { TreeNode } from '../models/tree-models/tree-node';
+import { ConstraintHelper } from '../utilities/constraint-utilities/constraint-helper';
+import { TreeNodeType } from '../models/tree-models/tree-node-type';
+import { GenomicAnnotationConstraint } from '../models/constraint-models/genomic-annotation-constraint';
+import { GenomicAnnotation } from '../models/constraint-models/genomic-annotation';
+import { ErrorHelper } from '../utilities/error-helper';
+import { OperationType } from '../models/operation-models/operation-types';
+import { MessageHelper } from '../utilities/message-helper';
 
 /**
  * This service concerns with
@@ -116,6 +116,28 @@ export class ConstraintService {
 
   public hasExclusionConstraint(): Boolean {
     return ConstraintHelper.hasNonEmptyChildren(this.rootExclusionConstraint);
+  }
+
+  /**
+   * validateConstraintValues returns empty string if the values are valid. This applies to constraint with an operator
+   * such textual or numerical constraint. If the operator is undefined or if this does not apply to a constraint, empty string
+   * is returned by default.
+   */
+  public validateConstraintValues(): string {
+    if (this.hasInclusionConstraint()) {
+      let inclusionConstraintValidity = this.rootInclusionConstraint.inputValueValidity()
+      if (inclusionConstraintValidity !== '') {
+        return inclusionConstraintValidity
+      } else {
+        if (this.hasExclusionConstraint()) {
+          return this.rootExclusionConstraint.inputValueValidity()
+        } else {
+          return ''
+        }
+      }
+    } else {
+      return ''
+    }
   }
 
   /**

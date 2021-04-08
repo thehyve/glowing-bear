@@ -15,7 +15,7 @@ import { OperationType } from '../../../../models/operation-models/operation-typ
 import { CohortService } from '../../../../services/cohort.service';
 import { ApiI2b2Timing } from '../../../../models/api-request-models/medco-node/api-i2b2-timing';
 import { QueryService } from '../../../../services/query.service';
-import {ErrorHelper} from '../../../../utilities/error-helper';
+import { ErrorHelper } from '../../../../utilities/error-helper';
 
 const nameMaxLength = 10
 
@@ -102,6 +102,11 @@ export class GbCohortLandingZoneComponent implements OnInit {
       throw ErrorHelper.handleNewUserInputError(`Subgroup name length cannot exceed ${nameMaxLength}.`);
     } else if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
       throw ErrorHelper.handleNewUserInputError('Both inclusion and exclusion constraints are empty, nothing to add.');
+    }
+
+    let inputValueValidation = this.constraintService.validateConstraintValues()
+    if (inputValueValidation !== '') {
+      throw ErrorHelper.handleNewUserInputError(`in definition of subgroup ${this.name} : ` + inputValueValidation)
     }
 
     let newSubGroup: SubGroup = {

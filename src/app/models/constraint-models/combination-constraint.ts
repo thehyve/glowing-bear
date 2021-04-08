@@ -65,6 +65,22 @@ export class CombinationConstraint extends Constraint {
     return this.combinationState === CombinationState.And;
   }
 
+  /**
+   *  the input value validity of a combination constraint is true if all children constraints have valid values.
+   *  If one or multiple children are not valid, only the first non-empty message string is returned
+   */
+  inputValueValidity(): string {
+
+    for (const child of this.children) {
+      let validity = child.inputValueValidity()
+      if (validity !== '') {
+        return validity
+      }
+    }
+    return ''
+  }
+
+
   get children(): Constraint[] {
     return this._children;
   }
@@ -104,6 +120,7 @@ export class CombinationConstraint extends Constraint {
   set isRoot(value: boolean) {
     this._isRoot = value;
   }
+
 
   private updateTextRepresentation() {
     if (this.children.length > 0) {

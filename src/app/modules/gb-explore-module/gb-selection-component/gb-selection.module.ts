@@ -6,6 +6,7 @@ import { GbConceptConstraintComponent } from '../constraint-components/gb-concep
 import { GbGenomicAnnotationConstraintComponent } from '../constraint-components/gb-genomic-annotation-constraint/gb-genomic-annotation-constraint.component';
 import { GbSelectionComponent } from './gb-selection.component';
 import { AccordionModule } from 'primeng';
+import { InputNumberModule } from 'primeng';
 import { DropdownModule } from 'primeng';
 import { FormsModule } from '@angular/forms';
 import { AutoCompleteModule } from 'primeng';
@@ -28,6 +29,7 @@ import { MultiSelectModule } from 'primeng';
     CommonModule,
     AccordionModule,
     FormsModule,
+    InputNumberModule,
     AutoCompleteModule,
     DropdownModule,
     CheckboxModule,

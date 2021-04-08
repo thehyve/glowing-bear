@@ -16,10 +16,10 @@ import { FormatHelper } from '../../../utilities/format-helper';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SelectItem } from 'primeng';
-import {CohortService} from '../../../services/cohort.service';
-import {ApiI2b2Timing} from '../../../models/api-request-models/medco-node/api-i2b2-timing';
-import {CombinationConstraint} from '../../../models/constraint-models/combination-constraint';
-import {OperationType} from '../../../models/operation-models/operation-types';
+import { CohortService } from '../../../services/cohort.service';
+import { ApiI2b2Timing } from '../../../models/api-request-models/medco-node/api-i2b2-timing';
+import { CombinationConstraint } from '../../../models/constraint-models/combination-constraint';
+import { OperationType } from '../../../models/operation-models/operation-types';
 
 type LoadingState = 'loading' | 'complete';
 
@@ -99,4 +99,5 @@ export class GbSelectionComponent {
   get rootExclusionConstraint(): CombinationConstraint {
     return this.constraintService.rootExclusionConstraint
   }
+
 }

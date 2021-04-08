@@ -1,6 +1,6 @@
 /**
  * Copyright 2017 - 2018  The Hyve B.V.
- * Copyright 2020 CHUV
+ * Copyright 2020 - 2021 CHUV
  * Copyright 2021 EPFL LDS
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -16,6 +16,15 @@ export class Constraint {
   protected _parentConstraint: Constraint;
   // i2b2 timing policiy
   protected _panelTimingSameInstance?: boolean;
+
+  /**
+   *  inputValueValidity check that all values needed values are defined for concept with textual or numerical constraint.
+   *  Parent class Constraint does not have such field and is by default valid, hence returns a empty string
+   */
+
+  inputValueValidity(): string {
+    return ''
+  }
 
 
   constructor() {
@@ -58,4 +67,6 @@ export class Constraint {
   get panelTimingSameInstance(): boolean {
     return this._panelTimingSameInstance
   }
+
+
 }

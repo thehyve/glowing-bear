@@ -15,20 +15,20 @@ import { ConstraintService } from './constraint.service';
 import { AppConfig } from '../config/app.config';
 import { ExploreQueryType } from '../models/query-models/explore-query-type';
 import { AuthenticationService } from './authentication.service';
-import {catchError, map, switchMap, tap} from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { ExploreQueryService } from './api/medco-node/explore-query.service';
 import { ApiExploreQueryResult } from '../models/api-response-models/medco-node/api-explore-query-result';
 import { CryptoService } from './crypto.service';
 import { GenomicAnnotationsService } from './api/genomic-annotations.service';
 import { ExploreQueryResult } from '../models/query-models/explore-query-result';
-import {Observable, ReplaySubject, throwError, Subject, of} from 'rxjs';
+import { Observable, ReplaySubject, throwError, Subject, of } from 'rxjs';
 import { ErrorHelper } from '../utilities/error-helper';
 import { MessageHelper } from '../utilities/message-helper';
-import {ApiNodeMetadata} from '../models/api-response-models/medco-network/api-node-metadata';
-import {ApiI2b2Panel} from '../models/api-request-models/medco-node/api-i2b2-panel';
-import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
+import { ApiNodeMetadata } from '../models/api-response-models/medco-network/api-node-metadata';
+import { ApiI2b2Panel } from '../models/api-request-models/medco-node/api-i2b2-panel';
+import { ApiI2b2Timing } from '../models/api-request-models/medco-node/api-i2b2-timing';
 import { OperationType } from '../models/operation-models/operation-types';
-import {UserInputError} from '../utilities/user-input-error';
+import { UserInputError } from '../utilities/user-input-error';
 
 /**
  * This service concerns with updating subject counts.
@@ -162,6 +162,14 @@ export class QueryService {
       return;
     } else if (!this.queryType) {
       MessageHelper.alert('warn', 'No authorized query type.');
+      return;
+    }
+
+    // validate user input
+
+    let validity = this.constraintService.validateConstraintValues()
+    if (validity !== '') {
+      ErrorHelper.handleNewUserInputError(validity);
       return;
     }
 
