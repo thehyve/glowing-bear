@@ -1,11 +1,11 @@
 {
   "api-version": "v2",
   "doc-url": "https://glowingbear.app",
-  "enable-fractalis-analysis": true,
+  "enable-fractalis-analysis": false,
   "autosave-subject-sets": false,
   "show-observation-counts": false,
   "instant-counts-update": false,
-  "include-data-table": true,
+  "include-data-table": false,
   "include-cohort-subscription": false,
   "oidc-client-id": "transmart-client",
   "export-mode": {

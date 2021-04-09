@@ -7,7 +7,7 @@
   "autosave-subject-sets": ${AUTOSAVE_SUBJECT_SETS},
   "show-observation-counts": false,
   "instant-counts-update": false,
-  "include-data-table": true,
+  "include-data-table": false,
   "include-cohort-subscription": false,
   "oidc-server-url": "${KEYCLOAK_SERVER_URL}/auth/realms/${KEYCLOAK_REALM}/protocol/openid-connect",
   "oidc-client-id": "${KEYCLOAK_CLIENT_ID}",
