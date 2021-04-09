@@ -1,22 +1,21 @@
 {
-  "api-url": "https://transmart-dev.thehyve.net",
+  "api-url": "https://glowingbear.thehyve.net/api/transmart-api-server",
   "api-version": "v2",
-  "gb-backend-url": "https://gb-backend-dev.thehyve.net",
-  "fractalis-url": "https://fractalis-dev.thehyve.net",
-  "fractalis-datasource-url": "http://localhost:8080",
+  "gb-backend-url": "https://glowingbear.thehyve.net/api/gb-backend",
   "doc-url": "https://glowingbear.app",
-  "enable-fractalis-analysis": true,
+  "enable-fractalis-analysis": false,
   "autosave-subject-sets": false,
   "show-observation-counts": true,
   "instant-counts-update": false,
-  "include-data-table": true,
+  "include-data-table": false,
   "include-cohort-subscription": true,
-  "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
+  "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart/protocol/openid-connect",
   "oidc-client-id": "transmart-client",
   "export-mode": {
-    "name": "transmart",
-    "data-view": "dataTable"
+    "name": "packer",
+    "data-view": "basic_export",
+    "export-url": "https://glowingbear.thehyve.net/api/transmart-packer"
   },
   "check-server-status": true,
-  "deny-access-to-users-without-role": true
+  "deny-access-to-users-without-role": false
 }

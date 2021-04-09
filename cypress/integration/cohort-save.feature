@@ -13,7 +13,7 @@ Feature: save cohort
     Given Cohort 'Query Vital Signs' is saved
     Given I am on the cohort-selection tab
     When I restore the cohort 'Query Vital Signs'
-    Then there are '6' subjects
+    Then there are '3' subjects
 
   Scenario: delete cohort
     Given Cohort 'Query Vital Signs' is saved

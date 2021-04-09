@@ -1,13 +1,13 @@
 {
-  "baseUrl": "https://glowingbear-dev.thehyve.net",
+  "baseUrl": "https://glowingbear.thehyve.net",
   "chromeWebSecurity": false,
   "video": false,
   "fixturesFolder": "cypress/fixtures/dev",
   "env": {
-    "apiUrl": "https://transmart-dev.thehyve.net",
-    "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart-dev/protocol/openid-connect",
+    "apiUrl": "https://glowingbear.thehyve.net/api/transmart-api-server",
+    "oidc-server-url": "https://keycloak-dwh-test.thehyve.net/auth/realms/transmart/protocol/openid-connect",
     "oidc-client-id": "transmart-client",
-    "gb-backend-url": "https://gb-backend-dev.thehyve.net"
+    "gb-backend-url": "https://glowingbear.thehyve.net/api/gb-backend"
   },
   "numTestsKeptInMemory": 3,
   "defaultCommandTimeout": 30000

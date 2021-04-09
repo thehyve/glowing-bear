@@ -11,8 +11,7 @@ then('I am logged in', () => {
 });
 
 then('I am not logged in', () => {
-  cy.get('div').should('have.class', 'alert alert-error');
-  cy.get('span').should('contain', 'Invalid username or password.');
+  cy.get('.kc-feedback-text').should('contain', 'Invalid username or password.');
 });
 
 when('I log out', () => {

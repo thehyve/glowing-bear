@@ -1,5 +1,7 @@
 when("I reveal a numeric node", () => {
-  cy.toggleNode('Vital Signs ');
+  cy.toggleNode('Public Studies ')
+    .toggleNode('CLINICAL_TRIAL ')
+    .toggleNode('Vital Signs ');
 });
 
 then("the node has the numeric icon", () => {
@@ -17,7 +19,9 @@ then("the node has the categorical icon", () => {
 });
 
 when("I reveal a date node", () => {
-  cy.toggleNode('Demographics ');
+  cy.toggleNode('Projects ')
+    .toggleNode('Survey 1 ')
+    .toggleNode('Demographics ');
 });
 
 then("the node has the date icon", () => {
@@ -25,9 +29,11 @@ then("the node has the date icon", () => {
 });
 
 when("I reveal a text node", () => {
-  cy.toggleNode('Demographics ');
+  cy.toggleNode('Projects ')
+    .toggleNode('Survey 1 ')
+    .toggleNode('Interests ');
 });
 
 then("the node has the text icon", () => {
-  cy.contains('Place of birth ').parent().parent().children('.ui-treenode-icon').should('have.class', 'fa-newspaper-o');
+  cy.contains('Favourite Book ').parent().parent().children('.ui-treenode-icon').should('have.class', 'fa-newspaper-o');
 });

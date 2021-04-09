@@ -3,7 +3,7 @@ when('I import a cohort with {string}', (fileName) => {
   const fileInputSelector = 'gb-cohorts input[type=file]';
 
   cy.get('gb-cohorts .import-btn').click();
-  cy.uploadFile(fileName, fileInputSelector);
+  cy.get(fileInputSelector).attachFile(fileName);
 });
 
 then('Current cohort should contain {string}', (text) => {
