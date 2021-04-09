@@ -33,7 +33,7 @@ given("Cohort {string} is saved", (cohortName) => {
                 "dimension": "patient",
                 "constraint": {
                   "type": "concept",
-                  "conceptCode": "VSIGN:HR",
+                  "conceptCode": "CT:VSIGN:HR",
                   "name": "Heart Rate",
                   "fullName": "\\Vital Signs\\Heart Rate\\",
                   "conceptPath": "\\Vital Signs\\Heart Rate\\",
@@ -47,7 +47,7 @@ given("Cohort {string} is saved", (cohortName) => {
                     "dimension": "patient",
                     "constraint": {
                       "type": "concept",
-                      "conceptCode": "VSIGN:HR",
+                      "conceptCode": "CT:VSIGN:HR",
                       "name": "Heart Rate",
                       "fullName": "\\Vital Signs\\Heart Rate\\",
                       "conceptPath": "\\Vital Signs\\Heart Rate\\",
@@ -136,10 +136,10 @@ when('I create a cohort with multiple dimensions constraint', () => {
   cy.toggleNode('Public Studies ');
   cy.toggleNode('CSR');
 
-  cy.toggleNode('03. Biosource');
+  cy.toggleNode('03. Biosource information');
   cy.drag('03. Tissue').drop(0);
 
-  cy.get('label').contains('medula (7), cortex (5)').click();
+  cy.get('.ui-multiselect-label').contains('medula (7), cortex (5)').click();
   cy.removeChip('medula (7)');
 
   cy.drag('CLINICAL_TRIAL ').drop(0);
@@ -157,7 +157,7 @@ then('the cohort {string} has type {string}', (cohortName, cohortType) => {
   cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).parent().parent().parent().parent().click();
   cy.get('.ng-trigger-tabContent').eq(1).contains('Type: ' + cohortType);
 })
-,
+
 then('the dimension selection is disabled', () => {
   cy.get('.gb-constraint').find('p-dropdown').children('div').should('have.class', 'ui-state-disabled');
 })

@@ -17,4 +17,4 @@ Feature: variable import
     Given I am on the export tab
     When I import variables with 'variable-invalid.json'
     Then I should see the message containing 'Invalid'
-    Then The number of selected variables should be '183'
+    Then The number of selected variables should be '180'

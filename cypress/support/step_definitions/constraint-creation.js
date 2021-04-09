@@ -29,17 +29,17 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
   cy.drag('categorical_10 ').drop(0);
 
   cy.contains('Stomach').should('not.be.visible');
-  cy.get('label').contains('9 items selected').should('be.visible');
+  cy.get('.ui-multiselect-label').contains('9 items selected').should('be.visible');
 
-  cy.get('label').contains('9 items selected').click();
+  cy.get('.ui-multiselect-label').contains('9 items selected').click();
   cy.removeChip('Mouth');
   cy.removeChip('Leg');
   cy.removeChip('Breast');
   cy.removeChip('Heart');
   cy.removeChip('Arm');
 
-  cy.get('label').contains('4 items selected').should('be.visible');
-  cy.get('label').contains('4 items selected').click();
+  cy.get('.ui-multiselect-label').contains('4 items selected').should('be.visible');
+  cy.get('.ui-multiselect-label').contains('4 items selected').click();
 
   cy.get('.ui-inputswitch-slider').eq(1).click();
 
