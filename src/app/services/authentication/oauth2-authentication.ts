@@ -18,6 +18,7 @@ import * as moment from 'moment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {MessageHelper} from '../../utilities/message-helper';
 import {RedirectHelper} from '../../utilities/redirect-helper';
+import {NavbarService} from '../navbar.service';
 
 /**
  * Implementation of the OAuth2 authorisation flow:
@@ -65,6 +66,8 @@ export class Oauth2Authentication implements AuthenticationMethod {
     if (authorisation === AuthorizationResult.Authorized && localStorage.getItem('redirect')) {
       const path = JSON.parse(localStorage.getItem('redirect'));
       console.log(`Redirect to ${path}`);
+      const navbarService = this.injector.get(NavbarService);
+      navbarService.updateNavbar(path.split('/')[1].split('#')[0]);
       this.router.navigate([path]);
     } else {
       this.logout();

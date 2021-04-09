@@ -19,10 +19,10 @@ then('Drag CATEGORICAL_VALUES:Demography:Race from tree view to row zone', () =>
   // collapse cohorts panel
   cy.get('.ui-accordion-header').contains('Cohorts').click();
   cy.get('gb-variables').find('loading-container').should('not.be.visible');
-  cy.toggleNode('Public Studies ');
-  cy.toggleNode('CATEGORICAL_VALUES ');
-  cy.toggleNode('Demography');
-  cy.drag('Race', '.gb-variables-tree-container').drop(1, 'div.gb-droppable-zone-info-container');
+  cy.toggleVariableNode('Public Studies ');
+  cy.toggleVariableNode('CATEGORICAL_VALUES ');
+  cy.toggleVariableNode('Demography');
+  cy.drag('Race', '.gb-variables-tree-container').drop(1, 'div.gb-droppable-zone-container');
 });
 
 then('Cross table has Latino and Caucasian labels', () => {
@@ -34,10 +34,10 @@ then('Drag Oracle_1000_Patient:Categorical_locations:categorical_12 from tree vi
   // collapse cohorts panel
   cy.get('.ui-accordion-header').contains('Cohorts').click();
   cy.get('gb-variables').find('loading-container').should('not.be.visible');
-  cy.toggleNode('Public Studies ');
-  cy.toggleNode('Oracle_1000_Patient ');
-  cy.toggleNode('Categorical_locations');
-  cy.drag('categorical_12', '.gb-variables-tree-container').drop(0, 'div.gb-droppable-zone-info-container');
+  cy.toggleVariableNode('Public Studies ');
+  cy.toggleVariableNode('Oracle_1000_Patient ');
+  cy.toggleVariableNode('Categorical_locations');
+  cy.drag('categorical_12', '.gb-variables-tree-container').drop(0, 'div.gb-droppable-zone-container');
 });
 
 then('Cross table has headers such as Heart, Mouth and Liver', () => {

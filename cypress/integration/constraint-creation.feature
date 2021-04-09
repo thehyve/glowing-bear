@@ -20,7 +20,7 @@ Feature: create constraints by selecting nodes from the tree
   Scenario: create a constraint with double negation
     Given I am on the cohort-selection tab
     When I use negated pedigree constraint 'Parent of' with concept 'Is a Twin' and negated concept 'Number of children that are multiplet'
-    Then there are '1,355' subjects
+    Then there are '1,357' subjects
     And constraint panel containing 'Parent of ' is negated
     And the root dimension and box descriptions for pedigree constraint are correct
 

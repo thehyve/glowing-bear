@@ -38,10 +38,10 @@ given("I am on the export tab", () => {
   cy.fixture('admin').as("user");
   cy.login();
   cy.url().should('eq', Cypress.config('baseUrl') + '/export');
-  cy.get('.section-banner').first().contains('Data Table');
+  cy.get('.section-banner').first().contains('New export');
   cy.get('.section-banner').last().contains('Recent exports');
 });
 
 then('I should see the message containing {string}', (msg) => {
-  cy.get('.ui-growl.ui-widget').contains(msg);
+  cy.get('.ui-toast.ui-widget').contains(msg);
 });
