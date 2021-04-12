@@ -14,6 +14,11 @@
       <p-button icon="fa fa-minus" label="Remove" (onClick)='removeSubGroup($event)' [disabled]="selectedSubGroup == null ">
       </p-button>
       &nbsp;
+      <p-button icon="fa fa-minus" label="Remove all" (onClick)='removeAll()' [disabled]="subGroups.length === 0">
+      </p-button>
+    </div>
+    <br>
+    <div class="small-font">
       <p-button label="Reset" (onClick)='reset()'>
       </p-button>
     </div>

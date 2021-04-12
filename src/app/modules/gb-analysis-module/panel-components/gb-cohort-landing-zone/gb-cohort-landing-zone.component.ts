@@ -148,13 +148,19 @@ export class GbCohortLandingZoneComponent implements OnInit {
     event.preventDefault()
   }
 
-  reset() {
+  removeAll() {
     this._subGroups = new Array()
     this.survivalService.subGroups = new Array()
     this._usedNames = new Set()
     this.clearName()
     this.constraintService.clearConstraint()
     this.queryService.clearAll()
+    this.selectedSubGroup = null
+  }
+
+  reset() {
+    this.clearName()
+    this.constraintService.clearConstraint()
   }
 
 }
