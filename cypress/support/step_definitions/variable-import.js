@@ -1,5 +1,5 @@
 given('I unselect all variables', () => {
-  cy.get('.loading-container').should('not.be.visible');
+  cy.get('.loading-container').should('not.exist');
   cy.get('.gb-variables-tree-container').contains('Public Studies ');
   cy.get('gb-variables').find('.checkAllText').contains('180 variables selected').should('be.visible');
   cy.wait(500);
@@ -7,7 +7,7 @@ given('I unselect all variables', () => {
   cy.wait(500);
   cy.get('gb-variables').find('.checkAllText').contains('0 variables selected').should('be.visible');
   cy.get('.gb-export-section-banner').contains('No data selected');
-})
+});
 
 when('I import variables with {string}', (fileName) => {
   const fileInputSelector = 'gb-variables input[type=file]';
