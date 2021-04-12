@@ -14,7 +14,7 @@ import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-ti
 import {TextOperator} from '../models/constraint-models/text-operator';
 import {NumericalOperator} from '../models/constraint-models/numerical-operator';
 import {ApiI2B2Modifier} from '../models/api-request-models/medco-node/api-i2b2-modifier';
-
+import {Concept} from '../models/constraint-models/concept';
 
 @Injectable()
 export class ConstraintMappingService {
@@ -110,8 +110,11 @@ export class ConstraintMappingService {
   }
 
   private generateI2b2ItemFromConcept(constraint: ConceptConstraint): ApiI2b2Item {
-    let item = new ApiI2b2Item();
+    if (!(constraint.concept instanceof Concept)) {
+      throw ErrorHelper.handleNewUserInputError(`Invalid query term "${constraint.concept}"`);
+    }
 
+    let item = new ApiI2b2Item();
     if (constraint.concept.encryptionDescriptor.encrypted) {
       // todo: children IDs implementation
       item.encrypted = true;
