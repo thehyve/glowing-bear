@@ -53,7 +53,9 @@ export class AppComponent implements OnInit {
     const bName = this.deviceService.browser.toLowerCase();
     const bVersion = parseInt(this.deviceService.browser_version, 10);
     if (!(bName.includes('chrome') && bVersion >= 80) &&
-      !(bName.includes('firefox') && bVersion >= 78)
+      !(bName.includes('firefox') && bVersion >= 78) &&
+      !(bName.includes('safari') && bVersion >= 13) &&
+      !(bName.includes('opera') && bVersion >= 67)
     ) {
       MessageHelper.alert('warn',
         `This app has not been tested with your browser (${this.deviceService.browser} ${this.deviceService.browser_version})`
