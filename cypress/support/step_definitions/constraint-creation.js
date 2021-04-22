@@ -1,6 +1,4 @@
 when("I use public study {string} as a constraint", (studyName) => {
-  // cy.contains('Public Studies ').parent().parent().children('.ui-tree-toggler').click();
-
   cy.toggleNode('Public Studies ');
   cy.drag(studyName).drop(0);
 
@@ -28,7 +26,7 @@ when("I select study Oracle_1000_Patient but exclude from categorical_10, Stomac
 
   cy.drag('categorical_10 ').drop(0);
 
-  cy.contains('Stomach').should('not.be.visible');
+  cy.contains('Stomach').should('not.exist');
   cy.get('.ui-multiselect-label').contains('9 items selected').should('be.visible');
 
   cy.get('.ui-multiselect-label').contains('9 items selected').click();
@@ -128,10 +126,7 @@ then("concept constraint is wrapped into combination box", () => {
 
 when("the root dimension and box descriptions for pedigree constraint are correct", () => {
   cy.get('.gb-constraint-dimension-dropdown').eq(0).contains('patient');
-  cy.get('.gb-constraint-container').eq(0).should('not.have.class', 'gb-constraint-dimension-dropdown');
-  cy.get('.gb-constraint-container').eq(0).children('gb-combination-constraint')
+  cy.get('.gb-constraint-container-root').eq(0).should('not.have.class', 'gb-constraint-dimension-dropdown');
+  cy.get('.gb-constraint-container-root').eq(0).children('gb-combination-constraint')
     .should('not.have.class', 'gb-constraint-dimension-dropdown');
 });
-
-
-

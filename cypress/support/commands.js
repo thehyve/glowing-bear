@@ -27,15 +27,21 @@
 import 'cypress-file-upload';
 
 Cypress.Commands.add('toggleNode', (nodeName, options = {}) => {
-  const node = cy.get('.ui-treenode').contains(nodeName).parent().parent();
-  node.scrollIntoView().should('be.visible');
-  node.children('.ui-tree-toggler').click('right');
+  const node = cy.get('.ui-treenode').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler');
+  node.scrollIntoView().should('be.visible').wait(100);
+  cy.get('.ui-treenode').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler')
+    .click();
 });
 
 Cypress.Commands.add('toggleVariableNode', (nodeName, options = {}) => {
-  const node = cy.get('.gb-variables-tree-container').contains(nodeName).parent().parent();
-  node.scrollIntoView().should('be.visible');
-  node.children('.ui-tree-toggler').click('right');
+  const node = cy.get('.gb-variables-tree-container').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler');
+  node.scrollIntoView().should('be.visible').wait(500);
+  cy.get('.gb-variables-tree-container').contains(nodeName)
+    .parent().parent().children('.ui-tree-toggler')
+    .click();
 });
 
 Cypress.Commands.add('toggleVisibleNode', (nodeName, options = {}) => {
