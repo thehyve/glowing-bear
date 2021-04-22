@@ -119,7 +119,7 @@ then('the cohort {string} is saved', (cohortName) => {
 });
 
 then('the cohort {string} is deleted', (cohortName) => {
-  cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).should('not.be.visible');
+  cy.get('.ng-trigger-tabContent').eq(1).contains(cohortName).should('not.exist');
 });
 
 then('the current cohort has biomaterial selected', () => {

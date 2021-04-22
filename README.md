@@ -1,9 +1,13 @@
-# Glowing Bear
+# ![](docs/images/glowingbear.png) Glowing Bear
 [![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 An [Angular]-based frontend application for clinical data selection and analysis 
 based on [TranSMART]. Visit https://glowingbear.app for more information.
+
+![](docs/images/Cohort-selection.png)
+
+## Development
 
 If you are interested in additional features, like visual analytics or using a custom format for data export, 
 see the [extentions](#extensions) section for details.
@@ -73,12 +77,12 @@ Here are settings you would need to modify for that:
 | `env.oidc-server-url` | URL of the identity provider that is used by the glowingbear and transmart. |
 | `env.oidc-client-id` | The OpenID Connect Client name. |
 
-WARNING: tests alter state. All saved queries are deleted.
+:warning: WARNING: tests alter state. All saved queries are deleted.
 
 
 
-### How to deploy
-We use Gradle to create bundles that are suitable for deployment:
+### How to publish
+We use Gradle to create bundles that are suitable for publication:
 
 ```bash
 # Create a tar bundle in build/distributions
@@ -88,7 +92,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.13.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.13/glowing-bear-2.0.13.tar).
+The latest release is [glowing-bear-2.0.14.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.14/glowing-bear-2.0.14.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -104,9 +108,45 @@ For creating a new release, increase the version in [package.json](package.json)
 Make sure the `publishing.repositories.maven.url` property
 in [build.gradle](build.gradle) is set to a release repository.
 
+### Dimension icons
+
+Glowing bear has a list of icons defined for basic subject dimensions:
+- patients
+- diagnoses
+- biosources
+- biomaterials
+- images
+
+If there is a new dimension, it will have a default icon. In order to customize this,
+for each new dimension that needs to be supported
+a new icon has to be added in [icon-helper file](src/app/utilities/icon-helper.ts).
+
+## Extensions
+
+All extensions require a proper configuration, as described in [configuration](#configuration) section.
+
+### Experimental analysis
+
+To use interactive visual analytics, you need to install [Fractalis back-end] and,
+either install [Fractalis front-end] from the repository, or use a [`npm` package](https://www.npmjs.com/package/fractalis).
+
+### Export service
+
+To be able to use additional export formats, install [transmart-packer].
 
 
-## Configuration
+
+## Installation
+
+For installation using *docker-compose*, see [glowing-bear-docker](https://github.com/thehyve/glowing-bear-docker).
+
+For installation using *Puppet*, follow the instructions on [puppet-transmart_core](https://github.com/thehyve/puppet-transmart_core).
+
+*Manual installation* is explained in the [installation instructions](docs/installation.md).
+
+
+
+## Configuring Glowing Bear
 
 The application can be configured by changing the `env.json` and `config.*.json`
 files in `app/config`.
@@ -115,19 +155,31 @@ Example `env.json` (allowed values are `default`, `dev` and `transmart`):
 
 ```json
 {
-  "env": "dev"
+  "env": "default"
 }
 ```
-Example `config.dev.json`:
+Example `config.default.json`:
 
 ```json
 {
-  "api-url": "https://transmart.example.com",
+  "api-url": "/api/transmart-api-server",
   "api-version": "v2",
-  "gb-backend-url": "https://gb-backend.example.com",
-  "tree-node-counts-update": true,
-  "autosave-subject-sets": false,
-  "oidc-server-url": "https://keycloak.example.com/auth/realms/{realm}/protocol/openid-connect"
+  "gb-backend-url": "/api/gb-backend",
+  "doc-url": "https://glowingbear.app",
+  "enable-fractalis-analysis": false,
+  "autosave-subject-sets": true,
+  "show-observation-counts": false,
+  "instant-counts-update": false,
+  "include-data-table": false,
+  "include-cohort-subscription": false,
+  "oidc-server-url": "${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect",
+  "oidc-client-id": "${KEYCLOAK_CLIENT_ID}",
+  "export-mode": {
+    "name": "packer",
+    "data-view": "basic_export",
+    "export-url": "/api/transmart-packer"
+  },
+  "check-server-status": true
 }
 ```
 
@@ -152,28 +204,6 @@ Supported properties in the `config.*.json` files:
 | `check-server-status` | `false` | Enable checking server status before requesting data.
 | `deny-access-to-users-without-role` | `false` | Deny access to users without any roles assigned to them. The corresponding configuration needs to be set for the backends.
 
-
-### Dimension icons
-
-Glowing bear has a list of icons defined for basic subject dimensions:
-- patients
-- diagnoses
-- biosources
-- biomaterials
-- images
-
-If there is a new dimension, it will have a default icon. In order to customize this, 
-for each new dimension that needs to be supported
-a new icon has to be added in [icon-helper file](src/app/utilities/icon-helper.ts).
-
-## Extensions
-
-To use interactive visual analytics, you need to install [Fractalis back-end] and, 
-either install [Fractalis front-end] from the repository, or use a [`npm` package](https://www.npmjs.com/package/fractalis). 
-
-To be able to use additional export formats, install [transmart-packer].
-
-All extensions require a proper configuration, as described in [configuration](#configuration) section.
 
 
 ## License

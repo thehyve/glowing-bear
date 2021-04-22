@@ -18,7 +18,7 @@ then('A cross table should show up', () => {
 then('Drag CATEGORICAL_VALUES:Demography:Race from tree view to row zone', () => {
   // collapse cohorts panel
   cy.get('.ui-accordion-header').contains('Cohorts').click();
-  cy.get('gb-variables').find('loading-container').should('not.be.visible');
+  cy.get('gb-variables').find('loading-container').should('not.exist');
   cy.toggleVariableNode('Public Studies ');
   cy.toggleVariableNode('CATEGORICAL_VALUES ');
   cy.toggleVariableNode('Demography');
@@ -33,7 +33,7 @@ then('Cross table has Latino and Caucasian labels', () => {
 then('Drag Oracle_1000_Patient:Categorical_locations:categorical_12 from tree view to column zone', () => {
   // collapse cohorts panel
   cy.get('.ui-accordion-header').contains('Cohorts').click();
-  cy.get('gb-variables').find('loading-container').should('not.be.visible');
+  cy.get('gb-variables').find('loading-container').should('not.exist');
   cy.toggleVariableNode('Public Studies ');
   cy.toggleVariableNode('Oracle_1000_Patient ');
   cy.toggleVariableNode('Categorical_locations');
