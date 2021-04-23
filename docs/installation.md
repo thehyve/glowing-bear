@@ -252,7 +252,7 @@ Installation steps for TranSMART API server:
 
 4. Download the application in the `/home/transmart` directory:
    ```shell
-   TRANSMART_VERSION=17.2.8
+   TRANSMART_VERSION=17.2.9
    curl -f -L -o "/home/transmart/transmart-api-server-${TRANSMART_VERSION}.war" \
      "https://repo.thehyve.nl/service/local/repositories/releases/content/org/transmartproject/transmart-api-server/${TRANSMART_VERSION}/transmart-api-server-${TRANSMART_VERSION}.war"
     ```
@@ -316,7 +316,7 @@ Installation steps for TranSMART API server:
    [Service]
    User=transmart
    WorkingDirectory=/home/transmart
-   ExecStart=java -jar -server -Xms8g -Xmx8g -Djava.awt.headless=true -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true  -Dserver.port=8081 -Djava.security.egd=file:///dev/urandom -Dspring.config.location=/home/transmart/transmart-api-server.config.yml /home/transmart/transmart-api-server-17.2.8.war
+   ExecStart=java -jar -server -Xms8g -Xmx8g -Djava.awt.headless=true -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true  -Dserver.port=8081 -Djava.security.egd=file:///dev/urandom -Dspring.config.location=/home/transmart/transmart-api-server.config.yml /home/transmart/transmart-api-server-17.2.9.war
    StandardOutput=journal+console
    Restart=always
 
@@ -519,7 +519,7 @@ Glowing Bear requires:
 
 1. Download the application and extract the contents in the `/var/www/glowingbear` directory:
    ```shell
-   GLOWING_BEAR_VERSION=2.0.13
+   GLOWING_BEAR_VERSION=2.0.14
    curl -f -L -o "glowing-bear-${GLOWING_BEAR_VERSION}.tar" \
      "https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/${GLOWING_BEAR_VERSION}/glowing-bear-${GLOWING_BEAR_VERSION}.tar"
    sudo mkdir -p /var/www/glowingbear
@@ -533,7 +533,7 @@ Glowing Bear requires:
    }
    ```
 
-3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.13/app/config/config.default.json` (overwrites the default config file in the `tar`):
+3. Edit configuration file `/var/www/glowingbear/glowing-bear-2.0.14/app/config/config.default.json` (overwrites the default config file in the `tar`):
    ```json
    {
      "oidc-server-url": "CHANGE ME",
@@ -574,7 +574,7 @@ Glowing Bear requires:
      error_log             /var/log/nginx/glowingbear.example.com:443.error.log;
 
      location / {
-       root /var/www/glowingbear/glowing-bear-2.0.13;
+       root /var/www/glowingbear/glowing-bear-2.0.14;
        index index.html index.htm;
        try_files $uri $uri/ /index.html =404;
      }
