@@ -187,7 +187,7 @@ curl -f --no-progress-meter \
   -d "password=${SYSTEM_PASSWORD}" \
   -d 'grant_type=password' \
   -d 'scope=offline_access' \
-  "${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token' | jq -r '.refresh_token'
+  "${KEYCLOAK_SERVER_URL}/realms/${KEYCLOAK_REALM}/protocol/openid-connect/token" | jq -r '.refresh_token'
 ```
 
 The value of the `refresh_token` field in the response is the offline token.
