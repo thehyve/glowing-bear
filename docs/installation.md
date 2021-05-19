@@ -438,7 +438,7 @@ Installation steps for the Transmart Packer services:
    adduser --system packer
    ```
 
-2. Create a Python 3 virtual environment in `/home/gb/venv`:
+2. Create a Python 3 virtual environment in `/home/packer/venv`:
    ```shell
    python3 -m venv venv
    ```
