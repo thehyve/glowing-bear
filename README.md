@@ -1,5 +1,5 @@
 # ![](docs/images/glowingbear.png) Glowing Bear
-[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![Build Status](https://travis-ci.com/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.com/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 An [Angular]-based frontend application for clinical data selection and analysis 
