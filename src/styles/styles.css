@@ -41,6 +41,10 @@ textarea {
   font-family: 'Roboto', sans-serif;
 }
 
+button {
+  cursor: pointer;
+}
+
 .loading-message {
   background-color: var(--gb-loading-bg-color);
   color: white;
@@ -421,6 +425,17 @@ gb-tree-nodes .gb-highlight-treenode {
  * should be left empty
  */
 gb-tree-nodes .gb-is-not-leaf {
+}
+
+gb-tree-nodes .ui-treenode-content {
+  cursor: pointer;
+  padding: 4px 0px;
+  border-radius: 2px;
+  transition: 0.15s ease-in-out background-color;
+}
+
+gb-tree-nodes .ui-treenode-content:hover {
+  background-color: rgba(51, 156, 144, 0.2);
 }
 
 /*

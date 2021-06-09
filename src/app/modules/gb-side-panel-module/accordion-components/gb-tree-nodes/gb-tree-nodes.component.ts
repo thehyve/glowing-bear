@@ -112,6 +112,11 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       let metadata = dataObject.metadata;
       let treeNodeElm = elm.querySelector('li.ui-treenode');
       let treeNodeElmIcon = elm.querySelector('li.ui-treenode .ui-treenode-icon');
+      let treeNodeToggler = elm.querySelector('li.ui-treenode .ui-tree-toggler');
+      let treeNodeContent = elm.querySelector('li.ui-treenode .ui-treenode-content');
+      let onClickTreeNodeContent = (function() {
+        treeNodeToggler.click();
+      }).bind(this);
       let handleDragstart = (function (event) {
         event.stopPropagation();
         dataObject.dropMode = DropMode.TreeNode;
@@ -135,6 +140,8 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
         treeNodeElmIcon.addEventListener('mouseleave', hideInfo);
       }
       */
+
+      treeNodeContent.addEventListener('click', onClickTreeNodeContent, true);
 
       // if the data object type is known, it is considered queryable
       if (dataObject.nodeType !== TreeNodeType.UNKNOWN) {
