@@ -37,7 +37,7 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     let dimensions = [];
     for (let dim of subjectDimensions) {
       let ctype: SelectItem = {
-        label: dim,
+        label: dim === 'patient' ? 'Subject' : dim,
         value: dim
       };
       dimensions.push(ctype);
