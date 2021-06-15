@@ -271,23 +271,8 @@ Installation steps for TranSMART API server:
      logSql: false
      formatql: false
      properties:
-       jmxEnabled: true
-       initialSize: 5
-       maxActive: 50
-       minIdle: 5
-       maxIdle: 25
-       maxWait: 10000
-       maxAge: 600000
-       timeBetweenEvictionRunsMillis: 5000
-       minEvictableIdleTimeMillis: 60000
-       validationQuery: select 1
-       validationQueryTimeout: 3
-       validationInterval: 15000
-       testOnBorrow: true
-       testWhileIdle: true
-       testOnReturn: false
-       jdbcInterceptors: ConnectionState
-       defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+       minimumIdle: 15
+       maximumPoolSize: 50
 
    keycloak:
      auth-server-url: https://keycloak.example.com  # CHANGE ME
