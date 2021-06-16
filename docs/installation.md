@@ -252,7 +252,7 @@ Installation steps for TranSMART API server:
 
 4. Download the application in the `/home/transmart` directory:
    ```shell
-   TRANSMART_VERSION=17.2.10
+   TRANSMART_VERSION=17.2.11
    curl -f -L -o "/home/transmart/transmart-api-server-${TRANSMART_VERSION}.war" \
      "https://repo.thehyve.nl/service/local/repositories/releases/content/org/transmartproject/transmart-api-server/${TRANSMART_VERSION}/transmart-api-server-${TRANSMART_VERSION}.war"
     ```
@@ -301,7 +301,7 @@ Installation steps for TranSMART API server:
    [Service]
    User=transmart
    WorkingDirectory=/home/transmart
-   ExecStart=java -jar -server -Xms8g -Xmx8g -Djava.awt.headless=true -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true  -Dserver.port=8081 -Djava.security.egd=file:///dev/urandom -Dspring.config.location=/home/transmart/transmart-api-server.config.yml /home/transmart/transmart-api-server-17.2.10.war
+   ExecStart=java -jar -server -Xms8g -Xmx8g -Djava.awt.headless=true -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true -Dmail.mime.decodeparameters=true  -Dserver.port=8081 -Djava.security.egd=file:///dev/urandom -Dspring.config.location=/home/transmart/transmart-api-server.config.yml /home/transmart/transmart-api-server-17.2.11.war
    StandardOutput=journal+console
    Restart=always
 
