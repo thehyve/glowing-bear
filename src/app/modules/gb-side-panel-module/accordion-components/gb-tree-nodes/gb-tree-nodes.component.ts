@@ -115,7 +115,9 @@ export class GbTreeNodesComponent implements AfterViewInit, AfterViewChecked {
       let treeNodeToggler = elm.querySelector('li.ui-treenode .ui-tree-toggler');
       let treeNodeContent = elm.querySelector('li.ui-treenode .ui-treenode-content');
       let onClickTreeNodeContent = (function() {
-        treeNodeToggler.click();
+        if (treeNodeToggler) {
+          treeNodeToggler.click();
+        }
       }).bind(this);
       let handleDragstart = (function (event) {
         event.stopPropagation();
