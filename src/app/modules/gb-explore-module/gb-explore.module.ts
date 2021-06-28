@@ -25,6 +25,8 @@ import {PanelModule} from 'primeng';
 import {MultiSelectModule} from 'primeng';
 import {GbSelectionModule} from './gb-selection-component/gb-selection.module';
 
+import {TooltipModule} from 'primeng/tooltip';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -37,7 +39,8 @@ import {GbSelectionModule} from './gb-selection-component/gb-selection.module';
     CalendarModule,
     PanelModule,
     MultiSelectModule,
-    GbSelectionModule
+    GbSelectionModule,
+    TooltipModule,
   ],
   exports: [
     RouterModule,

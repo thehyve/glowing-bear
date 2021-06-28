@@ -54,6 +54,7 @@ export class ExploreSearchService {
           treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
           treeNode.conceptCode = treeNodeObj['code'];
           treeNode.metadata = treeNodeObj['metadata'];
+          treeNode.comment = treeNodeObj['comment'];
           // leaf in the database is not a leaf in the tree, as modifiers
           // are displayed as children
           treeNode.leaf = false;
@@ -110,6 +111,7 @@ export class ExploreSearchService {
           treeNode.metadata = treeNodeObj['metadata']
           treeNode.leaf = false;
           treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
+          treeNode.comment = treeNodeObj['comment'];
 
           treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
           treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);

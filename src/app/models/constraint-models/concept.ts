@@ -21,6 +21,8 @@ export class Concept {
   private _code: string;
   private _name: string;
   private _fullName: string;
+  private _comment: string;
+
   private _encryptionDescriptor?: MedcoEncryptionDescriptor;
   private _modifier?: Modifier;
   private _unit?: string;
@@ -102,6 +104,13 @@ export class Concept {
 
   set code(value: string) {
     this._code = value;
+  }
+
+  get comment(): string {
+    return this._comment;
+  }
+  set comment(value: string) {
+    this._comment = value;
   }
 
   get name(): string {
