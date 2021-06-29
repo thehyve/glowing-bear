@@ -7,9 +7,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Component, Inject, Input, OnInit } from "@angular/core";
-import { ValueType } from "src/app/models/constraint-models/value-type";
-import { GbConceptConstraintComponent } from "../gb-concept-constraint.component";
+import { Component, Inject, Input, OnInit } from '@angular/core';
+import { ValueType } from 'src/app/models/constraint-models/value-type';
+import { GbConceptConstraintComponent } from '../gb-concept-constraint.component';
 
 @Component({
   selector: 'gb-tooltip',
