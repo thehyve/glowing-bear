@@ -14,7 +14,7 @@ import { FormatHelper } from '../../utilities/format-helper';
 
 export class CohortConstraint extends Constraint {
   private _cohort: Cohort;
-  
+
   constructor() {
     super();
     this.textRepresentation = 'Cohort';

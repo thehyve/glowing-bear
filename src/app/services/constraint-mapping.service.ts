@@ -92,7 +92,9 @@ export class ConstraintMappingService {
               break;
 
             case 'GenomicAnnotationConstraint':
-              panel.conceptItems.push(...this.generateI2b2ItemsFromGenomicAnnotation(combConstraint.children[i] as GenomicAnnotationConstraint));
+              panel.conceptItems.push(
+                ...this.generateI2b2ItemsFromGenomicAnnotation(combConstraint.children[i] as GenomicAnnotationConstraint)
+              );
               break;
 
             case 'CohortConstraint':
