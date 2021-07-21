@@ -24,6 +24,7 @@ import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {TextOperator} from '../../../../models/constraint-models/text-operator';
 import {NumericalOperator} from '../../../../models/constraint-models/numerical-operator';
+import { CohortConstraint } from 'src/app/models/constraint-models/cohort-constraint';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -127,35 +128,40 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   initializeConstraints(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
 
-      let constraint = (<ConceptConstraint>this.constraint);
-      // Initialize aggregate values
-      this.isMinEqual = true;
-      this.isMaxEqual = true;
-      this.numericalOperatorState = null;
-      if (constraint.concept.isText) {
-        constraint.applyTextOperator = true;
-      }
+      let constraint = this.constraint instanceof ConceptConstraint ?
+        this.constraint as ConceptConstraint :
+        this.constraint as CohortConstraint;
 
-
-      // if constraints comes from restoration
-
-      if (constraint.applyTextOperator) {
-        if (constraint.textOperator) {
-          this.textOperatorState = constraint.textOperator
-          this.textValue = constraint.textOperatorValue
+      if (constraint instanceof ConceptConstraint) {
+        // Initialize aggregate values
+        this.isMinEqual = true;
+        this.isMaxEqual = true;
+        this.numericalOperatorState = null;
+        if (constraint.concept.isText) {
+          constraint.applyTextOperator = true;
         }
-      }
 
-      if (constraint.applyNumericalOperator) {
-        if (constraint.numericalOperator) {
-          this.numericalOperatorState = constraint.numericalOperator
-          if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
-            this.minVal = constraint.minValue
-            this.maxVal = constraint.maxValue
-          } else {
-            this.equalVal = constraint.numValue
+
+        // if constraints comes from restoration
+
+        if (constraint.applyTextOperator) {
+          if (constraint.textOperator) {
+            this.textOperatorState = constraint.textOperator
+            this.textValue = constraint.textOperatorValue
           }
+        }
 
+        if (constraint.applyNumericalOperator) {
+          if (constraint.numericalOperator) {
+            this.numericalOperatorState = constraint.numericalOperator
+            if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
+              this.minVal = constraint.minValue
+              this.maxVal = constraint.maxValue
+            } else {
+              this.equalVal = constraint.numValue
+            }
+
+          }
         }
       }
 
@@ -166,7 +172,8 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
       this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
-      if (constraint.concept) {
+
+      if (constraint instanceof ConceptConstraint && constraint.concept) {
         // Construct a new constraint that only has the concept as sub constraint
         // (We don't want to apply value and date constraints when getting aggregates)
         let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint(constraint.treeNode);
@@ -521,6 +528,10 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
 
   get constraintConcept(): Concept {
     return (<ConceptConstraint>this.constraint).concept;
+  }
+
+  isCohort(): boolean {
+    return !!(<CohortConstraint>this.constraint).cohort;
   }
 
   isBetween() {

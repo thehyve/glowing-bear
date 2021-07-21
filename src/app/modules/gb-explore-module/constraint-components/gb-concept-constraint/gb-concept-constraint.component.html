@@ -5,8 +5,10 @@
       <p-checkbox *ngIf="(depth === 1) && queryTimingSameInstance" [(ngModel)]="panelTimingSameInstance" [binary]="true"></p-checkbox>
     </div>
 
-    <label>Ontology concept: </label>
+    <label *ngIf="isCohort()">Cohort: <b>{{this.constraint.cohort.name}}</b></label>
+    <label *ngIf="!isCohort()">Ontology concept: </label>
     <p-autoComplete #autoComplete
+                    *ngIf="!isCohort()"
                     [(ngModel)]="selectedConcept"
                     [suggestions]="searchResults"
                     field="label"
@@ -23,7 +25,7 @@
 
 
 <!-- if the concept is NUMERIC -->
-<div *ngIf="constraintConcept.type === ValueType.NUMERICAL" class="form-group gb-constraint-child-container" width="auto">
+<div *ngIf="!isCohort() && constraintConcept.type === ValueType.NUMERICAL" class="form-group gb-constraint-child-container" width="auto">
   <span>with value&nbsp;</span>
   <p-dropdown [(ngModel)]="numericalOperatorState" [options]="numericalOperation" dropdownIcon="pi pi-caret-down white-color" (onChange)="changeNumericalOperator($event)"></p-dropdown>
   <span>&nbsp;</span>
@@ -44,7 +46,7 @@
   </div>
 </div>
 <!-- if the concept is TEXT -->
-<div *ngIf="constraintConcept.type === ValueType.TEXT" class="form-group gb-constraint-child-container" width="auto">
+<div *ngIf="!isCohort() && constraintConcept.type === ValueType.TEXT" class="form-group gb-constraint-child-container" width="auto">
   <span>with value&nbsp;</span>
   <p-dropdown [(ngModel)]="textOperatorState" [options]="textOperation" dropdownIcon="pi pi-caret-down white-color" (onChange)="changeTextOperator($event)"></p-dropdown>
   <span>&nbsp;&nbsp;&nbsp;</span>
@@ -56,14 +58,14 @@
 </div>
 
   <!-- if the concept is CATEGORICAL -->
-  <div *ngIf="constraintConcept.type === ValueType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
+  <div *ngIf="!isCohort() && constraintConcept.type === ValueType.CATEGORICAL" class="v-align-center form-inline gb-constraint-child-container">
     <span>with values</span>
     <p-multiSelect [options]="suggestedCategories" [(ngModel)]="selectedCategories"
                    [panelStyle]="{minWidth:'12em'}" (onChange)="updateConceptValues()"></p-multiSelect>
   </div>
 
   <!--  if the concept is DATE -->
-  <div *ngIf="constraintConcept.type === ValueType.DATE" class="form-inline gb-constraint-child-container">
+  <div *ngIf="!isCohort() && constraintConcept.type === ValueType.DATE" class="form-inline gb-constraint-child-container">
     <span>with date</span>
     <button type="button" class="btn btn-outline-secondary"
             (click)="switchValDateOperatorState()" [ngSwitch]="valDateOperatorState">

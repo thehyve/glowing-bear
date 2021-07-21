@@ -68,12 +68,12 @@ export class ConstraintMappingService {
       case 'ConceptConstraint':
         const conceptConstraint = constraint as ConceptConstraint;
         if (conceptConstraint.concept) {
-          panel.items.push(this.generateI2b2ItemFromConcept(conceptConstraint));
+          panel.conceptItems.push(this.generateI2b2ItemFromConcept(conceptConstraint));
         }
         break;
 
       case 'GenomicAnnotationConstraint':
-        panel.items.push(...this.generateI2b2ItemsFromGenomicAnnotation(constraint as GenomicAnnotationConstraint));
+        panel.conceptItems.push(...this.generateI2b2ItemsFromGenomicAnnotation(constraint as GenomicAnnotationConstraint));
         break;
 
       case 'CombinationConstraint':
@@ -87,13 +87,18 @@ export class ConstraintMappingService {
             case 'ConceptConstraint':
               const childConceptConstraint = combConstraint.children[i] as ConceptConstraint;
               if (childConceptConstraint.concept) {
-                panel.items.push(this.generateI2b2ItemFromConcept(childConceptConstraint));
+                panel.conceptItems.push(this.generateI2b2ItemFromConcept(childConceptConstraint));
               }
               break;
 
             case 'GenomicAnnotationConstraint':
-              panel.items.push(...this.generateI2b2ItemsFromGenomicAnnotation(combConstraint.children[i] as GenomicAnnotationConstraint));
+              panel.conceptItems.push(...this.generateI2b2ItemsFromGenomicAnnotation(combConstraint.children[i] as GenomicAnnotationConstraint));
               break;
+
+            case 'CohortConstraint':
+              panel.cohortItems.push(combConstraint.children[i].textRepresentation);
+              break;
+
 
             default:
               throw ErrorHelper.handleNewError(`unexpected constraint type (${combConstraint.children[i].className})`)
@@ -105,7 +110,7 @@ export class ConstraintMappingService {
         throw ErrorHelper.handleNewError(`illegal constraint (${constraint.className})`);
     }
 
-    console.log(`Generated i2b2 panel with ${panel.items.length} items`, panel);
+    console.log(`Generated i2b2 panel with ${panel.conceptItems.length} items`, panel);
     return panel;
   }
 
