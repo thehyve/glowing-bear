@@ -11,7 +11,6 @@ import {Component, OnInit} from '@angular/core';
 import {GbConstraintComponent} from '../gb-constraint/gb-constraint.component';
 import {Cohort} from '../../../../models/constraint-models/cohort';
 import {CohortConstraint} from '../../../../models/constraint-models/cohort-constraint';
-import {SelectItem} from 'primeng';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 
@@ -24,20 +23,6 @@ export class GbCohortConstraintComponent extends GbConstraintComponent implement
   ngOnInit() {
   }
 
-  generateCategoricalValueItems(valueCounts: Map<string, number>, targetValues: string[]): SelectItem[] {
-    let items = [];
-    targetValues.forEach((target) => {
-      if (valueCounts.has(target)) {
-        const count = valueCounts.get(target);
-        items.push({
-          label: target + ' (' + count + ')',
-          value: target
-        });
-      }
-    });
-    return items;
-  }
-
   /*
    * -------------------- getters and setters --------------------
    */
@@ -48,14 +33,6 @@ export class GbCohortConstraintComponent extends GbConstraintComponent implement
   set selectedCohort(value: Cohort) {
     (<CohortConstraint>this.constraint).cohort = value;
     this.update();
-  }
-
-  /*
-   * -------------------- state checkers --------------------
-   */
-
-  get constraintCohort(): Cohort {
-    return (<CohortConstraint>this.constraint).cohort;
   }
 
   onDrop(event: DragEvent) {
