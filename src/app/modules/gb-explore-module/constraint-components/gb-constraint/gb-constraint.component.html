@@ -9,8 +9,10 @@
 
   <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
                              [constraint]="constraint"></gb-combination-constraint>
-  <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' || constraint.className === 'CohortConstraint' "
+  <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "
                          [constraint]="constraint"></gb-concept-constraint>
   <gb-genomic-annotation-constraint *ngIf="constraint.className === 'GenomicAnnotationConstraint' "
                                     [constraint]="constraint"></gb-genomic-annotation-constraint>
+  <gb-cohort-constraint *ngIf="constraint.className === 'CohortConstraint' "
+                                    [constraint]="constraint"></gb-cohort-constraint>
 </div>

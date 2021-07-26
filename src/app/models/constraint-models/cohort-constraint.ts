@@ -9,7 +9,7 @@
  */
 
 import { Constraint } from './constraint';
-import { Cohort } from './../../models/cohort-models/cohort';
+import { Cohort } from './../../models/constraint-models/cohort';
 import { FormatHelper } from '../../utilities/format-helper';
 
 export class CohortConstraint extends Constraint {
@@ -18,6 +18,14 @@ export class CohortConstraint extends Constraint {
   constructor() {
     super();
     this.textRepresentation = 'Cohort';
+  }
+
+  clone(): CohortConstraint {
+    let res = new CohortConstraint();
+    res.textRepresentation = this.textRepresentation;
+    res.parentConstraint = this.parentConstraint;
+
+    return res;
   }
 
   get className(): string {

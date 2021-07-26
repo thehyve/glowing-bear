@@ -24,7 +24,6 @@ import {NumericalAggregate} from '../../../../models/aggregate-models/numerical-
 import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {TextOperator} from '../../../../models/constraint-models/text-operator';
 import {NumericalOperator} from '../../../../models/constraint-models/numerical-operator';
-import { CohortConstraint } from 'src/app/models/constraint-models/cohort-constraint';
 
 @Component({
   selector: 'gb-concept-constraint',
@@ -128,40 +127,36 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   initializeConstraints(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
 
-      let constraint = this.constraint instanceof ConceptConstraint ?
-        this.constraint as ConceptConstraint :
-        this.constraint as CohortConstraint;
+      let constraint = (<ConceptConstraint>this.constraint);
 
-      if (constraint instanceof ConceptConstraint) {
-        // Initialize aggregate values
-        this.isMinEqual = true;
-        this.isMaxEqual = true;
-        this.numericalOperatorState = null;
-        if (constraint.concept.isText) {
-          constraint.applyTextOperator = true;
+      // Initialize aggregate values
+      this.isMinEqual = true;
+      this.isMaxEqual = true;
+      this.numericalOperatorState = null;
+      if (constraint.concept.isText) {
+        constraint.applyTextOperator = true;
+      }
+
+
+      // if constraints comes from restoration
+
+      if (constraint.applyTextOperator) {
+        if (constraint.textOperator) {
+          this.textOperatorState = constraint.textOperator
+          this.textValue = constraint.textOperatorValue
         }
+      }
 
-
-        // if constraints comes from restoration
-
-        if (constraint.applyTextOperator) {
-          if (constraint.textOperator) {
-            this.textOperatorState = constraint.textOperator
-            this.textValue = constraint.textOperatorValue
+      if (constraint.applyNumericalOperator) {
+        if (constraint.numericalOperator) {
+          this.numericalOperatorState = constraint.numericalOperator
+          if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
+            this.minVal = constraint.minValue
+            this.maxVal = constraint.maxValue
+          } else {
+            this.equalVal = constraint.numValue
           }
-        }
 
-        if (constraint.applyNumericalOperator) {
-          if (constraint.numericalOperator) {
-            this.numericalOperatorState = constraint.numericalOperator
-            if (this.numericalOperatorState === NumericalOperator.BETWEEN) {
-              this.minVal = constraint.minValue
-              this.maxVal = constraint.maxValue
-            } else {
-              this.equalVal = constraint.numValue
-            }
-
-          }
         }
       }
 
@@ -173,56 +168,54 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
       this._obsDateOperatorState = DateOperatorState.BETWEEN;
 
 
-      if (constraint instanceof ConceptConstraint && constraint.concept) {
-        // Construct a new constraint that only has the concept as sub constraint
-        // (We don't want to apply value and date constraints when getting aggregates)
-        let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint(constraint.treeNode);
-        conceptOnlyConstraint.concept = constraint.concept;
+      // Construct a new constraint that only has the concept as sub constraint
+      // (We don't want to apply value and date constraints when getting aggregates)
+      let conceptOnlyConstraint: ConceptConstraint = new ConceptConstraint(constraint.treeNode);
+      conceptOnlyConstraint.concept = constraint.concept;
 
-        // todo: this initializes the aggregate values, not supported for now
-        // this.resourceService.getAggregate(conceptOnlyConstraint)
-        //   .subscribe((responseAggregate: Aggregate) => {
-        //     console.log(`Processing aggregate of ${constraint.concept.name}, type ${constraint.concept.type.toString()}`);
-        //     if (!responseAggregate) {
-        //       return;
-        //     }
-        //
-        //     constraint.concept.aggregate = responseAggregate;
-        //     switch (constraint.concept.type) {
-        //       case ValueType.NUMERICAL:
-        //         this.handleNumericAggregate(responseAggregate);
-        //         break;
-        //       case ValueType.CATEGORICAL:
-        //         this.handleCategoricalAggregate(responseAggregate);
-        //         break;
-        //       case ValueType.DATE:
-        //         this.handleDateAggregate(responseAggregate);
-        //         break;
-        //       default:
-        //         console.log(`Concept type ${constraint.concept.type.toString()} does not need processing`);
-        //         break;
-        //     }
-        //     resolve(true);
-        //   },
-        //     (err: HttpErrorResponse) => {
-        //       ErrorHelper.handleError(err);
-        //       reject(err.message);
-        //     }
-        //   );
+      // todo: this initializes the aggregate values, not supported for now
+      // this.resourceService.getAggregate(conceptOnlyConstraint)
+      //   .subscribe((responseAggregate: Aggregate) => {
+      //     console.log(`Processing aggregate of ${constraint.concept.name}, type ${constraint.concept.type.toString()}`);
+      //     if (!responseAggregate) {
+      //       return;
+      //     }
+      //
+      //     constraint.concept.aggregate = responseAggregate;
+      //     switch (constraint.concept.type) {
+      //       case ValueType.NUMERICAL:
+      //         this.handleNumericAggregate(responseAggregate);
+      //         break;
+      //       case ValueType.CATEGORICAL:
+      //         this.handleCategoricalAggregate(responseAggregate);
+      //         break;
+      //       case ValueType.DATE:
+      //         this.handleDateAggregate(responseAggregate);
+      //         break;
+      //       default:
+      //         console.log(`Concept type ${constraint.concept.type.toString()} does not need processing`);
+      //         break;
+      //     }
+      //     resolve(true);
+      //   },
+      //     (err: HttpErrorResponse) => {
+      //       ErrorHelper.handleError(err);
+      //       reject(err.message);
+      //     }
+      //   );
 
-        // Initialize the dates from the time constraint
-        // Because the date picker represents the date/time in the local timezone,
-        // we need to correct the date that is actually used in the constraint.
-        this.applyObsDateConstraint = constraint.applyObsDateConstraint;
-        let date1 = constraint.obsDateConstraint.date1;
-        this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
-        let date2 = constraint.obsDateConstraint.date2;
-        this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
-        this.obsDateOperatorState = constraint.obsDateConstraint.dateOperator;
+      // Initialize the dates from the time constraint
+      // Because the date picker represents the date/time in the local timezone,
+      // we need to correct the date that is actually used in the constraint.
+      this.applyObsDateConstraint = constraint.applyObsDateConstraint;
+      let date1 = constraint.obsDateConstraint.date1;
+      this.obsDate1 = new Date(date1.getTime() + 60000 * date1.getTimezoneOffset());
+      let date2 = constraint.obsDateConstraint.date2;
+      this.obsDate2 = new Date(date2.getTime() + 60000 * date2.getTimezoneOffset());
+      this.obsDateOperatorState = constraint.obsDateConstraint.dateOperator;
 
-        // Initialize flags
-        this.showMoreOptions = this.applyObsDateConstraint;
-      }
+      // Initialize flags
+      this.showMoreOptions = this.applyObsDateConstraint;
     });
   }
 
@@ -530,10 +523,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
     return (<ConceptConstraint>this.constraint).concept;
   }
 
-  isCohort(): boolean {
-    return !!(<CohortConstraint>this.constraint).cohort;
-  }
-
   isBetween() {
     return this.numericalOperatorState === NumericalOperator.BETWEEN;
   }
@@ -598,6 +587,7 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   onDrop(event: DragEvent) {
+    console.log("onDrop concept");
     event.stopPropagation();
 
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;

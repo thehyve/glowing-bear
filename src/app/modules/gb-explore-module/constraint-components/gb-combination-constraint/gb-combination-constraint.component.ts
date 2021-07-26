@@ -16,6 +16,7 @@ import { TreeNode } from '../../../../models/tree-models/tree-node';
 import { UIHelper } from '../../../../utilities/ui-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
 import { Cohort } from 'src/app/models/cohort-models/cohort';
+import { Cohort as ConstraintCohort } from 'src/app/models/constraint-models/cohort';
 import { CohortConstraint } from 'src/app/models/constraint-models/cohort-constraint';
 
 @Component({
@@ -82,8 +83,11 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
     let selectedCohort: Cohort = this.cohortService.selectedCohort;
 
     if (selectedCohort) {
+      const constraintCohort = new ConstraintCohort();
+      constraintCohort.name = this.cohortService.selectedCohort.name;
+
       const cohortConstraint = new CohortConstraint();
-      cohortConstraint.cohort = this.cohortService.selectedCohort;
+      cohortConstraint.cohort = constraintCohort;
       cohortConstraint.textRepresentation = cohortConstraint.cohort.name;
       this.droppedConstraint = cohortConstraint;
     } else {
