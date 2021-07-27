@@ -10,8 +10,7 @@ import {ApiQueryDefinition} from '../../api-request-models/medco-node/api-query-
 
 export class ApiCohortResponse {
   cohortName: string;
-  queryId: number;
-  patientSetID: number;
+  queryID: number;
   creationDate: string;
   updateDate: string;
   queryDefinition?: ApiQueryDefinition;
