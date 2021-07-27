@@ -587,7 +587,6 @@ export class GbConceptConstraintComponent extends GbConstraintComponent implemen
   }
 
   onDrop(event: DragEvent) {
-    console.log("onDrop concept");
     event.stopPropagation();
 
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
