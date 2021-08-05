@@ -44,9 +44,9 @@ export class ConstraintReverseMappingService {
 
 
 
-    if (panels.length === 1 && panels[0].items.length === 1) {
+    if (panels.length === 1 && panels[0].conceptItems.length === 1) {
 
-      return this.mapItem(panels[0].items[0]).pipe(map(constraint => {
+      return this.mapItem(panels[0].conceptItems[0]).pipe(map(constraint => {
         constraint.panelTimingSameInstance = panels[0].panelTiming === ApiI2b2Timing.sameInstanceNum
         return constraint
       }))
@@ -75,20 +75,20 @@ export class ConstraintReverseMappingService {
    * @param target
    */
   private mapPanel(panel: ApiI2b2Panel): Observable<Constraint> {
-    for (const item of panel.items) {
+    for (const item of panel.conceptItems) {
       if (item.encrypted) {
         // restoration of encrypted concept is not supported
         return null
       }
     }
     let sameInstance = panel.panelTiming === ApiI2b2Timing.sameInstanceNum
-    if (panel.items.length === 1) {
-      return this.mapItem(panel.items[0]).pipe(map(constraint => {
+    if (panel.conceptItems.length === 1) {
+      return this.mapItem(panel.conceptItems[0]).pipe(map(constraint => {
         constraint.panelTimingSameInstance = sameInstance
         return constraint
       }))
     } else {
-      return forkJoin(panel.items.map(item => this.mapItem(item))).pipe(map(constraints => {
+      return forkJoin(panel.conceptItems.map(item => this.mapItem(item))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
         constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.Or

@@ -15,6 +15,9 @@ import { CombinationState } from '../../../../models/constraint-models/combinati
 import { TreeNode } from '../../../../models/tree-models/tree-node';
 import { UIHelper } from '../../../../utilities/ui-helper';
 import {MessageHelper} from '../../../../utilities/message-helper';
+import { Cohort } from 'src/app/models/cohort-models/cohort';
+import { Cohort as ConstraintCohort } from 'src/app/models/constraint-models/cohort';
+import { CohortConstraint } from 'src/app/models/constraint-models/cohort-constraint';
 
 @Component({
   selector: 'gb-combination-constraint',
@@ -77,13 +80,25 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   onDrop(event) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    this.droppedConstraint =
-      this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
-    this.treeNodeService.selectedTreeNode = null;
+    let selectedCohort: Cohort = this.cohortService.selectedCohort;
 
-    if (this.droppedConstraint) {
-      this.addChildConstraint(this.droppedConstraint);
+    if (selectedCohort) {
+      const constraintCohort = new ConstraintCohort();
+      constraintCohort.name = this.cohortService.selectedCohort.name;
+
+      const cohortConstraint = new CohortConstraint();
+      cohortConstraint.cohort = constraintCohort;
+      cohortConstraint.textRepresentation = cohortConstraint.cohort.name;
+      this.droppedConstraint = cohortConstraint;
+    } else {
+      this.droppedConstraint =
+        this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
     }
+
+    this.treeNodeService.selectedTreeNode = null;
+    this.cohortService.selectedCohort = null;
+
+    this.addChildConstraint(this.droppedConstraint);
   }
 
   private addChildConstraint(constraint: Constraint) {

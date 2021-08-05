@@ -88,7 +88,7 @@ export class CohortService {
 
       let cohort = new Cohort(cohortName, null, null, creationDates, updateDates)
 
-      cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryId)
+      cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryID)
       cohort.queryDefinition = apiCohorts.map(apiCohort => apiCohort[i].queryDefinition)
       res.push(cohort)
 
@@ -289,7 +289,7 @@ export class CohortService {
     let cohortName = cohort.name
     this.medcoNetworkService.nodes.forEach((_, index) => {
       let apiCohort = new ApiCohort()
-      apiCohort.patientSetID = cohort.patient_set_id[index]
+      apiCohort.queryID = cohort.patient_set_id[index]
 
       apiCohort.creationDate = cohort.updateDate[index].toISOString()
       apiCohort.updateDate = cohort.updateDate[index].toISOString()

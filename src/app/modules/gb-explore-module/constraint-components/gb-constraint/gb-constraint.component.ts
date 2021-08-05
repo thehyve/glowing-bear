@@ -9,6 +9,7 @@
 import {Component, OnInit, Input, EventEmitter, Output, ElementRef} from '@angular/core';
 import {Constraint} from '../../../../models/constraint-models/constraint';
 import {TreeNodeService} from '../../../../services/tree-node.service';
+import {CohortService} from '../../../../services/cohort.service';
 import {ConstraintService} from '../../../../services/constraint.service';
 import {CombinationConstraint} from '../../../../models/constraint-models/combination-constraint';
 import {QueryService} from '../../../../services/query.service';
@@ -29,6 +30,7 @@ export class GbConstraintComponent implements OnInit {
   _panelTimingSameInstance: boolean
 
   constructor(protected treeNodeService: TreeNodeService,
+    protected cohortService: CohortService,
     protected constraintService: ConstraintService,
     protected queryService: QueryService,
     protected genomicAnnotationsService: GenomicAnnotationsService,

@@ -9,8 +9,7 @@
 import { ApiQueryDefinition } from './api-query-definition';
 
 export class ApiCohort {
-  queryId: number;
-  patientSetID: number;
+  queryID: number;
   creationDate: string;
   updateDate: string;
   queryDefinition?: ApiQueryDefinition
