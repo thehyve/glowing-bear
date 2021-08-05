@@ -25,7 +25,6 @@ import {TreeNode} from '../../../../models/tree-models/tree-node';
 import {TextOperator} from '../../../../models/constraint-models/text-operator';
 import {NumericalOperator} from '../../../../models/constraint-models/numerical-operator';
 
-
 @Component({
   selector: 'gb-concept-constraint',
   templateUrl: './gb-concept-constraint.component.html',
