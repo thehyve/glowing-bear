@@ -427,6 +427,10 @@ gb-tree-nodes .gb-highlight-treenode {
 gb-tree-nodes .gb-is-not-leaf {
 }
 
+gb-tree-nodes .ui-treenode .ui-tree-toggler {
+  pointer-events: none;
+}
+
 gb-tree-nodes .ui-treenode-content {
   cursor: pointer;
   padding: 4px 0px;

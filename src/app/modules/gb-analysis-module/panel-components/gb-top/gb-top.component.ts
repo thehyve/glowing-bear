@@ -165,7 +165,7 @@ function fillTestPanels() {
   firstItem.encrypted = false
   firstItem.queryTerm = '/I2B2/I2B2/Demographics/Gender/Female/'
   firstItem.operator = 'equals'
-  firstPanel.items.push(firstItem)
+  firstPanel.conceptItems.push(firstItem)
 
   testPanels[0].panels.push(firstPanel)
 
@@ -175,7 +175,7 @@ function fillTestPanels() {
   secondItem.encrypted = false
   secondItem.queryTerm = '/I2B2/I2B2/Demographics/Gender/Male/'
   secondItem.operator = 'equals'
-  secondPanel.items.push(secondItem)
+  secondPanel.conceptItems.push(secondItem)
 
   testPanels[1].panels.push(secondPanel)
 }

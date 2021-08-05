@@ -114,7 +114,7 @@ export class QueryService {
               parsedResults.nodes = encResults.map(res => res[0]);
               parsedResults.perSiteCounts = decrypted;
               parsedResults.globalCount = parsedResults.perSiteCounts.reduce((a, b) => a + b, 0);
-              parsedResults.resultInstanceID = encResults.map(result => result[1].patientSetID)
+              parsedResults.resultInstanceID = encResults.map(result => result[1].queryID)
               return parsedResults;
             }),
             switchMap(parsedResults => {
