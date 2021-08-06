@@ -29,6 +29,9 @@ export class TreeNode implements PrimeNgTreeNode {
   // number of subject (possibly undefined) associated with this node
   subjectCount: number;
 
+  // A comment stored in the database precising some informations about this tree-node's content.
+  comment: string;
+
 
   // flag to signal if the children were requested to the backend
   childrenAttached: boolean;
