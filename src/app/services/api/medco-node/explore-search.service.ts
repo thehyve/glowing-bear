@@ -38,6 +38,49 @@ export class ExploreSearchService {
     private apiEndpointService: ApiEndpointService,
     private injector: Injector) { }
 
+    private exploreSearch(searchString: string, limit: number): Observable<TreeNode[]> {
+      return this.apiEndpointService.postCall(
+        'node/explore/search',
+        { searchString, limit }
+      ).pipe(
+        map((searchResp) => {
+          return (searchResp.results).map((treeNodeObj) => {
+            let treeNode = new TreeNode();
+            treeNode.path = treeNodeObj['path'];
+            treeNode.appliedPath = treeNodeObj['appliedPath'];
+            treeNode.name = treeNodeObj['name'];
+            treeNode.displayName = treeNodeObj['displayName'];
+            treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
+            treeNode.conceptCode = treeNodeObj['code'];
+            treeNode.metadata = treeNodeObj['metadata'];
+            treeNode.comment = treeNodeObj['comment'];
+            // leaf in the database is not a leaf in the tree, as modifiers
+            // are displayed as children
+            treeNode.leaf = false;
+            treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
+  
+            treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
+            treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
+            treeNode.depth = treeNode.path.split('/').length - 2;
+            treeNode.children = [];
+            treeNode.childrenAttached = false;
+  
+            return treeNode;
+          })
+        })
+      );
+    }
+    /**
+     * Perform search concept children in ontology.
+     *
+     * @param {string} root - the path to the specific tree node, must include the first slash
+     *
+     * @returns {Observable<Object>}
+     */
+    exploreSearchTerm(searchString: string, limit: number = 10): Observable<TreeNode[]> {
+      return this.exploreSearch(searchString, limit);
+    }
+
 
   private exploreSearchConcept(operation: string, root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(

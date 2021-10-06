@@ -79,6 +79,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onDrop(event) {
     event.stopPropagation();
+
+    console.log('event 1', event);
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     let selectedCohort: Cohort = this.cohortService.selectedCohort;
 
@@ -103,6 +105,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   private addChildConstraint(constraint: Constraint) {
     let combinationConstraint: CombinationConstraint = <CombinationConstraint>this.constraint;
+    console.log("combinationConstraint", combinationConstraint);
+    console.log("constraint", constraint);
     try {
       // do not allow single concept at root of combination constraint
       if (combinationConstraint.isRoot) {

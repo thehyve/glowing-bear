@@ -8,6 +8,8 @@
 
 import {Component} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
+import {TermSearchService} from '../../services/termSearchService.service';
+import {OntologyNavbarService} from '../../services/ontologyNavbar.service';
 import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
 
 @Component({
@@ -18,6 +20,7 @@ import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patie
 export class GbSidePanelComponent {
 
   constructor(public navbarService: NavbarService,
-              public savedCohortsPatientListService: SavedCohortsPatientListService) { }
-
+              public savedCohortsPatientListService: SavedCohortsPatientListService,
+              public ontologyNavbarService: OntologyNavbarService,
+              public termSearchService:TermSearchService) { }
 }

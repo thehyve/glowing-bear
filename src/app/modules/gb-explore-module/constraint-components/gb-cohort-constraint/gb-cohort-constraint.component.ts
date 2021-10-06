@@ -38,6 +38,8 @@ export class GbCohortConstraintComponent extends GbConstraintComponent implement
   onDrop(event: DragEvent) {
     event.stopPropagation();
 
+    console.log('event 0', event);
+
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     this.droppedConstraint =
       this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
