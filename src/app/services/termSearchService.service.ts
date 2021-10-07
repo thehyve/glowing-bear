@@ -13,6 +13,7 @@ import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { TreeNodeService } from './tree-node.service';
 import { ErrorHelper } from '../utilities/error-helper';
 import { DropMode } from '../models/drop-mode';
+import { TreeNode } from '../models/tree-models/tree-node';
 
 interface NodeFullPath {
   name: string;
@@ -49,6 +50,43 @@ export class TermSearchService {
     this.results = [];
   }
 
+  addInResults(node: TreeNode, displayNameList: string[], searchConceptInfo?: TreeNode[]) {
+    const formattedResult = {
+      name: node.name,
+      fullPath: displayNameList.reverse().reduce((result, displayName) => [
+        ...result, {
+          name: displayName,
+          isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.termSearch.toLowerCase()) !== -1
+          
+      }], []).reverse()
+    };
+    let resultIndex = -1;
+    if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
+      resultIndex = this.results.push(formattedResult) - 1;
+    } else { // Found in this.results, replace
+      resultIndex = this.results.findIndex(({ name: resultName }) => resultName === node.name);
+      this.results[resultIndex] = formattedResult;
+    }
+    const dataObject = {
+      ...node,
+      ...(searchConceptInfo ? { appliedConcept: searchConceptInfo[0] } : {}),
+      dropMode: DropMode.TreeNode,
+      metadata: undefined,
+      path: `/I2B2${node.path}`,
+      isModifier: () => !!searchConceptInfo
+    };
+
+    setTimeout(() => {
+      const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');
+      const elem = elems[resultIndex];
+      const handleDragstart = (function (event) {
+        event.stopPropagation();
+        this.treeNodeService.selectedTreeNode = dataObject;
+      }).bind(this);
+      elem.addEventListener('dragstart', handleDragstart);
+    }, 0);
+  }
+
   search() {
     this.exploreSearchService = this.injector.get(ExploreSearchService);
 
@@ -62,38 +100,13 @@ export class TermSearchService {
           this.exploreSearchService.exploreSearchConceptInfo(value).subscribe((searchResult) => {
             displayNameList[pathListIndex] = searchResult[0].displayName;
             if (displayNameList.filter((_value) => !!_value).length === pathList.length) {
-              const formattedResult = {
-                name: node.name,
-                fullPath: displayNameList.reverse().reduce((result, displayName) => [
-                  ...result, {
-                    name: displayName,
-                    isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.termSearch.toLowerCase()) !== -1
-                }], []).reverse()
-              };
-              let resultIndex = -1;
-              if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
-                resultIndex = this.results.push(formattedResult) - 1;
-              } else { // Found in this.results, replace
-                resultIndex = this.results.findIndex(({ name: resultName }) => resultName === node.name);
-                this.results[resultIndex] = formattedResult;
+              if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
+                this.addInResults(node, displayNameList);
+              } else {
+                this.exploreSearchService.exploreSearchConceptInfo(`/I2B2${node.appliedPath}`).subscribe((searchConceptInfo) => {
+                  this.addInResults(node, displayNameList, searchConceptInfo);
+                })
               }
-              setTimeout(() => {
-                const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');
-                const elem = elems[resultIndex];
-                const handleDragstart = (function (event) {
-                  event.stopPropagation();
-                  const dataObject = {
-                    ...node,
-                    dropMode: DropMode.TreeNode,
-                    metadata: undefined,
-                    path: `/I2B2${node.path}`
-                  };
-                  console.log('dataObject', dataObject);
-                  console.log('this.treeNodeService', this.treeNodeService);
-                  this.treeNodeService.selectedTreeNode = dataObject;
-                }).bind(this);
-                elem.addEventListener('dragstart', handleDragstart);
-              }, 0);
             }
           });
         });
@@ -104,14 +117,14 @@ export class TermSearchService {
   }
 
   onSearch() {
-   // this.search();
+   this.search();
   }
 
   onTermChange(event: any) {
     this.results = [];
     this.termSearch = event.target.value;
     if (this.termSearch.length > 2) {
-      this.search();
+      // this.search();
     }
   }
 
