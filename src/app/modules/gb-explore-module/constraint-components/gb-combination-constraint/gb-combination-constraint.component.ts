@@ -79,7 +79,6 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
 
   onDrop(event) {
     event.stopPropagation();
-
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
     let selectedCohort: Cohort = this.cohortService.selectedCohort;
 
