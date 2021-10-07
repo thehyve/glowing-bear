@@ -457,6 +457,7 @@ form.term-search
   background-color: #ffffff;
   color: #404040;
 }
+
 form.term-search .ui-togglebutton.ui-button.ui-state-focus {
   box-shadow: none;
 }
