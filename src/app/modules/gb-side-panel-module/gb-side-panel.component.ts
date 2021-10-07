@@ -22,5 +22,5 @@ export class GbSidePanelComponent {
   constructor(public navbarService: NavbarService,
               public savedCohortsPatientListService: SavedCohortsPatientListService,
               public ontologyNavbarService: OntologyNavbarService,
-              public termSearchService:TermSearchService) { }
+              public termSearchService: TermSearchService) { }
 }

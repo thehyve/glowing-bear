@@ -58,13 +58,13 @@ export class ExploreSearchService {
             // are displayed as children
             treeNode.leaf = false;
             treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
-  
+
             treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
             treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
             treeNode.depth = treeNode.path.split('/').length - 2;
             treeNode.children = [];
             treeNode.childrenAttached = false;
-  
+
             return treeNode;
           })
         })

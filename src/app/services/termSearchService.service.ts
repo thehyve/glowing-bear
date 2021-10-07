@@ -14,23 +14,23 @@ import { TreeNodeService } from './tree-node.service';
 import { ErrorHelper } from '../utilities/error-helper';
 import { DropMode } from '../models/drop-mode';
 
-type NodeFullPath = {
+interface NodeFullPath {
   name: string;
   isBold: boolean;
 }
 
-type ResultType = {
+interface ResultType {
   name: string;
   fullPath: NodeFullPath[];
 }
 
 const getPathList = (path: string) => {
-  const splittedPath = path.split('/').filter(value => value != "");
+  const splittedPath = path.split('/').filter(value => value !== '');
 
   const pathList: string[] = [];
 
   splittedPath.forEach((_, index) => {
-    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, "/I2B2/"));
+    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, '/I2B2/'));
   });
 
   return pathList;
@@ -39,7 +39,7 @@ const getPathList = (path: string) => {
 @Injectable()
 export class TermSearchService {
 
-  private _termSearch = "";
+  private _termSearch = '';
 
   private exploreSearchService: ExploreSearchService;
   private _results: ResultType[];
@@ -59,10 +59,10 @@ export class TermSearchService {
         let displayNameList: string[] = new Array(pathList.length);
 
         pathList.forEach((value, pathListIndex) => {
-          this.exploreSearchService.exploreSearchConceptInfo(value).subscribe((result) => {
-            displayNameList[pathListIndex] = result[0].displayName;
+          this.exploreSearchService.exploreSearchConceptInfo(value).subscribe((searchResult) => {
+            displayNameList[pathListIndex] = searchResult[0].displayName;
             if (displayNameList.filter((_value) => !!_value).length === pathList.length) {
-              const result = {
+              const formattedResult = {
                 name: node.name,
                 fullPath: displayNameList.reverse().reduce((result, displayName) => [
                   ...result, {
@@ -70,12 +70,12 @@ export class TermSearchService {
                     isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.termSearch.toLowerCase()) !== -1
                 }], []).reverse()
               };
-              let resultIndex: number = -1;
+              let resultIndex = -1;
               if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
-                resultIndex = this.results.push(result) - 1;
+                resultIndex = this.results.push(formattedResult) - 1;
               } else { // Found in this.results, replace
                 resultIndex = this.results.findIndex(({ name: resultName }) => resultName === node.name);
-                this.results[resultIndex] = result;
+                this.results[resultIndex] = formattedResult;
               }
               setTimeout(() => {
                 const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');

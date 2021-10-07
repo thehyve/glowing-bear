@@ -25,7 +25,7 @@ export class OntologyNavbarService {
       { label: 'Browse', command: this.setItem.bind(this) },
       { label: 'Term Search', command: this.setItem.bind(this) }
     ]
-    
+
     this.activeItem = this.items[this.isBrowse ? 0 : 1];
   }
 
