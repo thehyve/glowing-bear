@@ -75,7 +75,7 @@ export class TermSearchService {
     }
     const dataObject = {
       ...node,
-      ...(searchConceptInfo ? { appliedConcept: searchConceptInfo[0] } : {}),
+      ...((searchConceptInfo?.length > 0) ? { appliedConcept: searchConceptInfo[0] } : {}),
       dropMode: DropMode.TreeNode,
       metadata: undefined,
       path: `/I2B2${node.path}`,
@@ -110,6 +110,9 @@ export class TermSearchService {
               if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
                 this.addInResults(node, displayNameList, nodes.length);
               } else {
+                if (node.appliedPath[node.appliedPath.length - 1] !== '/') {
+                  node.appliedPath = `${node.appliedPath}/`;
+                }
                 this.exploreSearchService.exploreSearchConceptInfo(`/I2B2${node.appliedPath}`).subscribe((searchConceptInfo) => {
                   this.addInResults(node, displayNameList, nodes.length, searchConceptInfo);
                 })
