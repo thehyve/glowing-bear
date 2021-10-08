@@ -44,25 +44,31 @@ export class TermSearchService {
 
   private exploreSearchService: ExploreSearchService;
   private _results: ResultType[];
+  private _isLoading = false;
 
   constructor(private treeNodeService: TreeNodeService,
     private injector: Injector) {
     this.results = [];
+
+    this.exploreSearchService = this.injector.get(ExploreSearchService);
   }
 
-  addInResults(node: TreeNode, displayNameList: string[], searchConceptInfo?: TreeNode[]) {
+  addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, searchConceptInfo?: TreeNode[]) {
     const formattedResult = {
       name: node.name,
       fullPath: displayNameList.reverse().reduce((result, displayName) => [
         ...result, {
           name: displayName,
           isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.termSearch.toLowerCase()) !== -1
-          
+
       }], []).reverse()
     };
     let resultIndex = -1;
     if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
       resultIndex = this.results.push(formattedResult) - 1;
+      if (resultIndex === nodesSize - 1) {
+        this.isLoading = false;
+      }
     } else { // Found in this.results, replace
       resultIndex = this.results.findIndex(({ name: resultName }) => resultName === node.name);
       this.results[resultIndex] = formattedResult;
@@ -88,7 +94,8 @@ export class TermSearchService {
   }
 
   search() {
-    this.exploreSearchService = this.injector.get(ExploreSearchService);
+    this.results = [];
+    this.isLoading = true;
 
     this.exploreSearchService.exploreSearchTerm(this.termSearch).subscribe((nodes) => {
       nodes.forEach((node) => {
@@ -101,10 +108,10 @@ export class TermSearchService {
             displayNameList[pathListIndex] = searchResult[0].displayName;
             if (displayNameList.filter((_value) => !!_value).length === pathList.length) {
               if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
-                this.addInResults(node, displayNameList);
+                this.addInResults(node, displayNameList, nodes.length);
               } else {
                 this.exploreSearchService.exploreSearchConceptInfo(`/I2B2${node.appliedPath}`).subscribe((searchConceptInfo) => {
-                  this.addInResults(node, displayNameList, searchConceptInfo);
+                  this.addInResults(node, displayNameList, nodes.length, searchConceptInfo);
                 })
               }
             }
@@ -121,10 +128,9 @@ export class TermSearchService {
   }
 
   onTermChange(event: any) {
-    this.results = [];
     this.termSearch = event.target.value;
     if (this.termSearch.length > 2) {
-      // this.search();
+      this.search();
     }
   }
 
@@ -142,5 +148,13 @@ export class TermSearchService {
 
   set results(value: ResultType[]) {
     this._results = value;
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  set isLoading(value: boolean) {
+    this._isLoading = value;
   }
 }

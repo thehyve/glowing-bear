@@ -15,7 +15,7 @@
         <gb-tree-nodes *ngIf="ontologyNavbarService.isBrowse"></gb-tree-nodes>
         <form class="term-search" *ngIf="ontologyNavbarService.isTermSearch">
           <input class="ui-inputtext" (input)="termSearchService.onTermChange($event)" />
-          <p-button type="submit" label="Search" (onClick)='termSearchService.onSearch()'></p-button>
+          <p-button style="display: none;" type="submit" label="Search" (onClick)='termSearchService.onSearch()'></p-button>
           <p-accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
               class="ui-ontology-elements">
               <p-header class="ui-ontology-elements">
@@ -26,6 +26,9 @@
                 <span *ngIf="!last" class="path-separator">></span>
               </span>
           </p-accordionTab>
+          <div *ngIf="termSearchService.isLoading" style="margin: auto;">
+            <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+          </div>
         </form>
       </p-accordionTab>
     </div>

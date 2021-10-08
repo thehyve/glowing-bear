@@ -10,3 +10,8 @@
 .gb-sidepanel-navbar input {
   font-size: 13px;
 }
+
+.gb-sidepanel-navbar .loading-blink {
+  font-size: 3em;
+  text-align: left;
+}

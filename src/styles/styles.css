@@ -434,8 +434,11 @@ form.term-search .ui-accordion .ui-accordion-header p {
 }
 
 form.term-search .loading-blink {
-  font-size: 1em;
+  font-size: 1.5em;
   text-align: left;
+  padding: 0px;
+  margin-top: 1rem;
+  margin-bottom: 0px;
 }
 
 form.term-search .ui-accordion-content {
