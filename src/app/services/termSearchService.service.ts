@@ -99,7 +99,10 @@ export class TermSearchService {
 
     this.exploreSearchService.exploreSearchTerm(this.termSearch).subscribe((nodes) => {
       nodes.forEach((node) => {
-        const pathList = getPathList(node.path);
+        const pathList = [
+          ...(node.appliedPath !== '@' ? getPathList(node.appliedPath) : []),
+          ...getPathList(node.path)
+        ];
 
         let displayNameList: string[] = new Array(pathList.length);
 
@@ -124,10 +127,6 @@ export class TermSearchService {
     }, (err) => {
       ErrorHelper.handleError('Failed to search', err);
     });
-  }
-
-  onSearch() {
-   this.search();
   }
 
   onTermChange(event: any) {
