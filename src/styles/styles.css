@@ -441,6 +441,10 @@ form.term-search .loading-blink {
   margin-bottom: 0px;
 }
 
+form.term-search .no-result-text {
+  margin-top: 12px;
+}
+
 form.term-search .ui-accordion-content {
   border: none;
   padding: 0.5em;

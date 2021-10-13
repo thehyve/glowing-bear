@@ -77,7 +77,7 @@ export class ExploreSearchService {
      *
      * @returns {Observable<Object>}
      */
-    exploreSearchTerm(searchString: string, limit: number = 10): Observable<TreeNode[]> {
+    exploreSearchTerm(searchString: string, limit: number = 20): Observable<TreeNode[]> {
       return this.exploreSearch(searchString, limit);
     }
 

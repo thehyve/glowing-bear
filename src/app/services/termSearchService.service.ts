@@ -23,7 +23,10 @@ interface NodeFullPath {
 interface ResultType {
   name: string;
   fullPath: NodeFullPath[];
+  handleFuncStart?: EventListenerObject;
 }
+
+const rootPath = '/I2B2'; /* I2B2 / CLINICAL_SENSITIVE */
 
 const getPathList = (path: string) => {
   const splittedPath = path.split('/').filter(value => value !== '');
@@ -31,7 +34,7 @@ const getPathList = (path: string) => {
   const pathList: string[] = [];
 
   splittedPath.forEach((_, index) => {
-    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, '/I2B2/'));
+    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, `${rootPath}/`));
   });
 
   return pathList;
@@ -40,11 +43,12 @@ const getPathList = (path: string) => {
 @Injectable()
 export class TermSearchService {
 
-  private _termSearch = '';
+  private _searchTerm = '';
 
   private exploreSearchService: ExploreSearchService;
   private _results: ResultType[];
   private _isLoading = false;
+  private _isNoResults = false;
 
   constructor(private treeNodeService: TreeNodeService,
     private injector: Injector) {
@@ -54,15 +58,28 @@ export class TermSearchService {
   }
 
   addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, searchConceptInfo?: TreeNode[]) {
-    const formattedResult = {
+    const dataObject = {
+      ...node,
+      ...((searchConceptInfo?.length > 0) ? { appliedConcept: searchConceptInfo[0] } : {}),
+      dropMode: DropMode.TreeNode,
+      metadata: undefined,
+      path: `${rootPath}${node.path}`,
+      isModifier: () => !!searchConceptInfo
+    };
+
+    const formattedResult: ResultType = {
       name: node.name,
       fullPath: displayNameList.reverse().reduce((result, displayName) => [
         ...result, {
           name: displayName,
-          isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.termSearch.toLowerCase()) !== -1
-
-      }], []).reverse()
+          isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1
+      }], []).reverse(),
+      handleFuncStart: (function (event) {
+        event.stopPropagation();
+        this.treeNodeService.selectedTreeNode = dataObject;
+      }).bind(this)
     };
+
     let resultIndex = -1;
     if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
       resultIndex = this.results.push(formattedResult) - 1;
@@ -73,50 +90,72 @@ export class TermSearchService {
       resultIndex = this.results.findIndex(({ name: resultName }) => resultName === node.name);
       this.results[resultIndex] = formattedResult;
     }
-    const dataObject = {
-      ...node,
-      ...((searchConceptInfo?.length > 0) ? { appliedConcept: searchConceptInfo[0] } : {}),
-      dropMode: DropMode.TreeNode,
-      metadata: undefined,
-      path: `/I2B2${node.path}`,
-      isModifier: () => !!searchConceptInfo
-    };
 
+    this.addHandlers();
+  }
+
+  addHandlers() {
     setTimeout(() => {
       const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');
-      const elem = elems[resultIndex];
-      const handleDragstart = (function (event) {
-        event.stopPropagation();
-        this.treeNodeService.selectedTreeNode = dataObject;
-      }).bind(this);
-      elem.addEventListener('dragstart', handleDragstart);
+      console.log('add handlers for', elems.length, 'elements');
+      this.results.forEach((result, resultIndex) => {
+        const elem = elems[resultIndex];
+        elem.addEventListener('dragstart', result.handleFuncStart);
+      })
     }, 0);
   }
 
   search() {
     this.results = [];
     this.isLoading = true;
+    this.isNoResults = false;
 
-    this.exploreSearchService.exploreSearchTerm(this.termSearch).subscribe((nodes) => {
+    const searchTerm = this.searchTerm;
+
+    this.exploreSearchService.exploreSearchTerm(this.searchTerm).subscribe((nodes) => {
+      if (searchTerm !== this.searchTerm) {
+        return;
+      }
+      if (nodes.length === 0) {
+        this.isNoResults = true;
+        this.isLoading = false;
+      }
       nodes.forEach((node) => {
         const pathList = [
           ...(node.appliedPath !== '@' ? getPathList(node.appliedPath) : []),
           ...getPathList(node.path)
         ];
 
-        let displayNameList: string[] = new Array(pathList.length);
+        console.log('node.path', node.path);
+
+        console.log('Full node', node);
+        console.log('------------------');
+
+        let displayNameListLength = pathList.length;
+
+        let displayNameList: string[] = [];
 
         pathList.forEach((value, pathListIndex) => {
           this.exploreSearchService.exploreSearchConceptInfo(value).subscribe((searchResult) => {
-            displayNameList[pathListIndex] = searchResult[0].displayName;
-            if (displayNameList.filter((_value) => !!_value).length === pathList.length) {
+            if (searchTerm !== this.searchTerm) {
+              return;
+            }
+            if (searchResult.length > 0) {
+              displayNameList[pathListIndex] = searchResult[0].displayName;
+            } else {
+              displayNameListLength--;
+            }
+            if (displayNameList.filter((_value) => !!_value).length === displayNameListLength) {
               if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
                 this.addInResults(node, displayNameList, nodes.length);
               } else {
                 if (node.appliedPath[node.appliedPath.length - 1] !== '/') {
                   node.appliedPath = `${node.appliedPath}/`;
                 }
-                this.exploreSearchService.exploreSearchConceptInfo(`/I2B2${node.appliedPath}`).subscribe((searchConceptInfo) => {
+                this.exploreSearchService.exploreSearchConceptInfo(`${rootPath}${node.appliedPath}`).subscribe((searchConceptInfo) => {
+                  if (searchTerm !== this.searchTerm) {
+                    return;
+                  }
                   this.addInResults(node, displayNameList, nodes.length, searchConceptInfo);
                 })
               }
@@ -130,18 +169,18 @@ export class TermSearchService {
   }
 
   onTermChange(event: any) {
-    this.termSearch = event.target.value;
-    if (this.termSearch.length > 2) {
+    this.searchTerm = event.target.value;
+    if (this.searchTerm.length > 2) {
       this.search();
     }
   }
 
-  get termSearch(): string {
-    return this._termSearch;
+  get searchTerm(): string {
+    return this._searchTerm;
   }
 
-  set termSearch(value: string) {
-    this._termSearch = value;
+  set searchTerm(value: string) {
+    this._searchTerm = value;
   }
 
   get results(): ResultType[] {
@@ -158,5 +197,13 @@ export class TermSearchService {
 
   set isLoading(value: boolean) {
     this._isLoading = value;
+  }
+
+  get isNoResults(): boolean {
+    return this._isNoResults;
+  }
+
+  set isNoResults(value: boolean) {
+    this._isNoResults = value;
   }
 }

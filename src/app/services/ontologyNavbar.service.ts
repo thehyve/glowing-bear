@@ -10,6 +10,7 @@
 
 import { Injectable } from '@angular/core';
 import { MenuItem } from 'primeng/api';
+import { TermSearchService } from './termSearchService.service';
 
 @Injectable()
 export class OntologyNavbarService {
@@ -20,7 +21,7 @@ export class OntologyNavbarService {
   private _isBrowse = true;
   private _isTermSearch = false;
 
-  constructor() {
+  constructor(private termSearchService: TermSearchService) {
     this.items = [
       { label: 'Browse', command: this.setItem.bind(this) },
       { label: 'Term Search', command: this.setItem.bind(this) }
@@ -33,6 +34,9 @@ export class OntologyNavbarService {
     this.isBrowse = event.item.label === 'Browse';
     this.isTermSearch = event.item.label === 'Term Search';
     this.activeItem = this.items[this.isBrowse ? 0 : 1];
+    if (this.isTermSearch) {
+      this.termSearchService.addHandlers();
+    }
   }
 
   get items(): MenuItem[] {
