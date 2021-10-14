@@ -26,15 +26,13 @@ interface ResultType {
   handleFuncStart?: EventListenerObject;
 }
 
-const rootPath = '/I2B2'; /* I2B2 / CLINICAL_SENSITIVE */
-
 const getPathList = (path: string) => {
   const splittedPath = path.split('/').filter(value => value !== '');
 
   const pathList: string[] = [];
 
   splittedPath.forEach((_, index) => {
-    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, `${rootPath}/`));
+    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, '/'));
   });
 
   return pathList;
@@ -63,7 +61,7 @@ export class TermSearchService {
       ...((searchConceptInfo?.length > 0) ? { appliedConcept: searchConceptInfo[0] } : {}),
       dropMode: DropMode.TreeNode,
       metadata: undefined,
-      path: `${rootPath}${node.path}`,
+      path: `${node.path}`,
       isModifier: () => !!searchConceptInfo
     };
 
@@ -97,7 +95,6 @@ export class TermSearchService {
   addHandlers() {
     setTimeout(() => {
       const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');
-      console.log('add handlers for', elems.length, 'elements');
       this.results.forEach((result, resultIndex) => {
         const elem = elems[resultIndex];
         elem.addEventListener('dragstart', result.handleFuncStart);
@@ -117,22 +114,18 @@ export class TermSearchService {
         return;
       }
       if (nodes.length === 0) {
-        this.isNoResults = true;
         this.isLoading = false;
+        this.isNoResults = true;
       }
       nodes.forEach((node) => {
+        const splittedNodePath = node.path.split('/');
+        const realAppliedPath = `${splittedNodePath.length > 1 ? `/${splittedNodePath[1]}` : ''}${node.appliedPath}${node.appliedPath[node.appliedPath.length - 1] !== '/' ? '/' : ''}`
         const pathList = [
-          ...(node.appliedPath !== '@' ? getPathList(node.appliedPath) : []),
+          ...(node.appliedPath !== '@' ? getPathList(realAppliedPath) : []),
           ...getPathList(node.path)
         ];
 
-        console.log('node.path', node.path);
-
-        console.log('Full node', node);
-        console.log('------------------');
-
         let displayNameListLength = pathList.length;
-
         let displayNameList: string[] = [];
 
         pathList.forEach((value, pathListIndex) => {
@@ -149,10 +142,7 @@ export class TermSearchService {
               if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
                 this.addInResults(node, displayNameList, nodes.length);
               } else {
-                if (node.appliedPath[node.appliedPath.length - 1] !== '/') {
-                  node.appliedPath = `${node.appliedPath}/`;
-                }
-                this.exploreSearchService.exploreSearchConceptInfo(`${rootPath}${node.appliedPath}`).subscribe((searchConceptInfo) => {
+                this.exploreSearchService.exploreSearchConceptInfo(realAppliedPath).subscribe((searchConceptInfo) => {
                   if (searchTerm !== this.searchTerm) {
                     return;
                   }
@@ -165,6 +155,7 @@ export class TermSearchService {
       });
     }, (err) => {
       ErrorHelper.handleError('Failed to search', err);
+      this.isLoading = false;
     });
   }
 
