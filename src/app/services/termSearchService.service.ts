@@ -38,6 +38,9 @@ const getPathList = (path: string) => {
   return pathList;
 }
 
+/**
+ * This service manage the API calls to the backend for the search functionality.
+ */
 @Injectable()
 export class TermSearchService {
 
