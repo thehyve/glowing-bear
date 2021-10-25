@@ -22,8 +22,8 @@ import {GbSidePanelModule} from './modules/gb-side-panel-module/gb-side-panel.mo
 import {GbNavBarModule} from './modules/gb-navbar-module/gb-navbar.module';
 import {QueryService} from './services/query.service';
 import {NavbarService} from './services/navbar.service';
-import {OntologyNavbarService} from './services/ontologyNavbar.service';
-import {TermSearchService} from './services/termSearchService.service';
+import {OntologyNavbarService} from './services/ontology-navbar.service';
+import {TermSearchService} from './services/term-search.service';
 import {DatePipe} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthenticationService} from './services/authentication.service';

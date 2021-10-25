@@ -10,7 +10,7 @@
 
 import { Injectable } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { TermSearchService } from './termSearchService.service';
+import { TermSearchService } from './term-search.service';
 
 /**
  * This service concerns the 2 tabs (Browse & Term Search) on the left panel.

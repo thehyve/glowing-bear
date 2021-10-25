@@ -9,6 +9,7 @@
  */
 
 import { Injectable, Injector } from '@angular/core';
+import { ReplaySubject } from "rxjs";
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { TreeNodeService } from './tree-node.service';
 import { ErrorHelper } from '../utilities/error-helper';
@@ -50,6 +51,8 @@ export class TermSearchService {
   private _results: ResultType[];
   private _isLoading = false;
   private _isNoResults = false;
+
+  public searchResultObservable: ReplaySubject<ResultType[]> = new ReplaySubject();
 
   constructor(private treeNodeService: TreeNodeService,
     private injector: Injector) {
@@ -96,13 +99,7 @@ export class TermSearchService {
   }
 
   addHandlers() {
-    setTimeout(() => {
-      const elems = document.querySelectorAll('.term-search p-accordionTab.ui-ontology-elements');
-      this.results.forEach((result, resultIndex) => {
-        const elem = elems[resultIndex];
-        elem.addEventListener('dragstart', result.handleFuncStart);
-      })
-    }, 0);
+    this.searchResultObservable.next(this.results);
   }
 
   search() {

@@ -6,10 +6,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ViewChildren, QueryList, ElementRef} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
-import {TermSearchService} from '../../services/termSearchService.service';
-import {OntologyNavbarService} from '../../services/ontologyNavbar.service';
+import {TermSearchService} from '../../services/term-search.service';
+import {OntologyNavbarService} from '../../services/ontology-navbar.service';
 import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
 
 @Component({
@@ -23,4 +23,16 @@ export class GbSidePanelComponent {
               public savedCohortsPatientListService: SavedCohortsPatientListService,
               public ontologyNavbarService: OntologyNavbarService,
               public termSearchService: TermSearchService) { }
+
+    @ViewChildren('ontologyElem') elems: QueryList<ElementRef>;
+
+    ngAfterViewInit() {
+      this.termSearchService.searchResultObservable.subscribe(results => {
+        setTimeout(() => {
+          results.forEach((result, resultIndex) => {
+            this.elems.toArray()[resultIndex].__ngContext__[13][0].addEventListener('dragstart', result.handleFuncStart);
+          });
+        }, 0);
+      });
+    }
 }
