@@ -18,13 +18,12 @@ import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patie
   styleUrls: ['./gb-side-panel.component.css']
 })
 export class GbSidePanelComponent {
+  @ViewChildren('ontologyElem') elems: QueryList<any>;
 
   constructor(public navbarService: NavbarService,
               public savedCohortsPatientListService: SavedCohortsPatientListService,
               public ontologyNavbarService: OntologyNavbarService,
               public termSearchService: TermSearchService) { }
-
-    @ViewChildren('ontologyElem') elems: QueryList<ElementRef>;
 
     ngAfterViewInit() {
       this.termSearchService.searchResultObservable.subscribe(results => {

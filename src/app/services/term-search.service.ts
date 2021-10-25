@@ -9,7 +9,7 @@
  */
 
 import { Injectable, Injector } from '@angular/core';
-import { ReplaySubject } from "rxjs";
+import { ReplaySubject } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { TreeNodeService } from './tree-node.service';
 import { ErrorHelper } from '../utilities/error-helper';
