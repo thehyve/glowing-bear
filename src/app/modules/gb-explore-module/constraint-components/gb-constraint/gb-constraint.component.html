@@ -1,12 +1,26 @@
 <div class="{{containerClass}}">
   <!-- Remove Button -->
-  <button *ngIf="!isRoot"
-          type="button"
-          class="btn btn-outline-danger btn-sm pull-right gb-constraint-remove-btn"
-          (click)="remove()">
-    <i class="fa fa-times" aria-hidden="true"></i>
-  </button>
-
+  
+  <div class="pull-right">
+    
+    
+    <button *ngIf="depth==1" type="button" (click)="changeInclusion()" class="btn btn-outline-primary btn-inclusion" [class.btn-exclusion]="constraint.excluded">
+      <ng-container *ngIf="constraint.excluded; else included">excluded</ng-container>
+      <ng-template #included>included</ng-template>
+    </button>
+    <button *ngIf="!isRoot"
+            type="button"
+            class="btn btn-outline-danger btn-sm  gb-constraint-remove-btn"
+            (click)="remove()">
+      <i class="fa fa-times" aria-hidden="true"></i>
+    </button>
+  </div>
+  <ng-container *ngIf="depth==1">
+    <br>
+    <br>
+  </ng-container>
+  
+  
   <gb-combination-constraint *ngIf="constraint.className === 'CombinationConstraint' "
                              [constraint]="constraint"></gb-combination-constraint>
   <gb-concept-constraint *ngIf="constraint.className === 'ConceptConstraint' "

@@ -124,7 +124,7 @@ export class CombinationConstraint extends Constraint {
 
   private updateTextRepresentation() {
     if (this.children.length > 0) {
-      this.textRepresentation = '(' + this.children.map(({ textRepresentation }) => textRepresentation)
+      this.textRepresentation = (this.excluded ? 'not (':'(') + this.children.map(({ textRepresentation }) => textRepresentation)
         .join(this.combinationState === CombinationState.And ? ' and ' : ' or ') + ')'
     } else {
       this.textRepresentation = 'Group';

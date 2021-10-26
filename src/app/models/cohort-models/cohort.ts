@@ -23,22 +23,17 @@ export class Cohort {
   public visible: boolean
 
 
-  private _rootInclusionConstraint: CombinationConstraint
-  private _rootExclusionConstraint: CombinationConstraint
+  private _rootConstraint: CombinationConstraint
+
   constructor(
-    name: string, rootInclusionConstraint: CombinationConstraint,
-    rootExclusionConstraint: CombinationConstraint, createDate: Date[],
+    name: string, rootConstraint: CombinationConstraint, createDate: Date[],
     updateDate: Date[]
   ) {
     this._name = name
 
-    if (rootInclusionConstraint !== null) {
+    if (rootConstraint !== null) {
 
-      this._rootInclusionConstraint = rootInclusionConstraint.clone()
-    }
-    if (rootExclusionConstraint !== null) {
-
-      this._rootExclusionConstraint = rootExclusionConstraint.clone()
+      this._rootConstraint = rootConstraint.clone()
     }
 
     if (createDate) {
@@ -61,15 +56,15 @@ export class Cohort {
     return new Array(...this._patient_set_id)
   }
 
-  get rootInclusionConstraint(): CombinationConstraint {
-    if (this._rootInclusionConstraint) {
+  get rootConstraint(): CombinationConstraint {
+    if (this._rootConstraint) {
       let cpy = new CombinationConstraint
-      cpy.parentConstraint = this._rootInclusionConstraint.parentConstraint
-      cpy.textRepresentation = this._rootInclusionConstraint.textRepresentation
+      cpy.parentConstraint = this._rootConstraint.parentConstraint
+      cpy.textRepresentation = this._rootConstraint.textRepresentation
 
-      cpy.children = this._rootInclusionConstraint.children
-      cpy.combinationState = this._rootInclusionConstraint.combinationState
-      cpy.isRoot = this._rootInclusionConstraint.isRoot
+      cpy.children = this._rootConstraint.children
+      cpy.combinationState = this._rootConstraint.combinationState
+      cpy.isRoot = this._rootConstraint.isRoot
 
       return cpy
     } else {
@@ -77,7 +72,7 @@ export class Cohort {
     }
   }
 
-  set rootInclusionConstraint(constr: CombinationConstraint) {
+  set rootConstraint(constr: CombinationConstraint) {
     if (constr) {
       let cpy = new CombinationConstraint
       cpy.parentConstraint = constr.parentConstraint
@@ -87,43 +82,10 @@ export class Cohort {
       cpy.combinationState = constr.combinationState
       cpy.isRoot = constr.isRoot
 
-      this._rootInclusionConstraint = cpy
+      this._rootConstraint = cpy
 
     } else {
-      this._rootInclusionConstraint = null
-    }
-  }
-
-  get rootExclusionConstraint(): CombinationConstraint {
-    if (this._rootExclusionConstraint) {
-      let cpy = new CombinationConstraint
-      cpy.parentConstraint = this._rootExclusionConstraint.parentConstraint
-      cpy.textRepresentation = this._rootExclusionConstraint.textRepresentation
-
-
-      cpy.children = this._rootExclusionConstraint.children
-      cpy.combinationState = this._rootExclusionConstraint.combinationState
-      cpy.isRoot = this._rootExclusionConstraint.isRoot
-
-      return cpy
-    } else {
-      return null
-    }
-  }
-
-  set rootExclusionConstraint(constr: CombinationConstraint) {
-    if (constr) {
-      let cpy = new CombinationConstraint
-      cpy.parentConstraint = constr.parentConstraint
-      cpy.textRepresentation = constr.textRepresentation
-
-      cpy.children = constr.children
-      cpy.combinationState = constr.combinationState
-      cpy.isRoot = constr.isRoot
-
-      this._rootExclusionConstraint = cpy
-    } else {
-      this._rootExclusionConstraint = null
+      this._rootConstraint = null
     }
   }
 

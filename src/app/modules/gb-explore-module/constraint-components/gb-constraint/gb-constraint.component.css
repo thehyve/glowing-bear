@@ -98,3 +98,29 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.btn-inclusion {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+  margin-top: 0.5rem;
+  margin-right: 0.5rem;
+}
+.btn-exclusion {
+  padding: 0.2rem 0.4rem;
+  font-size: 0.875rem;
+  border-radius: 0.2rem;
+  margin-top: 0.5rem;
+  color:#a83c3c;
+  border-color: #a83c3c;
+  margin-right: 0.5rem;
+}
+.btn-exclusion:hover{
+  background: #ff0000;
+  color: #f7f7f7;
+}
+
+.btn-exclusion:focus, .btn-exclusion.focus {
+  -webkit-box-shadow: 0 0 0 2px rgba(156, 51, 51, 0.5);
+  box-shadow: 0 0 0 2px rgba(156, 51, 51, 0.5);
+}

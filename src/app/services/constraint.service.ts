@@ -13,7 +13,6 @@ import { Constraint } from '../models/constraint-models/constraint';
 import { Concept } from '../models/constraint-models/concept';
 import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
 import { CombinationState } from '../models/constraint-models/combination-state';
-import { NegationConstraint } from '../models/constraint-models/negation-constraint';
 import { DropMode } from '../models/drop-mode';
 import { TreeNodeService } from './tree-node.service';
 import { TreeNode } from '../models/tree-models/tree-node';
@@ -33,8 +32,7 @@ import { MessageHelper } from '../utilities/message-helper';
 @Injectable()
 export class ConstraintService {
 
-  private _rootInclusionConstraint: CombinationConstraint;
-  private _rootExclusionConstraint: CombinationConstraint;
+  private _rootConstraint: CombinationConstraint;
 
   /*
    * List keeping track of all available constraints.
@@ -59,8 +57,7 @@ export class ConstraintService {
   private _operationType: OperationType;
 
   // internal states to save when changing operationType
-  private _exploreRootInclusionConstraint: CombinationConstraint;
-  private _exploreRootExclusionConstraint: CombinationConstraint;
+  private _exploreRootConstraint: CombinationConstraint;
 
   public static depthOfConstraint(constraint: Constraint): number {
     let depth = 0;
@@ -72,11 +69,10 @@ export class ConstraintService {
   }
 
   constructor(private treeNodeService: TreeNodeService) {
-    // Initialize the root inclusion and exclusion constraints in the 1st step
-    this.rootInclusionConstraint = new CombinationConstraint();
-    this.rootInclusionConstraint.isRoot = true;
-    this.rootExclusionConstraint = new CombinationConstraint();
-    this.rootExclusionConstraint.isRoot = true;
+    // Initialize the root constraints in the 1st step
+    this.rootConstraint = new CombinationConstraint();
+    this.rootConstraint.isRoot = true;
+
   }
 
   /**
@@ -107,15 +103,7 @@ export class ConstraintService {
   }
 
   public hasConstraint(): Boolean {
-    return this.hasInclusionConstraint() || this.hasExclusionConstraint();
-  }
-
-  public hasInclusionConstraint(): Boolean {
-    return ConstraintHelper.hasNonEmptyChildren(this.rootInclusionConstraint);
-  }
-
-  public hasExclusionConstraint(): Boolean {
-    return ConstraintHelper.hasNonEmptyChildren(this.rootExclusionConstraint);
+    return ConstraintHelper.hasNonEmptyChildren(this.rootConstraint);
   }
 
   /**
@@ -124,17 +112,11 @@ export class ConstraintService {
    * is returned by default.
    */
   public validateConstraintValues(): string {
-    if (this.hasInclusionConstraint()) {
-      let inclusionConstraintValidity = this.rootInclusionConstraint.inputValueValidity()
-      if (inclusionConstraintValidity !== '') {
-        return inclusionConstraintValidity
-      } else {
-        if (this.hasExclusionConstraint()) {
-          return this.rootExclusionConstraint.inputValueValidity()
-        } else {
-          return ''
-        }
-      }
+    if (this.hasConstraint()) {
+      let constraintValidity = this.rootConstraint.inputValueValidity()
+
+      return constraintValidity
+
     } else {
       return ''
     }
@@ -145,30 +127,19 @@ export class ConstraintService {
    */
   public generateConstraint(): Constraint {
     let resultConstraint: Constraint;
-    if (!this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
+    if (!this.hasConstraint()) {
       throw ErrorHelper.handleNewError('Empty constraints');
 
-    } else if (this.hasInclusionConstraint() && !this.hasExclusionConstraint()) {
-      resultConstraint = this.rootInclusionConstraint;
+    } 
 
-    } else if (!this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
-      resultConstraint = new NegationConstraint(this.rootExclusionConstraint);
-
-    } else if (this.hasInclusionConstraint() && this.hasExclusionConstraint()) {
-      resultConstraint = new CombinationConstraint();
-      (resultConstraint as CombinationConstraint).addChild(this.rootInclusionConstraint);
-      (resultConstraint as CombinationConstraint).addChild(new NegationConstraint(this.rootExclusionConstraint));
-    }
-
-    return resultConstraint;
+    return this.rootConstraint;;
   }
 
   /**
    * Clear the patient constraints
    */
   public clearConstraint() {
-    this.rootInclusionConstraint.children.length = 0;
-    this.rootExclusionConstraint.children.length = 0;
+    this.rootConstraint.children.length = 0;
   }
 
   // generate the constraint instance based on given node (e.g. tree node)
@@ -246,11 +217,8 @@ export class ConstraintService {
 
         // reload previous selection
         if (this._operationType === OperationType.ANALYSIS) {
-          if (this._exploreRootInclusionConstraint) {
-            this.rootInclusionConstraint = this._exploreRootInclusionConstraint
-          }
-          if (this._exploreRootExclusionConstraint) {
-            this.rootExclusionConstraint = this._exploreRootExclusionConstraint
+          if (this._exploreRootConstraint) {
+            this.rootConstraint = this._exploreRootConstraint
           }
         }
 
@@ -260,8 +228,7 @@ export class ConstraintService {
 
         // save current selection
         if (this._operationType === OperationType.EXPLORE) {
-          this._exploreRootInclusionConstraint = this.rootInclusionConstraint.clone()
-          this._exploreRootExclusionConstraint = this.rootExclusionConstraint.clone()
+          this._exploreRootConstraint = this.rootConstraint.clone()
           this.clearConstraint()
         }
         this._operationType = opType
@@ -278,20 +245,12 @@ export class ConstraintService {
     return this._operationType
   }
 
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this._rootInclusionConstraint;
+  get rootConstraint(): CombinationConstraint {
+    return this._rootConstraint;
   }
 
-  set rootInclusionConstraint(value: CombinationConstraint) {
-    this._rootInclusionConstraint = value;
-  }
-
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this._rootExclusionConstraint;
-  }
-
-  set rootExclusionConstraint(value: CombinationConstraint) {
-    this._rootExclusionConstraint = value;
+  set rootConstraint(value: CombinationConstraint) {
+    this._rootConstraint = value;
   }
 
   get allConstraints(): Constraint[] {

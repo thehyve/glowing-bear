@@ -37,8 +37,6 @@ export class ConstraintReverseMappingService {
    * of clear concepts. If one or more encrypted concepts are found, null is returned instead.
    *
    * @param panels
-   * @param targetPanelTiming
-   * @param nots
    */
   public mapPanels(panels: ApiI2b2Panel[]): Observable<Constraint> {
 
@@ -48,6 +46,7 @@ export class ConstraintReverseMappingService {
 
       return this.mapItem(panels[0].conceptItems[0]).pipe(map(constraint => {
         constraint.panelTimingSameInstance = panels[0].panelTiming === ApiI2b2Timing.sameInstanceNum
+        constraint.excluded = panels[0].not
         return constraint
       }))
 
@@ -85,6 +84,7 @@ export class ConstraintReverseMappingService {
     if (panel.conceptItems.length === 1) {
       return this.mapItem(panel.conceptItems[0]).pipe(map(constraint => {
         constraint.panelTimingSameInstance = sameInstance
+        constraint.excluded = panel.not
         return constraint
       }))
     } else {
@@ -93,6 +93,7 @@ export class ConstraintReverseMappingService {
         constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.Or
         combinationConstraint.panelTimingSameInstance = sameInstance
+        combinationConstraint.excluded = panel.not
         return combinationConstraint
       }
       ))

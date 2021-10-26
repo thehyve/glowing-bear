@@ -100,7 +100,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
       throw ErrorHelper.handleNewUserInputError(`Subgroup name ${this.name} can only contain alphanumerical symbols (without ö é ç ...) and underscores "_".`);
     } else if (this.name.length > nameMaxLength) {
       throw ErrorHelper.handleNewUserInputError(`Subgroup name length cannot exceed ${nameMaxLength}.`);
-    } else if (!this.constraintService.hasExclusionConstraint() && !this.constraintService.hasInclusionConstraint()) {
+    } else if (!this.constraintService.hasConstraint()) {
       throw ErrorHelper.handleNewUserInputError('Both inclusion and exclusion constraints are empty, nothing to add.');
     }
 
@@ -112,8 +112,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
     let newSubGroup: SubGroup = {
       name: this.name,
       timing: this.queryService.queryTimingSameInstance ? ApiI2b2Timing.sameInstanceNum : ApiI2b2Timing.any,
-      rootInclusionConstraint: this.constraintService.rootInclusionConstraint.clone(),
-      rootExclusionConstraint: this.constraintService.rootExclusionConstraint.clone()
+      rootConstraint: this.constraintService.rootConstraint.clone()
     }
     this.subGroups.push({ label: this.name, value: newSubGroup })
     this._usedNames.add(this.name)
@@ -135,8 +134,7 @@ export class GbCohortLandingZoneComponent implements OnInit {
   loadSubGroup(event: Event) {
     this.name = this.selectedSubGroup.name
     this.queryService.queryTimingSameInstance = (this.selectedSubGroup.timing === ApiI2b2Timing.sameInstanceNum) ? true : false
-    this.constraintService.rootInclusionConstraint = this.selectedSubGroup.rootInclusionConstraint.clone()
-    this.constraintService.rootExclusionConstraint = this.selectedSubGroup.rootExclusionConstraint.clone()
+    this.constraintService.rootConstraint = this.selectedSubGroup.rootConstraint.clone()
   }
 
   clearName() {

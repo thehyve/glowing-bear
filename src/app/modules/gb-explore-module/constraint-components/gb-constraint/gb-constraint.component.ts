@@ -89,6 +89,10 @@ export class GbConstraintComponent implements OnInit {
     this.queryService.isDirty = true;
   }
 
+  changeInclusion(){
+    this.constraint.excluded = !this.constraint.excluded
+  }
+
   get containerClass(): string {
     if (this.element.nativeElement.children[0].classList.length === 0) {
       const containerClassName = (this.constraint.className === 'CombinationConstraint'
