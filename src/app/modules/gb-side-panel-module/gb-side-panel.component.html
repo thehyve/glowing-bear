@@ -18,8 +18,8 @@
           <span class="no-result-text" *ngIf="termSearchService.isNoResults">No results</span>
           <p-accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
               class="ui-ontology-elements">
-              <p-header #ontologyElem class="ui-ontology-elements">
-                <span class="ui-button-text ui-unselectable-text" draggable="true">{{ontologyElement.name}}</span>
+              <p-header class="ui-ontology-elements" draggable="true">
+                <span class="ui-button-text ui-unselectable-text">{{ontologyElement.name}}</span>
               </p-header>
               <span class="full-path" style="font-size: 0.8em;" *ngFor="let nodePath of ontologyElement.fullPath; let last = last">
                 <span [ngClass]="{'bold': !!nodePath.isBold}">{{nodePath.name}}</span>

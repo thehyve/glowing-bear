@@ -24,7 +24,7 @@ interface NodeFullPath {
 interface ResultType {
   name: string;
   fullPath: NodeFullPath[];
-  handleFuncStart?: EventListenerObject;
+  handleFuncStart?: (e: Event) => void;
 }
 
 const getPathList = (path: string) => {
