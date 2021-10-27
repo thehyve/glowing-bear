@@ -14,18 +14,18 @@ import { Observable, of } from 'rxjs';
 import { ExploreSearchService } from './api/medco-node/explore-search.service';
 import { map } from 'rxjs/operators';
 import { forkJoin } from 'rxjs';
-import {ConceptConstraint} from '../models/constraint-models/concept-constraint';
-import {MessageHelper} from '../utilities/message-helper';
-import {modifiedConceptPath} from '../utilities/constraint-utilities/modified-concept-path';
-import {ValueType} from '../models/constraint-models/value-type';
-import {ApiI2b2Item} from '../models/api-request-models/medco-node/api-i2b2-item';
-import {ApiI2b2Timing} from '../models/api-request-models/medco-node/api-i2b2-timing';
-import {CombinationState} from '../models/constraint-models/combination-state';
-import {TextOperator} from '../models/constraint-models/text-operator';
-import {CombinationConstraint} from '../models/constraint-models/combination-constraint';
-import {NumericalOperator} from '../models/constraint-models/numerical-operator';
-import {DropMode} from '../models/drop-mode';
-import {TreeNode} from '../models/tree-models/tree-node';
+import { ConceptConstraint } from '../models/constraint-models/concept-constraint';
+import { MessageHelper } from '../utilities/message-helper';
+import { modifiedConceptPath } from '../utilities/constraint-utilities/modified-concept-path';
+import { ValueType } from '../models/constraint-models/value-type';
+import { ApiI2b2Item } from '../models/api-request-models/medco-node/api-i2b2-item';
+import { ApiI2b2Timing } from '../models/api-request-models/medco-node/api-i2b2-timing';
+import { CombinationState } from '../models/constraint-models/combination-state';
+import { TextOperator } from '../models/constraint-models/text-operator';
+import { CombinationConstraint } from '../models/constraint-models/combination-constraint';
+import { NumericalOperator } from '../models/constraint-models/numerical-operator';
+import { DropMode } from '../models/drop-mode';
+import { TreeNode } from '../models/tree-models/tree-node';
 
 @Injectable()
 export class ConstraintReverseMappingService {
@@ -54,8 +54,9 @@ export class ConstraintReverseMappingService {
 
       return forkJoin(panels.map(panel => this.mapPanel(panel))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
-        constraints.forEach(constraint => { 
-          combinationConstraint.addChild(constraint) })
+        constraints.forEach(constraint => {
+          combinationConstraint.addChild(constraint)
+        })
         combinationConstraint.combinationState = CombinationState.And
         return combinationConstraint
 

@@ -55,7 +55,7 @@ export class CombinationConstraint extends Constraint {
     res.textRepresentation = this.textRepresentation;
     res.parentConstraint = (this.parentConstraint) ? this.parentConstraint : null;
     res.isRoot = this.isRoot;
-    res.excluded=this.excluded
+    res.excluded = this.excluded
     res.combinationState = this.combinationState;
     res.panelTimingSameInstance = this.panelTimingSameInstance;
     res.children = this._children.map(constr => constr.clone());
@@ -125,7 +125,7 @@ export class CombinationConstraint extends Constraint {
 
   private updateTextRepresentation() {
     if (this.children.length > 0) {
-      this.textRepresentation = (this.excluded ? 'not (':'(') + this.children.map(({ textRepresentation }) => textRepresentation)
+      this.textRepresentation = (this.excluded ? 'not (' : '(') + this.children.map(({ textRepresentation }) => textRepresentation)
         .join(this.combinationState === CombinationState.And ? ' and ' : ' or ') + ')'
     } else {
       this.textRepresentation = 'Group';

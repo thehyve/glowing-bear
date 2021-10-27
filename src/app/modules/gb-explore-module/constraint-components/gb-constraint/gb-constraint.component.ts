@@ -89,7 +89,7 @@ export class GbConstraintComponent implements OnInit {
     this.queryService.isDirty = true;
   }
 
-  changeInclusion(){
+  changeInclusion() {
     this.constraint.excluded = !this.constraint.excluded
   }
 

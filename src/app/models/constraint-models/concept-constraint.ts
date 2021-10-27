@@ -61,7 +61,7 @@ export class ConceptConstraint extends Constraint {
     res.textRepresentation = this.textRepresentation
     res.parentConstraint = this.parentConstraint
     res.concept = this.concept.clone()
-    res.excluded=this.excluded
+    res.excluded = this.excluded
     res.applyNumericalOperator = this.applyNumericalOperator
     res.applyTextOperator = this.applyTextOperator;
 
@@ -112,12 +112,12 @@ export class ConceptConstraint extends Constraint {
   }
 
   get textRepresentation(): string {
-    let currentRepresentation= super.textRepresentation;
+    let currentRepresentation = super.textRepresentation;
     this.textRepresentation = this.excluded ? 'not (' + currentRepresentation + ')' : currentRepresentation
     return super.textRepresentation
   }
 
-  set textRepresentation(text: string){
+  set textRepresentation(text: string) {
     super.textRepresentation = text
   }
 

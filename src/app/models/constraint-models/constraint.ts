@@ -52,12 +52,12 @@ export class Constraint {
     this._parentConstraint = value;
   }
 
-  get excluded() :boolean{
-    return this._excluded 
+  get excluded(): boolean {
+    return this._excluded
   }
 
-  set excluded(exclusionFlag: boolean){
-    this._excluded =exclusionFlag
+  set excluded(exclusionFlag: boolean) {
+    this._excluded = exclusionFlag
   }
 
   get className(): string {
@@ -67,7 +67,7 @@ export class Constraint {
     let ret = new Constraint()
     ret.textRepresentation = this.textRepresentation
     ret.panelTimingSameInstance = this.panelTimingSameInstance
-    ret.excluded =this.excluded
+    ret.excluded = this.excluded
 
     ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
     return ret

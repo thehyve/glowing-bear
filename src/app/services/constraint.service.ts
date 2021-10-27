@@ -130,9 +130,9 @@ export class ConstraintService {
     if (!this.hasConstraint()) {
       throw ErrorHelper.handleNewError('Empty constraints');
 
-    } 
+    }
 
-    return this.rootConstraint;;
+    return this.rootConstraint;
   }
 
   /**
