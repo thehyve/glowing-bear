@@ -35,7 +35,9 @@ export class GbSidePanelComponent {
         setTimeout(() => {
           const elems = this.accordionTab.accordion.el.nativeElement.querySelectorAll('p-header');
           elems.forEach((elemResult, resultIndex) => {
-            this.renderer.listen(elemResult, 'dragstart', searchResults[resultIndex]?.handleFuncStart);
+            if (searchResults[resultIndex]) {
+              this.renderer.listen(elemResult, 'dragstart', searchResults[resultIndex].handleFuncStart);
+            }
           });
         }, 0);
       });

@@ -62,14 +62,14 @@ export class TermSearchService {
   }
 
   addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, searchConceptInfo?: TreeNode[]) {
-    const dataObject = {
-      ...node,
-      ...((searchConceptInfo?.length > 0) ? { appliedConcept: searchConceptInfo[0] } : {}),
-      dropMode: DropMode.TreeNode,
-      metadata: undefined,
-      path: `${node.path}`,
-      isModifier: () => !!searchConceptInfo
-    };
+    const dataObject = node.clone();
+
+    dataObject.dropMode = DropMode.TreeNode;
+    dataObject.path = `${node.path}`;
+    dataObject.metadata = undefined;
+    if (searchConceptInfo?.length > 0) {
+      dataObject.appliedConcept = searchConceptInfo[0];
+    }
 
     const formattedResult: ResultType = {
       name: node.name,
