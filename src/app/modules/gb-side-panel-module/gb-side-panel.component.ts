@@ -29,7 +29,9 @@ export class GbSidePanelComponent {
 
     ngAfterViewInit() {
       this.termSearchService.searchResultObservable.subscribe(searchResults => {
-        if (searchResults.length === 0) return;
+        if (searchResults.length === 0) {
+          return;
+        }
         setTimeout(() => {
           const elems = this.accordionTab.accordion.el.nativeElement.querySelectorAll('p-header');
           elems.forEach((elemResult, resultIndex) => {
