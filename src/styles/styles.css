@@ -241,21 +241,17 @@ body .hline {
  * ------------------------------ Styles for gb-nav-bar component -------------------------------
  */
 /*Style fix for adding border radius to navbar*/
-gb-nav-bar .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
-  border-radius: 10px;
-}
-
-gb-nav-bar .ui-tabmenuitem .ui-state-active {
-  border-radius: 10px;
+.ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem {
+  border-radius: 10px !important;
 }
 
 /*Style fix for hiding the border in tab menu bar*/
-gb-nav-bar .ui-tabmenu-nav {
-  border: none;
+.ui-tabmenu-nav {
+  border: none !important;
   background-color: #FCFCFC;
 }
 
-gb-nav-bar .ui-menuitem-text {
+.ui-menuitem-text {
   color: hsl(0, 0%, 30%);
 }
 
@@ -382,6 +378,142 @@ gb-summary {
 
 gb-side-panel .ui-accordion .ui-accordion-content {
   padding: 1em;
+}
+
+p-accordiontab[ng-reflect-header="Ontology"] > .ui-accordion-content-wrapper > .ui-accordion-content {
+  padding-top: 0px;
+}
+
+p-accordiontab[ng-reflect-header="Ontology"] .ui-inputtext {
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+p-accordiontab[ng-reflect-header="Ontology"] .term-search {
+  display: flex;
+  flex-direction: column;
+}
+
+p-accordiontab[ng-reflect-header="Ontology"] .term-search p-button[label="Search"] {
+  margin-top: 8px;
+}
+
+form.term-search p-header button,
+form.term-search p-header button:hover {
+  float: right;
+  height: 20px;
+  color: #999999;
+  background-color: transparent !important;
+}
+
+form.term-search .ui-accordion-header,
+form.term-search .ui-accordion-header:hover {
+  padding: 0em ;
+  padding-bottom: 2px;
+  color: #8d8d8d;
+  background-color: #ffffff !important;
+  border: none;
+  border-radius: 0em;
+  border-bottom-color: #bebebe;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+form.term-search .ui-accordion-header a {
+  padding: 0em !important;
+  color: #404040;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0em;
+  font-size: 13px;
+}
+
+form.term-search .ui-accordion .ui-accordion-header p {
+  padding: 1em;
+  padding-bottom: 0em;
+}
+
+form.term-search .loading-blink {
+  font-size: 1.5em;
+  text-align: left;
+  padding: 0px;
+  margin-top: 1rem;
+  margin-bottom: 0px;
+}
+
+form.term-search .no-result-text {
+  margin-top: 12px;
+}
+
+form.term-search .ui-accordion-content {
+  border: none;
+  padding: 0.5em;
+}
+
+form.term-search .ui-togglebutton {
+  background-color: var(--gb-clinical-green);
+  padding: 0em;
+}
+
+form.term-search .ui-togglebutton:not(.ui-state-disabled).ui-state-active {
+  background-color: var(--gb-clinical-green);
+}
+
+form.term-search
+  .ui-togglebutton:not(.ui-state-disabled):not(.ui-state-active) {
+  background-color: #ffffff;
+  color: #404040;
+}
+
+form.term-search .ui-togglebutton.ui-button.ui-state-focus {
+  box-shadow: none;
+}
+
+form.term-search p-header > .ui-button-text {
+  padding: 0.1em 0.2em 0.1em 1.9em;
+  color: #404040 !important;
+  
+}
+
+form.term-search a:focus,
+form.term-search a:hover {
+  text-decoration: none;
+  outline: none;
+}
+
+form.term-search .ui-dialog-footer button {
+  height: auto;
+  color: #8b8b8b;
+}
+
+form.term-search .ui-dialog-footer button:hover {
+  background-color: var(--gb-clinical-green);
+  color: white;
+}
+
+form.term-search .ui-dialog-footer button:first-of-type {
+  background-color: red;
+  color: white;
+}
+
+form.term-search .ui-dialog-footer button:first-of-type:hover {
+  background-color: #b60000;
+}
+
+form.term-search .pi-spin {
+  color: transparent;
+}
+
+form.term-search .ui-accordion-toggle-icon {
+  color: #404040;
+}
+
+form.term-search .full-path .path-separator {
+  margin: 0px 4px;
+}
+
+form.term-search .full-path .bold {
+  font-weight: 700;
 }
 
 /*
