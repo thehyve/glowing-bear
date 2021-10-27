@@ -34,6 +34,9 @@ export const routes: Routes = [
         loadChildren: '../gb-survival-results-module/gb-survival-results.module#GbSurvivalResultsModule'
       }
     ]
+  },
+  { // https://stackoverflow.com/questions/61084536/how-to-redirect-unknown-routes-to-home-route-in-angular-program
+    path: '**', redirectTo: '/explore'
   }
 ];
 
