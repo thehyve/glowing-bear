@@ -6,11 +6,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {Component,  Renderer2} from '@angular/core';
+import {Component,  Renderer2, ViewChild} from '@angular/core';
 import {NavbarService} from '../../services/navbar.service';
 import {TermSearchService} from '../../services/term-search.service';
 import {OntologyNavbarService} from '../../services/ontology-navbar.service';
 import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patient-list.service';
+import {AccordionTab} from 'primeng';
 
 @Component({
   selector: 'gb-side-panel',
@@ -18,6 +19,8 @@ import {SavedCohortsPatientListService} from '../../services/saved-cohorts-patie
   styleUrls: ['./gb-side-panel.component.css']
 })
 export class GbSidePanelComponent {
+  @ViewChild('accordionTab') accordionTab: AccordionTab
+
   constructor(public navbarService: NavbarService,
               public savedCohortsPatientListService: SavedCohortsPatientListService,
               public ontologyNavbarService: OntologyNavbarService,
@@ -26,8 +29,9 @@ export class GbSidePanelComponent {
 
     ngAfterViewInit() {
       this.termSearchService.searchResultObservable.subscribe(searchResults => {
+        if (searchResults.length === 0) return;
         setTimeout(() => {
-          const elems = document.querySelectorAll('.term-search p-header');
+          const elems = this.accordionTab.accordion.el.nativeElement.querySelectorAll('p-header');
           elems.forEach((elemResult, resultIndex) => {
             this.renderer.listen(elemResult, 'dragstart', searchResults[resultIndex]?.handleFuncStart);
           });

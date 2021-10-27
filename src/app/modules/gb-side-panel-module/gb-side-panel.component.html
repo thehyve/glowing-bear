@@ -16,7 +16,7 @@
         <form class="term-search" *ngIf="ontologyNavbarService.isTermSearch">
           <input value="{{termSearchService.searchTerm}}" class="ui-inputtext" (input)="termSearchService.onTermChange($event)" placeholder="Search in Ontology (min. 3 characters)" />
           <span class="no-result-text" *ngIf="termSearchService.isNoResults">No results</span>
-          <p-accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
+          <p-accordionTab #accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
               class="ui-ontology-elements">
               <p-header class="ui-ontology-elements" draggable="true">
                 <span class="ui-button-text ui-unselectable-text">{{ontologyElement.name}}</span>
