@@ -113,10 +113,10 @@ export class CohortService {
       let newCombination = new CombinationConstraint()
       newCombination.combinationState = CombinationState.And
       newCombination.panelTimingSameInstance = flatConstraint.panelTimingSameInstance
-      newCombination.excluded = flatConstraint.excluded
       let newLevel2Combination = new CombinationConstraint()
       newLevel2Combination.combinationState = CombinationState.Or
       newLevel2Combination.addChild(flatConstraint)
+      newLevel2Combination.excluded = flatConstraint.excluded
       newCombination.addChild(newLevel2Combination)
       return newCombination
 
@@ -127,7 +127,7 @@ export class CohortService {
       if (childConstraint instanceof ConceptConstraint) {
         let newConstraint = new CombinationConstraint()
         newConstraint.combinationState = CombinationState.Or
-        newConstraint.excluded = flatConstraint.excluded
+        newConstraint.excluded = childConstraint.excluded
         newConstraint.panelTimingSameInstance = childConstraint.panelTimingSameInstance;
         newConstraint.addChild((newAndCombination as CombinationConstraint).children[i]);
         (newAndCombination as CombinationConstraint).updateChild(i, newConstraint)
@@ -319,16 +319,14 @@ export class CohortService {
     }
 
     this._queryTiming.next(cohortDefinition.queryTiming)
-
     this.constraintReverseMappingService.mapPanels(cohortDefinition.panels)
       .subscribe(constraint => {
-        let formatedConstraint = <Constraint>{}
-        formatedConstraint = CohortService.unflattenConstraints(formatedConstraint)
-        if (formatedConstraint) {
-          if (formatedConstraint instanceof ConceptConstraint) {
-            this.constraintService.rootConstraint.addChild(formatedConstraint)
+        constraint = CohortService.unflattenConstraints(constraint)
+        if (constraint) {
+          if (constraint instanceof ConceptConstraint) {
+            this.constraintService.rootConstraint.addChild(constraint)
           } else {
-            this.constraintService.rootConstraint = (formatedConstraint as CombinationConstraint);
+            this.constraintService.rootConstraint = (constraint as CombinationConstraint);
             this.constraintService.rootConstraint.isRoot = true
           }
         }

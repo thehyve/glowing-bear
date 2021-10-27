@@ -54,7 +54,8 @@ export class ConstraintReverseMappingService {
 
       return forkJoin(panels.map(panel => this.mapPanel(panel))).pipe(map(constraints => {
         let combinationConstraint = new CombinationConstraint()
-        constraints.forEach(constraint => { combinationConstraint.addChild(constraint) })
+        constraints.forEach(constraint => { 
+          combinationConstraint.addChild(constraint) })
         combinationConstraint.combinationState = CombinationState.And
         return combinationConstraint
 

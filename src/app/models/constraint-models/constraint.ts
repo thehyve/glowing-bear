@@ -67,6 +67,7 @@ export class Constraint {
     let ret = new Constraint()
     ret.textRepresentation = this.textRepresentation
     ret.panelTimingSameInstance = this.panelTimingSameInstance
+    ret.excluded =this.excluded
 
     ret.parentConstraint = (this._parentConstraint) ? this._parentConstraint : null
     return ret
