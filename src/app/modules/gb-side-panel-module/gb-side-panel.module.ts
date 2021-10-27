@@ -9,6 +9,7 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TabMenuModule } from 'primeng';
 import { GbSidePanelComponent } from './gb-side-panel.component';
 import { AccordionModule } from 'primeng';
 import { TreeModule } from 'primeng';
@@ -48,6 +49,7 @@ import {ExploreCohortsService} from '../../services/api/medco-node/explore-cohor
     TooltipModule,
     ConfirmDialogModule,
     RadioButtonModule,
+    TabMenuModule
   ],
   declarations: [
     GbSidePanelComponent,

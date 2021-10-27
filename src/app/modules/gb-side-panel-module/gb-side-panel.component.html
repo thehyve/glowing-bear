@@ -9,7 +9,27 @@
 
     <div *ngIf="navbarService.isExplore ||  navbarService.isAnalysis">
       <p-accordionTab header="Ontology" [selected]="true">
-        <gb-tree-nodes></gb-tree-nodes>
+        <div class="gb-sidepanel-navbar">
+          <p-tabMenu [model]="ontologyNavbarService.items" [activeItem]="ontologyNavbarService.activeItem"></p-tabMenu>
+        </div>
+        <gb-tree-nodes *ngIf="ontologyNavbarService.isBrowse"></gb-tree-nodes>
+        <form class="term-search" *ngIf="ontologyNavbarService.isTermSearch">
+          <input value="{{termSearchService.searchTerm}}" class="ui-inputtext" (input)="termSearchService.onTermChange($event)" placeholder="Search in Ontology (min. 3 characters)" />
+          <span class="no-result-text" *ngIf="termSearchService.isNoResults">No results</span>
+          <p-accordionTab #accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
+              class="ui-ontology-elements">
+              <p-header class="ui-ontology-elements" draggable="true">
+                <span class="ui-button-text ui-unselectable-text">{{ontologyElement.name}}</span>
+              </p-header>
+              <span class="full-path" style="font-size: 0.8em;" *ngFor="let nodePath of ontologyElement.fullPath; let last = last">
+                <span [ngClass]="{'bold': !!nodePath.isBold}">{{nodePath.name}}</span>
+                <span *ngIf="!last" class="path-separator">></span>
+              </span>
+          </p-accordionTab>
+          <div *ngIf="termSearchService.isLoading" style="margin: auto;">
+            <p class="loading-blink"><span>•</span><span>•</span><span>•</span></p>
+          </div>
+        </form>
       </p-accordionTab>
     </div>
 

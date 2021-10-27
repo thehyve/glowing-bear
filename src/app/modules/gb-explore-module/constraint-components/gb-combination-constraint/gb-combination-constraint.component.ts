@@ -80,9 +80,12 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
   onDrop(event) {
     event.stopPropagation();
     let selectedNode: TreeNode = this.treeNodeService.selectedTreeNode;
-    let selectedCohort: Cohort = this.cohortService.selectedCohort;
 
-    if (selectedCohort) {
+    if (selectedNode) {
+      this.droppedConstraint =
+        this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
+      this.treeNodeService.selectedTreeNode = null;
+    } else {
       const constraintCohort = new ConstraintCohort();
       constraintCohort.name = this.cohortService.selectedCohort.name;
 
@@ -90,13 +93,8 @@ export class GbCombinationConstraintComponent extends GbConstraintComponent impl
       cohortConstraint.cohort = constraintCohort;
       cohortConstraint.textRepresentation = cohortConstraint.cohort.name;
       this.droppedConstraint = cohortConstraint;
-    } else {
-      this.droppedConstraint =
-        this.constraintService.generateConstraintFromTreeNode(selectedNode, selectedNode ? selectedNode.dropMode : null);
+      this.cohortService.selectedCohort = null;
     }
-
-    this.treeNodeService.selectedTreeNode = null;
-    this.cohortService.selectedCohort = null;
 
     this.addChildConstraint(this.droppedConstraint);
   }
