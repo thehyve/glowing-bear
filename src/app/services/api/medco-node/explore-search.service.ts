@@ -38,36 +38,58 @@ export class ExploreSearchService {
     private apiEndpointService: ApiEndpointService,
     private injector: Injector) { }
 
+    private mapSearchResults(searchResp) {
+      return searchResp.results.map((treeNodeObj) => {
+        let treeNode = new TreeNode();
+        treeNode.path = treeNodeObj['path'];
+        treeNode.appliedPath = treeNodeObj['appliedPath'];
+        treeNode.name = treeNodeObj['name'];
+        treeNode.displayName = treeNodeObj['displayName'];
+        treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
+        treeNode.conceptCode = treeNodeObj['code'];
+        treeNode.metadata = treeNodeObj['metadata'];
+        treeNode.comment = treeNodeObj['comment'];
+        // leaf in the database is not a leaf in the tree, as modifiers
+        // are displayed as children
+        treeNode.leaf = false;
+        treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
+
+        treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
+        treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
+        treeNode.depth = treeNode.path.split('/').length - 2;
+        treeNode.children = [];
+        treeNode.childrenAttached = false;
+
+        return treeNode;
+      });
+    }
+
+    private exploreSearch(searchString: string, limit: number): Observable<TreeNode[]> {
+      return this.apiEndpointService.postCall(
+        'node/explore/search',
+        { searchString, limit }
+      ).pipe(
+        map(this.mapSearchResults.bind(this))
+      );
+    }
+    /**
+     * Perform search concept children in ontology.
+     *
+     * @param {string} root - the path to the specific tree node, must include the first slash
+     *
+     * @returns {Observable<Object>}
+     */
+    exploreSearchTerm(searchString: string, limit: number = 50): Observable<TreeNode[]> {
+      return this.exploreSearch(searchString, limit);
+    }
+
 
   private exploreSearchConcept(operation: string, root: string): Observable<TreeNode[]> {
     return this.apiEndpointService.postCall(
       'node/explore/search/concept',
       { operation: operation, path: root }
     ).pipe(
-      map((searchResp: object) => {
-        return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
-          let treeNode = new TreeNode();
-          treeNode.path = treeNodeObj['path'];
-          treeNode.appliedPath = treeNodeObj['appliedPath'];
-          treeNode.name = treeNodeObj['name'];
-          treeNode.displayName = treeNodeObj['displayName'];
-          treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
-          treeNode.conceptCode = treeNodeObj['code'];
-          treeNode.metadata = treeNodeObj['metadata'];
-          // leaf in the database is not a leaf in the tree, as modifiers
-          // are displayed as children
-          treeNode.leaf = false;
-          treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption'];
-
-          treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
-          treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
-          treeNode.depth = treeNode.path.split('/').length - 2;
-          treeNode.children = [];
-          treeNode.childrenAttached = false;
-
-          return treeNode;
-        })
-      })
+      map(this.mapSearchResults.bind(this))
     );
   }
   /**
@@ -98,29 +120,8 @@ export class ExploreSearchService {
       'node/explore/search/modifier',
       { operation: operation, path: root, appliedPath: appliedPath, appliedConcept: appliedConcept }
     ).pipe(
-      map((searchResp: object) => {
-        return (searchResp['results'] as object[]).map((treeNodeObj: object) => {
-          let treeNode = new TreeNode()
-          treeNode.path = treeNodeObj['path']
-          treeNode.appliedPath = treeNodeObj['appliedPath'];
-          treeNode.name = treeNodeObj['name']
-          treeNode.displayName = treeNodeObj['displayName']
-          treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`
-          treeNode.conceptCode = treeNodeObj['code']
-          treeNode.metadata = treeNodeObj['metadata']
-          treeNode.leaf = false;
-          treeNode.encryptionDescriptor = treeNodeObj['medcoEncryption']
-
-          treeNode.nodeType = this.nodeType(treeNodeObj['type'] as string);
-          treeNode.valueType = this.valueType(treeNode.nodeType, treeNode.metadata);
-
-          treeNode.depth = treeNode.path.split('/').length - 2;
-          treeNode.children = [];
-          treeNode.childrenAttached = false;
-          return treeNode
-        }
-        )
-      }))
+      map(this.mapSearchResults.bind(this))
+    );
   }
 
   private nodeType(nodeTypeString: string): TreeNodeType {

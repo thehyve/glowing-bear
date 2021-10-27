@@ -35,12 +35,14 @@
     <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-4" placeholder="max:{{maxLimit}}"
            [(ngModel)]="maxVal">
     <span>&nbsp;{{unit}}</span>
+    <gb-tooltip></gb-tooltip>
   </div>
 
   <div *ngIf="(numericalOperatorState !== null) && !isBetween() " class="d-inline-block">
     <input type="number" [step]="integerOrFloat" [min]="positive" class="col-sm-8"
            [(ngModel)]="equalVal">
     <span>&nbsp;{{unit}}</span>
+    <gb-tooltip></gb-tooltip>
   </div>
 </div>
 <!-- if the concept is TEXT -->
@@ -49,8 +51,9 @@
   <p-dropdown [(ngModel)]="textOperatorState" [options]="textOperation" dropdownIcon="pi pi-caret-down white-color" (onChange)="changeTextOperator($event)"></p-dropdown>
   <span>&nbsp;&nbsp;&nbsp;</span>
   <div *ngIf="(textOperatorState !== null)" class="d-inline-block">
-    <input type="text" class="col-sm-12" placeholder="expression"
-           [(ngModel)]="textValue">
+    <input type="text" class="col-sm-12" style="width: auto;" placeholder="expression"
+           [(ngModel)]="textValue"> <!-- Width auto so that the tooltip displays nicely on the right side instead of below this -->
+    <gb-tooltip></gb-tooltip>
   </div>
 
 </div>
