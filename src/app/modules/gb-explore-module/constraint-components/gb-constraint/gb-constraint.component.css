@@ -99,28 +99,87 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-.btn-inclusion {
-  padding: 0.2rem 0.4rem;
-  font-size: 0.875rem;
-  border-radius: 0.2rem;
-  margin-top: 0.5rem;
-  margin-right: 0.5rem;
-}
-.btn-exclusion {
-  padding: 0.2rem 0.4rem;
-  font-size: 0.875rem;
-  border-radius: 0.2rem;
-  margin-top: 0.5rem;
-  color:#a83c3c;
-  border-color: #a83c3c;
-  margin-right: 0.5rem;
-}
-.btn-exclusion:hover{
-  background: #a83c3c;
-  color: #f7f7f7;
+.switch {
+  position: relative;
+  top: 5px;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
 }
 
-.btn-exclusion:focus, .btn-exclusion.focus {
-  -webkit-box-shadow: 0 0 0 2px rgba(156, 51, 51, 0.5);
-  box-shadow: 0 0 0 2px rgba(156, 51, 51, 0.5);
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #aa7979;
+}
+
+input:checked:hover + .slider{
+  background-color: #a83c3c;
+}
+
+input:not(:checked) + .slider {
+  background-color: #6b9994;
+}
+
+
+input:not(:checked):hover + .slider{
+  background-color: #339C90;
+}
+
+input:focus:checked + .slider {
+  box-shadow: 0 0 2px rgba(156, 51, 51, 0.5);
+}
+
+input:focus:not(:checked)+ .slider {
+  box-shadow: 0 0 2px rgba(51, 156, 144, 0.5);
+}
+
+
+.slider.round {
+  border-radius: 17px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+.switch-label{
+  position: relative;
+  top: 4px;
 }
