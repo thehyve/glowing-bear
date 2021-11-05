@@ -44,6 +44,7 @@ export class ExploreSearchService {
         treeNode.path = treeNodeObj['path'];
         treeNode.appliedPath = treeNodeObj['appliedPath'];
         treeNode.name = treeNodeObj['name'];
+        treeNode.parent = treeNodeObj['parent'];
         treeNode.displayName = treeNodeObj['displayName'];
         treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
         treeNode.conceptCode = treeNodeObj['code'];
