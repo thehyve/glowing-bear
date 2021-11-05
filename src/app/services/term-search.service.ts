@@ -118,7 +118,10 @@ export class TermSearchService {
           this.addInResults(node, displayNameList, nodes.length);
         } else {
           const splittedNodePath = node.path.split('/');
-          const realAppliedPath = `${splittedNodePath.length > 1 ? `/${splittedNodePath[1]}` : ''}${node.appliedPath}${node.appliedPath[node.appliedPath.length - 1] !== '/' ? '/' : ''}`
+          const splittedAppliedPath = node.appliedPath.split('/');
+          const realAppliedPath = `${splittedNodePath.length > 1 ? `/${splittedNodePath[1]}` : ''}${`${node.nodeType.toLowerCase().indexOf('modifier_folder') === -1
+                                    ? node.appliedPath
+                                    : `/${splittedAppliedPath[1]}`}${node.appliedPath[node.appliedPath.length - 1] !== '/' ? '/' : ''}`}`;
           this.exploreSearchService.exploreSearchConceptInfo(realAppliedPath).subscribe((searchConceptInfo) => {
             if (searchTerm !== this.searchTerm) {
               return;
