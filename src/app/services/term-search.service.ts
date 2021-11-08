@@ -49,14 +49,14 @@ export class TermSearchService {
     this.exploreSearchService = this.injector.get(ExploreSearchService);
   }
 
-  addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, searchConceptInfo?: TreeNode[]) {
+  addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, appliedConcept?: TreeNode) {
     const dataObject = node.clone();
 
     dataObject.dropMode = DropMode.TreeNode;
     dataObject.path = `${node.path}`;
     dataObject.metadata = undefined;
-    if (searchConceptInfo?.length > 0) {
-      dataObject.appliedConcept = searchConceptInfo[0];
+    if (appliedConcept) {
+      dataObject.appliedConcept = appliedConcept;
     }
 
     const formattedResult: ResultType = {
@@ -117,17 +117,7 @@ export class TermSearchService {
        if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
           this.addInResults(node, displayNameList, nodes.length);
         } else {
-          const splittedNodePath = node.path.split('/');
-          const splittedAppliedPath = node.appliedPath.split('/');
-          const realAppliedPath = `${splittedNodePath.length > 1 ? `/${splittedNodePath[1]}` : ''}${`${node.nodeType.toLowerCase().indexOf('modifier_folder') === -1
-                                    ? node.appliedPath
-                                    : `/${splittedAppliedPath[1]}`}${node.appliedPath[node.appliedPath.length - 1] !== '/' ? '/' : ''}`}`;
-          this.exploreSearchService.exploreSearchConceptInfo(realAppliedPath).subscribe((searchConceptInfo) => {
-            if (searchTerm !== this.searchTerm) {
-              return;
-            }
-            this.addInResults(node, displayNameList, nodes.length, searchConceptInfo);
-          })
+          this.addInResults(node, displayNameList, nodes.length, node.parent);
         }
       });
     }, (err) => {
