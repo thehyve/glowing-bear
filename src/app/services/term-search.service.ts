@@ -25,6 +25,7 @@ interface ResultType {
   name: string;
   fullPath: NodeFullPath[];
   handleFuncStart?: (e: Event) => void;
+  conceptCode: string;
 }
 
 /**
@@ -61,6 +62,7 @@ export class TermSearchService {
 
     const formattedResult: ResultType = {
       name: node.name,
+      conceptCode: node.conceptCode,
       fullPath: displayNameList.reduce((result, displayName) => [
         ...result, {
           name: displayName,
@@ -73,7 +75,7 @@ export class TermSearchService {
     };
 
     let resultIndex = -1;
-    if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
+    if (!this.results.find(({ conceptCode: resultConceptCode }) => resultConceptCode === node.conceptCode)) { // Not found in this.results, add
       resultIndex = this.results.push(formattedResult) - 1;
       if (resultIndex === nodesSize - 1) {
         this.isLoading = false;
@@ -128,7 +130,10 @@ export class TermSearchService {
 
   onTermChange(event: any) {
     this.searchTerm = event.target.value;
-    if (this.searchTerm.length > 2) {
+  }
+
+  onSearch() {
+    if (this.searchTerm.length) {
       this.search();
     }
   }
