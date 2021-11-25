@@ -75,7 +75,9 @@ export class TermSearchService {
     };
 
     let resultIndex = -1;
-    if (!this.results.find(({ conceptCode: resultConceptCode }) => resultConceptCode === node.conceptCode)) { // Not found in this.results, add
+    if (!this.results.find(({ conceptCode: resultConceptCode }) =>
+          resultConceptCode === node.conceptCode
+        )) { // Not found in this.results, add
       resultIndex = this.results.push(formattedResult) - 1;
       if (resultIndex === nodesSize - 1) {
         this.isLoading = false;
