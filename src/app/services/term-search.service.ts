@@ -25,18 +25,7 @@ interface ResultType {
   name: string;
   fullPath: NodeFullPath[];
   handleFuncStart?: (e: Event) => void;
-}
-
-const getPathList = (path: string) => {
-  const splittedPath = path.split('/').filter(value => value !== '');
-
-  const pathList: string[] = [];
-
-  splittedPath.forEach((_, index) => {
-    pathList.push(splittedPath.slice(0, index + 1).reduce((result, value) => `${result}${value}/`, '/'));
-  });
-
-  return pathList;
+  conceptCode: string;
 }
 
 /**
@@ -61,19 +50,20 @@ export class TermSearchService {
     this.exploreSearchService = this.injector.get(ExploreSearchService);
   }
 
-  addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, searchConceptInfo?: TreeNode[]) {
+  addInResults(node: TreeNode, displayNameList: string[], nodesSize: number, appliedConcept?: TreeNode) {
     const dataObject = node.clone();
 
     dataObject.dropMode = DropMode.TreeNode;
     dataObject.path = `${node.path}`;
     dataObject.metadata = undefined;
-    if (searchConceptInfo?.length > 0) {
-      dataObject.appliedConcept = searchConceptInfo[0];
+    if (appliedConcept) {
+      dataObject.appliedConcept = appliedConcept;
     }
 
     const formattedResult: ResultType = {
       name: node.name,
-      fullPath: displayNameList.reverse().reduce((result, displayName) => [
+      conceptCode: node.conceptCode,
+      fullPath: displayNameList.reduce((result, displayName) => [
         ...result, {
           name: displayName,
           isBold: !result.find(({ isBold }) => isBold) && displayName.toLowerCase().indexOf(this.searchTerm.toLowerCase()) !== -1
@@ -85,7 +75,9 @@ export class TermSearchService {
     };
 
     let resultIndex = -1;
-    if (!this.results.find(({ name: resultName }) => resultName === node.name)) { // Not found in this.results, add
+    if (!this.results.find(({ conceptCode: resultConceptCode }) =>
+          resultConceptCode === node.conceptCode
+        )) { // Not found in this.results, add
       resultIndex = this.results.push(formattedResult) - 1;
       if (resultIndex === nodesSize - 1) {
         this.isLoading = false;
@@ -118,40 +110,19 @@ export class TermSearchService {
         this.isNoResults = true;
       }
       nodes.forEach((node) => {
-        const splittedNodePath = node.path.split('/');
-        const realAppliedPath = `${splittedNodePath.length > 1 ? `/${splittedNodePath[1]}` : ''}${node.appliedPath}${node.appliedPath[node.appliedPath.length - 1] !== '/' ? '/' : ''}`
-        const pathList = [
-          ...(node.appliedPath !== '@' ? getPathList(realAppliedPath) : []),
-          ...getPathList(node.path)
-        ];
+        let actualNode = node;
+        let displayNameList: string[] = [actualNode.displayName];
 
-        let displayNameListLength = pathList.length;
-        let displayNameList: string[] = [];
+        while (actualNode.parent) {
+          actualNode = actualNode.parent;
+          displayNameList.push(actualNode.displayName);
+        }
 
-        pathList.forEach((value, pathListIndex) => {
-          this.exploreSearchService.exploreSearchConceptInfo(value).subscribe((searchResult) => {
-            if (searchTerm !== this.searchTerm) {
-              return;
-            }
-            if (searchResult.length > 0) {
-              displayNameList[pathListIndex] = searchResult[0].displayName;
-            } else {
-              displayNameListLength--;
-            }
-            if (displayNameList.filter((_value) => !!_value).length === displayNameListLength) {
-              if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
-                this.addInResults(node, displayNameList, nodes.length);
-              } else {
-                this.exploreSearchService.exploreSearchConceptInfo(realAppliedPath).subscribe((searchConceptInfo) => {
-                  if (searchTerm !== this.searchTerm) {
-                    return;
-                  }
-                  this.addInResults(node, displayNameList, nodes.length, searchConceptInfo);
-                })
-              }
-            }
-          });
-        });
+       if (node.nodeType.toLowerCase().indexOf('modifier') === -1) {
+          this.addInResults(node, displayNameList, nodes.length);
+        } else {
+          this.addInResults(node, displayNameList, nodes.length, node.parent);
+        }
       });
     }, (err) => {
       ErrorHelper.handleError('Failed to search', err);
@@ -161,7 +132,10 @@ export class TermSearchService {
 
   onTermChange(event: any) {
     this.searchTerm = event.target.value;
-    if (this.searchTerm.length > 2) {
+  }
+
+  onSearch() {
+    if (this.searchTerm.length) {
       this.search();
     }
   }

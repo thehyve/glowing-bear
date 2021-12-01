@@ -15,6 +15,7 @@
         <gb-tree-nodes *ngIf="ontologyNavbarService.isBrowse"></gb-tree-nodes>
         <form class="term-search" *ngIf="ontologyNavbarService.isTermSearch">
           <input value="{{termSearchService.searchTerm}}" class="ui-inputtext" (input)="termSearchService.onTermChange($event)" placeholder="Search in Ontology (min. 3 characters)" />
+          <p-button label="Search" (onClick)="termSearchService.onSearch()"></p-button>
           <span class="no-result-text" *ngIf="termSearchService.isNoResults">No results</span>
           <p-accordionTab #accordionTab *ngFor="let ontologyElement of termSearchService.results" draggable="true"
               class="ui-ontology-elements">

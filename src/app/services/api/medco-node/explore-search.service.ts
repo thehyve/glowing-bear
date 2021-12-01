@@ -44,6 +44,10 @@ export class ExploreSearchService {
         treeNode.path = treeNodeObj['path'];
         treeNode.appliedPath = treeNodeObj['appliedPath'];
         treeNode.name = treeNodeObj['name'];
+        if (treeNodeObj['parent']) {
+          treeNode.parent = this.mapSearchResults({ results: [treeNodeObj['parent']] })[0];
+          treeNode.parent.metadata = undefined;
+        }
         treeNode.displayName = treeNodeObj['displayName'];
         treeNode.description = `${treeNodeObj['displayName']} (${treeNodeObj['code']})`;
         treeNode.conceptCode = treeNodeObj['code'];
