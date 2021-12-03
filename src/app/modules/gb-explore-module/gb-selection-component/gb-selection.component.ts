@@ -46,8 +46,7 @@ export class GbSelectionComponent {
     { label: 'Treat groups independently', value: false },
     { label: 'Selected groups occur in the same instance', value: true }]
 
-  @ViewChild('rootInclusionConstraintComponent', { static: true }) rootInclusionConstraintComponent: GbConstraintComponent;
-  @ViewChild('rootExclusionConstraintComponent', { static: true }) rootExclusionConstraintComponent: GbConstraintComponent;
+  @ViewChild('rootConstraintComponent', { static: true }) rootConstraintComponent: GbConstraintComponent;
 
   private isUploadListenerNotAdded: boolean;
 
@@ -92,12 +91,10 @@ export class GbSelectionComponent {
     return this.queryService.isUpdating ? 'loading' : 'complete';
   }
 
-  get rootInclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootInclusionConstraint
+  get rootConstraint(): CombinationConstraint {
+    return this.constraintService.rootConstraint
   }
 
-  get rootExclusionConstraint(): CombinationConstraint {
-    return this.constraintService.rootExclusionConstraint
-  }
+
 
 }

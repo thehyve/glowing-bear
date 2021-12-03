@@ -11,22 +11,14 @@
     </div>
   </div>
 
-  <div #inclusionCriteriaBox
+  <div #criteriaBox
        class="criteria-box input-label-wrapper">
-    <p><b>Inclusion</b> criteria:</p>
-    <gb-constraint #rootInclusionConstraintComponent
-                [constraint]="rootInclusionConstraint"
+    <p>Criteria:</p>
+    <gb-constraint #rootConstraintComponent
+                [constraint]="rootConstraint"
                 [isRoot]="true"></gb-constraint>
   </div>
 
-  <!-- Exclusion criteria -->
-  <div #exclusionCriteriaBox
-       class="criteria-box input-label-wrapper">
-    <p><b>Exclusion</b> criteria:</p>
-    <gb-constraint #rootExclusionConstraintComponent
-                [constraint]="rootExclusionConstraint"
-                [isRoot]="true"></gb-constraint>
-  </div>
 
 
   <!-- Intersection calculation -->

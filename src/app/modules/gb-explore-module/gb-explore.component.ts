@@ -92,8 +92,7 @@ export class GbExploreComponent implements AfterViewChecked {
 
     let cohort = new Cohort(
       this.cohortName,
-      this.constraintService.rootInclusionConstraint,
-      this.constraintService.rootExclusionConstraint,
+      this.constraintService.rootConstraint,
       creationDates,
       updateDates,
     )

@@ -86,7 +86,7 @@ export class CohortService {
         updateDates.push(new Date(apiCohort[i].updateDate))
       })
 
-      let cohort = new Cohort(cohortName, null, null, creationDates, updateDates)
+      let cohort = new Cohort(cohortName, null, creationDates, updateDates)
 
       cohort.patient_set_id = apiCohorts.map(apiCohort => apiCohort[i].queryID)
       cohort.queryDefinition = apiCohorts.map(apiCohort => apiCohort[i].queryDefinition)
@@ -98,57 +98,7 @@ export class CohortService {
   }
 
   /**
-   * conformContraints handles constraint(s) in a way they fit in the explore component,
-   * which has one panel for inclusion, one for exclusion
-   *
-   * @param nots input inclusion/exclusion from I2B2 panels
-   * @param constraintArg input constraint(s)
-   * @param inclusionConstraint output inclusion constraint
-   * @param exclusionConstraint output exclusion constraint
-   */
-  private static conformConstraints(
-    nots: boolean[],
-    constraintArg: Constraint,
-    target: { inclusionConstraint: Constraint, exclusionConstraint: Constraint }): void {
-    target.inclusionConstraint = null
-    target.exclusionConstraint = null
-
-    if (nots.length === 0) {
-      return
-    }
-
-    let sameValues = nots.every(value => value === nots[0])
-    if (sameValues) {
-      if (nots[0]) {
-        target.exclusionConstraint = constraintArg
-      } else {
-        target.inclusionConstraint = constraintArg
-      }
-      return
-
-    } else {
-      if (!(constraintArg instanceof CombinationConstraint)) {
-        ErrorHelper.handleNewError('Unexpected error in restore cohort: multiple and distinct negation flags for a constraint that is not a combination.')
-      }
-      let panels = (constraintArg as CombinationConstraint).children;
-      if (nots.length !== panels.length) {
-        ErrorHelper.handleNewError(`Unexpected error in restore cohort: the number of negation flags (${nots.length}) is not equal to that of panels (${panels.length})`)
-      } else {
-        target.inclusionConstraint = new CombinationConstraint()
-        target.exclusionConstraint = new CombinationConstraint()
-        panels.forEach((child, index) => {
-          if (nots[index]) {
-            (target.exclusionConstraint as CombinationConstraint).addChild(child)
-          } else {
-            (target.inclusionConstraint as CombinationConstraint).addChild(child)
-          }
-        })
-      }
-    }
-  }
-
-  /**
-   * unflattenConstraints check if the root exclusion and inclusion constraint are made of a simple concept constraint,
+   * unflattenConstraints check if the root constraints are made of a simple concept constraint,
    * or AND-composed consrtaints. If it is the case, it unflattens them into AND-composed OR-composed combinations
    *
    * @param flatConstraint
@@ -166,6 +116,7 @@ export class CohortService {
       let newLevel2Combination = new CombinationConstraint()
       newLevel2Combination.combinationState = CombinationState.Or
       newLevel2Combination.addChild(flatConstraint)
+      newLevel2Combination.excluded = flatConstraint.excluded
       newCombination.addChild(newLevel2Combination)
       return newCombination
 
@@ -176,6 +127,7 @@ export class CohortService {
       if (childConstraint instanceof ConceptConstraint) {
         let newConstraint = new CombinationConstraint()
         newConstraint.combinationState = CombinationState.Or
+        newConstraint.excluded = childConstraint.excluded
         newConstraint.panelTimingSameInstance = childConstraint.panelTimingSameInstance;
         newConstraint.addChild((newAndCombination as CombinationConstraint).children[i]);
         (newAndCombination as CombinationConstraint).updateChild(i, newConstraint)
@@ -353,7 +305,7 @@ export class CohortService {
   }
 
   updateCohortTerms(constraint: CombinationConstraint) {
-    this._selectedCohort.rootInclusionConstraint = constraint
+    this._selectedCohort.rootConstraint = constraint
   }
 
 
@@ -365,39 +317,17 @@ export class CohortService {
       MessageHelper.alert('warn', `Definition not found for cohort ${cohors.name}`)
       return
     }
-    let nots = cohortDefinition.panels.map(({ not }) => not)
-    this._queryTiming.next(cohortDefinition.queryTiming)
 
+    this._queryTiming.next(cohortDefinition.queryTiming)
     this.constraintReverseMappingService.mapPanels(cohortDefinition.panels)
       .subscribe(constraint => {
-        let formatedConstraint = {
-          inclusionConstraint: <Constraint>{},
-          exclusionConstraint: <Constraint>{}
-        }
-        CohortService.conformConstraints(nots, constraint, formatedConstraint)
-        formatedConstraint.inclusionConstraint = CohortService.unflattenConstraints(formatedConstraint.inclusionConstraint)
-        formatedConstraint.exclusionConstraint = CohortService.unflattenConstraints(formatedConstraint.exclusionConstraint)
-
-        if ((formatedConstraint.inclusionConstraint) || (formatedConstraint.exclusionConstraint)) {
-          this.constraintService.rootInclusionConstraint = new CombinationConstraint()
-          this.constraintService.rootInclusionConstraint.isRoot = true
-          this.constraintService.rootExclusionConstraint = new CombinationConstraint()
-          this.constraintService.rootExclusionConstraint.isRoot = true
-        }
-        if (formatedConstraint.inclusionConstraint) {
-          if (formatedConstraint.inclusionConstraint instanceof ConceptConstraint) {
-            this.constraintService.rootInclusionConstraint.addChild(formatedConstraint.inclusionConstraint)
+        constraint = CohortService.unflattenConstraints(constraint)
+        if (constraint) {
+          if (constraint instanceof ConceptConstraint) {
+            this.constraintService.rootConstraint.addChild(constraint)
           } else {
-            this.constraintService.rootInclusionConstraint = (formatedConstraint.inclusionConstraint as CombinationConstraint);
-            this.constraintService.rootInclusionConstraint.isRoot = true
-          }
-        }
-        if (formatedConstraint.exclusionConstraint) {
-          if (formatedConstraint.exclusionConstraint instanceof ConceptConstraint) {
-            this.constraintService.rootExclusionConstraint.addChild(formatedConstraint.exclusionConstraint)
-          } else {
-            this.constraintService.rootExclusionConstraint = (formatedConstraint.exclusionConstraint as CombinationConstraint);
-            this.constraintService.rootExclusionConstraint.isRoot = true
+            this.constraintService.rootConstraint = (constraint as CombinationConstraint);
+            this.constraintService.rootConstraint.isRoot = true
           }
         }
       })

@@ -21,6 +21,7 @@ import {AutoCompleteModule} from 'primeng';
 import {CheckboxModule} from 'primeng';
 import {CalendarModule} from 'primeng';
 import {PanelModule} from 'primeng';
+import {InputSwitchModule} from 'primeng';
 
 import {MultiSelectModule} from 'primeng';
 import {GbSelectionModule} from './gb-selection-component/gb-selection.module';
@@ -37,6 +38,7 @@ import {TooltipModule} from 'primeng/tooltip';
     AutoCompleteModule,
     CheckboxModule,
     CalendarModule,
+    InputSwitchModule,
     PanelModule,
     MultiSelectModule,
     GbSelectionModule,
