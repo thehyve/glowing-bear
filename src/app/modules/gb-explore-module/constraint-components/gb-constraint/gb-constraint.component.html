@@ -3,16 +3,14 @@
   
   <div class="pull-right">
     
-    <span class="switch-label" *ngIf="depth==1">
+    <span class="switch-label" style="margin-right: 0.5rem;" *ngIf="depth==1">
       <ng-container *ngIf="constraint.excluded; else included">excluded</ng-container>
       <ng-template #included>included</ng-template>
-      &nbsp;
     </span>
-    <label *ngIf="depth==1" class="switch">
+    <label *ngIf="depth==1"  class="switch" style="margin-right: 0.5rem;">
       <input [(ngModel)]="constraint.excluded" type="checkbox">
       <span class="slider round"></span>
     </label>
-    <span>&nbsp;</span>
     <button *ngIf="!isRoot"
             type="button"
             class="btn btn-outline-danger btn-sm  gb-constraint-remove-btn"
