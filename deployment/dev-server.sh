@@ -1,2 +1,2 @@
 #!/usr/bin/env sh
-USER_GROUP="$(id -u):$(id -g)" docker-compose up --build dev-server
+USER_GROUP="$(id -u):$(id -g)" docker-compose up dev-server
