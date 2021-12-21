@@ -30,7 +30,7 @@ export class IconHelper {
     if (/biomaterial/.test(dimension)) {
       return 'fa fa-leaf';
     }
-    if (/image/.test(dimension)) {
+    if (/image/.test(dimension) || /radiology/.test(dimension)) {
       return 'fa fa-image';
     }
     return 'fa fa-sticky-note';
