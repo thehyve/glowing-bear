@@ -108,7 +108,18 @@ export class GbExploreComponent implements AfterViewChecked {
       this.savedCohortsPatientListService.insertPatientList(this.cohortName, this._lastPatientList[0], this._lastPatientList[1])
       this.savedCohortsPatientListService.statusStorage.set(this.cohortName, OperationStatus.done)
     } else {
-      MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may have to download the list again.')
+      switch (this.queryService.queryType) {
+        case ExploreQueryType.COUNT_PER_SITE:
+        case ExploreQueryType.COUNT_PER_SITE_OBFUSCATED:
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED:
+        case ExploreQueryType.COUNT_PER_SITE_SHUFFLED_OBFUSCATED:
+        case ExploreQueryType.PATIENT_LIST:
+          MessageHelper.alert('error', 'There is no patient list cached from previous Explore Query. You may have to download the list again.')
+          break;
+        default:
+          //In this case no patient list is available in the return type of the explore query anyway.
+          break;
+      }
     }
     this.cohortName = ''
   }
