@@ -115,7 +115,7 @@ Glowing bear has a list of icons defined for basic subject dimensions:
 - diagnoses
 - biosources
 - biomaterials
-- images
+- radiology dimension and images
 
 If there is a new dimension, it will have a default icon. In order to customize this,
 for each new dimension that needs to be supported
