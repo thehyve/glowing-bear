@@ -1,5 +1,5 @@
 # ![](docs/images/glowingbear.png) Glowing Bear
-[![Build Status](https://travis-ci.org/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.org/thehyve/glowing-bear/branches)
+[![Build Status](https://travis-ci.com/thehyve/glowing-bear.svg?branch=dev)](https://travis-ci.com/thehyve/glowing-bear/branches)
 [![codecov](https://codecov.io/gh/thehyve/glowing-bear/branch/dev/graph/badge.svg)](https://codecov.io/gh/thehyve/glowing-bear)
 
 An [Angular]-based frontend application for clinical data selection and analysis 
@@ -92,7 +92,7 @@ gradle assemble
 gradle publish
 ```
 
-The latest release is [glowing-bear-2.0.14.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.14/glowing-bear-2.0.14.tar).
+The latest release is [glowing-bear-2.0.15.tar](https://repo.thehyve.nl/service/local/repositories/releases/content/nl/thehyve/glowing-bear/2.0.15/glowing-bear-2.0.15.tar).
 
 Published snapshot bundles are available in the `snapshots` repository
 on https://repo.thehyve.nl with id `nl.thehyve:glowing-bear:0.0.1-SNAPSNOT:tar`.
@@ -115,7 +115,7 @@ Glowing bear has a list of icons defined for basic subject dimensions:
 - diagnoses
 - biosources
 - biomaterials
-- images
+- radiology dimension and images
 
 If there is a new dimension, it will have a default icon. In order to customize this,
 for each new dimension that needs to be supported
