@@ -7,10 +7,10 @@
                 [dropdownIcon]="disableDimensionDropdown ? '' : 'pi pi-chevron-down'"
                 (onChange)="onSelectedDimensionChange()" [autoWidth]="false" [style]="{'min-width':'10em'} ">
       <ng-template let-item pTemplate="selectedItem">
-        <i class="{{getDimensionIcon(item.label)}} gb-dimension-icon"></i>&nbsp;{{item.label}}
+        <i class="{{getDimensionIcon(item.value)}} gb-dimension-icon"></i>&nbsp;{{item.label}}
       </ng-template>
       <ng-template let-dimension pTemplate="item">
-        <i class="{{getDimensionIcon(dimension.label)}} gb-dimension-icon"></i>&nbsp;{{dimension.label}}
+        <i class="{{getDimensionIcon(dimension.value)}} gb-dimension-icon"></i>&nbsp;{{dimension.label}}
       </ng-template>
     </p-dropdown>
   </div>
