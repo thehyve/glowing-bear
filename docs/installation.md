@@ -413,7 +413,7 @@ Transmart Packer consists of a worker service that performs the export tasks
 and a webapp services that handles export requests, task management and export file downloads.
 
 Transmart Packer requires:
-- Python 3.6 or newer
+- Python 3.7 or newer
 - Redis server
 
 Installation steps for the Transmart Packer services:
@@ -431,7 +431,7 @@ Installation steps for the Transmart Packer services:
 3. Install Transmart Packer:
    ```bash
    source venv/bin/activate
-   pip install --no-cache-dir --upgrade "transmart-packer == 0.5.0"
+   pip install --no-cache-dir --upgrade "transmart-packer == 0.6.1"
    ```
 
 4. Ensure that you have a valid offline token, for asynchronous data access. See [Offline token](#offline-token).
