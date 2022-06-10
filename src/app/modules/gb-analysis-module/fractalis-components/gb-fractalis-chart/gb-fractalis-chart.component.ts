@@ -16,7 +16,9 @@ import {Concept} from '../../../../models/constraint-models/concept';
 
 function convertMapToObject<T>(map: Map<string, T>): object {
   const obj = {};
-  map.forEach((v, k) => { obj[k] = v });
+  map.forEach((v, k) => {
+ obj[k] = v
+});
   return obj;
 }
 

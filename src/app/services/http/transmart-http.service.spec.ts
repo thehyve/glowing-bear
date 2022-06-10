@@ -200,7 +200,7 @@ describe('TransmartHttpService', () => {
         const el1 = new TransmartExportElement();
         const el2 = new TransmartExportElement();
         const elements = [el1, el2];
-        let tableState = undefined;
+        let tableState;
         service.runExportJob(jobId, mockConstraint, elements, tableState).subscribe((res) => {
           expect(res['foo']).toBe('bar');
         });
@@ -365,7 +365,7 @@ describe('TransmartHttpService', () => {
         req.flush(mockData);
       }));
 
-  it('should fetch studies from the TranSMART resource service', function () {
+  it('should fetch studies from the TranSMART resource service', function() {
     let study1 = new TransmartStudy();
     study1.studyId = 'TestStudy1';
     study1.dimensions = ['patient', 'concept', 'start time'];

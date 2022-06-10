@@ -81,7 +81,7 @@ describe('TreeNodesComponent', () => {
 
   it('should update event listners', () => {
     let elm = {
-      querySelector: function (arg: string) {
+      querySelector: function(arg: string) {
         if (arg === 'li.ui-treenode') {
           return treeNodeElm;
         } else if (arg === 'li.ui-treenode .ui-treenode-label') {
@@ -92,11 +92,11 @@ describe('TreeNodesComponent', () => {
       }
     } as Element;
     let treeNodeElm = {
-      addEventListener: function (_onWhich: string, _callback: Function) {
+      addEventListener: function(_onWhich: string, _callback: Function) {
       }
     };
     let treeNodeElmIcon = {
-      addEventListener: function (_onWhich: string, _callback: Function) {
+      addEventListener: function(_onWhich: string, _callback: Function) {
       }
     };
     let node = {
@@ -118,7 +118,7 @@ describe('TreeNodesComponent', () => {
 
   it('should not add event listeners to treenode icon when there is no metadata', () => {
     let elm = {
-      querySelector: function (arg: string) {
+      querySelector: function(arg: string) {
         if (arg === 'li.ui-treenode') {
           return treeNodeElm;
         } else if (arg === 'li.ui-treenode .ui-treenode-icon') {
@@ -132,11 +132,11 @@ describe('TreeNodesComponent', () => {
       type: 'NUMERIC'
     };
     let treeNodeElm = {
-      addEventListener: function (_onWhich: string, _callback: Function) {
+      addEventListener: function(_onWhich: string, _callback: Function) {
       }
     };
     let treeNodeElmIcon = {
-      addEventListener: function (_onWhich: string, _callback: Function) {
+      addEventListener: function(_onWhich: string, _callback: Function) {
       }
     };
     let spy1 = spyOn(treeNodeElm, 'addEventListener').and.stub();

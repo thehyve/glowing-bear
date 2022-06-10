@@ -83,7 +83,7 @@ export class FractalisServiceMock {
   }
 
   public getTrackedVariables(): Promise<object> {
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
       resolve({
         data: {
           data_states: []

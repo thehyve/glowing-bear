@@ -111,7 +111,7 @@ describe('GbDroppableZoneComponent', () => {
     let dummy = new TrueConstraint();
     let dummySelectedCell = {
       constraint: dummy,
-      remove: function () {
+      remove: function() {
       }
     };
     let spy6 = spyOnProperty(crossTableService, 'selectedConstraintCell', 'get')
