@@ -392,7 +392,7 @@ describe('TransmartHttpService', () => {
     );
   });
 
-  it('should forward the error when studies cannot be fetched', (done) => {
+  it('should forward the error when studies cannot be fetched', async () => {
     let httpError: any;
     spyOn(transmartHttpService, 'getStudies').and.callFake(() => {
       httpError = new HttpErrorResponse({status: 500});
@@ -402,13 +402,7 @@ describe('TransmartHttpService', () => {
     });
 
     // The first time, the studies should be fetched from the resource
-    transmartHttpService.studies.then(() => {
-      fail();
-      done();
-    }).catch((error) => {
-      expect(error).toEqual(httpError);
-      done();
-    });
+    await expectAsync(transmartHttpService.studies).toBeRejectedWith(httpError)
   });
 
   it('should correctly map constraints',

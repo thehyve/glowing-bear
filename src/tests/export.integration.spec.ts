@@ -156,7 +156,7 @@ describe('Integration test for data export', () => {
     dataTableService = TestBed.inject(DataTableService);
   });
 
-  it('should create and run an export job', () => {
+  it('should create and run an export job', async () => {
     // mock current selection count in count service
     countService.currentSelectionCount = new CountItem(10, 100);
     // mock selected tree nodes and variables in variable service
@@ -176,31 +176,29 @@ describe('Integration test for data export', () => {
 
     const spyRunJob = spyOn(resourceService, 'runExportJob').and.callThrough();
 
-    exportService.prepareExportJob().then(_ => {
-      expect(spyRunJob).toHaveBeenCalled();
-      const combination: Constraint = variableService.combination;
-      expect(combination.className).toBe('CombinationConstraint');
-      // verify that there are two constraints created, based on the mocked selected tree nodes
-      expect((combination as CombinationConstraint).children.length).toBe(2);
-      expect((combination as CombinationConstraint).dimension).toBe('patient');
-      // verify the cohort constraint
-      expect((combination as CombinationConstraint).children[0].className).toBe('CombinationConstraint');
-      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint).children.length).toBe(2);
-      // verify that combination contains selected cohort constraint
-      expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
-        .children[1].className).toBe('ConceptConstraint');
-      // verify that the variable constraint is a combination constraint
-      const variableConstraint = <CombinationConstraint>(combination as CombinationConstraint).children[1];
-      expect(variableConstraint.className).toBe('CombinationConstraint');
-      // verify that the variable constraint's dimension is indeed 'observation', not other dimensions that result in subselection wrapping
-      expect(variableConstraint.dimension).toBe('observation');
-      // verify that the variable constraint has two children, one for the heart rate and one for the age concept
-      expect(variableConstraint.children.length).toBe(2);
-      expect(variableConstraint.children[0]['concept'].code).toBe('VSIGN:HR');
-      expect(variableConstraint.children[1]['concept'].code).toBe('EHR:DEM:AGE');
-    }).catch(err => {
-      fail('Preparing export job should go through, but did not. ' + err)
-    });
+    await exportService.prepareExportJob();
+
+    expect(spyRunJob).toHaveBeenCalled();
+    const combination: Constraint = variableService.combination;
+    expect(combination.className).toBe('CombinationConstraint');
+    // verify that there are two constraints created, based on the mocked selected tree nodes
+    expect((combination as CombinationConstraint).children.length).toBe(2);
+    expect((combination as CombinationConstraint).dimension).toBe('patient');
+    // verify the cohort constraint
+    expect((combination as CombinationConstraint).children[0].className).toBe('CombinationConstraint');
+    expect(((combination as CombinationConstraint).children[0] as CombinationConstraint).children.length).toBe(2);
+    // verify that combination contains selected cohort constraint
+    expect(((combination as CombinationConstraint).children[0] as CombinationConstraint)
+      .children[1].className).toBe('ConceptConstraint');
+    // verify that the variable constraint is a combination constraint
+    const variableConstraint = <CombinationConstraint>(combination as CombinationConstraint).children[1];
+    expect(variableConstraint.className).toBe('CombinationConstraint');
+    // verify that the variable constraint's dimension is indeed 'observation', not other dimensions that result in subselection wrapping
+    expect(variableConstraint.dimension).toBe('observation');
+    // verify that the variable constraint has two children, one for the heart rate and one for the age concept
+    expect(variableConstraint.children.length).toBe(2);
+    expect(variableConstraint.children[0]['concept'].code).toBe('VSIGN:HR');
+    expect(variableConstraint.children[1]['concept'].code).toBe('EHR:DEM:AGE');
   });
 
 });

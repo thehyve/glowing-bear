@@ -169,7 +169,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
     dataTableService = TestBed.inject(DataTableService);
   });
 
-  it('should load data table data on initialisation', () => {
+  it('should load data table data on initialisation', async () => {
     dataTableCall = spyOn(transmartHttpService, 'getDataTable')
       .and.callFake((tableState: TransmartTableState,
                      constraint: Constraint,
@@ -181,7 +181,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
         return observableOf(['s1', 's2'])
       });
 
-    dataTableService.updateDataTable();
+    await dataTableService.updateDataTable();
 
     /**
      * After the studies have been loaded, and the data table service has been initialised ...
@@ -200,7 +200,7 @@ describe('Integration test data table retrieval calls for TranSMART', () => {
       expect(studyIdsCall).toHaveBeenCalled();
       expect(dataTableCall).toHaveBeenCalled();
       expect(dataTableService.rows.length).toEqual(5);
-    });
+    }, err => {});
   });
 
 });

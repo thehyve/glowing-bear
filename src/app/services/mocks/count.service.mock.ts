@@ -17,6 +17,7 @@ export class CountServiceMock {
   public conceptCountMap: Map<string, CountItem>;
   public studyCountMap: Map<string, CountItem>;
   public studyConceptCountMap: Map<string, Map<string, CountItem>>;
+  public selectedConceptCountMap: Map<string, CountItem>;
   public selectedConceptCountMapUpdated: Subject<boolean> = new Subject<boolean>();
 
   constructor() {
@@ -31,6 +32,8 @@ export class CountServiceMock {
     let item3 = new CountItem(70, 90);
     map2.set('concept2', item2);
     map2.set('concept3', item3);
+
+    this.selectedConceptCountMap = new Map<string, CountItem>();
 
     this.studyConceptCountMap = new Map<string, Map<string, CountItem>>();
     this.studyConceptCountMap.set('study1', map1);

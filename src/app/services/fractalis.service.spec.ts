@@ -56,6 +56,7 @@ describe('FractalisService', () => {
     constraintService = TestBed.inject(ConstraintService);
     resourceService = TestBed.inject(ResourceService);
     cohortService = TestBed.inject(CohortService);
+    spyOn(fractalisService, 'clearCache').and.stub();
   });
 
   it('should be injected', inject([FractalisService], (service: FractalisService) => {

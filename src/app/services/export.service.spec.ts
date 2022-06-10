@@ -26,6 +26,8 @@ import {VariableService} from './variable.service';
 import {VariableServiceMock} from './mocks/variable.service.mock';
 import {CountServiceMock} from './mocks/count.service.mock';
 import {CountService} from './count.service';
+import {CohortService} from "./cohort.service";
+import {CohortServiceMock} from "./mocks/cohort.service.mock";
 
 describe('ExportService', () => {
   let exportService: ExportService;
@@ -67,6 +69,10 @@ describe('ExportService', () => {
         {
           provide: VariableService,
           useClass: VariableServiceMock
+        },
+        {
+          provide: CohortService,
+          useClass: CohortServiceMock
         },
         ExportService
       ]
